@@ -23,6 +23,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.util.Assert;
 
 /**
  * Configure {@link RabbitTemplate} with sensible defaults.
@@ -37,6 +38,26 @@ public class RabbitTemplateConfigurer {
 	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 	private RabbitProperties rabbitProperties;
+
+	/**
+	 * Creates a new configurer.
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #RabbitTemplateConfigurer(RabbitProperties)}
+	 */
+	@Deprecated
+	public RabbitTemplateConfigurer() {
+
+	}
+
+	/**
+	 * Creates a new configurer that will use the given {@code rabbitProperties}.
+	 * @param rabbitProperties properties to use
+	 * @since 2.6.0
+	 */
+	public RabbitTemplateConfigurer(RabbitProperties rabbitProperties) {
+		Assert.notNull(rabbitProperties, "RabbitProperties must not be null");
+		this.rabbitProperties = rabbitProperties;
+	}
 
 	/**
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
@@ -58,7 +79,10 @@ public class RabbitTemplateConfigurer {
 	/**
 	 * Set the {@link RabbitProperties} to use.
 	 * @param rabbitProperties the {@link RabbitProperties}
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #RabbitTemplateConfigurer(RabbitProperties)}
 	 */
+	@Deprecated
 	protected void setRabbitProperties(RabbitProperties rabbitProperties) {
 		this.rabbitProperties = rabbitProperties;
 	}

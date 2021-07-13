@@ -146,11 +146,10 @@ public class RabbitAutoConfiguration {
 		public RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
 				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
-			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer();
+			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer(properties);
 			configurer.setMessageConverter(messageConverter.getIfUnique());
 			configurer
 					.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
-			configurer.setRabbitProperties(properties);
 			return configurer;
 		}
 
