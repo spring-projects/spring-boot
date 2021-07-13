@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class StackdriverPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesResourceLabelsAreSetAdapterResourceTypeReturnsThem() {
+	void whenPropertiesResourceLabelsAreSetAdapterResourceLabelsReturnsThem() {
 		final Map<String, String> labels = new HashMap<>();
 		labels.put("labelOne", "valueOne");
 		labels.put("labelTwo", "valueTwo");
