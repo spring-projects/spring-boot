@@ -9,10 +9,6 @@ plugins {
 
 description = "Spring Boot"
 
-toolchain {
-	testJvmArgs.add("--add-opens=java.base/java.net=ALL-UNNAMED")
-}
-
 def tomcatConfigProperties = "$buildDir/tomcat-config-properties"
 
 configurations {
@@ -153,4 +149,8 @@ compileTestKotlin {
 
 compileJava {
 	doLast new org.springframework.boot.build.log4j2.ReproducibleLog4j2PluginsDatAction()
+}
+
+toolchain {
+	testJvmArgs.add("--add-opens=java.base/java.net=ALL-UNNAMED")
 }

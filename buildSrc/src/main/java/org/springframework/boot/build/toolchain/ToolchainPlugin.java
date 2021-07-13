@@ -16,6 +16,8 @@
 
 package org.springframework.boot.build.toolchain;
 
+import java.util.Collections;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -69,10 +71,8 @@ public class ToolchainPlugin implements Plugin<Project> {
 	}
 
 	private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
-		if (!toolchain.getTestJvmArgs().isPresent()) {
-			return;
-		}
-		project.getTasks().withType(Test.class, (test) -> test.jvmArgs(toolchain.getTestJvmArgs().get()));
+		project.getTasks().withType(Test.class,
+				(test) -> test.jvmArgs(toolchain.getTestJvmArgs().getOrElse(Collections.emptyList())));
 	}
 
 }
