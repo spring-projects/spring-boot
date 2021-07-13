@@ -951,6 +951,12 @@ To disable the auto-configured connection pool metrics, set the following proper
 
 
 
+[[actuator.metrics.supported.jetty]]
+==== Jetty Metrics
+Auto-configuration will bind metrics for Jetty's `ThreadPool` using Micrometer's `JettyServerThreadPoolMetrics`.
+
+
+
 [[actuator.metrics.supported.timed-annotation]]
 ==== @Timed Annotation Support
 The `@Timed` annotation from the `io.micrometer.core.annotation` package can be used with several of the supported technologies listed above.
