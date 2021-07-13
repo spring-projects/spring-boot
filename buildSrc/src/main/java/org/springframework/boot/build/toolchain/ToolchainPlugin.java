@@ -16,7 +16,9 @@
 
 package org.springframework.boot.build.toolchain;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -71,8 +73,10 @@ public class ToolchainPlugin implements Plugin<Project> {
 	}
 
 	private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
-		project.getTasks().withType(Test.class,
-				(test) -> test.jvmArgs(toolchain.getTestJvmArgs().getOrElse(Collections.emptyList())));
+		List<String> jvmArgs = new ArrayList<>();
+		jvmArgs.add("--illegal-access=warn");
+		jvmArgs.addAll(toolchain.getTestJvmArgs().getOrElse(Collections.emptyList()));
+		project.getTasks().withType(Test.class, (test) -> test.jvmArgs(jvmArgs));
 	}
 
 }
