@@ -104,7 +104,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return errorAttributes;
 	}
 
-	private Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+	protected Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, webRequest);
@@ -113,7 +113,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return errorAttributes;
 	}
 
-	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
+	protected void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
 		Integer status = getAttribute(requestAttributes, RequestDispatcher.ERROR_STATUS_CODE);
 		if (status == null) {
 			errorAttributes.put("status", 999);
@@ -130,7 +130,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		}
 	}
 
-	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
+	protected void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
 			boolean includeStackTrace) {
 		Throwable error = getError(webRequest);
 		if (error != null) {
