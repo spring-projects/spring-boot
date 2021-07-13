@@ -75,20 +75,15 @@ class RedisHealthIndicatorTests {
 	}
 
 	@Test
-	void redisClusterIsUp() {
-		Properties clusterProperties = new Properties();
+	void redisClusterIsUpWithoutState() {
+		final Properties clusterProperties = new Properties();
 		clusterProperties.setProperty("cluster_size", "4");
 		clusterProperties.setProperty("cluster_slots_ok", "4");
 		clusterProperties.setProperty("cluster_slots_fail", "0");
-		List<RedisClusterNode> redisMasterNodes = Arrays.asList(new RedisClusterNode("127.0.0.1", 7001),
-				new RedisClusterNode("127.0.0.2", 7001));
-		RedisClusterConnection redisConnection = mock(RedisClusterConnection.class);
-		given(redisConnection.clusterGetNodes()).willReturn(redisMasterNodes);
-		given(redisConnection.clusterGetClusterInfo()).willReturn(new ClusterInfo(clusterProperties));
-		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
-		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
-		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
-		Health health = healthIndicator.health();
+		final RedisConnectionFactory redisConnectionFactory = mockRedisClusterConnectionFactory(clusterProperties);
+
+		final RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
+		final Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
@@ -96,4 +91,42 @@ class RedisHealthIndicatorTests {
 		verify(redisConnectionFactory, atLeastOnce()).getConnection();
 	}
 
+	@Test
+	void redisClusterIsUpWithState() {
+		final Properties clusterProperties = new Properties();
+		clusterProperties.setProperty("cluster_state", "ok");
+		clusterProperties.setProperty("cluster_size", "4");
+		clusterProperties.setProperty("cluster_slots_ok", "4");
+		clusterProperties.setProperty("cluster_slots_fail", "0");
+		final RedisConnectionFactory redisConnectionFactory = mockRedisClusterConnectionFactory(clusterProperties);
+
+		final RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
+		final Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+	}
+
+	@Test
+	void redisClusterIsDown() {
+		final Properties clusterProperties = new Properties();
+		clusterProperties.setProperty("cluster_state", "fail");
+		clusterProperties.setProperty("cluster_size", "3");
+		clusterProperties.setProperty("cluster_slots_ok", "4");
+		clusterProperties.setProperty("cluster_slots_fail", "0");
+		final RedisConnectionFactory redisConnectionFactory = mockRedisClusterConnectionFactory(clusterProperties);
+
+		final RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
+		final Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+	}
+
+	private static RedisConnectionFactory mockRedisClusterConnectionFactory(Properties clusterProperties) {
+		final List<RedisClusterNode> redisMasterNodes = Arrays.asList(new RedisClusterNode("127.0.0.1", 7001),
+																new RedisClusterNode("127.0.0.2", 7001));
+		final RedisClusterConnection redisConnection = mock(RedisClusterConnection.class);
+		given(redisConnection.clusterGetNodes()).willReturn(redisMasterNodes);
+		given(redisConnection.clusterGetClusterInfo()).willReturn(new ClusterInfo(clusterProperties));
+		final RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
+		return redisConnectionFactory;
+	}
 }

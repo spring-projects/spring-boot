@@ -65,7 +65,7 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	private Mono<Health> getHealth(Health.Builder builder, ReactiveRedisConnection connection) {
 		if (connection instanceof ReactiveRedisClusterConnection) {
 			return ((ReactiveRedisClusterConnection) connection).clusterGetClusterInfo()
-					.map((info) -> up(builder, info));
+					.map(info -> info(builder, info));
 		}
 		return connection.serverCommands().info("server").map((info) -> up(builder, info));
 	}
@@ -74,8 +74,8 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 		return RedisHealth.up(builder, info).build();
 	}
 
-	private Health up(Health.Builder builder, ClusterInfo clusterInfo) {
-		return RedisHealth.up(builder, clusterInfo).build();
+	private Health info(Health.Builder builder, ClusterInfo clusterInfo) {
+		return RedisHealth.info(builder, clusterInfo).build();
 	}
 
 }
