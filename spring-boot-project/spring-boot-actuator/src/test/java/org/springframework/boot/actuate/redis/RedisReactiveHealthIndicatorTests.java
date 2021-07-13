@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,16 +67,8 @@ class RedisReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void redisClusterIsUp() {
-		Properties clusterProperties = new Properties();
-		clusterProperties.setProperty("cluster_size", "4");
-		clusterProperties.setProperty("cluster_slots_ok", "4");
-		clusterProperties.setProperty("cluster_slots_fail", "0");
-		ReactiveRedisClusterConnection redisConnection = mock(ReactiveRedisClusterConnection.class);
-		given(redisConnection.closeLater()).willReturn(Mono.empty());
-		given(redisConnection.clusterGetClusterInfo()).willReturn(Mono.just(new ClusterInfo(clusterProperties)));
-		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
-		given(redisConnectionFactory.getReactiveConnection()).willReturn(redisConnection);
+	void healthWhenClusterStateIsAbsentShouldBeUp() {
+		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory(null);
 		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
@@ -85,7 +77,34 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails().get("slots_up")).isEqualTo(4L);
 			assertThat(h.getDetails().get("slots_fail")).isEqualTo(0L);
 		}).verifyComplete();
-		verify(redisConnection).closeLater();
+		verify(redisConnectionFactory.getReactiveConnection()).closeLater();
+	}
+
+	@Test
+	void healthWhenClusterStateIsOkShouldBeUp() {
+		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("ok");
+		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		Mono<Health> health = healthIndicator.health();
+		StepVerifier.create(health).consumeNextWith((h) -> {
+			assertThat(h.getStatus()).isEqualTo(Status.UP);
+			assertThat(h.getDetails().get("cluster_size")).isEqualTo(4L);
+			assertThat(h.getDetails().get("slots_up")).isEqualTo(4L);
+			assertThat(h.getDetails().get("slots_fail")).isEqualTo(0L);
+		}).verifyComplete();
+	}
+
+	@Test
+	void healthWhenClusterStateIsFailShouldBeDown() {
+		Properties clusterProperties = new Properties();
+		clusterProperties.setProperty("cluster_state", "fail");
+		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("fail");
+		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		Mono<Health> health = healthIndicator.health();
+		StepVerifier.create(health).consumeNextWith((h) -> {
+			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
+			assertThat(h.getDetails().get("slots_up")).isEqualTo(3L);
+			assertThat(h.getDetails().get("slots_fail")).isEqualTo(1L);
+		}).verifyComplete();
 	}
 
 	@Test
@@ -114,11 +133,27 @@ class RedisReactiveHealthIndicatorTests {
 
 	private RedisReactiveHealthIndicator createHealthIndicator(ReactiveRedisConnection redisConnection,
 			ReactiveServerCommands serverCommands) {
-
 		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
 		given(redisConnectionFactory.getReactiveConnection()).willReturn(redisConnection);
 		given(redisConnection.serverCommands()).willReturn(serverCommands);
 		return new RedisReactiveHealthIndicator(redisConnectionFactory);
+	}
+
+	private ReactiveRedisConnectionFactory createClusterConnectionFactory(String state) {
+		Properties clusterProperties = new Properties();
+		if (state != null) {
+			clusterProperties.setProperty("cluster_state", state);
+		}
+		clusterProperties.setProperty("cluster_size", "4");
+		boolean failure = "fail".equals(state);
+		clusterProperties.setProperty("cluster_slots_ok", failure ? "3" : "4");
+		clusterProperties.setProperty("cluster_slots_fail", failure ? "1" : "0");
+		ReactiveRedisClusterConnection redisConnection = mock(ReactiveRedisClusterConnection.class);
+		given(redisConnection.closeLater()).willReturn(Mono.empty());
+		given(redisConnection.clusterGetClusterInfo()).willReturn(Mono.just(new ClusterInfo(clusterProperties)));
+		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
+		given(redisConnectionFactory.getReactiveConnection()).willReturn(redisConnection);
+		return redisConnectionFactory;
 	}
 
 }
