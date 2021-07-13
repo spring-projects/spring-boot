@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,15 @@ final class RedisHealth {
 		return builder.up();
 	}
 
-	static Builder info(Health.Builder builder, ClusterInfo clusterInfo) {
+	static Builder fromClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
 		builder.withDetail("cluster_size", clusterInfo.getClusterSize());
 		builder.withDetail("slots_up", clusterInfo.getSlotsOk());
 		builder.withDetail("slots_fail", clusterInfo.getSlotsFail());
 
 		if ("fail".equalsIgnoreCase(clusterInfo.getState())) {
 			return builder.down();
-		} else {
+		}
+		else {
 			return builder.up();
 		}
 	}
