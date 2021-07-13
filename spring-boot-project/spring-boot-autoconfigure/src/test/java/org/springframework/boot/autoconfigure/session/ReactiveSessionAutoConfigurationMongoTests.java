@@ -41,7 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
+			.withPropertyValues("spring.mongodb.embedded.version=3.5.5");
 
 	@Test
 	void defaultConfig() {

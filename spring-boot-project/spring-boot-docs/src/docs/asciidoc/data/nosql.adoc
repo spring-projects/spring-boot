@@ -149,7 +149,11 @@ TIP: For complete details of Spring Data MongoDB, including its rich object mapp
 [[data.nosql.mongodb.embedded]]
 ==== Embedded Mongo
 Spring Boot offers auto-configuration for https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo[Embedded Mongo].
-To use it in your Spring Boot application, add a dependency on `de.flapdoodle.embed:de.flapdoodle.embed.mongo`.
+To use it in your Spring Boot application, add a dependency on `de.flapdoodle.embed:de.flapdoodle.embed.mongo` and set the configprop:spring.mongodb.embedded.version[] property to match the version of MongoDB that your application will use in production.
+
+NOTE: The default download configuration allows access to most of the versions listed in {embedded-mongo-code}/src/main/java/de/flapdoodle/embed/mongo/distribution/Version.java[Embedded Mongo's `Version` class] as well as some others.
+Configuring an inaccessible version will result in an error when attempting to download the server.
+Such an error can be corrected by defining an appropriately configured `DownloadConfigBuilderCustomizer` bean.
 
 The port that Mongo listens on can be configured by setting the configprop:spring.data.mongodb.port[] property.
 To use a randomly allocated free port, use a value of 0.
@@ -161,7 +165,6 @@ If you have SLF4J on the classpath, the output produced by Mongo is automaticall
 
 You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of the Mongo instance's configuration and logging routing.
 The download configuration can be customized by declaring a `DownloadConfigBuilderCustomizer` bean.
-
 
 
 [[data.nosql.neo4j]]
