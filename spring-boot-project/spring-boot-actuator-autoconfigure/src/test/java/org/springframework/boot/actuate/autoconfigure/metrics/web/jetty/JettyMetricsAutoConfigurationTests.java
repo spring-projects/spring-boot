@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
-import java.util.Collections;
-
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -198,7 +195,7 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void doesNotautoConfiguresSslHandshakeMetricsWhenSslEnabledPropertyNotSpecified() {
+	void doesNotAutoConfigureSslHandshakeMetricsWhenSslEnabledPropertyNotSpecified() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 						ServletWebServerFactoryAutoConfiguration.class))
@@ -207,7 +204,7 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void doesNotautoConfiguresSslHandshakeMetricsWhenSslEnabledPropertySetToFalse() {
+	void doesNotAutoConfigureSslHandshakeMetricsWhenSslEnabledPropertySetToFalse() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 						ServletWebServerFactoryAutoConfiguration.class))

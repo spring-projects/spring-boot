@@ -23,21 +23,13 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics;
 import org.eclipse.jetty.server.Server;
 
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.boot.web.embedded.jetty.JettyWebServer;
-import org.springframework.boot.web.server.WebServer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-
 /**
- * Binds {@link JettyConnectionMetrics} in response to the
- * {@link ApplicationStartedEvent}.
+ * {@link AbstractJettyMetricsBinder} for {@link JettyConnectionMetrics}.
  *
  * @author Chris Bono
  * @since 2.6.0
  */
-public class JettyConnectionMetricsBinder implements ApplicationListener<ApplicationStartedEvent> {
+public class JettyConnectionMetricsBinder extends AbstractJettyMetricsBinder {
 
 	private final MeterRegistry meterRegistry;
 
@@ -53,22 +45,8 @@ public class JettyConnectionMetricsBinder implements ApplicationListener<Applica
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationStartedEvent event) {
-		ApplicationContext applicationContext = event.getApplicationContext();
-		Server server = findServer(applicationContext);
-		if (server != null) {
-			JettyConnectionMetrics.addToAllConnectors(server, this.meterRegistry, this.tags);
-		}
-	}
-
-	private Server findServer(ApplicationContext applicationContext) {
-		if (applicationContext instanceof WebServerApplicationContext) {
-			WebServer webServer = ((WebServerApplicationContext) applicationContext).getWebServer();
-			if (webServer instanceof JettyWebServer) {
-				return ((JettyWebServer) webServer).getServer();
-			}
-		}
-		return null;
+	protected void bindMetrics(Server server) {
+		JettyConnectionMetrics.addToAllConnectors(server, this.meterRegistry, this.tags);
 	}
 
 }

@@ -954,6 +954,7 @@ To disable the auto-configured connection pool metrics, set the following proper
 [[actuator.metrics.supported.jetty]]
 ==== Jetty Metrics
 Auto-configuration will bind metrics for Jetty's `ThreadPool` using Micrometer's `JettyServerThreadPoolMetrics`.
+Metrics for Jetty's `Connector`s are bound using Micrometer's `JettyConnectionMetrics` and, in addition when configprop:server.ssl.enabled[] is set to `true`, Micrometer's `JettySslHandshakeMetrics`.
 
 
 
