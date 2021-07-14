@@ -94,22 +94,6 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	/**
 	 * Create a new {@code DefaultErrorWebExceptionHandler} instance.
 	 * @param errorAttributes the error attributes
-	 * @param resourceProperties the resources configuration properties
-	 * @param errorProperties the error configuration properties
-	 * @param applicationContext the current application context
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #DefaultErrorWebExceptionHandler(ErrorAttributes, Resources, ErrorProperties, ApplicationContext)}
-	 */
-	@Deprecated
-	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-			ErrorProperties errorProperties, ApplicationContext applicationContext) {
-		this(errorAttributes, (Resources) resourceProperties, errorProperties, applicationContext);
-	}
-
-	/**
-	 * Create a new {@code DefaultErrorWebExceptionHandler} instance.
-	 * @param errorAttributes the error attributes
 	 * @param resources the resources configuration properties
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,9 @@ import org.springframework.boot.actuate.cassandra.CassandraDriverReactiveHealthI
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.core.CassandraOperations;
-import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 
 /**
  * Health contributor options for Cassandra.
@@ -55,21 +52,6 @@ class CassandraHealthContributorConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(CassandraOperations.class)
-	@ConditionalOnBean(CassandraOperations.class)
-	@Deprecated
-	static class CassandraOperationsConfiguration extends
-			CompositeHealthContributorConfiguration<org.springframework.boot.actuate.cassandra.CassandraHealthIndicator, CassandraOperations> {
-
-		@Bean
-		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
-		HealthContributor cassandraHealthContributor(Map<String, CassandraOperations> cassandraOperations) {
-			return createContributor(cassandraOperations);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CqlSession.class)
 	static class CassandraReactiveDriverConfiguration extends
 			CompositeReactiveHealthContributorConfiguration<CassandraDriverReactiveHealthIndicator, CqlSession> {
@@ -78,22 +60,6 @@ class CassandraHealthContributorConfigurations {
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
 		ReactiveHealthContributor cassandraHealthContributor(Map<String, CqlSession> sessions) {
 			return createContributor(sessions);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ReactiveCassandraOperations.class)
-	@ConditionalOnBean(ReactiveCassandraOperations.class)
-	@Deprecated
-	static class CassandraReactiveOperationsConfiguration extends
-			CompositeReactiveHealthContributorConfiguration<org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
-
-		@Bean
-		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
-		ReactiveHealthContributor cassandraHealthContributor(
-				Map<String, ReactiveCassandraOperations> reactiveCassandraOperations) {
-			return createContributor(reactiveCassandraOperations);
 		}
 
 	}

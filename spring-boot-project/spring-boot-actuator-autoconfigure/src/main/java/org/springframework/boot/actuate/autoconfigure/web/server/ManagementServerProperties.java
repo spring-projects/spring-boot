@@ -20,10 +20,8 @@ import java.net.InetAddress;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -55,8 +53,6 @@ public class ManagementServerProperties {
 	 * management.server.port.
 	 */
 	private String basePath = "";
-
-	private final Servlet servlet = new Servlet();
 
 	@NestedConfigurationProperty
 	private Ssl ssl;
@@ -105,10 +101,6 @@ public class ManagementServerProperties {
 		this.ssl = ssl;
 	}
 
-	public Servlet getServlet() {
-		return this.servlet;
-	}
-
 	private String cleanBasePath(String basePath) {
 		String candidate = StringUtils.trimWhitespace(basePath);
 		if (StringUtils.hasText(candidate)) {
@@ -120,51 +112,6 @@ public class ManagementServerProperties {
 			}
 		}
 		return candidate;
-	}
-
-	/**
-	 * Servlet properties.
-	 */
-	public static class Servlet {
-
-		/**
-		 * Management endpoint context-path (for instance, `/management`). Requires a
-		 * custom management.server.port.
-		 */
-		private String contextPath = "";
-
-		/**
-		 * Return the context path with no trailing slash (i.e. the '/' root context is
-		 * represented as the empty string).
-		 * @return the context path (no trailing slash)
-		 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-		 * {@link ManagementServerProperties#getBasePath()}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "management.server.base-path")
-		public String getContextPath() {
-			return this.contextPath;
-		}
-
-		/**
-		 * Set the context path.
-		 * @param contextPath the context path
-		 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-		 * {@link ManagementServerProperties#setBasePath(String)}
-		 */
-		@Deprecated
-		public void setContextPath(String contextPath) {
-			Assert.notNull(contextPath, "ContextPath must not be null");
-			this.contextPath = cleanContextPath(contextPath);
-		}
-
-		private String cleanContextPath(String contextPath) {
-			if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-				return contextPath.substring(0, contextPath.length() - 1);
-			}
-			return contextPath;
-		}
-
 	}
 
 }

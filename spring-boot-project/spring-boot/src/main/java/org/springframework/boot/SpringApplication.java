@@ -157,36 +157,6 @@ import org.springframework.util.StringUtils;
 public class SpringApplication {
 
 	/**
-	 * The class name of application context that will be used by default for non-web
-	 * environments.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using a
-	 * {@link ApplicationContextFactory}
-	 */
-	@Deprecated
-	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
-			+ "annotation.AnnotationConfigApplicationContext";
-
-	/**
-	 * The class name of application context that will be used by default for web
-	 * environments.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using an
-	 * {@link ApplicationContextFactory}
-	 */
-	@Deprecated
-	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
-			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
-
-	/**
-	 * The class name of application context that will be used by default for reactive web
-	 * environments.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using an
-	 * {@link ApplicationContextFactory}
-	 */
-	@Deprecated
-	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
-
-	/**
 	 * Default banner location.
 	 */
 	public static final String BANNER_LOCATION_PROPERTY_VALUE = SpringApplicationBannerPrinter.DEFAULT_BANNER_LOCATION;
@@ -282,20 +252,11 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		this.bootstrapRegistryInitializers = getBootstrapRegistryInitializersFromSpringFactories();
+		this.bootstrapRegistryInitializers = new ArrayList<>(
+				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
-	}
-
-	@SuppressWarnings("deprecation")
-	private List<BootstrapRegistryInitializer> getBootstrapRegistryInitializersFromSpringFactories() {
-		ArrayList<BootstrapRegistryInitializer> initializers = new ArrayList<>();
-		getSpringFactoriesInstances(Bootstrapper.class).stream()
-				.map((bootstrapper) -> ((BootstrapRegistryInitializer) bootstrapper::initialize))
-				.forEach(initializers::add);
-		initializers.addAll(getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
-		return initializers;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -546,7 +507,6 @@ public class SpringApplication {
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
-	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
 	}
@@ -589,7 +549,6 @@ public class SpringApplication {
 	 * method will respect any explicitly set application context class or factory before
 	 * falling back to a suitable default.
 	 * @return the application context (not yet refreshed)
-	 * @see #setApplicationContextClass(Class)
 	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
@@ -1036,20 +995,6 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Adds a {@link Bootstrapper} that can be used to initialize the
-	 * {@link BootstrapRegistry}.
-	 * @param bootstrapper the bootstraper
-	 * @since 2.4.0
-	 * @deprecated since 2.4.5 for removal in 2.6 in favor of
-	 * {@link #addBootstrapRegistryInitializer(BootstrapRegistryInitializer)}
-	 */
-	@Deprecated
-	public void addBootstrapper(Bootstrapper bootstrapper) {
-		Assert.notNull(bootstrapper, "Bootstrapper must not be null");
-		this.bootstrapRegistryInitializers.add(bootstrapper::initialize);
-	}
-
-	/**
 	 * Adds {@link BootstrapRegistryInitializer} instances that can be used to initialize
 	 * the {@link BootstrapRegistry}.
 	 * @param bootstrapRegistryInitializer the bootstrap registry initializer to add
@@ -1206,21 +1151,6 @@ public class SpringApplication {
 	 */
 	public void setEnvironmentPrefix(String environmentPrefix) {
 		this.environmentPrefix = environmentPrefix;
-	}
-
-	/**
-	 * Sets the type of Spring {@link ApplicationContext} that will be created. If not
-	 * specified defaults to {@link #DEFAULT_SERVLET_WEB_CONTEXT_CLASS} for web based
-	 * applications or {@link AnnotationConfigApplicationContext} for non web based
-	 * applications.
-	 * @param applicationContextClass the context class to set
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #setApplicationContextFactory(ApplicationContextFactory)}
-	 */
-	@Deprecated
-	public void setApplicationContextClass(Class<? extends ConfigurableApplicationContext> applicationContextClass) {
-		this.webApplicationType = WebApplicationType.deduceFromApplicationContext(applicationContextClass);
-		this.applicationContextFactory = ApplicationContextFactory.ofContextClass(applicationContextClass);
 	}
 
 	/**

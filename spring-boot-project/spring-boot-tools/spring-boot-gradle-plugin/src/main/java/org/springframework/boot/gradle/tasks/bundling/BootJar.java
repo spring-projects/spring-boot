@@ -134,18 +134,6 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	@Override
-	@Deprecated
-	public String getMainClassName() {
-		return this.mainClass.getOrNull();
-	}
-
-	@Override
-	@Deprecated
-	public void setMainClassName(String mainClassName) {
-		this.mainClass.set(mainClassName);
-	}
-
-	@Override
 	public void requiresUnpack(String... patterns) {
 		this.support.requiresUnpack(patterns);
 	}
@@ -178,15 +166,6 @@ public class BootJar extends Jar implements BootArchive {
 	@Nested
 	public LayeredSpec getLayered() {
 		return this.layered;
-	}
-
-	/**
-	 * Configures the jar to be layered using the default layering.
-	 * @since 2.3.0
-	 * @deprecated since 2.4.0 for removal in 2.6.0 as layering as now enabled by default.
-	 */
-	@Deprecated
-	public void layered() {
 	}
 
 	/**

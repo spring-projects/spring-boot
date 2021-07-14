@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,20 +124,16 @@ public class ErrorMvcAutoConfiguration {
 
 	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.web.ResourceProperties.class,
-			WebProperties.class, WebMvcProperties.class })
+	@EnableConfigurationProperties({ WebProperties.class, WebMvcProperties.class })
 	static class DefaultErrorViewResolverConfiguration {
 
 		private final ApplicationContext applicationContext;
 
 		private final Resources resources;
 
-		DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext,
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties) {
+		DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext, WebProperties webProperties) {
 			this.applicationContext = applicationContext;
-			this.resources = webProperties.getResources().hasBeenCustomized() ? webProperties.getResources()
-					: resourceProperties;
+			this.resources = webProperties.getResources();
 		}
 
 		@Bean

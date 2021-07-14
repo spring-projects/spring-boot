@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,16 +108,6 @@ class LoggingSystemPropertiesTests {
 	void fileLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void rollingFileNameIsSet() {
-		new LoggingSystemProperties(
-				new MockEnvironment().withProperty("logging.pattern.rolling-file-name", "rolling file pattern"))
-						.apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
-				.isEqualTo("rolling file pattern");
 	}
 
 	private Environment environment(String key, Object value) {

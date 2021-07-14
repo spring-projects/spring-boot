@@ -20,7 +20,6 @@ import java.io.File;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.model.ReplacedBy;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -63,28 +62,6 @@ public class SpringBootExtension {
 	 */
 	public Property<String> getMainClass() {
 		return this.mainClass;
-	}
-
-	/**
-	 * Returns the fully-qualified main class name of the application.
-	 * @return the fully-qualified name of the application's main class
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of {@link #getMainClass()}.
-	 */
-	@Deprecated
-	@ReplacedBy("mainClass")
-	public String getMainClassName() {
-		return this.mainClass.getOrNull();
-	}
-
-	/**
-	 * Sets the fully-qualified main class name of the application.
-	 * @param mainClassName the fully-qualified name of the application's main class
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of {@link #getMainClass} and
-	 * {@link Property#set(Object)}
-	 */
-	@Deprecated
-	public void setMainClassName(String mainClassName) {
-		this.mainClass.set(mainClassName);
 	}
 
 	/**

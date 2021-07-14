@@ -114,15 +114,6 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void specificApplicationContextClass() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
-				.contextClass(StaticApplicationContext.class);
-		this.context = application.run();
-		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
-	}
-
-	@Test
 	void specificApplicationContextFactory() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class));
@@ -285,16 +276,6 @@ class SpringApplicationBuilderTests {
 		this.context = application.run();
 		this.context.getBean(ExampleConfig.class);
 		this.context.getBean(ChildConfig.class);
-	}
-
-	@Test
-	@Deprecated
-	void addBootstrapper() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
-				.web(WebApplicationType.NONE).addBootstrapper((context) -> context.addCloseListener(
-						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
-		this.context = application.run();
-		assertThat(this.context.getBean("test")).isEqualTo("spring");
 	}
 
 	@Test

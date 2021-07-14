@@ -40,18 +40,6 @@ public class ApplicationStartingEvent extends SpringApplicationEvent {
 
 	/**
 	 * Create a new {@link ApplicationStartingEvent} instance.
-	 * @param application the current application
-	 * @param args the arguments the application is running with
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #ApplicationStartingEvent(ConfigurableBootstrapContext, SpringApplication, String[])}
-	 */
-	@Deprecated
-	public ApplicationStartingEvent(SpringApplication application, String[] args) {
-		this(null, application, args);
-	}
-
-	/**
-	 * Create a new {@link ApplicationStartingEvent} instance.
 	 * @param bootstrapContext the bootstrap context
 	 * @param application the current application
 	 * @param args the arguments the application is running with

@@ -95,21 +95,6 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	/**
 	 * Create a new {@code AbstractErrorWebExceptionHandler}.
 	 * @param errorAttributes the error attributes
-	 * @param resourceProperties the resource properties
-	 * @param applicationContext the application context
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #AbstractErrorWebExceptionHandler(ErrorAttributes, Resources, ApplicationContext)}
-	 */
-	@Deprecated
-	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-			ApplicationContext applicationContext) {
-		this(errorAttributes, (Resources) resourceProperties, applicationContext);
-	}
-
-	/**
-	 * Create a new {@code AbstractErrorWebExceptionHandler}.
-	 * @param errorAttributes the error attributes
 	 * @param resources the resources configuration properties
 	 * @param applicationContext the application context
 	 * @since 2.4.0

@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,17 +44,6 @@ public class WebMvcProperties {
 	 * Formatting strategy for message codes. For instance, `PREFIX_ERROR_CODE`.
 	 */
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
-
-	/**
-	 * Locale to use. By default, this locale is overridden by the "Accept-Language"
-	 * header.
-	 */
-	private Locale locale;
-
-	/**
-	 * Define how the locale should be resolved.
-	 */
-	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
 	private final Format format = new Format();
 
@@ -119,26 +107,6 @@ public class WebMvcProperties {
 
 	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.web.locale")
-	public Locale getLocale() {
-		return this.locale;
-	}
-
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.web.locale-resolver")
-	public LocaleResolver getLocaleResolver() {
-		return this.localeResolver;
-	}
-
-	public void setLocaleResolver(LocaleResolver localeResolver) {
-		this.localeResolver = localeResolver;
 	}
 
 	@Deprecated
@@ -544,27 +512,6 @@ public class WebMvcProperties {
 		 * Use the {@code PathPatternParser} implementation.
 		 */
 		PATH_PATTERN_PARSER
-
-	}
-
-	/**
-	 * Locale resolution options.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link org.springframework.boot.autoconfigure.web.WebProperties.LocaleResolver}
-	 */
-	@Deprecated
-	public enum LocaleResolver {
-
-		/**
-		 * Always use the configured locale.
-		 */
-		FIXED,
-
-		/**
-		 * Use the "Accept-Language" header or the configured locale if the header is not
-		 * set.
-		 */
-		ACCEPT_HEADER
 
 	}
 

@@ -473,13 +473,6 @@ class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN)).isEqualTo("level");
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("path");
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
-		assertDeprecated();
-	}
-
-	@SuppressWarnings("deprecation")
-	private void assertDeprecated() {
-		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
-				.isEqualTo("my.log.%d{yyyyMMdd}.%i.gz");
 	}
 
 	@Test

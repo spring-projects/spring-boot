@@ -1586,10 +1586,6 @@
       "defaultValue": false
     },
     {
-      "name": "spring.mvc.locale-resolver",
-      "defaultValue": "accept-header"
-    },
-    {
       "name": "spring.mvc.pathmatch.matching-strategy",
       "defaultValue": "ant-path-matcher"
     },
@@ -1682,7 +1678,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable resolution of already gzipped resources. Checks for a resource name variant with the \"*.gz\" extension.",
       "deprecation": {
-        "replacement": "spring.resources.chain.compressed",
+        "replacement": "spring.web.resources.chain.compressed",
         "level": "error"
       }
     },

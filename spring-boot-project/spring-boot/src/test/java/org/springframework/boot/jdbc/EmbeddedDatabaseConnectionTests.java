@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,26 +53,6 @@ class EmbeddedDatabaseConnectionTests {
 	void derbyCustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.DERBY.getUrl("myderbydb"))
 				.isEqualTo("jdbc:derby:memory:myderbydb;create=true");
-	}
-
-	@Test
-	@Deprecated
-	void hsqlCustomDatabaseName() {
-		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl("myhsql")).isEqualTo("jdbc:hsqldb:mem:myhsql");
-	}
-
-	@Test
-	@Deprecated
-	void getUrlWithNullDatabaseName() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
-				.withMessageContaining("DatabaseName must not be empty");
-	}
-
-	@Test
-	@Deprecated
-	void getUrlWithEmptyDatabaseName() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
-				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test

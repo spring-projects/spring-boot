@@ -66,10 +66,8 @@ import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -333,45 +331,12 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void specificApplicationContextClass() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextClass(StaticApplicationContext.class);
-		this.context = application.run();
-		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
-	}
-
-	@Test
 	void specificApplicationContextFactory() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application
 				.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class));
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void specificWebApplicationContextClassDetectWebApplicationType() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextClass(AnnotationConfigServletWebApplicationContext.class);
-		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.SERVLET);
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void specificReactiveApplicationContextClassDetectReactiveApplicationType() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextClass(AnnotationConfigReactiveWebApplicationContext.class);
-		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.REACTIVE);
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void nonWebNorReactiveApplicationContextClassDetectNoneApplicationType() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextClass(StaticApplicationContext.class);
-		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.NONE);
 	}
 
 	@Test
@@ -1245,31 +1210,6 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenABootstrapperImplementsOnlyTheOldMethodThenItIsCalled() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
-		OnlyOldMethodTestBootstrapper bootstrapper = new OnlyOldMethodTestBootstrapper();
-		application.addBootstrapper(bootstrapper);
-		try (ConfigurableApplicationContext applicationContext = application.run()) {
-			assertThat(bootstrapper.intitialized).isTrue();
-		}
-	}
-
-	@Test
-	@Deprecated
-	void whenABootstrapperImplementsTheOldMethodAndTheNewMethodThenOnlyTheNewMethodIsCalled() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
-		BothMethodsTestBootstrapper bootstrapper = new BothMethodsTestBootstrapper();
-		application.addBootstrapper(bootstrapper);
-		try (ConfigurableApplicationContext applicationContext = application.run()) {
-			assertThat(bootstrapper.intitialized).isFalse();
-			assertThat(bootstrapper.initialized).isTrue();
-		}
-	}
-
-	@Test
 	void settingEnvironmentPrefixViaPropertiesThrowsException() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> new SpringApplication().run("--spring.main.environment-prefix=my"));
@@ -1754,37 +1694,6 @@ class SpringApplicationTests {
 		@SuppressWarnings("unchecked")
 		<E extends ApplicationEvent> E getEvent(Class<E> type) {
 			return (E) this.events.get(type).get(0);
-		}
-
-	}
-
-	@Deprecated
-	static class OnlyOldMethodTestBootstrapper implements Bootstrapper {
-
-		private boolean intitialized;
-
-		@Override
-		public void intitialize(BootstrapRegistry registry) {
-			this.intitialized = true;
-		}
-
-	}
-
-	@Deprecated
-	static class BothMethodsTestBootstrapper implements Bootstrapper {
-
-		private boolean intitialized;
-
-		private boolean initialized;
-
-		@Override
-		public void intitialize(BootstrapRegistry registry) {
-			this.intitialized = true;
-		}
-
-		@Override
-		public void initialize(BootstrapRegistry registry) {
-			this.initialized = true;
 		}
 
 	}

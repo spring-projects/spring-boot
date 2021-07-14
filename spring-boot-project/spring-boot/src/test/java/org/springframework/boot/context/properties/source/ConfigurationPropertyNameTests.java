@@ -587,9 +587,9 @@ class ConfigurationPropertyNameTests {
 
 	@Test
 	void compareDifferentLengthsShouldSortNames() {
-		ConfigurationPropertyName name = ConfigurationPropertyName.of("spring.resources.chain.strategy.content");
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("spring.web.resources.chain.strategy.content");
 		ConfigurationPropertyName other = ConfigurationPropertyName
-				.of("spring.resources.chain.strategy.content.enabled");
+				.of("spring.web.resources.chain.strategy.content.enabled");
 		assertThat(name.compareTo(other)).isLessThan(0);
 	}
 
