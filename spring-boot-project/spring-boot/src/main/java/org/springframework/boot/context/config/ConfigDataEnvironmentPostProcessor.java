@@ -129,6 +129,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 		getLegacyListener().addPropertySources(environment, resourceLoader);
 	}
 
+	@SuppressWarnings("deprecation")
 	LegacyConfigFileApplicationListener getLegacyListener() {
 		return new LegacyConfigFileApplicationListener(this.logFactory.getLog(ConfigFileApplicationListener.class));
 	}
@@ -200,6 +201,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 		postProcessor.postProcessEnvironment(environment, resourceLoader, additionalProfiles);
 	}
 
+	@SuppressWarnings("deprecation")
 	static class LegacyConfigFileApplicationListener extends ConfigFileApplicationListener {
 
 		LegacyConfigFileApplicationListener(Log logger) {
