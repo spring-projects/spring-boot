@@ -51,8 +51,8 @@ class Neo4jReactiveHealthIndicatorTests {
 
 	@Test
 	void neo4jIsUp() {
-		ResultSummary resultSummary = ResultSummaryMock.createResultSummary("4711", "My Home", "test");
-		Driver driver = mockDriver(resultSummary, "ultimate collectors edition");
+		ResultSummary resultSummary = ResultSummaryMock.createResultSummary("My Home", "test");
+		Driver driver = mockDriver(resultSummary, "4711", "ultimate collectors edition");
 		Neo4jReactiveHealthIndicator healthIndicator = new Neo4jReactiveHealthIndicator(driver);
 		healthIndicator.health().as(StepVerifier::create).consumeNextWith((health) -> {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -63,9 +63,9 @@ class Neo4jReactiveHealthIndicatorTests {
 
 	@Test
 	void neo4jIsUpWithOneSessionExpiredException() {
-		ResultSummary resultSummary = ResultSummaryMock.createResultSummary("4711", "My Home", "");
+		ResultSummary resultSummary = ResultSummaryMock.createResultSummary("My Home", "");
 		RxSession session = mock(RxSession.class);
-		RxResult statementResult = mockStatementResult(resultSummary, "some edition");
+		RxResult statementResult = mockStatementResult(resultSummary, "4711", "some edition");
 		AtomicInteger count = new AtomicInteger();
 		given(session.run(anyString())).will((invocation) -> {
 			if (count.compareAndSet(0, 1)) {
@@ -95,17 +95,18 @@ class Neo4jReactiveHealthIndicatorTests {
 		}).verifyComplete();
 	}
 
-	private RxResult mockStatementResult(ResultSummary resultSummary, String edition) {
+	private RxResult mockStatementResult(ResultSummary resultSummary, String version, String edition) {
 		Record record = mock(Record.class);
 		given(record.get("edition")).willReturn(Values.value(edition));
+		given(record.get("version")).willReturn(Values.value(version));
 		RxResult statementResult = mock(RxResult.class);
 		given(statementResult.records()).willReturn(Mono.just(record));
 		given(statementResult.consume()).willReturn(Mono.just(resultSummary));
 		return statementResult;
 	}
 
-	private Driver mockDriver(ResultSummary resultSummary, String edition) {
-		RxResult statementResult = mockStatementResult(resultSummary, edition);
+	private Driver mockDriver(ResultSummary resultSummary, String version, String edition) {
+		RxResult statementResult = mockStatementResult(resultSummary, version, edition);
 		RxSession session = mock(RxSession.class);
 		given(session.run(anyString())).willReturn(statementResult);
 		Driver driver = mock(Driver.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.neo4j.driver.AccessMode;
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.SessionConfig;
@@ -46,7 +47,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	/**
 	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	static final String CYPHER = "CALL dbms.components() YIELD name, edition WHERE name = 'Neo4j Kernel' RETURN edition";
+	static final String CYPHER = "CALL dbms.components() YIELD versions, name, edition WHERE name = 'Neo4j Kernel' RETURN edition, versions[0] as version";
 
 	/**
 	 * Message logged before retrying a health check.
@@ -91,9 +92,9 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 		// all possible workloads
 		try (Session session = this.driver.session(DEFAULT_SESSION_CONFIG)) {
 			Result result = session.run(CYPHER);
-			String edition = result.single().get("edition").asString();
+			Record record = result.single();
 			ResultSummary resultSummary = result.consume();
-			this.healthDetailsHandler.addHealthDetails(builder, edition, resultSummary);
+			this.healthDetailsHandler.addHealthDetails(builder, new Neo4jHealthDetails(record, resultSummary));
 		}
 	}
 
