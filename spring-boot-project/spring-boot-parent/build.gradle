@@ -20,6 +20,13 @@ bom {
 			]
 		}
 	}
+	library("API Guardian", "1.1.0") {
+		group("org.apiguardian") {
+			modules = [
+				"apiguardian-api"
+			]
+		}
+	}
 	library("Commons Compress", "1.20") {
 		group("org.apache.commons") {
 			modules = [
