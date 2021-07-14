@@ -112,8 +112,12 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @since 1.0.0
+ * @deprecated since 2.4.0 for removal in 3.0.0 in favor of
+ * {@link ConfigDataEnvironmentPostProcessor}
  */
-class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartApplicationListener, Ordered {
+@Deprecated
+public class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartApplicationListener, Ordered {
 
 	// Note the order is from least to most specific (last one wins)
 	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/";
@@ -138,32 +142,32 @@ class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartAp
 	/**
 	 * The "active profiles" property name.
 	 */
-	static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
+	public static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
 
 	/**
 	 * The "includes profiles" property name.
 	 */
-	static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
+	public static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
 
 	/**
 	 * The "config name" property name.
 	 */
-	static final String CONFIG_NAME_PROPERTY = "spring.config.name";
+	public static final String CONFIG_NAME_PROPERTY = "spring.config.name";
 
 	/**
 	 * The "config location" property name.
 	 */
-	static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
+	public static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
 	/**
 	 * The "config additional location" property name.
 	 */
-	static final String CONFIG_ADDITIONAL_LOCATION_PROPERTY = "spring.config.additional-location";
+	public static final String CONFIG_ADDITIONAL_LOCATION_PROPERTY = "spring.config.additional-location";
 
 	/**
 	 * The default order for the processor.
 	 */
-	static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	private final Log logger;
 
@@ -177,7 +181,7 @@ class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartAp
 
 	private int order = DEFAULT_ORDER;
 
-	ConfigFileApplicationListener() {
+	public ConfigFileApplicationListener() {
 		this(new DeferredLog());
 	}
 
@@ -221,7 +225,7 @@ class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartAp
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingPostProcessor(context));
 	}
 
-	void setOrder(int order) {
+	public void setOrder(int order) {
 		this.order = order;
 	}
 
@@ -239,7 +243,7 @@ class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartAp
 	 * (like a map merge).
 	 * @param locations the search locations
 	 */
-	void setSearchLocations(String locations) {
+	public void setSearchLocations(String locations) {
 		Assert.hasLength(locations, "Locations must not be empty");
 		this.searchLocations = locations;
 	}
@@ -249,7 +253,7 @@ class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartAp
 	 * comma-separated list.
 	 * @param names the names to load
 	 */
-	void setSearchNames(String names) {
+	public void setSearchNames(String names) {
 		Assert.hasLength(names, "Names must not be empty");
 		this.names = names;
 	}
