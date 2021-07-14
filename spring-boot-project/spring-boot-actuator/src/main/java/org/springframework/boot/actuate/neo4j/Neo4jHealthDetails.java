@@ -26,21 +26,24 @@ import org.neo4j.driver.summary.ResultSummary;
  */
 class Neo4jHealthDetails {
 
-	private final Record record;
+	private final String version;
+
+	private final String edition;
 
 	private final ResultSummary summary;
 
 	Neo4jHealthDetails(Record record, ResultSummary summary) {
-		this.record = record;
+		this.version = record.get("version").asString();
+		this.edition = record.get("edition").asString();
 		this.summary = summary;
 	}
 
 	String getVersion() {
-		return this.record.get("version").asString();
+		return this.version;
 	}
 
 	String getEdition() {
-		return this.record.get("edition").asString();
+		return this.edition;
 	}
 
 	ResultSummary getSummary() {
