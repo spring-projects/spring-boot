@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
@@ -182,6 +185,22 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	}
 
 	@Test
+	void runDisablesCircularReferencesByDefault() {
+		get().withUserConfiguration(ExampleConsumerConfiguration.class, ExampleProducerConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
+				});
+	}
+
+	@Test
+	void circularReferencesCanBeAllowed() {
+		get().withAllowCircularReferences(true)
+				.withUserConfiguration(ExampleConsumerConfiguration.class, ExampleProducerConfiguration.class)
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
 	void runWithUserBeanShouldBeRegisteredInOrder() {
 		get().withAllowBeanDefinitionOverriding(true).withBean(String.class, () -> "one")
 				.withBean(String.class, () -> "two").withBean(String.class, () -> "three").run((context) -> {
@@ -246,6 +265,43 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			return context.getClassLoader() instanceof FilteredClassLoader;
+		}
+
+	}
+
+	static class Example {
+
+	}
+
+	@FunctionalInterface
+	interface ExampleConfigurer {
+
+		void configure(Example example);
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExampleProducerConfiguration {
+
+		@Bean
+		Example example(ObjectProvider<ExampleConfigurer> configurers) {
+			Example example = new Example();
+			configurers.orderedStream().forEach((configurer) -> configurer.configure(example));
+			return example;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExampleConsumerConfiguration {
+
+		@Autowired
+		Example example;
+
+		@Bean
+		ExampleConfigurer configurer() {
+			return (example) -> {
+			};
 		}
 
 	}

@@ -808,6 +808,13 @@
       "defaultValue": false
     },
     {
+      "name": "spring.main.allow-circular-references",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether to allow circular references between beans and automatically try to resolve them.",
+      "defaultValue": false
+    },
+    {
       "name": "spring.main.banner-mode",
       "type": "org.springframework.boot.Banner$Mode",
       "sourceType": "org.springframework.boot.SpringApplication",

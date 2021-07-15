@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.annotation.Configurations;
@@ -197,6 +198,17 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	public SELF withAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
 		return newInstance(this.runnerConfiguration.withAllowBeanDefinitionOverriding(allowBeanDefinitionOverriding));
+	}
+
+	/**
+	 * Specify if circular references between beans should be allowed.
+	 * @param allowCircularReferences if circular references between beans are allowed
+	 * @return a new instance with the updated circular references policy
+	 * @since 2.6.0
+	 * @see AbstractAutowireCapableBeanFactory#setAllowCircularReferences(boolean)
+	 */
+	public SELF withAllowCircularReferences(boolean allowCircularReferences) {
+		return newInstance(this.runnerConfiguration.withAllowCircularReferences(allowCircularReferences));
 	}
 
 	/**
@@ -427,9 +439,13 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	private C createAndLoadContext() {
 		C context = this.runnerConfiguration.contextFactory.get();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beanFactory instanceof DefaultListableBeanFactory) {
-			((DefaultListableBeanFactory) beanFactory)
-					.setAllowBeanDefinitionOverriding(this.runnerConfiguration.allowBeanDefinitionOverriding);
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
+			((AbstractAutowireCapableBeanFactory) beanFactory)
+					.setAllowCircularReferences(this.runnerConfiguration.allowCircularReferences);
+			if (beanFactory instanceof DefaultListableBeanFactory) {
+				((DefaultListableBeanFactory) beanFactory)
+						.setAllowBeanDefinitionOverriding(this.runnerConfiguration.allowBeanDefinitionOverriding);
+			}
 		}
 		try {
 			configureContext(context);
@@ -504,6 +520,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private boolean allowBeanDefinitionOverriding = false;
 
+		private boolean allowCircularReferences = false;
+
 		private List<ApplicationContextInitializer<? super C>> initializers = Collections.emptyList();
 
 		private TestPropertyValues environmentProperties = TestPropertyValues.empty();
@@ -525,6 +543,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		private RunnerConfiguration(RunnerConfiguration<C> source) {
 			this.contextFactory = source.contextFactory;
 			this.allowBeanDefinitionOverriding = source.allowBeanDefinitionOverriding;
+			this.allowCircularReferences = source.allowCircularReferences;
 			this.initializers = source.initializers;
 			this.environmentProperties = source.environmentProperties;
 			this.systemProperties = source.systemProperties;
@@ -537,6 +556,12 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		private RunnerConfiguration<C> withAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
+			return config;
+		}
+
+		private RunnerConfiguration<C> withAllowCircularReferences(boolean allowCircularReferences) {
+			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
+			config.allowCircularReferences = allowCircularReferences;
 			return config;
 		}
 

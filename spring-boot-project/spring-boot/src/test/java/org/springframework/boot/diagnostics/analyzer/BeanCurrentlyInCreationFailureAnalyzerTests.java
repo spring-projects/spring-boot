@@ -64,6 +64,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(6)).isEqualTo("↑     ↓");
 		assertThat(lines.get(7)).startsWith("|  three defined in " + CyclicBeanMethodsConfiguration.class.getName());
 		assertThat(lines.get(8)).isEqualTo("└─────┘");
+		assertThat(analysis.getAction()).isNotNull();
 	}
 
 	@Test
@@ -84,6 +85,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(7)).startsWith(
 				"|  " + BeanTwoConfiguration.class.getName() + " (field private " + BeanThree.class.getName());
 		assertThat(lines.get(8)).isEqualTo("└─────┘");
+		assertThat(analysis.getAction()).isNotNull();
 	}
 
 	@Test
@@ -107,6 +109,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(10))
 				.startsWith("|  three defined in " + CycleReferencedViaOtherBeansConfiguration.class.getName());
 		assertThat(lines.get(11)).isEqualTo("└─────┘");
+		assertThat(analysis.getAction()).isNotNull();
 	}
 
 	@Test
@@ -120,6 +123,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(2)).isEqualTo("┌──->──┐");
 		assertThat(lines.get(3)).startsWith("|  bean defined in " + SelfReferenceBeanConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("└──<-──┘");
+		assertThat(analysis.getAction()).isNotNull();
 	}
 
 	@Test

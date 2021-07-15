@@ -36,6 +36,7 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -212,6 +213,8 @@ public class SpringApplication {
 
 	private boolean allowBeanDefinitionOverriding;
 
+	private boolean allowCircularReferences;
+
 	private boolean isCustomEnvironment = false;
 
 	private boolean lazyInitialization = false;
@@ -374,9 +377,12 @@ public class SpringApplication {
 		if (printedBanner != null) {
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
-		if (beanFactory instanceof DefaultListableBeanFactory) {
-			((DefaultListableBeanFactory) beanFactory)
-					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
+			((AbstractAutowireCapableBeanFactory) beanFactory).setAllowCircularReferences(this.allowCircularReferences);
+			if (beanFactory instanceof DefaultListableBeanFactory) {
+				((DefaultListableBeanFactory) beanFactory)
+						.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+			}
 		}
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
@@ -916,6 +922,17 @@ public class SpringApplication {
 	 */
 	public void setAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
 		this.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
+	}
+
+	/**
+	 * Sets whether to allow circular references between beans and automatically try to
+	 * resolve them. Defaults to {@code false}.
+	 * @param allowCircularReferences if circular references are allowed
+	 * @since 2.6.0
+	 * @see AbstractAutowireCapableBeanFactory#setAllowCircularReferences(boolean)
+	 */
+	public void setAllowCircularReferences(boolean allowCircularReferences) {
+		this.allowCircularReferences = allowCircularReferences;
 	}
 
 	/**
