@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
 import java.util.Map;
 
-import io.micrometer.dynatrace.DynatraceApiVersion;
-
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Dynatrace
@@ -34,72 +33,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "management.metrics.export.dynatrace")
 public class DynatraceProperties extends StepRegistryProperties {
 
-	/**
-	 * The Dynatrace metrics API version that metrics should be sent to. Defaults to v1.
-	 * Required to define which API is used for export.
-	 */
-	private DynatraceApiVersion apiVersion = DynatraceApiVersion.V1;
+	private final V1 v1 = new V1();
+
+	private final V2 v2 = new V2();
 
 	/**
 	 * Dynatrace authentication token.
-	 *
-	 * API v1: required, API v2: optional
 	 */
 	private String apiToken;
 
 	/**
-	 * ID of the custom device that is exporting metrics to Dynatrace.
-	 *
-	 * API v1: required, API v2: not applicable (ignored)
-	 */
-	private String deviceId;
-
-	/**
-	 * Technology type for exported metrics. Used to group metrics under a logical
-	 * technology name in the Dynatrace UI.
-	 *
-	 * API v1: required, API v2: not applicable (ignored)
-	 */
-	private String technologyType = "java";
-
-	/**
 	 * URI to ship metrics to. Should be used for SaaS, self managed instances or to
 	 * en-route through an internal proxy.
-	 *
-	 * API v1: required, API v2: optional
 	 */
 	private String uri;
-
-	/**
-	 * Group for exported metrics. Used to specify custom device group name in the
-	 * Dynatrace UI.
-	 *
-	 * API v1: required, API v2: not applicable (ignored)
-	 */
-	private String group;
-
-	/**
-	 * An optional prefix string that is added to all metrics exported.
-	 *
-	 * API v1: not applicable (ignored), API v2: optional
-	 */
-	private String metricKeyPrefix;
-
-	/**
-	 * An optional Boolean that allows enabling of the Dynatrace metadata export. On by
-	 * default.
-	 *
-	 * API v1: not applicable (ignored), API v2: optional
-	 */
-	private Boolean enrichWithDynatraceMetadata = true;
-
-	/**
-	 * Optional default dimensions that are added to all metrics in the form of key-value
-	 * pairs. These are overwritten by Micrometer tags if they use the same key.
-	 *
-	 * API v1: not applicable (ignored), API v2: optional
-	 */
-	private Map<String, String> defaultDimensions;
 
 	public String getApiToken() {
 		return this.apiToken;
@@ -109,20 +56,26 @@ public class DynatraceProperties extends StepRegistryProperties {
 		this.apiToken = apiToken;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.device-id")
 	public String getDeviceId() {
-		return this.deviceId;
+		return this.v1.getDeviceId();
 	}
 
+	@Deprecated
 	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
+		this.v1.setDeviceId(deviceId);
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.technology-type")
 	public String getTechnologyType() {
-		return this.technologyType;
+		return this.v1.getTechnologyType();
 	}
 
+	@Deprecated
 	public void setTechnologyType(String technologyType) {
-		this.technologyType = technologyType;
+		this.v1.setTechnologyType(technologyType);
 	}
 
 	public String getUri() {
@@ -133,44 +86,112 @@ public class DynatraceProperties extends StepRegistryProperties {
 		this.uri = uri;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.group")
 	public String getGroup() {
-		return this.group;
+		return this.v1.getGroup();
 	}
 
+	@Deprecated
 	public void setGroup(String group) {
-		this.group = group;
+		this.v1.setGroup(group);
 	}
 
-	public String getMetricKeyPrefix() {
-		return this.metricKeyPrefix;
+	public V1 getV1() {
+		return this.v1;
 	}
 
-	public void setMetricKeyPrefix(String metricKeyPrefix) {
-		this.metricKeyPrefix = metricKeyPrefix;
+	public V2 getV2() {
+		return this.v2;
 	}
 
-	public Boolean getEnrichWithDynatraceMetadata() {
-		return this.enrichWithDynatraceMetadata;
+	public static class V1 {
+
+		/**
+		 * ID of the custom device that is exporting metrics to Dynatrace.
+		 */
+		private String deviceId;
+
+		/**
+		 * Group for exported metrics. Used to specify custom device group name in the
+		 * Dynatrace UI.
+		 */
+		private String group;
+
+		/**
+		 * Technology type for exported metrics. Used to group metrics under a logical
+		 * technology name in the Dynatrace UI.
+		 */
+		private String technologyType = "java";
+
+		public String getDeviceId() {
+			return this.deviceId;
+		}
+
+		public void setDeviceId(String deviceId) {
+			this.deviceId = deviceId;
+		}
+
+		public String getGroup() {
+			return this.group;
+		}
+
+		public void setGroup(String group) {
+			this.group = group;
+		}
+
+		public String getTechnologyType() {
+			return this.technologyType;
+		}
+
+		public void setTechnologyType(String technologyType) {
+			this.technologyType = technologyType;
+		}
+
 	}
 
-	public void setEnrichWithDynatraceMetadata(Boolean enrichWithDynatraceMetadata) {
-		this.enrichWithDynatraceMetadata = enrichWithDynatraceMetadata;
-	}
+	public static class V2 {
 
-	public Map<String, String> getDefaultDimensions() {
-		return this.defaultDimensions;
-	}
+		/**
+		 * Default dimensions that are added to all metrics in the form of key-value
+		 * pairs. These are overwritten by Micrometer tags if they use the same key.
+		 */
+		private Map<String, String> defaultDimensions;
 
-	public void setDefaultDimensions(Map<String, String> defaultDimensions) {
-		this.defaultDimensions = defaultDimensions;
-	}
+		/**
+		 * Whether to enable Dynatrace metadata export.
+		 */
+		private boolean enrichWithDynatraceMetadata = true;
 
-	public DynatraceApiVersion getApiVersion() {
-		return this.apiVersion;
-	}
+		/**
+		 * Prefix string that is added to all exported metrics.
+		 */
+		private String metricKeyPrefix;
 
-	public void setApiVersion(DynatraceApiVersion apiVersion) {
-		this.apiVersion = apiVersion;
+		public Map<String, String> getDefaultDimensions() {
+			return this.defaultDimensions;
+		}
+
+		public void setDefaultDimensions(Map<String, String> defaultDimensions) {
+			this.defaultDimensions = defaultDimensions;
+		}
+
+		public boolean isEnrichWithDynatraceMetadata() {
+			return this.enrichWithDynatraceMetadata;
+		}
+
+		public void setEnrichWithDynatraceMetadata(Boolean enrichWithDynatraceMetadata) {
+			this.enrichWithDynatraceMetadata = enrichWithDynatraceMetadata;
+		}
+
+		public String getMetricKeyPrefix() {
+			return this.metricKeyPrefix;
+		}
+
+		public void setMetricKeyPrefix(String metricKeyPrefix) {
+			this.metricKeyPrefix = metricKeyPrefix;
+		}
+
 	}
 
 }

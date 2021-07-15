@@ -150,23 +150,15 @@ You can also change the interval at which metrics are sent to Datadog:
 
 Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer]:
 
-[[actuator.metrics.export.dynatrace.api-v2]]
-===== API v2
+[[actuator.metrics.export.dynatrace.v2-api]]
+===== V2 API
 
-The API v2 can be used in two ways:
+The V2 API can be used in two ways:
 
-If a local OneAgent is running on the host, it is enough to set the API version to v2 and metrics will be automatically exported to the https://www.dynatrace.com/support/help/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint], which forwards them to the Dynatrace backend:
+If a local OneAgent is running on the host, metrics will be automatically exported to the https://www.dynatrace.com/support/help/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint], which forwards them to the Dynatrace backend.
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	management:
-	  metrics:
-	    export:
-	      dynatrace:
-	        api-version: "v2"
-----
 
-If no local OneAgent is running, the endpoint of the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics API v2] and an API token are required.
+If no local OneAgent is running, the endpoint of the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
 The https://www.dynatrace.com/support/help/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "Ingest metrics" (`metrics.ingest`) permission set.
 It is recommended to limit scope to only this one permission.
 Please ensure that the endpoint URI contains the path (e.g. `/api/v2/metrics/ingest`).
@@ -177,7 +169,6 @@ Please ensure that the endpoint URI contains the path (e.g. `/api/v2/metrics/ing
 	  metrics:
 	    export:
 	      dynatrace:
-	        api-version: "v2"
 	        # uri: "https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest" for managed deployments.
 	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
 	        api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
@@ -196,23 +187,21 @@ If tags with the same key are specified using Micrometer, they overwrite the def
 	  metrics:
 	    export:
 	      dynatrace:
-	        # specify token and uri or leave blank for OneAgent export
-	        api-version: "v2"
-	        metric-key-prefix: "your.key.prefix"
-	        enrich-with-dynatrace-metadata: true
-	        default-dimensions:
-	          key1: "value1"
-	          key2: "value2"
+	        v2:
+	          # specify token and uri or leave blank for OneAgent export
+	          metric-key-prefix: "your.key.prefix"
+	          enrich-with-dynatrace-metadata: true
+	          default-dimensions:
+	            key1: "value1"
+	            key2: "value2"
 ----
 
-[[actuator.metrics.export.dynatrace.api-v1]]
-===== API v1 (Legacy)
+[[actuator.metrics.export.dynatrace.v1-api]]
+===== v1 API (Legacy)
 
-The Dynatrace API v1 registry pushes metrics to the configured URI periodically using the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries API v1].
+The Dynatrace v1 API registry pushes metrics to the configured URI periodically using the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
 For backwards-compatibility with existing setups, `api-version` defaults to `"v1"` but can also be specified explicitly as such.
 To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
-For the API v1, the base environment URI needs to be specified, without any path.
-The API v1 endpoint path will be added automatically.
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -220,11 +209,14 @@ The API v1 endpoint path will be added automatically.
 	  metrics:
 	    export:
 	      dynatrace:
-	        device-id: "YOUR_DEVICE_ID"
 	        # uri: "https://{your-domain}/e/{your-environment-id}" on managed deployments.
 	        uri: "https://{your-environment-id}.live.dynatrace.com"
 	        api-token: "YOUR_TOKEN" # should be read from a secure property source
+	        v1:
+	          device-id: "YOUR_DEVICE_ID"
 ----
+
+For the v1 API, the base environment URI must be specified without a path as the v1 endpoint path will be added automatically.
 
 [[actuator.metrics.export.dynatrace.version-independent-settings]]
 ===== Version-independent settings
