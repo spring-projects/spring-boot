@@ -148,7 +148,7 @@ public class EntityScanPackages {
 				Collections.addAll(packagesToScan, tokenized);
 			}
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
-				addResolvedPackage(ClassUtils.getPackageName(basePackageClass), packagesToScan);
+				packagesToScan.add(this.environment.resolvePlaceholders(ClassUtils.getPackageName(basePackageClass)));
 			}
 			if (packagesToScan.isEmpty()) {
 				String packageName = ClassUtils.getPackageName(metadata.getClassName());
@@ -156,10 +156,6 @@ public class EntityScanPackages {
 				return Collections.singleton(packageName);
 			}
 			return packagesToScan;
-		}
-
-		private void addResolvedPackage(String packageName, Set<String> packagesToScan) {
-			packagesToScan.add(this.environment.resolvePlaceholders(packageName));
 		}
 
 	}

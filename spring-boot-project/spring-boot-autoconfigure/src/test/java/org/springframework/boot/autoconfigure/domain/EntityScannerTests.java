@@ -25,7 +25,6 @@ import javax.persistence.Entity;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;
 import org.springframework.boot.autoconfigure.domain.scan.b.EmbeddableB;
@@ -124,13 +123,13 @@ class EntityScannerTests {
 	void scanShouldScanCommaSeparatedPackagesInPlaceholderPackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of(
-				"com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan,org.springframework.boot.autoconfigure.data.jpa.city")
+				"com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan.a,org.springframework.boot.autoconfigure.domain.scan.b")
 				.applyTo(context);
 		context.register(ScanPlaceholderConfig.class);
 		context.refresh();
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
-		assertThat(scanned).containsOnly(EntityA.class, EntityB.class, EntityC.class, City.class);
+		assertThat(scanned).containsOnly(EntityA.class, EntityB.class);
 		context.close();
 	}
 
