@@ -30,6 +30,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -141,10 +142,13 @@ public class EntityScanPackages {
 					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			Set<String> packagesToScan = new LinkedHashSet<>();
 			for (String basePackage : attributes.getStringArray("basePackages")) {
-				addResolvedPackage(basePackage, packagesToScan);
+				String[] tokenized = StringUtils.tokenizeToStringArray(
+						this.environment.resolvePlaceholders(basePackage),
+						ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+				Collections.addAll(packagesToScan, tokenized);
 			}
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
-				addResolvedPackage(ClassUtils.getPackageName(basePackageClass), packagesToScan);
+				packagesToScan.add(this.environment.resolvePlaceholders(ClassUtils.getPackageName(basePackageClass)));
 			}
 			if (packagesToScan.isEmpty()) {
 				String packageName = ClassUtils.getPackageName(metadata.getClassName());
@@ -152,10 +156,6 @@ public class EntityScanPackages {
 				return Collections.singleton(packageName);
 			}
 			return packagesToScan;
-		}
-
-		private void addResolvedPackage(String packageName, Set<String> packagesToScan) {
-			packagesToScan.add(this.environment.resolvePlaceholders(packageName));
 		}
 
 	}
