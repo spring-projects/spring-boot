@@ -138,8 +138,7 @@ public class BatchAutoConfiguration {
 		@Bean
 		@ConditionalOnClass(name = "liquibase.integration.spring.SpringLiquibase")
 		JobRepositoryDependsOnBeanFactoryPostProcessor liquibaseJobRepositoryDependsOnBeanFactoryPostProcessor() {
-			return new JobRepositoryDependsOnBeanFactoryPostProcessor(FlywayMigrationInitializer.class,
-					SpringLiquibase.class);
+			return new JobRepositoryDependsOnBeanFactoryPostProcessor(SpringLiquibase.class);
 		}
 
 	}

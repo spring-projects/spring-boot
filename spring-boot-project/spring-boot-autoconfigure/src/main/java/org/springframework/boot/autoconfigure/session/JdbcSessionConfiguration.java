@@ -104,8 +104,7 @@ class JdbcSessionConfiguration {
 		@Bean
 		@ConditionalOnClass(name = "liquibase.integration.spring.SpringLiquibase")
 		JdbcIndexedSessionRepositoryDependsOnBeanFactoryPostProcessor liquibaseJdbcIndexedSessionRepositoryDependsOnBeanFactoryPostProcessor() {
-			return new JdbcIndexedSessionRepositoryDependsOnBeanFactoryPostProcessor(FlywayMigrationInitializer.class,
-					SpringLiquibase.class);
+			return new JdbcIndexedSessionRepositoryDependsOnBeanFactoryPostProcessor(SpringLiquibase.class);
 		}
 
 	}
