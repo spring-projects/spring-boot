@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.Proxy;
+
+import org.mockito.AdditionalAnswers;
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
 import org.mockito.listeners.VerificationStartedEvent;
@@ -95,12 +98,20 @@ class SpyDefinition extends Definition {
 		if (StringUtils.hasLength(name)) {
 			settings.name(name);
 		}
-		settings.spiedInstance(instance);
-		settings.defaultAnswer(Mockito.CALLS_REAL_METHODS);
 		if (isProxyTargetAware()) {
 			settings.verificationStartedListeners(new SpringAopBypassingVerificationStartedListener());
 		}
-		return (T) mock(instance.getClass(), settings);
+		Class<?> toSpy;
+		if (Proxy.isProxyClass(instance.getClass())) {
+			settings.defaultAnswer(AdditionalAnswers.delegatesTo(instance));
+			toSpy = this.typeToSpy.toClass();
+		}
+		else {
+			settings.defaultAnswer(Mockito.CALLS_REAL_METHODS);
+			settings.spiedInstance(instance);
+			toSpy = instance.getClass();
+		}
+		return (T) mock(toSpy, settings);
 	}
 
 	/**
