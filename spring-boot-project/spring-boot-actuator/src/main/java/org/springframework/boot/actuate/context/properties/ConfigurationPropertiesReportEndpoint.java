@@ -298,7 +298,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private Map<String, Object> getInput(String property, ConfigurationProperty candidate) {
 		Map<String, Object> input = new LinkedHashMap<>();
-		Object value = candidate.getValue();
+		Object value = stringifyIfNecessary(candidate.getValue());
 		Origin origin = Origin.from(candidate);
 		List<Origin> originParents = Origin.parentsFrom(candidate);
 		input.put("value", this.sanitizer.sanitize(property, value));
@@ -307,6 +307,16 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			input.put("originParents", originParents.stream().map(Object::toString).toArray(String[]::new));
 		}
 		return input;
+	}
+
+	private Object stringifyIfNecessary(Object value) {
+		if (value == null || value.getClass().isPrimitive()) {
+			return value;
+		}
+		if (CharSequence.class.isAssignableFrom(value.getClass())) {
+			return value.toString();
+		}
+		return "Complex property value " + value.getClass().getName();
 	}
 
 	private String getQualifiedKey(String prefix, String key) {
