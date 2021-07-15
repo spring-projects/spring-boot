@@ -65,6 +65,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * A {@code GradleBuild} is used to run a Gradle build using {@link GradleRunner}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 public class GradleBuild {
 

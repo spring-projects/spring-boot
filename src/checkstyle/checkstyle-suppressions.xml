@@ -46,6 +46,7 @@
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]spring-boot-smoke-test-testng[\\/]" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-gradle-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]src[\\/]systemTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
