@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 			return null;
 		}
 		Constructor<?> constructor = findConstructorBindingAnnotatedConstructor(type);
-		if (constructor == null && (isConstructorBindingAnnotatedType(type) || isNestedConstructorBinding)) {
+		if (constructor == null && (isConstructorBindingType(type) || isNestedConstructorBinding)) {
 			constructor = deduceBindConstructor(type);
 		}
 		return constructor;
@@ -74,6 +74,15 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 			}
 		}
 		return constructor;
+	}
+
+	private boolean isConstructorBindingType(Class<?> type) {
+		return isImplicitConstructorBindingType(type) || isConstructorBindingAnnotatedType(type);
+	}
+
+	private boolean isImplicitConstructorBindingType(Class<?> type) {
+		Class<?> superclass = type.getSuperclass();
+		return (superclass != null) && "java.lang.Record".equals(superclass.getName());
 	}
 
 	private boolean isConstructorBindingAnnotatedType(Class<?> type) {

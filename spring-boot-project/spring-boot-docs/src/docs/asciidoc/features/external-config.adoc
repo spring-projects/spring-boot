@@ -706,6 +706,8 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
 This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
+If you are using Java 16 or later, constructor binding can be used with records.
+In this case, unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
 Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
 
