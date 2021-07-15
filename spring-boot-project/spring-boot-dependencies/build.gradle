@@ -1860,13 +1860,6 @@ bom {
 			]
 		}
 	}
-	library("WebJars HAL Browser", "3325375") {
-		group("org.webjars") {
-			modules = [
-				"hal-browser"
-			]
-		}
-	}
 	library("WebJars Locator Core", "0.47") {
 		group("org.webjars") {
 			modules = [
