@@ -16,14 +16,21 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
+import java.util.Map;
+import java.util.function.Function;
+
+import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace.DynatraceProperties.V1;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace.DynatraceProperties.V2;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link DynatraceProperties} to a {@link DynatraceConfig}.
  *
  * @author Andy Wilkinson
+ * @author Georg Pirklbauer
  */
 class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<DynatraceProperties>
 		implements DynatraceConfig {
@@ -44,12 +51,12 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 
 	@Override
 	public String deviceId() {
-		return get(DynatraceProperties::getDeviceId, DynatraceConfig.super::deviceId);
+		return get(v1(V1::getDeviceId), DynatraceConfig.super::deviceId);
 	}
 
 	@Override
 	public String technologyType() {
-		return get(DynatraceProperties::getTechnologyType, DynatraceConfig.super::technologyType);
+		return get(v1(V1::getTechnologyType), DynatraceConfig.super::technologyType);
 	}
 
 	@Override
@@ -59,7 +66,36 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 
 	@Override
 	public String group() {
-		return get(DynatraceProperties::getGroup, DynatraceConfig.super::group);
+		return get(v1(V1::getGroup), DynatraceConfig.super::group);
+	}
+
+	@Override
+	public DynatraceApiVersion apiVersion() {
+		return get((properties) -> (properties.getV1().getDeviceId() != null) ? DynatraceApiVersion.V1
+				: DynatraceApiVersion.V2, DynatraceConfig.super::apiVersion);
+	}
+
+	@Override
+	public String metricKeyPrefix() {
+		return get(v2(V2::getMetricKeyPrefix), DynatraceConfig.super::metricKeyPrefix);
+	}
+
+	@Override
+	public Map<String, String> defaultDimensions() {
+		return get(v2(V2::getDefaultDimensions), DynatraceConfig.super::defaultDimensions);
+	}
+
+	@Override
+	public boolean enrichWithDynatraceMetadata() {
+		return get(v2(V2::isEnrichWithDynatraceMetadata), DynatraceConfig.super::enrichWithDynatraceMetadata);
+	}
+
+	private <V> Function<DynatraceProperties, V> v1(Function<V1, V> getter) {
+		return (properties) -> getter.apply(properties.getV1());
+	}
+
+	private <V> Function<DynatraceProperties, V> v2(Function<V2, V> getter) {
+		return (properties) -> getter.apply(properties.getV2());
 	}
 
 }
