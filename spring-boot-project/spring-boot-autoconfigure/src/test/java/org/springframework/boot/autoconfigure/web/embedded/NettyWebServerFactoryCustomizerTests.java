@@ -104,10 +104,20 @@ class NettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void setConnectionTimeout() {
-		setupConnectionTimeout(Duration.ofSeconds(1));
+		setServerProperties();
+		this.serverProperties.getNetty().setConnectionTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, 1000);
+	}
+
+	@Test
+	void setIdleTimeout() {
+		setServerProperties();
+		this.serverProperties.getNetty().setIdleTimeout(Duration.ofSeconds(1));
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verifyIdleTimeout(factory, Duration.ofSeconds(1));
 	}
 
 	@Test
@@ -143,10 +153,21 @@ class NettyWebServerFactoryCustomizerTests {
 		assertThat(options.get(ChannelOption.CONNECT_TIMEOUT_MILLIS)).isEqualTo(expected);
 	}
 
-	private void setupConnectionTimeout(Duration connectionTimeout) {
+	private void verifyIdleTimeout(NettyReactiveWebServerFactory factory, Duration expected) {
+		if (expected == null) {
+			verify(factory, never()).addServerCustomizers(any(NettyServerCustomizer.class));
+			return;
+		}
+		verify(factory, times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		Duration idleTimeout = httpServer.configuration().idleTimeout();
+		assertThat(idleTimeout).isEqualTo(expected);
+	}
+
+	private void setServerProperties() {
 		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NONE);
 		this.serverProperties.setMaxHttpHeaderSize(null);
-		this.serverProperties.getNetty().setConnectionTimeout(connectionTimeout);
 	}
 
 }

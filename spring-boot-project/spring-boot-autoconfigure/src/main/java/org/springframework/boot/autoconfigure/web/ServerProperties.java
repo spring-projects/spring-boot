@@ -1300,6 +1300,12 @@ public class ServerProperties {
 		 */
 		private boolean validateHeaders = true;
 
+		/**
+		 * IdleTimeout for netty server .If an idletimeout is not specified, this
+		 * indicates no timeout(infinite).
+		 */
+		private Duration idleTimeout;
+
 		public Duration getConnectionTimeout() {
 			return this.connectionTimeout;
 		}
@@ -1346,6 +1352,14 @@ public class ServerProperties {
 
 		public void setValidateHeaders(boolean validateHeaders) {
 			this.validateHeaders = validateHeaders;
+		}
+
+		public Duration getIdleTimeout() {
+			return this.idleTimeout;
+		}
+
+		public void setIdleTimeout(Duration idleTimeout) {
+			this.idleTimeout = idleTimeout;
 		}
 
 	}

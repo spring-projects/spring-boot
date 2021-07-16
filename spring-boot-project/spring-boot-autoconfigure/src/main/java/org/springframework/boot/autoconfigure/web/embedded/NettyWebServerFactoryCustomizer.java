@@ -60,6 +60,8 @@ public class NettyWebServerFactoryCustomizer
 		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
 		propertyMapper.from(nettyProperties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
+		propertyMapper.from(nettyProperties::getIdleTimeout).whenNonNull()
+				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		customizeRequestDecoder(factory, propertyMapper);
 	}
 
@@ -96,6 +98,10 @@ public class NettyWebServerFactoryCustomizer
 					.to(httpRequestDecoderSpec::validateHeaders);
 			return httpRequestDecoderSpec;
 		}));
+	}
+
+	private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
+		factory.addServerCustomizers((httpServer) -> httpServer.idleTimeout(idleTimeout));
 	}
 
 }
