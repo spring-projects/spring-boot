@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,9 @@ public class BuildInfo extends ConventionTask {
 	public void generateBuildProperties() {
 		try {
 			new BuildPropertiesWriter(new File(getDestinationDir(), "build-info.properties"))
-					.writeBuildProperties(
-							new ProjectDetails(this.properties.getGroup(),
-									(this.properties.getArtifact() != null) ? this.properties.getArtifact()
-											: "unspecified",
-									this.properties.getVersion(), this.properties.getName(), this.properties.getTime(),
-									coerceToStringValues(this.properties.getAdditional())));
+					.writeBuildProperties(new ProjectDetails(this.properties.getGroup(), this.properties.getArtifact(),
+							this.properties.getVersion(), this.properties.getName(), this.properties.getTime(),
+							coerceToStringValues(this.properties.getAdditional())));
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);
