@@ -1355,7 +1355,7 @@ public class ServerProperties {
 		}
 
 		public Duration getIdleTimeout() {
-			return idleTimeout;
+			return this.idleTimeout;
 		}
 
 		public void setIdleTimeout(Duration idleTimeout) {
