@@ -148,15 +148,20 @@ You can also change the interval at which metrics are sent to Datadog:
 [[actuator.metrics.export.dynatrace]]
 ==== Dynatrace
 
-Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer]:
+Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer].
+Config properties in the `v1` namespace only apply when exporting to the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
+Config properties in the `v2` namespace only apply when exporting to the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API].
+Please note that this integration can only export to either the `v1` or `v2` version of the API at the same time.
+If the `device-id` (required for v1, but not used in v2) is set in the `v1` namespace, metrics will be exported to the `v1` endpoint. Otherwise, `v2` is assumed.
 
 [[actuator.metrics.export.dynatrace.v2-api]]
-===== V2 API
+===== v2 API
 
-The V2 API can be used in two ways:
+The v2 API can be used in two ways:
 
 If a local OneAgent is running on the host, metrics will be automatically exported to the https://www.dynatrace.com/support/help/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint], which forwards them to the Dynatrace backend.
-
+This is the default behaviour and requires no special set up.
+Simply include a dependency to `'io.micrometer:micrometer-registry-dynatrace'` in your project, and metrics will be exported to the local OneAgent endpoint.
 
 If no local OneAgent is running, the endpoint of the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
 The https://www.dynatrace.com/support/help/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "Ingest metrics" (`metrics.ingest`) permission set.
@@ -181,14 +186,15 @@ When using the Dynatrace v2 API, the following optional features are available:
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
 If tags with the same key are specified using Micrometer, they overwrite the default dimensions.
 
+
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  metrics:
 	    export:
 	      dynatrace:
+	        # specify token and uri or leave blank for OneAgent export
 	        v2:
-	          # specify token and uri or leave blank for OneAgent export
 	          metric-key-prefix: "your.key.prefix"
 	          enrich-with-dynatrace-metadata: true
 	          default-dimensions:
@@ -200,7 +206,7 @@ If tags with the same key are specified using Micrometer, they overwrite the def
 ===== v1 API (Legacy)
 
 The Dynatrace v1 API registry pushes metrics to the configured URI periodically using the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
-For backwards-compatibility with existing setups, `api-version` defaults to `"v1"` but can also be specified explicitly as such.
+For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics will be exported to the Timeseries v1 endpoint.
 To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -221,7 +227,7 @@ For the v1 API, the base environment URI must be specified without a path as the
 [[actuator.metrics.export.dynatrace.version-independent-settings]]
 ===== Version-independent settings
 
-You can also change the interval at which metrics are sent to Dynatrace (works for both API versions).
+In addition to the API endpoint and token, you can also change the interval at which metrics are sent to Dynatrace.
 The default export interval is `60s`.
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -248,8 +254,6 @@ The location of the Elastic server to use can be provided using the following pr
 	      elastic:
 	        host: "https://elastic.example.com:8086"
 ----
-
-
 
 [[actuator.metrics.export.ganglia]]
 ==== Ganglia
