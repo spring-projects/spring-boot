@@ -57,6 +57,9 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
+		if (JavaVersion.current() == JavaVersion.VERSION_17) {
+			return Stream.of(new DisabledTemplateInvocationContext());
+		}
 		Stream<String> gradleVersions = GRADLE_VERSIONS.stream().map((version) -> {
 			if (version.equals("current")) {
 				return GradleVersion.current().getVersion();
