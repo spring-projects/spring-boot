@@ -18,14 +18,18 @@ package org.springframework.boot.context.properties;
 
 /**
  * A {@link ConfigurationProperties @ConfigurationProperties} with an additional
- * single-arg public constructor. Used in {@link ConfigurationPropertiesTests}.
+ * single-arg public constructor, along with layered inner classes. Used in
+ * {@link ConfigurationPropertiesTests}.
  *
  * @author Madhura Bhave
+ * @author prasoonanand
  */
 @ConfigurationProperties(prefix = "test")
 public class WithPublicStringConstructorProperties {
 
 	private String a;
+
+	private Bar bar;
 
 	public WithPublicStringConstructorProperties() {
 	}
@@ -40,6 +44,66 @@ public class WithPublicStringConstructorProperties {
 
 	public void setA(String a) {
 		this.a = a;
+	}
+
+	public Bar getBar() {
+		return this.bar;
+	}
+
+	public void setBar(Bar bar) {
+		this.bar = bar;
+	}
+
+	public static class Bar {
+
+		private String baz;
+
+		private Foo foo;
+
+		public Bar() {
+		}
+
+		public Bar(String baz) {
+			this.baz = baz;
+		}
+
+		public String getBaz() {
+			return this.baz;
+		}
+
+		public void setBaz(String baz) {
+			this.baz = baz;
+		}
+
+		public Foo getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(Foo foo) {
+			this.foo = foo;
+		}
+
+		public static class Foo {
+
+			private String a;
+
+			public Foo() {
+			}
+
+			public Foo(String a) {
+				this.a = a;
+			}
+
+			public String getA() {
+				return this.a;
+			}
+
+			public void setA(String a) {
+				this.a = a;
+			}
+
+		}
+
 	}
 
 }

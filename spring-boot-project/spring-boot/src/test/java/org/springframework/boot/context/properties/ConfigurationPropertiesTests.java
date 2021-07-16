@@ -1055,10 +1055,16 @@ class ConfigurationPropertiesTests {
 		Map<String, Object> source = new HashMap<>();
 		source.put("test", "bar");
 		source.put("test.a", "baz");
+		source.put("test.bar", "xyz");
+		source.put("test.bar.baz", "bar");
+		source.put("test.bar.foo", "x");
+		source.put("test.bar.foo.a", "foo");
 		sources.addLast(new MapPropertySource("test", source));
 		load(WithPublicStringConstructorPropertiesConfiguration.class);
 		WithPublicStringConstructorProperties bean = this.context.getBean(WithPublicStringConstructorProperties.class);
 		assertThat(bean.getA()).isEqualTo("baz");
+		assertThat(bean.getBar().getBaz()).isEqualTo("bar");
+		assertThat(bean.getBar().getFoo().getA()).isEqualTo("foo");
 	}
 
 	@Test // gh-26201
