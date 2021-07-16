@@ -23,8 +23,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
@@ -59,6 +62,10 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private static final Set<PropertySourceLoader> PROPERTY_SOURCE_LOADERS;
 
+	private final Properties systemProperties;
+
+	private final Map<String, String> environmentVariables;
+
 	static {
 		Set<PropertySourceLoader> propertySourceLoaders = new HashSet<>();
 		propertySourceLoaders.add(new PropertiesPropertySourceLoader());
@@ -66,6 +73,15 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 			propertySourceLoaders.add(new YamlPropertySourceLoader());
 		}
 		PROPERTY_SOURCE_LOADERS = Collections.unmodifiableSet(propertySourceLoaders);
+	}
+
+	public DevToolsHomePropertiesPostProcessor() {
+		this(System.getenv(), System.getProperties());
+	}
+
+	DevToolsHomePropertiesPostProcessor(Map<String, String> environmentVariables, Properties systemProperties) {
+		this.environmentVariables = environmentVariables;
+		this.systemProperties = systemProperties;
 	}
 
 	@Override
@@ -93,7 +109,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private void addPropertySource(List<PropertySource<?>> propertySources, String fileName,
 			Function<File, String> propertySourceNamer) {
-		File home = getProjectRootFolder();
+		File home = getHomeDirectory();
 		File file = (home != null) ? new File(home, fileName) : null;
 		FileSystemResource resource = (file != null) ? new FileSystemResource(file) : null;
 		if (resource != null && resource.exists() && resource.isFile()) {
@@ -121,21 +137,19 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 				.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 	}
 
-	protected File getProjectRootFolder() {
-		String rootFolder = System.getenv("PROJECT_ROOT_FOLDER");
-		if (rootFolder == null) {
-			rootFolder = System.getProperty("PROJECT_ROOT_FOLDER");
-		}
-		if (StringUtils.hasLength(rootFolder)) {
-			return new File(rootFolder);
-		}
-		return getHomeDirectory();
+	protected File getHomeDirectory() {
+		return getHomeDirectory(() -> this.environmentVariables.get("SPRING_DEVTOOLS_HOME"),
+				() -> this.systemProperties.getProperty("spring.devtools.home"),
+				() -> this.systemProperties.getProperty("user.home"));
 	}
 
-	protected File getHomeDirectory() {
-		String home = System.getProperty("user.home");
-		if (StringUtils.hasLength(home)) {
-			return new File(home);
+	@SafeVarargs
+	private final File getHomeDirectory(Supplier<String>... pathSuppliers) {
+		for (Supplier<String> pathSupplier : pathSuppliers) {
+			String path = pathSupplier.get();
+			if (StringUtils.hasText(path)) {
+				return new File(path);
+			}
 		}
 		return null;
 	}
