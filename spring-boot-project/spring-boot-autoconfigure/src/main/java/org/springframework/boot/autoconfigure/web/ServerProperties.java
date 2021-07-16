@@ -1301,7 +1301,8 @@ public class ServerProperties {
 		private boolean validateHeaders = true;
 
 		/**
-		 * IdleTimeout for netty server .If an idletimeout is not specified, this indicates no timeout(infinite).
+		 * IdleTimeout for netty server .If an idletimeout is not specified, this
+		 * indicates no timeout(infinite).
 		 */
 		private Duration idleTimeout;
 
