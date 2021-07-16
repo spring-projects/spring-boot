@@ -147,25 +147,26 @@ You can also change the interval at which metrics are sent to Datadog:
 
 [[actuator.metrics.export.dynatrace]]
 ==== Dynatrace
-
 Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer].
-Config properties in the `v1` namespace only apply when exporting to the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
-Config properties in the `v2` namespace only apply when exporting to the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API].
-Please note that this integration can only export to either the `v1` or `v2` version of the API at the same time.
-If the `device-id` (required for v1, but not used in v2) is set in the `v1` namespace, metrics will be exported to the `v1` endpoint. Otherwise, `v2` is assumed.
+Config properties in the `v1` namespace only apply when exporting to the {dynatrace-help}/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
+Config properties in the `v2` namespace only apply when exporting to the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API].
+Please note that this integration can only export to either the `v1` or `v2` version of the API at a time.
+If the `device-id` (required for v1, but not used in v2) is set in the `v1` namespace, metrics will be exported to the `v1` endpoint.
+Otherwise, `v2` is assumed.
+
+
 
 [[actuator.metrics.export.dynatrace.v2-api]]
 ===== v2 API
+The v2 API can be used in two ways.
 
-The v2 API can be used in two ways:
+If a local OneAgent is running on the host, metrics will be automatically exported to the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint].
+The ingest endpoint forwards the metrics to the Dynatrace backend.
+This is the default behaviour and requires no special setup beyond a dependency on `io.micrometer:micrometer-registry-dynatrace`.
 
-If a local OneAgent is running on the host, metrics will be automatically exported to the https://www.dynatrace.com/support/help/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint], which forwards them to the Dynatrace backend.
-This is the default behaviour and requires no special set up.
-Simply include a dependency to `'io.micrometer:micrometer-registry-dynatrace'` in your project, and metrics will be exported to the local OneAgent endpoint.
-
-If no local OneAgent is running, the endpoint of the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
-The https://www.dynatrace.com/support/help/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "Ingest metrics" (`metrics.ingest`) permission set.
-It is recommended to limit scope to only this one permission.
+If no local OneAgent is running, the endpoint of the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
+The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "Ingest metrics" (`metrics.ingest`) permission set.
+It is recommended to limit the scope of the token to this one permission.
 Please ensure that the endpoint URI contains the path (e.g. `/api/v2/metrics/ingest`).
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -181,10 +182,10 @@ Please ensure that the endpoint URI contains the path (e.g. `/api/v2/metrics/ing
 
 When using the Dynatrace v2 API, the following optional features are available:
 
-* Metric key prefix: Sets a prefix that will be prepended to all exported metric keys.
-* Enrich with Dynatrace metadata: If a OneAgent or Dynatrace operator is running, enrich metrics with additional metadata (e.g. about the host, process or pod).
-* Default dimensions: Specify key-value pairs that are added to all exported metrics.
-If tags with the same key are specified using Micrometer, they overwrite the default dimensions.
+* Metric key prefix: sets a prefix that will be prepended to all exported metric keys.
+* Enrich with Dynatrace metadata: if a OneAgent or Dynatrace operator is running, enrich metrics with additional metadata (e.g. about the host, process or pod).
+* Default dimensions: specify key-value pairs that are added to all exported metrics.
+  If tags with the same key are specified using Micrometer, they overwrite the default dimensions.
 
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -202,10 +203,11 @@ If tags with the same key are specified using Micrometer, they overwrite the def
 	            key2: "value2"
 ----
 
+
+
 [[actuator.metrics.export.dynatrace.v1-api]]
 ===== v1 API (Legacy)
-
-The Dynatrace v1 API registry pushes metrics to the configured URI periodically using the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
+The Dynatrace v1 API metrics registry pushes metrics to the configured URI periodically using the {dynatrace-help}/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
 For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics will be exported to the Timeseries v1 endpoint.
 To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
@@ -224,9 +226,10 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 
 For the v1 API, the base environment URI must be specified without a path as the v1 endpoint path will be added automatically.
 
-[[actuator.metrics.export.dynatrace.version-independent-settings]]
-===== Version-independent settings
 
+
+[[actuator.metrics.export.dynatrace.version-independent-settings]]
+===== Version-independent Settings
 In addition to the API endpoint and token, you can also change the interval at which metrics are sent to Dynatrace.
 The default export interval is `60s`.
 
@@ -240,6 +243,8 @@ The default export interval is `60s`.
 ----
 
 More information on how to set up the Dynatrace exporter for Micrometer can be found in {micrometer-registry-docs}/dynatrace[the Micrometer documentation].
+
+
 
 [[actuator.metrics.export.elastic]]
 ==== Elastic
