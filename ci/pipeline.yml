@@ -829,7 +829,7 @@ jobs:
       trigger: true
     - do:
         - task: run-system-tests
-          image: ci-image-jdk16
+          image: ci-image-jdk17
           privileged: true
           timeout: ((task-timeout))
           file: git-repo/ci/tasks/run-system-tests.yml
