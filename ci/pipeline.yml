@@ -821,7 +821,7 @@ jobs:
   serial: true
   public: true
   plan:
-    - get: ci-image-jdk16
+    - get: ci-image-jdk17
     - get: git-repo
     - get: paketo-builder-base-image
       trigger: true
