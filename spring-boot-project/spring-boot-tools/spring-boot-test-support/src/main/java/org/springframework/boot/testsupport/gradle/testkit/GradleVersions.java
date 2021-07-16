@@ -17,6 +17,7 @@
 package org.springframework.boot.testsupport.gradle.testkit;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.JavaVersion;
@@ -33,6 +34,9 @@ public final class GradleVersions {
 	}
 
 	public static List<String> allCompatible() {
+		if (isJava17()) {
+			return Collections.emptyList();
+		}
 		if (isJava16()) {
 			return Arrays.asList("7.0.2", "7.1");
 		}
@@ -44,6 +48,10 @@ public final class GradleVersions {
 			return "7.0.2";
 		}
 		return GradleVersion.current().getVersion();
+	}
+
+	private static boolean isJava17() {
+		return JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17);
 	}
 
 	private static boolean isJava16() {
