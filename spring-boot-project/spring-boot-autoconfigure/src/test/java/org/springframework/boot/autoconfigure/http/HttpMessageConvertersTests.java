@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.http;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,7 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.smile.MappingJackson2SmileHttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
@@ -79,6 +81,16 @@ class HttpMessageConvertersTests {
 		assertThat(httpConverters.indexOf(converter1)).isEqualTo(0);
 		assertThat(httpConverters.indexOf(converter2)).isEqualTo(1);
 		assertThat(converters.getConverters().indexOf(converter1)).isNotEqualTo(0);
+	}
+
+	@Test
+	void addBeforeExistingEquivalentConverter() {
+		GsonHttpMessageConverter converter1 = new GsonHttpMessageConverter();
+		HttpMessageConverters converters = new HttpMessageConverters(converter1);
+		List<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass)
+				.collect(Collectors.toList());
+		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class);
 	}
 
 	@Test
