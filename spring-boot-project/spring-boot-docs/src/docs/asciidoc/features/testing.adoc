@@ -771,7 +771,12 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 
 [[features.testing.spring-boot-applications.autoconfigured-webservices]]
 ==== Auto-configured Spring Web Services Tests
-You can use `@WebServiceClientTest` to test applications that use call web services using the Spring Web Services project.
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.client]]
+===== Auto-configured Spring Web Services Client Tests
+You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
 By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
 (For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
 
@@ -782,7 +787,25 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/MyWebServiceClientTests.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/client/MyWebServiceClientTests.java[]
+----
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.server]]
+===== Auto-configured Spring Web Services Server Tests
+You can use `@WebServiceServerTest` to test applications that implement web services using the Spring Web Services project.
+By default, it configures a `MockWebServiceClient` bean that can be used to call your web service endpoints.
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
+
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@WebServiceServerTest` annotation in use:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/server/MyWebServiceServerTests.java[]
 ----
 
 

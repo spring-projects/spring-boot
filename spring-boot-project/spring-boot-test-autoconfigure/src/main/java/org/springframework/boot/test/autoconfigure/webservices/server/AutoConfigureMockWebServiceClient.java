@@ -27,8 +27,8 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.ws.test.server.MockWebServiceClient;
 
 /**
- * Annotation that can be applied to a test class to enable and configure
- * auto-configuration of {@link MockWebServiceClient}.
+ * Annotation that can be applied to a test class to enable auto-configuration of
+ * {@link MockWebServiceClient}.
  *
  * @author Daniil Razorenov
  * @since 2.6.0

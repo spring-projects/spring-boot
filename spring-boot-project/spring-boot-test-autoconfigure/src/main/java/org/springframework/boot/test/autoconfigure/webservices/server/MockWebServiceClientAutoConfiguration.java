@@ -16,9 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.webservices.server;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +30,7 @@ import org.springframework.ws.test.server.MockWebServiceClient;
  * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(WebServicesAutoConfiguration.class)
-@ConditionalOnClass({ MockWebServiceClient.class })
+@ConditionalOnClass(MockWebServiceClient.class)
 public class MockWebServiceClientAutoConfiguration {
 
 	@Bean

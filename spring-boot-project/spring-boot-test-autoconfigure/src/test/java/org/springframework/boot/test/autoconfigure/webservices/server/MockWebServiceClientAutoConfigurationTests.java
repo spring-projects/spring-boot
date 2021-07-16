@@ -41,7 +41,7 @@ class MockWebServiceClientAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotRegisterMockWebServiceClientWhenItNotOnClassPath() {
+	void shouldNotRegisterMockWebServiceClientWhenItIsNotOnTheClasspath() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(MockWebServiceClient.class);
 
 		this.contextRunner.withClassLoader(classLoader)

@@ -43,7 +43,6 @@ public class WebServiceServerTypeExcludeFilterTests {
 	@Test
 	void matchWhenHasNoEndpoints() throws IOException {
 		WebServiceServerTypeExcludeFilter filter = new WebServiceServerTypeExcludeFilter(WithNoEndpoints.class);
-
 		assertThat(exclude(filter, WebService1.class)).isFalse();
 		assertThat(exclude(filter, WebService2.class)).isFalse();
 		assertThat(exclude(filter, ExampleService.class)).isTrue();
@@ -53,7 +52,6 @@ public class WebServiceServerTypeExcludeFilterTests {
 	@Test
 	void matchWhenHasEndpoint() throws IOException {
 		WebServiceServerTypeExcludeFilter filter = new WebServiceServerTypeExcludeFilter(WithEndpoint.class);
-
 		assertThat(exclude(filter, WebService1.class)).isFalse();
 		assertThat(exclude(filter, WebService2.class)).isTrue();
 		assertThat(exclude(filter, ExampleService.class)).isTrue();
@@ -63,7 +61,6 @@ public class WebServiceServerTypeExcludeFilterTests {
 	@Test
 	void matchNotUsingDefaultFilters() throws IOException {
 		WebServiceServerTypeExcludeFilter filter = new WebServiceServerTypeExcludeFilter(NotUsingDefaultFilters.class);
-
 		assertThat(exclude(filter, WebService1.class)).isTrue();
 		assertThat(exclude(filter, WebService2.class)).isTrue();
 		assertThat(exclude(filter, ExampleService.class)).isTrue();
@@ -73,7 +70,6 @@ public class WebServiceServerTypeExcludeFilterTests {
 	@Test
 	void matchWithIncludeFilter() throws IOException {
 		WebServiceServerTypeExcludeFilter filter = new WebServiceServerTypeExcludeFilter(WithIncludeFilter.class);
-
 		assertThat(exclude(filter, WebService1.class)).isFalse();
 		assertThat(exclude(filter, WebService2.class)).isFalse();
 		assertThat(exclude(filter, ExampleService.class)).isTrue();
@@ -83,7 +79,6 @@ public class WebServiceServerTypeExcludeFilterTests {
 	@Test
 	void matchWithExcludeFilter() throws IOException {
 		WebServiceServerTypeExcludeFilter filter = new WebServiceServerTypeExcludeFilter(WithExcludeFilter.class);
-
 		assertThat(exclude(filter, WebService1.class)).isTrue();
 		assertThat(exclude(filter, WebService2.class)).isFalse();
 		assertThat(exclude(filter, ExampleService.class)).isTrue();

@@ -36,15 +36,15 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used for typical Spring web service server test. Can be used
- * when a test focused <strong>only</strong> on Spring WS endpoints.
+ * Annotation that can be used for a typical Spring web service server test. Can be used
+ * when a test focuses <strong>only</strong> on Spring WS endpoints.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Web Service Server tests (i.e. {@code Endpoint},
+ * configuration relevant to Web Service server tests (i.e. {@code Endpoint} and
  * {@code EndpointInterceptor} beans but not {@code @Component}, {@code @Service} or
  * {@code @Repository} beans).
  * <p>
- * Typically {@code WebMvcTest} is used in combination with
+ * Typically {@code WebServiceServerTest} is used in combination with
  * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
  * {@link org.springframework.context.annotation.Import @Import} to create any
  * collaborators required by your {@code Endpoint} beans.
@@ -77,7 +77,6 @@ public @interface WebServiceServerTest {
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 * @return the properties to add
-	 * @since 2.1.0
 	 */
 	String[] properties() default {};
 
@@ -103,8 +102,8 @@ public @interface WebServiceServerTest {
 	/**
 	 * Determines if default filtering should be used with
 	 * {@link SpringBootApplication @SpringBootApplication}. By default only
-	 * {@code @Endpoint} (when no explicit {@link #endpoints() controllers} are defined),
-	 * {@code @ControllerAdvice} and {@code WebMvcConfigurer} beans are included.
+	 * {@code @Endpoint} (when no explicit {@link #endpoints() controllers} are defined)
+	 * are included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used

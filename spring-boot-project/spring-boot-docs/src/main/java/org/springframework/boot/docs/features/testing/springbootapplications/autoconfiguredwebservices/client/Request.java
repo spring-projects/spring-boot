@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredwebservices;
+package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredwebservices.client;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
