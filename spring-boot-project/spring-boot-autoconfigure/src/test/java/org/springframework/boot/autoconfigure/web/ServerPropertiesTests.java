@@ -535,6 +535,12 @@ class ServerPropertiesTests {
 				.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
 	}
 
+	@Test
+	void testCustomizeNettyIdleTimeout() {
+		bind("server.netty.idle-timeout", "10s");
+		assertThat(this.properties.getNetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
+	}
+
 	private Connector getDefaultConnector() {
 		return new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
 	}
