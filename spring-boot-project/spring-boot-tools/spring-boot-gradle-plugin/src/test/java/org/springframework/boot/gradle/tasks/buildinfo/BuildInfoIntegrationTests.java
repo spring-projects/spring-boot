@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the {@link BuildInfo} task.
  *
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 @GradleCompatibility(configurationCache = true)
 class BuildInfoIntegrationTests {
@@ -50,8 +51,8 @@ class BuildInfoIntegrationTests {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
 		assertThat(buildInfoProperties).containsKey("build.time");
-		assertThat(buildInfoProperties).containsEntry("build.artifact", "unspecified");
-		assertThat(buildInfoProperties).containsEntry("build.group", "");
+		assertThat(buildInfoProperties).doesNotContainKey("build.artifact");
+		assertThat(buildInfoProperties).doesNotContainKey("build.group");
 		assertThat(buildInfoProperties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(buildInfoProperties).containsEntry("build.version", "unspecified");
 	}
@@ -120,6 +121,26 @@ class BuildInfoIntegrationTests {
 				.isEqualTo(TaskOutcome.SUCCESS);
 		String secondHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(firstHash).isEqualTo(secondHash);
+	}
+
+	@TestTemplate
+	void removePropertiesUsingNulls() {
+		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Properties buildInfoProperties = buildInfoProperties();
+		assertThat(buildInfoProperties).doesNotContainKey("build.group");
+		assertThat(buildInfoProperties).doesNotContainKey("build.artifact");
+		assertThat(buildInfoProperties).doesNotContainKey("build.version");
+		assertThat(buildInfoProperties).doesNotContainKey("build.name");
+	}
+
+	@TestTemplate
+	void removePropertiesUsingEmptyStrings() {
+		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Properties buildInfoProperties = buildInfoProperties();
+		assertThat(buildInfoProperties).doesNotContainKey("build.group");
+		assertThat(buildInfoProperties).doesNotContainKey("build.artifact");
+		assertThat(buildInfoProperties).doesNotContainKey("build.version");
+		assertThat(buildInfoProperties).doesNotContainKey("build.name");
 	}
 
 	private Properties buildInfoProperties() {

@@ -1,0 +1,16 @@
+plugins {
+	id 'org.springframework.boot' version '{version}' apply false
+}
+
+group = 'foo'
+version = '0.1.0'
+
+task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
+	destinationDir project.buildDir
+	properties {
+		group = ''
+		artifact = ''
+		version = ''
+		name = ''
+	}
+}

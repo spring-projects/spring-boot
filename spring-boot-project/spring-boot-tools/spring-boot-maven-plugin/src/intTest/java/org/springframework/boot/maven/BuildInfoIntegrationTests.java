@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the Maven plugin's build info support.
  *
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 @ExtendWith(MavenBuildExtension.class)
 public class BuildInfoIntegrationTests {
@@ -64,6 +65,14 @@ public class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
+	void generatedBuildInfoUsesCustomBuildProperties(MavenBuild mavenBuild) {
+		mavenBuild.project("build-info-custom-build-properties")
+				.execute(buildInfo((buildInfo) -> assertThat(buildInfo).hasBuildGroup("test-group")
+						.hasBuildArtifact("test-artifact").hasBuildName("test-name").hasBuildVersion("test-version")
+						.containsBuildTime()));
+	}
+
+	@TestTemplate
 	void generatedBuildInfoReproducible(MavenBuild mavenBuild) {
 		mavenBuild.project("build-info-reproducible")
 				.execute(buildInfo((buildInfo) -> assertThat(buildInfo)
@@ -87,6 +96,13 @@ public class BuildInfoIntegrationTests {
 				.hasBuildGroup("org.springframework.boot.maven.it").hasBuildArtifact("build-info-disable-build-time")
 				.hasBuildName("Generate build info with disabled build time").hasBuildVersion("0.0.1.BUILD-SNAPSHOT")
 				.doesNotContainBuildTime()));
+	}
+
+	@TestTemplate
+	void whenBuildPropertiesAreEmptyTheyDoNotAppearInGeneratedBuildInfo(MavenBuild mavenBuild) {
+		mavenBuild.project("build-info-disable-build-properties").execute(
+				buildInfo((buildInfo) -> assertThat(buildInfo).doesNotContainBuildGroup().doesNotContainBuildArtifact()
+						.doesNotContainBuildName().doesNotContainBuildVersion().containsBuildTime()));
 	}
 
 	private ProjectCallback buildInfo(Consumer<AssertProvider<BuildInfoAssert>> buildInfo) {
@@ -130,16 +146,32 @@ public class BuildInfoIntegrationTests {
 			return containsEntry("build.group", expected);
 		}
 
+		BuildInfoAssert doesNotContainBuildGroup() {
+			return doesNotContainKey("build.group");
+		}
+
 		BuildInfoAssert hasBuildArtifact(String expected) {
 			return containsEntry("build.artifact", expected);
+		}
+
+		BuildInfoAssert doesNotContainBuildArtifact() {
+			return doesNotContainKey("build.artifact");
 		}
 
 		BuildInfoAssert hasBuildName(String expected) {
 			return containsEntry("build.name", expected);
 		}
 
+		BuildInfoAssert doesNotContainBuildName() {
+			return doesNotContainKey("build.name");
+		}
+
 		BuildInfoAssert hasBuildVersion(String expected) {
 			return containsEntry("build.version", expected);
+		}
+
+		BuildInfoAssert doesNotContainBuildVersion() {
+			return doesNotContainKey("build.version");
 		}
 
 		BuildInfoAssert containsBuildTime() {

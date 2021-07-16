@@ -41,6 +41,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  * {@link MavenProject}.
  *
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.4.0
  */
 @Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
@@ -56,16 +57,46 @@ public class BuildInfoMojo extends AbstractMojo {
 	private MavenSession session;
 
 	/**
-	 * The Maven project.
-	 */
-	@Parameter(defaultValue = "${project}", readonly = true, required = true)
-	private MavenProject project;
-
-	/**
 	 * The location of the generated {@code build-info.properties} file.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
+
+	/**
+	 * The value used for the {@code build.group} property. Defaults to
+	 * {@code project.groupId}. To disable the {@code build.group} property entirely, use
+	 * {@code 'off'}.
+	 * @since 2.6.0
+	 */
+	@Parameter(defaultValue = "${project.groupId}")
+	private String group;
+
+	/**
+	 * The value used for the {@code build.artifact} property. Defaults to
+	 * {@code project.artifactId}. To disable the {@code build.artifact} property
+	 * entirely, use {@code 'off'}.
+	 * @since 2.6.0
+	 */
+	@Parameter(defaultValue = "${project.artifactId}")
+	private String artifact;
+
+	/**
+	 * The value used for the {@code build.version} property. Defaults to
+	 * {@code project.version}. To disable the {@code build.version} property entirely,
+	 * use {@code 'off'}.
+	 * @since 2.6.0
+	 */
+	@Parameter(defaultValue = "${project.version}")
+	private String version;
+
+	/**
+	 * The value used for the {@code build.name} property. Defaults to
+	 * {@code project.name}. To disable the {@code build.name} property entirely, use
+	 * {@code 'off'}.
+	 * @since 2.6.0
+	 */
+	@Parameter(defaultValue = "${project.name}")
+	private String name;
 
 	/**
 	 * The value used for the {@code build.time} property in a form suitable for
@@ -88,8 +119,8 @@ public class BuildInfoMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			ProjectDetails details = new ProjectDetails(this.project.getGroupId(), this.project.getArtifactId(),
-					this.project.getVersion(), this.project.getName(), getBuildTime(), this.additionalProperties);
+			ProjectDetails details = new ProjectDetails(getGroup(), getArtifact(), getVersion(), getName(),
+					getBuildTime(), this.additionalProperties);
 			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(details);
 			this.buildContext.refresh(this.outputFile);
 		}
@@ -99,6 +130,34 @@ public class BuildInfoMojo extends AbstractMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
+	}
+
+	private String getGroup() {
+		if ("off".equalsIgnoreCase(this.group)) {
+			return null;
+		}
+		return this.group;
+	}
+
+	private String getArtifact() {
+		if ("off".equalsIgnoreCase(this.artifact)) {
+			return null;
+		}
+		return this.artifact;
+	}
+
+	private String getVersion() {
+		if ("off".equalsIgnoreCase(this.version)) {
+			return null;
+		}
+		return this.version;
+	}
+
+	private String getName() {
+		if ("off".equalsIgnoreCase(this.name)) {
+			return null;
+		}
+		return this.name;
 	}
 
 	private Instant getBuildTime() {
