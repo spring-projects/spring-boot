@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredwebservices;
+package org.springframework.boot.test.autoconfigure.webservices.server;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "request")
-class Request {
+/**
+ * Test response.
+ *
+ * @author Daniil Razorenov
+ */
+@XmlRootElement(name = "response")
+class Response {
+
+	@XmlElement(required = true)
+	private int code;
+
+	Response(int code) {
+		this.code = code;
+	}
+
+	Response() {
+	}
 
 }
