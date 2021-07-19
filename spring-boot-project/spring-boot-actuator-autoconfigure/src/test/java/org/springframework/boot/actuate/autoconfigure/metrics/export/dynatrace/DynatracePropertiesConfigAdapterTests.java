@@ -54,7 +54,6 @@ class DynatracePropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@Deprecated
 	void whenPropertiesV1DeviceIdIsSetAdapterDeviceIdReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setDeviceId("dev-1");
@@ -113,21 +112,21 @@ class DynatracePropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesMetricKeyPrefixIsSetAdapterGroupReturnsIt() {
+	void whenPropertiesMetricKeyPrefixIsSetAdapterMetricKeyPrefixReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV2().setMetricKeyPrefix("my.prefix");
 		assertThat(new DynatracePropertiesConfigAdapter(properties).metricKeyPrefix()).isEqualTo("my.prefix");
 	}
 
 	@Test
-	void whenPropertiesEnrichWithOneAgentMetadataIsSetAdapterGroupReturnsIt() {
+	void whenPropertiesEnrichWithOneAgentMetadataIsSetAdapterEnrichWithOneAgentMetadataReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV2().setEnrichWithDynatraceMetadata(true);
 		assertThat(new DynatracePropertiesConfigAdapter(properties).enrichWithDynatraceMetadata()).isTrue();
 	}
 
 	@Test
-	void whenPropertiesDefaultDimensionsIsSetAdapterGroupReturnsIt() {
+	void whenPropertiesDefaultDimensionsIsSetAdapterDefaultDimensionsReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		HashMap<String, String> defaultDimensions = new HashMap<>();
 		defaultDimensions.put("dim1", "value1");
