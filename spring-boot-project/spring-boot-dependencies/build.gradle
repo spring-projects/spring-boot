@@ -1291,7 +1291,7 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.65.Final") {
+	library("Netty", "4.1.66.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
