@@ -37,6 +37,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
@@ -61,7 +62,6 @@ import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
-import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -534,7 +534,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 		@Bean
 		PhysicalNamingStrategy testPhysicalNamingStrategy() {
-			return new SpringPhysicalNamingStrategy();
+			return new CamelCaseToUnderscoresNamingStrategy();
 		}
 
 	}
@@ -542,7 +542,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Configuration(proxyBeanMethods = false)
 	static class TestHibernatePropertiesCustomizerConfiguration {
 
-		private final PhysicalNamingStrategy physicalNamingStrategy = new SpringPhysicalNamingStrategy();
+		private final PhysicalNamingStrategy physicalNamingStrategy = new CamelCaseToUnderscoresNamingStrategy();
 
 		private final ImplicitNamingStrategy implicitNamingStrategy = new SpringImplicitNamingStrategy();
 
