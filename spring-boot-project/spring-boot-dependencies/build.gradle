@@ -326,7 +326,7 @@ bom {
 			]
 		}
 	}
-	library("Git Commit ID Plugin", "4.0.5") {
+	library("Git Commit ID Plugin", "4.9.9") {
 		prohibit("[5.0.0,)") {
 			because "it requires Java 11"
 		}
