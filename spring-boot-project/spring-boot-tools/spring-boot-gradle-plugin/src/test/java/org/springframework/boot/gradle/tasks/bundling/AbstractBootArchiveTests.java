@@ -279,11 +279,14 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		properties.put("initInfoProvides", this.task.getArchiveBaseName().get());
 		properties.put("initInfoShortDescription", this.project.getDescription());
 		properties.put("initInfoDescription", this.project.getDescription());
-		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
+		File archiveFile = this.task.getArchiveFile().get().getAsFile();
+		assertThat(Files.readAllBytes(archiveFile.toPath()))
 				.startsWith(new DefaultLaunchScript(null, properties).toByteArray());
+		try (ZipFile zipFile = new ZipFile(archiveFile)) {
+			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
+		}
 		try {
-			Set<PosixFilePermission> permissions = Files
-					.getPosixFilePermissions(this.task.getArchiveFile().get().getAsFile().toPath());
+			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(archiveFile.toPath());
 			assertThat(permissions).contains(PosixFilePermission.OWNER_EXECUTE);
 		}
 		catch (UnsupportedOperationException ex) {
