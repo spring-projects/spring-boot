@@ -334,6 +334,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeNettyIdleTimeout() {
+		bind("server.netty.idle-timeout", "10s");
+		assertThat(this.properties.getNetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
+	}
+
+	@Test
 	void tomcatAcceptCountMatchesProtocolDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getAcceptCount()).isEqualTo(getDefaultProtocol().getAcceptCount());
 	}
@@ -533,12 +539,6 @@ class ServerPropertiesTests {
 	void nettyInitialBufferSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getInitialBufferSize().toBytes())
 				.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
-	}
-
-	@Test
-	void testCustomizeNettyIdleTimeout() {
-		bind("server.netty.idle-timeout", "10s");
-		assertThat(this.properties.getNetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
 	}
 
 	private Connector getDefaultConnector() {

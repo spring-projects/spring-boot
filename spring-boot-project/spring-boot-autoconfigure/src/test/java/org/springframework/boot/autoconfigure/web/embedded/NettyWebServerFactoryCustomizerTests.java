@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
@@ -104,7 +103,6 @@ class NettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void setConnectionTimeout() {
-		setServerProperties();
 		this.serverProperties.getNetty().setConnectionTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -113,7 +111,6 @@ class NettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void setIdleTimeout() {
-		setServerProperties();
 		this.serverProperties.getNetty().setIdleTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -163,11 +160,6 @@ class NettyWebServerFactoryCustomizerTests {
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Duration idleTimeout = httpServer.configuration().idleTimeout();
 		assertThat(idleTimeout).isEqualTo(expected);
-	}
-
-	private void setServerProperties() {
-		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NONE);
-		this.serverProperties.setMaxHttpHeaderSize(null);
 	}
 
 }
