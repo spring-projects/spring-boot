@@ -113,7 +113,6 @@ public class WebFluxAutoConfiguration {
 	public static class WelcomePageConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		public RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
 				WebFluxProperties webFluxProperties, WebProperties webProperties) {
 			String[] staticLocations = webProperties.getResources().getStaticLocations();
@@ -131,7 +130,6 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })

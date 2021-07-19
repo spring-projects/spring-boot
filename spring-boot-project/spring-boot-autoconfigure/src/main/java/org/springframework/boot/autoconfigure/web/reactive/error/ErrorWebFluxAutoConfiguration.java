@@ -48,7 +48,6 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Scott Frederick
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)

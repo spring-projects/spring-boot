@@ -43,7 +43,6 @@ class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHand
 		configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 	}
 
-	@SuppressWarnings("deprecation")
 	private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
 		Resources.Chain.Strategy strategy = properties.getStrategy();
 		if (properties.isCompressed()) {
