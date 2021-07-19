@@ -19,8 +19,8 @@ package smoketest.jetty10;
 import javax.net.ssl.SSLContext;
 
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
-import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
@@ -61,7 +61,7 @@ public class Jetty10Http2OverTlsTests {
 		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.customHttp2().setTlsStrategy(tlsStrategy)
 				.build()) {
 			http2Client.start();
-			SimpleHttpRequest request = SimpleHttpRequests.get("https://localhost:" + this.port);
+			SimpleHttpRequest request = SimpleRequestBuilder.get("https://localhost:" + this.port).build();
 			request.setBody("Hello World", ContentType.TEXT_PLAIN);
 			SimpleHttpResponse response = http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
 
