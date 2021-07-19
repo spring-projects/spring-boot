@@ -19,19 +19,5 @@ dependencies {
 	runtimeOnly("org.eclipse.jetty.http2:http2-server")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation("org.eclipse.jetty:jetty-client")
-	testImplementation("org.eclipse.jetty.http2:http2-client")
-	testImplementation("org.eclipse.jetty.http2:http2-http-client-transport")
-}
-
-def buildingWithJava11OrLater() {
-	return project.hasProperty("toolchainVersion") || JavaVersion.current().java11Compatible
-}
-
-compileTestJava {
-	enabled = buildingWithJava11OrLater()
-}
-
-test {
-	enabled = buildingWithJava11OrLater()
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }
