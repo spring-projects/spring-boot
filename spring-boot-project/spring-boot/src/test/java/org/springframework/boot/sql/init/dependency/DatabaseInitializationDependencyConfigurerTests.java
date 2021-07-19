@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -71,7 +72,8 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@BeforeEach
 	void resetMocks() {
-		reset(MockDatabaseInitializerDetector.instance, OrderedMockDatabaseInitializerDetector.instance,
+		reset(MockDatabaseInitializerDetector.instance, OrderedNearLowestMockDatabaseInitializerDetector.instance,
+				OrderedLowestMockDatabaseInitializerDetector.instance,
 				MockedDependsOnDatabaseInitializationDetector.instance);
 	}
 
@@ -94,8 +96,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 					context.refresh();
 					assertThat(DependsOnCaptor.dependsOn).hasEntrySatisfying("bravo",
 							(dependencies) -> assertThat(dependencies).containsExactly("alpha"));
-					assertThat(DependsOnCaptor.dependsOn).hasEntrySatisfying("alpha",
-							(dependencies) -> assertThat(dependencies).isEmpty());
+					assertThat(DependsOnCaptor.dependsOn).doesNotContainKey("alpha");
 				});
 	}
 
@@ -140,24 +141,34 @@ class DatabaseInitializationDependencyConfigurerTests {
 	@Test
 	void whenDependenciesAreConfiguredDetectedDatabaseInitializersAreInitializedInCorrectOrder() {
 		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo1 = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo2 = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
 		BeanDefinition charlie = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
-				OrderedMockDatabaseInitializerDetector.class, MockedDependsOnDatabaseInitializationDetector.class),
+		BeanDefinition delta = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		performDetection(
+				Arrays.asList(MockDatabaseInitializerDetector.class, OrderedLowestMockDatabaseInitializerDetector.class,
+						OrderedNearLowestMockDatabaseInitializerDetector.class,
+						MockedDependsOnDatabaseInitializationDetector.class),
 				(context) -> {
 					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
 							.willReturn(Collections.singleton("alpha"));
-					given(OrderedMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("bravo"));
+					given(OrderedNearLowestMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(new LinkedHashSet<>(Arrays.asList("bravo1", "bravo2")));
+					given(OrderedLowestMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(new LinkedHashSet<>(Arrays.asList("charlie")));
 					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("charlie"));
+							.willReturn(Collections.singleton("delta"));
 					context.registerBeanDefinition("alpha", alpha);
-					context.registerBeanDefinition("bravo", bravo);
+					context.registerBeanDefinition("bravo1", bravo1);
+					context.registerBeanDefinition("bravo2", bravo2);
 					context.registerBeanDefinition("charlie", charlie);
+					context.registerBeanDefinition("delta", delta);
 					context.register(DependencyConfigurerConfiguration.class);
 					context.refresh();
-					assertThat(charlie.getDependsOn()).containsExactly("alpha", "bravo");
-					assertThat(bravo.getDependsOn()).containsExactly("alpha");
+					assertThat(delta.getDependsOn()).containsExactlyInAnyOrder("alpha", "bravo1", "bravo2", "charlie");
+					assertThat(charlie.getDependsOn()).containsExactly("bravo1", "bravo2");
+					assertThat(bravo1.getDependsOn()).containsExactly("alpha");
+					assertThat(bravo2.getDependsOn()).containsExactly("alpha");
 					assertThat(alpha.getDependsOn()).isNullOrEmpty();
 				});
 	}
@@ -227,7 +238,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	}
 
-	static class OrderedMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
+	static class OrderedLowestMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
 		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
@@ -239,6 +250,22 @@ class DatabaseInitializationDependencyConfigurerTests {
 		@Override
 		public int getOrder() {
 			return Ordered.LOWEST_PRECEDENCE;
+		}
+
+	}
+
+	static class OrderedNearLowestMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
+
+		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+
+		@Override
+		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
+			return instance.detect(beanFactory);
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE - 100;
 		}
 
 	}
