@@ -23,7 +23,6 @@ dependencies {
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.h2database:h2")
-	optional("com.influxdb:influxdb-client-java")
 	optional("com.nimbusds:oauth2-oidc-sdk")
 	optional("com.oracle.database.jdbc:ojdbc8")
 	optional("com.oracle.database.jdbc:ucp")
