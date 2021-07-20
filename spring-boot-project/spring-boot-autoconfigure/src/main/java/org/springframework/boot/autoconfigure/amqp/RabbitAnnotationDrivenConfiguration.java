@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.amqp;
 import java.util.stream.Collectors;
 
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
@@ -48,14 +51,23 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
+	private final ObjectProvider<ContainerCustomizer<SimpleMessageListenerContainer>> simpleContainerCustomizers;
+
+	private final ObjectProvider<ContainerCustomizer<DirectMessageListenerContainer>> directContainerCustomizers;
+
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
-			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers, RabbitProperties properties) {
+			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
+			ObjectProvider<ContainerCustomizer<SimpleMessageListenerContainer>> simpleContainerCustomizers,
+			ObjectProvider<ContainerCustomizer<DirectMessageListenerContainer>> directContainerCustomizers,
+			RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
+		this.simpleContainerCustomizers = simpleContainerCustomizers;
+		this.directContainerCustomizers = directContainerCustomizers;
 		this.properties = properties;
 	}
 
@@ -79,6 +91,7 @@ class RabbitAnnotationDrivenConfiguration {
 			SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
+		factory.setContainerCustomizer(this.simpleContainerCustomizers.getIfUnique());
 		return factory;
 	}
 
@@ -101,6 +114,7 @@ class RabbitAnnotationDrivenConfiguration {
 			DirectRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
+		factory.setContainerCustomizer(this.directContainerCustomizers.getIfUnique());
 		return factory;
 	}
 
