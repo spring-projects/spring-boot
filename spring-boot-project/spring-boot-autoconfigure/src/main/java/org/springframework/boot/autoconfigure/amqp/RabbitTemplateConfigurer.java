@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,16 +63,18 @@ public class RabbitTemplateConfigurer {
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
+	 * @since 2.6.0
 	 */
-	protected void setMessageConverter(MessageConverter messageConverter) {
+	public void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
 	/**
 	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
 	 * @param retryTemplateCustomizers the retry template customizers
+	 * @since 2.6.0
 	 */
-	protected void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+	public void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 
