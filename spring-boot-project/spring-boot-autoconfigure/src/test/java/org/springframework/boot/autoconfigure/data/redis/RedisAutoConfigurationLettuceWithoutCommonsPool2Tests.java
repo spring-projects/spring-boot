@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("commons-pool2-*.jar")
-public class RedisAutoConfigurationLettuceWithoutCommonsPool2Tests {
+class RedisAutoConfigurationLettuceWithoutCommonsPool2Tests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
