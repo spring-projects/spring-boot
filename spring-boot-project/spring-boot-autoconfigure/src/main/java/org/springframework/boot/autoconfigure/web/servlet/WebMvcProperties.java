@@ -240,7 +240,6 @@ public class WebMvcProperties {
 		return this.pathmatch;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void checkConfiguration() {
 		if (this.getPathmatch().getMatchingStrategy() == MatchingStrategy.PATH_PATTERN_PARSER) {
 			if (this.getPathmatch().isUseSuffixPattern()) {
