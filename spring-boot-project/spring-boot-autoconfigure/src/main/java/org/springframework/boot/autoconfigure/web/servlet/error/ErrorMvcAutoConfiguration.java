@@ -122,7 +122,6 @@ public class ErrorMvcAutoConfiguration {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, WebMvcProperties.class })
 	static class DefaultErrorViewResolverConfiguration {
