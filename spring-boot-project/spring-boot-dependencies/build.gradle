@@ -1416,6 +1416,13 @@ bom {
 			]
 		}
 	}
+	library("Rabbit Stream Client", "0.3.0") {
+		group("com.rabbitmq") {
+			modules = [
+					"stream-client"
+			]
+		}
+	}
 	library("Reactive Streams", "1.0.3") {
 		group("org.reactivestreams") {
 			modules = [
@@ -1644,6 +1651,7 @@ bom {
 			modules = [
 				"spring-amqp",
 				"spring-rabbit",
+				"spring-rabbit-stream",
 				"spring-rabbit-junit",
 				"spring-rabbit-test"
 			]

@@ -51,6 +51,8 @@ public class RabbitProperties {
 
 	private static final int DEFAULT_PORT_SECURE = 5671;
 
+	private static final int DEFAULT_STREAM_PORT = 5552;
+
 	/**
 	 * RabbitMQ host. Ignored if an address is set.
 	 */
@@ -136,6 +138,8 @@ public class RabbitProperties {
 	private final Listener listener = new Listener();
 
 	private final Template template = new Template();
+
+	private final Stream stream = new Stream();
 
 	private List<Address> parsedAddresses;
 
@@ -359,6 +363,10 @@ public class RabbitProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public Stream getStream() {
+		return this.stream;
 	}
 
 	public class Ssl {
@@ -629,7 +637,12 @@ public class RabbitProperties {
 		 * Container where the listener is invoked directly on the RabbitMQ consumer
 		 * thread.
 		 */
-		DIRECT
+		DIRECT,
+
+		/**
+		 * Container that uses the RabbitMQ Stream Client.
+		 */
+		STREAM
 
 	}
 
@@ -643,6 +656,8 @@ public class RabbitProperties {
 		private final SimpleContainer simple = new SimpleContainer();
 
 		private final DirectContainer direct = new DirectContainer();
+
+		private final StreamContainer stream = new StreamContainer();
 
 		public ContainerType getType() {
 			return this.type;
@@ -660,14 +675,30 @@ public class RabbitProperties {
 			return this.direct;
 		}
 
+		public StreamContainer getStream() {
+			return this.stream;
+		}
+
 	}
 
-	public abstract static class AmqpContainer {
+	public abstract static class BaseContainer {
 
 		/**
 		 * Whether to start the container automatically on startup.
 		 */
 		private boolean autoStartup = true;
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
+
+	}
+
+	public abstract static class AmqpContainer extends BaseContainer {
 
 		/**
 		 * Acknowledge mode of container.
@@ -700,14 +731,6 @@ public class RabbitProperties {
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
-
-		public boolean isAutoStartup() {
-			return this.autoStartup;
-		}
-
-		public void setAutoStartup(boolean autoStartup) {
-			this.autoStartup = autoStartup;
-		}
 
 		public AcknowledgeMode getAcknowledgeMode() {
 			return this.acknowledgeMode;
@@ -867,6 +890,24 @@ public class RabbitProperties {
 
 		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
 			this.missingQueuesFatal = missingQueuesFatal;
+		}
+
+	}
+
+	public static class StreamContainer extends BaseContainer {
+
+		/**
+		 * When true, the container factory will create containers that support listeners
+		 * that consume native stream messages instead of spring-amqp {@code Message}s.
+		 */
+		boolean nativeListener;
+
+		public boolean isNativeListener() {
+			return this.nativeListener;
+		}
+
+		public void setNativeListener(boolean nativeListener) {
+			this.nativeListener = nativeListener;
 		}
 
 	}
@@ -1124,6 +1165,64 @@ public class RabbitProperties {
 
 		private boolean determineSslEnabled(boolean sslEnabled) {
 			return (this.secureConnection != null) ? this.secureConnection : sslEnabled;
+		}
+
+	}
+
+	public static final class Stream {
+
+		/**
+		 * Host of a RabbitMQ instance with the Stream Plugin Enabled
+		 */
+		private String host = "localhost";
+
+		/**
+		 * Stream port of a RabbitMQ instance with the Stream Plugin Enabled
+		 */
+		private int port = DEFAULT_STREAM_PORT;
+
+		/**
+		 * Login user to authenticate to the broker. If not set
+		 * {@code spring.rabbitmq.username} will be used.
+		 */
+		private String username;
+
+		/**
+		 * Login password to authenticate to the broker. If not set
+		 * {@code spring.rabbitmq.password} will be used.
+		 */
+		private String password;
+
+		public String getHost() {
+			return this.host;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
+		}
+
+		public int getPort() {
+			return this.port;
+		}
+
+		public void setPort(int port) {
+			this.port = port;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 	}
