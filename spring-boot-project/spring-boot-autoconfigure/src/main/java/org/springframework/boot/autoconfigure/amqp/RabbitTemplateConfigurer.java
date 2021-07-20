@@ -64,7 +64,7 @@ public class RabbitTemplateConfigurer {
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	protected void setMessageConverter(MessageConverter messageConverter) {
+	public void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -72,7 +72,7 @@ public class RabbitTemplateConfigurer {
 	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
 	 * @param retryTemplateCustomizers the retry template customizers
 	 */
-	protected void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+	public void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 
