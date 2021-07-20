@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,6 @@ class DevToolsHomePropertiesPostProcessorTests {
 		Properties properties = new Properties();
 		properties.put("uvw", "xyz");
 		writeFile(properties, this.customHome, ".config/spring-boot/spring-boot-devtools.properties");
-		Properties systemProperties = new Properties();
-		systemProperties.setProperty("spring.devtools.home", this.customHome.getAbsolutePath());
 		ConfigurableEnvironment environment = getPostProcessedEnvironment(
 				Collections.singletonMap("SPRING_DEVTOOLS_HOME", this.customHome.getAbsolutePath()));
 		assertThat(environment.getProperty("uvw")).isEqualTo("xyz");
