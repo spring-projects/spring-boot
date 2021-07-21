@@ -185,7 +185,6 @@ class MetricsRestTemplateCustomizerTests {
 		assertThat(restTemplate.getForObject(URI.create("/second/456"), String.class)).isEqualTo("OK");
 		this.registry.get("http.client.requests").tags("uri", "/second/456").timer();
 		this.mockServer.verify();
-
 	}
 
 	private static final class TestInterceptor implements ClientHttpRequestInterceptor {
