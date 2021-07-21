@@ -162,7 +162,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			List<String> names = SpringFactoriesLoader.loadFactoryNames(type, beanFactory.getBeanClassLoader());
 			Instantiator<T> instantiator = new Instantiator<>(type,
 					(availableParameters) -> availableParameters.add(Environment.class, this.environment));
-			return instantiator.instantiate(names);
+			return instantiator.instantiate(beanFactory.getBeanClassLoader(), names);
 		}
 
 		private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
