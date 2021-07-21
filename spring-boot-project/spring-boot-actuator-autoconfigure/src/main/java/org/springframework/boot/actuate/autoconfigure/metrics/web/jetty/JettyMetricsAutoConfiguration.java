@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,25 +46,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class })
+@ConditionalOnBean(MeterRegistry.class)
 @AutoConfigureAfter(CompositeMeterRegistryAutoConfiguration.class)
 public class JettyMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean({ JettyServerThreadPoolMetrics.class, JettyServerThreadPoolMetricsBinder.class })
 	public JettyServerThreadPoolMetricsBinder jettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyServerThreadPoolMetricsBinder(meterRegistry);
 	}
 
 	@Bean
-	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean({ JettyConnectionMetrics.class, JettyConnectionMetricsBinder.class })
 	public JettyConnectionMetricsBinder jettyConnectionMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyConnectionMetricsBinder(meterRegistry);
 	}
 
 	@Bean
-	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean({ JettySslHandshakeMetrics.class, JettySslHandshakeMetricsBinder.class })
 	@ConditionalOnProperty(name = "server.ssl.enabled", havingValue = "true")
 	public JettySslHandshakeMetricsBinder jettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {

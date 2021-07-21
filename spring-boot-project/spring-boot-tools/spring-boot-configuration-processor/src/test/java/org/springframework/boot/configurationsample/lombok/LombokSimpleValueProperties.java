@@ -24,7 +24,7 @@ import lombok.Value;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Configuration properties using lombok @Value.
+ * Configuration properties using Lombok {@code @Value}.
  *
  * @author Mark Jeffrey
  */

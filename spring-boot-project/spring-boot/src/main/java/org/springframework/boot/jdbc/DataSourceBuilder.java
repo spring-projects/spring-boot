@@ -174,7 +174,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		Set<DataSourceProperty> applied = new HashSet<>();
 		for (DataSourceProperty property : DataSourceProperty.values()) {
 			String value = this.values.get(property);
-			if (!this.values.containsKey(property) && deriveFromProperties != null && properties.canSet(property)) {
+			if (value == null && deriveFromProperties != null && properties.canSet(property)) {
 				value = deriveFromProperties.get(this.deriveFrom, property);
 			}
 			if (value != null) {
@@ -262,7 +262,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		PASSWORD(false, "password");
 
-		private boolean optional;
+		private final boolean optional;
 
 		private final String[] names;
 
