@@ -98,9 +98,8 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
-	 * given sources. Subclasses may override in order to provide a custom subclass of
-	 * {@link org.springframework.boot.SpringApplication}
+	 * Creates a new {@link SpringApplication} instance from the given sources. Subclasses
+	 * may override in order to provide a custom subclass of {@link SpringApplication}.
 	 * @param sources the sources
 	 * @return the {@link org.springframework.boot.SpringApplication} instance
 	 * @since 1.1.0

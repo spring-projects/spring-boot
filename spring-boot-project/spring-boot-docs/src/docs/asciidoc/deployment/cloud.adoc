@@ -359,7 +359,7 @@ See the blog post on https://boxfuse.com/blog/spring-boot-ec2.html[deploying Spr
 
 [[deployment.cloud.azure]]
 === Azure
-This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-ca/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-ca/azure/app-service/overview[Azure App Service].
+This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-us/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-us/azure/app-service/overview[Azure App Service].
 
 
 

@@ -48,8 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "server.http2.enabled=true", "server.ssl.enabled=true",
 				"server.ssl.keystore=classpath:sample.jks", "server.ssl.key-store-password=secret",
-				"server.ssl.key-password=password", "logging.level.org.eclipse.jetty=debug" })
-public class Jetty10Http2OverTlsTests {
+				"server.ssl.key-password=password" })
+class Jetty10Http2OverTlsTests {
 
 	@LocalServerPort
 	private int port;
