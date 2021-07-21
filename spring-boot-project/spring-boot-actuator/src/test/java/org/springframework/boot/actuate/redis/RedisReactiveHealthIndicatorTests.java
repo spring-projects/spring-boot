@@ -95,8 +95,6 @@ class RedisReactiveHealthIndicatorTests {
 
 	@Test
 	void healthWhenClusterStateIsFailShouldBeDown() {
-		Properties clusterProperties = new Properties();
-		clusterProperties.setProperty("cluster_state", "fail");
 		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("fail");
 		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
