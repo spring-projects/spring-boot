@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -39,7 +38,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.5.0
  */
-public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpolator>, MessageSourceAware {
+public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpolator> {
 
 	private static final Set<String> FALLBACKS;
 
@@ -49,25 +48,28 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
+
+	public MessageInterpolatorFactory() {
+		this(null);
+	}
 
 	/**
-	 * Sets the {@link MessageSource} used to create
-	 * {@link MessageSourceInterpolatorDelegate}.
-	 * @param messageSource the message source that resolves any message parameters before
-	 * final interpolation
+	 * Creates a new {@link MessageInterpolatorFactory} that will produce a
+	 * {@link MessageInterpolator} that uses the given {@code messageSource} to resolve
+	 * any message parameters before final interpolation.
+	 * @param messageSource message source to be used by the interpolator
+	 * @since 2.6.0
 	 */
-	@Override
-	public void setMessageSource(MessageSource messageSource) {
+	public MessageInterpolatorFactory(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
 	@Override
 	public MessageInterpolator getObject() throws BeansException {
 		MessageInterpolator messageInterpolator = getMessageInterpolator();
-		MessageSource messageSource = this.messageSource;
-		if (messageSource != null) {
-			return new MessageSourceInterpolatorDelegate(messageSource, messageInterpolator);
+		if (this.messageSource != null) {
+			return new MessageSourceMessageInterpolator(this.messageSource, messageInterpolator);
 		}
 		return messageInterpolator;
 	}

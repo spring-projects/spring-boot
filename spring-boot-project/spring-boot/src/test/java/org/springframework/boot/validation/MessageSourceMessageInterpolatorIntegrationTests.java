@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Tests for {@link MessageSourceInterpolatorDelegate}.
+ * Integration tests for {@link MessageSourceMessageInterpolator}.
  *
  * @author Dmytro Nosan
  */
-class MessageSourceInterpolatorDelegateTests {
+class MessageSourceMessageInterpolatorIntegrationTests {
 
 	private final Validator validator = buildValidator();
+
+	@NotNull
+	private String defaultMessage;
 
 	@NotNull(message = "{null}")
 	private String nullable;
@@ -68,6 +71,11 @@ class MessageSourceInterpolatorDelegateTests {
 	private String escapeEscape;
 
 	@Test
+	void defaultMessage() {
+		assertThat(validate("defaultMessage")).containsExactly("must not be null");
+	}
+
+	@Test
 	void nullable() {
 		assertThat(validate("nullable")).containsExactly("must not be null");
 	}
@@ -79,7 +87,8 @@ class MessageSourceInterpolatorDelegateTests {
 
 	@Test
 	void recursion() {
-		assertThatThrownBy(() -> validate("recursion")).hasStackTraceContaining("Circular reference '{recursion}'");
+		assertThatThrownBy(() -> validate("recursion"))
+				.hasStackTraceContaining("Circular reference '{recursion -> middle -> recursion}'");
 	}
 
 	@Test
@@ -121,13 +130,14 @@ class MessageSourceInterpolatorDelegateTests {
 		StaticMessageSource messageSource = new StaticMessageSource();
 		messageSource.addMessage("blank", locale, "{null} or {javax.validation.constraints.NotBlank.message}");
 		messageSource.addMessage("null", locale, "{javax.validation.constraints.NotNull.message}");
-		messageSource.addMessage("recursion", locale, "{recursion}");
-		MessageInterpolatorFactory messageInterpolatorFactory = new MessageInterpolatorFactory();
-		messageInterpolatorFactory.setMessageSource(messageSource);
-		LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
-		validatorFactory.setMessageInterpolator(messageInterpolatorFactory.getObject());
-		validatorFactory.afterPropertiesSet();
-		return validatorFactory.getValidator();
+		messageSource.addMessage("recursion", locale, "{middle}");
+		messageSource.addMessage("middle", locale, "{recursion}");
+		MessageInterpolatorFactory messageInterpolatorFactory = new MessageInterpolatorFactory(messageSource);
+		try (LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean()) {
+			validatorFactory.setMessageInterpolator(messageInterpolatorFactory.getObject());
+			validatorFactory.afterPropertiesSet();
+			return validatorFactory.getValidator();
+		}
 	}
 
 }

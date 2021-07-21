@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,10 @@ class MessageInterpolatorFactoryWithoutElIntegrationTests {
 
 	@Test
 	void getObjectShouldUseMessageSourceMessageInterpolatorDelegateWithFallback() {
-		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
 		MessageSource messageSource = mock(MessageSource.class);
-		interpolatorFactory.setMessageSource(messageSource);
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(messageSource);
 		MessageInterpolator interpolator = interpolatorFactory.getObject();
-		assertThat(interpolator).isInstanceOf(MessageSourceInterpolatorDelegate.class);
+		assertThat(interpolator).isInstanceOf(MessageSourceMessageInterpolator.class);
 		assertThat(interpolator).hasFieldOrPropertyWithValue("messageSource", messageSource);
 		assertThat(ReflectionTestUtils.getField(interpolator, "messageInterpolator"))
 				.isInstanceOf(ParameterMessageInterpolator.class);

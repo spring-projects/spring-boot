@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -130,11 +131,10 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		}
 	}
 
-	private static Validator create(ApplicationContext applicationContext) {
+	private static Validator create(MessageSource messageSource) {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
 		try {
-			MessageInterpolatorFactory factory = new MessageInterpolatorFactory();
-			factory.setMessageSource(applicationContext);
+			MessageInterpolatorFactory factory = new MessageInterpolatorFactory(messageSource);
 			validator.setMessageInterpolator(factory.getObject());
 		}
 		catch (ValidationException ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class ValidationAutoConfiguration {
 	@ConditionalOnMissingBean(Validator.class)
 	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext) {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
-		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
-		interpolatorFactory.setMessageSource(applicationContext);
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;
 	}
