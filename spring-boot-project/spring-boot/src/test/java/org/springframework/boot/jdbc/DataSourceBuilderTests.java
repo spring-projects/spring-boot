@@ -331,6 +331,34 @@ class DataSourceBuilderTests {
 		assertThat(built.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
 	}
 
+	@Test // gh-27295
+	void buildWhenDerivedFromCustomType() {
+		CustomDataSource dataSource = new CustomDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource).username("alice")
+				.password("confidential");
+		CustomDataSource testSource = (CustomDataSource) builder.build();
+		assertThat(testSource).isNotSameAs(dataSource);
+		assertThat(testSource.getUsername()).isEqualTo("alice");
+		assertThat(testSource.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+		assertThat(testSource.getPassword()).isEqualTo("confidential");
+	}
+
+	@Test // gh-27295
+	void buildWhenDerivedFromCustomTypeWithTypeChange() {
+		CustomDataSource dataSource = new CustomDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource).type(SimpleDriverDataSource.class);
+		SimpleDriverDataSource testSource = (SimpleDriverDataSource) builder.build();
+		assertThat(testSource.getUsername()).isEqualTo("test");
+		assertThat(testSource.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+		assertThat(testSource.getPassword()).isEqualTo("secret");
+	}
+
 	final class HidePackagesClassLoader extends URLClassLoader {
 
 		private final String[] hiddenPackages;
