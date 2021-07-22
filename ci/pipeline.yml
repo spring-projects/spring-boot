@@ -93,7 +93,7 @@ resource_types:
   type: registry-image
   source:
     repository: springio/artifactory-resource
-    tag: 0.0.15-SNAPSHOT
+    tag: 0.0.15
 - name: pull-request
   type: registry-image
   source:
