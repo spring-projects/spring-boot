@@ -611,6 +611,7 @@ jobs:
     - get: ci-image
     - get: git-repo
     - get: artifactory-repo
+      trigger: true
       passed: [promote-release]
       params:
         download_artifacts: false
