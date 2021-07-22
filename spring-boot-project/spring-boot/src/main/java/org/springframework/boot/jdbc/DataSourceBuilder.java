@@ -281,17 +281,22 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 
 		Method findSetter(Class<?> type) {
-			return extracted("set", type);
+			return extracted("set", type, true);
 		}
 
 		Method findGetter(Class<?> type) {
-			return extracted("get", type);
+			return extracted("get", type, false);
 		}
 
-		private Method extracted(String prefix, Class<?> type) {
+		private Method extracted(String prefix, Class<?> type, boolean hasParameter) {
 			for (String candidate : this.names) {
-				Method method = ReflectionUtils.findMethod(type, prefix + StringUtils.capitalize(candidate),
-						String.class);
+				Method method;
+				if (hasParameter) {
+					method = ReflectionUtils.findMethod(type, prefix + StringUtils.capitalize(candidate), String.class);
+				}
+				else {
+					method = ReflectionUtils.findMethod(type, prefix + StringUtils.capitalize(candidate));
+				}
 				if (method != null) {
 					return method;
 				}
