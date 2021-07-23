@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.function.Supplier;
 
 import javax.servlet.ServletException;
@@ -168,7 +169,7 @@ class WebMvcEndpointExposureIntegrationTests {
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
 				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1)).build();
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).exchangeStrategies(exchangeStrategies)
-				.build();
+				.responseTimeout(Duration.ofMinutes(5)).build();
 	}
 
 	private boolean isExposed(WebTestClient client, HttpMethod method, String path) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.test.context;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -67,8 +69,8 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 	@Test
 	void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
-		WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).build().get().uri("/").exchange()
-				.expectBody(String.class).isEqualTo("Hello World");
+		WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).responseTimeout(Duration.ofMinutes(5))
+				.build().get().uri("/").exchange().expectBody(String.class).isEqualTo("Hello World");
 	}
 
 	@Test
