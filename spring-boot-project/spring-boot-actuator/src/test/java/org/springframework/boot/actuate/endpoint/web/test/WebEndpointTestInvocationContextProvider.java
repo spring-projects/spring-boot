@@ -126,7 +126,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 	static class WebEndpointsInvocationContext
 			implements TestTemplateInvocationContext, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-		private static final Duration TIMEOUT = Duration.ofMinutes(6);
+		private static final Duration TIMEOUT = Duration.ofMinutes(5);
 
 		private final String name;
 

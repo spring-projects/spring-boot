@@ -79,7 +79,8 @@ class RSocketWebSocketNettyRouteProviderTests {
 	}
 
 	private WebTestClient createWebTestClient(WebServer server) {
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + server.getPort()).build();
+		return WebTestClient.bindToServer().baseUrl("http://localhost:" + server.getPort())
+				.responseTimeout(Duration.ofMinutes(5)).build();
 	}
 
 	private RSocketRequester createRSocketRequester(ApplicationContext context, WebServer server) {
