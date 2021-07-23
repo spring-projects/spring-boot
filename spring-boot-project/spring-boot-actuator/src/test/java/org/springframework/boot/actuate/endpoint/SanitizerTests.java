@@ -52,8 +52,8 @@ class SanitizerTests {
 	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
+		assertThat(sanitizer.sanitize(key, "view-source://user:password@localhost:8080"))
+				.isEqualTo("view-source://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")

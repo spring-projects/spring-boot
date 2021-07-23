@@ -50,7 +50,7 @@ public class Sanitizer {
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
 			Arrays.asList("uri", "uris", "address", "addresses"));
 
-	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("\\[?[A-Za-z]+://.+:(.*)@.+$");
+	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("^[A-Za-z][A-Za-z0-9\\+\\.\\-]+://.+:(.*)@.+$");
 
 	private Pattern[] keysToSanitize;
 
