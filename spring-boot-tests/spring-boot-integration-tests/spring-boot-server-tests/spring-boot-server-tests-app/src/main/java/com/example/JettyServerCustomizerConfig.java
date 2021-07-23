@@ -18,6 +18,7 @@ package com.example;
 
 import org.eclipse.jetty.server.handler.ContextHandler;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Madhura Bhave
  */
+@ConditionalOnClass(name = {"org.eclipse.jetty.server.handler.ContextHandler"})
 @Configuration(proxyBeanMethods = false)
 public class JettyServerCustomizerConfig {
 
