@@ -88,7 +88,7 @@ import org.springframework.core.io.ResourceLoader;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
 @EnableConfigurationProperties(RabbitProperties.class)
-@Import({ RabbitAnnotationDrivenConfiguration.class, RabbitStreamAutoConfiguration.class })
+@Import({ RabbitAnnotationDrivenConfiguration.class, RabbitStreamConfiguration.class })
 public class RabbitAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

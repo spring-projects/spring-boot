@@ -1416,14 +1416,14 @@ bom {
 			]
 		}
 	}
-	library("RabbitMQ AMQP Client", "5.13.0") {
+	library("Rabbit AMQP Client", "5.13.0") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
 			]
 		}
 	}
-	library("RabbitMQ Stream Client", "0.2.0-SNAPSHOT") {
+	library("Rabbit Stream Client", "0.2.0-SNAPSHOT") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"

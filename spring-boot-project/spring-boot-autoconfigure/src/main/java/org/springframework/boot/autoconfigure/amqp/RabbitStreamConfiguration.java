@@ -40,7 +40,7 @@ import org.springframework.rabbit.stream.listener.StreamListenerContainer;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableRabbit.class)
 @ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
-public class RabbitStreamAutoConfiguration {
+public class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")

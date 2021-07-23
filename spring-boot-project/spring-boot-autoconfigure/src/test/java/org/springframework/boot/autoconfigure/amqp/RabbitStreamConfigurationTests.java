@@ -36,12 +36,11 @@ import org.springframework.rabbit.stream.listener.StreamListenerContainer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitStreamAutoConfiguration}.
+ * Tests for {@link RabbitStreamConfiguration}.
  *
  * @author Gary Russell
  */
-@ExtendWith(OutputCaptureExtension.class)
-class RabbitStreamAutoConfigurationTests {
+class RabbitStreamConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
