@@ -62,8 +62,6 @@ class EmbeddedServerContainerInvocationContextProvider
 	private static final BuildOutput buildOutput = new BuildOutput(
 			EmbeddedServerContainerInvocationContextProvider.class);
 
-	private final Map<String, ApplicationBuilder> builderCache = new HashMap<>();
-
 	private final Map<String, AbstractApplicationLauncher> launcherCache = new HashMap<>();
 
 	private final Path tempDir;
@@ -83,7 +81,7 @@ class EmbeddedServerContainerInvocationContextProvider
 				.getAnnotation(EmbeddedServletContainerTest.class);
 		return CONTAINERS
 				.stream().map(
-						(container) -> getApplicationBuilder(annotation, container))
+						(container) -> getApplication(annotation, container))
 				.flatMap(
 						(builder) -> Stream
 								.of(annotation.launchers()).map(
@@ -103,28 +101,21 @@ class EmbeddedServerContainerInvocationContextProvider
 	private void cleanupCaches() {
 		this.launcherCache.values().forEach(AbstractApplicationLauncher::destroyProcess);
 		this.launcherCache.clear();
-		this.builderCache.clear();
 	}
 
-	private AbstractApplicationLauncher getAbstractApplicationLauncher(ApplicationBuilder builder,
+	private AbstractApplicationLauncher getAbstractApplicationLauncher(Application application,
 			Class<? extends AbstractApplicationLauncher> launcherClass) {
-		String cacheKey = builder.getContainer() + ":" + builder.getPackaging() + ":" + launcherClass.getName();
+		String cacheKey = application.getContainer() + ":" + application.getPackaging() + ":" + launcherClass.getName();
 		if (this.launcherCache.containsKey(cacheKey)) {
 			return this.launcherCache.get(cacheKey);
 		}
-		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, builder, buildOutput);
+		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application, buildOutput);
 		this.launcherCache.put(cacheKey, launcher);
 		return launcher;
 	}
 
-	private ApplicationBuilder getApplicationBuilder(EmbeddedServletContainerTest annotation, String container) {
-		String cacheKey = container + ":" + annotation.packaging();
-		if (this.builderCache.containsKey(cacheKey)) {
-			return this.builderCache.get(cacheKey);
-		}
-		ApplicationBuilder builder = new ApplicationBuilder(this.tempDir, annotation.packaging(), container);
-		this.builderCache.put(cacheKey, builder);
-		return builder;
+	private Application getApplication(EmbeddedServletContainerTest annotation, String container) {
+		return new Application(annotation.packaging(), container);
 	}
 
 	static class EmbeddedServletContainerInvocationContext implements TestTemplateInvocationContext, ParameterResolver {

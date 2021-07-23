@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,35 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import java.io.File;
 
 /**
- * Provides access to the current Boot version by referring to {@code gradle.properties}.
+ * An pre-built application that can be launched.
  *
  * @author Andy Wilkinson
  */
-final class Versions {
+class Application {
 
-	private Versions() {
+	private final String packaging;
+
+	private final String container;
+
+	Application(String packaging, String container) {
+		this.packaging = packaging;
+		this.container = container;
 	}
 
-	static String getBootVersion() {
-		Properties gradleProperties = new Properties();
-		try (FileInputStream input = new FileInputStream("../../../gradle.properties")) {
-			gradleProperties.load(input);
-			return gradleProperties.getProperty("version");
-		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+	String getPackaging() {
+		return this.packaging;
+	}
+
+	String getContainer() {
+		return this.container;
+	}
+
+	File getArchive() {
+		return new File("build/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-" + this.container
+				+ "." + this.packaging);
 	}
 
 }

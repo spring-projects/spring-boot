@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  */
 abstract class AbstractApplicationLauncher implements BeforeEachCallback {
 
-	private final ApplicationBuilder applicationBuilder;
+	private final Application application;
 
 	private final BuildOutput buildOutput;
 
@@ -49,8 +49,8 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback {
 
 	private int httpPort;
 
-	protected AbstractApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
-		this.applicationBuilder = applicationBuilder;
+	protected AbstractApplicationLauncher(Application application, BuildOutput buildOutput) {
+		this.application = application;
 		this.buildOutput = buildOutput;
 	}
 
@@ -87,7 +87,8 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback {
 		File workingDirectory = getWorkingDirectory();
 		File serverPortFile = new File(this.buildOutput.getRootLocation(), "server.port");
 		serverPortFile.delete();
-		File archive = this.applicationBuilder.buildApplication();
+		File archive = new File("build/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-"
+				+ this.application.getContainer() + "." + this.application.getPackaging());
 		List<String> arguments = new ArrayList<>();
 		arguments.add(System.getProperty("java.home") + "/bin/java");
 		arguments.addAll(getArguments(archive, serverPortFile));
