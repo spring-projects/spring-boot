@@ -40,8 +40,8 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 
 	private final Supplier<File> exploded;
 
-	ExplodedApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
-		super(applicationBuilder, buildOutput);
+	ExplodedApplicationLauncher(Application application, BuildOutput buildOutput) {
+		super(application, buildOutput);
 		this.exploded = () -> new File(buildOutput.getRootLocation(), "exploded");
 	}
 

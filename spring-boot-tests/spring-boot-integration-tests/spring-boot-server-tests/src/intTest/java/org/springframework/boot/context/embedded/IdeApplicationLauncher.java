@@ -35,34 +35,46 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link AbstractApplicationLauncher} that launches a Spring Boot application with a
- * classpath similar to that used when run with Maven or Gradle.
+ * classpath similar to that used when run in an IDE.
  *
  * @author Andy Wilkinson
  */
-class BootRunApplicationLauncher extends AbstractApplicationLauncher {
+class IdeApplicationLauncher extends AbstractApplicationLauncher {
 
 	private final File exploded;
 
-	BootRunApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
-		super(applicationBuilder, buildOutput);
-		this.exploded = new File(buildOutput.getRootLocation(), "run");
+	IdeApplicationLauncher(Application application, BuildOutput buildOutput) {
+		super(application, buildOutput);
+		this.exploded = new File(buildOutput.getRootLocation(), "the+ide application");
+	}
+
+	@Override
+	protected File getWorkingDirectory() {
+		return this.exploded;
+	}
+
+	@Override
+	protected String getDescription(String packaging) {
+		return "IDE run " + packaging + " project";
 	}
 
 	@Override
 	protected List<String> getArguments(File archive, File serverPortFile) {
 		try {
-			explodeArchive(archive);
+			explodeArchive(archive, this.exploded);
 			deleteLauncherClasses();
-			File targetClasses = populateTargetClasses(archive);
+			File builtClasses = populateBuiltClasses(archive);
 			File dependencies = populateDependencies(archive);
+			File resourcesProject = explodedResourcesProject(dependencies);
 			if (archive.getName().endsWith(".war")) {
 				populateSrcMainWebapp();
 			}
 			List<String> classpath = new ArrayList<>();
-			classpath.add(targetClasses.getAbsolutePath());
+			classpath.add(builtClasses.getAbsolutePath());
 			for (File dependency : dependencies.listFiles()) {
 				classpath.add(dependency.getAbsolutePath());
 			}
+			classpath.add(resourcesProject.getAbsolutePath());
 			return Arrays.asList("-cp", StringUtils.collectionToDelimitedString(classpath, File.pathSeparator),
 					"com.example.ResourceHandlingApplication", serverPortFile.getAbsolutePath());
 		}
@@ -71,11 +83,7 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 		}
 	}
 
-	private void deleteLauncherClasses() {
-		FileSystemUtils.deleteRecursively(new File(this.exploded, "org"));
-	}
-
-	private File populateTargetClasses(File archive) throws IOException {
+	private File populateBuiltClasses(File archive) throws IOException {
 		File builtClasses = new File(this.exploded, "built/classes");
 		builtClasses.mkdirs();
 		File source = new File(this.exploded, getClassesPath(archive));
@@ -98,6 +106,14 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 		return dependencies;
 	}
 
+	private File explodedResourcesProject(File dependencies) throws IOException {
+		File resourcesProject = new File(this.exploded, "resources-project/built/classes");
+		File resourcesJar = new File(dependencies, "spring-boot-server-tests-app-resources.jar");
+		explodeArchive(resourcesJar, resourcesProject);
+		resourcesJar.delete();
+		return resourcesProject;
+	}
+
 	private void populateSrcMainWebapp() throws IOException {
 		File srcMainWebapp = new File(this.exploded, "src/main/webapp");
 		srcMainWebapp.mkdirs();
@@ -106,22 +122,26 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 		source.delete();
 	}
 
+	private void deleteLauncherClasses() {
+		FileSystemUtils.deleteRecursively(new File(this.exploded, "org"));
+	}
+
 	private String getClassesPath(File archive) {
 		return (archive.getName().endsWith(".jar") ? "BOOT-INF/classes" : "WEB-INF/classes");
 	}
 
 	private List<String> getLibPaths(File archive) {
 		return (archive.getName().endsWith(".jar") ? Collections.singletonList("BOOT-INF/lib")
-				: Arrays.asList("WEB-INF/lib", "WEB-INF/lib-provided"));
+				: Arrays.asList("WEB-INF/lib"));
 	}
 
-	private void explodeArchive(File archive) throws IOException {
-		FileSystemUtils.deleteRecursively(this.exploded);
+	private void explodeArchive(File archive, File destination) throws IOException {
+		FileSystemUtils.deleteRecursively(destination);
 		JarFile jarFile = new JarFile(archive);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry jarEntry = entries.nextElement();
-			File extracted = new File(this.exploded, jarEntry.getName());
+			File extracted = new File(destination, jarEntry.getName());
 			if (jarEntry.isDirectory()) {
 				extracted.mkdirs();
 			}
@@ -132,16 +152,6 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 			}
 		}
 		jarFile.close();
-	}
-
-	@Override
-	protected File getWorkingDirectory() {
-		return this.exploded;
-	}
-
-	@Override
-	protected String getDescription(String packaging) {
-		return "build system run " + packaging + " project";
 	}
 
 }

@@ -30,8 +30,8 @@ import org.springframework.boot.testsupport.BuildOutput;
  */
 class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 
-	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
-		super(applicationBuilder, buildOutput);
+	PackagedApplicationLauncher(Application application, BuildOutput buildOutput) {
+		super(application, buildOutput);
 	}
 
 	@Override
