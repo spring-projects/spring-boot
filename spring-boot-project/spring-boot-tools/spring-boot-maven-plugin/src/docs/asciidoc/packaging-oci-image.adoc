@@ -176,6 +176,14 @@ Where `<options>` can contain:
 (`spring-boot.build-image.publish`)
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
+| `network` +
+(`spring-boot.build-image.network`)
+| The network the build container will connect to. The value supplied for this option will be passed
+unvalidated as `HostConfig.NetworkMode` to the configuration which creates the build container,
+see https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate[Docker's engine API].
+Using this option is similar to running `docker build --network ...`.
+|
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.

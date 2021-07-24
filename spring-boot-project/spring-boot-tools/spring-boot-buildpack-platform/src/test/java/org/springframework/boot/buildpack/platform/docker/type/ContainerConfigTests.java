@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class ContainerConfigTests extends AbstractJsonTests {
 
@@ -59,6 +60,7 @@ class ContainerConfigTests extends AbstractJsonTests {
 			update.withBinding(Binding.from("bind-source", "bind-dest"));
 			update.withEnv("name1", "value1");
 			update.withEnv("name2", "value2");
+			update.withNetworkMode("test");
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		containerConfig.writeTo(outputStream);
