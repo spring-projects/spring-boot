@@ -62,6 +62,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class LifecycleTests {
 
@@ -186,6 +187,17 @@ class LifecycleTests {
 		createLifecycle().close();
 		verify(this.docker.volume()).delete(VolumeName.of("pack-layers-aaaaaaaaaa"), true);
 		verify(this.docker.volume()).delete(VolumeName.of("pack-app-aaaaaaaaaa"), true);
+	}
+
+	@Test
+	void executeWithNetworkExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest().withNetwork("test");
+		createLifecycle(request).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-network.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
 	private DockerApi mockDockerApi() {

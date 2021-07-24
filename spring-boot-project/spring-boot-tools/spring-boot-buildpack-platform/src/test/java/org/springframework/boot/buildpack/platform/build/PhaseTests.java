@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class PhaseTests {
 
@@ -56,6 +57,7 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
+		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -69,6 +71,7 @@ class PhaseTests {
 		verify(update).withBinding(Binding.from("/var/run/docker.sock", "/var/run/docker.sock"));
 		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
+		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -80,6 +83,7 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test", "-log-level", "debug");
 		verify(update).withLabel("author", "spring-boot");
+		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -91,6 +95,7 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
+		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -102,6 +107,7 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test", "a", "b", "c");
 		verify(update).withLabel("author", "spring-boot");
+		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -115,6 +121,7 @@ class PhaseTests {
 		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
 		verify(update).withBinding(Binding.from(volumeName, "/test"));
+		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -129,6 +136,19 @@ class PhaseTests {
 		verify(update).withLabel("author", "spring-boot");
 		verify(update).withEnv("name1", "value1");
 		verify(update).withEnv("name2", "value2");
+		verify(update).withNetworkMode(null);
+		verifyNoMoreInteractions(update);
+	}
+
+	@Test
+	void applyWhenWithNetworkModeUpdatesConfigurationWithNetworkMode() {
+		Phase phase = new Phase("test", true);
+		phase.withNetworkMode("test");
+		Update update = mock(Update.class);
+		phase.apply(update);
+		verify(update).withCommand("/cnb/lifecycle/test");
+		verify(update).withNetworkMode("test");
+		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
 

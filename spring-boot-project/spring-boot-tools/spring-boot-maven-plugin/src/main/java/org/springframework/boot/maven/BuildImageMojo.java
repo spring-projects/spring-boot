@@ -59,6 +59,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  * @since 2.3.0
  */
 @Mojo(name = "build-image", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
@@ -154,6 +155,13 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	Boolean publish;
 
 	/**
+	 * Alias for {@link Image#network} to support configuration via command-line property.
+	 * @since 2.6.0
+	 */
+	@Parameter(property = "spring-boot.build-image.network", readonly = true)
+	String network;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -247,6 +255,9 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.publish == null && this.publish != null) {
 			image.setPublish(this.publish);
+		}
+		if (image.network == null && this.network != null) {
+			image.setNetwork(this.network);
 		}
 		if (image.publish != null && image.publish && publishRegistryNotConfigured()) {
 			throw new MojoExecutionException("Publishing an image requires docker.publishRegistry to be configured");
