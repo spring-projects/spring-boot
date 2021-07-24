@@ -72,7 +72,8 @@ class TunnelClientTests {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Thread.sleep(200);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(this.tunnelConnection::getOpenedTimes,
+				(open) -> open == 1);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
