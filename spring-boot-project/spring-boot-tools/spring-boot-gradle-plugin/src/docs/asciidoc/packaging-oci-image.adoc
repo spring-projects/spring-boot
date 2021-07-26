@@ -169,6 +169,14 @@ Where `<options>` can contain:
 | `--publishImage`
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
+| `network`
+| `--network`
+| The network the build container will connect to. The value supplied for this option will be passed
+unvalidated as `HostConfig.NetworkMode` to the configuration which creates the build container,
+see https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate[Docker's engine API].
+Using this option is similar to running `docker build --network ...`.
+|
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
