@@ -176,9 +176,13 @@ You must ensure that the endpoint URI contains the path (for example, `/api/v2/m
 	  metrics:
 	    export:
 	      dynatrace:
-	        # uri: "https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest" for managed deployments.
-	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
-	        api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
+	        # uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest" # for SaaS
+	        # uri: "https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest"    # for managed deployments
+	        # or use the Spring placeholder notation to read it from an environment variable:
+	        uri: ${DT_METRICS_INGEST_URL}
+
+	        # should be read from a secure source and not hard-coded.
+	        api-token: ${DT_METRICS_INGEST_API_TOKEN}
 ----
 
 When using the Dynatrace v2 API, the following optional features are available:
@@ -194,7 +198,11 @@ When using the Dynatrace v2 API, the following optional features are available:
 	  metrics:
 	    export:
 	      dynatrace:
-	        # specify token and uri or leave blank for OneAgent export
+	        # Specify API token and URI or leave blank for OneAgent export, e.g.:
+	        # uri: ${DT_METRICS_INGEST_URL}
+	        # api-token: ${DT_METRICS_INGEST_API_TOKEN}
+
+	        # Configure v2-specific properties:
 	        v2:
 	          metric-key-prefix: "your.key.prefix"
 	          enrich-with-dynatrace-metadata: true
@@ -219,7 +227,8 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 	      dynatrace:
 	        # uri: "https://{your-domain}/e/{your-environment-id}" on managed deployments.
 	        uri: "https://{your-environment-id}.live.dynatrace.com"
-	        api-token: "YOUR_TOKEN" # should be read from a secure property source
+	        # should be read from a secure property source
+	        api-token: "YOUR_TOKEN"
 	        v1:
 	          device-id: "YOUR_DEVICE_ID"
 ----
