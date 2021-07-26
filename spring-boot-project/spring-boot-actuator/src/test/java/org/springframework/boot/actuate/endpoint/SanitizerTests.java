@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,16 @@ class SanitizerTests {
 	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "view-source://user:password@localhost:8080"))
-				.isEqualTo("view-source://user:******@localhost:8080");
+		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080"))
+				.isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithNonAlphaSchemeCharactersAndSingleValueWithPasswordShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "s-ch3m.+-e://user:password@localhost:8080"))
+				.isEqualTo("s-ch3m.+-e://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
