@@ -89,6 +89,13 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
+	@Deprecated
+	@TestTemplate
+	void basicBuildUsingDeprecatedMainClassName() {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+	}
+
 	@TestTemplate
 	void reproducibleArchive() throws IOException, InterruptedException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())

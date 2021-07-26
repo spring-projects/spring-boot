@@ -5,5 +5,4 @@ plugins {
 
 bootJar {
 	mainClass = 'com.example.Application'
-	launchScript()
 }
