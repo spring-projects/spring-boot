@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import javax.validation.ValidationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -47,8 +48,33 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 
+	private final MessageSource messageSource;
+
+	public MessageInterpolatorFactory() {
+		this(null);
+	}
+
+	/**
+	 * Creates a new {@link MessageInterpolatorFactory} that will produce a
+	 * {@link MessageInterpolator} that uses the given {@code messageSource} to resolve
+	 * any message parameters before final interpolation.
+	 * @param messageSource message source to be used by the interpolator
+	 * @since 2.6.0
+	 */
+	public MessageInterpolatorFactory(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	@Override
 	public MessageInterpolator getObject() throws BeansException {
+		MessageInterpolator messageInterpolator = getMessageInterpolator();
+		if (this.messageSource != null) {
+			return new MessageSourceMessageInterpolator(this.messageSource, messageInterpolator);
+		}
+		return messageInterpolator;
+	}
+
+	private MessageInterpolator getMessageInterpolator() {
 		try {
 			return Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
 		}
