@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ public class Sanitizer {
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
 			Arrays.asList("uri", "uris", "address", "addresses"));
 
-	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("\\[?[A-Za-z]+://.+:(.*)@.+$");
+	private static final Pattern URI_USERINFO_PATTERN = Pattern
+			.compile("^\\[?[A-Za-z][A-Za-z0-9\\+\\.\\-]+://.+:(.*)@.+$");
 
 	private Pattern[] keysToSanitize;
 
