@@ -834,13 +834,6 @@ bom {
 			]
 		}
 	}
-	library("JBoss Transaction SPI", "7.6.1.Final") {
-		group("org.jboss") {
-			modules = [
-				"jboss-transaction-spi"
-			]
-		}
-	}
 	library("JDOM2", "2.0.6") {
 		group("org.jdom") {
 			modules = [
