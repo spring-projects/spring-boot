@@ -170,15 +170,19 @@ The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API toke
 We recommend limiting the scope of the token to this one permission.
 You must ensure that the endpoint URI contains the path (for example, `/api/v2/metrics/ingest`):
 
+The URLs of the Metrics API v2 ingest endpoint are:
+
+- `+https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest+` for SaaS and
+- `+https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest+` for Managed Deployments
+
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  metrics:
 	    export:
 	      dynatrace:
-	        # uri: "https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest" for managed deployments.
 	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
-	        api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
+	        api-token: "YOUR_TOKEN"
 ----
 
 When using the Dynatrace v2 API, the following optional features are available:
@@ -188,13 +192,16 @@ When using the Dynatrace v2 API, the following optional features are available:
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
   If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
 
+In the example below URI and API token are not specified, therefore the local OneAgent endpoint is used.
+It is also possible to explicitly use the `uri` and `api-token` properties as shown in the examples above.
+
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  metrics:
 	    export:
 	      dynatrace:
-	        # specify token and uri or leave blank for OneAgent export
+	        # Specify uri and api-token here if not using the local OneAgent endpoint.
 	        v2:
 	          metric-key-prefix: "your.key.prefix"
 	          enrich-with-dynatrace-metadata: true
@@ -217,9 +224,8 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 	  metrics:
 	    export:
 	      dynatrace:
-	        # uri: "https://{your-domain}/e/{your-environment-id}" on managed deployments.
 	        uri: "https://{your-environment-id}.live.dynatrace.com"
-	        api-token: "YOUR_TOKEN" # should be read from a secure property source
+	        api-token: "YOUR_TOKEN"
 	        v1:
 	          device-id: "YOUR_DEVICE_ID"
 ----
