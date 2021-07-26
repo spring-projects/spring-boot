@@ -69,8 +69,9 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		for (Library library : libraries) {
 			librariesByName.put(library.getName(), library);
 		}
-		return libraries.stream().map((library) -> resolveUpgrade(library, librariesByName))
-				.filter((upgrade) -> upgrade != null).collect(Collectors.toList());
+		return libraries.stream().filter((library) -> !library.getName().equals("Spring Boot"))
+				.map((library) -> resolveUpgrade(library, librariesByName)).filter((upgrade) -> upgrade != null)
+				.collect(Collectors.toList());
 	}
 
 	private Upgrade resolveUpgrade(Library library, Map<String, Library> libraries) {
