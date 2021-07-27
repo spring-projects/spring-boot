@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -218,17 +220,17 @@ class LiveReloadServerTests {
 
 	}
 
-	static class LiveReloadWebSocketHandler extends TextWebSocketHandler {
+	class LiveReloadWebSocketHandler extends TextWebSocketHandler {
 
-		private WebSocketSession session;
+		private volatile WebSocketSession session;
 
 		private final CountDownLatch helloLatch = new CountDownLatch(2);
 
-		private final List<String> messages = new ArrayList<>();
+		private final List<String> messages = new CopyOnWriteArrayList<>();
 
-		private int pongCount;
+		private final AtomicInteger pongCount = new AtomicInteger();
 
-		private CloseStatus closeStatus;
+		private volatile CloseStatus closeStatus;
 
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -239,20 +241,20 @@ class LiveReloadServerTests {
 
 		void awaitHello() throws InterruptedException {
 			this.helloLatch.await(1, TimeUnit.MINUTES);
-			Thread.sleep(200);
 		}
 
 		@Override
 		protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-			if (message.getPayload().contains("hello")) {
+			String payload = message.getPayload();
+			this.messages.add(payload);
+			if (payload.contains("hello")) {
 				this.helloLatch.countDown();
 			}
-			this.messages.add(message.getPayload());
 		}
 
 		@Override
 		protected void handlePongMessage(WebSocketSession session, PongMessage message) {
-			this.pongCount++;
+			this.pongCount.incrementAndGet();
 		}
 
 		@Override
@@ -273,7 +275,7 @@ class LiveReloadServerTests {
 		}
 
 		int getPongCount() {
-			return this.pongCount;
+			return this.pongCount.get();
 		}
 
 		CloseStatus getCloseStatus() {
