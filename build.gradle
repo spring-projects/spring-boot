@@ -30,7 +30,6 @@ allprojects {
 		}
 		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
-			maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 		}
 	}
 
