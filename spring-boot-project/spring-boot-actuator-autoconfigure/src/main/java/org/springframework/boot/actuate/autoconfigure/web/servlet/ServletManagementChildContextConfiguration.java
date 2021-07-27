@@ -50,6 +50,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -106,6 +107,13 @@ class ServletManagementChildContextConfiguration {
 		Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
+		}
+
+		@Bean
+		@ConditionalOnBean(name = "securityFilterChainRegistration", search = SearchStrategy.ANCESTORS)
+		DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(HierarchicalBeanFactory beanFactory) {
+			return beanFactory.getParentBeanFactory().getBean("securityFilterChainRegistration",
+					DelegatingFilterProxyRegistrationBean.class);
 		}
 
 	}
