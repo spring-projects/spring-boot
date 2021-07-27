@@ -63,13 +63,6 @@ bom {
 			]
 		}
 	}
-	library("Apache QPID ProtonJ", "0.33.8") {
-		group("org.apache.qpid") {
-			modules = [
-					"proton-j"
-			]
-		}
-	}
 	library("AppEngine SDK", "1.9.90") {
 		group("com.google.appengine") {
 			modules = [
@@ -1423,7 +1416,7 @@ bom {
 			]
 		}
 	}
-	library("Rabbit Stream Client", "0.2.0-SNAPSHOT") {
+	library("Rabbit Stream Client", "0.2.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"

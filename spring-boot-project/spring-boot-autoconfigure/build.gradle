@@ -58,7 +58,6 @@ dependencies {
 	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.kafka:kafka-streams")
-	optional("org.apache.qpid:proton-j")
 	optional("org.apache.solr:solr-solrj")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
