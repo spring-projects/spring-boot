@@ -18,6 +18,7 @@ dependencies {
 	compileOnly("org.mockito:mockito-core")
 	compileOnly("org.springframework:spring-context")
 	compileOnly("org.springframework.data:spring-data-redis")
+	compileOnly("org.testcontainers:cassandra")
 	compileOnly("org.testcontainers:testcontainers")
 
 	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
