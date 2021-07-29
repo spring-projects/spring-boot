@@ -61,11 +61,11 @@ import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.internal.file.archive.ZipCopyAction;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 
@@ -115,7 +115,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		try {
 			File projectDir = new File(this.temp, "project");
 			projectDir.mkdirs();
-			this.project = ProjectBuilder.builder().withProjectDir(projectDir).build();
+			this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).build();
 			this.project.setDescription("Test project for " + this.taskClass.getSimpleName());
 			this.task = configure(this.project.getTasks().create("testArchive", this.taskClass));
 		}
