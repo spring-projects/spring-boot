@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import java.time.Duration;
-
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,7 +27,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -47,8 +44,7 @@ import static org.mockito.Mockito.verify;
 class CassandraAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+	static final CassandraContainer cassandra = new CassandraContainer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).withPropertyValues(
