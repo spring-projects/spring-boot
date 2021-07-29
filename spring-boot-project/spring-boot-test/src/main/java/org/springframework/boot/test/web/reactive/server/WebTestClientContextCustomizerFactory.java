@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,21 +29,36 @@ import org.springframework.util.ClassUtils;
  * {@link ContextCustomizerFactory} for {@code WebTestClient}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory {
 
-	private static final String WEB_TEST_CLIENT_CLASS = "org.springframework.web.reactive.function.client.WebClient";
+	private static final boolean reactorClientPresent;
+
+	private static final boolean jettyClientPresent;
+
+	private static final boolean httpComponentsClientPresent;
+
+	private static final boolean webClientPresent;
+
+	static {
+		ClassLoader loader = WebTestClientContextCustomizerFactory.class.getClassLoader();
+		reactorClientPresent = ClassUtils.isPresent("reactor.netty.http.client.HttpClient", loader);
+		jettyClientPresent = ClassUtils.isPresent("org.eclipse.jetty.client.HttpClient", loader);
+		httpComponentsClientPresent = ClassUtils
+				.isPresent("org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient", loader)
+				&& ClassUtils.isPresent("org.apache.hc.core5.reactive.ReactiveDataConsumer", loader);
+		webClientPresent = ClassUtils.isPresent("org.springframework.web.reactive.function.client.WebClient", loader);
+	}
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
-		return (springBootTest != null && isWebClientPresent()) ? new WebTestClientContextCustomizer() : null;
-	}
-
-	private boolean isWebClientPresent() {
-		return ClassUtils.isPresent(WEB_TEST_CLIENT_CLASS, getClass().getClassLoader());
+		return (springBootTest != null && webClientPresent
+				&& (reactorClientPresent || jettyClientPresent || httpComponentsClientPresent))
+						? new WebTestClientContextCustomizer() : null;
 	}
 
 }
