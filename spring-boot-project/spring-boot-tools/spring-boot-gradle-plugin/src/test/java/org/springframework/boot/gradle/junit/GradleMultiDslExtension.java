@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.gradle.api.JavaVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,9 +42,6 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		if (JavaVersion.current() == JavaVersion.VERSION_17) {
-			return Stream.of(new DisabledTemplateInvocationContext());
-		}
 		return Stream.of(Dsl.values()).map(DslTestTemplateInvocationContext::new);
 	}
 

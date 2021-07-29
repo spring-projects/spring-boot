@@ -25,6 +25,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 
 /**
@@ -63,7 +64,7 @@ public interface BootArchive extends Task {
 	 * @return the launch script configuration, or {@code null} if the launch script has
 	 * not been configured.
 	 */
-	@Input
+	@Nested
 	@Optional
 	LaunchScriptConfiguration getLaunchScript();
 

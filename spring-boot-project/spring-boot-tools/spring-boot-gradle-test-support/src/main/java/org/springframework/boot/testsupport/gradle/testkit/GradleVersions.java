@@ -35,7 +35,7 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJava17()) {
-			return Collections.emptyList();
+			return Collections.singletonList("7.2-rc-1");
 		}
 		if (isJava16()) {
 			return Arrays.asList("7.0.2", "7.1");
@@ -44,6 +44,9 @@ public final class GradleVersions {
 	}
 
 	public static String currentOrMinimumCompatible() {
+		if (isJava17()) {
+			return "7.2-rc-1";
+		}
 		if (isJava16()) {
 			return "7.0.2";
 		}
