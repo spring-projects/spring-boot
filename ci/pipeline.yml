@@ -832,13 +832,42 @@ jobs:
     - put: slack-alert
       params:
         <<: *slack-success-params
+- name: jdk17-run-system-tests
+  serial: true
+  public: true
+  plan:
+    - get: ci-image-jdk17
+    - get: git-repo
+    - get: paketo-builder-base-image
+      trigger: true
+    - get: daily
+      trigger: true
+    - do:
+        - task: run-system-tests
+          image: ci-image-jdk17
+          privileged: true
+          timeout: ((task-timeout))
+          file: git-repo/ci/tasks/run-system-tests.yml
+          params:
+            BRANCH: ((branch))
+            TOOLCHAIN_JAVA_VERSION: 17
+            <<: *gradle-enterprise-task-params
+            <<: *docker-hub-task-params
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: slack-alert
+      params:
+        <<: *slack-success-params
 groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk16-build", "jdk17-build", "windows-build"]
 - name: "releases"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-gradle-plugin", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "system-tests"
-  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk16-run-system-tests"]
+  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk16-run-system-tests", "jdk17-run-system-tests"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
