@@ -42,9 +42,6 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		if (JavaVersion.current() == JavaVersion.VERSION_17) {
-			return Stream.of(new DisabledTemplateInvocationContext());
-		}
 		return Stream.of(Dsl.values()).map(DslTestTemplateInvocationContext::new);
 	}
 
@@ -65,7 +62,10 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 		public List<Extension> getAdditionalExtensions() {
 			GradleBuild gradleBuild = new GradleBuild(this.dsl);
 			JavaVersion javaVersion = JavaVersion.current();
-			if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
+			if (javaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
+				gradleBuild.gradleVersion("7.2-rc-1");
+			}
+			else if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
 				gradleBuild.gradleVersion("7.0.2");
 			}
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
