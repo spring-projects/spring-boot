@@ -390,7 +390,13 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		public void writeTo(OutputStream outputStream) throws IOException {
 			TarArchiveOutputStream tar = new TarArchiveOutputStream(outputStream);
 			tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-			this.packager.packageImage(this.libraries, (entry, entryWriter) -> write(entry, entryWriter, tar));
+			try {
+				this.packager.packageImage(this.libraries, (entry, entryWriter) -> write(entry, entryWriter, tar));
+			}
+			catch (RuntimeException ex) {
+				outputStream.close();
+				throw new RuntimeException("Error packaging archive for image", ex);
+			}
 		}
 
 		private void write(ZipEntry jarEntry, EntryWriter entryWriter, TarArchiveOutputStream tar) {
