@@ -271,6 +271,24 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenBuildImageIsInvokedOnMultiModuleProjectWithPackageGoal(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-multi-module").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-multi-module-app:0.0.1.BUILD-SNAPSHOT")
+							.contains("Successfully built image");
+					removeImage("build-image-multi-module-app", "0.0.1.BUILD-SNAPSHOT");
+				});
+	}
+
+	@TestTemplate
+	void failsWhenBuildImageIsInvokedOnMultiModuleProjectWithBuildImageGoal(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-multi-module").goals("spring-boot:build-image")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").executeAndFail(
+						(project) -> assertThat(buildLog(project)).contains("Error packaging archive for image"));
+	}
+
+	@TestTemplate
 	void failsWhenPublishWithoutPublishRegistryConfigured(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image").goals("package").systemProperty("spring-boot.build-image.publish", "true")
 				.executeAndFail((project) -> assertThat(buildLog(project)).contains("requires docker.publishRegistry"));
