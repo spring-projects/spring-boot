@@ -97,8 +97,9 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | ID | Description
 
 | `heapdump`
-| Returns an `hprof` heap dump file.
-  Requires a HotSpot JVM.
+| Returns a heap dump file.
+  On a HotSpot JVM, an `HPROF`-format file is returned.
+  On an OpenJ9 JVM, a `PHD`-format file is returned.
 
 | `jolokia`
 | Exposes JMX beans over HTTP (when Jolokia is on the classpath, not available for WebFlux).
