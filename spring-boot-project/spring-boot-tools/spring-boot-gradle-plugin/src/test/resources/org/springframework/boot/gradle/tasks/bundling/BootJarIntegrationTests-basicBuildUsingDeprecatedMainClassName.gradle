@@ -4,5 +4,5 @@ plugins {
 }
 
 bootJar {
-	mainClass = 'com.example.Application'
+	mainClassName = 'com.example.Application'
 }
