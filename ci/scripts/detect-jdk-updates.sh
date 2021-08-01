@@ -9,19 +9,19 @@ trap 'report_error $? $LINENO' ERR
 
 case "$JDK_VERSION" in
 	java8)
-		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/8/ga"
+		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/8/ga"
 		 ISSUE_TITLE="Upgrade Java 8 version in CI image"
 	;;
 	java11)
-		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/11/ga"
+		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/11/ga"
 		 ISSUE_TITLE="Upgrade Java 11 version in CI image"
 	;;
 	java16)
-		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/16/ga"
+		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/16/ga"
 		 ISSUE_TITLE="Upgrade Java 16 version in CI image"
 	;;
 	java17)
-		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/17/ea"
+		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/17/ea"
 		 ISSUE_TITLE="Upgrade Java 17 version in CI image"
 	;;
 	*)
