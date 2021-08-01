@@ -29,7 +29,7 @@ case "$JDK_VERSION" in
 		exit 1;
 esac
 
-response=$( curl -s ${BASE_URL}\?architecture\=x64\&heap_size\=normal\&image_type\=jdk\&jvm_impl\=hotspot\&os\=linux\&sort_order\=DESC\&vendor\=adoptopenjdk )
+response=$( curl -s ${BASE_URL}\?architecture\=x64\&heap_size\=normal\&image_type\=jdk\&jvm_impl\=hotspot\&os\=linux\&sort_order\=DESC\&vendor\=adoptium )
 latest=$( jq -r '.[0].binaries[0].package.link' <<< "$response" )
 if [[ ${latest} = "null" || ${latest} = "" ]]; then
 	echo "Could not parse JDK response: $response"
