@@ -139,6 +139,7 @@ org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration,
 org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration,\
