@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.restart;
 import java.beans.Introspector;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -263,6 +264,9 @@ public class Restarter {
 		do {
 			Throwable error = doStart();
 			if (error == null) {
+				return;
+			}
+			if (error instanceof InvocationTargetException) {
 				return;
 			}
 			if (failureHandler.handle(error) == Outcome.ABORT) {
