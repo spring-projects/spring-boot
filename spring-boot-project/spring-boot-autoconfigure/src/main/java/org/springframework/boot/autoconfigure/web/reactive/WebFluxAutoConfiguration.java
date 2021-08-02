@@ -89,6 +89,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -96,7 +97,7 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
