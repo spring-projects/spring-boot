@@ -1,7 +1,23 @@
+/*
+ * Copyright 2012-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,67 +30,54 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.multipart.DefaultPartHttpMessageReader;
 import org.springframework.util.unit.DataSize;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for multipart support in Spring
- * Webflux.
- * <p>
- * Configures the {@link DefaultPartHttpMessageReader} via a {@link CodecCustomizer}.
+ * WebFlux.
  *
  * @author Chris Bono
+ * @author Brian Clozel
  * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ CodecConfigurer.class, DefaultPartHttpMessageReader.class })
+@ConditionalOnClass({ DefaultPartHttpMessageReader.class, WebFluxConfigurer.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(ReactiveMultipartProperties.class)
-class ReactiveMultipartAutoConfiguration {
+public class ReactiveMultipartAutoConfiguration {
 
 	@Bean
-	@Order(1)
+	@Order(0)
 	CodecCustomizer defaultPartHttpMessageReaderCustomizer(ReactiveMultipartProperties multipartProperties) {
 		return (configurer) -> configurer.defaultCodecs().configureDefaultCodec((codec) -> {
-			if (!DefaultPartHttpMessageReader.class.isInstance(codec)) {
-				return;
-			}
-			DefaultPartHttpMessageReader defaultPartHttpMessageReader = (DefaultPartHttpMessageReader) codec;
-			boolean streaming = multipartProperties.getStreaming() != null && multipartProperties.getStreaming();
-			boolean unlimitedMaxMemorySize = multipartProperties.getMaxInMemorySize() != null
-					&& multipartProperties.getMaxInMemorySize().toBytes() == -1;
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(multipartProperties::getStreaming).to(defaultPartHttpMessageReader::setStreaming);
-			if (!streaming) {
-				map.from(multipartProperties::getMaxInMemorySize).asInt(this::convertToBytes)
+			if (codec instanceof DefaultPartHttpMessageReader) {
+				DefaultPartHttpMessageReader defaultPartHttpMessageReader = (DefaultPartHttpMessageReader) codec;
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(multipartProperties::getMaxInMemorySize).asInt(DataSize::toBytes)
 						.to(defaultPartHttpMessageReader::setMaxInMemorySize);
-			}
-			if (!streaming && !unlimitedMaxMemorySize) {
-				map.from(multipartProperties::getMaxDiskUsagePerPart).as(this::convertToBytes)
+				map.from(multipartProperties::getMaxHeadersSize).asInt(DataSize::toBytes)
+						.to(defaultPartHttpMessageReader::setMaxHeadersSize);
+				map.from(multipartProperties::getMaxDiskUsagePerPart).asInt(DataSize::toBytes)
 						.to(defaultPartHttpMessageReader::setMaxDiskUsagePerPart);
-				map.from(multipartProperties::getFileStorageDirectory)
-						.to(dir -> setFileStorageDirectory(dir, defaultPartHttpMessageReader));
+				map.from(multipartProperties::getMaxParts).to(defaultPartHttpMessageReader::setMaxParts);
+				map.from(multipartProperties::getStreaming).to(defaultPartHttpMessageReader::setStreaming);
+				map.from(multipartProperties::getFileStorageDirectory).as(Paths::get)
+						.to((dir) -> configureFileStorageDirectory(defaultPartHttpMessageReader, dir));
+				map.from(multipartProperties::getHeadersCharset).to(defaultPartHttpMessageReader::setHeadersCharset);
 			}
-			map.from(multipartProperties::getMaxParts).to(defaultPartHttpMessageReader::setMaxParts);
-			map.from(multipartProperties::getMaxHeadersSize).asInt(this::convertToBytes)
-					.to(defaultPartHttpMessageReader::setMaxHeadersSize);
-			map.from(multipartProperties::getHeadersCharset).to(defaultPartHttpMessageReader::setHeadersCharset);
 		});
 	}
 
-	private void setFileStorageDirectory(String fileStorageDirectory,
-			DefaultPartHttpMessageReader defaultPartHttpMessageReader) {
+	private void configureFileStorageDirectory(DefaultPartHttpMessageReader defaultPartHttpMessageReader,
+			Path fileStorageDirectory) {
 		try {
-			defaultPartHttpMessageReader.setFileStorageDirectory(Paths.get(fileStorageDirectory));
+			defaultPartHttpMessageReader.setFileStorageDirectory(fileStorageDirectory);
 		}
 		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+			throw new IllegalStateException("Failed to configure multipart file storage directory", ex);
 		}
-	}
-
-	private Long convertToBytes(DataSize size) {
-		return (size != null) ? size.toBytes() : null;
 	}
 
 }

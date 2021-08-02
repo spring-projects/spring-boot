@@ -34,8 +34,8 @@ import org.springframework.util.unit.DataSize;
 public class ReactiveMultipartProperties {
 
 	/**
-	 * Maximum amount of memory allowed per part. Set to -1 to store all contents in
-	 * memory. Ignored when streaming is enabled.
+	 * Maximum amount of memory allowed per part before it's written to disk. Set to -1 to
+	 * store all contents in memory. Ignored when streaming is enabled.
 	 */
 	private DataSize maxInMemorySize = DataSize.ofKilobytes(256);
 
@@ -47,7 +47,7 @@ public class ReactiveMultipartProperties {
 
 	/**
 	 * Maximum amount of disk space allowed per part. Default is -1 which enforces no
-	 * limits. Ignored when streaming is enabled or 'maxInMemorySize' is set to -1.
+	 * limits. Ignored when streaming is enabled.
 	 */
 	private DataSize maxDiskUsagePerPart = DataSize.ofBytes(-1);
 
@@ -58,15 +58,15 @@ public class ReactiveMultipartProperties {
 	private Integer maxParts = -1;
 
 	/**
-	 * Whether or not to stream directly from the parsed input buffer stream without
-	 * storing in memory nor file. Default is non-streaming.
+	 * Whether to stream directly from the parsed input buffer stream without storing in
+	 * memory nor file. Default is non-streaming.
 	 */
 	private Boolean streaming = Boolean.FALSE;
 
 	/**
-	 * Directory used to store parts larger than 'maxInMemorySize'. Default is a directory
-	 * named 'spring-multipart' created under the system temporary directory. Ignored when
-	 * streaming is enabled or 'maxInMemorySize' is set to -1.
+	 * Directory used to store file parts larger than 'maxInMemorySize'. Default is a
+	 * directory named 'spring-multipart' created under the system temporary directory.
+	 * Ignored when streaming is enabled.
 	 */
 	private String fileStorageDirectory;
 
@@ -76,7 +76,7 @@ public class ReactiveMultipartProperties {
 	private Charset headersCharset = StandardCharsets.UTF_8;
 
 	public DataSize getMaxInMemorySize() {
-		return maxInMemorySize;
+		return this.maxInMemorySize;
 	}
 
 	public void setMaxInMemorySize(DataSize maxInMemorySize) {
@@ -84,7 +84,7 @@ public class ReactiveMultipartProperties {
 	}
 
 	public DataSize getMaxHeadersSize() {
-		return maxHeadersSize;
+		return this.maxHeadersSize;
 	}
 
 	public void setMaxHeadersSize(DataSize maxHeadersSize) {
@@ -92,7 +92,7 @@ public class ReactiveMultipartProperties {
 	}
 
 	public DataSize getMaxDiskUsagePerPart() {
-		return maxDiskUsagePerPart;
+		return this.maxDiskUsagePerPart;
 	}
 
 	public void setMaxDiskUsagePerPart(DataSize maxDiskUsagePerPart) {
@@ -100,7 +100,7 @@ public class ReactiveMultipartProperties {
 	}
 
 	public Integer getMaxParts() {
-		return maxParts;
+		return this.maxParts;
 	}
 
 	public void setMaxParts(Integer maxParts) {
@@ -108,7 +108,7 @@ public class ReactiveMultipartProperties {
 	}
 
 	public Boolean getStreaming() {
-		return streaming;
+		return this.streaming;
 	}
 
 	public void setStreaming(Boolean streaming) {
@@ -116,7 +116,7 @@ public class ReactiveMultipartProperties {
 	}
 
 	public String getFileStorageDirectory() {
-		return fileStorageDirectory;
+		return this.fileStorageDirectory;
 	}
 
 	public void setFileStorageDirectory(String fileStorageDirectory) {
@@ -124,7 +124,7 @@ public class ReactiveMultipartProperties {
 	}
 
 	public Charset getHeadersCharset() {
-		return headersCharset;
+		return this.headersCharset;
 	}
 
 	public void setHeadersCharset(Charset headersCharset) {
