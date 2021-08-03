@@ -143,7 +143,8 @@ org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2Re
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
-org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfiguration
+org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfiguration,\
+org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration
 
 # AutoConfigureMockRestServiceServer
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer=\

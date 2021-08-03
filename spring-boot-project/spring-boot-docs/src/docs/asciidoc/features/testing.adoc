@@ -172,8 +172,9 @@ include::{docs-java}/features/testing/springbootapplications/usingapplicationarg
 
 [[features.testing.spring-boot-applications.with-mock-environment]]
 ==== Testing with a mock environment
-By default, `@SpringBootTest` does not start the server.
-If you have web endpoints that you want to test against this mock environment, you can additionally configure {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] as shown in the following example:
+By default, `@SpringBootTest` does not start the server but instead sets up a mock environment for testing web endpoints.
+
+With Spring MVC, we can query our web endpoints using {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] or `WebTestClient`, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -182,7 +183,7 @@ include::{docs-java}/features/testing/springbootapplications/withmockenvironment
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<features#features.testing.spring-boot-applications.spring-mvc-tests,using `@WebMvcTest` instead>>.
 
-Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
+With Spring WebFlux endpoints, you can use {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -213,6 +214,8 @@ For convenience, tests that need to make REST calls to the started server can ad
 ----
 include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortWebTestClientTests.java[]
 ----
+
+TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
 
 This setup requires `spring-webflux` on the classpath.
 If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate` facility:
