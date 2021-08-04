@@ -36,7 +36,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -218,9 +217,6 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	private BindingResult extractBindingResult(Throwable error) {
 		if (error instanceof BindingResult) {
 			return (BindingResult) error;
-		}
-		if (error instanceof MethodArgumentNotValidException) {
-			return ((MethodArgumentNotValidException) error).getBindingResult();
 		}
 		return null;
 	}
