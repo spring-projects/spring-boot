@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.util.Assert;
 
 /**
  * Configure {@link RabbitTemplate} with sensible defaults.
@@ -39,26 +40,51 @@ public class RabbitTemplateConfigurer {
 	private RabbitProperties rabbitProperties;
 
 	/**
+	 * Creates a new configurer.
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #RabbitTemplateConfigurer(RabbitProperties)}
+	 */
+	@Deprecated
+	public RabbitTemplateConfigurer() {
+
+	}
+
+	/**
+	 * Creates a new configurer that will use the given {@code rabbitProperties}.
+	 * @param rabbitProperties properties to use
+	 * @since 2.6.0
+	 */
+	public RabbitTemplateConfigurer(RabbitProperties rabbitProperties) {
+		Assert.notNull(rabbitProperties, "RabbitProperties must not be null");
+		this.rabbitProperties = rabbitProperties;
+	}
+
+	/**
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
+	 * @since 2.6.0
 	 */
-	protected void setMessageConverter(MessageConverter messageConverter) {
+	public void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
 	/**
 	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
 	 * @param retryTemplateCustomizers the retry template customizers
+	 * @since 2.6.0
 	 */
-	protected void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+	public void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 
 	/**
 	 * Set the {@link RabbitProperties} to use.
 	 * @param rabbitProperties the {@link RabbitProperties}
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #RabbitTemplateConfigurer(RabbitProperties)}
 	 */
+	@Deprecated
 	protected void setRabbitProperties(RabbitProperties rabbitProperties) {
 		this.rabbitProperties = rabbitProperties;
 	}

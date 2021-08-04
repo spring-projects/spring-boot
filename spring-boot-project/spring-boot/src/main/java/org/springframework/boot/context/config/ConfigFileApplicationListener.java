@@ -113,7 +113,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Scott Frederick
  * @since 1.0.0
- * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+ * @deprecated since 2.4.0 for removal in 3.0.0 in favor of
  * {@link ConfigDataEnvironmentPostProcessor}
  */
 @Deprecated

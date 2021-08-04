@@ -97,8 +97,9 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | ID | Description
 
 | `heapdump`
-| Returns an `hprof` heap dump file.
-  Requires a HotSpot JVM.
+| Returns a heap dump file.
+  On a HotSpot JVM, an `HPROF`-format file is returned.
+  On an OpenJ9 JVM, a `PHD`-format file is returned.
 
 | `jolokia`
 | Exposes JMX beans over HTTP (when Jolokia is on the classpath, not available for WebFlux).
@@ -314,9 +315,15 @@ TIP: If you want to implement your own strategy for when endpoints are exposed, 
 
 
 [[actuator.endpoints.security]]
-=== Securing HTTP Endpoints
-You should take care to secure HTTP endpoints in the same way that you would any other sensitive URL.
-If Spring Security is present, endpoints are secured by default using Spring Security’s content-negotiation strategy.
+=== Security
+For security purposes, all actuators other than `/health` are disabled by default.
+The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
+
+NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.
+
+If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` are secured by Spring Boot auto-configuration.
+If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
+
 If you wish to configure custom security for HTTP endpoints, for example, only allow users with a certain role to access them, Spring Boot provides some convenient `RequestMatcher` objects that can be used in combination with Spring Security.
 
 A typical Spring Security configuration might look something like the following example:
@@ -351,6 +358,15 @@ include::{docs-java}/actuator/endpoints/security/exposeall/MySecurityConfigurati
 
 NOTE: In both the examples above, the configuration applies only to the actuator endpoints.
 Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you will need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.
+
+[[actuator.endpoints.security.csrf]]
+==== Cross Site Request Forgery Protection
+Since Spring Boot relies on Spring Security's defaults, CSRF protection is turned on by default.
+This means that the actuator endpoints that require a `POST` (shutdown and loggers endpoints), `PUT` or `DELETE` will get a 403 forbidden error when the default security configuration is in use.
+
+NOTE: We recommend disabling CSRF protection completely only if you are creating a service that is used by non-browser clients.
+
+Additional information about CSRF protection can be found in the {spring-security-docs}#csrf[Spring Security Reference Guide].
 
 
 
@@ -1061,7 +1077,7 @@ When a Spring Boot application shuts down:
 |`CORRECT`
 |`REFUSING_TRAFFIC`
 |New requests are rejected
-|If enabled, <<features#features.graceful-shutdown,graceful shutdown processes in-flight requests>>.
+|If enabled, <<web#web.graceful-shutdown,graceful shutdown processes in-flight requests>>.
 
 |Shutdown complete
 |N/A

@@ -138,6 +138,7 @@ org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration,\
@@ -176,3 +177,9 @@ org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvid
 # DataSource initializer detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
 org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDatabaseInitializerDetector
+
+# Depends on database initialization detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.autoconfigure.batch.JobRepositoryDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.autoconfigure.quartz.SchedulerDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.autoconfigure.session.JdbcIndexedSessionRepositoryDependsOnDatabaseInitializationDetector

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -60,7 +60,7 @@ class HibernatePropertiesTests {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> {
 			assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 			assertThat(hibernateProperties).containsEntry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
-					SpringPhysicalNamingStrategy.class.getName());
+					CamelCaseToUnderscoresNamingStrategy.class.getName());
 			assertThat(hibernateProperties).containsEntry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
 					SpringImplicitNamingStrategy.class.getName());
 		}));

@@ -77,7 +77,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
-		if (!this.autoTimer.isEnabled()) {
+		if (!enabled()) {
 			return execution.execute(request, body);
 		}
 		long startTime = System.nanoTime();
@@ -100,6 +100,10 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 		}
 	}
 
+	private boolean enabled() {
+		return this.autoTimer.isEnabled();
+	}
+
 	UriTemplateHandler createUriTemplateHandler(UriTemplateHandler delegate) {
 		if (delegate instanceof RootUriTemplateHandler) {
 			return ((RootUriTemplateHandler) delegate).withHandlerWrapper(CapturingUriTemplateHandler::new);
@@ -113,7 +117,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 				.description("Timer of RestTemplate operation");
 	}
 
-	private static final class CapturingUriTemplateHandler implements UriTemplateHandler {
+	private final class CapturingUriTemplateHandler implements UriTemplateHandler {
 
 		private final UriTemplateHandler delegate;
 
@@ -123,13 +127,17 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 		@Override
 		public URI expand(String url, Map<String, ?> arguments) {
-			urlTemplate.get().push(url);
+			if (enabled()) {
+				urlTemplate.get().push(url);
+			}
 			return this.delegate.expand(url, arguments);
 		}
 
 		@Override
 		public URI expand(String url, Object... arguments) {
-			urlTemplate.get().push(url);
+			if (enabled()) {
+				urlTemplate.get().push(url);
+			}
 			return this.delegate.expand(url, arguments);
 		}
 

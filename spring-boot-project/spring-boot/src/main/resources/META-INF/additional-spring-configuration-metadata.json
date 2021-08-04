@@ -912,6 +912,12 @@
       "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
     },
     {
+      "name": "spring.profiles.default",
+      "type": "java.lang.String",
+      "description": "Name of the profile to enable if no profile is active.",
+      "defaultValue": "default"
+    },
+    {
       "name": "spring.profiles.include",
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.Profiles",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class BindFailureAnalyzerTests {
 
@@ -76,7 +77,16 @@ class BindFailureAnalyzerTests {
 	void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
 		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class, "test.foo.value=hello");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
-				"\"test.foo.value\" from property source \"test\"", "This is a failure"));
+				"\"test.foo.value\" from property source \"test\"", "java.lang.RuntimeException: This is a failure"));
+	}
+
+	@Test // gh-27028
+	void bindExceptionDueToClassNotFoundConvertionFailure() {
+		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
+				"test.foo.type=com.example.Missing");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.type", "com.example.Missing",
+				"\"test.foo.type\" from property source \"test\"",
+				"failed to convert java.lang.String to java.lang.Class<?> (caused by java.lang.ClassNotFoundException: com.example.Missing"));
 	}
 
 	private static String failure(String property, String value, String origin, String reason) {
@@ -178,12 +188,22 @@ class BindFailureAnalyzerTests {
 
 		private int value;
 
+		private Class<?> type;
+
 		int getValue() {
 			return this.value;
 		}
 
 		void setValue(int value) {
 			this.value = value;
+		}
+
+		Class<?> getType() {
+			return this.type;
+		}
+
+		void setType(Class<?> type) {
+			this.type = type;
 		}
 
 	}

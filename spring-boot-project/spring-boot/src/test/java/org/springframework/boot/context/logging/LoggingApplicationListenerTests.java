@@ -415,7 +415,7 @@ class LoggingApplicationListenerTests {
 		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNotNull();
-		listener.shutdownHook.start();
+		listener.shutdownHook.run();
 		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30, TimeUnit.SECONDS)).isTrue();
 	}
 
@@ -473,13 +473,6 @@ class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN)).isEqualTo("level");
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("path");
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
-		assertDeprecated();
-	}
-
-	@SuppressWarnings("deprecation")
-	private void assertDeprecated() {
-		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
-				.isEqualTo("my.log.%d{yyyyMMdd}.%i.gz");
 	}
 
 	@Test
@@ -634,10 +627,10 @@ class LoggingApplicationListenerTests {
 
 	static class TestLoggingApplicationListener extends LoggingApplicationListener {
 
-		private Thread shutdownHook;
+		private Runnable shutdownHook;
 
 		@Override
-		void registerShutdownHook(Thread shutdownHook) {
+		void registerShutdownHook(Runnable shutdownHook) {
 			this.shutdownHook = shutdownHook;
 		}
 

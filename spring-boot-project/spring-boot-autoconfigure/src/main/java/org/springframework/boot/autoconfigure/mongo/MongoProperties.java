@@ -20,7 +20,6 @@ import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Mongo.
@@ -193,23 +192,6 @@ public class MongoProperties {
 
 	public Gridfs getGridfs() {
 		return this.gridfs;
-	}
-
-	/**
-	 * Return the GridFS database name.
-	 * @return the GridFS database name
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link Gridfs#getDatabase()}
-	 */
-	@DeprecatedConfigurationProperty(replacement = "spring.data.mongodb.gridfs.database")
-	@Deprecated
-	public String getGridFsDatabase() {
-		return this.gridfs.getDatabase();
-	}
-
-	@Deprecated
-	public void setGridFsDatabase(String gridFsDatabase) {
-		this.gridfs.setDatabase(gridFsDatabase);
 	}
 
 	public String getMongoClientDatabase() {

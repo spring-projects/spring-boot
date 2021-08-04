@@ -1,5 +1,5 @@
 [[features]]
-= Spring Boot Features
+= Core Features
 include::attributes.adoc[]
 
 
@@ -22,54 +22,14 @@ include::features/internationalization.adoc[]
 
 include::features/json.adoc[]
 
-include::features/developing-web-applications.adoc[]
-
-include::features/graceful-shutdown.adoc[]
-
-include::features/rsocket.adoc[]
-
-include::features/security.adoc[]
-
-include::features/sql.adoc[]
-
-include::features/nosql.adoc[]
-
-include::features/caching.adoc[]
-
-include::features/messaging.adoc[]
-
-include::features/resttemplate.adoc[]
-
-include::features/webclient.adoc[]
-
-include::features/validation.adoc[]
-
-include::features/email.adoc[]
-
-include::features/jta.adoc[]
-
 include::features/hazelcast.adoc[]
-
-include::features/quartz.adoc[]
 
 include::features/task-execution-and-scheduling.adoc[]
 
-include::features/spring-integration.adoc[]
-
-include::features/spring-session.adoc[]
-
-include::features/jmx.adoc[]
-
 include::features/testing.adoc[]
-
-include::features/websockets.adoc[]
-
-include::features/webservices.adoc[]
 
 include::features/developing-auto-configuration.adoc[]
 
 include::features/kotlin.adoc[]
-
-include::features/container-images.adoc[]
 
 include::features/whats-next.adoc[]

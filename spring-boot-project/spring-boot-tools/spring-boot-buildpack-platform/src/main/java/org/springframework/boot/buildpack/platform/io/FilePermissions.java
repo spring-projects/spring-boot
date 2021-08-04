@@ -16,6 +16,10 @@
 
 package org.springframework.boot.buildpack.platform.io;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collection;
 
@@ -30,6 +34,21 @@ import org.springframework.util.Assert;
 public final class FilePermissions {
 
 	private FilePermissions() {
+	}
+
+	/**
+	 * Return the integer representation of the file permissions for a path, where the
+	 * integer value conforms to the
+	 * <a href="https://en.wikipedia.org/wiki/Umask">umask</a> octal notation.
+	 * @param path the file path
+	 * @return the integer representation
+	 * @throws IOException if path permissions cannot be read
+	 */
+	public static int umaskForPath(Path path) throws IOException {
+		Assert.notNull(path, "Path must not be null");
+		PosixFileAttributeView attributeView = Files.getFileAttributeView(path, PosixFileAttributeView.class);
+		Assert.state(attributeView != null, "Unsupported file type for retrieving Posix attributes");
+		return posixPermissionsToUmask(attributeView.readAttributes().permissions());
 	}
 
 	/**

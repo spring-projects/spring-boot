@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.function.Supplier;
 
 import javax.servlet.ServletException;
@@ -168,7 +169,7 @@ class WebMvcEndpointExposureIntegrationTests {
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
 				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1)).build();
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).exchangeStrategies(exchangeStrategies)
-				.build();
+				.responseTimeout(Duration.ofMinutes(5)).build();
 	}
 
 	private boolean isExposed(WebTestClient client, HttpMethod method, String path) {

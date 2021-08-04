@@ -30,7 +30,7 @@ In general, you need a `View` that resolves with a name of `error` or a `@Contro
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
 See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
-See also the section on "`<<features#features.developing-web-applications.spring-mvc.error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
+See also the section on "`<<web#web.servlet.spring-mvc.error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
 
 
 

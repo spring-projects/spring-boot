@@ -143,7 +143,8 @@ org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2Re
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
-org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfiguration
+org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfiguration,\
+org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration
 
 # AutoConfigureMockRestServiceServer
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer=\
@@ -195,6 +196,14 @@ org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAuto
 # AutoConfigureMockWebServiceServer
 org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureMockWebServiceServer=\
 org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerAutoConfiguration
+
+# AutoConfigureWebServiceServer auto-configuration imports
+org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureWebServiceServer=\
+org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
+
+# AutoConfigureMockWebServiceClient auto-configuration imports
+org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureMockWebServiceClient=\
+org.springframework.boot.test.autoconfigure.webservices.server.MockWebServiceClientAutoConfiguration
 
 # DefaultTestExecutionListenersPostProcessors
 org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\

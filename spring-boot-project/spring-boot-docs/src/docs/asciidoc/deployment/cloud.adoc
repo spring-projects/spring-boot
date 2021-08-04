@@ -136,7 +136,11 @@ The preStop handler can be configured via the PodSpec in the pod's configuration
 	          command: ["sh", "-c", "sleep 10"]
 ----
 
-Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<features#features.graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<web#web.graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+
+NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specified time called the termination grace period (the default for which is 30 seconds).
+If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.
+If the pod takes longer than 30 seconds to shut down, which could be because you've increased configprop:spring.lifecycle.timeout-per-shutdown-phase[], make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
 
 
 
@@ -350,6 +354,12 @@ At this point, `boxfuse` creates an image for your application, uploads it, and 
 Your application should now be up and running on AWS.
 
 See the blog post on https://boxfuse.com/blog/spring-boot-ec2.html[deploying Spring Boot apps on EC2] as well as the https://boxfuse.com/docs/payloads/springboot.html[documentation for the Boxfuse Spring Boot integration] to get started with a Maven build to run the app.
+
+
+
+[[deployment.cloud.azure]]
+=== Azure
+This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-us/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-us/azure/app-service/overview[Azure App Service].
 
 
 

@@ -17,16 +17,6 @@ configurations {
 	testSlices
 }
 
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-			includeGroup "io.spring.asciidoctor.backends"
-		}
-	}
-}
-
 jar {
 	enabled = false
 }
@@ -110,6 +100,7 @@ dependencies {
 	implementation("org.springframework.data:spring-data-cassandra")
 	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-elasticsearch")
+	implementation("org.springframework.data:spring-data-envers")
 	implementation("org.springframework.data:spring-data-jpa")
 	implementation("org.springframework.data:spring-data-ldap")
 	implementation("org.springframework.data:spring-data-mongodb")
@@ -224,19 +215,20 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
-		attributes	"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+		attributes	"embedded-mongo-version": versionConstraints["de.flapdoodle.embed:de.flapdoodle.embed.mongo"],
+					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
 					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
 					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
 					"spring-boot-version": project.version,
 					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
 					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
+					"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
 					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
 					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
 					"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],

@@ -198,7 +198,9 @@ class DataSourceInitializationIntegrationTests {
 						"spring.datasource.schema-username:admin", "spring.datasource.schema-password:admin")
 				.run((context) -> {
 					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
+					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class)
+							.hasMessageContaining("invalid authorization specification");
+					context.getStartupFailure().printStackTrace();
 				});
 	}
 
@@ -212,7 +214,8 @@ class DataSourceInitializationIntegrationTests {
 						"spring.datasource.data-username:admin", "spring.datasource.data-password:admin")
 				.run((context) -> {
 					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
+					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class)
+							.hasMessageContaining("invalid authorization specification");
 				});
 	}
 

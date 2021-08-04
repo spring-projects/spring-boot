@@ -106,24 +106,25 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	private ServerConnector createHttp11ServerConnector(Server server, HttpConfiguration config,
 			SslContextFactory.Server sslContextFactory) {
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
-		SslConnectionFactory sslConnectionFactory;
+		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(),
+				createSslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()), connectionFactory);
+	}
+
+	private SslConnectionFactory createSslConnectionFactory(SslContextFactory.Server sslContextFactory,
+			String protocol) {
 		try {
-			sslConnectionFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+			return new SslConnectionFactory(sslContextFactory, protocol);
 		}
 		catch (NoSuchMethodError ex) {
 			// Jetty 10
 			try {
-				sslConnectionFactory = SslConnectionFactory.class
-						.getConstructor(SslContextFactory.Server.class, String.class)
-						.newInstance(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+				return SslConnectionFactory.class.getConstructor(SslContextFactory.Server.class, String.class)
+						.newInstance(sslContextFactory, protocol);
 			}
 			catch (Exception ex2) {
 				throw new RuntimeException(ex2);
 			}
 		}
-
-		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(), sslConnectionFactory,
-				connectionFactory);
 	}
 
 	private boolean isJettyAlpnPresent() {
@@ -143,7 +144,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		if (isConscryptPresent()) {
 			sslContextFactory.setProvider("Conscrypt");
 		}
-		SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
+		SslConnectionFactory ssl = createSslConnectionFactory(sslContextFactory, alpn.getProtocol());
 		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(), ssl, alpn, h2, http);
 	}
 

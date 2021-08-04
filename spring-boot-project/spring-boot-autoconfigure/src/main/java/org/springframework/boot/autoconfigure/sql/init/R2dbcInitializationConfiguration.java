@@ -19,12 +19,12 @@ package org.springframework.boot.autoconfigure.sql.init;
 import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
-import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
-import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.r2dbc.connection.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,23 +34,24 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(ConnectionFactory.class)
+@ConditionalOnClass({ ConnectionFactory.class, DatabasePopulator.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
+@ConditionalOnMissingBean({ SqlR2dbcScriptDatabaseInitializer.class, SqlDataSourceScriptDatabaseInitializer.class })
 class R2dbcInitializationConfiguration {
 
 	@Bean
-	R2dbcScriptDatabaseInitializer r2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
+	SqlR2dbcScriptDatabaseInitializer r2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
 			SqlInitializationProperties properties) {
-		DatabaseInitializationSettings settings = SettingsCreator.createFrom(properties);
-		return new R2dbcScriptDatabaseInitializer(
+		return new SqlR2dbcScriptDatabaseInitializer(
 				determineConnectionFactory(connectionFactory, properties.getUsername(), properties.getPassword()),
-				settings);
+				properties);
 	}
 
 	private static ConnectionFactory determineConnectionFactory(ConnectionFactory connectionFactory, String username,
 			String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			ConnectionFactoryBuilder.derivefrom(connectionFactory).username(username).password(password).build();
+			return ConnectionFactoryBuilder.derivedFrom(connectionFactory).username(username).password(password)
+					.build();
 		}
 		return connectionFactory;
 	}

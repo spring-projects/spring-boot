@@ -53,6 +53,11 @@ public class FlywayProperties {
 	private boolean checkLocation = true;
 
 	/**
+	 * Whether to fail if a location of migration scripts doesn't exist.
+	 */
+	private boolean failOnMissingLocations;
+
+	/**
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
 	 * use vendor-specific locations.
 	 */
@@ -355,6 +360,18 @@ public class FlywayProperties {
 	 */
 	private List<String> vaultSecrets;
 
+	/**
+	 * Ignore migrations that match this comma-separated list of patterns when validating
+	 * migrations. Requires Flyway Teams.
+	 */
+	private List<String> ignoreMigrationPatterns;
+
+	/**
+	 * Whether to attempt to automatically detect SQL migration file encoding. Requires
+	 * Flyway Teams.
+	 */
+	private Boolean detectEncoding;
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -373,6 +390,14 @@ public class FlywayProperties {
 	@Deprecated
 	public void setCheckLocation(boolean checkLocation) {
 		this.checkLocation = checkLocation;
+	}
+
+	public boolean isFailOnMissingLocations() {
+		return this.failOnMissingLocations;
+	}
+
+	public void setFailOnMissingLocations(boolean failOnMissingLocations) {
+		this.failOnMissingLocations = failOnMissingLocations;
 	}
 
 	public List<String> getLocations() {
@@ -840,6 +865,22 @@ public class FlywayProperties {
 
 	public void setVaultSecrets(List<String> vaultSecrets) {
 		this.vaultSecrets = vaultSecrets;
+	}
+
+	public List<String> getIgnoreMigrationPatterns() {
+		return this.ignoreMigrationPatterns;
+	}
+
+	public void setIgnoreMigrationPatterns(List<String> ignoreMigrationPatterns) {
+		this.ignoreMigrationPatterns = ignoreMigrationPatterns;
+	}
+
+	public Boolean getDetectEncoding() {
+		return this.detectEncoding;
+	}
+
+	public void setDetectEncoding(final Boolean detectEncoding) {
+		this.detectEncoding = detectEncoding;
 	}
 
 }

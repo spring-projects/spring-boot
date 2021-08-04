@@ -26,7 +26,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.Extension;
 
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against multiple

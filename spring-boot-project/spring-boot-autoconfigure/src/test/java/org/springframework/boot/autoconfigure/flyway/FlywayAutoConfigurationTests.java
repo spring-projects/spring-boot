@@ -50,6 +50,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -113,6 +114,13 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
 				});
+	}
+
+	@Test
+	void backsOffWithFlywayUrlAndNoSpringJdbc() {
+		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
+				.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
+				.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
 	}
 
 	@Test
@@ -288,6 +296,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void checkLocationsAllMissing() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
@@ -299,6 +308,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void checkLocationsAllExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
@@ -306,6 +316,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void checkLocationsAllExistWithImplicitClasspathPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
@@ -313,8 +324,49 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void checkLocationsAllExistWithFilesystemPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations:filesystem:src/test/resources/db/migration")
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	void failOnMissingLocationsAllMissing() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.check-location=false",
+						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
+					assertThat(context).getFailure().hasMessageContaining("Unable to resolve location");
+				});
+	}
+
+	@Test
+	void failOnMissingLocationsAllExist() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.check-location=false",
+						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	void failOnMissingLocationsAllExistWithImplicitClasspathPrefix() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.check-location=false",
+						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	void failOnMissingLocationsAllExistWithFilesystemPrefix() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.check-location=false",
+						"spring.flyway.fail-on-missing-locations=true")
 				.withPropertyValues("spring.flyway.locations:filesystem:src/test/resources/db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
@@ -475,8 +527,9 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void licenseKeyIsCorrectlyMapped(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.license-key=<<secret>>").run((context) -> assertThat(output)
-						.contains("<<secret>> is not supported by Flyway Community Edition"));
+				.withPropertyValues("spring.flyway.license-key=<<secret>>")
+				.run((context) -> assertThat(output).contains(
+						"Flyway Teams Edition upgrade required: licenseKey is not supported by Flyway Community Edition."));
 	}
 
 	@Test

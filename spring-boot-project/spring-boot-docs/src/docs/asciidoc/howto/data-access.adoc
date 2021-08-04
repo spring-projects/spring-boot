@@ -113,7 +113,7 @@ This example uses a more generic `configuration` sub namespace as the example do
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type` has no effect.
 In practice, the builder is initialized with whatever value you might set there and then overridden by the call to `.type()`.
 
-See "`<<features#features.sql.datasource>>`" in the "`Spring Boot features`" section and the {spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
+See "`<<data#data.sql.datasource>>`" in the "`Spring Boot features`" section and the {spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
 
 

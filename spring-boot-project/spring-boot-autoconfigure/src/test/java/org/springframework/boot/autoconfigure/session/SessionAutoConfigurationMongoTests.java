@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,8 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 					SessionAutoConfiguration.class))
-			.withPropertyValues("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl());
+			.withPropertyValues("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl(),
+					"spring.mongodb.embedded.version=3.5.5");
 
 	@Test
 	void defaultConfig() {

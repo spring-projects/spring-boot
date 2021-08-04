@@ -71,7 +71,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 	private ArgumentCaptor<ResourceLoader> resourceLoaderCaptor;
 
 	@Test
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	void defaultOrderMatchesDeprecatedListener() {
 		assertThat(ConfigDataEnvironmentPostProcessor.ORDER).isEqualTo(ConfigFileApplicationListener.DEFAULT_ORDER);
 	}

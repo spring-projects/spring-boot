@@ -102,6 +102,17 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		assertThat(propertySource.getCount("sprong")).isEqualTo(1);
 	}
 
+	@Test // gh-26732
+	void getPropertyAsTypeWhenHasPlaceholder() {
+		ResolverEnvironment environment = new ResolverEnvironment();
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.withProperty("v1", "1");
+		propertySource.withProperty("v2", "${v1}");
+		environment.getPropertySources().addFirst(propertySource);
+		assertThat(environment.getProperty("v2")).isEqualTo("1");
+		assertThat(environment.getProperty("v2", Integer.class)).isEqualTo(1);
+	}
+
 	private CountingMockPropertySource createMockPropertySource(StandardEnvironment environment, boolean attach) {
 		CountingMockPropertySource propertySource = new CountingMockPropertySource();
 		propertySource.withProperty("spring", "boot");

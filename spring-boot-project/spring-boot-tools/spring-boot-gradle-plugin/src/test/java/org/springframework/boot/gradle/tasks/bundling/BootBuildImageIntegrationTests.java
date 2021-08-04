@@ -42,8 +42,9 @@ import org.junit.jupiter.api.condition.OS;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.boot.buildpack.platform.io.FilePermissions;
 import org.springframework.boot.gradle.junit.GradleCompatibility;
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -234,12 +235,16 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void failsWithLaunchScript() throws IOException {
+	void buildsImageWithLaunchScript() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains("not compatible with buildpacks");
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
+		removeImage(projectName);
 	}
 
 	@TestTemplate
@@ -312,8 +317,14 @@ class BootBuildImageIntegrationTests {
 	}
 
 	private void writeBuildpackContent() throws IOException {
+		FileAttribute<Set<PosixFilePermission>> dirAttribute = PosixFilePermissions
+				.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x"));
+		FileAttribute<Set<PosixFilePermission>> execFileAttribute = PosixFilePermissions
+				.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
 		File buildpackDir = new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world");
-		buildpackDir.mkdirs();
+		Files.createDirectories(buildpackDir.toPath(), dirAttribute);
+		File binDir = new File(buildpackDir, "bin");
+		Files.createDirectories(binDir.toPath(), dirAttribute);
 		File descriptor = new File(buildpackDir, "buildpack.toml");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(descriptor))) {
 			writer.println("api = \"0.2\"");
@@ -325,17 +336,13 @@ class BootBuildImageIntegrationTests {
 			writer.println("[[stacks]]\n");
 			writer.println("id = \"io.buildpacks.stacks.bionic\"");
 		}
-		File binDir = new File(buildpackDir, "bin");
-		binDir.mkdirs();
-		FileAttribute<Set<PosixFilePermission>> attribute = PosixFilePermissions
-				.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
-		File detect = Files.createFile(Paths.get(binDir.getAbsolutePath(), "detect"), attribute).toFile();
+		File detect = Files.createFile(Paths.get(binDir.getAbsolutePath(), "detect"), execFileAttribute).toFile();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(detect))) {
 			writer.println("#!/usr/bin/env bash");
 			writer.println("set -eo pipefail");
 			writer.println("exit 0");
 		}
-		File build = Files.createFile(Paths.get(binDir.getAbsolutePath(), "build"), attribute).toFile();
+		File build = Files.createFile(Paths.get(binDir.getAbsolutePath(), "build"), execFileAttribute).toFile();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(build))) {
 			writer.println("#!/usr/bin/env bash");
 			writer.println("set -eo pipefail");
@@ -349,16 +356,33 @@ class BootBuildImageIntegrationTests {
 		Path tarGzipPath = Paths.get(this.gradleBuild.getProjectDir().getAbsolutePath(), "hello-world.tgz");
 		try (TarArchiveOutputStream tar = new TarArchiveOutputStream(
 				new GzipCompressorOutputStream(Files.newOutputStream(Files.createFile(tarGzipPath))))) {
-			writeFileToTar(tar, new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world/buildpack.toml"),
-					"buildpack.toml", 0644);
-			writeFileToTar(tar, new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world/bin/detect"),
-					"bin/detect", 0777);
-			writeFileToTar(tar, new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world/bin/build"),
-					"bin/build", 0777);
+			File buildpackDir = new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world");
+			writeDirectoryToTar(tar, buildpackDir, buildpackDir.getAbsolutePath());
 		}
 	}
 
-	private void writeFileToTar(TarArchiveOutputStream tar, File file, String name, int mode) throws IOException {
+	private void writeDirectoryToTar(TarArchiveOutputStream tar, File dir, String baseDirPath) throws IOException {
+		for (File file : dir.listFiles()) {
+			String name = file.getAbsolutePath().replace(baseDirPath, "");
+			int mode = FilePermissions.umaskForPath(file.toPath());
+			if (file.isDirectory()) {
+				writeTarEntry(tar, name + "/", mode);
+				writeDirectoryToTar(tar, file, baseDirPath);
+			}
+			else {
+				writeTarEntry(tar, file, name, mode);
+			}
+		}
+	}
+
+	private void writeTarEntry(TarArchiveOutputStream tar, String name, int mode) throws IOException {
+		TarArchiveEntry entry = new TarArchiveEntry(name);
+		entry.setMode(mode);
+		tar.putArchiveEntry(entry);
+		tar.closeArchiveEntry();
+	}
+
+	private void writeTarEntry(TarArchiveOutputStream tar, File file, String name, int mode) throws IOException {
 		TarArchiveEntry entry = new TarArchiveEntry(file, name);
 		entry.setMode(mode);
 		tar.putArchiveEntry(entry);

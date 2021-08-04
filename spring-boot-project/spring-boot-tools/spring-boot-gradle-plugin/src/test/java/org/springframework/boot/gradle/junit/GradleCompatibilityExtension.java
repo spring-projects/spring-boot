@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.gradle.api.JavaVersion;
 import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
@@ -30,8 +29,9 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.AnnotationUtils;
 
-import org.springframework.boot.gradle.testkit.GradleBuild;
-import org.springframework.boot.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 import org.springframework.util.StringUtils;
 
 /**
@@ -43,26 +43,11 @@ import org.springframework.util.StringUtils;
  */
 final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
-	private static final List<String> GRADLE_VERSIONS;
-
-	static {
-		JavaVersion javaVersion = JavaVersion.current();
-		if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
-			GRADLE_VERSIONS = Arrays.asList("7.0.2");
-		}
-		else {
-			GRADLE_VERSIONS = Arrays.asList("6.8.3", "current", "7.0.2");
-		}
-	}
+	private static final List<String> GRADLE_VERSIONS = GradleVersions.allCompatible();
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		Stream<String> gradleVersions = GRADLE_VERSIONS.stream().map((version) -> {
-			if (version.equals("current")) {
-				return GradleVersion.current().getVersion();
-			}
-			return version;
-		});
+		Stream<String> gradleVersions = GRADLE_VERSIONS.stream();
 		GradleCompatibility gradleCompatibility = AnnotationUtils
 				.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class).get();
 		if (StringUtils.hasText(gradleCompatibility.versionsLessThan())) {

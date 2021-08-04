@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -59,6 +60,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -609,12 +611,13 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
 	}
 
-	@Test
+	@Test // gh-26858
 	void runWhenImportWithProfileVariantOrdersPropertySourcesCorrectly() {
 		this.application.setAdditionalProfiles("dev");
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
-		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported-dev");
+		assertThat(context.getEnvironment().getProperty("my.value"))
+				.isEqualTo("application-import-with-profile-variant-imported-dev");
 	}
 
 	@Test
@@ -622,7 +625,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		this.application.setAdditionalProfiles("dev");
 		ConfigurableApplicationContext context = this.application.run(
 				"--spring.config.location=classpath:application-import-with-profile-variant-and-direct-profile-import.properties");
-		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported-dev");
+		assertThat(context.getEnvironment().getProperty("my.value"))
+				.isEqualTo("application-import-with-profile-variant-imported-dev");
 	}
 
 	@Test
@@ -706,6 +710,18 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	void runWhenOptionalWildcardLocationDoesNotExistDoesNotThrowException() {
+		assertThatNoException().isThrownBy(() -> this.application.run(
+				"--spring.config.location=optional:file:src/test/resources/nonexistent/*/testproperties.properties"));
+	}
+
+	@Test
+	void runWhenMandatoryWildcardLocationDoesNotExistThrowsException() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(() -> this.application
+				.run("--spring.config.location=file:src/test/resources/nonexistent/*/testproperties.properties"));
+	}
+
+	@Test
 	void runWhenMandatoryWildcardLocationHasEmptyFileDirectory() {
 		assertThatNoException()
 				.isThrownBy(() -> this.application.run("--spring.config.location=file:src/test/resources/config/*/"));
@@ -713,16 +729,28 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	@Test
 	void runWhenMandatoryWildcardLocationHasNoSubdirectories() {
-		assertThatIllegalStateException().isThrownBy(
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
 				() -> this.application.run("--spring.config.location=file:src/test/resources/config/0-empty/*/"))
 				.withMessage(
-						"No subdirectories found for mandatory directory location 'file:src/test/resources/config/0-empty/*/'.");
+						"Config data location 'file:src/test/resources/config/0-empty/*/' contains no subdirectories");
 	}
 
 	@Test
 	void runWhenHasMandatoryWildcardLocationThatDoesNotExist() {
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
 				.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
+	}
+
+	@Test
+	void runWhenHasOptionalWildcardLocationThatDoesNotExistDoesNotThrow() {
+		assertThatNoException()
+				.isThrownBy(() -> this.application.run("--spring.config.location=optional:file:invalid/*/"));
+	}
+
+	@Test
+	void runWhenOptionalWildcardLocationHasNoSubdirectoriesDoesNotThrow() {
+		assertThatNoException().isThrownBy(() -> this.application
+				.run("--spring.config.location=optional:file:src/test/resources/config/0-empty/*/"));
 	}
 
 	@Test // gh-24990
@@ -732,6 +760,43 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("test1")).isEqualTo("test1");
 		assertThat(environment.getProperty("test2")).isEqualTo("test2");
+	}
+
+	@Test // gh-26960
+	void runWhenHasProfileSpecificImportWithImportImportsSecondProfileSpecificFile() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=application-profile-specific-import-with-import");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p1")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p2")).isFalse();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p1")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p2")).isTrue();
+	}
+
+	@Test // gh-26960
+	void runWhenHasProfileSpecificImportWithCustomImportResolvesProfileSpecific() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=application-profile-specific-import-with-custom-import");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.containsProperty("test:boot")).isTrue();
+		assertThat(environment.containsProperty("test:boot:ps")).isTrue();
+	}
+
+	@Test // gh-26593
+	void runWhenHasFilesInRootAndConfigWithProfiles() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=file-in-root-and-config-with-profile", "--spring.profiles.active=p1,p2");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.containsProperty("file-in-root-and-config-with-profile")).isTrue();
+		assertThat(environment.containsProperty("file-in-root-and-config-with-profile-p1")).isTrue();
+		assertThat(environment.containsProperty("file-in-root-and-config-with-profile-p2")).isTrue();
+		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile")).isTrue();
+		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile-p1")).isTrue();
+		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile-p2")).isTrue();
+		assertThat(environment.getProperty("v1")).isEqualTo("config-file-in-root-and-config-with-profile-p2");
+		assertThat(environment.getProperty("v2")).isEqualTo("file-in-root-and-config-with-profile-p2");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
@@ -771,7 +836,14 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		public List<TestConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 				ConfigDataLocation location)
 				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
-			return Collections.singletonList(new TestConfigDataResource(location));
+			return Collections.singletonList(new TestConfigDataResource(location, false));
+		}
+
+		@Override
+		public List<TestConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
+				ConfigDataLocation location, org.springframework.boot.context.config.Profiles profiles)
+				throws ConfigDataLocationNotFoundException {
+			return Collections.singletonList(new TestConfigDataResource(location, true));
 		}
 
 	}
@@ -784,8 +856,13 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 			if (resource.isOptional()) {
 				return null;
 			}
-			MapPropertySource propertySource = new MapPropertySource("loaded",
-					Collections.singletonMap("spring", "boot"));
+			Map<String, Object> map = new LinkedHashMap<>();
+			if (!resource.isProfileSpecific()) {
+				map.put("spring", "boot");
+			}
+			String suffix = (!resource.isProfileSpecific()) ? "" : ":ps";
+			map.put(resource.toString() + suffix, "true");
+			MapPropertySource propertySource = new MapPropertySource("loaded" + suffix, map);
 			return new ConfigData(Collections.singleton(propertySource));
 		}
 
@@ -793,8 +870,41 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	static class TestConfigDataResource extends ConfigDataResource {
 
-		TestConfigDataResource(ConfigDataLocation location) {
+		private final ConfigDataLocation location;
+
+		private boolean profileSpecific;
+
+		TestConfigDataResource(ConfigDataLocation location, boolean profileSpecific) {
 			super(location.toString().contains("optionalresult"));
+			this.location = location;
+			this.profileSpecific = profileSpecific;
+		}
+
+		boolean isProfileSpecific() {
+			return this.profileSpecific;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			TestConfigDataResource other = (TestConfigDataResource) obj;
+			return ObjectUtils.nullSafeEquals(this.location, other.location)
+					&& this.profileSpecific == other.profileSpecific;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public String toString() {
+			return this.location.toString();
 		}
 
 	}

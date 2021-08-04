@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +32,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.io.InputStreamSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -235,6 +244,43 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 					.get(context.getId()).getBeans().get("hikariDataSource");
 			Map<String, Object> nestedProperties = hikariDataSource.getProperties();
 			assertThat(nestedProperties).doesNotContainKey("error");
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void endpointResponseUsesToStringOfCharSequenceAsPropertyValue() throws IOException {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withInitializer((context) -> {
+			ConfigurableEnvironment environment = context.getEnvironment();
+			environment.getPropertySources().addFirst(new MapPropertySource("test",
+					Collections.singletonMap("foo.name", new CharSequenceProperty("Spring Boot"))));
+		}).withUserConfiguration(FooConfig.class);
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor descriptor = applicationProperties.getContexts().get(context.getId())
+					.getBeans().get("foo");
+			assertThat((Map<String, Object>) descriptor.getInputs().get("name")).containsEntry("value", "Spring Boot");
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void endpointResponseUsesPlaceholderForComplexValueAsPropertyValue() throws IOException {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withInitializer((context) -> {
+			ConfigurableEnvironment environment = context.getEnvironment();
+			environment.getPropertySources().addFirst(new MapPropertySource("test",
+					Collections.singletonMap("foo.name", new ComplexProperty("Spring Boot"))));
+		}).withUserConfiguration(ComplexPropertyToStringConverter.class, FooConfig.class);
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
+			ConfigurationPropertiesBeanDescriptor descriptor = applicationProperties.getContexts().get(context.getId())
+					.getBeans().get("foo");
+			assertThat((Map<String, Object>) descriptor.getInputs().get("name")).containsEntry("value",
+					"Complex property value " + ComplexProperty.class.getName());
 		});
 	}
 
@@ -514,6 +560,61 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 		@ConfigurationProperties(prefix = "test.datasource")
 		HikariDataSource hikariDataSource() {
 			return new HikariDataSource();
+		}
+
+	}
+
+	static class CharSequenceProperty implements CharSequence, InputStreamSource {
+
+		private final String value;
+
+		CharSequenceProperty(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public int length() {
+			return this.value.length();
+		}
+
+		@Override
+		public char charAt(int index) {
+			return this.value.charAt(index);
+		}
+
+		@Override
+		public CharSequence subSequence(int start, int end) {
+			return this.value.subSequence(start, end);
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+		@Override
+		public InputStream getInputStream() throws IOException {
+			return new ByteArrayInputStream(this.value.getBytes());
+		}
+
+	}
+
+	static class ComplexProperty {
+
+		private final String value;
+
+		ComplexProperty(String value) {
+			this.value = value;
+		}
+
+	}
+
+	@ConfigurationPropertiesBinding
+	static class ComplexPropertyToStringConverter implements Converter<ComplexProperty, String> {
+
+		@Override
+		public String convert(ComplexProperty source) {
+			return source.value;
 		}
 
 	}

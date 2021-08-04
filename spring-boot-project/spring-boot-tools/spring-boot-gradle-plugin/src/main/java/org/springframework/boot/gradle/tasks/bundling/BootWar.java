@@ -116,18 +116,6 @@ public class BootWar extends War implements BootArchive {
 	}
 
 	@Override
-	@Deprecated
-	public String getMainClassName() {
-		return this.mainClass.getOrNull();
-	}
-
-	@Override
-	@Deprecated
-	public void setMainClassName(String mainClassName) {
-		this.mainClass.set(mainClassName);
-	}
-
-	@Override
 	public void requiresUnpack(String... patterns) {
 		this.support.requiresUnpack(patterns);
 	}

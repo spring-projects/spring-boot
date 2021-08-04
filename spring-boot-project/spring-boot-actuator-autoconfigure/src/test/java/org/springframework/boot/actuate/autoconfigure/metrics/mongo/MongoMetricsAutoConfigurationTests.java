@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.connection.ConnectionPoolSettings;
 import com.mongodb.event.ConnectionPoolListener;
 import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
@@ -176,18 +177,15 @@ class MongoMetricsAutoConfigurationTests {
 
 	private MongoClientSettings getActualMongoClientSettingsUsedToConstructClient(
 			final AssertableApplicationContext context) {
-		final MongoClient mongoClient = context.getBean(MongoClient.class);
-		return (MongoClientSettings) ReflectionTestUtils.getField(mongoClient, "settings");
+		final MongoClientImpl mongoClient = (MongoClientImpl) context.getBean(MongoClient.class);
+		return mongoClient.getSettings();
 	}
 
 	private List<ConnectionPoolListener> getConnectionPoolListenersFromClient(
 			final AssertableApplicationContext context) {
 		MongoClientSettings mongoClientSettings = getActualMongoClientSettingsUsedToConstructClient(context);
 		ConnectionPoolSettings connectionPoolSettings = mongoClientSettings.getConnectionPoolSettings();
-		@SuppressWarnings("unchecked")
-		List<ConnectionPoolListener> listeners = (List<ConnectionPoolListener>) ReflectionTestUtils
-				.getField(connectionPoolSettings, "connectionPoolListeners");
-		return listeners;
+		return connectionPoolSettings.getConnectionPoolListeners();
 	}
 
 	private MongoCommandTagsProvider getMongoCommandTagsProviderUsedToConstructListener(

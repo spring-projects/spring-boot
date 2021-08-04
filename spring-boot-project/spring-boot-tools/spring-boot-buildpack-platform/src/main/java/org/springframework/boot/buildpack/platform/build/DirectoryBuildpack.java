@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.PosixFileAttributeView;
 
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
@@ -82,7 +81,16 @@ final class DirectoryBuildpack implements Buildpack {
 	private void addLayerContent(Layout layout) throws IOException {
 		String id = this.coordinates.getSanitizedId();
 		Path cnbPath = Paths.get("/cnb/buildpacks/", id, this.coordinates.getVersion());
+		writeBasePathEntries(layout, cnbPath);
 		Files.walkFileTree(this.path, new LayoutFileVisitor(this.path, cnbPath, layout));
+	}
+
+	private void writeBasePathEntries(Layout layout, Path basePath) throws IOException {
+		int pathCount = basePath.getNameCount();
+		for (int pathIndex = 1; pathIndex < pathCount + 1; pathIndex++) {
+			String name = "/" + basePath.subpath(0, pathIndex) + "/";
+			layout.directory(name, Owner.ROOT);
+		}
 	}
 
 	/**
@@ -117,13 +125,27 @@ final class DirectoryBuildpack implements Buildpack {
 		}
 
 		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-			PosixFileAttributeView attributeView = Files.getFileAttributeView(file, PosixFileAttributeView.class);
-			Assert.state(attributeView != null,
-					"Buildpack content in a directory is not supported on this operating system");
-			int mode = FilePermissions.posixPermissionsToUmask(attributeView.readAttributes().permissions());
-			this.layout.file(relocate(file), Owner.ROOT, mode, Content.of(file.toFile()));
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+			if (!dir.equals(this.basePath)) {
+				this.layout.directory(relocate(dir), Owner.ROOT, getMode(dir));
+			}
 			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			this.layout.file(relocate(file), Owner.ROOT, getMode(file), Content.of(file.toFile()));
+			return FileVisitResult.CONTINUE;
+		}
+
+		private int getMode(Path path) throws IOException {
+			try {
+				return FilePermissions.umaskForPath(path);
+			}
+			catch (IllegalStateException ex) {
+				throw new IllegalStateException(
+						"Buildpack content in a directory is not supported on this operating system");
+			}
 		}
 
 		private String relocate(Path path) {

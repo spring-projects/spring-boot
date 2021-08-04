@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.util.Assert;
 
 /**
@@ -31,8 +28,6 @@ import org.springframework.util.Assert;
  * @see #of(String)
  */
 public class ImageName {
-
-	private static final Pattern PATTERN = Regex.IMAGE_NAME.compile();
 
 	private static final String DEFAULT_DOMAIN = "docker.io";
 
@@ -132,12 +127,22 @@ public class ImageName {
 	 */
 	public static ImageName of(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		Matcher matcher = PATTERN.matcher(value);
-		Assert.isTrue(matcher.matches(),
+		String domain = parseDomain(value);
+		String path = (domain != null) ? value.substring(domain.length() + 1) : value;
+		Assert.isTrue(Regex.PATH.matcher(path).matches(),
 				() -> "Unable to parse name \"" + value + "\". "
 						+ "Image name must be in the form '[domainHost:port/][path/]name', "
 						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
-		return new ImageName(matcher.group("domain"), matcher.group("path"));
+		return new ImageName(domain, path);
+	}
+
+	static String parseDomain(String value) {
+		int firstSlash = value.indexOf('/');
+		String candidate = (firstSlash != -1) ? value.substring(0, firstSlash) : null;
+		if (candidate != null && Regex.DOMAIN.matcher(candidate).matches()) {
+			return candidate;
+		}
+		return null;
 	}
 
 }

@@ -147,7 +147,68 @@ You can also change the interval at which metrics are sent to Datadog:
 
 [[actuator.metrics.export.dynatrace]]
 ==== Dynatrace
-Dynatrace registry pushes metrics to the configured URI periodically.
+Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer].
+Config properties in the `v1` namespace only apply when exporting to the {dynatrace-help}/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
+Config properties in the `v2` namespace only apply when exporting to the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API].
+Please note that this integration can only export to either the `v1` or `v2` version of the API at a time.
+If the `device-id` (required for v1, but not used in v2) is set in the `v1` namespace, metrics will be exported to the `v1` endpoint.
+Otherwise, `v2` is assumed.
+
+
+
+[[actuator.metrics.export.dynatrace.v2-api]]
+===== v2 API
+The v2 API can be used in two ways.
+
+If a local OneAgent is running on the host, metrics will be automatically exported to the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint].
+The ingest endpoint forwards the metrics to the Dynatrace backend.
+This is the default behaviour and requires no special setup beyond a dependency on `io.micrometer:micrometer-registry-dynatrace`.
+
+If no local OneAgent is running, the endpoint of the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
+The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "Ingest metrics" (`metrics.ingest`) permission set.
+It is recommended to limit the scope of the token to this one permission.
+Please ensure that the endpoint URI contains the path (e.g. `/api/v2/metrics/ingest`).
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  metrics:
+	    export:
+	      dynatrace:
+	        # uri: "https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest" for managed deployments.
+	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
+	        api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
+----
+
+When using the Dynatrace v2 API, the following optional features are available:
+
+* Metric key prefix: sets a prefix that will be prepended to all exported metric keys.
+* Enrich with Dynatrace metadata: if a OneAgent or Dynatrace operator is running, enrich metrics with additional metadata (e.g. about the host, process or pod).
+* Default dimensions: specify key-value pairs that are added to all exported metrics.
+  If tags with the same key are specified using Micrometer, they overwrite the default dimensions.
+
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  metrics:
+	    export:
+	      dynatrace:
+	        # specify token and uri or leave blank for OneAgent export
+	        v2:
+	          metric-key-prefix: "your.key.prefix"
+	          enrich-with-dynatrace-metadata: true
+	          default-dimensions:
+	            key1: "value1"
+	            key2: "value2"
+----
+
+
+
+[[actuator.metrics.export.dynatrace.v1-api]]
+===== v1 API (Legacy)
+The Dynatrace v1 API metrics registry pushes metrics to the configured URI periodically using the {dynatrace-help}/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
+For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics will be exported to the Timeseries v1 endpoint.
 To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -156,12 +217,21 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 	  metrics:
 	    export:
 	      dynatrace:
-	        api-token: "YOUR_TOKEN"
-	        device-id: "YOUR_DEVICE_ID"
-	        uri: "YOUR_URI"
+	        # uri: "https://{your-domain}/e/{your-environment-id}" on managed deployments.
+	        uri: "https://{your-environment-id}.live.dynatrace.com"
+	        api-token: "YOUR_TOKEN" # should be read from a secure property source
+	        v1:
+	          device-id: "YOUR_DEVICE_ID"
 ----
 
-You can also change the interval at which metrics are sent to Dynatrace:
+For the v1 API, the base environment URI must be specified without a path as the v1 endpoint path will be added automatically.
+
+
+
+[[actuator.metrics.export.dynatrace.version-independent-settings]]
+===== Version-independent Settings
+In addition to the API endpoint and token, you can also change the interval at which metrics are sent to Dynatrace.
+The default export interval is `60s`.
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -171,6 +241,8 @@ You can also change the interval at which metrics are sent to Dynatrace:
 	      dynatrace:
 	        step: "30s"
 ----
+
+More information on how to set up the Dynatrace exporter for Micrometer can be found in {micrometer-registry-docs}/dynatrace[the Micrometer documentation].
 
 
 
@@ -187,8 +259,6 @@ The location of the Elastic server to use can be provided using the following pr
 	      elastic:
 	        host: "https://elastic.example.com:8086"
 ----
-
-
 
 [[actuator.metrics.export.ganglia]]
 ==== Ganglia
@@ -554,7 +624,7 @@ In most situations, the out-of-the-box defaults will provide sensible metrics th
 [[actuator.metrics.supported.jvm]]
 ==== JVM Metrics
 Auto-configuration will enable JVM Metrics using core Micrometer classes.
-JVM metrics are published under the `jvm.` meter name.
+JVM metrics are published under the `jvm.` and `disk.` meter names.
 
 The following JVM metrics are provided:
 
@@ -562,6 +632,7 @@ The following JVM metrics are provided:
 * Statistics related to garbage collection
 * Threads utilization
 * The Number of classes loaded/unloaded
+* Disk space available
 
 
 
@@ -582,6 +653,13 @@ The following system metrics are provided:
 ==== Logger Metrics
 Auto-configuration enables the event metrics for both Logback and Log4J2.
 Details are published under the `log4j2.events.` or `logback.events.` meter names.
+
+
+
+[[actuator.metrics.supported.tasks]]
+==== Task Execution and Scheduling Metrics
+Auto-configuration enables the instrumentation of all available `ThreadPoolTaskExecutor` and `ThreadPoolTaskScheduler` beans, as long as the underling `ThreadPoolExecutor` is available.
+Metrics are tagged by the name of the executor that is derived from the bean name.
 
 
 
@@ -620,7 +698,7 @@ To add to the default tags, provide one or more ``@Bean``s that implement `WebMv
 To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 TIP: In some cases, exceptions handled in Web controllers are not recorded as request metrics tags.
-Applications can opt-in and record exceptions by <<features#features.developing-web-applications.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt-in and record exceptions by <<web#web.servlet.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
 
 
 
@@ -659,7 +737,7 @@ To add to the default tags, provide one or more ``@Bean``s that implement `WebFl
 To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
-Applications can opt-in and record exceptions by <<features#features.developing-web-applications.spring-webflux.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt-in and record exceptions by <<web#web.reactive.webflux.error-handling, setting handled exceptions as request attributes>>.
 
 
 
@@ -940,6 +1018,13 @@ To disable the auto-configured connection pool metrics, set the following proper
 	      connectionpool:
 	        enabled: false
 ----
+
+
+
+[[actuator.metrics.supported.jetty]]
+==== Jetty Metrics
+Auto-configuration will bind metrics for Jetty's `ThreadPool` using Micrometer's `JettyServerThreadPoolMetrics`.
+Metrics for Jetty's ``Connector``s are bound using Micrometer's `JettyConnectionMetrics` and, in addition when configprop:server.ssl.enabled[] is set to `true`, Micrometer's `JettySslHandshakeMetrics`.
 
 
 

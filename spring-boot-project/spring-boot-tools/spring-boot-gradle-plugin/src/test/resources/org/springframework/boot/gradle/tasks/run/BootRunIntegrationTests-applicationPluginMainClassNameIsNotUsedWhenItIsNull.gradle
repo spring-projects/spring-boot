@@ -5,6 +5,6 @@ plugins {
 
 bootRun {
 	doFirst {
-		println "Main class name = ${bootRun.main}"
+		println "Main class name = ${bootRun.mainClass.get()}"
 	}
 }

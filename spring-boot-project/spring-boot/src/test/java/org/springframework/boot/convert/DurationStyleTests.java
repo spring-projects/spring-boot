@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,9 +231,15 @@ class DurationStyleTests {
 	}
 
 	@Test
-	void printSimpleWithUnitShouldPrintInUnit() {
+	void printSimpleWithSecondsUnitShouldPrintInUnit() {
 		Duration duration = Duration.ofMillis(1000);
 		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.SECONDS)).isEqualTo("1s");
+	}
+
+	@Test
+	void printSimpleWithMicrosUnitShouldPrintInUnit() {
+		Duration duration = Duration.ofNanos(2000);
+		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.MICROS)).isEqualTo("2us");
 	}
 
 }

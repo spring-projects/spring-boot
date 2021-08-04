@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -260,7 +260,7 @@ class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
-		this.contextRunner.withPropertyValues("spring.resources.chain.enabled:true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
 			FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
 			assertThat(registration.getFilter()).isInstanceOf(ResourceUrlEncodingFilter.class);
 			assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
@@ -273,7 +273,7 @@ class ThymeleafServletAutoConfigurationTests {
 	void registerResourceHandlingFilterWithOtherRegistrationBean() {
 		// gh-14897
 		this.contextRunner.withUserConfiguration(FilterRegistrationOtherConfiguration.class)
-				.withPropertyValues("spring.resources.chain.enabled:true").run((context) -> {
+				.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
 					Map<String, FilterRegistrationBean> beans = context.getBeansOfType(FilterRegistrationBean.class);
 					assertThat(beans).hasSize(2);
 					FilterRegistrationBean registration = beans.values().stream()
@@ -288,7 +288,7 @@ class ThymeleafServletAutoConfigurationTests {
 	void registerResourceHandlingFilterWithResourceRegistrationBean() {
 		// gh-14926
 		this.contextRunner.withUserConfiguration(FilterRegistrationResourceConfiguration.class)
-				.withPropertyValues("spring.resources.chain.enabled:true").run((context) -> {
+				.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
 					Map<String, FilterRegistrationBean> beans = context.getBeansOfType(FilterRegistrationBean.class);
 					assertThat(beans).hasSize(1);
 					FilterRegistrationBean registration = beans.values().stream()

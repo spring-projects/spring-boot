@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
@@ -104,10 +103,18 @@ class NettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void setConnectionTimeout() {
-		setupConnectionTimeout(Duration.ofSeconds(1));
+		this.serverProperties.getNetty().setConnectionTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, 1000);
+	}
+
+	@Test
+	void setIdleTimeout() {
+		this.serverProperties.getNetty().setIdleTimeout(Duration.ofSeconds(1));
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verifyIdleTimeout(factory, Duration.ofSeconds(1));
 	}
 
 	@Test
@@ -143,10 +150,16 @@ class NettyWebServerFactoryCustomizerTests {
 		assertThat(options.get(ChannelOption.CONNECT_TIMEOUT_MILLIS)).isEqualTo(expected);
 	}
 
-	private void setupConnectionTimeout(Duration connectionTimeout) {
-		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NONE);
-		this.serverProperties.setMaxHttpHeaderSize(null);
-		this.serverProperties.getNetty().setConnectionTimeout(connectionTimeout);
+	private void verifyIdleTimeout(NettyReactiveWebServerFactory factory, Duration expected) {
+		if (expected == null) {
+			verify(factory, never()).addServerCustomizers(any(NettyServerCustomizer.class));
+			return;
+		}
+		verify(factory, times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		Duration idleTimeout = httpServer.configuration().idleTimeout();
+		assertThat(idleTimeout).isEqualTo(expected);
 	}
 
 }

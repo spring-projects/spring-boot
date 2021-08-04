@@ -42,7 +42,7 @@ import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.thread.ThreadPool;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpDecoderSpec;
 import reactor.netty.http.server.HttpRequestDecoderSpec;
@@ -130,6 +130,7 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.remoteip.protocol-header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remoteip.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.remoteip.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		map.put("server.tomcat.reject-illegal-header", "false");
 		map.put("server.tomcat.background-processor-delay", "10");
 		map.put("server.tomcat.relaxed-path-chars", "|,<");
 		map.put("server.tomcat.relaxed-query-chars", "^  ,  | ");
@@ -152,6 +153,7 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getRemoteip().getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getRemoteip().getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getRemoteip().getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.isRejectIllegalHeader()).isFalse();
 		assertThat(tomcat.getBackgroundProcessorDelay()).hasSeconds(10);
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
 		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
@@ -332,6 +334,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeNettyIdleTimeout() {
+		bind("server.netty.idle-timeout", "10s");
+		assertThat(this.properties.getNetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
+	}
+
+	@Test
 	void tomcatAcceptCountMatchesProtocolDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getAcceptCount()).isEqualTo(getDefaultProtocol().getAcceptCount());
 	}
@@ -406,6 +414,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void tomcatRejectIllegalHeaderMatchesProtocolDefault() throws Exception {
+		assertThat(getDefaultProtocol()).hasFieldOrPropertyWithValue("rejectIllegalHeader",
+				this.properties.getTomcat().isRejectIllegalHeader());
+	}
+
+	@Test
 	void tomcatUseRelativeRedirectsDefaultsToFalse() {
 		assertThat(this.properties.getTomcat().isUseRelativeRedirects()).isFalse();
 	}
@@ -422,11 +436,11 @@ class ServerPropertiesTests {
 	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
-		Server server = (Server) ReflectionTestUtils.getField(jetty, "server");
-		ThreadPool threadPool = (ThreadPool) ReflectionTestUtils.getField(server, "_threadPool");
-		int idleTimeout = (int) ReflectionTestUtils.getField(threadPool, "_idleTimeout");
-		int maxThreads = (int) ReflectionTestUtils.getField(threadPool, "_maxThreads");
-		int minThreads = (int) ReflectionTestUtils.getField(threadPool, "_minThreads");
+		Server server = jetty.getServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
+		int idleTimeout = threadPool.getIdleTimeout();
+		int maxThreads = threadPool.getMaxThreads();
+		int minThreads = threadPool.getMinThreads();
 		assertThat(this.properties.getJetty().getThreads().getIdleTimeout().toMillis()).isEqualTo(idleTimeout);
 		assertThat(this.properties.getJetty().getThreads().getMax()).isEqualTo(maxThreads);
 		assertThat(this.properties.getJetty().getThreads().getMin()).isEqualTo(minThreads);

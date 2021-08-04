@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.Ordered;
+import org.springframework.core.OverridingClassLoader;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +78,29 @@ class InstantiatorTests {
 	}
 
 	@Test
+	void instantiateTypesCreatesInstance() {
+		WithDefaultConstructor instance = createInstantiator(WithDefaultConstructor.class)
+				.instantiateTypes(Collections.singleton(WithDefaultConstructor.class)).get(0);
+		assertThat(instance).isInstanceOf(WithDefaultConstructor.class);
+	}
+
+	@Test
+	void instantiateWithClassLoaderCreatesInstance() {
+		OverridingClassLoader classLoader = new OverridingClassLoader(getClass().getClassLoader()) {
+
+			@Override
+			protected boolean isEligibleForOverriding(String className) {
+				return super.isEligibleForOverriding(className)
+						&& className.equals(WithDefaultConstructorSubclass.class.getName());
+			}
+
+		};
+		WithDefaultConstructor instance = createInstantiator(WithDefaultConstructor.class)
+				.instantiate(classLoader, Collections.singleton(WithDefaultConstructorSubclass.class.getName())).get(0);
+		assertThat(instance.getClass().getClassLoader()).isSameAs(classLoader);
+	}
+
+	@Test
 	void createWhenWrongTypeThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> createInstantiator(WithDefaultConstructor.class)
@@ -96,7 +120,7 @@ class InstantiatorTests {
 		});
 	}
 
-	static class WithDefaultConstructor {
+	static class WithDefaultConstructorSubclass extends WithDefaultConstructor {
 
 	}
 

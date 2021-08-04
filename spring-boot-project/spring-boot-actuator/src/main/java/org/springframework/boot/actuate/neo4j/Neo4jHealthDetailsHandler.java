@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +33,14 @@ class Neo4jHealthDetailsHandler {
 	/**
 	 * Add health details for the specified {@link ResultSummary} and {@code edition}.
 	 * @param builder the {@link Builder} to use
-	 * @param edition the edition of the server
-	 * @param resultSummary server information
+	 * @param healthDetails the health details of the server
 	 */
-	void addHealthDetails(Builder builder, String edition, ResultSummary resultSummary) {
-		ServerInfo serverInfo = resultSummary.server();
-		builder.up().withDetail("server", serverInfo.version() + "@" + serverInfo.address()).withDetail("edition",
-				edition);
-		DatabaseInfo databaseInfo = resultSummary.database();
+	void addHealthDetails(Builder builder, Neo4jHealthDetails healthDetails) {
+		ResultSummary summary = healthDetails.getSummary();
+		ServerInfo serverInfo = summary.server();
+		builder.up().withDetail("server", healthDetails.getVersion() + "@" + serverInfo.address()).withDetail("edition",
+				healthDetails.getEdition());
+		DatabaseInfo databaseInfo = summary.database();
 		if (StringUtils.hasText(databaseInfo.name())) {
 			builder.withDetail("database", databaseInfo.name());
 		}

@@ -135,9 +135,9 @@ Given the examples above, if we have the following configuration:
 The actual application will show the banner (as overridden by configuration) and uses three sources for the `ApplicationContext`.
 The application sources are:
 
-.`MyApplication` (from the code)
-.`MyDatabaseConfig` (from the external config)
-.`MyJmsConfig`(from the external config)
+. `MyApplication` (from the code)
+. `MyDatabaseConfig` (from the external config)
+. `MyJmsConfig`(from the external config)
 
 
 
@@ -234,6 +234,24 @@ In Spring Boot, you can also set the active profile in `application.properties`,
 
 A value set this way is replaced by the System property or environment variable setting but not by the `SpringApplicationBuilder.profiles()` method.
 Thus, the latter Java API can be used to augment the profiles without changing the defaults.
+
+See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section for more information.
+
+
+
+[[howto.properties-and-configuration.set-default-spring-profile-name]]
+=== Set the Default Profile Name
+The default profile is a profile that is enabled if no profile is active.
+By default, the name of the default profile is `default`, but it could be changed using a System property (configprop:spring.profiles.default[]) or an OS environment variable (configprop:spring.profiles.default[format=envvar]).
+
+In Spring Boot, you can also set the default profile name in `application.properties`, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  profiles:
+	    default: "dev"
+----
 
 See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section for more information.
 

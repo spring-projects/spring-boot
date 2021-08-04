@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,24 +60,13 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Set<Artifact> artifacts;
 
+	private final Set<Artifact> includedArtifacts;
+
 	private final Collection<MavenProject> localProjects;
 
 	private final Collection<Dependency> unpacks;
 
 	private final Log log;
-
-	/**
-	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
-	 * @param artifacts the artifacts to represent as libraries
-	 * @param unpacks artifacts that should be unpacked on launch
-	 * @param log the log
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #ArtifactsLibraries(Set, Collection, Collection, Log)}
-	 */
-	@Deprecated
-	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks, Log log) {
-		this(artifacts, Collections.emptyList(), unpacks, log);
-	}
 
 	/**
 	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
@@ -89,7 +79,23 @@ public class ArtifactsLibraries implements Libraries {
 	 */
 	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<MavenProject> localProjects,
 			Collection<Dependency> unpacks, Log log) {
+		this(artifacts, artifacts, localProjects, unpacks, log);
+	}
+
+	/**
+	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
+	 * @param artifacts all artifacts that can be represented as libraries
+	 * @param includedArtifacts the actual artifacts to include in the fat jar
+	 * @param localProjects projects for which {@link Library#isLocal() local} libraries
+	 * should be created
+	 * @param unpacks artifacts that should be unpacked on launch
+	 * @param log the log
+	 * @since 2.4.8
+	 */
+	public ArtifactsLibraries(Set<Artifact> artifacts, Set<Artifact> includedArtifacts,
+			Collection<MavenProject> localProjects, Collection<Dependency> unpacks, Log log) {
 		this.artifacts = artifacts;
+		this.includedArtifacts = includedArtifacts;
 		this.localProjects = localProjects;
 		this.unpacks = unpacks;
 		this.log = log;
@@ -99,18 +105,22 @@ public class ArtifactsLibraries implements Libraries {
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 		Set<String> duplicates = getDuplicates(this.artifacts);
 		for (Artifact artifact : this.artifacts) {
+			String name = getFileName(artifact);
+			File file = artifact.getFile();
 			LibraryScope scope = SCOPES.get(artifact.getScope());
-			if (scope != null && artifact.getFile() != null) {
-				String name = getFileName(artifact);
-				if (duplicates.contains(name)) {
-					this.log.debug("Duplicate found: " + name);
-					name = artifact.getGroupId() + "-" + name;
-					this.log.debug("Renamed to: " + name);
-				}
-				LibraryCoordinates coordinates = new ArtifactLibraryCoordinates(artifact);
-				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact),
-						isLocal(artifact)));
+			if (scope == null || file == null) {
+				continue;
 			}
+			if (duplicates.contains(name)) {
+				this.log.debug("Duplicate found: " + name);
+				name = artifact.getGroupId() + "-" + name;
+				this.log.debug("Renamed to: " + name);
+			}
+			LibraryCoordinates coordinates = new ArtifactLibraryCoordinates(artifact);
+			boolean unpackRequired = isUnpackRequired(artifact);
+			boolean local = isLocal(artifact);
+			boolean included = this.includedArtifacts.contains(artifact);
+			callback.library(new Library(name, file, scope, coordinates, unpackRequired, local, included));
 		}
 	}
 

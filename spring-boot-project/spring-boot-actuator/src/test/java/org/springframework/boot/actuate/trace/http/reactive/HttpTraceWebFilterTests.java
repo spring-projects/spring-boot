@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package org.springframework.boot.actuate.trace.http.reactive;
 
 import java.security.Principal;
-import java.time.Duration;
 import java.util.EnumSet;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTrace.Session;
@@ -55,16 +55,15 @@ class HttpTraceWebFilterTests {
 	@Test
 	void filterTracesExchange() {
 		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
-				(exchange) -> Mono.empty()).block(Duration.ofSeconds(30));
+				(exchange) -> Mono.empty());
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
 	void filterCapturesSessionIdWhenSessionIsUsed() {
-		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")), (exchange) -> {
-			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a", "alpha");
-			return Mono.empty();
-		}).block(Duration.ofSeconds(30));
+		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
+				(exchange) -> exchange.getSession().doOnNext((session) -> session.getAttributes().put("a", "alpha"))
+						.then());
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNotNull();
@@ -73,10 +72,8 @@ class HttpTraceWebFilterTests {
 
 	@Test
 	void filterDoesNotCaptureIdOfUnusedSession() {
-		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")), (exchange) -> {
-			exchange.getSession().block(Duration.ofSeconds(30));
-			return Mono.empty();
-		}).block(Duration.ofSeconds(30));
+		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
+				(exchange) -> exchange.getSession().then());
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNull();
@@ -95,10 +92,7 @@ class HttpTraceWebFilterTests {
 				return Mono.just((T) principal);
 			}
 
-		}, (exchange) -> {
-			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a", "alpha");
-			return Mono.empty();
-		}).block(Duration.ofSeconds(30));
+		}, (exchange) -> exchange.getSession().doOnNext((session) -> session.getAttributes().put("a", "alpha")).then());
 		assertThat(this.repository.findAll()).hasSize(1);
 		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository.findAll()
 				.get(0).getPrincipal();
@@ -106,8 +100,10 @@ class HttpTraceWebFilterTests {
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
 
-	private Mono<Void> executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
-		return this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete()));
+	private void executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
+		StepVerifier.create(
+				this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete())))
+				.verifyComplete();
 	}
 
 }

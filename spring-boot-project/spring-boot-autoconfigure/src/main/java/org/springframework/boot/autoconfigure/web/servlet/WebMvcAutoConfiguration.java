@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.time.Duration;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -180,8 +179,7 @@ public class WebMvcAutoConfiguration {
 	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@Import(EnableWebMvcConfiguration.class)
-	@EnableConfigurationProperties({ WebMvcProperties.class,
-			org.springframework.boot.autoconfigure.web.ResourceProperties.class, WebProperties.class })
+	@EnableConfigurationProperties({ WebMvcProperties.class, WebProperties.class })
 	@Order(0)
 	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ServletContextAware {
 
@@ -203,15 +201,12 @@ public class WebMvcAutoConfiguration {
 
 		private ServletContext servletContext;
 
-		public WebMvcAutoConfigurationAdapter(
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties, WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<HttpMessageConverters> messageConvertersProvider,
+		public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
 				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
-			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
+			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
@@ -399,15 +394,11 @@ public class WebMvcAutoConfiguration {
 
 		private ResourceLoader resourceLoader;
 
-		@SuppressWarnings("deprecation")
-		public EnableWebMvcConfiguration(
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebMvcProperties mvcProperties, WebProperties webProperties,
+		public EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ListableBeanFactory beanFactory) {
-			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
+			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.webProperties = webProperties;
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
@@ -464,18 +455,12 @@ public class WebMvcAutoConfiguration {
 		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
-		@SuppressWarnings("deprecation")
 		public LocaleResolver localeResolver() {
 			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {
 				return new FixedLocaleResolver(this.webProperties.getLocale());
 			}
-			if (this.mvcProperties.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
-				return new FixedLocaleResolver(this.mvcProperties.getLocale());
-			}
 			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-			Locale locale = (this.webProperties.getLocale() != null) ? this.webProperties.getLocale()
-					: this.mvcProperties.getLocale();
-			localeResolver.setDefaultLocale(locale);
+			localeResolver.setDefaultLocale(this.webProperties.getLocale());
 			return localeResolver;
 		}
 
@@ -616,12 +601,9 @@ public class WebMvcAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
 				WebProperties webProperties) {
-			return new ResourceChainResourceHandlerRegistrationCustomizer(
-					resourceProperties.hasBeenCustomized() ? resourceProperties : webProperties.getResources());
+			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());
 		}
 
 	}
@@ -646,7 +628,6 @@ public class WebMvcAutoConfiguration {
 			configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 		}
 
-		@SuppressWarnings("deprecation")
 		private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
 			Strategy strategy = properties.getStrategy();
 			if (properties.isCompressed()) {
@@ -654,11 +635,6 @@ public class WebMvcAutoConfiguration {
 			}
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
-			}
-			if (properties instanceof org.springframework.boot.autoconfigure.web.ResourceProperties.Chain
-					&& ((org.springframework.boot.autoconfigure.web.ResourceProperties.Chain) properties)
-							.isHtmlApplicationCache()) {
-				chain.addTransformer(new org.springframework.web.servlet.resource.AppCacheManifestTransformer());
 			}
 		}
 

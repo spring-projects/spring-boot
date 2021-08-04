@@ -29,20 +29,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -89,6 +90,8 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
+import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.WebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionManager;
 import org.springframework.web.util.pattern.PathPattern;
 
@@ -179,18 +182,16 @@ class WebFluxAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void shouldNotMapResourcesWhenDisabled(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + ".add-mappings:false")
+	@Test
+	void shouldNotMapResourcesWhenDisabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.add-mappings:false")
 				.run((context) -> assertThat(context.getBean("resourceHandlerMapping"))
 						.isNotInstanceOf(SimpleUrlHandlerMapping.class));
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void resourceHandlerChainEnabled(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "chain.enabled:true").run((context) -> {
+	@Test
+	void resourceHandlerChainEnabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
@@ -415,11 +416,10 @@ class WebFluxAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void cachePeriod(String prefix) {
+	@Test
+	void cachePeriod() {
 		Assertions.setExtractBareNamePropertyMethods(false);
-		this.contextRunner.withPropertyValues(prefix + "cache.period:5").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.web.resources.cache.period:5").run((context) -> {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 			assertThat(handlerMap).hasSize(2);
 			for (Object handler : handlerMap.values()) {
@@ -432,12 +432,11 @@ class WebFluxAutoConfigurationTests {
 		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void cacheControl(String prefix) {
+	@Test
+	void cacheControl() {
 		Assertions.setExtractBareNamePropertyMethods(false);
-		this.contextRunner.withPropertyValues(prefix + "cache.cachecontrol.max-age:5",
-				prefix + "cache.cachecontrol.proxy-revalidate:true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
+				"spring.web.resources.cache.cachecontrol.proxy-revalidate:true").run((context) -> {
 					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
@@ -473,14 +472,14 @@ class WebFluxAutoConfigurationTests {
 				});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void welcomePageHandlerMapping(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "static-locations=classpath:/welcome-page/").run((context) -> {
-			assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
-			assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
-					.extracting("order").isEqualTo(1);
-		});
+	@Test
+	void welcomePageHandlerMapping() {
+		this.contextRunner.withPropertyValues("spring.web.resources.static-locations=classpath:/welcome-page/")
+				.run((context) -> {
+					assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
+					assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
+							.extracting("order").isEqualTo(1);
+				});
 	}
 
 	@Test
@@ -565,29 +564,29 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void customSameSteConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.timeout:123",
-				"spring.webflux.session.cookie.name:JSESSIONID", "spring.webflux.session.cookie.domain:.example.com",
-				"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
-				"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
-				"spring.webflux.session.cookie.same-site:strict").run((context) -> {
-					MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
-					MockServerWebExchange exchange = MockServerWebExchange.from(request);
-					WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
-					WebSession webSession = webSessionManager.getSession(exchange).block();
-					webSession.start();
-					exchange.getResponse().setComplete().block();
-					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
-					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
-					assertThat(cookies).isNotEmpty();
-					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
-					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
-					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
-					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
-					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
-					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+	void customWebSessionIdResolverShouldBeApplied() {
+		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolver.class).run(assertExchangeWithSession(
+				(exchange) -> assertThat(exchange.getResponse().getCookies().get("TEST")).isNotEmpty()));
+	}
 
-				});
+	@Test
+	void customSameSiteConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run(
+				assertExchangeWithSession((exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION"))
+						.isNotEmpty().allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
+	}
+
+	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
+			Consumer<MockServerWebExchange> exchange) {
+		return (context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
+			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+			WebSession webSession = webSessionManager.getSession(webExchange).block();
+			webSession.start();
+			webExchange.getResponse().setComplete().block();
+			exchange.accept(webExchange);
+		};
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
@@ -596,6 +595,18 @@ class WebFluxAutoConfigurationTests {
 			return ((SimpleUrlHandlerMapping) mapping).getHandlerMap();
 		}
 		return Collections.emptyMap();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomWebSessionIdResolver {
+
+		@Bean
+		WebSessionIdResolver webSessionIdResolver() {
+			CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
+			resolver.setCookieName("TEST");
+			return resolver;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

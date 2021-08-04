@@ -59,7 +59,7 @@ class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEnd
 
 	@Test
 	void configPropsFilterByPrefix() throws Exception {
-		this.mockMvc.perform(get("/actuator/configprops/spring.resources")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/configprops/spring.jackson")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("configprops/prefixed",
 						preprocessResponse(limit("contexts", getApplicationContext().getId(), "beans")),
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id."),

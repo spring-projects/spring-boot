@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,12 +62,12 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurer() {
-		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer(
+				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
 		configurer.setRetryTemplateCustomizers(
 				this.retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
-		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
 
@@ -85,12 +85,12 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurer() {
-		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer();
+		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer(
+				this.properties);
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
 		configurer.setRetryTemplateCustomizers(
 				this.retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
-		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
 

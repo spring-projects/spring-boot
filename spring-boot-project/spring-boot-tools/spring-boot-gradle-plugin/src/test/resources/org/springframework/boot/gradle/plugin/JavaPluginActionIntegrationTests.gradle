@@ -37,9 +37,13 @@ task('configurationAttributes') {
 }
 
 task('configurationResolvabilityAndConsumability') {
-	doFirst {
-		def configuration = configurations.findByName(configurationName)
-		println "canBeResolved: ${configuration.canBeResolved}"
-		println "canBeConsumed: ${configuration.canBeConsumed}"
+	if (project.hasProperty("configurationName")) {
+		Configuration configuration = configurations.findByName(configurationName)
+		def canBeResolved = configuration.canBeResolved
+		def canBeConsumed = configuration.canBeConsumed
+		doFirst {
+			println "canBeResolved: ${canBeResolved}"
+			println "canBeConsumed: ${canBeConsumed}"
+		}
 	}
 }

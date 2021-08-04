@@ -38,6 +38,7 @@ import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
@@ -126,6 +127,10 @@ class ImageBuildpackTests extends AbstractJsonTests {
 			TarArchive archive = (out) -> {
 				try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
 					tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+					writeTarEntry(tarOut, "/cnb/");
+					writeTarEntry(tarOut, "/cnb/buildpacks/");
+					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/");
+					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/");
 					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml");
 					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
 					tarOut.finish();
@@ -154,16 +159,22 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		});
 		assertThat(layers).hasSize(1);
 		byte[] content = layers.get(0).toByteArray();
-		List<String> names = new ArrayList<>();
+		List<TarArchiveEntry> entries = new ArrayList<>();
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
 			TarArchiveEntry entry = tar.getNextTarEntry();
 			while (entry != null) {
-				names.add(entry.getName());
+				entries.add(entry);
 				entry = tar.getNextTarEntry();
 			}
 		}
-		assertThat(names).containsExactlyInAnyOrder("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml",
-				"cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
+		assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
+				tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
+				tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
+				tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
+				tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
+				tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml", TarArchiveEntry.DEFAULT_FILE_MODE),
+				tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
+						TarArchiveEntry.DEFAULT_FILE_MODE));
 	}
 
 }

@@ -1,0 +1,9 @@
+[[documentation.messaging]]
+== Messaging
+If your application uses any messaging protocol, check out this section:
+
+* *JMS:* <<messaging#messaging.jms, Auto-configuration for ActiveMQ and Artemis, Sending and Receiving messages via JMS>>
+* *AMQP:* <<messaging#messaging.amqp, Auto-configuration for RabbitMQ>>
+* *Kafka:* <<messaging#messaging.kafka, Auto-configuration for Spring Kafka>>
+* *RSocket:* <<messaging#messaging.rsocket, Auto-configuration for Spring Framework's RSocket Support>>
+* *Spring Integration:* <<messaging#messaging.spring-integration, Auto-configuration for Spring Integration>>

@@ -53,13 +53,13 @@ class ConfigDataLoadersTests {
 
 	@Test
 	void createWhenLoaderHasLogParameterInjectsLog() {
-		new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(LoggingConfigDataLoader.class.getName()));
 	}
 
 	@Test
 	void createWhenLoaderHasDeferredLogFactoryParameterInjectsDeferredLogFactory() {
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(DeferredLogFactoryConfigDataLoader.class.getName()));
 		assertThat(loaders).extracting("loaders").asList()
 				.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
@@ -73,7 +73,7 @@ class ConfigDataLoadersTests {
 
 	@Test
 	void createWhenLoaderHasBootstrapParametersInjectsBootstrapContext() {
-		new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(BootstrappingConfigDataLoader.class.getName()));
 		assertThat(this.bootstrapContext.get(String.class)).isEqualTo("boot");
 	}
@@ -81,7 +81,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenSingleLoaderSupportsLocationReturnsLoadedConfigData() throws Exception {
 		TestConfigDataResource location = new TestConfigDataResource("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(TestConfigDataLoader.class.getName()));
 		ConfigData loaded = loaders.load(this.context, location);
 		assertThat(getLoader(loaded)).isInstanceOf(TestConfigDataLoader.class);
@@ -90,7 +90,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenMultipleLoadersSupportLocationThrowsException() {
 		TestConfigDataResource location = new TestConfigDataResource("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(LoggingConfigDataLoader.class.getName(), TestConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
 				.withMessageContaining("Multiple loaders found for resource 'test'");
@@ -99,7 +99,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenNoLoaderSupportsLocationThrowsException() {
 		TestConfigDataResource location = new TestConfigDataResource("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(NonLoadableConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
 				.withMessage("No loader found for resource 'test'");
@@ -108,7 +108,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenGenericTypeDoesNotMatchSkipsLoader() throws Exception {
 		TestConfigDataResource location = new TestConfigDataResource("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(OtherConfigDataLoader.class.getName(), SpecificConfigDataLoader.class.getName()));
 		ConfigData loaded = loaders.load(this.context, location);
 		assertThat(getLoader(loaded)).isInstanceOf(SpecificConfigDataLoader.class);

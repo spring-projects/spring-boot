@@ -73,8 +73,24 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	public boolean initializeDatabase() {
 		ScriptLocationResolver locationResolver = new ScriptLocationResolver(this.resourceLoader);
 		boolean initialized = applySchemaScripts(locationResolver);
-		initialized = applyDataScripts(locationResolver) || initialized;
-		return initialized;
+		return applyDataScripts(locationResolver) || initialized;
+	}
+
+	private boolean isEnabled() {
+		if (this.settings.getMode() == DatabaseInitializationMode.NEVER) {
+			return false;
+		}
+		return this.settings.getMode() == DatabaseInitializationMode.ALWAYS || isEmbeddedDatabase();
+	}
+
+	/**
+	 * Returns whether the database that is to be initialized is embedded.
+	 * @return {@code true} if the database is embedded, otherwise {@code false}
+	 * @since 2.5.1
+	 */
+	protected boolean isEmbeddedDatabase() {
+		throw new IllegalStateException(
+				"Database initialization mode is '" + this.settings.getMode() + "' and database type is unknown");
 	}
 
 	private boolean applySchemaScripts(ScriptLocationResolver locationResolver) {
@@ -87,10 +103,11 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 
 	private boolean applyScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
 		List<Resource> scripts = getScripts(locations, type, locationResolver);
-		if (!scripts.isEmpty()) {
+		if (!scripts.isEmpty() && isEnabled()) {
 			runScripts(scripts);
+			return true;
 		}
-		return !scripts.isEmpty();
+		return false;
 	}
 
 	private List<Resource> getScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
@@ -125,9 +142,6 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	}
 
 	private void runScripts(List<Resource> resources) {
-		if (resources.isEmpty()) {
-			return;
-		}
 		runScripts(resources, this.settings.isContinueOnError(), this.settings.getSeparator(),
 				this.settings.getEncoding());
 	}

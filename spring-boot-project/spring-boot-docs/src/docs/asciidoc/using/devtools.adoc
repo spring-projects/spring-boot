@@ -43,7 +43,7 @@ When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executa
 [[using.devtools.property-defaults]]
 === Property Defaults
 Several of the libraries supported by Spring Boot use caches to improve performance.
-For example, <<features#features.developing-web-applications.spring-mvc.template-engines,template engines>> cache compiled templates to avoid repeatedly parsing template files.
+For example, <<web#web.servlet.spring-mvc.template-engines,template engines>> cache compiled templates to avoid repeatedly parsing template files.
 Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
 
 While caching is very beneficial in production, it can be counter-productive during development, preventing you from seeing the changes you just made in your application.
@@ -284,6 +284,9 @@ For example, to configure restart to always use a <<using#using.devtools.restart
 	    restart:
 	      trigger-file: ".reloadtrigger"
 ----
+
+By default, `$HOME` is the user's home directory.
+To customize this location, set the `SPRING_DEVTOOLS_HOME` environment variable or the `spring.devtools.home` system property.
 
 NOTE: If devtools configuration files are not found in `$HOME/.config/spring-boot`, the root of the `$HOME` directory is searched for the presence of a `.spring-boot-devtools.properties` file.
 This allows you to share the devtools global configuration with applications that are on an older version of Spring Boot that does not support the `$HOME/.config/spring-boot` location.

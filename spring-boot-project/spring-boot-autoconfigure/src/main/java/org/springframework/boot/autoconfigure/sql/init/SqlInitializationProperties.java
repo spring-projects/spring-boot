@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 /**
  * {@link ConfigurationProperties Configuration properties} for initializing an SQL
@@ -73,6 +74,11 @@ public class SqlInitializationProperties {
 	 * Encoding of the schema and data scripts.
 	 */
 	private Charset encoding;
+
+	/**
+	 * Mode to apply when determining whether initialization should be performed.
+	 */
+	private DatabaseInitializationMode mode = DatabaseInitializationMode.EMBEDDED;
 
 	public List<String> getSchemaLocations() {
 		return this.schemaLocations;
@@ -136,6 +142,14 @@ public class SqlInitializationProperties {
 
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	public DatabaseInitializationMode getMode() {
+		return this.mode;
+	}
+
+	public void setMode(DatabaseInitializationMode mode) {
+		this.mode = mode;
 	}
 
 }

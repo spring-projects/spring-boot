@@ -1,0 +1,101 @@
+[[io.rest-client]]
+== Calling REST Services
+If your application calls remote REST services, Spring Boot makes that very convenient using a `RestTemplate` or a `WebClient`.
+
+[[io.rest-client.resttemplate]]
+=== RestTemplate
+If you need to call remote REST services from your application, you can use the Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class.
+Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.
+It does, however, auto-configure a `RestTemplateBuilder`, which can be used to create `RestTemplate` instances when needed.
+The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConverters` are applied to `RestTemplate` instances.
+
+The following code shows a typical example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/resttemplate/MyService.java[]
+----
+
+TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
+For example, to add BASIC auth support, you can use `builder.basicAuthentication("user", "password").build()`.
+
+
+
+[[io.rest-client.resttemplate.customization]]
+==== RestTemplate Customization
+There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured `RestTemplateBuilder` and then call its methods as required.
+Each method call returns a new `RestTemplateBuilder` instance, so the customizations only affect this use of the builder.
+
+To make an application-wide, additive customization, use a `RestTemplateCustomizer` bean.
+All such beans are automatically registered with the auto-configured `RestTemplateBuilder` and are applied to any templates that are built with it.
+
+The following example shows a customizer that configures the use of a proxy for all hosts except `192.168.0.5`:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/resttemplate/customization/MyRestTemplateCustomizer.java[]
+----
+
+Finally, you can also create your own `RestTemplateBuilder` bean.
+To prevent switching off the auto-configuration of a `RestTemplateBuilder` and prevent any `RestTemplateCustomizer` beans from being used, make sure to configure your custom instance with a `RestTemplateBuilderConfigurer`.
+The following example exposes a `RestTemplateBuilder` with what Spring Boot would auto-configure, except that custom connect and read timeouts are also specified:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/resttemplate/customization/MyRestTemplateBuilderConfiguration.java[]
+----
+
+The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
+Doing so switches off the auto-configuration of a `RestTemplateBuilder` and prevents any `RestTemplateCustomizer` beans from being used.
+
+
+[[io.rest-client.webclient]]
+=== WebClient
+If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
+Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
+You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web-reactive.html#webflux-client[section in the Spring Framework docs].
+
+Spring Boot creates and pre-configures a `WebClient.Builder` for you.
+It is strongly advised to inject it in your components and use it to create `WebClient` instances.
+Spring Boot is configuring that builder to share HTTP resources, reflect codecs setup in the same fashion as the server ones (see <<web#web.reactive.webflux.httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
+
+The following code shows a typical example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/webclient/MyService.java[]
+----
+
+
+
+[[io.rest-client.webclient.runtime]]
+==== WebClient Runtime
+Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient`, depending on the libraries available on the application classpath.
+For now, Reactor Netty and Jetty RS client are supported.
+
+The `spring-boot-starter-webflux` starter depends on `io.projectreactor.netty:reactor-netty` by default, which brings both server and client implementations.
+If you choose to use Jetty as a reactive server instead, you should add a dependency on the Jetty Reactive HTTP client library, `org.eclipse.jetty:jetty-reactive-httpclient`.
+Using the same technology for server and client has it advantages, as it will automatically share HTTP resources between client and server.
+
+Developers can override the resource configuration for Jetty and Reactor Netty by providing a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to both clients and servers.
+
+If you wish to override that choice for the client, you can define your own `ClientHttpConnector` bean and have full control over the client configuration.
+
+You can learn more about the {spring-framework-docs}/web-reactive.html#webflux-client-builder[`WebClient` configuration options in the Spring Framework reference documentation].
+
+
+
+[[io.rest-client.webclient.customization]]
+==== WebClient Customization
+There are three main approaches to `WebClient` customization, depending on how broadly you want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured `WebClient.Builder` and then call its methods as required.
+`WebClient.Builder` instances are stateful: Any change on the builder is reflected in all clients subsequently created with it.
+If you want to create several clients with the same builder, you can also consider cloning the builder with `WebClient.Builder other = builder.clone();`.
+
+To make an application-wide, additive customization to all `WebClient.Builder` instances, you can declare `WebClientCustomizer` beans and change the `WebClient.Builder` locally at the point of injection.
+
+Finally, you can fall back to the original API and use `WebClient.create()`.
+In that case, no auto-configuration or `WebClientCustomizer` is applied.

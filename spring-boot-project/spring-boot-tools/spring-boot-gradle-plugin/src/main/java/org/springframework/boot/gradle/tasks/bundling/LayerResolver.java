@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.gradle.api.specs.Spec;
 import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 
 /**
  * Resolver backed by a {@link LayeredSpec} that provides the destination {@link Layer}
@@ -77,9 +78,12 @@ class LayerResolver {
 	private Library asLibrary(FileCopyDetails details) {
 		File file = details.getFile();
 		DependencyDescriptor dependency = this.resolvedDependencies.find(file);
-		return (dependency != null)
-				? new Library(null, file, null, dependency.getCoordinates(), false, dependency.isProjectDependency())
-				: new Library(file, null);
+		if (dependency == null) {
+			return new Library(null, file, null, null, false, false, true);
+		}
+		LibraryCoordinates coordinates = dependency.getCoordinates();
+		boolean projectDependency = dependency.isProjectDependency();
+		return new Library(null, file, null, coordinates, false, projectDependency, true);
 	}
 
 }

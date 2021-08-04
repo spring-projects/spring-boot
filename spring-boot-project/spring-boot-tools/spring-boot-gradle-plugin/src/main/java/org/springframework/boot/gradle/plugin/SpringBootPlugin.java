@@ -76,7 +76,10 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 */
 	public static final String DEVELOPMENT_ONLY_CONFIGURATION_NAME = "developmentOnly";
 
-	static final String PRODUCTION_RUNTIME_CLASSPATH_NAME = "productionRuntimeClasspath";
+	/**
+	 * The name of the {@code productionRuntimeClasspath} configuration.
+	 */
+	public static final String PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME = "productionRuntimeClasspath";
 
 	/**
 	 * The coordinates {@code (group:name:version)} of the
@@ -96,8 +99,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private void verifyGradleVersion() {
 		GradleVersion currentVersion = GradleVersion.current();
 		if (currentVersion.compareTo(GradleVersion.version("6.8")) < 0) {
-			throw new GradleException(
-					"Spring Boot plugin requires Gradle 6.8.x or 7.x. " + "The current version is " + currentVersion);
+			throw new GradleException("Spring Boot plugin requires Gradle 6.8.x, 6.9.x, or 7.x. "
+					+ "The current version is " + currentVersion);
 		}
 	}
 

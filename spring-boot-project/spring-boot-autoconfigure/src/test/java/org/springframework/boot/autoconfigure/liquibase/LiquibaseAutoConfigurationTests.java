@@ -43,6 +43,7 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -93,6 +94,13 @@ class LiquibaseAutoConfigurationTests {
 			SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
 			assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
 		}));
+	}
+
+	@Test
+	void backsOffWithLiquibaseUrlAndNoSpringJdbc() {
+		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
+				.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
+				.run((context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
 	}
 
 	@Test

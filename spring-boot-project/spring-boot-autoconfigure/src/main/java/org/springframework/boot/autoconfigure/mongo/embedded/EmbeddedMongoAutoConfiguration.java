@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded Mongo.
@@ -81,6 +82,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @author Mark Paluch
  * @author Issam El-atif
  * @author Paulius Dambrauskas
+ * @author Chris Bono
  * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -143,6 +145,8 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	private IFeatureAwareVersion determineVersion(EmbeddedMongoProperties embeddedProperties) {
+		Assert.state(embeddedProperties.getVersion() != null, "Set the spring.mongodb.embedded.version property or "
+				+ "define your own MongodConfig bean to use embedded MongoDB");
 		if (embeddedProperties.getFeatures() == null) {
 			for (Version version : Version.values()) {
 				if (version.asInDownloadPath().equals(embeddedProperties.getVersion())) {

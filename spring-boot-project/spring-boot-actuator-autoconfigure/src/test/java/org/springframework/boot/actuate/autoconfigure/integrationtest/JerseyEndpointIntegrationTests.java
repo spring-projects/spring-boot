@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +64,8 @@ class JerseyEndpointIntegrationTests {
 					int port = context
 							.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
 							.getWebServer().getPort();
-					WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+					WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
+							.responseTimeout(Duration.ofMinutes(5)).build();
 					client.get().uri("/actuator").exchange().expectStatus().isNotFound();
 				});
 	}
@@ -81,7 +83,8 @@ class JerseyEndpointIntegrationTests {
 		contextRunner.run((context) -> {
 			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
 					.getWebServer().getPort();
-			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5)).build();
 			client.get().uri("/actuator").exchange().expectStatus().isUnauthorized();
 		});
 
@@ -91,7 +94,8 @@ class JerseyEndpointIntegrationTests {
 		getContextRunner(userConfigurations).run((context) -> {
 			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
 					.getWebServer().getPort();
-			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5)).build();
 			client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
 					.isNotEmpty().jsonPath("_links.restcontroller").doesNotExist().jsonPath("_links.controller")
 					.doesNotExist();

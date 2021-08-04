@@ -135,8 +135,8 @@ class BootZipCopyAction implements CopyAction {
 	}
 
 	private void writeArchive(CopyActionProcessingStream copyActions, OutputStream output) throws IOException {
-		writeLaunchScriptIfNecessary(output);
 		ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(output);
+		writeLaunchScriptIfNecessary(zipOutput);
 		try {
 			setEncodingIfNecessary(zipOutput);
 			Processor processor = new Processor(zipOutput);
@@ -148,15 +148,14 @@ class BootZipCopyAction implements CopyAction {
 		}
 	}
 
-	private void writeLaunchScriptIfNecessary(OutputStream outputStream) {
+	private void writeLaunchScriptIfNecessary(ZipArchiveOutputStream outputStream) {
 		if (this.launchScript == null) {
 			return;
 		}
 		try {
 			File file = this.launchScript.getScript();
 			Map<String, String> properties = this.launchScript.getProperties();
-			outputStream.write(new DefaultLaunchScript(file, properties).toByteArray());
-			outputStream.flush();
+			outputStream.writePreamble(new DefaultLaunchScript(file, properties).toByteArray());
 			this.output.setExecutable(true);
 		}
 		catch (IOException ex) {

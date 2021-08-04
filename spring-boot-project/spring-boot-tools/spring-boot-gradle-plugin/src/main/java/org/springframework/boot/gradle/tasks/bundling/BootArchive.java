@@ -21,11 +21,11 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.model.ReplacedBy;
 import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 
 /**
@@ -43,24 +43,6 @@ public interface BootArchive extends Task {
 	 */
 	@Input
 	Property<String> getMainClass();
-
-	/**
-	 * Returns the fully-qualified main class name of the application.
-	 * @return the fully-qualified name of the application's main class
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of {@link #getMainClass()}.
-	 */
-	@Deprecated
-	@ReplacedBy("mainClass")
-	String getMainClassName();
-
-	/**
-	 * Sets the fully-qualified main class name of the application.
-	 * @param mainClassName the fully-qualified name of the application's main class
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of {@link #getMainClass} and
-	 * {@link Property#set(Object)}
-	 */
-	@Deprecated
-	void setMainClassName(String mainClassName);
 
 	/**
 	 * Adds Ant-style patterns that identify files that must be unpacked from the archive
@@ -82,7 +64,7 @@ public interface BootArchive extends Task {
 	 * @return the launch script configuration, or {@code null} if the launch script has
 	 * not been configured.
 	 */
-	@Input
+	@Nested
 	@Optional
 	LaunchScriptConfiguration getLaunchScript();
 

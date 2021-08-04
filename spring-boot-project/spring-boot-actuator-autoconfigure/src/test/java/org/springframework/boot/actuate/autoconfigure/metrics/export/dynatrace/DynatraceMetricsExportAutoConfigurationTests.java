@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,15 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void failsWithoutAUri() {
+	void failsWithADeviceIdWithoutAUri() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.dynatrace.device-id:dev-1")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(mandatoryProperties())
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(v1MandatoryProperties())
 				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
 						.hasSingleBean(DynatraceConfig.class));
 	}
@@ -85,14 +86,25 @@ class DynatraceMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).with(mandatoryProperties())
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).with(v1MandatoryProperties())
 				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
 						.hasBean("customRegistry").hasSingleBean(DynatraceConfig.class));
 	}
 
 	@Test
-	void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(mandatoryProperties()).run((context) -> {
+	void stopsMeterRegistryForV1ApiWhenContextIsClosed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(v1MandatoryProperties())
+				.run((context) -> {
+					DynatraceMeterRegistry registry = context.getBean(DynatraceMeterRegistry.class);
+					assertThat(registry.isClosed()).isFalse();
+					context.close();
+					assertThat(registry.isClosed()).isTrue();
+				});
+	}
+
+	@Test
+	void stopsMeterRegistryForV2ApiWhenContextIsClosed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			DynatraceMeterRegistry registry = context.getBean(DynatraceMeterRegistry.class);
 			assertThat(registry.isClosed()).isFalse();
 			context.close();
@@ -100,7 +112,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 		});
 	}
 
-	private Function<ApplicationContextRunner, ApplicationContextRunner> mandatoryProperties() {
+	private Function<ApplicationContextRunner, ApplicationContextRunner> v1MandatoryProperties() {
 		return (runner) -> runner.withPropertyValues(
 				"management.metrics.export.dynatrace.uri=https://dynatrace.example.com",
 				"management.metrics.export.dynatrace.api-token=abcde",

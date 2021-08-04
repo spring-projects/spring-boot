@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,19 +50,21 @@ class EnvironmentPostProcessorApplicationListenerTests {
 	private DefaultBootstrapContext bootstrapContext = spy(new DefaultBootstrapContext());
 
 	private EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener(
-			EnvironmentPostProcessorsFactory.of(TestEnvironmentPostProcessor.class), this.deferredLogs);
+			(classLoader) -> EnvironmentPostProcessorsFactory.of(TestEnvironmentPostProcessor.class),
+			this.deferredLogs);
 
 	@Test
 	void createUsesSpringFactories() {
 		EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener();
-		assertThat(listener.getEnvironmentPostProcessors(this.bootstrapContext)).hasSizeGreaterThan(1);
+		assertThat(listener.getEnvironmentPostProcessors(null, this.bootstrapContext)).hasSizeGreaterThan(1);
 	}
 
 	@Test
 	void createWhenHasFactoryUsesFactory() {
 		EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener(
 				EnvironmentPostProcessorsFactory.of(TestEnvironmentPostProcessor.class));
-		List<EnvironmentPostProcessor> postProcessors = listener.getEnvironmentPostProcessors(this.bootstrapContext);
+		List<EnvironmentPostProcessor> postProcessors = listener.getEnvironmentPostProcessors(null,
+				this.bootstrapContext);
 		assertThat(postProcessors).hasSize(1);
 		assertThat(postProcessors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
 	}

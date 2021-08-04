@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -36,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Weix Sun
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
@@ -138,7 +141,17 @@ class RedisAutoConfigurationJedisTests {
 					assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
 					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
 					assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
-					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRunsMillis()).isEqualTo(30000);
+					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
+				});
+	}
+
+	@Test
+	void testRedisConfigurationDisabledPool() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled:false")
+				.run((context) -> {
+					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getClientConfiguration().isUsePooling()).isEqualTo(false);
 				});
 	}
 

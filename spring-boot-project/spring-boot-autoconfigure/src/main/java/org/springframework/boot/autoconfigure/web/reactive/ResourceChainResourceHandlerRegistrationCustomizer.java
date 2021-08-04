@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHand
 		configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 	}
 
-	@SuppressWarnings("deprecation")
 	private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
 		Resources.Chain.Strategy strategy = properties.getStrategy();
 		if (properties.isCompressed()) {
@@ -51,11 +50,6 @@ class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHand
 		}
 		if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 			chain.addResolver(getVersionResourceResolver(strategy));
-		}
-		if ((properties instanceof org.springframework.boot.autoconfigure.web.ResourceProperties.Chain)
-				&& ((org.springframework.boot.autoconfigure.web.ResourceProperties.Chain) properties)
-						.isHtmlApplicationCache()) {
-			chain.addTransformer(new org.springframework.web.reactive.resource.AppCacheManifestTransformer());
 		}
 	}
 

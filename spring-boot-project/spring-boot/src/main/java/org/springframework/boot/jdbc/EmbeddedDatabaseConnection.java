@@ -63,15 +63,6 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * HSQL Database Connection.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link EmbeddedDatabaseConnection#HSQLDB}.
-	 */
-	@Deprecated
-	HSQL(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
-			"jdbc:hsqldb:mem:%s", (url) -> url.contains(":hsqldb:mem:")),
-
-	/**
-	 * HSQL Database Connection.
 	 * @since 2.4.0
 	 */
 	HSQLDB(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
@@ -134,19 +125,6 @@ public enum EmbeddedDatabaseConnection {
 	boolean isDriverCompatible(String driverClass) {
 		return (driverClass != null
 				&& (driverClass.equals(this.driverClass) || driverClass.equals(this.alternativeDriverClass)));
-	}
-
-	/**
-	 * Convenience method to determine if a given driver class name represents an embedded
-	 * database type.
-	 * @param driverClass the driver class
-	 * @return true if the driver class is one of the embedded types
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #isEmbedded(String, String)}
-	 */
-	@Deprecated
-	public static boolean isEmbedded(String driverClass) {
-		return isEmbedded(driverClass, null);
 	}
 
 	/**
@@ -219,7 +197,7 @@ public enum EmbeddedDatabaseConnection {
 			productName = productName.toUpperCase(Locale.ENGLISH);
 			EmbeddedDatabaseConnection[] candidates = EmbeddedDatabaseConnection.values();
 			for (EmbeddedDatabaseConnection candidate : candidates) {
-				if (candidate != NONE && productName.contains(candidate.name())) {
+				if (candidate != NONE && productName.contains(candidate.getType().name())) {
 					String url = metaData.getURL();
 					return (url == null || candidate.isEmbeddedUrl(url));
 				}

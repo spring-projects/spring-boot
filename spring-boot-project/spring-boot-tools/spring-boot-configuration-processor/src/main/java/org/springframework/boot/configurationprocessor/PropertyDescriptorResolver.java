@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,7 +197,8 @@ class PropertyDescriptorResolver {
 		}
 
 		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
-			if (env.hasConstructorBindingAnnotation(type)) {
+			if (env.hasConstructorBindingAnnotation(type)
+					|| "java.lang.Record".equals(type.getSuperclass().toString())) {
 				return true;
 			}
 			if (type.getNestingKind() == NestingKind.MEMBER) {

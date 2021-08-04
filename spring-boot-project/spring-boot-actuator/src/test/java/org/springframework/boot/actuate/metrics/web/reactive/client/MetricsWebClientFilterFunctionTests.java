@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,17 +146,17 @@ class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
+	void filterWhenExceptionAndRetryShouldNotAccumulateRecordTime() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException())
-				.delaySubscription(Duration.ofMillis(300)).cast(ClientResponse.class);
+				.delaySubscription(Duration.ofMillis(1000)).cast(ClientResponse.class);
 		this.filterFunction.filter(request, exchange).retry(1)
 				.onErrorResume(IllegalArgumentException.class, (t) -> Mono.empty()).block(Duration.ofSeconds(5));
 		Timer timer = this.registry.get("http.client.requests")
 				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR").timer();
 		assertThat(timer.count()).isEqualTo(2);
-		assertThat(timer.max(TimeUnit.MILLISECONDS)).isLessThan(600);
+		assertThat(timer.max(TimeUnit.MILLISECONDS)).isLessThan(2000);
 	}
 
 }

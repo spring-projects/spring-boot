@@ -43,6 +43,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -115,7 +116,16 @@ public class StandardConfigDataLocationResolver
 	@Override
 	public List<StandardConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location) throws ConfigDataNotFoundException {
-		return resolve(getReferences(context, location));
+		return resolve(getReferences(context, location.split()));
+	}
+
+	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
+			ConfigDataLocation[] configDataLocations) {
+		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
+		for (ConfigDataLocation configDataLocation : configDataLocations) {
+			references.addAll(getReferences(context, configDataLocation));
+		}
+		return references;
 	}
 
 	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
@@ -135,15 +145,17 @@ public class StandardConfigDataLocationResolver
 	@Override
 	public List<StandardConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location, Profiles profiles) {
-		return resolve(getProfileSpecificReferences(context, location, profiles));
+		return resolve(getProfileSpecificReferences(context, location.split(), profiles));
 	}
 
 	private Set<StandardConfigDataReference> getProfileSpecificReferences(ConfigDataLocationResolverContext context,
-			ConfigDataLocation configDataLocation, Profiles profiles) {
+			ConfigDataLocation[] configDataLocations, Profiles profiles) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
-		String resourceLocation = getResourceLocation(context, configDataLocation);
 		for (String profile : profiles) {
-			references.addAll(getReferences(configDataLocation, resourceLocation, profile));
+			for (ConfigDataLocation configDataLocation : configDataLocations) {
+				String resourceLocation = getResourceLocation(context, configDataLocation);
+				references.addAll(getReferences(configDataLocation, resourceLocation, profile));
+			}
 		}
 		return references;
 	}
@@ -246,7 +258,9 @@ public class StandardConfigDataLocationResolver
 			Set<StandardConfigDataReference> references) {
 		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
-			empty.addAll(resolveEmptyDirectories(reference));
+			if (reference.getDirectory() != null) {
+				empty.addAll(resolveEmptyDirectories(reference));
+			}
 		}
 		return empty;
 	}
@@ -265,10 +279,13 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
-		Resource[] resources = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
-		Assert.state(resources.length > 0,
-				"No subdirectories found for mandatory directory location '" + reference.getDirectory() + "'.");
-		return Arrays.stream(resources).filter(Resource::exists)
+		Resource[] subdirectories = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
+		ConfigDataLocation location = reference.getConfigDataLocation();
+		if (!location.isOptional() && ObjectUtils.isEmpty(subdirectories)) {
+			String message = String.format("Config data location '%s' contains no subdirectories", location);
+			throw new ConfigDataLocationNotFoundException(location, message, null);
+		}
+		return Arrays.stream(subdirectories).filter(Resource::exists)
 				.map((resource) -> new StandardConfigDataResource(reference, resource, true))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

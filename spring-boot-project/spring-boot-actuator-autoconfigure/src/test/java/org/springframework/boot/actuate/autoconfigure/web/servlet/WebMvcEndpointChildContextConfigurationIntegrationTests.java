@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,26 +133,6 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 					.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
 			assertThat(body).isEqualTo("Success");
 		}));
-	}
-
-	@Test
-	void whenManagementServletContextPathIsConfiguredThenEndpointsAreBeneathThatPath() {
-		this.runner.withPropertyValues("management.server.servlet.context-path:/manage")
-				.run(withWebTestClient((client) -> {
-					String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
-							.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
-					assertThat(body).isEqualTo("Success");
-				}));
-	}
-
-	@Test
-	void whenManagementBasePathAndServletContextPathAreConfiguredThenEndpointsAreBeneathBasePath() {
-		this.runner.withPropertyValues("management.server.servlet.context-path:/admin",
-				"management.server.base-path:/manage").run(withWebTestClient((client) -> {
-					String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
-							.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
-					assertThat(body).isEqualTo("Success");
-				}));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> withWebTestClient(Consumer<WebClient> webClient) {

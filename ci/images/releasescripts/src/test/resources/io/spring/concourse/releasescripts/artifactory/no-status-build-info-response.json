@@ -1,0 +1,26 @@
+{
+  "buildInfo": {
+    "version": "1.0.1",
+    "name": "example",
+    "number": "example-build-1",
+    "started": "2019-09-10T12:18:05.430+0000",
+    "durationMillis": 0,
+    "artifactoryPrincipal": "user",
+    "url": "https://my-ci.com",
+    "modules": [
+      {
+        "id": "org.example.demo:demo:2.2.0",
+        "artifacts": [
+          {
+            "type": "jar",
+            "sha1": "ayyyya9151a22cb3145538e523dbbaaaaaaaa",
+            "sha256": "aaaaaaaaa85f5c5093721f3ed0edda8ff8290yyyyyyyyyy",
+            "md5": "aaaaaacddea1724b0b69d8yyyyyyy",
+            "name": "demo-2.2.0.jar"
+          }
+        ]
+      }
+    ]
+  },
+  "uri": "https://my-artifactory-repo.com/api/build/example/example-build-1"
+}

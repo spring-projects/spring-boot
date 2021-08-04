@@ -65,7 +65,7 @@ The processor picks up both classes and methods that are annotated with `@Config
 
 If the class is also annotated with `@ConstructorBinding`, a single constructor is expected and one property is created per constructor parameter.
 Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection and map types (that is detected even if only a getter is present).
-The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok annotations.
+The annotation processor also supports the use of the `@Data`, `@Value`, `@Getter`, and `@Setter` lombok annotations.
 
 Consider the following example:
 

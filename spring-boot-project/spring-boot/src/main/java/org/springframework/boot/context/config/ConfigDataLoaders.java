@@ -51,21 +51,23 @@ class ConfigDataLoaders {
 	 * Create a new {@link ConfigDataLoaders} instance.
 	 * @param logFactory the deferred log factory
 	 * @param bootstrapContext the bootstrap context
-	 * @param classLoader the class loader used when loading from {@code spring.factories}
+	 * @param classLoader the class loader used when loading
 	 */
 	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
 			ClassLoader classLoader) {
-		this(logFactory, bootstrapContext, SpringFactoriesLoader.loadFactoryNames(ConfigDataLoader.class, classLoader));
+		this(logFactory, bootstrapContext, classLoader,
+				SpringFactoriesLoader.loadFactoryNames(ConfigDataLoader.class, classLoader));
 	}
 
 	/**
 	 * Create a new {@link ConfigDataLoaders} instance.
 	 * @param logFactory the deferred log factory
 	 * @param bootstrapContext the bootstrap context
+	 * @param classLoader the class loader used when loading
 	 * @param names the {@link ConfigDataLoader} class names instantiate
 	 */
 	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
-			List<String> names) {
+			ClassLoader classLoader, List<String> names) {
 		this.logger = logFactory.getLog(getClass());
 		Instantiator<ConfigDataLoader<?>> instantiator = new Instantiator<>(ConfigDataLoader.class,
 				(availableParameters) -> {
@@ -75,7 +77,7 @@ class ConfigDataLoaders {
 					availableParameters.add(BootstrapContext.class, bootstrapContext);
 					availableParameters.add(BootstrapRegistry.class, bootstrapContext);
 				});
-		this.loaders = instantiator.instantiate(names);
+		this.loaders = instantiator.instantiate(classLoader, names);
 		this.resourceTypes = getResourceTypes(this.loaders);
 	}
 

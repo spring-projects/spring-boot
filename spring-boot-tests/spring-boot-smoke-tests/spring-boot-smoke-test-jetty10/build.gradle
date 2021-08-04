@@ -1,0 +1,23 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Jetty 10 smoke test"
+
+dependencies {
+	implementation(enforcedPlatform("org.eclipse.jetty:jetty-bom:10.0.5"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty")) {
+		exclude group: "org.eclipse.jetty.websocket", module: "websocket-server"
+		exclude group: "org.eclipse.jetty.websocket", module: "javax-websocket-server-impl"
+	}
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
+		exclude module: "spring-boot-starter-tomcat"
+	}
+	
+	runtimeOnly("org.eclipse.jetty:jetty-alpn-java-server")
+	runtimeOnly("org.eclipse.jetty.http2:http2-server")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+}

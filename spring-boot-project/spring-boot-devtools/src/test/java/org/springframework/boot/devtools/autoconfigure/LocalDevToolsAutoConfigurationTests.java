@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,16 +115,6 @@ class LocalDevToolsAutoConfigurationTests {
 	void resourceCachePeriodIsZero() throws Exception {
 		this.context = getContext(() -> initializeAndRun(WebResourcesConfig.class));
 		Resources properties = this.context.getBean(WebProperties.class).getResources();
-		assertThat(properties.getCache().getPeriod()).isZero();
-	}
-
-	@SuppressWarnings("deprecation")
-	@Test
-	void deprecatedResourceCachePeriodIsZeroWhenDeprecatedResourcePropertiesAreInUse() throws Exception {
-		this.context = getContext(() -> initializeAndRun(WebResourcesConfig.class,
-				Collections.singletonMap("spring.resources.add-mappings", false)));
-		Resources properties = this.context
-				.getBean(org.springframework.boot.autoconfigure.web.ResourceProperties.class);
 		assertThat(properties.getCache().getPeriod()).isZero();
 	}
 
@@ -293,10 +283,9 @@ class LocalDevToolsAutoConfigurationTests {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class, WebProperties.class,
-			org.springframework.boot.autoconfigure.web.ResourceProperties.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
+			WebProperties.class })
 	static class WebResourcesConfig {
 
 	}

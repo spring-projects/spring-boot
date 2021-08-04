@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
 
@@ -55,7 +55,7 @@ public class JdbcSessionProperties {
 	/**
 	 * Database schema initialization mode.
 	 */
-	private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
+	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 	/**
 	 * Sessions flush mode. Determines when session changes are written to the session
@@ -93,11 +93,11 @@ public class JdbcSessionProperties {
 		this.cleanupCron = cleanupCron;
 	}
 
-	public DataSourceInitializationMode getInitializeSchema() {
+	public DatabaseInitializationMode getInitializeSchema() {
 		return this.initializeSchema;
 	}
 
-	public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
+	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 		this.initializeSchema = initializeSchema;
 	}
 

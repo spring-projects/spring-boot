@@ -7,17 +7,10 @@ description = "Starter for using Spring Security's OAuth2/OpenID Connect client 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("com.sun.mail:jakarta.mail")
-	api("org.springframework.security:spring-security-config") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
-	}
-	api("org.springframework.security:spring-security-core") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
-	}
+	api("org.springframework.security:spring-security-config")
+	api("org.springframework.security:spring-security-core")
 	api("org.springframework.security:spring-security-oauth2-client") {
 		exclude group: "com.sun.mail", module: "javax.mail"
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
 	}
-	api("org.springframework.security:spring-security-oauth2-jose") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
-	}
+	api("org.springframework.security:spring-security-oauth2-jose")
 }

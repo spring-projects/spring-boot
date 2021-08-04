@@ -30,7 +30,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.util.Assert;
@@ -54,14 +53,15 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private ClassLoader classLoader;
 
 	/**
-	 * Name of the datasource. Default to "testdb" when using an embedded database.
-	 */
-	private String name;
-
-	/**
 	 * Whether to generate a random datasource name.
 	 */
 	private boolean generateUniqueName = true;
+
+	/**
+	 * Datasource name to use if "generate-unique-name" is false. Defaults to "testdb"
+	 * when using an embedded database, otherwise null.
+	 */
+	private String name;
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -100,7 +100,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * using the available DDL and DML scripts.
 	 */
 	@Deprecated
-	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
+	private org.springframework.boot.jdbc.DataSourceInitializationMode initializationMode = org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
 
 	/**
 	 * Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or
@@ -194,20 +194,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 				.url(determineUrl()).username(determineUsername()).password(determinePassword());
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public boolean isGenerateUniqueName() {
 		return this.generateUniqueName;
 	}
 
 	public void setGenerateUniqueName(boolean generateUniqueName) {
 		this.generateUniqueName = generateUniqueName;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Class<? extends DataSource> getType() {
@@ -392,13 +392,13 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.enabled")
-	public DataSourceInitializationMode getInitializationMode() {
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.mode")
+	public org.springframework.boot.jdbc.DataSourceInitializationMode getInitializationMode() {
 		return this.initializationMode;
 	}
 
 	@Deprecated
-	public void setInitializationMode(DataSourceInitializationMode initializationMode) {
+	public void setInitializationMode(org.springframework.boot.jdbc.DataSourceInitializationMode initializationMode) {
 		this.initializationMode = initializationMode;
 	}
 

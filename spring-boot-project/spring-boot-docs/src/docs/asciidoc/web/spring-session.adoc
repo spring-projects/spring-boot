@@ -1,0 +1,50 @@
+[[web.spring-session]]
+== Spring Session
+Spring Boot provides {spring-session}[Spring Session] auto-configuration for a wide range of data stores.
+When building a Servlet web application, the following stores can be auto-configured:
+
+* JDBC
+* Redis
+* Hazelcast
+* MongoDB
+
+The Servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
+
+When building a reactive web application, the following stores can be auto-configured:
+
+* Redis
+* MongoDB
+
+The reactive auto-configuration replaces the need to use `@Enable*WebSession`.
+
+If a single Spring Session module is present on the classpath, Spring Boot uses that store implementation automatically.
+If you have more than one implementation, you must choose the {spring-boot-autoconfigure-module-code}/session/StoreType.java[`StoreType`] that you wish to use to store the sessions.
+For instance, to use JDBC as the back-end store, you can configure your application as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  session:
+	    store-type: "jdbc"
+----
+
+TIP: You can disable Spring Session by setting the `store-type` to `none`.
+
+Each store has specific additional settings.
+For instance, it is possible to customize the name of the table for the JDBC store, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  session:
+	    jdbc:
+	      table-name: "SESSIONS"
+----
+
+For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
+If that property is not set with a Servlet web application, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+
+
+You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable*WebSession` (Reactive).
+This will cause the auto-configuration to back off.
+Spring Session can then be configured using the annotation's attributes rather than the previously described configuration properties.

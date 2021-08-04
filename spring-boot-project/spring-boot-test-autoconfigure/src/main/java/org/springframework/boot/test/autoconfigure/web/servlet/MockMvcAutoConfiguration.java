@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -28,14 +29,19 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration;
+import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.DispatcherServletCustomizer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -44,12 +50,13 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Brian Clozel
  * @see AutoConfigureWebMvc
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, WebTestClientAutoConfiguration.class })
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
 public class MockMvcAutoConfiguration {
 
@@ -95,6 +102,22 @@ public class MockMvcAutoConfiguration {
 	@ConditionalOnMissingBean
 	public DispatcherServlet dispatcherServlet(MockMvc mockMvc) {
 		return mockMvc.getDispatcherServlet();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ WebClient.class, WebTestClient.class })
+	static class WebTestClientMockMvcConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		WebTestClient webTestClient(MockMvc mockMvc, List<WebTestClientBuilderCustomizer> customizers) {
+			WebTestClient.Builder builder = MockMvcWebTestClient.bindTo(mockMvc);
+			for (WebTestClientBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
+			return builder.build();
+		}
+
 	}
 
 	private static class MockMvcDispatcherServletCustomizer implements DispatcherServletCustomizer {

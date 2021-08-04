@@ -172,8 +172,9 @@ include::{docs-java}/features/testing/springbootapplications/usingapplicationarg
 
 [[features.testing.spring-boot-applications.with-mock-environment]]
 ==== Testing with a mock environment
-By default, `@SpringBootTest` does not start the server.
-If you have web endpoints that you want to test against this mock environment, you can additionally configure {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] as shown in the following example:
+By default, `@SpringBootTest` does not start the server but instead sets up a mock environment for testing web endpoints.
+
+With Spring MVC, we can query our web endpoints using {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] or `WebTestClient`, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -182,7 +183,7 @@ include::{docs-java}/features/testing/springbootapplications/withmockenvironment
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<features#features.testing.spring-boot-applications.spring-mvc-tests,using `@WebMvcTest` instead>>.
 
-Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
+With Spring WebFlux endpoints, you can use {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -195,7 +196,7 @@ Testing within a mocked environment is usually faster than running with a full S
 However, since mocking occurs at the Spring MVC layer, code that relies on lower-level Servlet container behavior cannot be directly tested with MockMvc.
 
 For example, Spring Boot's error handling is based on the "`error page`" support provided by the Servlet container.
-This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<features#features.developing-web-applications.spring-mvc.error-handling.error-pages, custom error page>> is rendered.
+This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<web#web.servlet.spring-mvc.error-handling.error-pages, custom error page>> is rendered.
 If you need to test these lower-level concerns, you can start a fully running server as described in the next section.
 ====
 
@@ -213,6 +214,8 @@ For convenience, tests that need to make REST calls to the started server can ad
 ----
 include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortWebTestClientTests.java[]
 ----
+
+TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
 
 This setup requires `spring-webflux` on the classpath.
 If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate` facility:
@@ -451,7 +454,7 @@ You can use `@DataCassandraTest` to test Cassandra applications.
 By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Cassandra with Spring Boot, see "<<features#features.nosql.cassandra>>", earlier in this chapter.)
+(For more about using Cassandra with Spring Boot, see "<<data#data.nosql.cassandra>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
@@ -552,7 +555,7 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
 If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
-(For more about using jOOQ with Spring Boot, see "<<features#features.sql.jooq>>", earlier in this chapter.)
+(For more about using jOOQ with Spring Boot, see "<<data#data.sql.jooq>>", earlier in this chapter.)
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -577,7 +580,7 @@ You can use `@DataMongoTest` to test MongoDB applications.
 By default, it configures an in-memory embedded MongoDB (if available), configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using MongoDB with Spring Boot, see "<<features#features.nosql.mongodb>>", earlier in this chapter.)
+(For more about using MongoDB with Spring Boot, see "<<data#data.nosql.mongodb>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
@@ -604,7 +607,7 @@ You can use `@DataNeo4jTest` to test Neo4j applications.
 By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Neo4J with Spring Boot, see "<<features#features.nosql.neo4j>>", earlier in this chapter.)
+(For more about using Neo4J with Spring Boot, see "<<data#data.nosql.neo4j>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
@@ -635,7 +638,7 @@ You can use `@DataRedisTest` to test Redis applications.
 By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataRedisTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Redis with Spring Boot, see "<<features#features.nosql.redis>>", earlier in this chapter.)
+(For more about using Redis with Spring Boot, see "<<data#data.nosql.redis>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
@@ -654,7 +657,7 @@ You can use `@DataLdapTest` to test LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for `@Entry` classes, and configures Spring Data LDAP repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataLdapTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using LDAP with Spring Boot, see "<<features#features.nosql.ldap>>", earlier in this chapter.)
+(For more about using LDAP with Spring Boot, see "<<data#data.nosql.ldap>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
@@ -771,9 +774,14 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 
 [[features.testing.spring-boot-applications.autoconfigured-webservices]]
 ==== Auto-configured Spring Web Services Tests
-You can use `@WebServiceClientTest` to test applications that use call web services using the Spring Web Services project.
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.client]]
+===== Auto-configured Spring Web Services Client Tests
+You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
 By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
-(For more about using Web Services with Spring Boot, see "<<features#features.webservices>>", earlier in this chapter.)
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
 
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
@@ -782,7 +790,25 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/MyWebServiceClientTests.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/client/MyWebServiceClientTests.java[]
+----
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.server]]
+===== Auto-configured Spring Web Services Server Tests
+You can use `@WebServiceServerTest` to test applications that implement web services using the Spring Web Services project.
+By default, it configures a `MockWebServiceClient` bean that can be used to call your web service endpoints.
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
+
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@WebServiceServerTest` annotation in use:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/server/MyWebServiceServerTests.java[]
 ----
 
 

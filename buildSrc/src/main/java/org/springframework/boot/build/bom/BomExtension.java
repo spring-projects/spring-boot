@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -47,19 +48,24 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskExecutionException;
-import org.gradle.util.ConfigureUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.DeployedPlugin;
+import org.springframework.boot.build.bom.Library.DependencyConstraintsDependencyVersions;
+import org.springframework.boot.build.bom.Library.DependencyLockDependencyVersions;
+import org.springframework.boot.build.bom.Library.DependencyVersions;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.mavenplugin.MavenExec;
 import org.springframework.util.FileCopyUtils;
@@ -77,7 +83,7 @@ public class BomExtension {
 
 	private final List<Library> libraries = new ArrayList<>();
 
-	private final UpgradeHandler upgradeHandler = new UpgradeHandler();
+	private final UpgradeHandler upgradeHandler;
 
 	private final DependencyHandler dependencyHandler;
 
@@ -85,6 +91,7 @@ public class BomExtension {
 
 	public BomExtension(DependencyHandler dependencyHandler, Project project) {
 		this.dependencyHandler = dependencyHandler;
+		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class);
 		this.project = project;
 	}
 
@@ -92,8 +99,8 @@ public class BomExtension {
 		return this.libraries;
 	}
 
-	public void upgrade(Closure<?> closure) {
-		ConfigureUtil.configure(closure, this.upgradeHandler);
+	public void upgrade(Action<UpgradeHandler> action) {
+		action.execute(this.upgradeHandler);
 	}
 
 	public Upgrade getUpgrade() {
@@ -101,11 +108,19 @@ public class BomExtension {
 				this.upgradeHandler.gitHub.repository, this.upgradeHandler.gitHub.issueLabels));
 	}
 
-	public void library(String name, String version, Closure<?> closure) {
-		LibraryHandler libraryHandler = new LibraryHandler();
-		ConfigureUtil.configure(closure, libraryHandler);
-		addLibrary(new Library(name, DependencyVersion.parse(version), libraryHandler.groups,
-				libraryHandler.prohibitedVersions));
+	public void library(String name, Action<LibraryHandler> action) {
+		this.library(name, null, action);
+	}
+
+	public void library(String name, String version, Action<LibraryHandler> action) {
+		ObjectFactory objects = this.project.getObjects();
+		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "",
+				objects);
+		action.execute(libraryHandler);
+		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version),
+				libraryHandler.versionAlignment);
+		addLibrary(new Library(name, libraryVersion, libraryHandler.groups, libraryHandler.prohibitedVersions,
+				libraryHandler.dependencyVersions));
 	}
 
 	public void effectiveBomArtifact() {
@@ -171,17 +186,18 @@ public class BomExtension {
 		this.libraries.add(library);
 		String versionProperty = library.getVersionProperty();
 		if (versionProperty != null) {
-			this.properties.put(versionProperty, library.getVersion());
+			this.properties.put(versionProperty, library.getVersion().getVersion());
 		}
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
 				putArtifactVersionProperty(group.getId(), module.getName(), versionProperty);
 				this.dependencyHandler.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
-						createDependencyNotation(group.getId(), module.getName(), library.getVersion()));
+						createDependencyNotation(group.getId(), module.getName(), library.getVersion().getVersion()));
 			}
 			for (String bomImport : group.getBoms()) {
 				putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
-				String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion());
+				String bomDependency = createDependencyNotation(group.getId(), bomImport,
+						library.getVersion().getVersion());
 				this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						this.dependencyHandler.platform(bomDependency));
 				this.dependencyHandler.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME,
@@ -196,16 +212,37 @@ public class BomExtension {
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
-		public void group(String id, Closure<?> closure) {
+		private final ObjectFactory objectFactory;
+
+		private String version;
+
+		private VersionAlignment versionAlignment;
+
+		private DependencyVersions dependencyVersions;
+
+		@Inject
+		public LibraryHandler(String version, ObjectFactory objectFactory) {
+			this.version = version;
+			this.objectFactory = objectFactory;
+		}
+
+		public void version(String version, Action<VersionHandler> action) {
+			this.version = version;
+			VersionHandler versionHandler = new VersionHandler();
+			action.execute(versionHandler);
+			this.versionAlignment = new VersionAlignment(versionHandler.libraryName);
+		}
+
+		public void group(String id, Action<GroupHandler> action) {
 			GroupHandler groupHandler = new GroupHandler(id);
-			ConfigureUtil.configure(closure, groupHandler);
+			action.execute(groupHandler);
 			this.groups
 					.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
 		}
 
-		public void prohibit(String range, Closure<?> closure) {
+		public void prohibit(String range, Action<ProhibitedVersionHandler> action) {
 			ProhibitedVersionHandler prohibitedVersionHandler = new ProhibitedVersionHandler();
-			ConfigureUtil.configure(closure, prohibitedVersionHandler);
+			action.execute(prohibitedVersionHandler);
 			try {
 				this.prohibitedVersions.add(new ProhibitedVersion(VersionRange.createFromVersionSpec(range),
 						prohibitedVersionHandler.reason));
@@ -213,6 +250,23 @@ public class BomExtension {
 			catch (InvalidVersionSpecificationException ex) {
 				throw new InvalidUserCodeException("Invalid version range", ex);
 			}
+		}
+
+		public void dependencyVersions(Action<DependencyVersionsHandler> action) {
+			DependencyVersionsHandler dependencyVersionsHandler = this.objectFactory
+					.newInstance(DependencyVersionsHandler.class, this.version);
+			action.execute(dependencyVersionsHandler);
+			this.dependencyVersions = dependencyVersionsHandler.dependencyVersions;
+		}
+
+		public static class VersionHandler {
+
+			private String libraryName;
+
+			public void shouldAlignWithVersionFrom(String libraryName) {
+				this.libraryName = libraryName;
+			}
+
 		}
 
 		public static class ProhibitedVersionHandler {
@@ -258,7 +312,10 @@ public class BomExtension {
 					Object arg = ((Object[]) args)[0];
 					if (arg instanceof Closure) {
 						ExclusionHandler exclusionHandler = new ExclusionHandler();
-						ConfigureUtil.configure((Closure<?>) arg, exclusionHandler);
+						Closure<?> closure = (Closure<?>) arg;
+						closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+						closure.setDelegate(exclusionHandler);
+						closure.call(exclusionHandler);
 						return new Module(name, exclusionHandler.exclusions);
 					}
 				}
@@ -277,6 +334,37 @@ public class BomExtension {
 
 		}
 
+		public static class DependencyVersionsHandler {
+
+			private final String libraryVersion;
+
+			private DependencyVersions dependencyVersions;
+
+			@Inject
+			public DependencyVersionsHandler(String libraryVersion) {
+				this.libraryVersion = libraryVersion;
+			}
+
+			public void extractFrom(Action<ExtractFromHandler> action) {
+				action.execute(new ExtractFromHandler());
+			}
+
+			public class ExtractFromHandler {
+
+				public void dependencyLock(String location) {
+					DependencyVersionsHandler.this.dependencyVersions = new DependencyLockDependencyVersions(location,
+							DependencyVersionsHandler.this.libraryVersion);
+				}
+
+				public void dependencyConstraints(String location) {
+					DependencyVersionsHandler.this.dependencyVersions = new DependencyConstraintsDependencyVersions(
+							location, DependencyVersionsHandler.this.libraryVersion);
+				}
+
+			}
+
+		}
+
 	}
 
 	public static class UpgradeHandler {
@@ -289,8 +377,8 @@ public class BomExtension {
 			this.upgradePolicy = upgradePolicy;
 		}
 
-		public void gitHub(Closure<?> closure) {
-			ConfigureUtil.configure(closure, this.gitHub);
+		public void gitHub(Action<GitHubHandler> action) {
+			action.execute(this.gitHub);
 		}
 
 	}

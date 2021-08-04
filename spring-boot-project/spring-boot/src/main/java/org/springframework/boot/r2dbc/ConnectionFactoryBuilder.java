@@ -29,7 +29,6 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
 import io.r2dbc.spi.ValidationDepth;
-import io.r2dbc.spi.Wrapped;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.Assert;
@@ -93,8 +92,23 @@ public final class ConnectionFactoryBuilder {
 	 * @param connectionFactory the connection factory whose options are to be used to
 	 * initialize the builder
 	 * @return a new builder initialized with the options from the connection factory
+	 * @deprecated since 2.5.1 for removal in 2.7.0 in favor of
+	 * {@link #derivedFrom(ConnectionFactory)}
 	 */
+	@Deprecated
 	public static ConnectionFactoryBuilder derivefrom(ConnectionFactory connectionFactory) {
+		return derivedFrom(connectionFactory);
+	}
+
+	/**
+	 * Initialize a new {@link ConnectionFactoryBuilder} derived from the options of the
+	 * specified {@code connectionFactory}.
+	 * @param connectionFactory the connection factory whose options are to be used to
+	 * initialize the builder
+	 * @return a new builder initialized with the options from the connection factory
+	 * @since 2.5.1
+	 */
+	public static ConnectionFactoryBuilder derivedFrom(ConnectionFactory connectionFactory) {
 		ConnectionFactoryOptions options = extractOptionsIfPossible(connectionFactory);
 		if (options == null) {
 			throw new IllegalArgumentException(
@@ -104,14 +118,9 @@ public final class ConnectionFactoryBuilder {
 	}
 
 	private static ConnectionFactoryOptions extractOptionsIfPossible(ConnectionFactory connectionFactory) {
-		if (connectionFactory instanceof OptionsCapableConnectionFactory) {
-			return ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
-		}
-		if (connectionFactory instanceof Wrapped) {
-			Object unwrapped = ((Wrapped<?>) connectionFactory).unwrap();
-			if (unwrapped instanceof ConnectionFactory) {
-				return extractOptionsIfPossible((ConnectionFactory) unwrapped);
-			}
+		OptionsCapableConnectionFactory optionsCapable = OptionsCapableConnectionFactory.unwrapFrom(connectionFactory);
+		if (optionsCapable != null) {
+			return optionsCapable.getOptions();
 		}
 		return null;
 	}
@@ -221,10 +230,9 @@ public final class ConnectionFactoryBuilder {
 			String[] protocols = protocol.split(COLON, 2);
 			String driverDelegate = protocols[0];
 			String protocolDelegate = (protocols.length != 2) ? "" : protocols[1];
-			ConnectionFactoryOptions newOptions = ConnectionFactoryOptions.builder().from(options)
+			return ConnectionFactoryOptions.builder().from(options)
 					.option(ConnectionFactoryOptions.DRIVER, driverDelegate)
 					.option(ConnectionFactoryOptions.PROTOCOL, protocolDelegate).build();
-			return newOptions;
 		}
 
 		ConnectionPoolConfiguration connectionPoolConfiguration(ConnectionFactoryOptions options,
@@ -253,8 +261,7 @@ public final class ConnectionFactoryBuilder {
 			map.from(options.getValue(PoolingConnectionFactoryProvider.VALIDATION_QUERY)).to(builder::validationQuery);
 			map.from((Object) options.getValue(PoolingConnectionFactoryProvider.VALIDATION_DEPTH))
 					.as(this::toValidationDepth).to(builder::validationDepth);
-			ConnectionPoolConfiguration build = builder.build();
-			return build;
+			return builder.build();
 		}
 
 		private Integer toInteger(Object object) {

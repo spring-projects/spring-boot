@@ -29,26 +29,28 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 /**
  * Base class for testing {@link AbstractScriptDatabaseInitializer} implementations.
  *
+ * @param <T> type of the initializer being tested
  * @author Andy Wilkinson
  */
-public abstract class AbstractScriptDatabaseInitializerTests {
+public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractScriptDatabaseInitializer> {
 
 	@Test
 	void whenDatabaseIsInitializedThenSchemaAndDataScriptsAreApplied() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("schema.sql"));
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
 	}
 
 	@Test
 	void whenContinueOnErrorIsFalseThenInitializationFailsOnError() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
+		assertThatDatabaseWasAccessed(initializer);
 	}
 
 	@Test
@@ -56,46 +58,131 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setContinueOnError(true);
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThatDatabaseWasAccessed(initializer);
 	}
 
 	@Test
 	void whenNoScriptsExistAtASchemaLocationThenInitializationFails() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
 				.withMessage("No schema scripts found at location 'does-not-exist.sql'");
+		assertThatDatabaseWasNotAccessed(initializer);
 	}
 
 	@Test
 	void whenNoScriptsExistAtADataLocationThenInitializationFails() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
 				.withMessage("No data scripts found at location 'does-not-exist.sql'");
+		assertThatDatabaseWasNotAccessed(initializer);
 	}
 
 	@Test
-	void whenNoScriptsExistAtAnOptionalSchemaLocationThenInitializationSucceeds() {
+	void whenNoScriptsExistAtAnOptionalSchemaLocationThenDatabaseIsNotAccessed() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("optional:does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isFalse();
+		assertThatDatabaseWasNotAccessed(initializer);
 	}
 
 	@Test
-	void whenNoScriptsExistAtAnOptionalDataLocationThenInitializationSucceeds() {
+	void whenNoScriptsExistAtAnOptionalDataLocationThenDatabaseIsNotAccessed() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("optional:does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isFalse();
+		assertThatDatabaseWasNotAccessed(initializer);
 	}
 
-	protected abstract AbstractScriptDatabaseInitializer createInitializer(DatabaseInitializationSettings settings);
+	@Test
+	void whenModeIsNeverThenEmbeddedDatabaseIsNotInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.NEVER);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+		assertThatDatabaseWasNotAccessed(initializer);
+	}
 
-	protected abstract int numberOfRows(String sql);
+	@Test
+	void whenModeIsNeverThenStandaloneDatabaseIsNotInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.NEVER);
+		T initializer = createStandaloneDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+		assertThatDatabaseWasNotAccessed(initializer);
+	}
+
+	@Test
+	void whenModeIsEmbeddedThenEmbeddedDatabaseIsInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.EMBEDDED);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+	}
+
+	@Test
+	void whenModeIsEmbeddedThenStandaloneDatabaseIsNotInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.EMBEDDED);
+		T initializer = createStandaloneDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+		assertThatDatabaseWasAccessed(initializer);
+	}
+
+	@Test
+	void whenModeIsAlwaysThenEmbeddedDatabaseIsInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.ALWAYS);
+		T initializer = createEmbeddedDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+	}
+
+	@Test
+	void whenModeIsAlwaysThenStandaloneDatabaseIsInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.ALWAYS);
+		T initializer = createStandaloneDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThat(numberOfStandaloneRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+	}
+
+	protected abstract T createStandaloneDatabaseInitializer(DatabaseInitializationSettings settings);
+
+	protected abstract T createEmbeddedDatabaseInitializer(DatabaseInitializationSettings settings);
+
+	protected abstract int numberOfEmbeddedRows(String sql);
+
+	protected abstract int numberOfStandaloneRows(String sql);
+
+	private void assertThatDatabaseWasAccessed(T initializer) {
+		assertDatabaseAccessed(true, initializer);
+	}
+
+	private void assertThatDatabaseWasNotAccessed(T initializer) {
+		assertDatabaseAccessed(false, initializer);
+	}
+
+	protected abstract void assertDatabaseAccessed(boolean accessed, T initializer);
 
 }
