@@ -570,10 +570,29 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void customSameSiteConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run(
-				assertExchangeWithSession((exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION"))
-						.isNotEmpty().allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
+	void customSessionCookieConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.session.timeout:123",
+				"spring.webflux.session.cookie.name:JSESSIONID", "spring.webflux.session.cookie.domain:.example.com",
+				"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
+				"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
+				"spring.webflux.session.cookie.same-site:strict").run((context) -> {
+					MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+					MockServerWebExchange exchange = MockServerWebExchange.from(request);
+					WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+					WebSession webSession = webSessionManager.getSession(exchange).block();
+					webSession.start();
+					exchange.getResponse().setComplete().block();
+					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
+					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+					assertThat(cookies).isNotEmpty();
+					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+
+				});
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
