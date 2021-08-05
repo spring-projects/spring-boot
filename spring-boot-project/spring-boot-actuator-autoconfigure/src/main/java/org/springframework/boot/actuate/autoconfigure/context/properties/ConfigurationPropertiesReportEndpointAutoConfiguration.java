@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.context.properties;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -46,7 +49,19 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 		if (keysToSanitize != null) {
 			endpoint.setKeysToSanitize(keysToSanitize);
 		}
+		String[] additionalKeysToSanitize = properties.getAdditionalKeysToSanitize();
+		if (additionalKeysToSanitize != null) {
+			endpoint.keysToSanitize(additionalKeysToSanitize);
+		}
 		return endpoint;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
+	public ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
+			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint) {
+		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint);
 	}
 
 }

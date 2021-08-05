@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.client;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -304,7 +303,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void basicAuthenticationShouldApply() throws Exception {
+	void basicAuthenticationShouldApply() {
 		RestTemplate template = this.builder.basicAuthentication("spring", "boot", StandardCharsets.UTF_8).build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).containsOnlyKeys(HttpHeaders.AUTHORIZATION);
@@ -312,14 +311,14 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void defaultHeaderAddsHeader() throws IOException {
+	void defaultHeaderAddsHeader() {
 		RestTemplate template = this.builder.defaultHeader("spring", "boot").build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("boot")));
 	}
 
 	@Test
-	void defaultHeaderAddsHeaderValues() throws IOException {
+	void defaultHeaderAddsHeaderValues() {
 		String name = HttpHeaders.ACCEPT;
 		String[] values = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE };
 		RestTemplate template = this.builder.defaultHeader(name, values).build();
@@ -328,7 +327,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test // gh-17885
-	void defaultHeaderWhenUsingMockRestServiceServerAddsHeader() throws IOException {
+	void defaultHeaderWhenUsingMockRestServiceServerAddsHeader() {
 		RestTemplate template = this.builder.defaultHeader("spring", "boot").build();
 		MockRestServiceServer.bindTo(template).build();
 		ClientHttpRequest request = createRequest(template);
@@ -336,7 +335,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void requestCustomizersAddsCustomizers() throws IOException {
+	void requestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
 				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework")).build();
 		ClientHttpRequest request = createRequest(template);
@@ -344,7 +343,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void additionalRequestCustomizersAddsCustomizers() throws IOException {
+	void additionalRequestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
 				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
 				.additionalRequestCustomizers((request) -> request.getHeaders().add("for", "java")).build();

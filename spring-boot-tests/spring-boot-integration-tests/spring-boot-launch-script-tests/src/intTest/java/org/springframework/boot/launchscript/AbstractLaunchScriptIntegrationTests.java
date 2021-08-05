@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -105,17 +106,16 @@ abstract class AbstractLaunchScriptIntegrationTests {
 			withCopyFileToContainer(
 					MountableFile.forHostPath("src/intTest/resources/scripts/" + scriptsDir + testScript),
 					"/" + testScript);
-			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
+			withCommand("/bin/bash", "-c",
+					"chown root:root *.sh && chown root:root *.jar && chmod +x " + testScript + " && ./" + testScript);
 			withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)));
 		}
 
 		private static File findApplication() {
-			File appJar = new File("build/app/build/libs/app.jar");
-			if (appJar.isFile()) {
-				return appJar;
-			}
-			throw new IllegalStateException(
-					"Could not find test application in build/app/build/libs directory. Have you built it?");
+			String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-launch-script-tests-app");
+			File jar = new File(name);
+			Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
+			return jar;
 		}
 
 	}

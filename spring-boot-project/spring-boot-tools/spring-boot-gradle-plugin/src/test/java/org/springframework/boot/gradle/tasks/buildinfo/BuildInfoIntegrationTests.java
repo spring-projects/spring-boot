@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,12 @@ import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Properties;
 
-import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
-import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -80,7 +78,7 @@ class BuildInfoIntegrationTests {
 		Properties second = buildInfoProperties();
 		String secondBuildTime = second.getProperty("build.time");
 		assertThat(secondBuildTime).isNotNull();
-		assertThat(Instant.parse(firstBuildTime).isBefore(Instant.parse(secondBuildTime)));
+		assertThat(Instant.parse(firstBuildTime)).isBefore(Instant.parse(secondBuildTime));
 	}
 
 	@TestTemplate
@@ -92,7 +90,7 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() throws IOException {
+	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
 		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0").build("buildInfo").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0").build("buildInfo").task(":buildInfo")
@@ -111,8 +109,7 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	void reproducibleOutputWithFixedTime()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException, InterruptedException {
+	void reproducibleOutputWithFixedTime() throws IOException, InterruptedException {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/build-info.properties");

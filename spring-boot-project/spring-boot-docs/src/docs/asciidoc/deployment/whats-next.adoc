@@ -1,0 +1,7 @@
+[[deployment.whats-next]]
+== What to Read Next
+Check out the https://www.cloudfoundry.org/[Cloud Foundry], https://www.heroku.com/[Heroku], https://www.openshift.com[OpenShift], and https://boxfuse.com[Boxfuse] web sites for more information about the kinds of features that a PaaS can offer.
+These are just four of the most popular Java PaaS providers.
+Since Spring Boot is so amenable to cloud-based deployment, you can freely consider other providers as well.
+
+The next section goes on to cover the _<<cli#cli, Spring Boot CLI>>_, or you can jump ahead to read about _<<build-tool-plugins#build-tool-plugins, build tool plugins>>_.

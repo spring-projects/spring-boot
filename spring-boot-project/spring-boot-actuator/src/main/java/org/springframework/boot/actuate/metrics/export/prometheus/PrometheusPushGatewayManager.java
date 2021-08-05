@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -31,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Class that can be used to manage the pushing of metrics to a {@link PushGateway
@@ -107,16 +105,8 @@ public class PrometheusPushGatewayManager {
 		try {
 			this.pushGateway.pushAdd(this.registry, this.job, this.groupingKey);
 		}
-		catch (UnknownHostException ex) {
-			String host = ex.getMessage();
-			String message = "Unable to locate prometheus push gateway host"
-					+ (StringUtils.hasLength(host) ? " '" + host + "'" : "")
-					+ ". No longer attempting metrics publication to this host";
-			logger.error(message, ex);
-			shutdown(ShutdownOperation.NONE);
-		}
 		catch (Throwable ex) {
-			logger.error("Unable to push metrics to Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown while pushing metrics to Prometheus Pushgateway", ex);
 		}
 	}
 
@@ -125,7 +115,7 @@ public class PrometheusPushGatewayManager {
 			this.pushGateway.delete(this.job, this.groupingKey);
 		}
 		catch (Throwable ex) {
-			logger.error("Unable to delete metrics from Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown while deleting metrics from Promethues Pushgateway", ex);
 		}
 	}
 

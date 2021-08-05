@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
+
+import java.io.EOFException;
 
 import io.micrometer.core.instrument.Tag;
 import org.junit.jupiter.api.BeforeEach;
@@ -140,7 +142,7 @@ class WebFluxTagsTests {
 	@Test
 	void outcomeTagIsSuccessWhenResponseStatusIsNull() {
 		this.exchange.getResponse().setStatusCode(null);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
@@ -153,56 +155,68 @@ class WebFluxTagsTests {
 		given(response.getRawStatusCode()).willReturn(null);
 		given(exchange.getRequest()).willReturn(request);
 		given(exchange.getResponse()).willReturn(response);
-		Tag tag = WebFluxTags.outcome(exchange);
+		Tag tag = WebFluxTags.outcome(exchange, null);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
 	void outcomeTagIsInformationalWhenResponseIs1xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.CONTINUE);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
 	}
 
 	@Test
 	void outcomeTagIsSuccessWhenResponseIs2xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.OK);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
 	void outcomeTagIsRedirectionWhenResponseIs3xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
 	}
 
 	@Test
 	void outcomeTagIsClientErrorWhenResponseIs4xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
 	void outcomeTagIsServerErrorWhenResponseIs5xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.BAD_GATEWAY);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
 	}
 
 	@Test
 	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
 		this.exchange.getResponse().setRawStatusCode(490);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
 	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
 		this.exchange.getResponse().setRawStatusCode(701);
-		Tag tag = WebFluxTags.outcome(this.exchange);
+		Tag tag = WebFluxTags.outcome(this.exchange, null);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenExceptionIsDisconnectedClient() {
+		Tag tag = WebFluxTags.outcome(this.exchange, new EOFException("broken pipe"));
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenExceptionIsCancelledExchange() {
+		Tag tag = WebFluxTags.outcome(this.exchange, new CancelledServerWebExchangeException());
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 

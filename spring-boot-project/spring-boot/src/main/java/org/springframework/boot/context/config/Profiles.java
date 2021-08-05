@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
@@ -54,12 +56,13 @@ public class Profiles implements Iterable<String> {
 	 */
 	public static final String INCLUDE_PROFILES_PROPERTY_NAME = "spring.profiles.include";
 
+	static final ConfigurationPropertyName INCLUDE_PROFILES = ConfigurationPropertyName
+			.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
+
 	private static final Bindable<MultiValueMap<String, String>> STRING_STRINGS_MAP = Bindable
 			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
 
-	private static final Set<String> UNSET_ACTIVE = Collections.emptySet();
-
-	private static final Set<String> UNSET_DEFAULT = Collections.singleton("default");
+	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 
 	private final MultiValueMap<String, String> groups;
 
@@ -82,32 +85,45 @@ public class Profiles implements Iterable<String> {
 
 	private List<String> getActivatedProfiles(Environment environment, Binder binder,
 			Collection<String> additionalProfiles) {
-		return asUniqueItemList(get(environment, binder, environment::getActiveProfiles,
-				AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, UNSET_ACTIVE), additionalProfiles);
+		return asUniqueItemList(getProfiles(environment, binder, Type.ACTIVE), additionalProfiles);
 	}
 
 	private List<String> getDefaultProfiles(Environment environment, Binder binder) {
-		return asUniqueItemList(get(environment, binder, environment::getDefaultProfiles,
-				AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, UNSET_DEFAULT));
+		return asUniqueItemList(getProfiles(environment, binder, Type.DEFAULT));
 	}
 
-	private String[] get(Environment environment, Binder binder, Supplier<String[]> supplier, String propertyName,
-			Set<String> unset) {
-		String propertyValue = environment.getProperty(propertyName);
-		if (hasExplicit(supplier, propertyValue, unset)) {
-			return supplier.get();
+	private Collection<String> getProfiles(Environment environment, Binder binder, Type type) {
+		String environmentPropertyValue = environment.getProperty(type.getName());
+		Set<String> environmentPropertyProfiles = (!StringUtils.hasLength(environmentPropertyValue))
+				? Collections.emptySet()
+				: StringUtils.commaDelimitedListToSet(StringUtils.trimAllWhitespace(environmentPropertyValue));
+		Set<String> environmentProfiles = new LinkedHashSet<>(Arrays.asList(type.get(environment)));
+		BindResult<Set<String>> boundProfiles = binder.bind(type.getName(), STRING_SET);
+		if (hasProgrammaticallySetProfiles(type, environmentPropertyValue, environmentPropertyProfiles,
+				environmentProfiles)) {
+			if (!type.isMergeWithEnvironmentProfiles() || !boundProfiles.isBound()) {
+				return environmentProfiles;
+			}
+			return boundProfiles.map((bound) -> merge(environmentProfiles, bound)).get();
 		}
-		return binder.bind(propertyName, String[].class).orElseGet(() -> StringUtils.toStringArray(unset));
+		return boundProfiles.orElse(type.getDefaultValue());
 	}
 
-	private boolean hasExplicit(Supplier<String[]> supplier, String propertyValue, Set<String> unset) {
-		Set<String> profiles = new LinkedHashSet<>(Arrays.asList(supplier.get()));
-		if (!StringUtils.hasLength(propertyValue)) {
-			return !unset.equals(profiles);
+	private boolean hasProgrammaticallySetProfiles(Type type, String environmentPropertyValue,
+			Set<String> environmentPropertyProfiles, Set<String> environmentProfiles) {
+		if (!StringUtils.hasLength(environmentPropertyValue)) {
+			return !type.getDefaultValue().equals(environmentProfiles);
 		}
-		Set<String> propertyProfiles = StringUtils
-				.commaDelimitedListToSet(StringUtils.trimAllWhitespace(propertyValue));
-		return !propertyProfiles.equals(profiles);
+		if (type.getDefaultValue().equals(environmentProfiles)) {
+			return false;
+		}
+		return !environmentPropertyProfiles.equals(environmentProfiles);
+	}
+
+	private Set<String> merge(Set<String> environmentProfiles, Set<String> bound) {
+		Set<String> result = new LinkedHashSet<>(environmentProfiles);
+		result.addAll(bound);
+		return result;
 	}
 
 	private List<String> expandProfiles(List<String> profiles) {
@@ -120,7 +136,7 @@ public class Profiles implements Iterable<String> {
 				asReversedList(this.groups.get(current)).forEach(stack::push);
 			}
 		}
-		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
+		return asUniqueItemList(expandedProfiles);
 	}
 
 	private List<String> asReversedList(List<String> list) {
@@ -132,15 +148,16 @@ public class Profiles implements Iterable<String> {
 		return reversed;
 	}
 
-	private List<String> asUniqueItemList(String[] array) {
-		return asUniqueItemList(array, null);
+	private List<String> asUniqueItemList(Collection<String> profiles) {
+		return asUniqueItemList(profiles, null);
 	}
 
-	private List<String> asUniqueItemList(String[] array, Collection<String> additional) {
-		LinkedHashSet<String> uniqueItems = new LinkedHashSet<>(Arrays.asList(array));
+	private List<String> asUniqueItemList(Collection<String> profiles, Collection<String> additional) {
+		LinkedHashSet<String> uniqueItems = new LinkedHashSet<>();
 		if (!CollectionUtils.isEmpty(additional)) {
 			uniqueItems.addAll(additional);
 		}
+		uniqueItems.addAll(profiles);
 		return Collections.unmodifiableList(new ArrayList<>(uniqueItems));
 	}
 
@@ -192,6 +209,51 @@ public class Profiles implements Iterable<String> {
 		creator.append("default", getDefault().toString());
 		creator.append("accepted", getAccepted().toString());
 		return creator.toString();
+	}
+
+	/**
+	 * A profiles type that can be obtained.
+	 */
+	private enum Type {
+
+		ACTIVE(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, Environment::getActiveProfiles, true,
+				Collections.emptySet()),
+
+		DEFAULT(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, Environment::getDefaultProfiles, false,
+				Collections.singleton("default"));
+
+		private final Function<Environment, String[]> getter;
+
+		private final boolean mergeWithEnvironmentProfiles;
+
+		private final String name;
+
+		private final Set<String> defaultValue;
+
+		Type(String name, Function<Environment, String[]> getter, boolean mergeWithEnvironmentProfiles,
+				Set<String> defaultValue) {
+			this.name = name;
+			this.getter = getter;
+			this.mergeWithEnvironmentProfiles = mergeWithEnvironmentProfiles;
+			this.defaultValue = defaultValue;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		String[] get(Environment environment) {
+			return this.getter.apply(environment);
+		}
+
+		Set<String> getDefaultValue() {
+			return this.defaultValue;
+		}
+
+		boolean isMergeWithEnvironmentProfiles() {
+			return this.mergeWithEnvironmentProfiles;
+		}
+
 	}
 
 }

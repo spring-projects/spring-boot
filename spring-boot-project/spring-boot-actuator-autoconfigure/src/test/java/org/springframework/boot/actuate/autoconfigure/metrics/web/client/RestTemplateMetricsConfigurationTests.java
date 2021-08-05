@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,16 @@ class RestTemplateMetricsConfigurationTests {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
 			validateRestTemplate(builder, registry);
+		});
+	}
+
+	@Test
+	void restTemplateWithRootUriIsInstrumented() {
+		this.contextRunner.run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
+			builder = builder.rootUri("/root");
+			validateRestTemplate(builder, registry, "/root");
 		});
 	}
 
@@ -130,17 +140,22 @@ class RestTemplateMetricsConfigurationTests {
 	}
 
 	private void validateRestTemplate(RestTemplateBuilder builder, MeterRegistry registry) {
-		RestTemplate restTemplate = mockRestTemplate(builder);
+		this.validateRestTemplate(builder, registry, "");
+	}
+
+	private void validateRestTemplate(RestTemplateBuilder builder, MeterRegistry registry, String rootUri) {
+		RestTemplate restTemplate = mockRestTemplate(builder, rootUri);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
 		assertThat(restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot").getStatusCode())
 				.isEqualTo(HttpStatus.OK);
-		assertThat(registry.get("http.client.requests").tags("uri", "/projects/{project}").meter()).isNotNull();
+		assertThat(registry.get("http.client.requests").tags("uri", rootUri + "/projects/{project}").meter())
+				.isNotNull();
 	}
 
-	private RestTemplate mockRestTemplate(RestTemplateBuilder builder) {
+	private RestTemplate mockRestTemplate(RestTemplateBuilder builder, String rootUri) {
 		RestTemplate restTemplate = builder.build();
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-		server.expect(requestTo("/projects/spring-boot")).andRespond(withStatus(HttpStatus.OK));
+		server.expect(requestTo(rootUri + "/projects/spring-boot")).andRespond(withStatus(HttpStatus.OK));
 		return restTemplate;
 	}
 

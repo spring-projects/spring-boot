@@ -1,0 +1,7 @@
+[[documentation.advanced]]
+== Advanced Topics
+Finally, we have a few topics for more advanced users:
+
+* *Spring Boot Applications Deployment:* <<deployment#deployment.cloud, Cloud Deployment>> | <<deployment#deployment.installing.nix-services, OS Service>>
+* *Build tool plugins:* <<build-tool-plugins#build-tool-plugins.maven, Maven>> | <<build-tool-plugins#build-tool-plugins.gradle, Gradle>>
+* *Appendix:* <<application-properties#application-properties,Application Properties>> | <<configuration-metadata#configuration-metadata,Configuration Metadata>> | <<auto-configuration-classes#auto-configuration-classes,Auto-configuration Classes>> | <<test-auto-configuration#test-auto-configuration,Test Auto-configuration Annotations>> | <<executable-jar#executable-jar,Executable Jars>> | <<dependency-versions#dependency-versions,Dependency Versions>>

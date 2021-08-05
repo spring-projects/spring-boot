@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -53,6 +52,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
@@ -64,6 +64,7 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.convert.PeriodFormat;
 import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -75,6 +76,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -379,7 +381,7 @@ class ConfigurationPropertiesTests {
 		this.context = new AnnotationConfigApplicationContext() {
 
 			@Override
-			protected void onRefresh() throws BeansException {
+			protected void onRefresh() {
 				assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized).as("Initialized too early").isFalse();
 				super.onRefresh();
 			}
@@ -471,6 +473,22 @@ class ConfigurationPropertiesTests {
 		load(SimplePrefixedProperties.class);
 		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
 		assertThat(bean.getBar()).isEqualTo("baz");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void loadWhenEnvironmentPrefixSetShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		sources.replace(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+						Collections.singletonMap("MY_SPRING_FOO_NAME", "Jane")));
+		SpringApplication application = new SpringApplication(PrefixConfiguration.class);
+		application.setApplicationContextFactory((webApplicationType) -> ConfigurationPropertiesTests.this.context);
+		application.setEnvironmentPrefix("my");
+		application.setEnvironment(this.context.getEnvironment());
+		application.run();
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.name).isEqualTo("Jane");
 	}
 
 	@Test
@@ -629,6 +647,20 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	void loadWhenBeanFactoryConversionServiceAndConverterBean() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new AlienConverter());
+		this.context.getBeanFactory().setConversionService(conversionService);
+		load(new Class<?>[] { ConverterConfiguration.class, PersonAndAlienProperties.class }, "test.person=John Smith",
+				"test.alien=Alf Tanner");
+		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
+		assertThat(properties.getPerson().firstName).isEqualTo("John");
+		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
+		assertThat(properties.getAlien().firstName).isEqualTo("Alf");
+		assertThat(properties.getAlien().lastName).isEqualTo("Tanner");
+	}
+
+	@Test
 	void loadWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
 		assertThatExceptionOfType(BeanCreationException.class)
 				.isThrownBy(
@@ -694,6 +726,13 @@ class ConfigurationPropertiesTests {
 			assertThat(ex).hasCauseInstanceOf(BindException.class);
 			assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
 		});
+	}
+
+	@Test
+	void loadWhenConfigurationPropertiesWithValidDefaultValuesShouldNotFail() {
+		AnnotationConfigApplicationContext context = load(ValidatorPropertiesWithDefaultValues.class);
+		ValidatorPropertiesWithDefaultValues bean = context.getBean(ValidatorPropertiesWithDefaultValues.class);
+		assertThat(bean.getBar()).isEqualTo("a");
 	}
 
 	@Test
@@ -1008,6 +1047,30 @@ class ConfigurationPropertiesTests {
 		ConstructorBindingWithOuterClassConstructorBoundProperties bean = this.context
 				.getBean(ConstructorBindingWithOuterClassConstructorBoundProperties.class);
 		assertThat(bean.getNested().getOuter().getAge()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenConfigurationPropertiesPrefixMatchesPropertyInEnvironment() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test", "bar");
+		source.put("test.a", "baz");
+		sources.addLast(new MapPropertySource("test", source));
+		load(WithPublicStringConstructorPropertiesConfiguration.class);
+		WithPublicStringConstructorProperties bean = this.context.getBean(WithPublicStringConstructorProperties.class);
+		assertThat(bean.getA()).isEqualTo("baz");
+	}
+
+	@Test // gh-26201
+	void loadWhenBoundToRandomPropertyPlaceholder() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		sources.addFirst(new RandomValuePropertySource());
+		Map<String, Object> source = new HashMap<>();
+		source.put("com.example.bar", "${random.int[100,200]}");
+		sources.addLast(new MapPropertySource("test", source));
+		load(SimplePrefixedProperties.class);
+		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
+		assertThat(bean.getBar()).isNotNull().containsOnlyDigits();
 	}
 
 	@Test
@@ -1873,6 +1936,32 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class PersonAndAlienProperties {
+
+		private Person person;
+
+		private Alien alien;
+
+		Person getPerson() {
+			return this.person;
+		}
+
+		void setPerson(Person person) {
+			this.person = person;
+		}
+
+		Alien getAlien() {
+			return this.alien;
+		}
+
+		void setAlien(Alien alien) {
+			this.alien = alien;
+		}
+
+	}
+
+	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "sample")
 	static class MapWithNumericKeyProperties {
 
@@ -2165,6 +2254,16 @@ class ConfigurationPropertiesTests {
 
 	}
 
+	static class AlienConverter implements Converter<String, Alien> {
+
+		@Override
+		public Alien convert(String source) {
+			String[] content = StringUtils.split(source, " ");
+			return new Alien(content[0], content[1]);
+		}
+
+	}
+
 	static class GenericPersonConverter implements GenericConverter {
 
 		@Override
@@ -2198,7 +2297,7 @@ class ConfigurationPropertiesTests {
 	static class PersonPropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			String[] content = text.split(",");
 			setValue(new Person(content[1], content[0]));
 		}
@@ -2212,6 +2311,27 @@ class ConfigurationPropertiesTests {
 		private final String lastName;
 
 		Person(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
+
+		String getFirstName() {
+			return this.firstName;
+		}
+
+		String getLastName() {
+			return this.lastName;
+		}
+
+	}
+
+	static class Alien {
+
+		private final String firstName;
+
+		private final String lastName;
+
+		Alien(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
 		}
@@ -2581,6 +2701,12 @@ class ConfigurationPropertiesTests {
 			}
 
 		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(WithPublicStringConstructorProperties.class)
+	static class WithPublicStringConstructorPropertiesConfiguration {
 
 	}
 

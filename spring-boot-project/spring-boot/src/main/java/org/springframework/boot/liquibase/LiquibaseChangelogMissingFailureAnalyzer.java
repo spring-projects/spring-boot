@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
 
 package org.springframework.boot.liquibase;
 
-import java.io.FileNotFoundException;
-
 import liquibase.exception.ChangeLogParseException;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.util.StringUtils;
 
 /**
  * An {@link AbstractFailureAnalyzer} that analyzes exceptions of type
@@ -32,21 +29,20 @@ import org.springframework.util.StringUtils;
  */
 class LiquibaseChangelogMissingFailureAnalyzer extends AbstractFailureAnalyzer<ChangeLogParseException> {
 
+	private static final String MESSAGE_SUFFIX = " does not exist";
+
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ChangeLogParseException cause) {
-		FileNotFoundException fileNotFound = findCause(cause, FileNotFoundException.class);
-		if (fileNotFound != null) {
+		if (cause.getMessage().endsWith(MESSAGE_SUFFIX)) {
 			String changelogPath = extractChangelogPath(cause);
-			if (StringUtils.hasText(changelogPath)) {
-				return new FailureAnalysis(getDescription(changelogPath),
-						"Make sure a Liquibase changelog is present at the configured path.", cause);
-			}
+			return new FailureAnalysis(getDescription(changelogPath),
+					"Make sure a Liquibase changelog is present at the configured path.", cause);
 		}
 		return null;
 	}
 
 	private String extractChangelogPath(ChangeLogParseException cause) {
-		return cause.getMessage().substring("Error parsing ".length());
+		return cause.getMessage().substring(0, cause.getMessage().length() - MESSAGE_SUFFIX.length());
 	}
 
 	private String getDescription(String changelogPath) {

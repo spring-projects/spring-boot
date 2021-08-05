@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.logging.DeferredLogFactory;
 
 /**
  * Strategy class that can be used used to load {@link ConfigData} for a given
@@ -30,7 +31,8 @@ import org.springframework.boot.ConfigurableBootstrapContext;
  * {@code spring.factories} entries. The following constructor parameter types are
  * supported:
  * <ul>
- * <li>{@link Log} - if the resolver needs deferred logging</li>
+ * <li>{@link Log} or {@link DeferredLogFactory} - if the loader needs deferred
+ * logging</li>
  * <li>{@link ConfigurableBootstrapContext} - A bootstrap context that can be used to
  * store objects that may be expensive to create, or need to be shared
  * ({@link BootstrapContext} or {@link BootstrapRegistry} may also be used).</li>

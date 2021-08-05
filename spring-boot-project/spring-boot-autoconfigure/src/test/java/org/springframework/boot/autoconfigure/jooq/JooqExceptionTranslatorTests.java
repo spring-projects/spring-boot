@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import org.jooq.Configuration;
 import org.jooq.ExecuteContext;
 import org.jooq.SQLDialect;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
@@ -28,8 +29,10 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.jdbc.BadSqlGrammarException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -53,6 +56,17 @@ class JooqExceptionTranslatorTests {
 		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
 		verify(context).exception(captor.capture());
 		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
+	}
+
+	@Test
+	void whenExceptionCannotBeTranslatedThenExecuteContextExceptionIsNotCalled() {
+		ExecuteContext context = mock(ExecuteContext.class);
+		Configuration configuration = mock(Configuration.class);
+		given(context.configuration()).willReturn(configuration);
+		given(configuration.dialect()).willReturn(SQLDialect.POSTGRES);
+		given(context.sqlException()).willReturn(new SQLException(null, null, 123456789));
+		this.exceptionTranslator.exception(context);
+		verify(context, times(0)).exception(any());
 	}
 
 	static Object[] exceptionTranslation() {

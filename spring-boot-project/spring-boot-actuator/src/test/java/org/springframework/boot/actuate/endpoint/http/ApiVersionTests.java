@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@Deprecated
 class ApiVersionTests {
 
 	@Test
@@ -39,24 +40,28 @@ class ApiVersionTests {
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenEmptyReturnsLatest() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(Collections.emptyMap());
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasSingleV2HeaderReturnsV2() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader(ActuatorMediaType.V2_JSON));
 		assertThat(version).isEqualTo(ApiVersion.V2);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasSingleV3HeaderReturnsV3() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader(ActuatorMediaType.V3_JSON));
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasV2AndV3HeaderReturnsV3() {
 		ApiVersion version = ApiVersion
 				.fromHttpHeaders(acceptHeader(ActuatorMediaType.V2_JSON, ActuatorMediaType.V3_JSON));
@@ -64,6 +69,7 @@ class ApiVersionTests {
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasV2AndV3AsOneHeaderReturnsV3() {
 		ApiVersion version = ApiVersion
 				.fromHttpHeaders(acceptHeader(ActuatorMediaType.V2_JSON + "," + ActuatorMediaType.V3_JSON));
@@ -71,14 +77,23 @@ class ApiVersionTests {
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasSingleHeaderWithoutJsonReturnsHeader() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("application/vnd.spring-boot.actuator.v2"));
 		assertThat(version).isEqualTo(ApiVersion.V2);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasUnknownVersionReturnsLatest() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("application/vnd.spring-boot.actuator.v200"));
+		assertThat(version).isEqualTo(ApiVersion.V3);
+	}
+
+	@Test
+	@Deprecated
+	void fromHttpHeadersWhenAcceptsEverythingReturnsLatest() {
+		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("*/*"));
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 

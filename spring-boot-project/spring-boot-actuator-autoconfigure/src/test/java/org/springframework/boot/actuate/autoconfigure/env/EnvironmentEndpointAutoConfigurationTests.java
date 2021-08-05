@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,14 @@ class EnvironmentEndpointAutoConfigurationTests {
 				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
 				.run(validateSystemProperties("******", "123456"));
+	}
+
+	@Test
+	void additionalKeysToSanitizeCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
+				.withPropertyValues("management.endpoint.env.additional-keys-to-sanitize=key")
+				.run(validateSystemProperties("******", "******"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {

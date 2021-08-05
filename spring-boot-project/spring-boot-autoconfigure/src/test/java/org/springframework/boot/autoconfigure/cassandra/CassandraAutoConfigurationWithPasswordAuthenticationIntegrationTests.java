@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import org.junit.jupiter.api.Test;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
-import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 import org.testcontainers.images.builder.Transferable;
@@ -37,7 +36,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,15 +51,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new PasswordAuthenticatorCassandraContainer().withStartupAttempts(5)
+	static final CassandraContainer cassandra = new PasswordAuthenticatorCassandraContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(10)).waitingFor(new CassandraWaitStrategy());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).withPropertyValues(
 					"spring.data.cassandra.contact-points:" + cassandra.getHost() + ":"
 							+ cassandra.getFirstMappedPort(),
-					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.read-timeout=20s",
-					"spring.data.cassandra.connect-timeout=10s");
+					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.request.timeout=20s",
+					"spring.data.cassandra.connection.init-query-timeout=10s");
 
 	@Test
 	void authenticationWithValidUsernameAndPassword() {
@@ -81,12 +80,7 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 						.hasMessageContaining("Authentication error"));
 	}
 
-	static final class PasswordAuthenticatorCassandraContainer
-			extends CassandraContainer<PasswordAuthenticatorCassandraContainer> {
-
-		PasswordAuthenticatorCassandraContainer() {
-			super(DockerImageNames.cassandra());
-		}
+	static final class PasswordAuthenticatorCassandraContainer extends CassandraContainer {
 
 		@Override
 		protected void containerIsCreated(String containerId) {

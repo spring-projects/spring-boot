@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,9 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
 			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
-		super.close();
+		if (System.getSecurityManager() == null) {
+			super.close();
+		}
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
@@ -137,7 +139,12 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 			this.data = parser.parse(data, filter == null);
 		}
 		catch (RuntimeException ex) {
-			close();
+			try {
+				this.rootFile.close();
+				super.close();
+			}
+			catch (IOException ioex) {
+			}
 			throw ex;
 		}
 		this.manifestSupplier = (manifestSupplier != null) ? manifestSupplier : () -> {
@@ -337,10 +344,11 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		if (this.closed) {
 			return;
 		}
-		this.closed = true;
+		super.close();
 		if (this.type == JarFileType.DIRECT) {
 			this.rootFile.close();
 		}
+		this.closed = true;
 	}
 
 	private void ensureOpen() {
@@ -411,6 +419,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.
 	 */
 	public static void registerUrlProtocolHandler() {
+		Handler.captureJarContextUrl();
 		String handlers = System.getProperty(PROTOCOL_HANDLER, "");
 		System.setProperty(PROTOCOL_HANDLER,
 				((handlers == null || handlers.isEmpty()) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));

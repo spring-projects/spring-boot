@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -108,6 +109,13 @@ class ServletManagementChildContextConfiguration {
 			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		}
 
+		@Bean
+		@ConditionalOnBean(name = "securityFilterChainRegistration", search = SearchStrategy.ANCESTORS)
+		DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(HierarchicalBeanFactory beanFactory) {
+			return beanFactory.getParentBeanFactory().getBean("securityFilterChainRegistration",
+					DelegatingFilterProxyRegistrationBean.class);
+		}
+
 	}
 
 	static class ServletManagementWebServerFactoryCustomizer
@@ -126,10 +134,9 @@ class ServletManagementChildContextConfiguration {
 			webServerFactory.setContextPath(getContextPath(managementServerProperties));
 		}
 
-		@SuppressWarnings("deprecation")
 		private String getContextPath(ManagementServerProperties managementServerProperties) {
 			String basePath = managementServerProperties.getBasePath();
-			return StringUtils.hasText(basePath) ? basePath : managementServerProperties.getServlet().getContextPath();
+			return StringUtils.hasText(basePath) ? basePath : "";
 		}
 
 	}

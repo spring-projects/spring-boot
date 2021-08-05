@@ -2,7 +2,6 @@ plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"
@@ -11,23 +10,11 @@ plugins {
 description = "Spring Boot Gradle Plugin"
 
 configurations {
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	documentation
 }
 
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-		}
-	}
-}
-
 dependencies {
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -35,16 +22,15 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
-	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
+	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers")
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 gradlePlugin {
@@ -67,6 +53,7 @@ task preparePluginValidationClasses(type: Copy) {
 
 validatePlugins {
 	classes.setFrom preparePluginValidationClasses
+	enableStricterValidation = true
 }
 
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
@@ -82,14 +69,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}
-	attributes "stylesheet": "css/style.css"
 }
 
-asciidoctorPdf {
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
 	}

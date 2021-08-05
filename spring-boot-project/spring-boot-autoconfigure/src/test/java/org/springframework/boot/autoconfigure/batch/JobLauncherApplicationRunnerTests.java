@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -44,11 +45,12 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,8 +70,7 @@ class JobLauncherApplicationRunnerTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class))
-			.withUserConfiguration(BatchConfiguration.class)
-			.withPropertyValues("spring.datasource.initialization-mode=never");
+			.withUserConfiguration(BatchConfiguration.class);
 
 	@Test
 	void basicExecution() {
@@ -227,8 +228,10 @@ class JobLauncherApplicationRunnerTests {
 		}
 
 		@Bean
-		BatchDataSourceInitializer batchDataSourceInitializer(ResourceLoader resourceLoader) {
-			return new BatchDataSourceInitializer(this.dataSource, resourceLoader, new BatchProperties());
+		DataSourceScriptDatabaseInitializer batchDataSourceInitializer() {
+			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+			settings.setSchemaLocations(Arrays.asList("classpath:org/springframework/batch/core/schema-h2.sql"));
+			return new DataSourceScriptDatabaseInitializer(this.dataSource, settings);
 		}
 
 	}

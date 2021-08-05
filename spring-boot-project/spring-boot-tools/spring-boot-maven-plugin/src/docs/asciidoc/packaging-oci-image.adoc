@@ -1,6 +1,6 @@
 [[build-image]]
-== Packaging OCI Images
-The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
+= Packaging OCI Images
+The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
 Images can be built using the `build-image` goal.
 
 NOTE: For security reasons, images build and run as non-root users.
@@ -9,32 +9,18 @@ See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specificat
 The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>build-image</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+include::../maven/packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
 
-TIP: While the buildpack runs from an <<repackage,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
+TIP: While the buildpack runs from an <<packaging,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
 
 
-[[build-image-docker-daemon]]
-=== Docker Daemon
+[[build-image.docker-daemon]]
+== Docker Daemon
 The `build-image` goal requires access to a Docker daemon.
 By default, it will communicate with a Docker daemon over a local connection.
 This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
@@ -73,12 +59,12 @@ The following table summarizes the available parameters:
 | Path to certificate and key files for HTTPS (required if `tlsVerify` is `true`, ignored otherwise)
 |===
 
-For more details, see also <<build-image-example-docker,examples>>.
+For more details, see also <<build-image.examples.docker,examples>>.
 
 
 
-[[build-image-docker-registry]]
-=== Docker Registry
+[[build-image.docker-registry]]
+== Docker Registry
 If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.builderRegistry` parameters.
 
 If the generated Docker image is to be published to a Docker image registry, the authentication credentials can be provided using `docker.publishRegistry` parameters.
@@ -107,12 +93,12 @@ The following table summarizes the available parameters for `docker.builderRegis
 | Identity token for the Docker image registry user. Required for token authentication.
 |===
 
-For more details, see also <<build-image-example-docker,examples>>.
+For more details, see also <<build-image.examples.docker,examples>>.
 
 
 
-[[build-image-customization]]
-=== Image Customizations
+[[build-image.customization]]
+== Image Customizations
 The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
 The builder includes multiple {buildpacks-reference}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
@@ -121,88 +107,99 @@ The name of the generated image is deduced from project properties.
 The `image` parameter allows configuration of the builder and how it should operate on the project.
 The following table summarizes the available parameters and their default values:
 
+[cols="1,4,1"]
 |===
-| Parameter | Description | User property | Default value
+| Parameter / (User Property)| Description | Default value
 
-| `builder`
+| `builder` +
+(`spring-boot.build-image.builder`)
 | Name of the Builder image to use.
-| `spring-boot.build-image.builder`
 | `paketobuildpacks/builder:base`
 
-| `runImage`
+| `runImage` +
+(`spring-boot.build-image.runImage`)
 | Name of the run image to use.
-| `spring-boot.build-image.runImage`
 | No default value, indicating the run image specified in Builder metadata should be used.
 
-| `name`
+| `name` +
+(`spring-boot.build-image.imageName`)
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
-| `spring-boot.build-image.imageName`
-| `docker.io/library/${project.artifactId}:${project.version}`
+| `docker.io/library/` +
+`${project.artifactId}:${project.version}`
 
-| `pullPolicy`
+| `pullPolicy` +
+(`spring-boot.build-image.pullPolicy`)
 | {spring-boot-api}/buildpack/platform/build/PullPolicy.html[Policy] used to determine when to pull the builder and run images from the registry.
 Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
-| `spring-boot.build-image.pullPolicy`
 | `ALWAYS`
 
 | `env`
 | Environment variables that should be passed to the builder.
 |
+
+| `buildpacks`
+a|Buildpacks that the builder should use when building the image.
+Only the specified buildpacks will be used, overriding the default buildpacks included in the builder.
+Buildpack references must be in one of the following forms:
+
+* Buildpack in the builder - `[urn:cnb:builder:]<buildpack ID>[@<version>]`
+* Buildpack in a directory on the file system - `[file://]<path>`
+* Buildpack in a gzipped tar (.tgz) file on the file system - `[file://]<path>/<file name>`
+* Buildpack in an OCI image - `[docker://]<host>/<repo>[:<tag>][@<digest>]`
+| None, indicating the builder should use the buildpacks included in it.
+
+| `bindings`
+a|https://docs.docker.com/storage/bind-mounts/[Volume bind mounts] that should be mounted to the builder container when building the image.
+The bindings will be passed unparsed and unvalidated to Docker when creating the builder container.
+Bindings must be in one of the following forms:
+
+* `<host source path>:<container destination path>[:<options>]`
+* `<host volume name>:<container destination path>[:<options>]`
+
+Where `<options>` can contain:
+
+* `ro` to mount the volume as read-only in the container
+* `rw` to mount the volume as readable and writable in the container
+* `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
 |
 
-| `cleanCache`
+| `cleanCache` +
+(`spring-boot.build-image.cleanCache`)
 | Whether to clean the cache before building.
-| `spring-boot.build-image.cleanCache`
 | `false`
 
 | `verboseLogging`
 | Enables verbose logging of builder operations.
-|
 | `false`
 
-| `publish`
+| `publish` +
+(`spring-boot.build-image.publish`)
 | Whether to publish the generated image to a Docker registry.
-| `spring-boot.build-image.publish`
 | `false`
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
-You can override this behaviour as shown in the <<build-image-example-builder-configuration,builder configuration>> examples.
+You can override this behaviour as shown in the <<build-image.examples.builder-configuration,builder configuration>> examples.
 
-For more details, see also <<build-image-examples,examples>>.
+For more details, see also <<build-image.examples,examples>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 
 
 
-[[build-image-examples]]
-=== Examples
+[[build-image.examples]]
+== Examples
 
 
 
-[[build-image-example-custom-image-builder]]
-==== Custom Image Builder
+[[build-image.examples.custom-image-builder]]
+=== Custom Image Builder
 If you need to customize the builder used to create the image or the run image used to launch the built image, configure the plugin as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<image>
-							<builder>mine/java-cnb-builder</builder>
-							<runImage>mine/java-cnb-run</runImage>
-						</image>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/custom-image-builder-pom.xml[tags=custom-image-builder]
 ----
 
 This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`, and the run image named `mine/java-cnb-run` and the tag `latest`.
@@ -216,85 +213,49 @@ The builder and run image can be specified on the command line as well, as shown
 
 
 
-[[build-image-example-builder-configuration]]
-==== Builder Configuration
+[[build-image.examples.builder-configuration]]
+=== Builder Configuration
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
 The following is an example of {paketo-java-reference}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<image>
-							<env>
-								<BP_JVM_VERSION>8.*</BP_JVM_VERSION>
-							</env>
-						</image>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/build-image-example-builder-configuration-pom.xml[tags=build-image-example-builder-configuration]
 ----
-
-In a similar way, Paketo Java buildpacks support {paketo-java-reference}/#runtime-jvm-configuration[configuring JVM runtime behavior].
-Refer to the {paketo-java-reference}[Paketo documentation] for additional configuration options supported by Paketo Java buildpacks.
 
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
 When using the Paketo builder, this can be accomplished by setting the `HTTPS_PROXY` and/or `HTTP_PROXY` environment variables as show in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<image>
-							<env>
-								<HTTP_PROXY>http://proxy.example.com</HTTP_PROXY>
-								<HTTPS_PROXY>https://proxy.example.com</HTTPS_PROXY>
-							</env>
-						</image>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/paketo-pom.xml[tags=paketo]
 ----
 
 
 
-[[build-image-example-custom-image-name]]
-==== Custom Image Name
+[[build-image.examples.runtime-jvm-configuration]]
+=== Runtime JVM Configuration
+Paketo Java buildpacks {paketo-java-reference}/#runtime-jvm-configuration[configure the JVM runtime environment] by setting the `JAVA_TOOL_OPTIONS` environment variable.
+The buildpack-provided `JAVA_TOOL_OPTIONS` value can be modified to customize JVM runtime behavior when the application image is launched in a container.
+
+Environment variable modifications that should be stored in the image and applied to every deployment can be set as described in the {paketo-reference}/buildpacks/configuration/#environment-variables[Paketo documentation] and shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runtime-jvm-configuration]
+----
+
+
+
+[[build-image.examples.custom-image-name]]
+=== Custom Image Name
 By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
 You can take control over the name, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<image>
-							<name>example.com/library/${project.artifactId}</name>
-						</image>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/custom-image-name-pom.xml[tags=custom-image-name]
 ----
 
 NOTE: This configuration does not provide an explicit tag so `latest` is used.
@@ -309,36 +270,56 @@ The image name can be specified on the command line as well, as shown in this ex
 
 
 
-[[build-image-example-publish]]
-==== Image Publishing
+[[build-image.examples.buildpacks]]
+=== Buildpacks
+By default, the builder will use buildpacks included in the builder image and apply them in a pre-defined order.
+An alternative set of buildpacks can be provided to apply buildpacks that are not included in the builder, or to change the order of included buildpacks.
+When one or more buildpacks are provided, only the specified buildpacks will be applied.
+
+The following example instructs the builder to use a custom buildpack packaged in a `.tgz` file, followed by a buildpack included in the builder.
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/packaging-oci-image/buildpacks-pom.xml[tags=buildpacks]
+----
+
+Buildpacks can be specified in any of the forms shown below.
+
+A buildpack located in a CNB Builder (version may be omitted if there is only one buildpack in the builder matching the `buildpack-id`):
+
+* `urn:cnb:builder:buildpack-id`
+* `urn:cnb:builder:buildpack-id@0.0.1`
+* `buildpack-id`
+* `buildpack-id@0.0.1`
+
+A path to a directory containing buildpack content (not supported on Windows):
+
+* `\file:///path/to/buildpack/`
+* `/path/to/buildpack/`
+
+A path to a gzipped tar file containing buildpack content:
+
+* `\file:///path/to/buildpack.tgz`
+* `/path/to/buildpack.tgz`
+
+An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/package-a-buildpack/[packaged buildpack]:
+
+* `docker://example/buildpack`
+* `docker:///example/buildpack:latest`
+* `docker:///example/buildpack@sha256:45b23dee08...`
+* `example/buildpack`
+* `example/buildpack:latest`
+* `example/buildpack@sha256:45b23dee08...`
+
+
+
+[[build-image.examples.publish]]
+=== Image Publishing
 The generated image can be published to a Docker registry by enabling a `publish` option and configuring authentication for the registry using `docker.publishRegistry` parameters.
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<image>
-							<name>docker.example.com/library/${project.artifactId}</name>
-							<publish>true</publish>
-						</image>
-						<docker>
-							<publishRegistry>
-								<username>user</username>
-								<password>secret</password>
-								<url>https://docker.example.com/v1/</url>
-								<email>user@example.com</email>
-							</publishRegistry>
-						</docker>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/docker-pom.xml[tags=docker]
 ----
 
 The `publish` option can be specified on the command line as well, as shown in this example:
@@ -350,76 +331,25 @@ The `publish` option can be specified on the command line as well, as shown in t
 
 
 
-[[build-image-example-docker]]
-==== Docker Configuration
+[[build-image.examples.docker]]
+=== Docker Configuration
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` parameters as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<docker>
-							<host>tcp://192.168.99.100:2376</host>
-							<tlsVerify>true</tlsVerify>
-							<certPath>/home/user/.minikube/certs</certPath>
-						</docker>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/docker-remote-pom.xml[tags=docker-remote]
 ----
 
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<docker>
-							<builderRegistry>
-								<username>user</username>
-								<password>secret</password>
-								<url>https://docker.example.com/v1/</url>
-								<email>user@example.com</email>
-							</builderRegistry>
-						</docker>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/docker-registry-authentication-pom.xml[tags=docker-registry-authentication]
 ----
 
 If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<docker>
-							<builderRegistry>
-								<token>9cbaf023786cd7...</token>
-							</builderRegistry>
-						</docker>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/packaging-oci-image/docker-token-authentication-pom.xml[tags=docker-token-authentication]
 ----

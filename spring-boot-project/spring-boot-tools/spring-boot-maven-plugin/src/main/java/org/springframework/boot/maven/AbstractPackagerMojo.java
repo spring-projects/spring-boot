@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.springframework.boot.loader.tools.layer.CustomLayers;
  * Abstract base class for classes that work with an {@link Packager}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo {
@@ -90,24 +91,6 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	private String mainClass;
 
 	/**
-	 * The type of archive (which corresponds to how the dependencies are laid out inside
-	 * it). Possible values are {@code JAR}, {@code WAR}, {@code ZIP}, {@code DIR},
-	 * {@code NONE}. Defaults to a guess based on the archive type.
-	 * @since 1.0.0
-	 */
-	@Parameter(property = "spring-boot.repackage.layout")
-	private LayoutType layout;
-
-	/**
-	 * The layout factory that will be used to create the executable archive if no
-	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
-	 * parties.
-	 * @since 1.5.0
-	 */
-	@Parameter
-	private LayoutFactory layoutFactory;
-
-	/**
 	 * Exclude Spring Boot devtools from the repackaged archive.
 	 * @since 1.3.0
 	 */
@@ -130,6 +113,24 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	private Layers layers;
 
 	/**
+	 * Return the type of archive that should be packaged by this MOJO.
+	 * @return {@code null}, indicating a layout type will be chosen based on the original
+	 * archive type
+	 */
+	protected LayoutType getLayout() {
+		return null;
+	}
+
+	/**
+	 * Return the layout factory that will be used to determine the {@link LayoutType} if
+	 * no explicit layout is set.
+	 * @return {@code null}, indicating a default layout factory will be chosen
+	 */
+	protected LayoutFactory getLayoutFactory() {
+		return null;
+	}
+
+	/**
 	 * Return a {@link Packager} configured for this MOJO.
 	 * @param <P> the packager type
 	 * @param supplier a packager supplier
@@ -137,12 +138,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	protected <P extends Packager> P getConfiguredPackager(Supplier<P> supplier) {
 		P packager = supplier.get();
-		packager.setLayoutFactory(this.layoutFactory);
+		packager.setLayoutFactory(getLayoutFactory());
 		packager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener(this::getLog));
 		packager.setMainClass(this.mainClass);
-		if (this.layout != null) {
-			getLog().info("Layout: " + this.layout);
-			packager.setLayout(this.layout.layout());
+		LayoutType layout = getLayout();
+		if (layout != null) {
+			getLog().info("Layout: " + layout);
+			packager.setLayout(layout.layout());
 		}
 		if (this.layers == null) {
 			packager.setLayers(IMPLICIT_LAYERS);
@@ -180,8 +182,9 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @throws MojoExecutionException on execution error
 	 */
 	protected final Libraries getLibraries(Collection<Dependency> unpacks) throws MojoExecutionException {
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), getFilters(getAdditionalFilters()));
-		return new ArtifactsLibraries(artifacts, this.session.getProjects(), unpacks, getLog());
+		Set<Artifact> artifacts = this.project.getArtifacts();
+		Set<Artifact> includedArtifacts = filterDependencies(artifacts, getFilters(getAdditionalFilters()));
+		return new ArtifactsLibraries(artifacts, includedArtifacts, this.session.getProjects(), unpacks, getLog());
 	}
 
 	private ArtifactsFilter[] getAdditionalFilters() {
@@ -197,6 +200,42 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		}
 		return filters.toArray(new ArtifactsFilter[0]);
+	}
+
+	/**
+	 * Return the source {@link Artifact} to repackage. If a classifier is specified and
+	 * an artifact with that classifier exists, it is used. Otherwise, the main artifact
+	 * is used.
+	 * @param classifier the artifact classifier
+	 * @return the source artifact to repackage
+	 */
+	protected Artifact getSourceArtifact(String classifier) {
+		Artifact sourceArtifact = getArtifact(classifier);
+		return (sourceArtifact != null) ? sourceArtifact : this.project.getArtifact();
+	}
+
+	private Artifact getArtifact(String classifier) {
+		if (classifier != null) {
+			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
+				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
+						&& attachedArtifact.getFile().isFile()) {
+					return attachedArtifact;
+				}
+			}
+		}
+		return null;
+	}
+
+	protected File getTargetFile(String finalName, String classifier, File targetDirectory) {
+		String classifierSuffix = (classifier != null) ? classifier.trim() : "";
+		if (!classifierSuffix.isEmpty() && !classifierSuffix.startsWith("-")) {
+			classifierSuffix = "-" + classifierSuffix;
+		}
+		if (!targetDirectory.exists()) {
+			targetDirectory.mkdirs();
+		}
+		return new File(targetDirectory,
+				finalName + classifierSuffix + "." + this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	/**

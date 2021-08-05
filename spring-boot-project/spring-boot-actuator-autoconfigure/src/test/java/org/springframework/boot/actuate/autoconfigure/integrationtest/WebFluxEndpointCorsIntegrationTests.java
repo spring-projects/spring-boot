@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,19 @@ class WebFluxEndpointCorsIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.run(withWebTestClient((webTestClient) -> {
 					webTestClient.options().uri("/actuator/beans").header("Origin", "test.example.org")
+							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").exchange().expectStatus()
+							.isForbidden();
+					performAcceptedCorsRequest(webTestClient, "/actuator/beans");
+				}));
+	}
+
+	@Test
+	void settingAllowedOriginPatternsEnablesCors() {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.org",
+						"management.endpoints.web.cors.allow-credentials:true")
+				.run(withWebTestClient((webTestClient) -> {
+					webTestClient.options().uri("/actuator/beans").header("Origin", "spring.example.com")
 							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").exchange().expectStatus()
 							.isForbidden();
 					performAcceptedCorsRequest(webTestClient, "/actuator/beans");

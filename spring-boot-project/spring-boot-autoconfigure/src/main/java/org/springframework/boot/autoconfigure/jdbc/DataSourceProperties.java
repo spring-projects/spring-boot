@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.util.Assert;
@@ -53,14 +53,15 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private ClassLoader classLoader;
 
 	/**
-	 * Name of the datasource. Default to "testdb" when using an embedded database.
-	 */
-	private String name;
-
-	/**
 	 * Whether to generate a random datasource name.
 	 */
 	private boolean generateUniqueName = true;
+
+	/**
+	 * Datasource name to use if "generate-unique-name" is false. Defaults to "testdb"
+	 * when using an embedded database, otherwise null.
+	 */
+	private String name;
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -98,12 +99,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Mode to apply when determining if DataSource initialization should be performed
 	 * using the available DDL and DML scripts.
 	 */
-	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
+	@Deprecated
+	private org.springframework.boot.jdbc.DataSourceInitializationMode initializationMode = org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
 
 	/**
 	 * Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or
 	 * data-${platform}.sql).
 	 */
+	@Deprecated
 	private String platform = "all";
 
 	/**
@@ -114,44 +117,56 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	/**
 	 * Username of the database to execute DDL scripts (if different).
 	 */
+	@Deprecated
 	private String schemaUsername;
 
 	/**
 	 * Password of the database to execute DDL scripts (if different).
 	 */
+	@Deprecated
 	private String schemaPassword;
 
 	/**
 	 * Data (DML) script resource references.
 	 */
+	@Deprecated
 	private List<String> data;
 
 	/**
 	 * Username of the database to execute DML scripts (if different).
 	 */
+	@Deprecated
 	private String dataUsername;
 
 	/**
 	 * Password of the database to execute DML scripts (if different).
 	 */
+	@Deprecated
 	private String dataPassword;
 
 	/**
 	 * Whether to stop if an error occurs while initializing the database.
 	 */
+	@Deprecated
 	private boolean continueOnError = false;
 
 	/**
 	 * Statement separator in SQL initialization scripts.
 	 */
+	@Deprecated
 	private String separator = ";";
 
 	/**
 	 * SQL scripts encoding.
 	 */
+	@Deprecated
 	private Charset sqlScriptEncoding;
 
-	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
+	/**
+	 * Connection details for an embedded database. Defaults to the most suitable embedded
+	 * database that is available on the classpath.
+	 */
+	private EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
 	private Xa xa = new Xa();
 
@@ -164,7 +179,9 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
+		if (this.embeddedDatabaseConnection == null) {
+			this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
+		}
 	}
 
 	/**
@@ -177,20 +194,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 				.url(determineUrl()).username(determineUsername()).password(determinePassword());
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public boolean isGenerateUniqueName() {
 		return this.generateUniqueName;
 	}
 
 	public void setGenerateUniqueName(boolean generateUniqueName) {
 		this.generateUniqueName = generateUniqueName;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Class<? extends DataSource> getType() {
@@ -374,92 +391,133 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		this.jndiName = jndiName;
 	}
 
-	public DataSourceInitializationMode getInitializationMode() {
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.mode")
+	public org.springframework.boot.jdbc.DataSourceInitializationMode getInitializationMode() {
 		return this.initializationMode;
 	}
 
-	public void setInitializationMode(DataSourceInitializationMode initializationMode) {
+	@Deprecated
+	public void setInitializationMode(org.springframework.boot.jdbc.DataSourceInitializationMode initializationMode) {
 		this.initializationMode = initializationMode;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.platform")
 	public String getPlatform() {
 		return this.platform;
 	}
 
+	@Deprecated
 	public void setPlatform(String platform) {
 		this.platform = platform;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.schema-locations")
 	public List<String> getSchema() {
 		return this.schema;
 	}
 
+	@Deprecated
 	public void setSchema(List<String> schema) {
 		this.schema = schema;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.username")
 	public String getSchemaUsername() {
 		return this.schemaUsername;
 	}
 
+	@Deprecated
 	public void setSchemaUsername(String schemaUsername) {
 		this.schemaUsername = schemaUsername;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.password")
 	public String getSchemaPassword() {
 		return this.schemaPassword;
 	}
 
+	@Deprecated
 	public void setSchemaPassword(String schemaPassword) {
 		this.schemaPassword = schemaPassword;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.data-locations")
 	public List<String> getData() {
 		return this.data;
 	}
 
+	@Deprecated
 	public void setData(List<String> data) {
 		this.data = data;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.username")
 	public String getDataUsername() {
 		return this.dataUsername;
 	}
 
+	@Deprecated
 	public void setDataUsername(String dataUsername) {
 		this.dataUsername = dataUsername;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.password")
 	public String getDataPassword() {
 		return this.dataPassword;
 	}
 
+	@Deprecated
 	public void setDataPassword(String dataPassword) {
 		this.dataPassword = dataPassword;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.continue-on-error")
 	public boolean isContinueOnError() {
 		return this.continueOnError;
 	}
 
+	@Deprecated
 	public void setContinueOnError(boolean continueOnError) {
 		this.continueOnError = continueOnError;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.separator")
 	public String getSeparator() {
 		return this.separator;
 	}
 
+	@Deprecated
 	public void setSeparator(String separator) {
 		this.separator = separator;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.encoding")
 	public Charset getSqlScriptEncoding() {
 		return this.sqlScriptEncoding;
 	}
 
+	@Deprecated
 	public void setSqlScriptEncoding(Charset sqlScriptEncoding) {
 		this.sqlScriptEncoding = sqlScriptEncoding;
+	}
+
+	public EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
+		return this.embeddedDatabaseConnection;
+	}
+
+	public void setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection embeddedDatabaseConnection) {
+		this.embeddedDatabaseConnection = embeddedDatabaseConnection;
 	}
 
 	public ClassLoader getClassLoader() {

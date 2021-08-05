@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
 		return (details) -> {
 			map.from(identityprovider::getEntityId).to(details::entityId);
-			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getBinding).whenNonNull()
+					.to(details::singleSignOnServiceBinding);
 			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
 			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
 					.to(details::wantAuthnRequestsSigned);

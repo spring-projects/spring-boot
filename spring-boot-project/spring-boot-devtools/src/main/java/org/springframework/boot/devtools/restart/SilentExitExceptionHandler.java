@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.restart;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 /**
@@ -35,7 +36,8 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread thread, Throwable exception) {
-		if (exception instanceof SilentExitException) {
+		if (exception instanceof SilentExitException || (exception instanceof InvocationTargetException
+				&& ((InvocationTargetException) exception).getTargetException() instanceof SilentExitException)) {
 			if (isJvmExiting(thread)) {
 				preventNonZeroExitCode();
 			}

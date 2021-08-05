@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure.quartz;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -48,6 +50,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -59,6 +63,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
@@ -76,6 +81,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
 class QuartzAutoConfigurationTests {
@@ -149,16 +155,20 @@ class QuartzAutoConfigurationTests {
 				});
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String datasourceName) {
+	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String dataSourceName) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(Scheduler.class);
 			Scheduler scheduler = context.getBean(Scheduler.class);
 			assertThat(scheduler.getMetaData().getJobStoreClass()).isAssignableFrom(LocalDataSourceJobStore.class);
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(datasourceName, DataSource.class));
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(dataSourceName, DataSource.class));
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_JOB_DETAILS", Integer.class))
 					.isEqualTo(2);
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS", Integer.class))
 					.isEqualTo(0);
+			assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class);
+			QuartzDataSourceScriptDatabaseInitializer initializer = context
+					.getBean(QuartzDataSourceScriptDatabaseInitializer.class);
+			assertThat(initializer).hasFieldOrPropertyWithValue("dataSource", context.getBean(dataSourceName));
 		};
 	}
 
@@ -194,8 +204,8 @@ class QuartzAutoConfigurationTests {
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob"))).isNotNull();
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"))).isNotNull();
-					Thread.sleep(1000L);
-					assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
+					Awaitility.waitAtMost(Duration.ofSeconds(5)).untilAsserted(
+							() -> assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue"));
 				});
 	}
 
@@ -309,6 +319,37 @@ class QuartzAutoConfigurationTests {
 	@Test
 	void schedulerNameUseBeanNameByDefault() {
 		this.contextRunner.withPropertyValues().run(assertSchedulerName("quartzScheduler"));
+	}
+
+	@Test
+	void whenTheUserDefinesTheirOwnQuartzDatabaseInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomQuartzDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc")
+				.run((context) -> assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("quartzDataSourceScriptDatabaseInitializer").hasBean("customInitializer"));
+	}
+
+	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
+	void whenTheUserDefinesTheirOwnQuartzDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomQuartzDataSourceInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc")
+				.run((context) -> assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(QuartzDataSourceInitializer.class).hasBean("customInitializer"));
+	}
+
+	@Test
+	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredQuartzInitializerRemains() {
+		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> assertThat(context)
+						.hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class).hasBean("customInitializer"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSchedulerName(String schedulerName) {
@@ -485,6 +526,39 @@ class QuartzAutoConfigurationTests {
 				throw new RuntimeException(ex);
 			}
 			return properties.initializeDataSourceBuilder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomQuartzDatabaseInitializerConfiguration {
+
+		@Bean
+		QuartzDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
+				QuartzProperties properties) {
+			return new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDatabaseInitializerConfiguration {
+
+		@Bean
+		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
+			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
+		}
+
+	}
+
+	@Deprecated
+	@Configuration(proxyBeanMethods = false)
+	static class CustomQuartzDataSourceInitializerConfiguration {
+
+		@Bean
+		QuartzDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+				QuartzProperties properties) {
+			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

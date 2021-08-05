@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link ZipFileTarArchive}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ZipFileTarArchiveTests {
 
@@ -75,6 +76,7 @@ class ZipFileTarArchiveTests {
 			assertThat(fileEntry.getLongUserId()).isEqualTo(123);
 			assertThat(fileEntry.getLongGroupId()).isEqualTo(456);
 			assertThat(fileEntry.getSize()).isEqualTo(4);
+			assertThat(fileEntry.getMode()).isEqualTo(0755);
 			assertThat(tarStream).hasContent("test");
 		}
 	}
@@ -85,6 +87,7 @@ class ZipFileTarArchiveTests {
 			zip.putArchiveEntry(dirEntry);
 			zip.closeArchiveEntry();
 			ZipArchiveEntry fileEntry = new ZipArchiveEntry("spring/boot");
+			fileEntry.setUnixMode(0755);
 			zip.putArchiveEntry(fileEntry);
 			zip.write("test".getBytes(StandardCharsets.UTF_8));
 			zip.closeArchiveEntry();

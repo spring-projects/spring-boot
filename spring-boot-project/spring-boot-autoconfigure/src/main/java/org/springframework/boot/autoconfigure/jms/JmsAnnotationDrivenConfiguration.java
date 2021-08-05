@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,6 +39,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableJms.class)
@@ -49,14 +51,17 @@ class JmsAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageConverter> messageConverter;
 
+	private final ObjectProvider<ExceptionListener> exceptionListener;
+
 	private final JmsProperties properties;
 
 	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
 			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
-			JmsProperties properties) {
+			ObjectProvider<ExceptionListener> exceptionListener, JmsProperties properties) {
 		this.destinationResolver = destinationResolver;
 		this.transactionManager = transactionManager;
 		this.messageConverter = messageConverter;
+		this.exceptionListener = exceptionListener;
 		this.properties = properties;
 	}
 
@@ -67,6 +72,7 @@ class JmsAnnotationDrivenConfiguration {
 		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
 		configurer.setTransactionManager(this.transactionManager.getIfUnique());
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setExceptionListener(this.exceptionListener.getIfUnique());
 		configurer.setJmsProperties(this.properties);
 		return configurer;
 	}

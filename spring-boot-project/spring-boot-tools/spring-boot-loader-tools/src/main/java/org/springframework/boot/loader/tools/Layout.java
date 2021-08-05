@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,26 +42,35 @@ public interface Layout {
 	 * @return the location of the library relative to the root of the archive (should end
 	 * with '/') or {@code null} if the library should not be included.
 	 */
-	default String getLibraryLocation(String libraryName, LibraryScope scope) {
-		return getLibraryDestination(libraryName, scope);
-	}
-
-	/**
-	 * Returns the destination path for a given library.
-	 * @param libraryName the name of the library (excluding any path)
-	 * @param scope the scope of the library
-	 * @return the destination relative to the root of the archive (should end with '/')
-	 * or {@code null} if the library should not be included.
-	 * @deprecated since 2.3.0 in favor of {@link #getLibraryLocation}
-	 */
-	@Deprecated
-	String getLibraryDestination(String libraryName, LibraryScope scope);
+	String getLibraryLocation(String libraryName, LibraryScope scope);
 
 	/**
 	 * Returns the location of classes within the archive.
 	 * @return the classes location
 	 */
 	String getClassesLocation();
+
+	/**
+	 * Returns the location of the classpath index file that should be written or
+	 * {@code null} if not index is required. The result should include the filename and
+	 * is relative to the root of the jar.
+	 * @return the classpath index file location
+	 * @since 2.5.0
+	 */
+	default String getClasspathIndexFileLocation() {
+		return null;
+	}
+
+	/**
+	 * Returns the location of the layer index file that should be written or {@code null}
+	 * if not index is required. The result should include the filename and is relative to
+	 * the root of the jar.
+	 * @return the layer index file location
+	 * @since 2.5.0
+	 */
+	default String getLayersIndexFileLocation() {
+		return null;
+	}
 
 	/**
 	 * Returns if loader classes should be included to make the archive executable.

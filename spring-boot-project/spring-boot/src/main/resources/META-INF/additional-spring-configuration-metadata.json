@@ -21,12 +21,12 @@
     },
     {
       "name": "logging.charset.console",
-      "type": "java.nio.Charset",
+      "type": "java.nio.charset.Charset",
       "description": "Charset to use for console output."
     },
     {
       "name": "logging.charset.file",
-      "type": "java.nio.Charset",
+      "type": "java.nio.charset.Charset",
       "description": "Charset to use for file output."
     },
     {
@@ -109,9 +109,9 @@
     {
       "name": "logging.register-shutdown-hook",
       "type": "java.lang.Boolean",
-      "description": "Register a shutdown hook for the logging system when it is initialized.",
+      "description": "Register a shutdown hook for the logging system when it is initialized. Disabled automatically when deployed as a war file.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false
+      "defaultValue": true
     },
     {
       "name": "logging.pattern.rolling-file-name",
@@ -274,10 +274,28 @@
       "defaultValue": true
     },
     {
+      "name": "spring.config.activate.on-cloud-platform",
+      "type": "org.springframework.boot.cloud.CloudPlatform",
+      "description": "Required cloud platform for the document to be included.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
+    },
+    {
+      "name": "spring.config.activate.on-profile",
+      "type": "java.lang.String[]",
+      "description": "Profile expressions that should match for the document to be included.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
+    },
+    {
       "name": "spring.config.additional-location",
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Config file locations used in addition to the defaults."
+    },
+    {
+      "name": "spring.config.import",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Import additional config data.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     },
     {
       "name": "spring.config.location",
@@ -291,6 +309,17 @@
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Config file name.",
       "defaultValue": "application"
+    },
+    {
+      "name": "spring.config.use-legacy-processing",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable configuration data processing legacy mode.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jpa.defer-datasource-initialization",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
     },
     {
       "name": "spring.jta.atomikos.connectionfactory.borrow-connection-timeout",
@@ -445,273 +474,331 @@
     {
       "name": "spring.jta.bitronix.connectionfactory.acquire-increment",
       "type": "java.lang.Integer",
-      "description": "Number of connections to create when growing the pool.",
-      "defaultValue": 1
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.acquisition-interval",
       "type": "java.lang.Integer",
-      "description": "Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.",
-      "defaultValue": 1
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.acquisition-timeout",
       "type": "java.lang.Integer",
-      "description": "Timeout, in seconds, for acquiring connections from the pool.",
-      "defaultValue": 30
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.allow-local-transactions",
       "type": "java.lang.Boolean",
-      "description": "Whether the transaction manager should allow mixing XA and non-XA transactions.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.apply-transaction-timeout",
       "type": "java.lang.Boolean",
-      "description": "Whether the transaction timeout should be set on the XAResource when it is enlisted.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.automatic-enlisting-enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether resources should be enlisted and delisted automatically.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.cache-producers-consumers",
       "type": "java.lang.Boolean",
-      "description": "Whether producers and consumers should be cached.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.class-name",
       "type": "java.lang.String",
-      "description": "Underlying implementation class name of the XA resource."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.defer-connection-release",
       "type": "java.lang.Boolean",
-      "description": "Whether the provider can run many transactions on the same connection and supports transaction interleaving.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.disabled",
       "type": "java.lang.Boolean",
-      "description": "Whether this resource is disabled, meaning it's temporarily forbidden to acquire a connection from its pool.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.driver-properties",
       "type": "java.util.Properties",
-      "description": "Properties that should be set on the underlying implementation."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.ignore-recovery-failures",
       "type": "java.lang.Boolean",
-      "description": "Whether recovery failures should be ignored.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.max-idle-time",
       "type": "java.lang.Integer",
-      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
-      "defaultValue": 60
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.max-pool-size",
       "type": "java.lang.Integer",
-      "description": "Maximum size of the pool. 0 denotes no limit.",
-      "defaultValue": 0
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.min-pool-size",
       "type": "java.lang.Integer",
-      "description": "Minimum size of the pool.",
-      "defaultValue": 0
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.password",
       "type": "java.lang.String",
-      "description": "Password to use to connect to the JMS provider."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.share-transaction-connections",
       "type": "java.lang.Boolean",
-      "description": "Whether connections in the ACCESSIBLE state can be shared within the context of a transaction.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.test-connections",
       "type": "java.lang.Boolean",
-      "description": "Whether connections should be tested when acquired from the pool.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.two-pc-ordering-position",
       "type": "java.lang.Integer",
-      "description": "Position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).",
-      "defaultValue": 1
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.unique-name",
       "type": "java.lang.String",
-      "description": "Unique name used to identify the resource during recovery.",
-      "defaultValue": "jmsConnectionFactory"
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.use-tm-join",
       "type": "java.lang.Boolean",
-      "description": "Whether TMJOIN should be used when starting XAResources.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.connectionfactory.user",
       "type": "java.lang.String",
-      "description": "User to use to connect to the JMS provider."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.acquire-increment",
       "type": "java.lang.Integer",
-      "description": "Number of connections to create when growing the pool.",
-      "defaultValue": 1
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.acquisition-interval",
       "type": "java.lang.Integer",
-      "description": "Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.",
-      "defaultValue": 1
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.acquisition-timeout",
       "type": "java.lang.Integer",
-      "description": "Timeout, in seconds, for acquiring connections from the pool.",
-      "defaultValue": 30
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.allow-local-transactions",
       "type": "java.lang.Boolean",
-      "description": "Whether the transaction manager should allow mixing XA and non-XA transactions.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.apply-transaction-timeout",
       "type": "java.lang.Boolean",
-      "description": "Whether the transaction timeout should be set on the XAResource when it is enlisted.",
-      "defaultValue": "false"
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.automatic-enlisting-enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether resources should be enlisted and delisted automatically.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.class-name",
       "type": "java.lang.String",
-      "description": "Underlying implementation class name of the XA resource."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.cursor-holdability",
       "type": "java.lang.String",
-      "description": "Default cursor holdability for connections."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.defer-connection-release",
       "type": "java.lang.Boolean",
-      "description": "Whether the database can run many transactions on the same connection and supports transaction interleaving.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.disabled",
       "type": "java.lang.Boolean",
-      "description": "Whether this resource is disabled, meaning it's temporarily forbidden to acquire a connection from its pool.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.driver-properties",
       "type": "java.util.Properties",
-      "description": "Properties that should be set on the underlying implementation."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.enable-jdbc4-connection-test",
       "type": "java.lang.Boolean",
-      "description": "Whether Connection.isValid() is called when acquiring a connection from the pool.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.ignore-recovery-failures",
       "type": "java.lang.Boolean",
-      "description": "Whether recovery failures should be ignored.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.isolation-level",
       "type": "java.lang.String",
-      "description": "Default isolation level for connections."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.local-auto-commit",
       "type": "java.lang.String",
-      "description": "Default auto-commit mode for local transactions."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.login-timeout",
       "type": "java.lang.Integer",
-      "description": "Timeout, in seconds, for establishing a database connection."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.max-idle-time",
       "type": "java.lang.Integer",
-      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
-      "defaultValue": 60
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.max-pool-size",
       "type": "java.lang.Integer",
-      "description": "Maximum size of the pool. 0 denotes no limit.",
-      "defaultValue": 0
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.min-pool-size",
       "type": "java.lang.Integer",
-      "description": "Minimum size of the pool.",
-      "defaultValue": 0
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.prepared-statement-cache-size",
       "type": "java.lang.Integer",
-      "description": "Target size of the prepared statement cache. 0 disables the cache.",
-      "defaultValue": 0
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.share-transaction-connections",
       "type": "java.lang.Boolean",
-      "description": "Whether connections in the ACCESSIBLE state can be shared within the context of a transaction.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.test-query",
       "type": "java.lang.String",
-      "description": "SQL query or statement used to validate a connection before returning it."
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.two-pc-ordering-position",
       "type": "java.lang.Integer",
-      "description": "Position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, and always last is Integer.MAX_VALUE).",
-      "defaultValue": 1
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.unique-name",
       "type": "java.lang.String",
-      "description": "Unique name used to identify the resource during recovery.",
-      "defaultValue": "dataSource"
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.datasource.use-tm-join",
       "type": "java.lang.Boolean",
-      "description": "Whether TMJOIN should be used when starting XAResources.",
-      "defaultValue": true
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.main.allow-bean-definition-overriding",
@@ -825,10 +912,22 @@
       "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
     },
     {
+      "name": "spring.profiles.default",
+      "type": "java.lang.String",
+      "description": "Name of the profile to enable if no profile is active.",
+      "defaultValue": "default"
+    },
+    {
       "name": "spring.profiles.include",
       "type": "java.util.List<java.lang.String>",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
+    },
+    {
+      "name": "spring.profiles.group",
+      "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
+      "description": "Profile groups to define a logical name for a related group of profiles."
     },
     {
       "name": "spring.reactor.debug-agent.enabled",
@@ -843,24 +942,6 @@
       "description": "Enable trace logs.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false
-    },
-    {
-      "name": "spring.config.import",
-      "type": "java.util.List<java.lang.String>",
-      "description": "Import additional config data.",
-      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
-    },
-    {
-      "name": "spring.config.activate.on-cloud-platform",
-      "type": "org.springframework.boot.cloud.CloudPlatform",
-      "description": "Required cloud platform for the document to be included.",
-      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
-    },
-    {
-      "name": "spring.config.activate.on-profile",
-      "type": "java.lang.String[]",
-      "description": "Profile expressions that should match for the document to be included.",
-      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     }
   ],
   "hints": [

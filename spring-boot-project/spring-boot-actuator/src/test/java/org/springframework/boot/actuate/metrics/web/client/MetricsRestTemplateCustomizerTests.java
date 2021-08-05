@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,29 @@ package org.springframework.boot.actuate.metrics.web.client;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
@@ -134,6 +141,50 @@ class MetricsRestTemplateCustomizerTests {
 
 		this.mockServer.verify();
 		nestedMockServer.verify();
+	}
+
+	@Test
+	void whenCustomizerAndLocalHostUriTemplateHandlerAreUsedTogetherThenRestTemplateBuilderCanBuild() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("local.server.port", "8443");
+		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(environment, "https");
+		RestTemplate restTemplate = new RestTemplateBuilder(this.customizer).uriTemplateHandler(uriTemplateHandler)
+				.build();
+		assertThat(restTemplate.getUriTemplateHandler())
+				.asInstanceOf(InstanceOfAssertFactories.type(RootUriTemplateHandler.class))
+				.extracting(RootUriTemplateHandler::getRootUri).isEqualTo("https://localhost:8443");
+	}
+
+	@Test
+	void whenAutoTimingIsDisabledUriTemplateHandlerDoesNotCaptureUris() {
+		AtomicBoolean enabled = new AtomicBoolean(false);
+		AutoTimer autoTimer = new AutoTimer() {
+
+			@Override
+			public boolean isEnabled() {
+				return enabled.get();
+			}
+
+			@Override
+			public void apply(Builder builder) {
+			}
+
+		};
+		RestTemplate restTemplate = new RestTemplateBuilder(new MetricsRestTemplateCustomizer(this.registry,
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests", autoTimer)).build();
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+		mockServer.expect(MockRestRequestMatchers.requestTo("/first/123"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		mockServer.expect(MockRestRequestMatchers.requestTo("/second/456"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		assertThat(restTemplate.getForObject("/first/{id}", String.class, 123)).isEqualTo("OK");
+		assertThat(this.registry.find("http.client.requests").timer()).isNull();
+		enabled.set(true);
+		assertThat(restTemplate.getForObject(URI.create("/second/456"), String.class)).isEqualTo("OK");
+		this.registry.get("http.client.requests").tags("uri", "/second/456").timer();
+		this.mockServer.verify();
 	}
 
 	private static final class TestInterceptor implements ClientHttpRequestInterceptor {

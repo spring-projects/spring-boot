@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,13 @@ import java.lang.annotation.Target;
 /**
  * Annotation that can be used to specify the default value when binding to an immutable
  * property. This annotation can also be used with nested properties to indicate that a
- * value should always be bound (rather than binding {@code null}).
+ * value should always be bound (rather than binding {@code null}). The value from this
+ * annotation will only be used if the property is not found in the property sources used
+ * by the {@link Binder}. For example, if the property is present in the
+ * {@link org.springframework.core.env.Environment} when binding to
+ * {@link org.springframework.boot.context.properties.ConfigurationProperties @ConfigurationProperties},
+ * the default value for the property will not be used even if the property value is
+ * empty.
  *
  * @author Madhura Bhave
  * @since 2.2.0

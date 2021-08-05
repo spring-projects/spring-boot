@@ -55,6 +55,9 @@ do as they were designed before this was clarified.
 | https://docs.microsoft.com/en-us/azure/application-insights/app-insights-overview[Azure Application Insights]
 | https://github.com/Microsoft/ApplicationInsights-Java/tree/master/azure-application-insights-spring-boot-starter
 
+| https://github.com/bitcoin/bitcoin[Bitcoin]
+| https://github.com/theborakompanioni/bitcoin-spring-boot-starter
+
 | https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
 | https://github.com/MarcGiffing/bucket4j-spring-boot-starter
 
@@ -121,6 +124,9 @@ do as they were designed before this was clarified.
 | https://www.hyperledger.org/use/fabric[Hyperledger Fabric]
 | https://github.com/bxforce/hyperledger-fabric-spring-boot
 
+| https://www.ibm.com/products/mq[IBM MQ]
+| https://github.com/ibm-messaging/mq-jms-spring
+
 | https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
@@ -166,6 +172,9 @@ do as they were designed before this was clarified.
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
+| https://groupe-sii.github.io/ogham/[Ogham]
+| https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-all, https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-email, and https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-sms
+
 | https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
@@ -173,7 +182,7 @@ do as they were designed before this was clarified.
 | https://github.com/okta/okta-spring-boot
 
 | https://www.optaplanner.org/[OptaPlanner]
-| https://github.com/kiegroup/optaplanner/tree/master/optaplanner-integration/optaplanner-spring-boot-starter
+| https://github.com/kiegroup/optaplanner/tree/master/optaplanner-spring-integration/optaplanner-spring-boot-starter
 
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter

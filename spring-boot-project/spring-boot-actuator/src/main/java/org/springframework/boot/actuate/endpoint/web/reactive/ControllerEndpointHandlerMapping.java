@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEn
 import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
@@ -92,20 +91,13 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		if (patterns.isEmpty()) {
 			patterns = Collections.singleton(getPathPatternParser().parse(""));
 		}
-		PathPattern[] endpointMappedPatterns = patterns.stream()
-				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(PathPattern[]::new);
-		return withNewPatterns(mapping, endpointMappedPatterns);
+		String[] endpointMappedPatterns = patterns.stream()
+				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(String[]::new);
+		return mapping.mutate().paths(endpointMappedPatterns).build();
 	}
 
-	private PathPattern getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
-		return getPathPatternParser().parse(this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern));
-	}
-
-	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping, PathPattern[] patterns) {
-		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(patterns);
-		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
-				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
-				mapping.getCustomCondition());
+	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
+		return this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern);
 	}
 
 	@Override

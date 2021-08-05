@@ -1,18 +1,18 @@
 [[reacting-to-other-plugins]]
-== Reacting to Other Plugins
+= Reacting to Other Plugins
 When another plugin is applied the Spring Boot plugin reacts by making various changes to the project's configuration.
 This section describes those changes.
 
 
 
-[[reacting-to-other-plugins-java]]
-=== Reacting to the Java Plugin
+[[reacting-to-other-plugins.java]]
+== Reacting to the Java Plugin
 When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {boot-jar-javadoc}[`BootJar`] task named `bootJar` that will create an executable, fat jar for the project.
    The jar will contain everything on the runtime classpath of the main source set; classes are packaged in `BOOT-INF/classes` and jars are packaged in `BOOT-INF/lib`
 2. Configures the `assemble` task to depend on the `bootJar` task.
-3. Disables the `jar` task.
+3. Configures the `jar` task to use `plain` as the convention for its archive classifier.
 4. Creates a {boot-build-image-javadoc}[`BootBuildImage`] task named `bootBuildImage` that will create a OCI image using a https://buildpacks.io[buildpack].
 5. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run your application.
 6. Creates a configuration named `bootArchives` that contains the artifact produced by the `bootJar` task.
@@ -22,8 +22,8 @@ When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring B
 
 
 
-[[reacting-to-other-plugins-kotlin]]
-=== Reacting to the Kotlin Plugin
+[[reacting-to-other-plugins.kotlin]]
+== Reacting to the Kotlin Plugin
 When {kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot plugin:
 
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version of the plugin.
@@ -32,26 +32,26 @@ When {kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring
 
 
 
-[[reacting-to-other-plugins-war]]
-=== Reacting to the War Plugin
+[[reacting-to-other-plugins.war]]
+== Reacting to the War Plugin
 When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {boot-war-javadoc}[`BootWar`] task named `bootWar` that will create an executable, fat war for the project.
    In addition to the standard packaging, everything in the `providedRuntime` configuration will be packaged in `WEB-INF/lib-provided`.
 2. Configures the `assemble` task to depend on the `bootWar` task.
-3. Disables the `war` task.
+3. Configures the `war` task to use `plain` as the convention for its archive classifier.
 4. Configures the `bootArchives` configuration to contain the artifact produced by the `bootWar` task.
 
 
 
-[[reacting-to-other-plugins-dependency-management]]
-=== Reacting to the Dependency Management Plugin
+[[reacting-to-other-plugins.dependency-management]]
+== Reacting to the Dependency Management Plugin
 When the {dependency-management-plugin}[`io.spring.dependency-management` plugin] is applied to a project, the Spring Boot plugin will automatically import the `spring-boot-dependencies` bom.
 
 
 
-[[reacting-to-other-plugins-application]]
-=== Reacting to the Application Plugin
+[[reacting-to-other-plugins.application]]
+== Reacting to the Application Plugin
 When Gradle's {application-plugin}[`application` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts that launch the artifact in the `bootArchives` configuration using `java -jar`.
@@ -64,6 +64,9 @@ When Gradle's {application-plugin}[`application` plugin] is applied to a project
 
 
 
-[[reacting-to-other-plugins-maven]]
-=== Reacting to the Maven plugin
+[[reacting-to-other-plugins.maven]]
+== Reacting to the Maven plugin
+WARNING: Support for reacting to Gradle's `maven` plugin is deprecated and will be removed in a future release.
+Please use the `maven-publish` plugin instead.
+
 When Gradle's {maven-plugin}[`maven` plugin] is applied to a project, the Spring Boot plugin will configure the `uploadBootArchives` `Upload` task to ensure that no dependencies are declared in the pom that it generates.

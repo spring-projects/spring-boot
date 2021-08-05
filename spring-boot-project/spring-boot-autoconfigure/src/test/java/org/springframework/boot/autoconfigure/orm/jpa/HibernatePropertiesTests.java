@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
+ * @author Chris Bono
  */
 @ExtendWith(MockitoExtension.class)
 class HibernatePropertiesTests {
@@ -59,7 +60,7 @@ class HibernatePropertiesTests {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> {
 			assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 			assertThat(hibernateProperties).containsEntry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
-					SpringPhysicalNamingStrategy.class.getName());
+					CamelCaseToUnderscoresNamingStrategy.class.getName());
 			assertThat(hibernateProperties).containsEntry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
 					SpringImplicitNamingStrategy.class.getName());
 		}));
@@ -129,6 +130,19 @@ class HibernatePropertiesTests {
 	void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
 				.run(assertDefaultDdlAutoNotInvoked("create"));
+	}
+
+	@Test
+	void defaultDdlAutoIsNotInvokedAndDdlAutoIsNotSetIfJpaDbActionPropertyIsSet() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create")
+				.run(assertHibernateProperties((hibernateProperties) -> {
+					assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
+					assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_DATABASE_ACTION,
+							"drop-and-create");
+					verify(this.ddlAutoSupplier, never()).get();
+				}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 			}
 			String sourceType = source.getType();
 			if (sourceType != null) {
-				putIfAbsent(group.getSources(), sourceType, source);
+				addOrMergeSource(group.getSources(), sourceType, source);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 				// Merge properties
 				group.getProperties().forEach((name, value) -> putIfAbsent(existingGroup.getProperties(), name, value));
 				// Merge sources
-				group.getSources().forEach((name, value) -> putIfAbsent(existingGroup.getSources(), name, value));
+				group.getSources().forEach((name, value) -> addOrMergeSource(existingGroup.getSources(), name, value));
 			}
 		}
 
@@ -109,6 +109,17 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 			return rootGroup;
 		}
 		return this.allGroups.get(source.getGroupId());
+	}
+
+	private void addOrMergeSource(Map<String, ConfigurationMetadataSource> sources, String name,
+			ConfigurationMetadataSource source) {
+		ConfigurationMetadataSource existingSource = sources.get(name);
+		if (existingSource == null) {
+			sources.put(name, source);
+		}
+		else {
+			source.getProperties().forEach((k, v) -> putIfAbsent(existingSource.getProperties(), k, v));
+		}
 	}
 
 	private <V> void putIfAbsent(Map<String, V> map, String key, V value) {

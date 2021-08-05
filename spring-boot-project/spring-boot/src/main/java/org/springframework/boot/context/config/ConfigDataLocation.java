@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * A user specified location that can be {@link ConfigDataLocationResolver resolved} to
- * one or {@link ConfigDataResource config data resources}. A {@link ConfigDataLocation}
- * is a simple wrapper around a {@link String} value. The exact format of the value will
- * depend on the underlying technology, but is usually a URL like syntax consisting of a
- * prefix and path. For example, {@code crypt:somehost/somepath}.
+ * one or more {@link ConfigDataResource config data resources}. A
+ * {@link ConfigDataLocation} is a simple wrapper around a {@link String} value. The exact
+ * format of the value will depend on the underlying technology, but is usually a URL like
+ * syntax consisting of a prefix and path. For example, {@code crypt:somehost/somepath}.
  * <p>
  * Locations can be mandatory or {@link #isOptional() optional}. Optional locations are
  * prefixed with {@code optional:}.
@@ -95,6 +95,32 @@ public final class ConfigDataLocation implements OriginProvider {
 	@Override
 	public Origin getOrigin() {
 		return this.origin;
+	}
+
+	/**
+	 * Return an array of {@link ConfigDataLocation} elements built by splitting this
+	 * {@link ConfigDataLocation} around a delimiter of {@code ";"}.
+	 * @return the split locations
+	 * @since 2.4.7
+	 */
+	public ConfigDataLocation[] split() {
+		return split(";");
+	}
+
+	/**
+	 * Return an array of {@link ConfigDataLocation} elements built by splitting this
+	 * {@link ConfigDataLocation} around the specified delimiter.
+	 * @param delimiter the delimiter to split on
+	 * @return the split locations
+	 * @since 2.4.7
+	 */
+	public ConfigDataLocation[] split(String delimiter) {
+		String[] values = StringUtils.delimitedListToStringArray(toString(), delimiter);
+		ConfigDataLocation[] result = new ConfigDataLocation[values.length];
+		for (int i = 0; i < values.length; i++) {
+			result[i] = of(values[i]).withOrigin(getOrigin());
+		}
+		return result;
 	}
 
 	@Override

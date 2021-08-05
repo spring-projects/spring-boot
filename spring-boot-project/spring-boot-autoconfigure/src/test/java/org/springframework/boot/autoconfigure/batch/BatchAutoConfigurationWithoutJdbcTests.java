@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,22 +60,22 @@ class BatchAutoConfigurationWithoutJdbcTests {
 	static class BatchConfiguration implements BatchConfigurer {
 
 		@Override
-		public JobRepository getJobRepository() throws Exception {
+		public JobRepository getJobRepository() {
 			return mock(JobRepository.class);
 		}
 
 		@Override
-		public PlatformTransactionManager getTransactionManager() throws Exception {
+		public PlatformTransactionManager getTransactionManager() {
 			return mock(PlatformTransactionManager.class);
 		}
 
 		@Override
-		public JobLauncher getJobLauncher() throws Exception {
+		public JobLauncher getJobLauncher() {
 			return mock(JobLauncher.class);
 		}
 
 		@Override
-		public JobExplorer getJobExplorer() throws Exception {
+		public JobExplorer getJobExplorer() {
 			return mock(JobExplorer.class);
 		}
 

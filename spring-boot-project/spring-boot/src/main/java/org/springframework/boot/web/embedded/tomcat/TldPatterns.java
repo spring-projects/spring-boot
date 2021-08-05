@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,30 @@ import java.util.Set;
  */
 final class TldPatterns {
 
-	private static final Set<String> TOMCAT_SKIP;
+	static final Set<String> TOMCAT_SKIP;
 
 	static {
 		// Same as Tomcat
 		Set<String> skipPatterns = new LinkedHashSet<>();
-		skipPatterns.add("ant-*.jar");
+		skipPatterns.add("annotations-api.jar");
+		skipPatterns.add("ant-junit*.jar");
+		skipPatterns.add("ant-launcher.jar");
+		skipPatterns.add("ant.jar");
+		skipPatterns.add("asm-*.jar");
 		skipPatterns.add("aspectj*.jar");
+		skipPatterns.add("bootstrap.jar");
+		skipPatterns.add("catalina-ant.jar");
+		skipPatterns.add("catalina-ha.jar");
+		skipPatterns.add("catalina-ssi.jar");
+		skipPatterns.add("catalina-storeconfig.jar");
+		skipPatterns.add("catalina-tribes.jar");
+		skipPatterns.add("catalina.jar");
+		skipPatterns.add("cglib-*.jar");
+		skipPatterns.add("cobertura-*.jar");
 		skipPatterns.add("commons-beanutils*.jar");
 		skipPatterns.add("commons-codec*.jar");
 		skipPatterns.add("commons-collections*.jar");
+		skipPatterns.add("commons-daemon.jar");
 		skipPatterns.add("commons-dbcp*.jar");
 		skipPatterns.add("commons-digester*.jar");
 		skipPatterns.add("commons-fileupload*.jar");
@@ -47,29 +61,59 @@ final class TldPatterns {
 		skipPatterns.add("commons-logging*.jar");
 		skipPatterns.add("commons-math*.jar");
 		skipPatterns.add("commons-pool*.jar");
+		skipPatterns.add("dom4j-*.jar");
+		skipPatterns.add("easymock-*.jar");
+		skipPatterns.add("ecj-*.jar");
+		skipPatterns.add("el-api.jar");
 		skipPatterns.add("geronimo-spec-jaxrpc*.jar");
 		skipPatterns.add("h2*.jar");
-		skipPatterns.add("hamcrest*.jar");
+		skipPatterns.add("hamcrest-*.jar");
 		skipPatterns.add("hibernate*.jar");
-		skipPatterns.add("jaxb-runtime-*.jar");
-		skipPatterns.add("jmx*.jar");
-		skipPatterns.add("jmx-tools-*.jar");
+		skipPatterns.add("httpclient*.jar");
+		skipPatterns.add("icu4j-*.jar");
+		skipPatterns.add("jasper-el.jar");
+		skipPatterns.add("jasper.jar");
+		skipPatterns.add("jaspic-api.jar");
+		skipPatterns.add("jaxb-*.jar");
+		skipPatterns.add("jaxen-*.jar");
+		skipPatterns.add("jdom-*.jar");
+		skipPatterns.add("jetty-*.jar");
+		skipPatterns.add("jmx-tools.jar");
+		skipPatterns.add("jmx.jar");
+		skipPatterns.add("jsp-api.jar");
+		skipPatterns.add("jstl.jar");
 		skipPatterns.add("jta*.jar");
 		skipPatterns.add("junit-*.jar");
-		skipPatterns.add("httpclient*.jar");
-		skipPatterns.add("log4j-*.jar");
+		skipPatterns.add("junit.jar");
+		skipPatterns.add("log4j*.jar");
 		skipPatterns.add("mail*.jar");
-		skipPatterns.add("org.hamcrest*.jar");
+		skipPatterns.add("objenesis-*.jar");
+		skipPatterns.add("oraclepki.jar");
+		skipPatterns.add("oro-*.jar");
+		skipPatterns.add("servlet-api-*.jar");
+		skipPatterns.add("servlet-api.jar");
 		skipPatterns.add("slf4j*.jar");
-		skipPatterns.add("tomcat-embed-core-*.jar");
-		skipPatterns.add("tomcat-embed-logging-*.jar");
-		skipPatterns.add("tomcat-jdbc-*.jar");
-		skipPatterns.add("tomcat-juli-*.jar");
+		skipPatterns.add("taglibs-standard-spec-*.jar");
+		skipPatterns.add("tagsoup-*.jar");
+		skipPatterns.add("tomcat-api.jar");
+		skipPatterns.add("tomcat-coyote.jar");
+		skipPatterns.add("tomcat-dbcp.jar");
+		skipPatterns.add("tomcat-i18n-*.jar");
+		skipPatterns.add("tomcat-jdbc.jar");
+		skipPatterns.add("tomcat-jni.jar");
+		skipPatterns.add("tomcat-juli-adapters.jar");
+		skipPatterns.add("tomcat-juli.jar");
+		skipPatterns.add("tomcat-util-scan.jar");
+		skipPatterns.add("tomcat-util.jar");
+		skipPatterns.add("tomcat-websocket.jar");
 		skipPatterns.add("tools.jar");
+		skipPatterns.add("websocket-api.jar");
 		skipPatterns.add("wsdl4j*.jar");
-		skipPatterns.add("xercesImpl-*.jar");
+		skipPatterns.add("xercesImpl.jar");
+		skipPatterns.add("xml-apis.jar");
 		skipPatterns.add("xmlParserAPIs-*.jar");
-		skipPatterns.add("xml-apis-*.jar");
+		skipPatterns.add("xmlParserAPIs.jar");
+		skipPatterns.add("xom-*.jar");
 		TOMCAT_SKIP = Collections.unmodifiableSet(skipPatterns);
 	}
 
@@ -80,17 +124,9 @@ final class TldPatterns {
 		Set<String> skipPatterns = new LinkedHashSet<>();
 		skipPatterns.add("antlr-*.jar");
 		skipPatterns.add("aopalliance-*.jar");
-		skipPatterns.add("aspectjrt-*.jar");
 		skipPatterns.add("aspectjweaver-*.jar");
 		skipPatterns.add("classmate-*.jar");
-		skipPatterns.add("dom4j-*.jar");
-		skipPatterns.add("ecj-*.jar");
 		skipPatterns.add("ehcache-core-*.jar");
-		skipPatterns.add("hibernate-core-*.jar");
-		skipPatterns.add("hibernate-commons-annotations-*.jar");
-		skipPatterns.add("hibernate-entitymanager-*.jar");
-		skipPatterns.add("hibernate-jpa-2.1-api-*.jar");
-		skipPatterns.add("hibernate-validator-*.jar");
 		skipPatterns.add("hsqldb-*.jar");
 		skipPatterns.add("jackson-annotations-*.jar");
 		skipPatterns.add("jackson-core-*.jar");
@@ -102,11 +138,9 @@ final class TldPatterns {
 		skipPatterns.add("jcl-over-slf4j-*.jar");
 		skipPatterns.add("jdom-*.jar");
 		skipPatterns.add("jul-to-slf4j-*.jar");
-		skipPatterns.add("log4j-over-slf4j-*.jar");
 		skipPatterns.add("logback-classic-*.jar");
 		skipPatterns.add("logback-core-*.jar");
 		skipPatterns.add("rome-*.jar");
-		skipPatterns.add("slf4j-api-*.jar");
 		skipPatterns.add("spring-aop-*.jar");
 		skipPatterns.add("spring-aspects-*.jar");
 		skipPatterns.add("spring-beans-*.jar");
@@ -120,9 +154,10 @@ final class TldPatterns {
 		skipPatterns.add("spring-oxm-*.jar");
 		skipPatterns.add("spring-tx-*.jar");
 		skipPatterns.add("snakeyaml-*.jar");
+		skipPatterns.add("tomcat-embed-core-*.jar");
+		skipPatterns.add("tomcat-embed-logging-*.jar");
 		skipPatterns.add("tomcat-embed-el-*.jar");
 		skipPatterns.add("validation-api-*.jar");
-		skipPatterns.add("xml-apis-*.jar");
 		ADDITIONAL_SKIP = Collections.unmodifiableSet(skipPatterns);
 	}
 
@@ -135,7 +170,7 @@ final class TldPatterns {
 		DEFAULT_SKIP = Collections.unmodifiableSet(skipPatterns);
 	}
 
-	private static final Set<String> TOMCAT_SCAN;
+	static final Set<String> TOMCAT_SCAN;
 
 	static {
 		Set<String> scanPatterns = new LinkedHashSet<>();

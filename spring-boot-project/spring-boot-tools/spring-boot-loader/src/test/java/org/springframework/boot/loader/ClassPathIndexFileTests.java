@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class ClassPathIndexFileTests {
 	File temp;
 
 	@Test
-	void loadIfPossibleWhenRootIsNotFileReturnsNull() throws IOException {
+	void loadIfPossibleWhenRootIsNotFileReturnsNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("https://example.com/file"), "test.idx"))
 				.withMessage("URL does not reference a file");
@@ -78,11 +78,11 @@ class ClassPathIndexFileTests {
 		ClassPathIndexFile indexFile = copyAndLoadTestIndexFile();
 		List<URL> urls = indexFile.getUrls();
 		List<File> expected = new ArrayList<>();
-		expected.add(new File(this.temp, "a.jar"));
-		expected.add(new File(this.temp, "b.jar"));
-		expected.add(new File(this.temp, "c.jar"));
-		expected.add(new File(this.temp, "d.jar"));
-		expected.add(new File(this.temp, "e.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/a.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/b.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/c.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/two/lib/d.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/two/lib/e.jar"));
 		assertThat(urls).containsExactly(expected.stream().map(this::toUrl).toArray(URL[]::new));
 	}
 
@@ -95,7 +95,7 @@ class ClassPathIndexFileTests {
 		}
 	}
 
-	private ClassPathIndexFile copyAndLoadTestIndexFile() throws IOException, MalformedURLException {
+	private ClassPathIndexFile copyAndLoadTestIndexFile() throws IOException {
 		copyTestIndexFile();
 		ClassPathIndexFile indexFile = ClassPathIndexFile.loadIfPossible(this.temp.toURI().toURL(), "test.idx");
 		return indexFile;

@@ -4,8 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.beans.factory.support.GenericBeanDefinition
-import org.springframework.core.type.AnnotationMetadata
-import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
 
 /**
  * Tests for `ConfigurationPropertiesBeanRegistrar`.

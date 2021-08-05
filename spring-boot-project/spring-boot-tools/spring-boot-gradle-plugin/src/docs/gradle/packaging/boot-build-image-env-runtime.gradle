@@ -1,0 +1,23 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::env-runtime[]
+bootBuildImage {
+	environment = [
+			"BPE_DELIM_JAVA_TOOL_OPTIONS" : " ",
+			"BPE_APPEND_JAVA_TOOL_OPTIONS" : "-XX:+HeapDumpOnOutOfMemoryError"
+	]
+}
+// end::env-runtime[]
+
+task bootBuildImageEnvironment {
+	doFirst {
+		bootBuildImage.environment.each { name, value -> println "$name=$value" }
+	}
+}

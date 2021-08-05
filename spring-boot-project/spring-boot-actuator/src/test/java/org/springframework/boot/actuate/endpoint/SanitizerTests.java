@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,12 +48,37 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
 	}
 
+	@Test
+	void whenAdditionalKeysAreAddedValuesOfBothThemAndTheDefaultKeysAreSanitized() {
+		Sanitizer sanitizer = new Sanitizer();
+		sanitizer.keysToSanitize("find", "confidential");
+		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somesecret", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("confidential", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("private", "secret")).isEqualTo("secret");
+	}
+
 	@ParameterizedTest(name = "key = {0}")
 	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080"))
 				.isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithNonAlphaSchemeCharactersAndSingleValueWithPasswordShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "s-ch3m.+-e://user:password@localhost:8080"))
+				.isEqualTo("s-ch3m.+-e://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -123,8 +148,8 @@ class SanitizerTests {
 	}
 
 	private static Stream<String> matchingUriUserInfoKeys() {
-		return Stream.of("uri", "my.uri", "myuri", "uris", "my.uris", "myuris", "address", "my.address", "myaddress",
-				"addresses", "my.addresses", "myaddresses");
+		return Stream.of("uri", "my.uri", "myuri", "uris", "my.uris", "myuris", "url", "my.url", "myurl", "urls",
+				"my.urls", "myurls", "address", "my.address", "myaddress", "addresses", "my.addresses", "myaddresses");
 	}
 
 	@Test

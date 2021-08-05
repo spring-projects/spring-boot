@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
@@ -112,7 +113,8 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Scott Frederick
  * @since 1.0.0
- * @deprecated since 2.4.0 in favor of {@link ConfigDataEnvironmentPostProcessor}
+ * @deprecated since 2.4.0 for removal in 3.0.0 in favor of
+ * {@link ConfigDataEnvironmentPostProcessor}
  */
 @Deprecated
 public class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartApplicationListener, Ordered {
@@ -314,7 +316,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.placeholdersResolver = new PropertySourcesPlaceholdersResolver(this.environment);
 			this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader(null);
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-					getClass().getClassLoader());
+					this.resourceLoader.getClassLoader());
 		}
 
 		void load() {
@@ -360,11 +362,16 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.profiles.addAll(includedViaProperty);
 			addActiveProfiles(activatedViaProperty);
 			if (this.profiles.size() == 1) { // only has null profile
-				for (String defaultProfileName : this.environment.getDefaultProfiles()) {
+				for (String defaultProfileName : getDefaultProfiles(binder)) {
 					Profile defaultProfile = new Profile(defaultProfileName, true);
 					this.profiles.add(defaultProfile);
 				}
 			}
+		}
+
+		private String[] getDefaultProfiles(Binder binder) {
+			return binder.bind(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, STRING_ARRAY)
+					.orElseGet(this.environment::getDefaultProfiles);
 		}
 
 		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty,
@@ -776,9 +783,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			if (defaultProperties != null) {
 				Binder binder = new Binder(ConfigurationPropertySources.from(defaultProperties),
 						new PropertySourcesPlaceholdersResolver(this.environment));
-				activeProfiles.addAll(getDefaultProfiles(binder, "spring.profiles.include"));
+				activeProfiles.addAll(bindStringList(binder, "spring.profiles.include"));
 				if (!this.activatedProfiles) {
-					activeProfiles.addAll(getDefaultProfiles(binder, "spring.profiles.active"));
+					activeProfiles.addAll(bindStringList(binder, "spring.profiles.active"));
 				}
 			}
 			this.processedProfiles.stream().filter(this::isDefaultProfile).map(Profile::getName)
@@ -790,7 +797,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			return profile != null && !profile.isDefaultProfile();
 		}
 
-		private List<String> getDefaultProfiles(Binder binder, String property) {
+		private List<String> bindStringList(Binder binder, String property) {
 			return binder.bind(property, STRING_LIST).orElse(Collections.emptyList());
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.AbstractProtocolSslContextSpec;
 import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -38,7 +39,6 @@ import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
@@ -171,10 +171,16 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (this.ssl != null && this.ssl.isEnabled()) {
-			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(this.ssl, null, this.sslStoreProvider);
-			httpServer = sslServerCustomizer.apply(httpServer);
+			httpServer = customizeSslConfiguration(httpServer);
 		}
 		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
+	}
+
+	@SuppressWarnings("deprecation")
+	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
+		org.springframework.boot.web.embedded.netty.SslServerCustomizer sslServerCustomizer = new org.springframework.boot.web.embedded.netty.SslServerCustomizer(
+				this.ssl, null, this.sslStoreProvider);
+		return sslServerCustomizer.apply(httpServer);
 	}
 
 	private ServerTransport<CloseableChannel> createTcpTransport() {
@@ -196,19 +202,17 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return new InetSocketAddress(this.port);
 	}
 
-	private static final class TcpSslServerCustomizer extends SslServerCustomizer {
+	@SuppressWarnings("deprecation")
+	private static final class TcpSslServerCustomizer
+			extends org.springframework.boot.web.embedded.netty.SslServerCustomizer {
 
 		private TcpSslServerCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
 			super(ssl, null, sslStoreProvider);
 		}
 
 		private TcpServer apply(TcpServer server) {
-			try {
-				return server.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder()));
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
+			AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec();
+			return server.secure((spec) -> spec.sslContext(sslContextSpec));
 		}
 
 	}

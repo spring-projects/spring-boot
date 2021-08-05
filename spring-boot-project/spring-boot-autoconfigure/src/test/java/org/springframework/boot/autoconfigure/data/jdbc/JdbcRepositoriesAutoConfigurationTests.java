@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.data.jdbc.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
@@ -111,9 +112,12 @@ class JdbcRepositoriesAutoConfigurationTests {
 	}
 
 	private Function<ApplicationContextRunner, ApplicationContextRunner> database() {
-		return (runner) -> runner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.schema=classpath:data-city-schema.sql",
-						"spring.datasource.data=classpath:city.sql", "spring.datasource.generate-unique-name:true");
+		return (runner) -> runner
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						SqlInitializationAutoConfiguration.class))
+				.withPropertyValues("spring.sql.init.schema-locations=classpath:data-city-schema.sql",
+						"spring.sql.init.data-locations=classpath:city.sql",
+						"spring.datasource.generate-unique-name:true");
 	}
 
 	@TestAutoConfigurationPackage(City.class)

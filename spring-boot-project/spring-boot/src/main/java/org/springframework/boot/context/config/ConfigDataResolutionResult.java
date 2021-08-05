@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,12 @@ class ConfigDataResolutionResult {
 
 	private final ConfigDataResource resource;
 
-	ConfigDataResolutionResult(ConfigDataLocation location, ConfigDataResource resource) {
+	private final boolean profileSpecific;
+
+	ConfigDataResolutionResult(ConfigDataLocation location, ConfigDataResource resource, boolean profileSpecific) {
 		this.location = location;
 		this.resource = resource;
+		this.profileSpecific = profileSpecific;
 	}
 
 	ConfigDataLocation getLocation() {
@@ -39,6 +42,10 @@ class ConfigDataResolutionResult {
 
 	ConfigDataResource getResource() {
 		return this.resource;
+	}
+
+	boolean isProfileSpecific() {
+		return this.profileSpecific;
 	}
 
 }

@@ -203,7 +203,7 @@ class ConfigurationPropertySourcesTests {
 		}
 
 		private static Map<String, Object> createProperties(int index) {
-			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			Map<String, Object> map = new LinkedHashMap<>();
 			for (int i = 0; i < 1000; i++) {
 				String name = "test-" + index + "-property-" + i;
 				String value = name + "-value";

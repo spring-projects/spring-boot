@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.StringUtils;
 
 /**
  * A source of {@link ConfigurationProperty ConfigurationProperties}.
@@ -72,6 +73,16 @@ public interface ConfigurationPropertySource {
 	 */
 	default ConfigurationPropertySource withAliases(ConfigurationPropertyNameAliases aliases) {
 		return new AliasedConfigurationPropertySource(this, aliases);
+	}
+
+	/**
+	 * Return a variant of this source that supports a prefix.
+	 * @param prefix the prefix for properties in the source
+	 * @return a {@link ConfigurationPropertySource} instance supporting a prefix
+	 * @since 2.5.0
+	 */
+	default ConfigurationPropertySource withPrefix(String prefix) {
+		return (StringUtils.hasText(prefix)) ? new PrefixedConfigurationPropertySource(this, prefix) : this;
 	}
 
 	/**

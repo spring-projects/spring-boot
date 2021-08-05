@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 
 /**
- * Integration tests for {@link BootJar}.
+ * Integration tests for {@link BootWar}.
  *
  * @author Andy Wilkinson
  */
@@ -27,7 +31,14 @@ import org.springframework.boot.gradle.junit.GradleCompatibility;
 class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootWarIntegrationTests() {
-		super("bootWar", "WEB-INF/lib/", "WEB-INF/classes/");
+		super("bootWar", "WEB-INF/lib/", "WEB-INF/classes/", "WEB-INF/");
+	}
+
+	@Override
+	String[] getExpectedApplicationLayerContents(String... additionalFiles) {
+		Set<String> contents = new TreeSet<>(Arrays.asList(additionalFiles));
+		contents.addAll(Arrays.asList("WEB-INF/layers.idx", "META-INF/"));
+		return contents.toArray(new String[0]);
 	}
 
 }

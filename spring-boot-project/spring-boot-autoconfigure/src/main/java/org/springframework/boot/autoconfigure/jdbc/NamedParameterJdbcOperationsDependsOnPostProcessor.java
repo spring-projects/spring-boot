@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 /**
@@ -30,7 +31,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * @author Andrii Hrytsiuk
  * @since 2.1.4
  * @see BeanDefinition#setDependsOn(String[])
+ * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
+ * {@link DependsOnDatabaseInitializationDetector}
  */
+@Deprecated
 public class NamedParameterJdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	/**

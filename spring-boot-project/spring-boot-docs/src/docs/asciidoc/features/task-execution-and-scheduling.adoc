@@ -1,0 +1,43 @@
+[[features.task-execution-and-scheduling]]
+== Task Execution and Scheduling
+In the absence of an `Executor` bean in the context, Spring Boot auto-configures a `ThreadPoolTaskExecutor` with sensible defaults that can be automatically associated to asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request processing.
+
+[TIP]
+====
+If you have defined a custom `Executor` in the context, regular task execution (i.e. `@EnableAsync`) will use it transparently but the Spring MVC support will not be configured as it requires an `AsyncTaskExecutor` implementation (named `applicationTaskExecutor`).
+Depending on your target arrangement, you could change your `Executor` into a `ThreadPoolTaskExecutor` or define both a `ThreadPoolTaskExecutor` and an `AsyncConfigurer` wrapping your custom `Executor`.
+
+The auto-configured `TaskExecutorBuilder` allows you to easily create instances that reproduce what the auto-configuration does by default.
+====
+
+The thread pool uses 8 core threads that can grow and shrink according to the load.
+Those default settings can be fine-tuned using the `spring.task.execution` namespace, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  task:
+	    execution:
+	      pool:
+	        max-size: 16
+	        queue-capacity: 100
+	        keep-alive: "10s"
+----
+
+This changes the thread pool to use a bounded queue so that when the queue is full (100 tasks), the thread pool increases to maximum 16 threads.
+Shrinking of the pool is more aggressive as threads are reclaimed when they are idle for 10 seconds (rather than 60 seconds by default).
+
+A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated to scheduled task execution (e.g. `@EnableScheduling`).
+The thread pool uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  task:
+	    scheduling:
+	      thread-name-prefix: "scheduling-"
+	      pool:
+	        size: 2
+----
+
+Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the context if a custom executor or scheduler needs to be created.

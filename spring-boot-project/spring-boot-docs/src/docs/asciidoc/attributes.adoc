@@ -1,3 +1,4 @@
+:!version-label:
 :doctype: book
 :idprefix:
 :idseparator: -
@@ -7,26 +8,23 @@
 :numbered:
 :sectanchors:
 :sectnums:
-:icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
-
+:attribute-missing: warn
+:chomp: default headers packages
 :spring-boot-artifactory-repo: snapshot
-:github-tag: master
+:github-tag: main
 :spring-boot-version: current
-
 :github-repo: spring-projects/spring-boot
 :github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
-
-:code-examples: ../main/java/org/springframework/boot/docs
-:test-examples: ../test/java/org/springframework/boot/docs
-
+:docs-java: ../../main/java/org/springframework/boot/docs
+:docs-groovy: ../../main/groovy/org/springframework/boot/docs
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
-:spring-boot-master-code: https://github.com/{github-repo}/tree/master
+:spring-boot-latest-code: https://github.com/{github-repo}/tree/main
 :spring-boot-current-docs: https://docs.spring.io/spring-boot/docs/current/reference/
 :spring-boot-actuator-restapi-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/htmlsingle
 :spring-boot-actuator-restapi-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/pdf/spring-boot-actuator-web-api.pdf
@@ -36,7 +34,6 @@
 :spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/
 :spring-boot-gradle-plugin-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/pdf/spring-boot-gradle-plugin-reference.pdf
 :spring-boot-gradle-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/api/
-
 :spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
 :spring-boot-module-api: {spring-boot-api}/org/springframework/boot
 :spring-boot-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
@@ -53,7 +50,6 @@
 :spring-boot-test-module-api: {spring-boot-api}/org/springframework/boot/test
 :spring-boot-test-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
 :spring-boot-test-autoconfigure-module-api: {spring-boot-api}/org/springframework/boot/test/autoconfigure
-
 :spring-amqp-api: https://docs.spring.io/spring-amqp/docs/{spring-amqp-version}/api/org/springframework/amqp
 :spring-batch: https://spring.io/projects/spring-batch
 :spring-batch-api: https://docs.spring.io/spring-batch/docs/{spring-batch-version}/api/org/springframework/batch
@@ -65,10 +61,13 @@
 :spring-data-couchbase-docs: https://docs.spring.io/spring-data/couchbase/docs/{spring-data-couchbase-version}/reference/html/
 :spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
 :spring-data-elasticsearch-docs: https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/
+:spring-data-envers: https://spring.io/projects/spring-data-envers
+:spring-data-envers-doc: https://docs.spring.io/spring-data/envers/docs/{spring-data-envers-version}/reference/html/
 :spring-data-gemfire: https://spring.io/projects/spring-data-gemfire
 :spring-data-geode: https://spring.io/projects/spring-data-geode
 :spring-data-jpa: https://spring.io/projects/spring-data-jpa
 :spring-data-jpa-api: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/api/org/springframework/data/jpa
+:spring-data-jpa-docs: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/reference/html
 :spring-data-jdbc-docs: https://docs.spring.io/spring-data/jdbc/docs/{spring-data-jdbc-version}/reference/html/
 :spring-data-ldap: https://spring.io/projects/spring-data-ldap
 :spring-data-mongodb: https://spring.io/projects/spring-data-mongodb
@@ -79,12 +78,9 @@
 :spring-data-r2dbc-docs: https://docs.spring.io/spring-data/r2dbc/docs/{spring-data-r2dbc-version}/reference/html/
 :spring-data-redis: https://spring.io/projects/spring-data-redis
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
-:spring-data-solr: https://spring.io/projects/spring-data-solr
-:spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/{spring-data-solr-version}/reference/html/
 :spring-framework: https://spring.io/projects/spring-framework
-:spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
-:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/reference/html
-:spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html
+:spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/org/springframework
+:spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference/html
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/
@@ -94,13 +90,11 @@
 :spring-security-oauth2: https://spring.io/projects/spring-security-oauth
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-session: https://spring.io/projects/spring-session
-:spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
-
-
-
-
+:spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/html/
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
+:dynatrace-help: https://www.dynatrace.com/support/help
+:embedded-mongo-code: https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/blob/de.flapdoodle.embed.mongo-{embedded-mongo-version}
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/javase/8/docs/api

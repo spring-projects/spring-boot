@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -164,18 +163,6 @@ class PrometheusPushGatewayManagerTests {
 		manager.shutdown();
 		verify(this.future).cancel(false);
 		verifyNoInteractions(this.pushGateway);
-	}
-
-	@Test
-	void pushWhenUnknownHostExceptionIsThrownDoesShutdown() throws Exception {
-		givenScheduleAtFixedRateWithReturnFuture();
-		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
-				this.groupingKey, null);
-		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
-		willThrow(new UnknownHostException("foo")).given(this.pushGateway).pushAdd(this.registry, "job",
-				this.groupingKey);
-		this.task.getValue().run();
-		verify(this.future).cancel(false);
 	}
 
 	@Test

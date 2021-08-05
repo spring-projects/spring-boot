@@ -1,0 +1,15 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootBuildImage {
+	jar = bootWar.archiveFile
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+bootBuildImage {
+	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1"
+}

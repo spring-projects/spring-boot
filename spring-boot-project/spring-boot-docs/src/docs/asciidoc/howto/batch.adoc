@@ -1,0 +1,59 @@
+[[howto.batch]]
+== Batch Applications
+A number of questions often arise when people use Spring Batch from within a Spring Boot application.
+This section addresses those questions.
+
+
+
+[[howto.batch.specifying-a-data-source]]
+=== Specifying a Batch Data Source
+By default, batch applications require a `DataSource` to store job details.
+Spring Batch expects a single `DataSource` by default.
+To have it use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
+If you do so and want two data sources, remember to mark the other one `@Primary`.
+To take greater control, implement `BatchConfigurer`.
+See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[The Javadoc of `@EnableBatchProcessing`] for more details.
+
+For more info about Spring Batch, see the {spring-batch}[Spring Batch project page].
+
+
+
+[[howto.batch.running-jobs-on-startup]]
+=== Running Spring Batch Jobs on Startup
+Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` to one of your `@Configuration` classes.
+
+By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
+You can narrow down to a specific job or jobs by specifying `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
+
+See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[@EnableBatchProcessing] for more details.
+
+
+
+[[howto.batch.running-from-the-command-line]]
+=== Running from the Command Line
+Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<features#features.external-config.command-line-args,accessing command line properties>>.
+This should not be used to pass arguments to batch jobs.
+To specify batch arguments on the command line, use the regular format (i.e. without `--`), as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
+----
+
+If you specify a property of the `Environment` on the command line, it is ignored by the job.
+Consider the following command:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar myapp.jar --server.port=7070 someParameter=someValue
+----
+
+This provides only one argument to the batch job: `someParameter=someValue`.
+
+
+
+[[howto.batch.storing-job-repository]]
+=== Storing the Job Repository
+Spring Batch requires a data store for the `Job` repository.
+If you use Spring Boot, you must use an actual database.
+Note that it can be an in-memory database, see {spring-batch-docs}job.html#configuringJobRepository[Configuring a Job Repository].

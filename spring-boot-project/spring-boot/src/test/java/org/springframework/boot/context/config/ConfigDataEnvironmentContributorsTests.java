@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.boot.context.config.ConfigDataEnvironmentContributors
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 
@@ -84,8 +85,9 @@ class ConfigDataEnvironmentContributorsTests {
 		this.environment = new MockEnvironment();
 		this.binder = Binder.get(this.environment);
 		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
-				this.binder, null);
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext);
+				this.binder, new DefaultResourceLoader(getClass().getClassLoader()));
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+				getClass().getClassLoader());
 		this.importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL, resolvers, loaders);
 		this.activationContext = new ConfigDataActivationContext(CloudPlatform.KUBERNETES, null);
 	}
@@ -117,7 +119,7 @@ class ConfigDataEnvironmentContributorsTests {
 		List<ConfigDataLocation> locations = Arrays.asList(LOCATION_1);
 		MockPropertySource propertySource = new MockPropertySource();
 		Map<ConfigDataResolutionResult, ConfigData> imported = new LinkedHashMap<>();
-		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a")),
+		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a"), false),
 				new ConfigData(Arrays.asList(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 				.willReturn(imported);
@@ -140,14 +142,14 @@ class ConfigDataEnvironmentContributorsTests {
 		MockPropertySource initialPropertySource = new MockPropertySource();
 		initialPropertySource.setProperty("spring.config.import", "location2");
 		Map<ConfigDataResolutionResult, ConfigData> initialImported = new LinkedHashMap<>();
-		initialImported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a")),
+		initialImported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a"), false),
 				new ConfigData(Arrays.asList(initialPropertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(initialLocations)))
 				.willReturn(initialImported);
 		List<ConfigDataLocation> secondLocations = Arrays.asList(LOCATION_2);
 		MockPropertySource secondPropertySource = new MockPropertySource();
 		Map<ConfigDataResolutionResult, ConfigData> secondImported = new LinkedHashMap<>();
-		secondImported.put(new ConfigDataResolutionResult(LOCATION_2, new TestConfigDataResource("b")),
+		secondImported.put(new ConfigDataResolutionResult(LOCATION_2, new TestConfigDataResource("b"), false),
 				new ConfigData(Arrays.asList(secondPropertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(secondLocations)))
 				.willReturn(secondImported);
@@ -174,7 +176,7 @@ class ConfigDataEnvironmentContributorsTests {
 		List<ConfigDataLocation> locations = Arrays.asList(LOCATION_1);
 		MockPropertySource propertySource = new MockPropertySource();
 		Map<ConfigDataResolutionResult, ConfigData> imported = new LinkedHashMap<>();
-		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a'")),
+		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a'"), false),
 				new ConfigData(Arrays.asList(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 				.willReturn(imported);
@@ -194,14 +196,14 @@ class ConfigDataEnvironmentContributorsTests {
 		MockPropertySource initialPropertySource = new MockPropertySource();
 		initialPropertySource.setProperty("spring.config.import", "location2");
 		Map<ConfigDataResolutionResult, ConfigData> initialImported = new LinkedHashMap<>();
-		initialImported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a")),
+		initialImported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a"), false),
 				new ConfigData(Arrays.asList(initialPropertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(initialLocations)))
 				.willReturn(initialImported);
 		List<ConfigDataLocation> secondLocations = Arrays.asList(LOCATION_2);
 		MockPropertySource secondPropertySource = new MockPropertySource();
 		Map<ConfigDataResolutionResult, ConfigData> secondImported = new LinkedHashMap<>();
-		secondImported.put(new ConfigDataResolutionResult(LOCATION_2, new TestConfigDataResource("b")),
+		secondImported.put(new ConfigDataResolutionResult(LOCATION_2, new TestConfigDataResource("b"), false),
 				new ConfigData(Arrays.asList(secondPropertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(secondLocations)))
 				.willReturn(secondImported);
@@ -224,7 +226,7 @@ class ConfigDataEnvironmentContributorsTests {
 		List<ConfigDataLocation> locations = Arrays.asList(LOCATION_1);
 		MockPropertySource propertySource = new MockPropertySource();
 		Map<ConfigDataResolutionResult, ConfigData> imported = new LinkedHashMap<>();
-		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a'")),
+		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a'"), false),
 				new ConfigData(Arrays.asList(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 				.willReturn(imported);
@@ -247,7 +249,7 @@ class ConfigDataEnvironmentContributorsTests {
 		List<ConfigDataLocation> locations = Arrays.asList(LOCATION_1);
 		MockPropertySource propertySource = new MockPropertySource();
 		Map<ConfigDataResolutionResult, ConfigData> imported = new LinkedHashMap<>();
-		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a'")),
+		imported.put(new ConfigDataResolutionResult(LOCATION_1, new TestConfigDataResource("a'"), false),
 				new ConfigData(Arrays.asList(propertySource)));
 		given(this.importer.resolveAndLoad(eq(this.activationContext), any(), any(), eq(locations)))
 				.willReturn(imported);
@@ -386,7 +388,7 @@ class ConfigDataEnvironmentContributorsTests {
 	private ConfigDataEnvironmentContributor createBoundImportContributor(ConfigData configData,
 			int propertySourceIndex) {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null, null,
-				configData, propertySourceIndex);
+				false, configData, propertySourceIndex);
 		Binder binder = new Binder(contributor.getConfigurationPropertySource());
 		return contributor.withBoundProperties(binder);
 	}

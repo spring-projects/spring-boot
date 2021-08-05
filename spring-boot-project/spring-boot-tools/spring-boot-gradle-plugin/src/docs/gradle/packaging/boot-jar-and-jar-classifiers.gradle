@@ -1,0 +1,18 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::classifiers[]
+bootJar {
+	classifier = 'boot'
+}
+
+jar {
+	classifier = ''
+}
+// end::classifiers[]
+
+bootJar {
+	mainClass = 'com.example.Application'
+}

@@ -117,7 +117,9 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 		T instance = (T) this.instances.get(type);
 		if (instance == null) {
 			instance = (T) instanceSupplier.get(this);
-			this.instances.put(type, instance);
+			if (instanceSupplier.getScope() == Scope.SINGLETON) {
+				this.instances.put(type, instance);
+			}
 		}
 		return instance;
 	}

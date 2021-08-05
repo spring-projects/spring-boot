@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 package org.springframework.boot.maven;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,6 +58,10 @@ public class Image {
 	PullPolicy pullPolicy;
 
 	Boolean publish;
+
+	List<String> buildpacks;
+
+	List<String> bindings;
 
 	/**
 	 * The name of the created image.
@@ -173,6 +182,13 @@ public class Image {
 		}
 		if (this.publish != null) {
 			request = request.withPublish(this.publish);
+		}
+		if (!CollectionUtils.isEmpty(this.buildpacks)) {
+			request = request
+					.withBuildpacks(this.buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
+		}
+		if (!CollectionUtils.isEmpty(this.bindings)) {
+			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
 		}
 		return request;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,9 +197,9 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		libJarFile.setLastModified(JAN_1_1980);
 		P packager = createPackager();
 		execute(packager, (callback) -> {
-			callback.library(new Library(libJarFile, LibraryScope.COMPILE));
-			callback.library(new Library(libJarFileToUnpack, LibraryScope.COMPILE, true));
-			callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
+			callback.library(newLibrary(libJarFile, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFileToUnpack, LibraryScope.COMPILE, true));
+			callback.library(newLibrary(libNonJarFile, LibraryScope.COMPILE, false));
 		});
 		assertThat(hasPackagedEntry("BOOT-INF/lib/" + libJarFile.getName())).isTrue();
 		assertThat(hasPackagedEntry("BOOT-INF/lib/" + libJarFileToUnpack.getName())).isTrue();
@@ -226,15 +226,15 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		File file = this.testJarFile.getFile();
 		P packager = createPackager(file);
 		execute(packager, (callback) -> {
-			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
-			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
-			callback.library(new Library(libJarFile3, LibraryScope.COMPILE));
+			callback.library(newLibrary(libJarFile1, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFile2, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFile3, LibraryScope.COMPILE, false));
 		});
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
 		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((jar) -> "- \"" + jar.getName() + "\"").collect(Collectors.toList());
+				.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"").collect(Collectors.toList());
 		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
 	}
 
@@ -258,14 +258,14 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		packager.setLayers(layers);
 		packager.setIncludeRelevantJarModeJars(false);
 		execute(packager, (callback) -> {
-			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
-			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
-			callback.library(new Library(libJarFile3, LibraryScope.COMPILE));
+			callback.library(newLibrary(libJarFile1, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFile2, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFile3, LibraryScope.COMPILE, false));
 		});
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((file) -> "- \"" + file.getName() + "\"").collect(Collectors.toList());
+				.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"").collect(Collectors.toList());
 		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
@@ -296,7 +296,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		assertThat(Arrays.asList(classpathIndex.split("\\n")))
-				.containsExactly("- \"spring-boot-jarmode-layertools.jar\"");
+				.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-layertools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -316,8 +316,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		P packager = createPackager();
 		assertThatIllegalStateException().isThrownBy(() -> execute(packager, (callback) -> {
-			callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
-			callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFile, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libJarFile, LibraryScope.COMPILE, false));
 		})).withMessageContaining("Duplicate library");
 	}
 
@@ -334,7 +334,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		given(layout.getLibraryLocation(anyString(), eq(scope))).willReturn("test/");
 		given(layout.getLibraryLocation(anyString(), eq(LibraryScope.COMPILE))).willReturn("test-lib/");
 		packager.setLayout(layout);
-		execute(packager, (callback) -> callback.library(new Library(libJarFile, scope)));
+		execute(packager, (callback) -> callback.library(newLibrary(libJarFile, scope, false)));
 		assertThat(hasPackagedEntry("test/" + libJarFile.getName())).isTrue();
 		assertThat(getPackagedManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo("test-lib/");
 		assertThat(getPackagedManifest().getMainAttributes().getValue("Main-Class")).isEqualTo("testLauncher");
@@ -351,7 +351,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
 		packager.setLayout(layout);
-		execute(packager, (callback) -> callback.library(new Library(libJarFile, scope)));
+		execute(packager, (callback) -> callback.library(newLibrary(libJarFile, scope, false)));
 		assertThat(getPackagedManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isNull();
 		assertThat(getPackagedManifest().getMainAttributes().getValue("Main-Class")).isEqualTo("testLauncher");
 	}
@@ -405,7 +405,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addFile("test/nested.jar", nestedFile);
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		P packager = createPackager();
-		execute(packager, (callback) -> callback.library(new Library(nestedFile, LibraryScope.COMPILE)));
+		execute(packager, (callback) -> callback.library(newLibrary(nestedFile, LibraryScope.COMPILE, false)));
 		assertThat(getPackagedEntry("BOOT-INF/lib/" + nestedFile.getName()).getMethod()).isEqualTo(ZipEntry.STORED);
 		assertThat(getPackagedEntry("BOOT-INF/classes/test/nested.jar").getMethod()).isEqualTo(ZipEntry.STORED);
 	}
@@ -419,7 +419,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addFile(name, nested.getFile());
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		P packager = createPackager();
-		execute(packager, (callback) -> callback.library(new Library(nestedFile, LibraryScope.COMPILE, true)));
+		execute(packager, (callback) -> callback.library(newLibrary(nestedFile, LibraryScope.COMPILE, true)));
 		assertThat(getPackagedEntry(name).getComment()).startsWith("UNPACK:");
 	}
 
@@ -437,7 +437,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 			File toZip = new File(this.tempDir, "to-zip");
 			toZip.createNewFile();
 			ZipUtil.packEntry(toZip, nestedFile);
-			callback.library(new Library(nestedFile, LibraryScope.COMPILE));
+			callback.library(newLibrary(nestedFile, LibraryScope.COMPILE, false));
 		});
 		assertThat(getPackagedEntry("BOOT-INF/lib/" + nestedFile.getName()).getSize()).isEqualTo(sourceLength);
 	}
@@ -498,14 +498,14 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	@Test
 	void loaderIsWrittenFirstThenApplicationClassesThenLibraries() throws IOException {
 		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
-		File libraryOne = createLibrary();
-		File libraryTwo = createLibrary();
-		File libraryThree = createLibrary();
+		File libraryOne = createLibraryJar();
+		File libraryTwo = createLibraryJar();
+		File libraryThree = createLibraryJar();
 		P packager = createPackager();
 		execute(packager, (callback) -> {
-			callback.library(new Library(libraryOne, LibraryScope.COMPILE, false));
-			callback.library(new Library(libraryTwo, LibraryScope.COMPILE, true));
-			callback.library(new Library(libraryThree, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libraryOne, LibraryScope.COMPILE, false));
+			callback.library(newLibrary(libraryTwo, LibraryScope.COMPILE, true));
+			callback.library(newLibrary(libraryThree, LibraryScope.COMPILE, false));
 		});
 		assertThat(getPackagedEntryNames()).containsSubsequence("org/springframework/boot/loader/",
 				"BOOT-INF/classes/com/example/Application.class", "BOOT-INF/lib/" + libraryOne.getName(),
@@ -514,12 +514,12 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 	@Test
 	void existingEntryThatMatchesUnpackLibraryIsMarkedForUnpack() throws IOException {
-		File library = createLibrary();
+		File library = createLibraryJar();
 		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
 		this.testJarFile.addFile("WEB-INF/lib/" + library.getName(), library);
 		P packager = createPackager(this.testJarFile.getFile("war"));
 		packager.setLayout(new Layouts.War());
-		execute(packager, (callback) -> callback.library(new Library(library, LibraryScope.COMPILE, true)));
+		execute(packager, (callback) -> callback.library(newLibrary(library, LibraryScope.COMPILE, true)));
 		assertThat(getPackagedEntryNames()).containsSubsequence("org/springframework/boot/loader/",
 				"WEB-INF/classes/com/example/Application.class", "WEB-INF/lib/" + library.getName());
 		ZipEntry unpackLibrary = getPackagedEntry("WEB-INF/lib/" + library.getName());
@@ -536,7 +536,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		Layout layout = mock(Layout.class);
 		LibraryScope scope = mock(LibraryScope.class);
 		packager.setLayout(layout);
-		execute(packager, (callback) -> callback.library(new Library(libJarFile, scope)));
+		execute(packager, (callback) -> callback.library(newLibrary(libJarFile, scope, false)));
 		assertThat(getPackagedEntryNames()).containsExactly("META-INF/", "META-INF/MANIFEST.MF", "a/", "a/b/",
 				"a/b/C.class");
 	}
@@ -583,10 +583,37 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(getPackagedEntry("BOOT-INF/classes/META-INF/test.kotlin_module")).isNotNull();
 	}
 
-	private File createLibrary() throws IOException {
+	@Test
+	void entryFiltering() throws Exception {
+		File webLibrary = createLibraryJar();
+		File libraryOne = createLibraryJar();
+		File libraryTwo = createLibraryJar();
+		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("WEB-INF/lib/" + webLibrary.getName(), webLibrary);
+		P packager = createPackager(this.testJarFile.getFile("war"));
+		packager.setLayout(new Layouts.War());
+		execute(packager, (callback) -> {
+			callback.library(newLibrary(webLibrary, LibraryScope.COMPILE, false, false));
+			callback.library(newLibrary(libraryOne, LibraryScope.COMPILE, false, false));
+			callback.library(newLibrary(libraryTwo, LibraryScope.COMPILE, false, true));
+		});
+		Collection<String> packagedEntryNames = getPackagedEntryNames();
+		packagedEntryNames.removeIf((name) -> !name.endsWith(".jar"));
+		assertThat(packagedEntryNames).containsExactly("WEB-INF/lib/" + libraryTwo.getName());
+	}
+
+	private File createLibraryJar() throws IOException {
 		TestJarFile library = new TestJarFile(this.tempDir);
 		library.addClass("com/example/library/Library.class", ClassWithoutMainMethod.class);
 		return library.getFile();
+	}
+
+	private Library newLibrary(File file, LibraryScope scope, boolean unpackRequired) {
+		return new Library(null, file, scope, null, unpackRequired, false, true);
+	}
+
+	private Library newLibrary(File file, LibraryScope scope, boolean unpackRequired, boolean included) {
+		return new Library(null, file, scope, null, unpackRequired, false, included);
 	}
 
 	protected final P createPackager() throws IOException {
@@ -644,7 +671,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 		private static final Layer DEFAULT_LAYER = new Layer("default");
 
-		private Set<Layer> layers = new LinkedHashSet<Layer>();
+		private Set<Layer> layers = new LinkedHashSet<>();
 
 		private Map<String, Layer> libraries = new HashMap<>();
 

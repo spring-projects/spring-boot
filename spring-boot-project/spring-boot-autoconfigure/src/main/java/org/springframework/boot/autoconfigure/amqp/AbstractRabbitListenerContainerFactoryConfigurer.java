@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,25 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	private RabbitProperties rabbitProperties;
 
 	/**
+	 * Creates a new configurer.
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #AbstractRabbitListenerContainerFactoryConfigurer(RabbitProperties)}
+	 */
+	@Deprecated
+	protected AbstractRabbitListenerContainerFactoryConfigurer() {
+
+	}
+
+	/**
+	 * Creates a new configurer that will use the given {@code rabbitProperties}.
+	 * @param rabbitProperties properties to use
+	 * @since 2.6.0
+	 */
+	protected AbstractRabbitListenerContainerFactoryConfigurer(RabbitProperties rabbitProperties) {
+		this.rabbitProperties = rabbitProperties;
+	}
+
+	/**
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
@@ -75,7 +94,10 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	/**
 	 * Set the {@link RabbitProperties} to use.
 	 * @param rabbitProperties the {@link RabbitProperties}
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #AbstractRabbitListenerContainerFactoryConfigurer(RabbitProperties)}
 	 */
+	@Deprecated
 	protected void setRabbitProperties(RabbitProperties rabbitProperties) {
 		this.rabbitProperties = rabbitProperties;
 	}

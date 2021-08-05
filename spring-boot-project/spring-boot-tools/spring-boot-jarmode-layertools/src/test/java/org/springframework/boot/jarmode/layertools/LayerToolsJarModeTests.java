@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.jarmode.layertools;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
@@ -30,6 +30,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -55,7 +58,7 @@ class LayerToolsJarModeTests {
 	@BeforeEach
 	void setup() throws Exception {
 		Context context = mock(Context.class);
-		given(context.getJarFile()).willReturn(createJarFile("test.jar"));
+		given(context.getArchiveFile()).willReturn(createJarFile("test.jar"));
 		this.out = new TestPrintStream(this);
 		this.systemOut = System.out;
 		System.setOut(this.out);
@@ -98,9 +101,12 @@ class LayerToolsJarModeTests {
 		assertThat(this.out).hasSameContentAsResource("error-option-missing-value-output.txt");
 	}
 
-	private File createJarFile(String name) throws IOException {
+	private File createJarFile(String name) throws Exception {
 		File file = new File(this.temp, name);
 		try (ZipOutputStream jarOutputStream = new ZipOutputStream(new FileOutputStream(file))) {
+			jarOutputStream.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
+			jarOutputStream.write(getFile("test-manifest.MF").getBytes());
+			jarOutputStream.closeEntry();
 			JarEntry indexEntry = new JarEntry("BOOT-INF/layers.idx");
 			jarOutputStream.putNextEntry(indexEntry);
 			Writer writer = new OutputStreamWriter(jarOutputStream, StandardCharsets.UTF_8);
@@ -114,6 +120,12 @@ class LayerToolsJarModeTests {
 			writer.flush();
 		}
 		return file;
+	}
+
+	private String getFile(String fileName) throws Exception {
+		ClassPathResource resource = new ClassPathResource(fileName, getClass());
+		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
+		return FileCopyUtils.copyToString(reader);
 	}
 
 }

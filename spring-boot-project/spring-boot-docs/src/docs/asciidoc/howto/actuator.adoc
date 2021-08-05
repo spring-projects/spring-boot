@@ -1,0 +1,72 @@
+[[howto.actuator]]
+== Actuator
+Spring Boot includes the Spring Boot Actuator.
+This section answers questions that often arise from its use.
+
+
+
+[[howto.actuator.change-http-port-or-address]]
+=== Change the HTTP Port or Address of the Actuator Endpoints
+In a standalone application, the Actuator HTTP port defaults to the same as the main HTTP port.
+To make the application listen on a different port, set the external property: configprop:management.server.port[].
+To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
+
+For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`<<actuator#actuator.monitoring.customizing-management-server-port>>`" in the "`Production-ready features`" section.
+
+
+
+[[howto.actuator.customize-whitelabel-error-page]]
+=== Customize the '`whitelabel`' Error Page
+Spring Boot installs a '`whitelabel`' error page that you see in a browser client if you encounter a server error (machine clients consuming JSON and other media types should see a sensible response with the right error code).
+
+NOTE: Set `server.error.whitelabel.enabled=false` to switch the default error page off.
+Doing so restores the default of the servlet container that you are using.
+Note that Spring Boot still tries to resolve the error view, so you should probably add your own error page rather than disabling it completely.
+
+Overriding the error page with your own depends on the templating technology that you use.
+For example, if you use Thymeleaf, you can add an `error.html` template.
+If you use FreeMarker, you can add an `error.ftlh` template.
+In general, you need a `View` that resolves with a name of `error` or a `@Controller` that handles the `/error` path.
+Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
+See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
+
+See also the section on "`<<web#web.servlet.spring-mvc.error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
+
+
+
+[[howto.actuator.sanitize-sensitive-values]]
+=== Sanitize Sensitive Values
+Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (i.e. their values are replaced by `+******+`). Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
+Additionally, any key that holds the word `credentials` (configured as a regular expression, i.e. `+*credentials.*+`) as part of the key is also entirely sanitized.
+
+Furthermore, Spring Boot sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
+
+- `address`
+- `addresses`
+- `uri`
+- `uris`
+- `url`
+- `urls`
+
+The sensitive portion of the URI is identified using the format `<scheme>://<username>:<password>@<host>:<port>/`.
+For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
+`++http://user1:******@localhost:8081++`.
+
+The default patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
+Alternatively, additional patterns can be configured using configprop:management.endpoint.env.additional-keys-to-sanitize[] and configprop:management.endpoint.configprops.additional-keys-to-sanitize[].
+
+
+
+[[howto.actuator.map-health-indicators-to-metrics]]
+=== Map Health Indicators to Micrometer Metrics
+Spring Boot health indicators return a `Status` type to indicate the overall system health.
+If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics via Micrometer.
+By default, the status codes "`UP`", "`DOWN`", "`OUT_OF_SERVICE`" and "`UNKNOWN`" are used by Spring Boot.
+To export these, you'll need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
+
+The following example shows one way to write such an exporter:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/actuator/maphealthindicatorstometrics/MyHealthMetricsExportConfiguration.java[]
+----

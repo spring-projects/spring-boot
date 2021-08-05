@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,10 +106,25 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	private ServerConnector createHttp11ServerConnector(Server server, HttpConfiguration config,
 			SslContextFactory.Server sslContextFactory) {
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
-		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(sslContextFactory,
-				HttpVersion.HTTP_1_1.asString());
-		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(), sslConnectionFactory,
-				connectionFactory);
+		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(),
+				createSslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()), connectionFactory);
+	}
+
+	private SslConnectionFactory createSslConnectionFactory(SslContextFactory.Server sslContextFactory,
+			String protocol) {
+		try {
+			return new SslConnectionFactory(sslContextFactory, protocol);
+		}
+		catch (NoSuchMethodError ex) {
+			// Jetty 10
+			try {
+				return SslConnectionFactory.class.getConstructor(SslContextFactory.Server.class, String.class)
+						.newInstance(sslContextFactory, protocol);
+			}
+			catch (Exception ex2) {
+				throw new RuntimeException(ex2);
+			}
+		}
 	}
 
 	private boolean isJettyAlpnPresent() {
@@ -129,7 +144,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		if (isConscryptPresent()) {
 			sslContextFactory.setProvider("Conscrypt");
 		}
-		SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
+		SslConnectionFactory ssl = createSslConnectionFactory(sslContextFactory, alpn.getProtocol());
 		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(), ssl, alpn, h2, http);
 	}
 

@@ -1,0 +1,10 @@
+---
+platform: linux
+inputs:
+  - name: artifactory-repo
+  - name: git-repo
+params:
+  GRADLE_PUBLISH_KEY:
+  GRADLE_PUBLISH_SECRET:
+run:
+  path: git-repo/ci/scripts/publish-gradle-plugin.sh

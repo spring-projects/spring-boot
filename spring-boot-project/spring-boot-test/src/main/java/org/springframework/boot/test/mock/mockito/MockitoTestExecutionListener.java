@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,18 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
- * {@link TestExecutionListener} to trigger {@link MockitoAnnotations#openMocks(Object)}
- * when {@link MockBean @MockBean} annotations are used. Primarily to allow
- * {@link Captor @Captor} annotations.
+ * {@link TestExecutionListener} to enable {@link MockBean @MockBean} and
+ * {@link SpyBean @SpyBean} support. Also triggers
+ * {@link MockitoAnnotations#openMocks(Object)} when any Mockito annotations used,
+ * primarily to allow {@link Captor @Captor} annotations.
+ * <p>
+ * To use the automatic reset support of {@code @MockBean} and {@code @SpyBean}, configure
+ * {@link ResetMocksTestExecutionListener} as well.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.4.2
+ * @see ResetMocksTestExecutionListener
  */
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 

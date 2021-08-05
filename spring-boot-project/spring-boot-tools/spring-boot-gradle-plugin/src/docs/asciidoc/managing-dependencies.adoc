@@ -1,13 +1,13 @@
 [[managing-dependencies]]
-== Managing Dependencies
-To manage dependencies in your Spring Boot application, you can either apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin or, if you are using Gradle 6 or later, use Gradle's native bom support.
+= Managing Dependencies
+To manage dependencies in your Spring Boot application, you can either apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin or use Gradle's native bom support.
 The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds.
 
 
 
-[[managing-dependencies-dependency-management-plugin]]
-=== Managing Dependencies with the Dependency Management Plugin
-When you apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically <<reacting-to-other-plugins-dependency-management,import the `spring-boot-dependencies` bom>> from the version of Spring Boot that you are using.
+[[managing-dependencies.dependency-management-plugin]]
+== Managing Dependencies with the Dependency Management Plugin
+When you apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically <<reacting-to-other-plugins.dependency-management,import the `spring-boot-dependencies` bom>> from the version of Spring Boot that you are using.
 This provides a similar dependency management experience to the one that's enjoyed by Maven users.
 For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
 To make use of this functionality, declare dependencies in the usual way but omit the version number:
@@ -26,8 +26,8 @@ include::../gradle/managing-dependencies/dependencies.gradle.kts[tags=dependenci
 
 
 
-[[managing-dependencies-dependency-management-plugin-customizing]]
-==== Customizing Managed Versions
+[[managing-dependencies.dependency-management-plugin.customizing]]
+=== Customizing Managed Versions
 The `spring-boot-dependencies` bom that is automatically imported when the dependency management plugin is applied uses properties to control the versions of the dependencies that it manages.
 Browse the {version-properties-appendix}[`Dependency versions Appendix`] in the Spring Boot reference for a complete list of these properties.
 
@@ -51,9 +51,8 @@ Overriding versions may cause compatibility issues and should be done with care.
 
 
 
-[[managing-dependencies-dependency-management-plugin-using-in-isolation]]
-==== Using Spring Boot's Dependency Management in Isolation
-
+[[managing-dependencies.dependency-management-plugin.using-in-isolation]]
+=== Using Spring Boot's Dependency Management in Isolation
 Spring Boot's dependency management can be used in a project without applying Spring Boot's plugin to that project.
 The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be used to import the bom without having to know its group ID, artifact ID, or version.
 
@@ -114,7 +113,6 @@ include::../gradle/managing-dependencies/configure-bom.gradle[tags=configure-bom
 include::../gradle/managing-dependencies/configure-bom.gradle.kts[tags=configure-bom]
 ----
 
-
 The Kotlin code above is a bit awkward.
 That's because we're using the imperative way of applying the dependency management plugin.
 
@@ -128,14 +126,14 @@ include::../gradle/managing-dependencies/configure-bom-with-plugins.gradle.kts[t
 
 
 
-[[managing-dependencies-dependency-management-plugin-learning-more]]
-==== Learning More
+[[managing-dependencies.dependency-management-plugin.learning-more]]
+=== Learning More
 To learn more about the capabilities of the dependency management plugin, please refer to its {dependency-management-plugin-documentation}[documentation].
 
 
 
-[[managing-dependencies-gradle-bom-support]]
-=== Managing Dependencies with Gradle's Bom Support
+[[managing-dependencies.gradle-bom-support]]
+== Managing Dependencies with Gradle's Bom Support
 Gradle allows a bom to be used to manage a project's versions by declaring it as a `platform` or `enforcedPlatform` dependency.
 A `platform` dependency treats the versions in the bom as recommendations and other versions and constraints in the dependency graph may cause a version of a dependency other than that declared in the bom to be used.
 An `enforcedPlatform` dependency treats the versions in the bom as requirements and they will override any other version found in the dependency graph.
@@ -159,8 +157,8 @@ As a result, in may be necessary to declare the same dependency in more than one
 
 
 
-[[managing-dependencies-gradle-bom-support-customizing]]
-==== Customizing Managed Versions
+[[managing-dependencies.gradle-bom-support.customizing]]
+=== Customizing Managed Versions
 When using Gradle's bom support, you cannot use the properties from `spring-boot-dependencies` to control the versions of the dependencies that it manages.
 Instead, you must use one of the mechanisms that Gradle provides.
 One such mechanism is a resolution strategy.

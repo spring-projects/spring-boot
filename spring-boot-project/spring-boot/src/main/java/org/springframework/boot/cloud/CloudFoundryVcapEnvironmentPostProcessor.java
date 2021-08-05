@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,9 @@ import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.boot.logging.DeferredLog;
-import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -91,8 +88,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class CloudFoundryVcapEnvironmentPostProcessor
-		implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationPreparedEvent> {
+public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
@@ -100,21 +96,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	private final Log logger;
 
-	private final boolean switchableLogger;
-
 	// Before ConfigFileApplicationListener so values there can use these ones
 	private int order = ConfigDataEnvironmentPostProcessor.ORDER - 1;
-
-	/**
-	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link #CloudFoundryVcapEnvironmentPostProcessor(Log)}
-	 */
-	@Deprecated
-	public CloudFoundryVcapEnvironmentPostProcessor() {
-		this.logger = new DeferredLog();
-		this.switchableLogger = true;
-	}
 
 	/**
 	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
@@ -122,7 +105,6 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 	 */
 	public CloudFoundryVcapEnvironmentPostProcessor(Log logger) {
 		this.logger = logger;
-		this.switchableLogger = false;
 	}
 
 	public void setOrder(int order) {
@@ -149,19 +131,6 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			else {
 				propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
 			}
-		}
-	}
-
-	/**
-	 * Event listener used to switch logging.
-	 * @deprecated since 2.4.0 in favor of only using {@link EnvironmentPostProcessor}
-	 * callbacks
-	 */
-	@Deprecated
-	@Override
-	public void onApplicationEvent(ApplicationPreparedEvent event) {
-		if (this.switchableLogger) {
-			((DeferredLog) this.logger).switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
 		}
 	}
 

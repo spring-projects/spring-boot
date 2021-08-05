@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -304,20 +304,13 @@ public final class TestPropertyValues {
 	/**
 	 * A single name value pair.
 	 */
-	public static class Pair {
+	public static final class Pair {
 
-		private String name;
+		private final String name;
 
-		private String value;
+		private final String value;
 
-		/**
-		 * Create a new {@link Pair} instance.
-		 * @param name the name
-		 * @param value the value
-		 * @deprecated since 2.4.0 in favor of {@link #of(String, String)}
-		 */
-		@Deprecated
-		public Pair(String name, String value) {
+		private Pair(String name, String value) {
 			Assert.hasLength(name, "Name must not be empty");
 			this.name = name;
 			this.value = value;

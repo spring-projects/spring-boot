@@ -1,0 +1,369 @@
+[[configuration-metadata.manual-hints]]
+== Providing Manual Hints
+To improve the user experience and further assist the user in configuring a given property, you can provide additional metadata that:
+
+* Describes the list of potential values for a property.
+* Associates a provider, to attach a well defined semantic to a property, so that a tool can discover the list of potential values based on the project's context.
+
+
+
+[[configuration-metadata.manual-hints.value-hint]]
+=== Value Hint
+The `name` attribute of each hint refers to the `name` of a property.
+In the <<configuration-metadata#configuration-metadata.format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
+Each value may have a description as well.
+
+If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
+The special `.keys` and `.values` suffixes must refer to the keys and the values, respectively.
+
+Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/configurationmetadata/manualhints/valuehint/MyProperties.java[]
+----
+
+The magic values are (in this example) are `sample1` and `sample2`.
+In order to offer additional content assistance for the keys, you could add the following JSON to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "my.contexts.keys",
+			"values": [
+				{
+					"value": "sample1"
+				},
+				{
+					"value": "sample2"
+				}
+			]
+		}
+	]}
+----
+
+TIP: We recommend that you use an `Enum` for those two values instead.
+If your IDE supports it, this is by far the most effective approach to auto-completion.
+
+
+
+[[configuration-metadata.manual-hints.value-providers]]
+=== Value Providers
+Providers are a powerful way to attach semantics to a property.
+In this section, we define the official providers that you can use for your own hints.
+However, your favorite IDE may implement some of these or none of them.
+Also, it could eventually provide its own.
+
+NOTE: As this is a new feature, IDE vendors must catch up with how it works.
+Adoption times naturally vary.
+
+The following table summarizes the list of supported providers:
+
+[cols="2,4"]
+|===
+| Name | Description
+
+| `any`
+| Permits any additional value to be provided.
+
+| `class-reference`
+| Auto-completes the classes available in the project.
+  Usually constrained by a base class that is specified by the `target` parameter.
+
+| `handle-as`
+| Handles the property as if it were defined by the type defined by the mandatory `target` parameter.
+
+| `logger-name`
+| Auto-completes valid logger names and <<features#features.logging.log-groups,logger groups>>.
+  Typically, package and class names available in the current project can be auto-completed as well as defined groups.
+
+| `spring-bean-reference`
+| Auto-completes the available bean names in the current project.
+  Usually constrained by a base class that is specified by the `target` parameter.
+
+| `spring-profile-name`
+| Auto-completes the available Spring profile names in the project.
+|===
+
+TIP: Only one provider can be active for a given property, but you can specify several providers if they can all manage the property _in some way_.
+Make sure to place the most powerful provider first, as the IDE must use the first one in the JSON section that it can handle.
+If no provider for a given property is supported, no special content assistance is provided, either.
+
+
+
+[[configuration-metadata.manual-hints.value-providers.any]]
+==== Any
+The special **any** provider value permits any additional values to be provided.
+Regular value validation based on the property type should be applied if this is supported.
+
+This provider is typically used if you have a list of values and any extra values should still be considered as valid.
+
+The following example offers `on` and `off` as auto-completion values for `system.state`:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "system.state",
+			"values": [
+				{
+					"value": "on"
+				},
+				{
+					"value": "off"
+				}
+			],
+			"providers": [
+				{
+					"name": "any"
+				}
+			]
+		}
+	]}
+----
+
+Note that, in the preceding example, any other value is also allowed.
+
+
+
+[[configuration-metadata.manual-hints.value-providers.class-reference]]
+==== Class Reference
+The **class-reference** provider auto-completes classes available in the project.
+This provider supports the following parameters:
+
+[cols="1,1,2,4"]
+|===
+| Parameter | Type | Default value | Description
+
+| `target`
+| `String` (`Class`)
+| _none_
+| The fully qualified name of the class that should be assignable to the chosen value.
+  Typically used to filter out-non candidate classes.
+  Note that this information can be provided by the type itself by exposing a class with the appropriate upper bound.
+
+| `concrete`
+| `boolean`
+| true
+| Specify whether only concrete classes are to be considered as valid candidates.
+|===
+
+
+The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the `JspServlet` class name to use:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "server.servlet.jsp.class-name",
+			"providers": [
+				{
+					"name": "class-reference",
+					"parameters": {
+						"target": "javax.servlet.http.HttpServlet"
+					}
+				}
+			]
+		}
+	]}
+----
+
+
+
+[[configuration-metadata.manual-hints.value-providers.handle-as]]
+==== Handle As
+The **handle-as** provider lets you substitute the type of the property to a more high-level type.
+This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
+This provider supports the following parameters:
+
+[cols="1,1,2,4"]
+|===
+| Parameter | Type | Default value | Description
+
+| **`target`**
+| `String` (`Class`)
+| _none_
+| The fully qualified name of the type to consider for the property.
+  This parameter is mandatory.
+|===
+
+The following types can be used:
+
+* Any `java.lang.Enum`: Lists the possible values for the property.
+  (We recommend defining the property with the `Enum` type, as no further hint should be required for the IDE to auto-complete the values)
+* `java.nio.charset.Charset`: Supports auto-completion of charset/encoding values (such as `UTF-8`)
+* `java.util.Locale`: auto-completion of locales (such as `en_US`)
+* `org.springframework.util.MimeType`: Supports auto-completion of content type values (such as `text/plain`)
+* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource abstraction to refer to a file on the filesystem or on the classpath (such as `classpath:/sample.properties`)
+
+TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE about it.
+
+The following metadata snippet corresponds to the standard `spring.liquibase.change-log` property that defines the path to the changelog to use.
+It is actually used internally as a `org.springframework.core.io.Resource` but cannot be exposed as such, because we need to keep the original String value to pass it to the Liquibase API.
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "spring.liquibase.change-log",
+			"providers": [
+				{
+					"name": "handle-as",
+					"parameters": {
+						"target": "org.springframework.core.io.Resource"
+					}
+				}
+			]
+		}
+	]}
+----
+
+
+
+[[configuration-metadata.manual-hints.value-providers.logger-name]]
+==== Logger Name
+The **logger-name** provider auto-completes valid logger names and <<features#features.logging.log-groups,logger groups>>.
+Typically, package and class names available in the current project can be auto-completed.
+If groups are enabled (default) and if a custom logger group is identified in the configuration, auto-completion for it should be provided.
+Specific frameworks may have extra magic logger names that can be supported as well.
+
+This provider supports the following parameters:
+
+[cols="1,1,2,4"]
+|===
+| Parameter | Type | Default value | Description
+
+| `group`
+| `boolean`
+| `true`
+| Specify whether known groups should be considered.
+|===
+
+Since a logger name can be any arbitrary name, this provider should allow any value but could highlight valid package and class names that are not available in the project's classpath.
+
+The following metadata snippet corresponds to the standard `logging.level` property.
+Keys are _logger names_, and values correspond to the standard log levels or any custom level.
+As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints have been added for those.
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "logging.level.keys",
+			"values": [
+				{
+					"value": "root",
+					"description": "Root logger used to assign the default logging level."
+				},
+				{
+					"value": "sql",
+					"description": "SQL logging group including Hibernate SQL logger."
+				},
+				{
+					"value": "web",
+					"description": "Web logging group including codecs."
+				}
+			],
+			"providers": [
+				{
+					"name": "logger-name"
+				}
+			]
+		},
+		{
+			"name": "logging.level.values",
+			"values": [
+				{
+					"value": "trace"
+				},
+				{
+					"value": "debug"
+				},
+				{
+					"value": "info"
+				},
+				{
+					"value": "warn"
+				},
+				{
+					"value": "error"
+				},
+				{
+					"value": "fatal"
+				},
+				{
+					"value": "off"
+				}
+
+			],
+			"providers": [
+				{
+					"name": "any"
+				}
+			]
+		}
+	]}
+----
+
+
+
+[[configuration-metadata.manual-hints.value-providers.spring-bean-reference]]
+==== Spring Bean Reference
+The **spring-bean-reference** provider auto-completes the beans that are defined in the configuration of the current project.
+This provider supports the following parameters:
+
+[cols="1,1,2,4"]
+|===
+| Parameter | Type | Default value | Description
+
+| `target`
+| `String` (`Class`)
+| _none_
+| The fully qualified name of the bean class that should be assignable to the candidate.
+  Typically used to filter out non-candidate beans.
+|===
+
+The following metadata snippet corresponds to the standard `spring.jmx.server` property that defines the name of the `MBeanServer` bean to use:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "spring.jmx.server",
+			"providers": [
+				{
+					"name": "spring-bean-reference",
+					"parameters": {
+						"target": "javax.management.MBeanServer"
+					}
+				}
+			]
+		}
+	]}
+----
+
+NOTE: The binder is not aware of the metadata.
+If you provide that hint, you still need to transform the bean name into an actual Bean reference using by the `ApplicationContext`.
+
+
+
+[[configuration-metadata.manual-hints.value-providers.spring-profile-name]]
+==== Spring Profile Name
+The **spring-profile-name** provider auto-completes the Spring profiles that are defined in the configuration of the current project.
+
+The following metadata snippet corresponds to the standard `spring.profiles.active` property that defines the name of the Spring profile(s) to enable:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"hints": [
+		{
+			"name": "spring.profiles.active",
+			"providers": [
+				{
+					"name": "spring-profile-name"
+				}
+			]
+		}
+	]}
+----

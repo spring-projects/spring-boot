@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,14 @@ package org.springframework.boot.actuate.autoconfigure.metrics.amqp;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,11 +50,30 @@ class RabbitMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void abstractConnectionFactoryDefinedAsAConnectionFactoryIsInstrumented() {
+		this.contextRunner.withUserConfiguration(ConnectionFactoryConfiguration.class).run((context) -> {
+			assertThat(context).hasBean("customConnectionFactory");
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			registry.get("rabbitmq.connections").meter();
+		});
+	}
+
+	@Test
 	void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.rabbitmq=false").run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry.find("rabbitmq.connections").meter()).isNull();
 		});
+	}
+
+	@Configuration
+	static class ConnectionFactoryConfiguration {
+
+		@Bean
+		ConnectionFactory customConnectionFactory() {
+			return new CachingConnectionFactory();
+		}
+
 	}
 
 }

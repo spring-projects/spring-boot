@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::buildpacks[]
+bootBuildImage {
+	buildpacks = ["file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java"]
+}
+// end::buildpacks[]
+
+task bootBuildImageBuildpacks {
+	doFirst {
+		bootBuildImage.buildpacks.each { reference -> println "$reference" }
+	}
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class CheckBom extends DefaultTask {
 			for (Group group : library.getGroups()) {
 				for (Module module : group.getModules()) {
 					if (!module.getExclusions().isEmpty()) {
-						checkExclusions(group.getId(), module, library.getVersion());
+						checkExclusions(group.getId(), module, library.getVersion().getVersion());
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 /**
  * {@link BasicDataSource} used for testing.
@@ -27,23 +31,45 @@ import org.apache.commons.dbcp2.BasicDataSource;
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
  */
-public class TestDataSource extends BasicDataSource {
-
-	/**
-	 * Create an in-memory database with the specified name.
-	 * @param name the name of the database
-	 */
-	public TestDataSource(String name) {
-		setDriverClassName("org.hsqldb.jdbcDriver");
-		setUrl("jdbc:hsqldb:mem:" + name);
-		setUsername("sa");
-	}
+public class TestDataSource extends SimpleDriverDataSource {
 
 	/**
 	 * Create an in-memory database with a random name.
 	 */
 	public TestDataSource() {
-		this(UUID.randomUUID().toString());
+		this(false);
+	}
+
+	/**
+	 * Create an in-memory database with a random name.
+	 * @param addTestUser if a test user should be added
+	 */
+	public TestDataSource(boolean addTestUser) {
+		this(UUID.randomUUID().toString(), addTestUser);
+	}
+
+	/**
+	 * Create an in-memory database with the specified name.
+	 * @param name the name of the database
+	 * @param addTestUser if a test user should be added
+	 */
+	public TestDataSource(String name, boolean addTestUser) {
+		setDriverClass(org.hsqldb.jdbc.JDBCDriver.class);
+		setUrl("jdbc:hsqldb:mem:" + name);
+		setUsername("sa");
+		setupDatabase(addTestUser);
+		setUrl(getUrl() + ";create=false");
+	}
+
+	private void setupDatabase(boolean addTestUser) {
+		try (Connection connection = getConnection()) {
+			if (addTestUser) {
+				connection.prepareStatement("CREATE USER \"test\" password \"secret\" ADMIN").execute();
+			}
+		}
+		catch (SQLException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }

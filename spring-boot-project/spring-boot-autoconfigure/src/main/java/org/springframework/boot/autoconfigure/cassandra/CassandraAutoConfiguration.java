@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -40,6 +41,7 @@ import com.typesafe.config.ConfigFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Connection;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Controlconnection;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Request;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Throttler;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.ThrottlerType;
@@ -51,6 +53,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.Resource;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Cassandra.
@@ -104,7 +107,7 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	@Bean
+	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
@@ -115,6 +118,28 @@ public class CassandraAutoConfiguration {
 	}
 
 	private Config cassandraConfiguration(CassandraProperties properties) {
+		Config config = mapConfig(properties);
+		Resource configFile = properties.getConfig();
+		return (configFile != null) ? applyDefaultFallback(config.withFallback(loadConfig(configFile)))
+				: applyDefaultFallback(config);
+	}
+
+	private Config applyDefaultFallback(Config config) {
+		ConfigFactory.invalidateCaches();
+		return ConfigFactory.defaultOverrides().withFallback(config).withFallback(ConfigFactory.defaultReference())
+				.resolve();
+	}
+
+	private Config loadConfig(Resource config) {
+		try {
+			return ConfigFactory.parseURL(config.getURL());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to load cassandra configuration from " + config, ex);
+		}
+	}
+
+	private Config mapConfig(CassandraProperties properties) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get();
 		map.from(properties.getSessionName()).whenHasText()
@@ -127,13 +152,12 @@ public class CassandraAutoConfiguration {
 		mapConnectionOptions(properties, options);
 		mapPoolingOptions(properties, options);
 		mapRequestOptions(properties, options);
+		mapControlConnectionOptions(properties, options);
 		map.from(mapContactPoints(properties))
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
 		map.from(properties.getLocalDatacenter()).to(
 				(localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
-		ConfigFactory.invalidateCaches();
-		return ConfigFactory.defaultOverrides().withFallback(options.build())
-				.withFallback(ConfigFactory.defaultReference()).resolve();
+		return options.build();
 	}
 
 	private void mapConnectionOptions(CassandraProperties properties, CassandraDriverOptions options) {
@@ -176,6 +200,13 @@ public class CassandraAutoConfiguration {
 				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND, maxRequestsPerSecond));
 		map.from(throttlerProperties::getDrainInterval).asInt(Duration::toMillis).to(
 				(drainInterval) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL, drainInterval));
+	}
+
+	private void mapControlConnectionOptions(CassandraProperties properties, CassandraDriverOptions options) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Controlconnection controlProperties = properties.getControlconnection();
+		map.from(controlProperties::getTimeout).asInt(Duration::toMillis)
+				.to((timeout) -> options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, timeout));
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties) {

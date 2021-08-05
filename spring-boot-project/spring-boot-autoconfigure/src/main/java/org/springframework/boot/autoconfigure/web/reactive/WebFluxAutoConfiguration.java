@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -74,6 +76,10 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
+import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.DefaultWebSessionManager;
+import org.springframework.web.server.session.WebSessionIdResolver;
+import org.springframework.web.server.session.WebSessionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebFlux WebFlux}.
@@ -85,6 +91,7 @@ import org.springframework.web.server.i18n.LocaleContextResolver;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -92,13 +99,13 @@ import org.springframework.web.server.i18n.LocaleContextResolver;
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled")
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
@@ -107,13 +114,9 @@ public class WebFluxAutoConfiguration {
 	public static class WelcomePageConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		public RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
-				WebFluxProperties webFluxProperties,
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties) {
-			String[] staticLocations = resourceProperties.hasBeenCustomized() ? resourceProperties.getStaticLocations()
-					: webProperties.getResources().getStaticLocations();
+				WebFluxProperties webFluxProperties, WebProperties webProperties) {
+			String[] staticLocations = webProperties.getResources().getStaticLocations();
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
 					new TemplateAvailabilityProviders(applicationContext), applicationContext, staticLocations,
 					webFluxProperties.getStaticPathPattern());
@@ -128,11 +131,10 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.web.ResourceProperties.class,
-			WebProperties.class, WebFluxProperties.class })
+	@EnableConfigurationProperties({ WebProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })
+	@Order(0)
 	public static class WebFluxConfig implements WebFluxConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
@@ -151,14 +153,12 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties, WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+		public WebFluxConfig(WebProperties webProperties, WebFluxProperties webFluxProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<ViewResolver> viewResolvers) {
-			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
+			this.resourceProperties = webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers;
@@ -300,6 +300,23 @@ public class WebFluxAutoConfiguration {
 			return localeContextResolver;
 		}
 
+		@Bean
+		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
+		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
+			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
+			webSessionManager.setSessionIdResolver(webSessionIdResolver.getIfAvailable(cookieWebSessionIdResolver()));
+			return webSessionManager;
+		}
+
+		private Supplier<WebSessionIdResolver> cookieWebSessionIdResolver() {
+			return () -> {
+				CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
+				webSessionIdResolver.addCookieInitializer((cookie) -> cookie
+						.sameSite(this.webFluxProperties.getSession().getCookie().getSameSite().attribute()));
+				return webSessionIdResolver;
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -307,13 +324,9 @@ public class WebFluxAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
 				WebProperties webProperties) {
-			Resources resources = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
-			return new ResourceChainResourceHandlerRegistrationCustomizer(resources);
+			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());
 		}
 
 	}

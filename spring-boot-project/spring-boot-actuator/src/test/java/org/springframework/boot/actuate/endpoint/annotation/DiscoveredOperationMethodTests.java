@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.util.MimeType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,12 +50,35 @@ class DiscoveredOperationMethodTests {
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };
 		annotationAttributes.put("produces", produces);
+		annotationAttributes.put("producesFrom", Producible.class);
 		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
 				annotationAttributes);
 		assertThat(discovered.getProducesMediaTypes()).containsExactly("application/json");
 	}
 
+	@Test
+	void getProducesMediaTypesWhenProducesFromShouldReturnMediaTypes() {
+		Method method = ReflectionUtils.findMethod(getClass(), "example");
+		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
+		annotationAttributes.put("produces", new String[0]);
+		annotationAttributes.put("producesFrom", ExampleProducible.class);
+		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
+				annotationAttributes);
+		assertThat(discovered.getProducesMediaTypes()).containsExactly("one/*", "two/*", "three/*");
+	}
+
 	void example() {
+	}
+
+	enum ExampleProducible implements Producible<ExampleProducible> {
+
+		ONE, TWO, THREE;
+
+		@Override
+		public MimeType getProducedMimeType() {
+			return new MimeType(toString().toLowerCase());
+		}
+
 	}
 
 }

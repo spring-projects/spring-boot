@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::custom-image-builder[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<builder>mine/java-cnb-builder</builder>
+						<runImage>mine/java-cnb-run</runImage>
+					</image>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::custom-image-builder[] -->
+

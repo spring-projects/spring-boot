@@ -26,6 +26,16 @@ curl -L ${JDK_URL} | tar zx --strip-components=1
 test -f /opt/openjdk/bin/java
 test -f /opt/openjdk/bin/javac
 
+if [[ $# -eq 2 ]]; then
+	cd /
+	TOOLCHAIN_JDK_URL=$( ./get-jdk-url.sh $2 )
+
+	mkdir -p /opt/openjdk-toolchain
+	cd /opt/openjdk-toolchain
+	curl -L ${TOOLCHAIN_JDK_URL} | tar zx --strip-components=1
+	test -f /opt/openjdk-toolchain/bin/java
+	test -f /opt/openjdk-toolchain/bin/javac
+fi
 
 ###########################################################
 # DOCKER

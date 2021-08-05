@@ -124,12 +124,31 @@ class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
+	void nativeConnectionFactoryCustomBrokerUrl() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.broker-url:tcp://192.168.1.144:9876")
+				.run((context) -> assertNettyConnectionFactory(
+						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.144", 9876));
+	}
+
+	@Test
+	@Deprecated
 	void nativeConnectionFactoryCustomHost() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
 						"spring.artemis.port:9876")
 				.run((context) -> assertNettyConnectionFactory(
 						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.144", 9876));
+	}
+
+	@Test
+	@Deprecated
+	void nativeConnectionFactoryCustomBrokerUrlAndHost() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
+						"spring.artemis.port:9876", "spring.artemis.broker-url=tcp://192.168.1.221:6543")
+				.run((context) -> assertNettyConnectionFactory(
+						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.221", 6543));
 	}
 
 	@Test
@@ -377,7 +396,11 @@ class ArtemisAutoConfigurationTests {
 		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
 		assertThat(transportConfig.getFactoryClassName()).isEqualTo(NettyConnectorFactory.class.getName());
 		assertThat(transportConfig.getParams().get("host")).isEqualTo(host);
-		assertThat(transportConfig.getParams().get("port")).isEqualTo(port);
+		Object transportConfigPort = transportConfig.getParams().get("port");
+		if (transportConfigPort instanceof String) {
+			transportConfigPort = Integer.parseInt((String) transportConfigPort);
+		}
+		assertThat(transportConfigPort).isEqualTo(port);
 		return transportConfig;
 	}
 

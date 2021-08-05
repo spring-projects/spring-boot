@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,16 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
@@ -169,6 +172,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));
+		server.setStopTimeout(0);
 		ServletHolder servletHolder = new ServletHolder(servlet);
 		servletHolder.setAsyncSupported(true);
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "/", false, false);
@@ -193,23 +197,26 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
-		ServerConnector connector;
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		httpConfiguration.setSendServerVersion(false);
+		List<ConnectionFactory> connectionFactories = new ArrayList<>();
+		connectionFactories.add(new HttpConnectionFactory(httpConfiguration));
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			connectionFactories.add(new HTTP2CServerConnectionFactory(httpConfiguration));
+		}
 		JettyResourceFactory resourceFactory = getResourceFactory();
+		ServerConnector connector;
 		if (resourceFactory != null) {
 			connector = new ServerConnector(server, resourceFactory.getExecutor(), resourceFactory.getScheduler(),
-					resourceFactory.getByteBufferPool(), this.acceptors, this.selectors, new HttpConnectionFactory());
+					resourceFactory.getByteBufferPool(), this.acceptors, this.selectors,
+					connectionFactories.toArray(new ConnectionFactory[0]));
 		}
 		else {
-			connector = new ServerConnector(server, this.acceptors, this.selectors);
+			connector = new ServerConnector(server, this.acceptors, this.selectors,
+					connectionFactories.toArray(new ConnectionFactory[0]));
 		}
 		connector.setHost(address.getHostString());
 		connector.setPort(address.getPort());
-		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
-			if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-				((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
-						.setSendServerVersion(false);
-			}
-		}
 		return connector;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.security.KeyStore;
 
@@ -27,18 +28,25 @@ import com.couchbase.client.core.env.SecurityConfig;
 import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
+import com.couchbase.client.java.codec.JacksonJsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.env.ClusterEnvironment.Builder;
+import com.couchbase.client.java.json.JsonValueModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -50,6 +58,7 @@ import org.springframework.util.ResourceUtils;
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
+@AutoConfigureAfter(JacksonAutoConfiguration.class)
 @ConditionalOnClass(Cluster.class)
 @ConditionalOnProperty("spring.couchbase.connection-string")
 @EnableConfigurationProperties(CouchbaseProperties.class)
@@ -107,8 +116,44 @@ public class CouchbaseAutoConfiguration {
 	private KeyStore loadKeyStore(String resource, String keyStorePassword) throws Exception {
 		KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), (keyStorePassword != null) ? keyStorePassword.toCharArray() : null);
+		try (InputStream stream = url.openStream()) {
+			store.load(stream, (keyStorePassword != null) ? keyStorePassword.toCharArray() : null);
+		}
 		return store;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ObjectMapper.class)
+	static class JacksonConfiguration {
+
+		@Bean
+		@ConditionalOnSingleCandidate(ObjectMapper.class)
+		ClusterEnvironmentBuilderCustomizer jacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
+			return new JacksonClusterEnvironmentBuilderCustomizer(
+					objectMapper.copy().registerModule(new JsonValueModule()));
+		}
+
+	}
+
+	private static final class JacksonClusterEnvironmentBuilderCustomizer
+			implements ClusterEnvironmentBuilderCustomizer, Ordered {
+
+		private final ObjectMapper objectMapper;
+
+		private JacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
+		}
+
+		@Override
+		public void customize(Builder builder) {
+			builder.jsonSerializer(JacksonJsonSerializer.create(this.objectMapper));
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
 	}
 
 }

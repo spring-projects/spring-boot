@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -52,9 +51,11 @@ import org.springframework.boot.context.properties.IncompatibleConfigurationExce
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -82,20 +83,25 @@ import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
@@ -119,6 +125,9 @@ import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceTransformer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.resource.VersionStrategy;
+import org.springframework.web.servlet.support.AbstractFlashMapManager;
+import org.springframework.web.servlet.support.SessionFlashMapManager;
+import org.springframework.web.servlet.theme.FixedThemeResolver;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.util.UrlPathHelper;
@@ -137,6 +146,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Kristine Jetzke
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  */
 class WebMvcAutoConfigurationTests {
 
@@ -204,17 +214,15 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void resourceHandlerMappingDisabled(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "add-mappings:false")
+	@Test
+	void resourceHandlerMappingDisabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.add-mappings:false")
 				.run((context) -> assertThat(getResourceMappingLocations(context)).hasSize(0));
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void resourceHandlerChainEnabled(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "chain.enabled:true").run((context) -> {
+	@Test
+	void resourceHandlerChainEnabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(2);
 			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(1);
 			assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass")
@@ -224,13 +232,11 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void resourceHandlerFixedStrategyEnabled(String prefix) {
-		this.contextRunner
-				.withPropertyValues(prefix + "chain.strategy.fixed.enabled:true",
-						prefix + "chain.strategy.fixed.version:test", prefix + "chain.strategy.fixed.paths:/**/*.js")
-				.run((context) -> {
+	@Test
+	void resourceHandlerFixedStrategyEnabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.chain.strategy.fixed.enabled:true",
+				"spring.web.resources.chain.strategy.fixed.version:test",
+				"spring.web.resources.chain.strategy.fixed.paths:/**/*.js").run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
@@ -243,11 +249,10 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void resourceHandlerContentStrategyEnabled(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "chain.strategy.content.enabled:true",
-				prefix + "chain.strategy.content.paths:/**,/*.png").run((context) -> {
+	@Test
+	void resourceHandlerContentStrategyEnabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.chain.strategy.content.enabled:true",
+				"spring.web.resources.chain.strategy.content.paths:/**,/*.png").run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
@@ -260,25 +265,22 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	@SuppressWarnings("deprecation")
-	void resourceHandlerChainCustomized(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "chain.enabled:true", prefix + "chain.cache:false",
-				prefix + "chain.strategy.content.enabled:true", prefix + "chain.strategy.content.paths:/**,/*.png",
-				prefix + "chain.strategy.fixed.enabled:true", prefix + "chain.strategy.fixed.version:test",
-				prefix + "chain.strategy.fixed.paths:/**/*.js", prefix + "chain.html-application-cache:true",
-				prefix + "chain.compressed:true").run((context) -> {
+	@Test
+	void resourceHandlerChainCustomized() {
+		this.contextRunner.withPropertyValues("spring.web.resources.chain.enabled:true",
+				"spring.web.resources.chain.cache:false", "spring.web.resources.chain.strategy.content.enabled:true",
+				"spring.web.resources.chain.strategy.content.paths:/**,/*.png",
+				"spring.web.resources.chain.strategy.fixed.enabled:true",
+				"spring.web.resources.chain.strategy.fixed.version:test",
+				"spring.web.resources.chain.strategy.fixed.paths:/**/*.js",
+				"spring.web.resources.chain.html-application-cache:true", "spring.web.resources.chain.compressed:true")
+				.run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
-					assertThat(getResourceTransformers(context, "/webjars/**"))
-							.hasSize(prefix.equals("spring.resources.") ? 2 : 1);
+					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(1);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
 							EncodedResourceResolver.class, VersionResourceResolver.class, PathResourceResolver.class);
 					assertThat(getResourceTransformers(context, "/**")).extractingResultOf("getClass")
-							.containsOnly(prefix.equals("spring.resources.")
-									? new Class<?>[] { CssLinkResourceTransformer.class,
-											org.springframework.web.servlet.resource.AppCacheManifestTransformer.class }
-									: new Class<?>[] { CssLinkResourceTransformer.class });
+							.containsOnly(CssLinkResourceTransformer.class);
 					VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(context, "/**")
 							.get(1);
 					Map<String, VersionStrategy> strategyMap = resolver.getStrategyMap();
@@ -296,11 +298,10 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "mvc", "web" })
-	void overrideLocale(String mvcOrWeb) {
-		this.contextRunner.withPropertyValues("spring." + mvcOrWeb + ".locale:en_UK",
-				"spring." + mvcOrWeb + ".locale-resolver=fixed").run((loader) -> {
+	@Test
+	void overrideLocale() {
+		this.contextRunner.withPropertyValues("spring.web.locale:en_UK", "spring.web.locale-resolver=fixed")
+				.run((loader) -> {
 					// mock request and set user preferred locale
 					MockHttpServletRequest request = new MockHttpServletRequest();
 					request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -314,10 +315,9 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "mvc", "web" })
-	void useAcceptHeaderLocale(String mvcOrWeb) {
-		this.contextRunner.withPropertyValues("spring." + mvcOrWeb + ".locale:en_UK").run((loader) -> {
+	@Test
+	void useAcceptHeaderLocale() {
+		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((loader) -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -330,10 +330,9 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "mvc", "web" })
-	void useDefaultLocaleIfAcceptHeaderNoSet(String mvcOrWeb) {
-		this.contextRunner.withPropertyValues("spring." + mvcOrWeb + ".locale:en_UK").run((context) -> {
+	@Test
+	void useDefaultLocaleIfAcceptHeaderNoSet() {
+		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			LocaleResolver localeResolver = context.getBean(LocaleResolver.class);
@@ -359,6 +358,42 @@ class WebMvcAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context.getBean("customLocaleResolver")).isInstanceOf(CustomLocaleResolver.class);
 					assertThat(context.getBean("localeResolver")).isInstanceOf(AcceptHeaderLocaleResolver.class);
+				});
+	}
+
+	@Test
+	void customThemeResolverWithMatchingNameReplacesDefaultThemeResolver() {
+		this.contextRunner.withBean("themeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ThemeResolver.class);
+					assertThat(context.getBean("themeResolver")).isInstanceOf(CustomThemeResolver.class);
+				});
+	}
+
+	@Test
+	void customThemeResolverWithDifferentNameDoesNotReplaceDefaultThemeResolver() {
+		this.contextRunner.withBean("customThemeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
+				.run((context) -> {
+					assertThat(context.getBean("customThemeResolver")).isInstanceOf(CustomThemeResolver.class);
+					assertThat(context.getBean("themeResolver")).isInstanceOf(FixedThemeResolver.class);
+				});
+	}
+
+	@Test
+	void customFlashMapManagerWithMatchingNameReplacesDefaultFlashMapManager() {
+		this.contextRunner.withBean("flashMapManager", CustomFlashMapManager.class, CustomFlashMapManager::new)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(FlashMapManager.class);
+					assertThat(context.getBean("flashMapManager")).isInstanceOf(CustomFlashMapManager.class);
+				});
+	}
+
+	@Test
+	void customFlashMapManagerWithDifferentNameDoesNotReplaceDefaultFlashMapManager() {
+		this.contextRunner.withBean("customFlashMapManager", CustomFlashMapManager.class, CustomFlashMapManager::new)
+				.run((context) -> {
+					assertThat(context.getBean("customFlashMapManager")).isInstanceOf(CustomFlashMapManager.class);
+					assertThat(context.getBean("flashMapManager")).isInstanceOf(SessionFlashMapManager.class);
 				});
 	}
 
@@ -632,24 +667,23 @@ class WebMvcAutoConfigurationTests {
 		};
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void welcomePageHandlerMappingIsAutoConfigured(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "static-locations:classpath:/welcome-page/").run((context) -> {
-			assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-			WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
-			assertThat(bean.getRootHandler()).isNotNull();
-		});
+	@Test
+	void welcomePageHandlerMappingIsAutoConfigured() {
+		this.contextRunner.withPropertyValues("spring.web.resources.static-locations:classpath:/welcome-page/")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
+					WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
+					assertThat(bean.getRootHandler()).isNotNull();
+				});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void welcomePageHandlerIncludesCorsConfiguration(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "static-locations:classpath:/welcome-page/")
+	@Test
+	void welcomePageHandlerIncludesCorsConfiguration() {
+		this.contextRunner.withPropertyValues("spring.web.resources.static-locations:classpath:/welcome-page/")
 				.withUserConfiguration(CorsConfigurer.class).run((context) -> {
 					WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
-					UrlBasedCorsConfigurationSource source = (UrlBasedCorsConfigurationSource) ReflectionTestUtils
-							.getField(bean, "corsConfigurationSource");
+					UrlBasedCorsConfigurationSource source = (UrlBasedCorsConfigurationSource) bean
+							.getCorsConfigurationSource();
 					assertThat(source.getCorsConfigurations()).containsKey("/**");
 				});
 	}
@@ -768,10 +802,9 @@ class WebMvcAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void cachePeriod(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "cache.period:5").run((context) -> {
+	@Test
+	void cachePeriod() {
+		this.contextRunner.withPropertyValues("spring.web.resources.cache.period:5").run((context) -> {
 			assertResourceHttpRequestHandler((context), (handler) -> {
 				assertThat(handler.getCacheSeconds()).isEqualTo(5);
 				assertThat(handler.getCacheControl()).isNull();
@@ -779,12 +812,11 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
-	void cacheControl(String prefix) {
+	@Test
+	void cacheControl() {
 		this.contextRunner
-				.withPropertyValues(prefix + "cache.cachecontrol.max-age:5",
-						prefix + "cache.cachecontrol.proxy-revalidate:true")
+				.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
+						"spring.web.resources.cache.cachecontrol.proxy-revalidate:true")
 				.run((context) -> assertResourceHttpRequestHandler(context, (handler) -> {
 					assertThat(handler.getCacheSeconds()).isEqualTo(-1);
 					assertThat(handler.getCacheControl()).usingRecursiveComparison()
@@ -804,7 +836,6 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	@SuppressWarnings("deprecation")
 	void useSuffixPatternMatch() {
 		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
 				"spring.mvc.pathmatch.use-registered-suffix-pattern:true").run((context) -> {
@@ -962,11 +993,30 @@ class WebMvcAutoConfigurationTests {
 						(handler) -> assertThat(handler.isUseLastModified()).isFalse()));
 	}
 
+	@Test // gh-25743
+	void addResourceHandlersAppliesToChildAndParentContext() {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
+			context.register(WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+					ResourceHandlersWithChildAndParentContextConfiguration.class);
+			context.refresh();
+			SimpleUrlHandlerMapping resourceHandlerMapping = context.getBean("resourceHandlerMapping",
+					SimpleUrlHandlerMapping.class);
+			DispatcherServlet extraDispatcherServlet = context.getBean("extraDispatcherServlet",
+					DispatcherServlet.class);
+			SimpleUrlHandlerMapping extraResourceHandlerMapping = extraDispatcherServlet.getWebApplicationContext()
+					.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
+			assertThat(resourceHandlerMapping).isNotSameAs(extraResourceHandlerMapping);
+			assertThat(resourceHandlerMapping.getUrlMap()).containsKey("/**");
+			assertThat(extraResourceHandlerMapping.getUrlMap()).containsKey("/**");
+		}
+	}
+
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
 			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.keySet()) {
+		for (Object handler : handlerMap.values()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
 				handlerConsumer.accept((ResourceHttpRequestHandler) handler);
 			}
@@ -976,7 +1026,7 @@ class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
 		Object bean = context.getBean("resourceHandlerMapping");
 		if (bean instanceof HandlerMapping) {
-			return getMappingLocations(context.getBean("resourceHandlerMapping", HandlerMapping.class));
+			return getMappingLocations((HandlerMapping) bean);
 		}
 		assertThat(bean.toString()).isEqualTo("null");
 		return Collections.emptyMap();
@@ -998,7 +1048,7 @@ class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping) {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		getHandlerMap(mapping).forEach((key, value) -> {
-			Object locations = ReflectionTestUtils.getField(value, "locations");
+			Object locations = ReflectionTestUtils.getField(value, "locationsToUse");
 			mappingLocations.put(key, (List<Resource>) locations);
 		});
 		return mappingLocations;
@@ -1403,6 +1453,79 @@ class WebMvcAutoConfigurationTests {
 
 		@Override
 		public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+		}
+
+	}
+
+	static class CustomThemeResolver implements ThemeResolver {
+
+		@Override
+		public String resolveThemeName(HttpServletRequest request) {
+			return "custom";
+		}
+
+		@Override
+		public void setThemeName(HttpServletRequest request, HttpServletResponse response, String themeName) {
+		}
+
+	}
+
+	static class CustomFlashMapManager extends AbstractFlashMapManager {
+
+		@Override
+		protected List<FlashMap> retrieveFlashMaps(HttpServletRequest request) {
+			return null;
+		}
+
+		@Override
+		protected void updateFlashMaps(List<FlashMap> flashMaps, HttpServletRequest request,
+				HttpServletResponse response) {
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ResourceHandlersWithChildAndParentContextConfiguration {
+
+		@Bean
+		TomcatServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
+		}
+
+		@Bean
+		ServletRegistrationBean<?> additionalDispatcherServlet(DispatcherServlet extraDispatcherServlet) {
+			ServletRegistrationBean<?> registration = new ServletRegistrationBean<>(extraDispatcherServlet, "/extra/*");
+			registration.setName("additionalDispatcherServlet");
+			registration.setLoadOnStartup(1);
+			return registration;
+		}
+
+		@Bean
+		private DispatcherServlet extraDispatcherServlet() throws ServletException {
+			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+			applicationContext.register(ResourceHandlersWithChildAndParentContextChildConfiguration.class);
+			dispatcherServlet.setApplicationContext(applicationContext);
+			return dispatcherServlet;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableWebMvc
+	static class ResourceHandlersWithChildAndParentContextChildConfiguration {
+
+		@Bean
+		WebMvcConfigurer myConfigurer() {
+			return new WebMvcConfigurer() {
+
+				@Override
+				public void addResourceHandlers(ResourceHandlerRegistry registry) {
+					registry.addResourceHandler("/testtesttest");
+				}
+
+			};
 		}
 
 	}

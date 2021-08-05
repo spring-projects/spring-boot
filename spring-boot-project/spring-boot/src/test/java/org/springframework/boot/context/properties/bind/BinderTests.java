@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 
+import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -316,6 +317,30 @@ class BinderTests {
 		assertThat(result.isBound()).isFalse();
 	}
 
+	@Test
+	void bindToJavaBeanWithPublicConstructor() {
+		Bindable<JavaBeanWithPublicConstructor> bindable = Bindable.of(JavaBeanWithPublicConstructor.class);
+		JavaBeanWithPublicConstructor result = bindToJavaBeanWithPublicConstructor(bindable);
+		assertThat(result.getValue()).isEqualTo("constructor");
+	}
+
+	@Test
+	void bindToJavaBeanWithPublicConstructorWhenHasBindRestriction() {
+		Bindable<JavaBeanWithPublicConstructor> bindable = Bindable.of(JavaBeanWithPublicConstructor.class)
+				.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
+		JavaBeanWithPublicConstructor result = bindToJavaBeanWithPublicConstructor(bindable);
+		assertThat(result.getValue()).isEqualTo("setter");
+	}
+
+	private JavaBeanWithPublicConstructor bindToJavaBeanWithPublicConstructor(
+			Bindable<JavaBeanWithPublicConstructor> bindable) {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "constructor");
+		source.put("foo.value", "setter");
+		this.sources.add(source);
+		return this.binder.bindOrCreate("foo", bindable);
+	}
+
 	static class JavaBean {
 
 		private String value;
@@ -436,7 +461,7 @@ class BinderTests {
 	static class JavaBeanPropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			JavaBean value = new JavaBean();
 			value.setValue(text);
 			setValue(value);

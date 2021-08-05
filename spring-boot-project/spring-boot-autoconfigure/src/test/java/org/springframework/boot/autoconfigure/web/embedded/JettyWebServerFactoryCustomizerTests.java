@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void threadPoolMaxThreadsCanBeCustomized() {
-		bind("server.jetty.max-threads=100");
+		bind("server.jetty.threads.max=100");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
 		assertThat(threadPool.getMaxThreads()).isEqualTo(100);
@@ -172,7 +172,7 @@ class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void threadPoolMinThreadsCanBeCustomized() {
-		bind("server.jetty.min-threads=100");
+		bind("server.jetty.threads.min=100");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
 		assertThat(threadPool.getMinThreads()).isEqualTo(100);
@@ -198,8 +198,8 @@ class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void threadPoolWithMaxQueueCapacityEqualToZeroCustomizesThreadPool() {
-		bind("server.jetty.threads.max-queue-capacity=0", "server.jetty.min-threads=100",
-				"server.jetty.max-threads=100", "server.jetty.threads.idle-timeout=6s");
+		bind("server.jetty.threads.max-queue-capacity=0", "server.jetty.threads.min=100",
+				"server.jetty.threads.max=100", "server.jetty.threads.idle-timeout=6s");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
 		assertThat(threadPool.getMinThreads()).isEqualTo(100);
@@ -220,8 +220,8 @@ class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void threadPoolWithMaxQueueCapacityPositiveCustomizesThreadPool() {
-		bind("server.jetty.threads.max-queue-capacity=1234", "server.jetty.min-threads=10",
-				"server.jetty.max-threads=150", "server.jetty.threads.idle-timeout=3s");
+		bind("server.jetty.threads.max-queue-capacity=1234", "server.jetty.threads.min=10",
+				"server.jetty.threads.max=150", "server.jetty.threads.idle-timeout=3s");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
 		assertThat(threadPool.getMinThreads()).isEqualTo(10);

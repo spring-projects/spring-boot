@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,12 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JerseyChildManagementContextConfiguration}.
@@ -76,6 +80,27 @@ class JerseyChildManagementContextConfigurationTests {
 	@Test
 	void resourceConfigCustomizerBeanIsNotRequired() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ResourceConfig.class));
+	}
+
+	@Test
+	void resourceConfigIsCustomizedWithResourceConfigCustomizerBean() {
+		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ResourceConfig.class);
+			ResourceConfig config = context.getBean(ResourceConfig.class);
+			ManagementContextResourceConfigCustomizer customizer = context
+					.getBean(ManagementContextResourceConfigCustomizer.class);
+			verify(customizer).customize(config);
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomizerConfiguration {
+
+		@Bean
+		ManagementContextResourceConfigCustomizer resourceConfigCustomizer() {
+			return mock(ManagementContextResourceConfigCustomizer.class);
+		}
+
 	}
 
 }

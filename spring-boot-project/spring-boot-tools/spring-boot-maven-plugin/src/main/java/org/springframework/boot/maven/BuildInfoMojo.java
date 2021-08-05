@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.NullAdditiona
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * Generate a {@code build-info.properties} file based the content of the current
+ * Generate a {@code build-info.properties} file based on the content of the current
  * {@link MavenProject}.
  *
  * @author Stephane Nicoll
@@ -69,11 +69,13 @@ public class BuildInfoMojo extends AbstractMojo {
 
 	/**
 	 * The value used for the {@code build.time} property in a form suitable for
-	 * {@link Instant#parse(CharSequence)}. Defaults to {@code session.request.startTime}.
-	 * To disable the {@code build.time} property entirely, use {@code 'off'}.
+	 * {@link Instant#parse(CharSequence)}. Defaults to
+	 * {@code project.build.outputTimestamp} or {@code session.request.startTime} if the
+	 * former is not set. To disable the {@code build.time} property entirely, use
+	 * {@code 'off'}.
 	 * @since 2.2.0
 	 */
-	@Parameter
+	@Parameter(defaultValue = "${project.build.outputTimestamp}")
 	private String time;
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -53,7 +54,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StreamUtils;
@@ -621,17 +621,7 @@ class JarFileTests {
 
 	@Test
 	void jarFileEntryWithEpochTimeOfZeroShouldNotFail() throws Exception {
-		File file = new File(this.tempDir, "timed.jar");
-		FileOutputStream fileOutputStream = new FileOutputStream(file);
-		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
-			jarOutputStream.setComment("outer");
-			JarEntry entry = new JarEntry("1.dat");
-			entry.setLastModifiedTime(FileTime.from(Instant.EPOCH));
-			ReflectionTestUtils.setField(entry, "xdostime", 0);
-			jarOutputStream.putNextEntry(entry);
-			jarOutputStream.write(new byte[] { (byte) 1 });
-			jarOutputStream.closeEntry();
-		}
+		File file = createJarFileWithEpochTimeOfZero();
 		try (JarFile jar = new JarFile(file)) {
 			Enumeration<java.util.jar.JarEntry> entries = jar.entries();
 			JarEntry entry = entries.nextElement();
@@ -640,10 +630,42 @@ class JarFileTests {
 		}
 	}
 
+	private File createJarFileWithEpochTimeOfZero() throws Exception {
+		File jarFile = new File(this.tempDir, "temp.jar");
+		FileOutputStream fileOutputStream = new FileOutputStream(jarFile);
+		String comment = "outer";
+		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
+			jarOutputStream.setComment(comment);
+			JarEntry entry = new JarEntry("1.dat");
+			entry.setLastModifiedTime(FileTime.from(Instant.EPOCH));
+			jarOutputStream.putNextEntry(entry);
+			jarOutputStream.write(new byte[] { (byte) 1 });
+			jarOutputStream.closeEntry();
+		}
+
+		byte[] data = Files.readAllBytes(jarFile.toPath());
+		int headerPosition = data.length - ZipFile.ENDHDR - comment.getBytes().length;
+		int centralHeaderPosition = (int) Bytes.littleEndianValue(data, headerPosition + ZipFile.ENDOFF, 1);
+		int localHeaderPosition = (int) Bytes.littleEndianValue(data, centralHeaderPosition + ZipFile.CENOFF, 1);
+		writeTimeBlock(data, centralHeaderPosition + ZipFile.CENTIM, 0);
+		writeTimeBlock(data, localHeaderPosition + ZipFile.LOCTIM, 0);
+
+		File jar = new File(this.tempDir, "zerotimed.jar");
+		Files.write(jar.toPath(), data);
+		return jar;
+	}
+
+	private static void writeTimeBlock(byte[] data, int pos, int value) {
+		data[pos] = (byte) (value & 0xff);
+		data[pos + 1] = (byte) ((value >> 8) & 0xff);
+		data[pos + 2] = (byte) ((value >> 16) & 0xff);
+		data[pos + 3] = (byte) ((value >> 24) & 0xff);
+	}
+
 	@Test
 	void iterator() {
 		Iterator<JarEntry> iterator = this.jarFile.iterator();
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		while (iterator.hasNext()) {
 			names.add(iterator.next().getName());
 		}

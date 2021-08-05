@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -27,10 +28,13 @@ import io.lettuce.core.ClientOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
+import io.lettuce.core.resource.DefaultClientResources;
+import io.lettuce.core.tracing.Tracing;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -52,6 +56,7 @@ import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RedisAutoConfiguration}.
@@ -65,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Alen Turkovic
  * @author Scott Frederick
+ * @author Weix Sun
  */
 class RedisAutoConfigurationTests {
 
@@ -92,6 +98,16 @@ class RedisAutoConfigurationTests {
 					assertThat(cf.getPassword()).isNull();
 					assertThat(cf.isUseSsl()).isFalse();
 					assertThat(cf.getShutdownTimeout()).isEqualTo(500);
+				});
+	}
+
+	@Test
+	void testCustomizeClientResources() {
+		Tracing tracing = mock(Tracing.class);
+		this.contextRunner.withBean(ClientResourcesBuilderCustomizer.class, () -> (builder) -> builder.tracing(tracing))
+				.run((context) -> {
+					DefaultClientResources clientResources = context.getBean(DefaultClientResources.class);
+					assertThat(clientResources.tracing()).isEqualTo(tracing);
 				});
 	}
 
@@ -155,7 +171,21 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPool() {
+	void testRedisConfigurationUsePoolByDefault() {
+		Pool defaultPool = new RedisProperties().getLettuce().getPool();
+		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getHostName()).isEqualTo("foo");
+			GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(cf).getPoolConfig();
+			assertThat(poolConfig.getMinIdle()).isEqualTo(defaultPool.getMinIdle());
+			assertThat(poolConfig.getMaxIdle()).isEqualTo(defaultPool.getMaxIdle());
+			assertThat(poolConfig.getMaxTotal()).isEqualTo(defaultPool.getMaxActive());
+			assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(defaultPool.getMaxWait().toMillis());
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithCustomPoolSettings() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
 				"spring.redis.lettuce.pool.max-idle:4", "spring.redis.lettuce.pool.max-active:16",
 				"spring.redis.lettuce.pool.max-wait:2000", "spring.redis.lettuce.pool.time-between-eviction-runs:30000",
@@ -167,8 +197,18 @@ class RedisAutoConfigurationTests {
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
 					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(2000);
-					assertThat(poolConfig.getTimeBetweenEvictionRunsMillis()).isEqualTo(30000);
+					assertThat(poolConfig.getTimeBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
 					assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
+				});
+	}
+
+	@Test
+	void testRedisConfigurationDisabledPool() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.enabled:false")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getClientConfiguration()).isNotInstanceOf(LettucePoolingClientConfiguration.class);
 				});
 	}
 
@@ -399,7 +439,7 @@ class RedisAutoConfigurationTests {
 	}
 
 	private LettucePoolingClientConfiguration getPoolingClientConfiguration(LettuceConnectionFactory factory) {
-		return (LettucePoolingClientConfiguration) ReflectionTestUtils.getField(factory, "clientConfiguration");
+		return (LettucePoolingClientConfiguration) factory.getClientConfiguration();
 	}
 
 	private String getUserName(LettuceConnectionFactory factory) {

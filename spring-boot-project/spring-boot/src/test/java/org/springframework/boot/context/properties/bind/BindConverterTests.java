@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -28,8 +29,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.PropertyEditorRegistry;
-import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
@@ -38,7 +39,6 @@ import org.springframework.core.convert.support.GenericConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -55,19 +55,13 @@ class BindConverterTests {
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
 	@Test
-	void createWhenConversionServiceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> BindConverter.get(null, null))
-				.withMessageContaining("ConversionService must not be null");
-	}
-
-	@Test
 	void createWhenPropertyEditorInitializerIsNullShouldCreate() {
-		BindConverter.get(ApplicationConversionService.getSharedInstance(), null);
+		BindConverter.get(null, null);
 	}
 
 	@Test
 	void createWhenPropertyEditorInitializerIsNotNullShouldUseToInitialize() {
-		BindConverter.get(ApplicationConversionService.getSharedInstance(), this.propertyEditorInitializer);
+		BindConverter.get(null, this.propertyEditorInitializer);
 		verify(this.propertyEditorInitializer).accept(any(PropertyEditorRegistry.class));
 	}
 
@@ -111,7 +105,7 @@ class BindConverterTests {
 
 	@Test
 	void canConvertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldReturnFalse() {
-		BindConverter bindConverter = BindConverter.get(ApplicationConversionService.getSharedInstance(), null);
+		BindConverter bindConverter = BindConverter.get(null, null);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClass(SampleType.class))).isFalse();
 	}
 
@@ -162,7 +156,7 @@ class BindConverterTests {
 
 	@Test
 	void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
-		BindConverter bindConverter = BindConverter.get(ApplicationConversionService.getSharedInstance(), null);
+		BindConverter bindConverter = BindConverter.get(null, null);
 		assertThatExceptionOfType(ConverterNotFoundException.class)
 				.isThrownBy(() -> bindConverter.convert("test", ResolvableType.forClass(SampleType.class)));
 	}
@@ -171,27 +165,38 @@ class BindConverterTests {
 	void convertWhenConvertingToFileShouldExcludeFileEditor() {
 		// For back compatibility we want true file conversion and not an accidental
 		// classpath resource reference. See gh-12163
-		BindConverter bindConverter = BindConverter.get(new GenericConversionService(), null);
+		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
+				null);
 		File result = bindConverter.convert(".", ResolvableType.forClass(File.class));
 		assertThat(result.getPath()).isEqualTo(".");
 	}
 
 	@Test
 	void fallsBackToApplicationConversionService() {
-		BindConverter bindConverter = BindConverter.get(new GenericConversionService(), null);
+		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
+				null);
 		Duration result = bindConverter.convert("10s", ResolvableType.forClass(Duration.class));
 		assertThat(result.getSeconds()).isEqualTo(10);
 	}
 
+	@Test // gh-27028
+	void convertWhenConversionFailsThrowsConversionFailedExceptionRatherThanConverterNotFoundException() {
+		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
+				null);
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> bindConverter.convert("com.example.Missing", ResolvableType.forClass(Class.class)))
+				.withRootCauseInstanceOf(ClassNotFoundException.class);
+	}
+
 	private BindConverter getPropertyEditorOnlyBindConverter(
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
-		return BindConverter.get(new ThrowingConversionService(), propertyEditorInitializer);
+		return BindConverter.get(Collections.singletonList(new ThrowingConversionService()), propertyEditorInitializer);
 	}
 
 	private BindConverter getBindConverter(Converter<?, ?> converter) {
 		GenericConversionService conversionService = new GenericConversionService();
 		conversionService.addConverter(converter);
-		return BindConverter.get(conversionService, null);
+		return BindConverter.get(Collections.singletonList(conversionService), null);
 	}
 
 	private void registerSampleTypeEditor(PropertyEditorRegistry registry) {
@@ -211,7 +216,7 @@ class BindConverterTests {
 	static class SampleTypePropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			SampleType value = new SampleType();
 			value.text = text;
 			setValue(value);
@@ -243,7 +248,7 @@ class BindConverterTests {
 	static class ConventionTypeEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			ConventionType value = new ConventionType();
 			value.text = text;
 			setValue(value);

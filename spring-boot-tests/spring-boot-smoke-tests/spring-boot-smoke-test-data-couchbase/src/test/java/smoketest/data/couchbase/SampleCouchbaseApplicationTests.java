@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package smoketest.data.couchbase;
 
-import com.couchbase.client.core.error.FeatureNotAvailableException;
+import com.couchbase.client.core.error.AmbiguousTimeoutException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -44,13 +44,12 @@ class SampleCouchbaseApplicationTests {
 	}
 
 	private boolean serverNotRunning(RuntimeException ex) {
-		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(FeatureNotAvailableException.class)) {
+		if (nested.contains(AmbiguousTimeoutException.class)) {
 			Throwable root = nested.getRootCause();
 			// This is not ideal, we should have a better way to know what is going on
-			if (root.getMessage().contains("The cluster does not support cluster-level queries")) {
+			if (root.getMessage().contains("QueryRequest, Reason: TIMEOUT")) {
 				return true;
 			}
 		}

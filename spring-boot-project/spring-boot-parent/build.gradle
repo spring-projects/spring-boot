@@ -20,7 +20,14 @@ bom {
 			]
 		}
 	}
-	library("Commons Compress", "1.20") {
+	library("API Guardian", "1.1.0") {
+		group("org.apiguardian") {
+			modules = [
+				"apiguardian-api"
+			]
+		}
+	}
+	library("Commons Compress", "1.21") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-compress"
@@ -44,7 +51,7 @@ bom {
 			]
 		}
 	}
-	library("JNA", "5.5.0") {
+	library("JNA", "5.7.0") {
 		group("net.java.dev.jna") {
 			modules = [
 				"jna-platform"
@@ -67,14 +74,14 @@ bom {
 			]
 		}
 	}
-	library("Maven Common Artifact Filters", "3.1.0") {
+	library("Maven Common Artifact Filters", "3.2.0") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-common-artifact-filters"
 			]
 		}
 	}
-	library("Maven Invoker", "3.0.1") {
+	library("Maven Invoker", "3.1.0") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-invoker"
@@ -88,7 +95,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Resolver", "1.4.2") {
+	library("Maven Resolver", "1.6.1") {
 		group("org.apache.maven.resolver") {
 			modules = [
 				"maven-resolver-connector-basic",
@@ -105,7 +112,7 @@ bom {
 			]
 		}
 	}
-	library("MockK", "1.10.0") {
+	library("MockK", "1.10.6") {
 		group("io.mockk") {
 			modules = [
 				"mockk"
@@ -133,7 +140,7 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "1.3-groovy-2.5") {
+	library("Spock Framework", "2.0-groovy-3.0") {
 		group("org.spockframework") {
 			modules = [
 				"spock-core",
@@ -148,15 +155,15 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.5.0") {
+	library("Spring Asciidoctor Extensions", "0.6.0") {
 		group("io.spring.asciidoctor") {
 			modules = [
-				"spring-asciidoctor-extensions-block-switch",
-				"spring-asciidoctor-extensions-spring-boot"
+				"spring-asciidoctor-extensions-spring-boot",
+				"spring-asciidoctor-extensions-section-ids"
 			]
 		}
 	}
-	library("Testcontainers", "1.15.0") {
+	library("Testcontainers", "1.15.3") {
 		group("org.testcontainers") {
 			imports = [
 				"testcontainers-bom"

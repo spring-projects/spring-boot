@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConfigDataLocationBindHandler}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ConfigDataLocationBindHandlerTests {
 
@@ -43,6 +44,21 @@ class ConfigDataLocationBindHandlerTests {
 	void bindToArrayFromCommaStringPropertySetsOrigin() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("locations", "a,b,c");
+		Binder binder = new Binder(source);
+		ConfigDataLocation[] bound = binder.bind("locations", ARRAY, this.handler).get();
+		String expectedLocation = "\"locations\" from property source \"source\"";
+		assertThat(bound[0]).hasToString("a");
+		assertThat(bound[0].getOrigin()).hasToString(expectedLocation);
+		assertThat(bound[1]).hasToString("b");
+		assertThat(bound[1].getOrigin()).hasToString(expectedLocation);
+		assertThat(bound[2]).hasToString("c");
+		assertThat(bound[2].getOrigin()).hasToString(expectedLocation);
+	}
+
+	@Test
+	void bindToArrayFromCommaStringPropertyIgnoresEmptyElements() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("locations", ",a,,b,c,");
 		Binder binder = new Binder(source);
 		ConfigDataLocation[] bound = binder.bind("locations", ARRAY, this.handler).get();
 		String expectedLocation = "\"locations\" from property source \"source\"";
@@ -74,6 +90,21 @@ class ConfigDataLocationBindHandlerTests {
 	void bindToValueObjectFromCommaStringPropertySetsOrigin() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("test.locations", "a,b,c");
+		Binder binder = new Binder(source);
+		ValueObject bound = binder.bind("test", VALUE_OBJECT, this.handler).get();
+		String expectedLocation = "\"test.locations\" from property source \"source\"";
+		assertThat(bound.getLocation(0)).hasToString("a");
+		assertThat(bound.getLocation(0).getOrigin()).hasToString(expectedLocation);
+		assertThat(bound.getLocation(1)).hasToString("b");
+		assertThat(bound.getLocation(1).getOrigin()).hasToString(expectedLocation);
+		assertThat(bound.getLocation(2)).hasToString("c");
+		assertThat(bound.getLocation(2).getOrigin()).hasToString(expectedLocation);
+	}
+
+	@Test
+	void bindToValueObjectFromCommaStringPropertyIgnoresEmptyElements() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("test.locations", ",a,b,,c,");
 		Binder binder = new Binder(source);
 		ValueObject bound = binder.bind("test", VALUE_OBJECT, this.handler).get();
 		String expectedLocation = "\"test.locations\" from property source \"source\"";

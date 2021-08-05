@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -171,6 +172,22 @@ class BindableTests {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation).withSuppliedValue(() -> "");
 		assertThat(bindable.getAnnotations()).containsExactly(annotation);
+	}
+
+	@Test
+	void hasBindRestrictionWhenDefaultReturnsFalse() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		for (BindRestriction bindRestriction : BindRestriction.values()) {
+			assertThat(bindable.hasBindRestriction(bindRestriction)).isFalse();
+		}
+	}
+
+	@Test
+	void withBindRestrictionAddsBindRestriction() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		Bindable<String> restricted = bindable.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
+		assertThat(bindable.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isFalse();
+		assertThat(restricted.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isTrue();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

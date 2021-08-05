@@ -4,10 +4,10 @@
 	<property name="charset" value="UTF-8"/>
 	<property name="fileExtensions" value=""/>
 	<module name="io.spring.nohttp.checkstyle.check.NoHttpCheck">
-		<property name="whitelistFileName" value="src/nohttp/whitelist.lines"/>
+		<property name="allowlistFileName" value="${config_loc}/allowlist.lines"/>
 	</module>
 	<module name="SuppressionFilter">
-		<property name="file" value="src/nohttp/suppressions.xml"/>
+		<property name="file" value="${config_loc}/suppressions.xml"/>
 	</module>
 	<module name="SuppressWithPlainTextCommentFilter"/>
 </module>

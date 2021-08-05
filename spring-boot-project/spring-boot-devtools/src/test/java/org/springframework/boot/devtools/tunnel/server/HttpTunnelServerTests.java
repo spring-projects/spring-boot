@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.channels.Channels;
+import java.time.Duration;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +85,7 @@ class HttpTunnelServerTests {
 	private MockServerChannel serverChannel;
 
 	@BeforeEach
-	void setup() throws Exception {
+	void setup() {
 		this.server = new HttpTunnelServer(this.serverConnection);
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletRequest.setAsyncSupported(true);
@@ -236,13 +238,14 @@ class HttpTunnelServerTests {
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h1.getServletResponse()::getStatus,
+				(status) -> status == 204);
 		MockHttpConnection h2 = new MockHttpConnection();
 		this.server.handle(h2);
-		Thread.sleep(400);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h2.getServletResponse()::getStatus,
+				(status) -> status == 204);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
-		assertThat(h1.getServletResponse().getStatus()).isEqualTo(204);
-		assertThat(h2.getServletResponse().getStatus()).isEqualTo(204);
 	}
 
 	@Test

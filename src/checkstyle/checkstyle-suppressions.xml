@@ -17,7 +17,9 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocVariable" />
-	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType|JavadocVariable" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-docs[\\/].*jooq" checks="AvoidStaticImport" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" id="mainCodeIllegalImportCheck" />
@@ -31,7 +33,6 @@
 	<suppress files="TripType\.java" checks="JavadocVariable" />
 	<suppress files="Rating\.java" checks="JavadocVariable" />
 	<suppress files="Direction\.java" checks="JavadocVariable" />
-	<suppress files="JooqExamples\.java" checks="AvoidStaticImport" />
 	<suppress files="LoggingApplicationListenerIntegrationTests\.java" checks="IllegalImport" />
 	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
 	<suppress files="EmbeddedMongoAutoConfiguration\.java" checks="IllegalImport" />
@@ -42,11 +43,14 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
-	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]spring-boot-smoke-test-testng[\\/]" checks="SpringJUnit5" />
+	<suppress files="[\\/]spring-boot-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-gradle-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]src[\\/]systemTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="StringSequence" checks="SpringMethodVisibility" message="isEmpty"/>
+	<suppress files="ValidatorPropertiesWithDefaultValues\.java" checks="SpringMethodVisibility" />
 </suppressions>

@@ -1,0 +1,8 @@
+[[build-tool-plugins.gradle]]
+== Spring Boot Gradle Plugin
+The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
+It requires Gradle 6.8, 6.9, or 7.x.
+Please refer to the plugin's documentation to learn more:
+
+* Reference ({spring-boot-gradle-plugin-docs}[HTML] and {spring-boot-gradle-plugin-pdfdocs}[PDF])
+* {spring-boot-gradle-plugin-api}[API]

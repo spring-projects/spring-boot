@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.List;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.internal.async.client.AsyncMongoClient;
 import com.mongodb.reactivestreams.client.MongoClient;
-
-import org.springframework.test.util.ReflectionTestUtils;
+import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
 
 /**
  * Tests for {@link ReactiveMongoClientFactory}.
@@ -41,8 +39,7 @@ class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<Mon
 
 	@Override
 	protected MongoClientSettings getClientSettings(MongoClient client) {
-		AsyncMongoClient wrapped = (AsyncMongoClient) ReflectionTestUtils.getField(client, "wrapped");
-		return (MongoClientSettings) ReflectionTestUtils.getField(wrapped, "settings");
+		return ((MongoClientImpl) client).getSettings();
 	}
 
 }

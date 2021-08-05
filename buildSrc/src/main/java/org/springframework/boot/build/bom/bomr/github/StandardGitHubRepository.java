@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,16 +40,17 @@ final class StandardGitHubRepository implements GitHubRepository {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public int openIssue(String title, List<String> labels, Milestone milestone) {
-		Map<String, Object> body = new HashMap<>();
-		body.put("title", title);
+	public int openIssue(String title, String body, List<String> labels, Milestone milestone) {
+		Map<String, Object> requestBody = new HashMap<>();
+		requestBody.put("title", title);
 		if (milestone != null) {
-			body.put("milestone", milestone.getNumber());
+			requestBody.put("milestone", milestone.getNumber());
 		}
 		if (!labels.isEmpty()) {
-			body.put("labels", labels);
+			requestBody.put("labels", labels);
 		}
-		ResponseEntity<Map> response = this.rest.postForEntity("issues", body, Map.class);
+		requestBody.put("body", body);
+		ResponseEntity<Map> response = this.rest.postForEntity("issues", requestBody, Map.class);
 		return (Integer) response.getBody().get("number");
 	}
 
@@ -62,6 +63,14 @@ final class StandardGitHubRepository implements GitHubRepository {
 	public List<Milestone> getMilestones() {
 		return get("milestones?per_page=100",
 				(milestone) -> new Milestone((String) milestone.get("title"), (Integer) milestone.get("number")));
+	}
+
+	@Override
+	public List<Issue> findIssues(List<String> labels, Milestone milestone) {
+		return get(
+				"issues?per_page=100&state=all&labels=" + String.join(",", labels) + "&milestone="
+						+ milestone.getNumber(),
+				(issue) -> new Issue(this.rest, (Integer) issue.get("number"), (String) issue.get("title")));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,10 @@ public class StopMojo extends AbstractMojo {
 	private MavenProject project;
 
 	/**
-	 * Flag to indicate if process to stop was forked. By default, the value is inherited
-	 * from the {@link MavenProject}. If it is set, it must match the value used to
-	 * {@link StartMojo start} the process.
+	 * Flag to indicate if the process to stop was forked. By default, the value is
+	 * inherited from the {@link MavenProject} with a fallback on the default fork value
+	 * ({@code true}). If it is set, it must match the value used to {@link StartMojo
+	 * start} the process.
 	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.stop.fork")
@@ -61,15 +62,15 @@ public class StopMojo extends AbstractMojo {
 	 * The JMX name of the automatically deployed MBean managing the lifecycle of the
 	 * application.
 	 */
-	@Parameter
-	private String jmxName = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME;
+	@Parameter(defaultValue = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME)
+	private String jmxName;
 
 	/**
 	 * The port to use to lookup the platform MBeanServer if the application has been
 	 * forked.
 	 */
-	@Parameter
-	private int jmxPort = 9001;
+	@Parameter(defaultValue = "9001")
+	private int jmxPort;
 
 	/**
 	 * Skip the execution.
@@ -103,8 +104,11 @@ public class StopMojo extends AbstractMojo {
 		if (this.fork != null) {
 			return this.fork;
 		}
-		String property = this.project.getProperties().getProperty("_spring.boot.fork.enabled");
-		return Boolean.parseBoolean(property);
+		String forkFromStart = this.project.getProperties().getProperty("_spring.boot.fork.enabled");
+		if (forkFromStart != null) {
+			return Boolean.parseBoolean(forkFromStart);
+		}
+		return true;
 	}
 
 	private void stopForkedProcess() throws IOException, MojoFailureException, MojoExecutionException {

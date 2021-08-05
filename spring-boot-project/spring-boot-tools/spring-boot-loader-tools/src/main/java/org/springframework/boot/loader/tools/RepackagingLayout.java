@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,27 +30,5 @@ public interface RepackagingLayout extends Layout {
 	 * @return the repackaged classes location
 	 */
 	String getRepackagedClassesLocation();
-
-	/**
-	 * Returns the location of the classpath index file that should be written or
-	 * {@code null} if not index is required. The result should include the filename and
-	 * is relative to the root of the jar.
-	 * @return the classpath index file location
-	 * @since 2.3.0
-	 */
-	default String getClasspathIndexFileLocation() {
-		return null;
-	}
-
-	/**
-	 * Returns the location of the layer index file that should be written or {@code null}
-	 * if not index is required. The result should include the filename and is relative to
-	 * the root of the jar.
-	 * @return the layer index file location
-	 * @since 2.3.0
-	 */
-	default String getLayersIndexFileLocation() {
-		return null;
-	}
 
 }

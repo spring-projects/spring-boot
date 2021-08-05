@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.http.client.utils.URIBuilder;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
@@ -37,9 +39,12 @@ import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
+import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.buildpack.platform.json.JsonStream;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -240,6 +245,31 @@ public class DockerApi {
 			}
 			finally {
 				listener.onFinish();
+			}
+		}
+
+		/**
+		 * Export the layers of an image.
+		 * @param reference the reference to export
+		 * @param exports a consumer to receive the layers (contents can only be accessed
+		 * during the callback)
+		 * @throws IOException on IO error
+		 */
+		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
+				throws IOException {
+			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(exports, "Exports must not be null");
+			URI saveUri = buildUrl("/images/" + reference + "/get");
+			Response response = http().get(saveUri);
+			try (TarArchiveInputStream tar = new TarArchiveInputStream(response.getContent())) {
+				TarArchiveEntry entry = tar.getNextTarEntry();
+				while (entry != null) {
+					if (entry.getName().endsWith("/layer.tar")) {
+						TarArchive archive = (out) -> StreamUtils.copy(tar, out);
+						exports.accept(entry.getName(), archive);
+					}
+					entry = tar.getNextTarEntry();
+				}
 			}
 		}
 

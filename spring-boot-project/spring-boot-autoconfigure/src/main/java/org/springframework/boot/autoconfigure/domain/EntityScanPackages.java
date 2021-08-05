@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,10 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -124,6 +126,12 @@ public class EntityScanPackages {
 	 */
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
+		private final Environment environment;
+
+		Registrar(Environment environment) {
+			this.environment = environment;
+		}
+
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			register(registry, getPackagesToScan(metadata));
@@ -132,11 +140,15 @@ public class EntityScanPackages {
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
-			String[] basePackages = attributes.getStringArray("basePackages");
-			Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-			Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));
-			for (Class<?> basePackageClass : basePackageClasses) {
-				packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
+			Set<String> packagesToScan = new LinkedHashSet<>();
+			for (String basePackage : attributes.getStringArray("basePackages")) {
+				String[] tokenized = StringUtils.tokenizeToStringArray(
+						this.environment.resolvePlaceholders(basePackage),
+						ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+				Collections.addAll(packagesToScan, tokenized);
+			}
+			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
+				packagesToScan.add(this.environment.resolvePlaceholders(ClassUtils.getPackageName(basePackageClass)));
 			}
 			if (packagesToScan.isEmpty()) {
 				String packageName = ClassUtils.getPackageName(metadata.getClassName());

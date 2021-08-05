@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class ContextTests {
 	@Test
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new Context(null, this.temp))
-				.withMessage("Unable to find source JAR");
+				.withMessage("Unable to find source archive");
 	}
 
 	@Test
@@ -47,15 +47,15 @@ class ContextTests {
 		File directory = new File(this.temp, "test");
 		directory.mkdir();
 		assertThatIllegalStateException().isThrownBy(() -> new Context(directory, this.temp))
-				.withMessage("Unable to find source JAR");
+				.withMessage("Unable to find source archive");
 	}
 
 	@Test
-	void createWhenSourceIsNotJarThrowsException() throws Exception {
+	void createWhenSourceIsNotJarOrWarThrowsException() throws Exception {
 		File zip = new File(this.temp, "test.zip");
 		Files.createFile(zip.toPath());
 		assertThatIllegalStateException().isThrownBy(() -> new Context(zip, this.temp))
-				.withMessage("Unable to find source JAR");
+				.withMessage("Unable to find source archive");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class ContextTests {
 		File jar = new File(this.temp, "test.jar");
 		Files.createFile(jar.toPath());
 		Context context = new Context(jar, this.temp);
-		assertThat(context.getJarFile()).isEqualTo(jar);
+		assertThat(context.getArchiveFile()).isEqualTo(jar);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class ContextTests {
 		File jar = new File(target, "test.jar");
 		Files.createFile(jar.toPath());
 		Context context = new Context(jar, this.temp);
-		assertThat(context.getRelativeJarDir()).isEqualTo("target");
+		assertThat(context.getRelativeArchiveDir()).isEqualTo("target");
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class ContextTests {
 		File jar = new File(this.temp, "test.jar");
 		Files.createFile(jar.toPath());
 		Context context = new Context(jar, this.temp);
-		assertThat(context.getRelativeJarDir()).isNull();
+		assertThat(context.getRelativeArchiveDir()).isNull();
 	}
 
 	@Test
@@ -102,7 +102,7 @@ class ContextTests {
 		File jar = new File(directory1, "test.jar");
 		Files.createFile(jar.toPath());
 		Context context = new Context(jar, directory2);
-		assertThat(context.getRelativeJarDir()).isNull();
+		assertThat(context.getRelativeArchiveDir()).isNull();
 	}
 
 }

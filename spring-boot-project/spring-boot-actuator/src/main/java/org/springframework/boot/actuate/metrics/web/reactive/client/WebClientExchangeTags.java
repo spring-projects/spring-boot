@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,30 +92,6 @@ public final class WebClientExchangeTags {
 			return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
 		}
 		return CLIENT_ERROR;
-	}
-
-	/**
-	 * Creates a {@code status} {@code Tag} derived from the
-	 * {@link ClientResponse#statusCode()} of the given {@code response}.
-	 * @param response the response
-	 * @return the status tag
-	 * @deprecated since 2.3.0 in favor of {@link #status(ClientResponse, Throwable)}
-	 */
-	@Deprecated
-	public static Tag status(ClientResponse response) {
-		return Tag.of("status", String.valueOf(response.rawStatusCode()));
-	}
-
-	/**
-	 * Creates a {@code status} {@code Tag} derived from the exception thrown by the
-	 * client.
-	 * @param throwable the exception
-	 * @return the status tag
-	 * @deprecated since 2.3.0 in favor of {@link #status(ClientResponse, Throwable)}
-	 */
-	@Deprecated
-	public static Tag status(Throwable throwable) {
-		return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
 	}
 
 	/**

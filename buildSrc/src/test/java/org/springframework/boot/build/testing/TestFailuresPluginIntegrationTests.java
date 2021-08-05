@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ class TestFailuresPluginIntegrationTests {
 	void multiProjectParallel() throws IOException {
 		createMultiProjectBuild();
 		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
-				.withArguments("build", "--parallel").withPluginClasspath().buildAndFail();
+				.withArguments("build", "--parallel", "--stacktrace").withPluginClasspath().buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 2 test tasks:", "",
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",

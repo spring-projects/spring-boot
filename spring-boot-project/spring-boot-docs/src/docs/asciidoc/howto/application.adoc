@@ -1,0 +1,111 @@
+[[howto.application]]
+== Spring Boot Application
+This section includes topics relating directly to Spring Boot applications.
+
+
+
+[[howto.application.failure-analyzer]]
+=== Create Your Own FailureAnalyzer
+{spring-boot-module-api}/diagnostics/FailureAnalyzer.html[`FailureAnalyzer`] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a {spring-boot-module-api}/diagnostics/FailureAnalysis.html[`FailureAnalysis`].
+Spring Boot provides such an analyzer for application-context-related exceptions, JSR-303 validations, and more.
+You can also create your own.
+
+`AbstractFailureAnalyzer` is a convenient extension of `FailureAnalyzer` that checks the presence of a specified exception type in the exception to handle.
+You can extend from that so that your implementation gets a chance to handle the exception only when it is actually present.
+If, for whatever reason, you cannot handle the exception, return `null` to give another implementation a chance to handle the exception.
+
+`FailureAnalyzer` implementations must be registered in `META-INF/spring.factories`.
+The following example registers `ProjectConstraintViolationFailureAnalyzer`:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	org.springframework.boot.diagnostics.FailureAnalyzer=\
+	com.example.ProjectConstraintViolationFailureAnalyzer
+----
+
+NOTE: If you need access to the `BeanFactory` or the `Environment`, your `FailureAnalyzer` can implement `BeanFactoryAware` or `EnvironmentAware` respectively.
+
+
+
+[[howto.application.troubleshoot-auto-configuration]]
+=== Troubleshoot Auto-configuration
+The Spring Boot auto-configuration tries its best to "`do the right thing`", but sometimes things fail, and it can be hard to tell why.
+
+There is a really useful `ConditionEvaluationReport` available in any Spring Boot `ApplicationContext`.
+You can see it if you enable `DEBUG` logging output.
+If you use the `spring-boot-actuator` (see <<actuator#actuator,the Actuator chapter>>), there is also a `conditions` endpoint that renders the report in JSON.
+Use that endpoint to debug the application and see what features have been added (and which have not been added) by Spring Boot at runtime.
+
+Many more questions can be answered by looking at the source code and the Javadoc.
+When reading the code, remember the following rules of thumb:
+
+* Look for classes called `+*AutoConfiguration+` and read their sources.
+  Pay special attention to the `+@Conditional*+` annotations to find out what features they enable and when.
+  Add `--debug` to the command line or a System property `-Ddebug` to get a log on the console of all the auto-configuration decisions that were made in your app.
+  In a running application with actuator enabled, look at the `conditions` endpoint (`/actuator/conditions` or the JMX equivalent) for the same information.
+* Look for classes that are `@ConfigurationProperties` (such as {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`]) and read from there the available external configuration options.
+  The `@ConfigurationProperties` annotation has a `name` attribute that acts as a prefix to external properties.
+  Thus, `ServerProperties` has `prefix="server"` and its configuration properties are `server.port`, `server.address`, and others.
+  In a running application with actuator enabled, look at the `configprops` endpoint.
+* Look for uses of the `bind` method on the `Binder` to pull configuration values explicitly out of the `Environment` in a relaxed manner.
+  It is often used with a prefix.
+* Look for `@Value` annotations that bind directly to the `Environment`.
+* Look for `@ConditionalOnExpression` annotations that switch features on and off in response to SpEL expressions, normally evaluated with placeholders resolved from the `Environment`.
+
+
+
+[[howto.application.customize-the-environment-or-application-context]]
+=== Customize the Environment or ApplicationContext Before It Starts
+A `SpringApplication` has `ApplicationListeners` and `ApplicationContextInitializers` that are used to apply customizations to the context or environment.
+Spring Boot loads a number of such customizations for use internally from `META-INF/spring.factories`.
+There is more than one way to register additional customizations:
+
+* Programmatically, per application, by calling the `addListeners` and `addInitializers` methods on `SpringApplication` before you run it.
+* Declaratively, per application, by setting the `context.initializer.classes` or `context.listener.classes` properties.
+* Declaratively, for all applications, by adding a `META-INF/spring.factories` and packaging a jar file that the applications all use as a library.
+
+The `SpringApplication` sends some special `ApplicationEvents` to the listeners (some even before the context is created) and then registers the listeners for events published by the `ApplicationContext` as well.
+See "`<<features#features.spring-application.application-events-and-listeners,Application Events and Listeners>>`" in the '`Spring Boot features`' section for a complete list.
+
+It is also possible to customize the `Environment` before the application context is refreshed by using `EnvironmentPostProcessor`.
+Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
+
+[indent=0]
+----
+	org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+----
+
+The implementation can load arbitrary files and add them to the `Environment`.
+For instance, the following example loads a YAML configuration file from the classpath:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/application/customizetheenvironmentorapplicationcontext/MyEnvironmentPostProcessor.java[]
+----
+
+TIP: The `Environment` has already been prepared with all the usual property sources that Spring Boot loads by default.
+It is therefore possible to get the location of the file from the environment.
+The preceding example adds the `custom-resource` property source at the end of the list so that a key defined in any of the usual other locations takes precedence.
+A custom implementation may define another order.
+
+CAUTION: While using `@PropertySource` on your `@SpringBootApplication` may seem to be a convenient way to load a custom resource in the `Environment`, we do not recommend it.
+Such property sources are not added to the `Environment` until the application context is being refreshed.
+This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
+
+
+
+[[howto.application.context-hierarchy]]
+=== Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
+You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
+See "`<<features#features.spring-application.fluent-builder-api>>`" in the '`Spring Boot features`' section for more information.
+
+
+
+[[howto.application.non-web-application]]
+=== Create a Non-web Application
+Not all Spring applications have to be web applications (or web services).
+If you want to execute some code in a `main` method but also bootstrap a Spring application to set up the infrastructure to use, you can use the `SpringApplication` features of Spring Boot.
+A `SpringApplication` changes its `ApplicationContext` class, depending on whether it thinks it needs a web application or not.
+The first thing you can do to help it is to leave server-related dependencies (e.g. servlet API) off the classpath.
+If you cannot do that (for example, you run two applications from the same code base) then you can explicitly call `setWebApplicationType(WebApplicationType.NONE)` on your `SpringApplication` instance or set the `applicationContextClass` property (through the Java API or with external properties).
+Application code that you want to run as your business logic can be implemented as a `CommandLineRunner` and dropped into the context as a `@Bean` definition.

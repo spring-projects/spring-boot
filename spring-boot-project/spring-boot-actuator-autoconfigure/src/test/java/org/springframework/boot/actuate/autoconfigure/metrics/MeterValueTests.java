@@ -42,8 +42,8 @@ class MeterValueTests {
 
 	@Test
 	void getValueForDistributionSummaryWhenFromNumberStringShouldReturnDoubleValue() {
-		MeterValue meterValue = MeterValue.valueOf("123");
-		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
+		MeterValue meterValue = MeterValue.valueOf("123.42");
+		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
 	}
 
 	@Test

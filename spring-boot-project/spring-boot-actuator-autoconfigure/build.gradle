@@ -1,7 +1,6 @@
 plugins {
     id "java-library"
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
@@ -11,14 +10,22 @@ plugins {
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	documentation
+}
+
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+			includeGroup "io.spring.asciidoctor.backends"
+		}
+	}
 }
 
 dependencies {
 	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
 	api(project(":spring-boot-project:spring-boot-actuator"))
 
@@ -69,6 +76,7 @@ dependencies {
 	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.kafka:kafka-clients")
 	optional("org.apache.kafka:kafka-streams")
+	optional("org.apache.solr:solr-solrj")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
@@ -80,6 +88,7 @@ dependencies {
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate:hibernate-core")
+	optional("org.hibernate:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.jolokia:jolokia-core")
@@ -87,6 +96,7 @@ dependencies {
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.neo4j.driver:neo4j-java-driver")
+	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-messaging")
@@ -95,11 +105,11 @@ dependencies {
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.data:spring-data-cassandra")
 	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.data:spring-data-elasticsearch")
-	optional("org.springframework.data:spring-data-solr")
 	optional("org.springframework.integration:spring-integration-core")
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
@@ -143,7 +153,6 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
 
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
@@ -159,7 +168,6 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
@@ -171,14 +179,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}
 }
 
-asciidoctorPdf {
-	configurations "asciidoctorExtensions"
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
 	}

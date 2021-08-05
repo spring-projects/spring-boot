@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,26 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MockMvcAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author Brian Clozel
  */
 class MockMvcAutoConfigurationTests {
 
@@ -42,6 +52,37 @@ class MockMvcAutoConfigurationTests {
 			assertThat(context).hasSingleBean(DispatcherServlet.class);
 			assertThat(context.getBean(DispatcherServlet.class)).isEqualTo(mockMvc.getDispatcherServlet());
 		});
+	}
+
+	@Test
+	void registersWebTestClient() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(WebTestClient.class));
+	}
+
+	@Test
+	void shouldNotRegisterWebTestClientIfWebFluxMissing() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(WebClient.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(WebTestClient.class));
+	}
+
+	@Test
+	void shouldApplyWebTestClientCustomizers() {
+		this.contextRunner.withUserConfiguration(WebTestClientCustomConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(WebTestClient.class);
+			assertThat(context).hasBean("myWebTestClientCustomizer");
+			verify(context.getBean("myWebTestClientCustomizer", WebTestClientBuilderCustomizer.class))
+					.customize(any(WebTestClient.Builder.class));
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebTestClientCustomConfig {
+
+		@Bean
+		WebTestClientBuilderCustomizer myWebTestClientCustomizer() {
+			return mock(WebTestClientBuilderCustomizer.class);
+		}
+
 	}
 
 }

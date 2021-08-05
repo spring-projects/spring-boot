@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.function.BiConsumer;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -80,47 +81,6 @@ public class LoggingSystemProperties {
 	public static final String FILE_LOG_CHARSET = "FILE_LOG_CHARSET";
 
 	/**
-	 * The name of the System property that contains the rolled-over log file name
-	 * pattern.
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_FILE_NAME_PATTERN}
-	 */
-	@Deprecated
-	public static final String ROLLING_FILE_NAME_PATTERN = "ROLLING_FILE_NAME_PATTERN";
-
-	/**
-	 * The name of the System property that contains the clean history on start flag.
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_CLEAN_HISTORY_ON_START}
-	 */
-	@Deprecated
-	public static final String FILE_CLEAN_HISTORY_ON_START = "LOG_FILE_CLEAN_HISTORY_ON_START";
-
-	/**
-	 * The name of the System property that contains the file log max size.
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_MAX_FILE_SIZE}
-	 */
-	@Deprecated
-	public static final String FILE_MAX_SIZE = "LOG_FILE_MAX_SIZE";
-
-	/**
-	 * The name of the System property that contains the file total size cap.
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_TOTAL_SIZE_CAP}
-	 */
-	@Deprecated
-	public static final String FILE_TOTAL_SIZE_CAP = "LOG_FILE_TOTAL_SIZE_CAP";
-
-	/**
-	 * The name of the System property that contains the file log max history.
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_MAX_HISTORY}
-	 */
-	@Deprecated
-	public static final String FILE_MAX_HISTORY = "LOG_FILE_MAX_HISTORY";
-
-	/**
 	 * The name of the System property that contains the log level pattern.
 	 */
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
@@ -130,15 +90,35 @@ public class LoggingSystemProperties {
 	 */
 	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
+	private static final BiConsumer<String, String> systemPropertySetter = (name, value) -> {
+		if (System.getProperty(name) == null && value != null) {
+			System.setProperty(name, value);
+		}
+	};
+
 	private final Environment environment;
+
+	private final BiConsumer<String, String> setter;
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
 	 */
 	public LoggingSystemProperties(Environment environment) {
+		this(environment, systemPropertySetter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param setter setter used to apply the property
+	 * @since 2.4.2
+	 */
+	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
 		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(setter, "Setter must not be null");
 		this.environment = environment;
+		this.setter = setter;
 	}
 
 	protected Charset getDefaultCharset() {
@@ -163,18 +143,9 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");
 		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
-		applyDeprecated(resolver);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
-	}
-
-	private void applyDeprecated(PropertyResolver resolver) {
-		setSystemProperty(resolver, FILE_CLEAN_HISTORY_ON_START, "logging.file.clean-history-on-start");
-		setSystemProperty(resolver, FILE_MAX_HISTORY, "logging.file.max-history");
-		setSystemProperty(resolver, FILE_MAX_SIZE, "logging.file.max-size");
-		setSystemProperty(resolver, FILE_TOTAL_SIZE_CAP, "logging.file.total-size-cap");
-		setSystemProperty(resolver, ROLLING_FILE_NAME_PATTERN, "logging.pattern.rolling-file-name");
 	}
 
 	private PropertyResolver getPropertyResolver() {
@@ -200,9 +171,7 @@ public class LoggingSystemProperties {
 	}
 
 	protected final void setSystemProperty(String name, String value) {
-		if (System.getProperty(name) == null && value != null) {
-			System.setProperty(name, value);
-		}
+		this.setter.accept(name, value);
 	}
 
 }

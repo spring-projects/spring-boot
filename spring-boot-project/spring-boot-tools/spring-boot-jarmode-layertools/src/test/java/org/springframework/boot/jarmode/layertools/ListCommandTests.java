@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.jarmode.layertools;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -60,7 +64,7 @@ class ListCommandTests {
 	@BeforeEach
 	void setup() throws Exception {
 		this.jarFile = createJarFile("test.jar");
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		this.command = new ListCommand(this.context);
 		this.out = new TestPrintStream(this);
 	}
@@ -72,7 +76,7 @@ class ListCommandTests {
 		assertThat(this.out).hasSameContentAsResource("list-output.txt");
 	}
 
-	private File createJarFile(String name) throws IOException {
+	private File createJarFile(String name) throws Exception {
 		File file = new File(this.temp, name);
 		try (ZipOutputStream jarOutputStream = new ZipOutputStream(new FileOutputStream(file))) {
 			writeLayersIndex(jarOutputStream);
@@ -91,6 +95,9 @@ class ListCommandTests {
 			jarOutputStream.closeEntry();
 			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "d/"));
 			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
+			jarOutputStream.write(getFile("test-manifest.MF").getBytes());
+			jarOutputStream.closeEntry();
 		}
 		return file;
 	}
@@ -107,6 +114,12 @@ class ListCommandTests {
 		writer.write("- \"0003\":\n");
 		writer.write("  - \"BOOT-INF/lib/d.jar\"\n");
 		writer.flush();
+	}
+
+	private String getFile(String fileName) throws Exception {
+		ClassPathResource resource = new ClassPathResource(fileName, getClass());
+		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
+		return FileCopyUtils.copyToString(reader);
 	}
 
 }

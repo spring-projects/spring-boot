@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,21 @@
 
 package org.springframework.boot.convert;
 
+import java.lang.annotation.Annotation;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.converter.GenericConverter.ConvertiblePair;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.format.AnnotationFormatterFactory;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.Parser;
@@ -50,15 +55,118 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	private static volatile ApplicationConversionService sharedInstance;
 
+	private final boolean unmodifiable;
+
 	public ApplicationConversionService() {
 		this(null);
 	}
 
 	public ApplicationConversionService(StringValueResolver embeddedValueResolver) {
+		this(embeddedValueResolver, false);
+	}
+
+	private ApplicationConversionService(StringValueResolver embeddedValueResolver, boolean unmodifiable) {
 		if (embeddedValueResolver != null) {
 			setEmbeddedValueResolver(embeddedValueResolver);
 		}
 		configure(this);
+		this.unmodifiable = unmodifiable;
+	}
+
+	@Override
+	public void addPrinter(Printer<?> printer) {
+		assertModifiable();
+		super.addPrinter(printer);
+	}
+
+	@Override
+	public void addParser(Parser<?> parser) {
+		assertModifiable();
+		super.addParser(parser);
+	}
+
+	@Override
+	public void addFormatter(Formatter<?> formatter) {
+		assertModifiable();
+		super.addFormatter(formatter);
+	}
+
+	@Override
+	public void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter) {
+		assertModifiable();
+		super.addFormatterForFieldType(fieldType, formatter);
+	}
+
+	@Override
+	public void addConverter(Converter<?, ?> converter) {
+		assertModifiable();
+		super.addConverter(converter);
+	}
+
+	@Override
+	public void addFormatterForFieldType(Class<?> fieldType, Printer<?> printer, Parser<?> parser) {
+		assertModifiable();
+		super.addFormatterForFieldType(fieldType, printer, parser);
+	}
+
+	@Override
+	public void addFormatterForFieldAnnotation(
+			AnnotationFormatterFactory<? extends Annotation> annotationFormatterFactory) {
+		assertModifiable();
+		super.addFormatterForFieldAnnotation(annotationFormatterFactory);
+	}
+
+	@Override
+	public <S, T> void addConverter(Class<S> sourceType, Class<T> targetType,
+			Converter<? super S, ? extends T> converter) {
+		assertModifiable();
+		super.addConverter(sourceType, targetType, converter);
+	}
+
+	@Override
+	public void addConverter(GenericConverter converter) {
+		assertModifiable();
+		super.addConverter(converter);
+	}
+
+	@Override
+	public void addConverterFactory(ConverterFactory<?, ?> factory) {
+		assertModifiable();
+		super.addConverterFactory(factory);
+	}
+
+	@Override
+	public void removeConvertible(Class<?> sourceType, Class<?> targetType) {
+		assertModifiable();
+		super.removeConvertible(sourceType, targetType);
+	}
+
+	private void assertModifiable() {
+		if (this.unmodifiable) {
+			throw new UnsupportedOperationException("This ApplicationConversionService cannot be modified");
+		}
+	}
+
+	/**
+	 * Return {@code true} if objects of {@code sourceType} can be converted to the
+	 * {@code targetType} and the converter has {@code Object.class} as a supported source
+	 * type.
+	 * @param sourceType the source type to test
+	 * @param targetType the target type to test
+	 * @return if conversion happens via an {@code ObjectTo...} converter
+	 * @since 2.4.3
+	 */
+	public boolean isConvertViaObjectSourceType(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		GenericConverter converter = getConverter(sourceType, targetType);
+		Set<ConvertiblePair> pairs = (converter != null) ? converter.getConvertibleTypes() : null;
+		if (pairs != null) {
+			for (ConvertiblePair pair : pairs) {
+				if (Object.class.equals(pair.getSourceType())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -77,7 +185,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 			synchronized (ApplicationConversionService.class) {
 				sharedInstance = ApplicationConversionService.sharedInstance;
 				if (sharedInstance == null) {
-					sharedInstance = new ApplicationConversionService();
+					sharedInstance = new ApplicationConversionService(null, true);
 					ApplicationConversionService.sharedInstance = sharedInstance;
 				}
 			}

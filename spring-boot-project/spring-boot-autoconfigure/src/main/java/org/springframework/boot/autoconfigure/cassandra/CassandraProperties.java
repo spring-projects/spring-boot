@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.List;
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Cassandra.
@@ -37,6 +37,11 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
+
+	/**
+	 * Location of the configuration file to use.
+	 */
+	private Resource config;
 
 	/**
 	 * Keyspace name to use.
@@ -105,6 +110,19 @@ public class CassandraProperties {
 	 */
 	private final Request request = new Request();
 
+	/**
+	 * Control connection configuration.
+	 */
+	private final Controlconnection controlconnection = new Controlconnection();
+
+	public Resource getConfig() {
+		return this.config;
+	}
+
+	public void setConfig(Resource config) {
+		this.config = config;
+	}
+
 	public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
@@ -119,17 +137,6 @@ public class CassandraProperties {
 
 	public void setSessionName(String sessionName) {
 		this.sessionName = sessionName;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.session-name")
-	public String getClusterName() {
-		return getSessionName();
-	}
-
-	@Deprecated
-	public void setClusterName(String clusterName) {
-		setSessionName(clusterName);
 	}
 
 	public List<String> getContactPoints() {
@@ -176,61 +183,6 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.consistency")
-	public DefaultConsistencyLevel getConsistencyLevel() {
-		return getRequest().getConsistency();
-	}
-
-	@Deprecated
-	public void setConsistencyLevel(DefaultConsistencyLevel consistency) {
-		getRequest().setConsistency(consistency);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.serial-consistency")
-	public DefaultConsistencyLevel getSerialConsistencyLevel() {
-		return getRequest().getSerialConsistency();
-	}
-
-	@Deprecated
-	public void setSerialConsistencyLevel(DefaultConsistencyLevel serialConsistency) {
-		getRequest().setSerialConsistency(serialConsistency);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.page-size")
-	public int getFetchSize() {
-		return getRequest().getPageSize();
-	}
-
-	@Deprecated
-	public void setFetchSize(int fetchSize) {
-		getRequest().setPageSize(fetchSize);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.connection.init-query-timeout")
-	public Duration getConnectTimeout() {
-		return getConnection().getInitQueryTimeout();
-	}
-
-	@Deprecated
-	public void setConnectTimeout(Duration connectTimeout) {
-		getConnection().setInitQueryTimeout(connectTimeout);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.timeout")
-	public Duration getReadTimeout() {
-		return getRequest().getTimeout();
-	}
-
-	@Deprecated
-	public void setReadTimeout(Duration readTimeout) {
-		getRequest().setTimeout(readTimeout);
-	}
-
 	public boolean isSsl() {
 		return this.ssl;
 	}
@@ -259,18 +211,22 @@ public class CassandraProperties {
 		return this.request;
 	}
 
+	public Controlconnection getControlconnection() {
+		return this.controlconnection;
+	}
+
 	public static class Connection {
 
 		/**
 		 * Timeout to use when establishing driver connections.
 		 */
-		private Duration connectTimeout = Duration.ofSeconds(5);
+		private Duration connectTimeout;
 
 		/**
 		 * Timeout to use for internal queries that run as part of the initialization
 		 * process, just after a connection is opened.
 		 */
-		private Duration initQueryTimeout = Duration.ofMillis(500);
+		private Duration initQueryTimeout;
 
 		public Duration getConnectTimeout() {
 			return this.connectTimeout;
@@ -295,7 +251,7 @@ public class CassandraProperties {
 		/**
 		 * How long the driver waits for a request to complete.
 		 */
-		private Duration timeout = Duration.ofSeconds(2);
+		private Duration timeout;
 
 		/**
 		 * Queries consistency level.
@@ -310,7 +266,7 @@ public class CassandraProperties {
 		/**
 		 * How many rows will be retrieved simultaneously in a single network roundtrip.
 		 */
-		private int pageSize = 5000;
+		private int pageSize;
 
 		private final Throttler throttler = new Throttler();
 
@@ -360,13 +316,13 @@ public class CassandraProperties {
 		/**
 		 * Idle timeout before an idle connection is removed.
 		 */
-		private Duration idleTimeout = Duration.ofSeconds(120);
+		private Duration idleTimeout;
 
 		/**
 		 * Heartbeat interval after which a message is sent on an idle connection to make
 		 * sure it's still alive.
 		 */
-		private Duration heartbeatInterval = Duration.ofSeconds(30);
+		private Duration heartbeatInterval;
 
 		public Duration getIdleTimeout() {
 			return this.idleTimeout;
@@ -386,35 +342,52 @@ public class CassandraProperties {
 
 	}
 
+	public static class Controlconnection {
+
+		/**
+		 * Timeout to use for control queries.
+		 */
+		private Duration timeout = Duration.ofSeconds(5);
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+	}
+
 	public static class Throttler {
 
 		/**
 		 * Request throttling type.
 		 */
-		private ThrottlerType type = ThrottlerType.NONE;
+		private ThrottlerType type;
 
 		/**
 		 * Maximum number of requests that can be enqueued when the throttling threshold
 		 * is exceeded.
 		 */
-		private int maxQueueSize = 10000;
+		private int maxQueueSize;
 
 		/**
 		 * Maximum number of requests that are allowed to execute in parallel.
 		 */
-		private int maxConcurrentRequests = 10000;
+		private int maxConcurrentRequests;
 
 		/**
 		 * Maximum allowed request rate.
 		 */
-		private int maxRequestsPerSecond = 10000;
+		private int maxRequestsPerSecond;
 
 		/**
 		 * How often the throttler attempts to dequeue requests. Set this high enough that
 		 * each attempt will process multiple entries in the queue, but not delay requests
 		 * too much.
 		 */
-		private Duration drainInterval = Duration.ofMillis(10);
+		private Duration drainInterval;
 
 		public ThrottlerType getType() {
 			return this.type;

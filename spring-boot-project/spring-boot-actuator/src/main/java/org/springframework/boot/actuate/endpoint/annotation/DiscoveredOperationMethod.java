@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.Assert;
@@ -40,8 +42,32 @@ public class DiscoveredOperationMethod extends OperationMethod {
 			AnnotationAttributes annotationAttributes) {
 		super(method, operationType);
 		Assert.notNull(annotationAttributes, "AnnotationAttributes must not be null");
-		String[] produces = annotationAttributes.getStringArray("produces");
-		this.producesMediaTypes = Collections.unmodifiableList(Arrays.asList(produces));
+		List<String> producesMediaTypes = new ArrayList<>();
+		producesMediaTypes.addAll(Arrays.asList(annotationAttributes.getStringArray("produces")));
+		producesMediaTypes.addAll(getProducesFromProducable(annotationAttributes));
+		this.producesMediaTypes = Collections.unmodifiableList(producesMediaTypes);
+	}
+
+	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducable(
+			AnnotationAttributes annotationAttributes) {
+		Class<?> type = getProducesFrom(annotationAttributes);
+		if (type == Producible.class) {
+			return Collections.emptyList();
+		}
+		List<String> produces = new ArrayList<>();
+		for (Object value : type.getEnumConstants()) {
+			produces.add(((Producible<?>) value).getProducedMimeType().toString());
+		}
+		return produces;
+	}
+
+	private Class<?> getProducesFrom(AnnotationAttributes annotationAttributes) {
+		try {
+			return annotationAttributes.getClass("producesFrom");
+		}
+		catch (IllegalArgumentException ex) {
+			return Producible.class;
+		}
 	}
 
 	public List<String> getProducesMediaTypes() {

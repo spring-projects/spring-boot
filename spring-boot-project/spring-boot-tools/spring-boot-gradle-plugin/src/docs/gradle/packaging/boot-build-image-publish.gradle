@@ -4,7 +4,7 @@ plugins {
 }
 
 bootJar {
-	mainClassName 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::publish[]
@@ -21,3 +21,9 @@ bootBuildImage {
 	}
 }
 // end::publish[]
+
+task bootBuildImagePublish {
+    doFirst {
+        println(tasks.bootBuildImage.publish)
+    }
+}

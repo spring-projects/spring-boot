@@ -1,6 +1,6 @@
 <!--
 Thanks for contributing to Spring Boot. Please review the following notes before
-submitting you pull request.
+submitting a pull request.
 
 Please submit only genuine pull-requests. Do not use this repository as a GitHub
 playground.
@@ -8,7 +8,7 @@ playground.
 Security Vulnerabilities
 
 STOP! If your contribution fixes a security vulnerability, please do not submit it.
-Instead, please head over to https://pivotal.io/security to learn how to disclose a
+Instead, please head over to https://spring.io/security-policy to learn how to disclose a
 vulnerability responsibly.
 
 Dependency Upgrades

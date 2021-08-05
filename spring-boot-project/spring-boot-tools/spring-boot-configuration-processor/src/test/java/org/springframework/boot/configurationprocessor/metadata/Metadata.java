@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Condition;
 import org.hamcrest.collection.IsMapContaining;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -132,7 +132,7 @@ public final class Metadata {
 
 		@Override
 		public boolean matches(ConfigurationMetadata value) {
-			ItemMetadata itemMetadata = getItemWithName(value, this.name);
+			ItemMetadata itemMetadata = findItem(value, this.name);
 			if (itemMetadata == null) {
 				return false;
 			}
@@ -208,15 +208,14 @@ public final class Metadata {
 					this.description, this.defaultValue, null);
 		}
 
-		private ItemMetadata getItemWithName(ConfigurationMetadata metadata, String name) {
-			ItemMetadata result = null;
-			for (ItemMetadata item : metadata.getItems()) {
-				if (item.isOfItemType(this.itemType) && name.equals(item.getName())) {
-					Assert.state(result == null, () -> "Duplicate item found for " + name);
-					result = item;
-				}
+		private ItemMetadata findItem(ConfigurationMetadata metadata, String name) {
+			List<ItemMetadata> candidates = metadata.getItems().stream()
+					.filter((item) -> item.isOfItemType(this.itemType) && name.equals(item.getName()))
+					.collect(Collectors.toList());
+			if (candidates.size() > 1) {
+				throw new IllegalStateException("More that one metadata item with name '" + name + "': " + candidates);
 			}
-			return result;
+			return (candidates.size() == 1) ? candidates.get(0) : null;
 		}
 
 	}

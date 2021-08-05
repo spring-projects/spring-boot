@@ -7,13 +7,13 @@ plugins {
 }
 
 tasks.getByName<BootJar>("bootJar") {
-	mainClassName = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 
 // tag::publish[]
 tasks.getByName<BootBuildImage>("bootBuildImage") {
 	imageName = "docker.example.com/library/${project.name}"
-	publish = true
+	isPublish = true
 	docker {
 		publishRegistry {
 			username = "user"
@@ -24,3 +24,9 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 	}
 }
 // end::publish[]
+
+tasks.register("bootBuildImagePublish") {
+    doFirst {
+        println(tasks.getByName<BootBuildImage>("bootBuildImage").isPublish)
+    }
+}

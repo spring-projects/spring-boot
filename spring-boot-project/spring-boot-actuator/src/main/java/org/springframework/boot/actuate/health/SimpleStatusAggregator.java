@@ -89,7 +89,8 @@ public class SimpleStatusAggregator implements StatusAggregator {
 			return null;
 		}
 		StringBuilder builder = new StringBuilder();
-		for (char ch : code.toCharArray()) {
+		for (int i = 0; i < code.length(); i++) {
+			char ch = code.charAt(i);
 			if (Character.isAlphabetic(ch) || Character.isDigit(ch)) {
 				builder.append(Character.toLowerCase(ch));
 			}

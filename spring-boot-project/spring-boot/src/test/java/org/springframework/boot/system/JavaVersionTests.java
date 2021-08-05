@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,6 +125,18 @@ class JavaVersionTests {
 	@EnabledOnJre(JRE.JAVA_15)
 	void currentJavaVersionFifteen() {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.FIFTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_16)
+	void currentJavaVersionSixteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SIXTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_17)
+	void currentJavaVersionSeventeen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SEVENTEEN);
 	}
 
 }

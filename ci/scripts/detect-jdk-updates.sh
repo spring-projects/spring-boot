@@ -16,9 +16,13 @@ case "$JDK_VERSION" in
 		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/11/ga"
 		 ISSUE_TITLE="Upgrade Java 11 version in CI image"
 	;;
-	java15)
-		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/15/ga"
-		 ISSUE_TITLE="Upgrade Java 15 version in CI image"
+	java16)
+		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/16/ga"
+		 ISSUE_TITLE="Upgrade Java 16 version in CI image"
+	;;
+	java17)
+		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/17/ea"
+		 ISSUE_TITLE="Upgrade Java 17 version in CI image"
 	;;
 	*)
 		echo $"Unknown java version"

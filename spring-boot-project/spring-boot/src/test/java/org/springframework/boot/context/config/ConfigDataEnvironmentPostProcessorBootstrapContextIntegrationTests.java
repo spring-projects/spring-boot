@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ class ConfigDataEnvironmentPostProcessorBootstrapContextIntegrationTests {
 			LoaderHelper bean = context.getBean(TestConfigDataBootstrap.LoaderHelper.class);
 			assertThat(bean).isNotNull();
 			assertThat(bean.getBound()).isEqualTo("igotbound");
+			assertThat(bean.getProfileBound()).isEqualTo("igotprofilebound");
 			assertThat(bean.getLocation().getResolverHelper().getLocation())
 					.isEqualTo(ConfigDataLocation.of("testbootstrap:test"));
 		}

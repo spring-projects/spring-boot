@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")) {
+		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")
+				|| name.startsWith("io.netty.internal.tcnative")) {
 			return Class.forName(name, false, this.junitLoader);
 		}
 		return super.loadClass(name);
@@ -131,11 +132,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	private static boolean isManifestOnlyJar(URL url) {
-		return isSurefireBooterJar(url) || isShortenedIntelliJJar(url);
-	}
-
-	private static boolean isSurefireBooterJar(URL url) {
-		return url.getPath().contains("surefirebooter");
+		return isShortenedIntelliJJar(url);
 	}
 
 	private static boolean isShortenedIntelliJJar(URL url) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,12 +95,15 @@ class LocationResourceLoader {
 		validatePattern(location, type);
 		String directoryPath = location.substring(0, location.indexOf("*/"));
 		String fileName = location.substring(location.lastIndexOf("/") + 1);
-		Resource directoryResource = getResource(directoryPath);
-		if (!directoryResource.exists()) {
-			return new Resource[] { directoryResource };
+		Resource resource = getResource(directoryPath);
+		if (!resource.exists()) {
+			return EMPTY_RESOURCES;
 		}
-		File directory = getDirectory(location, directoryResource);
-		File[] subDirectories = directory.listFiles(this::isVisibleDirectory);
+		File file = getFile(location, resource);
+		if (!file.isDirectory()) {
+			return EMPTY_RESOURCES;
+		}
+		File[] subDirectories = file.listFiles(this::isVisibleDirectory);
 		if (subDirectories == null) {
 			return EMPTY_RESOURCES;
 		}
@@ -131,11 +134,9 @@ class LocationResourceLoader {
 		Assert.state(directoryPath.endsWith("*/"), () -> String.format("Location '%s' must end with '*/'", location));
 	}
 
-	private File getDirectory(String patternLocation, Resource resource) {
+	private File getFile(String patternLocation, Resource resource) {
 		try {
-			File directory = resource.getFile();
-			Assert.state(directory.isDirectory(), () -> "'" + directory + "' is not a directory");
-			return directory;
+			return resource.getFile();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(

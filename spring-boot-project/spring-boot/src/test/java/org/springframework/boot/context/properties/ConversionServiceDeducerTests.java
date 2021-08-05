@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,28 +41,42 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConversionServiceDeducerTests {
 
 	@Test
-	void getConversionServiceWhenHasConversionServiceBeanReturnsBean() {
+	void getConversionServicesWhenHasConversionServiceBeanContainsOnlyBean() {
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
 				CustomConverterServiceConfiguration.class);
 		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
-		assertThat(deducer.getConversionService()).isInstanceOf(TestApplicationConversionService.class);
+		TestApplicationConversionService expected = applicationContext.getBean(TestApplicationConversionService.class);
+		assertThat(deducer.getConversionServices()).containsExactly(expected);
 	}
 
 	@Test
-	void getConversionServiceWhenHasNoConversionServiceBeanAndNoQualifiedBeansReturnsSharedInstance() {
+	void getConversionServiceWhenHasNoConversionServiceBeanAndNoQualifiedBeansAndNoBeanFactoryConversionServiceReturnsEmptyList() {
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(EmptyConfiguration.class);
 		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
-		assertThat(deducer.getConversionService()).isSameAs(ApplicationConversionService.getSharedInstance());
+		assertThat(deducer.getConversionServices()).isEmpty();
 	}
 
 	@Test
-	void getConversionServiceWhenHasQualifiedConverterBeansReturnsNewInstance() {
+	void getConversionServiceWhenHasNoConversionServiceBeanAndNoQualifiedBeansAndBeanFactoryConversionServiceContainsOnlyBeanFactoryInstance() {
+		ConfigurableApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+				EmptyConfiguration.class);
+		ConversionService conversionService = new ApplicationConversionService();
+		applicationContext.getBeanFactory().setConversionService(conversionService);
+		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
+		List<ConversionService> conversionServices = deducer.getConversionServices();
+		assertThat(conversionServices).containsOnly(conversionService);
+		assertThat(conversionServices.get(0)).isSameAs(conversionService);
+	}
+
+	@Test
+	void getConversionServiceWhenHasQualifiedConverterBeansContainsCustomizedApplicationService() {
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
 				CustomConverterConfiguration.class);
 		ConversionServiceDeducer deducer = new ConversionServiceDeducer(applicationContext);
-		ConversionService conversionService = deducer.getConversionService();
-		assertThat(conversionService).isNotSameAs(ApplicationConversionService.getSharedInstance());
-		assertThat(conversionService.canConvert(InputStream.class, OutputStream.class)).isTrue();
+		List<ConversionService> conversionServices = deducer.getConversionServices();
+		assertThat(conversionServices).hasSize(1);
+		assertThat(conversionServices.get(0)).isNotSameAs(ApplicationConversionService.getSharedInstance());
+		assertThat(conversionServices.get(0).canConvert(InputStream.class, OutputStream.class)).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)

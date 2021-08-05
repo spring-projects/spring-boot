@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 import com.wavefront.sdk.common.WavefrontSender;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -85,8 +89,10 @@ class WavefrontMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde").run((context) -> {
 					WavefrontProperties properties = new WavefrontProperties();
 					WavefrontSender sender = context.getBean(WavefrontSender.class);
-					assertThat(sender).extracting("metricsBuffer").hasFieldOrPropertyWithValue("capacity",
-							properties.getSender().getMaxQueueSize());
+					assertThat(sender)
+							.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
+							.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size())
+									.isEqualTo(properties.getSender().getMaxQueueSize()));
 					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", properties.getBatchSize());
 					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes",
 							(int) properties.getSender().getMessageSize().toBytes());
@@ -103,7 +109,9 @@ class WavefrontMetricsExportAutoConfigurationTests {
 				.run((context) -> {
 					WavefrontSender sender = context.getBean(WavefrontSender.class);
 					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
-					assertThat(sender).extracting("metricsBuffer").hasFieldOrPropertyWithValue("capacity", 100);
+					assertThat(sender)
+							.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
+							.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size()).isEqualTo(100));
 					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
 				});
 	}

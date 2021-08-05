@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -34,12 +34,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class EndpointMediaTypesTests {
 
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
+
 	@Test
 	void defaultReturnsExpectedProducedAndConsumedTypes() {
-		assertThat(EndpointMediaTypes.DEFAULT.getProduced()).containsExactly(ActuatorMediaType.V3_JSON,
-				ActuatorMediaType.V2_JSON, "application/json");
-		assertThat(EndpointMediaTypes.DEFAULT.getConsumed()).containsExactly(ActuatorMediaType.V3_JSON,
-				ActuatorMediaType.V2_JSON, "application/json");
+		assertThat(EndpointMediaTypes.DEFAULT.getProduced()).containsExactly(V3_JSON, V2_JSON, "application/json");
+		assertThat(EndpointMediaTypes.DEFAULT.getConsumed()).containsExactly(V3_JSON, V2_JSON, "application/json");
 	}
 
 	@Test

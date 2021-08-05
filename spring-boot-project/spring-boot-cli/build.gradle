@@ -56,6 +56,7 @@ dependencies {
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
+	testCompileOnly("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation(project(":spring-boot-project:spring-boot"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
@@ -99,6 +100,7 @@ test {
 }
 
 task fullJar(type: Jar) {
+	dependsOn configurations.loader
 	classifier = "full"
 	entryCompression = "stored"
 	from(configurations.runtimeClasspath) {
@@ -107,8 +109,11 @@ task fullJar(type: Jar) {
 	from(sourceSets.main.output) {
 		into "BOOT-INF/classes"
 	}
-	into("") {
-		from zipTree(configurations.loader.singleFile)
+	from {
+		zipTree(configurations.loader.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
 	}
 	manifest {
 		attributes(
@@ -168,11 +173,11 @@ def scoopManifestArtifact = artifacts.add("archives", file("${buildDir}/scoop/sp
 task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
 	dependsOn tar
 	outputDir = file("${buildDir}/homebrew")
-	template = file("src/main/homebrew/springboot.rb")
+	template = file("src/main/homebrew/spring-boot.rb")
 	archive = tar.archiveFile
 }
 
-def homebrewFormulaArtifact = artifacts.add("archives", file("${buildDir}/homebrew/springboot.rb")) {
+def homebrewFormulaArtifact = artifacts.add("archives", file("${buildDir}/homebrew/spring-boot.rb")) {
 	type "rb"
 	classifier "homebrew"
 	builtBy "homebrewFormula"

@@ -48,4 +48,14 @@ bom {
 			]
 		}
 	}
+	library("OAuth2 OIDC SDK") {
+		version("8.36.1") {
+			shouldAlignWithVersionFrom("Spring Security")
+		}
+		group("com.nimbusds") {
+			modules = [
+				"oauth2-oidc-sdk"
+			]
+		}
+	}
 }

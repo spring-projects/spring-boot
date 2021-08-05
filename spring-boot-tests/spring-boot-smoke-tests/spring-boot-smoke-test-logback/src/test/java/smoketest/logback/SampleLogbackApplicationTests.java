@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleLogbackApplicationTests {
 
 	@Test
-	void testLoadedCustomLogbackConfig(CapturedOutput output) throws Exception {
+	void testLoadedCustomLogbackConfig(CapturedOutput output) {
 		SampleLogbackApplication.main(new String[0]);
 		assertThat(output).contains("Sample Debug Message").doesNotContain("Sample Trace Message");
 	}
 
 	@Test
-	void testProfile(CapturedOutput output) throws Exception {
+	void testProfile(CapturedOutput output) {
 		SampleLogbackApplication.main(new String[] { "--spring.profiles.active=staging" });
 		assertThat(output).contains("Sample Debug Message").contains("Sample Trace Message");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.util.StreamUtils;
  * {@link Layout} for writing TAR archive content directly to an {@link OutputStream}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class TarLayoutWriter implements Layout, Closeable {
 
@@ -43,24 +44,24 @@ class TarLayoutWriter implements Layout, Closeable {
 	}
 
 	@Override
-	public void directory(String name, Owner owner) throws IOException {
-		this.outputStream.putArchiveEntry(createDirectoryEntry(name, owner));
+	public void directory(String name, Owner owner, int mode) throws IOException {
+		this.outputStream.putArchiveEntry(createDirectoryEntry(name, owner, mode));
 		this.outputStream.closeArchiveEntry();
 	}
 
 	@Override
-	public void file(String name, Owner owner, Content content) throws IOException {
-		this.outputStream.putArchiveEntry(createFileEntry(name, owner, content.size()));
+	public void file(String name, Owner owner, int mode, Content content) throws IOException {
+		this.outputStream.putArchiveEntry(createFileEntry(name, owner, mode, content.size()));
 		content.writeTo(StreamUtils.nonClosing(this.outputStream));
 		this.outputStream.closeArchiveEntry();
 	}
 
-	private TarArchiveEntry createDirectoryEntry(String name, Owner owner) {
-		return createEntry(name, owner, TarConstants.LF_DIR, 0755, 0);
+	private TarArchiveEntry createDirectoryEntry(String name, Owner owner, int mode) {
+		return createEntry(name, owner, TarConstants.LF_DIR, mode, 0);
 	}
 
-	private TarArchiveEntry createFileEntry(String name, Owner owner, int size) {
-		return createEntry(name, owner, TarConstants.LF_NORMAL, 0644, size);
+	private TarArchiveEntry createFileEntry(String name, Owner owner, int mode, int size) {
+		return createEntry(name, owner, TarConstants.LF_NORMAL, mode, size);
 	}
 
 	private TarArchiveEntry createEntry(String name, Owner owner, byte linkFlag, int mode, int size) {

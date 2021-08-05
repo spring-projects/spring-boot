@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,15 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
@@ -74,13 +82,18 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(new ConfigurationMetadataAnnotationProcessor().getSupportedAnnotationTypes())
 				.containsExactlyInAnyOrder("org.springframework.boot.context.properties.ConfigurationProperties",
 						"org.springframework.context.annotation.Configuration",
-						"org.springframework.boot.actuate.endpoint.annotation.Endpoint");
+						"org.springframework.boot.actuate.endpoint.annotation.Endpoint",
+						"org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint",
+						"org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint",
+						"org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint",
+						"org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint",
+						"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint");
 	}
 
 	@Test
 	void notAnnotated() {
 		ConfigurationMetadata metadata = compile(NotAnnotated.class);
-		assertThat(metadata.getItems()).isEmpty();
+		assertThat(metadata).isNull();
 	}
 
 	@Test
@@ -238,7 +251,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void parseArrayConfig() throws Exception {
+	void parseArrayConfig() {
 		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
@@ -395,6 +408,56 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	@Test
 	void recursivePropertiesDoNotCauseAStackOverflow() {
 		compile(RecursiveProperties.class);
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void explicityBoundRecordProperties(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "ExampleRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
+			writer.println("@org.springframework.boot.configurationsample.ConfigurationProperties(\"explicit\")");
+			writer.println("public record ExampleRecord(String someString, Integer someInteger) {");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata).has(Metadata.withProperty("explicit.some-string"));
+		assertThat(metadata).has(Metadata.withProperty("explicit.some-integer"));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void implicitlyBoundRecordProperties(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "ExampleRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println("@org.springframework.boot.configurationsample.ConfigurationProperties(\"implicit\")");
+			writer.println("public record ExampleRecord(String someString, Integer someInteger) {");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata).has(Metadata.withProperty("implicit.some-string"));
+		assertThat(metadata).has(Metadata.withProperty("implicit.some-integer"));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void multiConstructorRecordProperties(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "ExampleRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println("@org.springframework.boot.configurationsample.ConfigurationProperties(\"multi\")");
+			writer.println("public record ExampleRecord(String someString, Integer someInteger) {");
+			writer.println("    @org.springframework.boot.configurationsample.ConstructorBinding");
+			writer.println("    public ExampleRecord(String someString) {");
+			writer.println("        this(someString, 42);");
+			writer.println("    }");
+			writer.println("    public ExampleRecord(Integer someInteger) {");
+			writer.println("        this(\"someString\", someInteger);");
+			writer.println("    }");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata).has(Metadata.withProperty("multi.some-string"));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("multi.some-integer"));
 	}
 
 }

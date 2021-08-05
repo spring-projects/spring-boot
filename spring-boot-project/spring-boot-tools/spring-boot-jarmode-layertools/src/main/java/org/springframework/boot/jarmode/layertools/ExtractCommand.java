@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.zip.ZipInputStream;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * The {@code 'extract'} tools command.
@@ -65,9 +64,9 @@ class ExtractCommand extends Command {
 					mkDirs(new File(destination, layer));
 				}
 			}
-			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getJarFile()))) {
+			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getArchiveFile()))) {
 				ZipEntry entry = zip.getNextEntry();
-				Assert.state(entry != null, "File '" + this.context.getJarFile().toString()
+				Assert.state(entry != null, "File '" + this.context.getArchiveFile().toString()
 						+ "' is not compatible with layertools; ensure jar file is valid and launch script is not enabled");
 				while (entry != null) {
 					if (!entry.isDirectory()) {
@@ -86,15 +85,18 @@ class ExtractCommand extends Command {
 	}
 
 	private void write(ZipInputStream zip, ZipEntry entry, File destination) throws IOException {
-		String path = StringUtils.cleanPath(entry.getName());
-		File file = new File(destination, path);
-		if (file.getAbsolutePath().startsWith(destination.getAbsolutePath())) {
-			mkParentDirs(file);
-			try (OutputStream out = new FileOutputStream(file)) {
-				StreamUtils.copy(zip, out);
-			}
-			Files.setAttribute(file.toPath(), "creationTime", entry.getCreationTime());
+		String canonicalOutputPath = destination.getCanonicalPath() + File.separator;
+		File file = new File(destination, entry.getName());
+		String canonicalEntryPath = file.getCanonicalPath();
+		Assert.state(canonicalEntryPath.startsWith(canonicalOutputPath),
+				() -> "Entry '" + entry.getName() + "' would be written to '" + canonicalEntryPath
+						+ "'. This is outside the output location of '" + canonicalOutputPath
+						+ "'. Verify the contents of your archive.");
+		mkParentDirs(file);
+		try (OutputStream out = new FileOutputStream(file)) {
+			StreamUtils.copy(zip, out);
 		}
+		Files.setAttribute(file.toPath(), "creationTime", entry.getCreationTime());
 	}
 
 	private void mkParentDirs(File file) throws IOException {

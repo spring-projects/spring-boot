@@ -1,0 +1,505 @@
+[[howto.webserver]]
+== Embedded Web Servers
+Each Spring Boot web application includes an embedded web server.
+This feature leads to a number of how-to questions, including how to change the embedded server and how to configure the embedded server.
+This section answers those questions.
+
+
+
+[[howto.webserver.use-another]]
+=== Use Another Web Server
+Many Spring Boot starters include default embedded containers.
+
+* For servlet stack applications, the `spring-boot-starter-web` includes Tomcat by including `spring-boot-starter-tomcat`, but you can use `spring-boot-starter-jetty` or `spring-boot-starter-undertow` instead.
+* For reactive stack applications, the `spring-boot-starter-webflux` includes  Reactor Netty by including `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`, `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
+
+When switching to a different HTTP server, you need to swap the default dependencies for those that you need instead.
+To help with this process, Spring Boot provides a separate starter for each of the supported HTTP servers.
+
+The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<properties>
+		<servlet-api.version>3.1.0</servlet-api.version>
+	</properties>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+			<!-- Exclude the Tomcat dependency -->
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<!-- Use Jetty instead -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+	</dependency>
+----
+
+NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support Servlet 4.0.
+If you wish to use Jetty 10, which does support Servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
+
+The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		implementation "org.springframework.boot:spring-boot-starter-undertow"
+		implementation "org.springframework.boot:spring-boot-starter-webflux"
+		modules {
+			module("org.springframework.boot:spring-boot-starter-reactor-netty") {
+				replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Reactor Netty")
+			}
+		}
+	}
+----
+
+NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.
+
+
+
+[[howto.webserver.disable]]
+=== Disabling the Web Server
+If your classpath contains the necessary bits to start a web server, Spring Boot will automatically start it.
+To disable this behavior configure the `WebApplicationType` in your `application.properties`, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  main:
+	    web-application-type: "none"
+----
+
+
+
+[[howto.webserver.change-port]]
+=== Change the HTTP Port
+In a standalone application, the main HTTP port defaults to `8080` but can be set with configprop:server.port[] (for example, in `application.properties` or as a System property).
+Thanks to relaxed binding of `Environment` values, you can also use configprop:server.port[format=envvar] (for example, as an OS environment variable).
+
+To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
+
+For more details, see "`<<web#web.servlet.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
+
+
+
+[[howto.webserver.use-random-port]]
+=== Use a Random Unassigned HTTP Port
+To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
+
+
+
+[[howto.webserver.discover-port]]
+=== Discover the HTTP Port at Runtime
+You can access the port the server is running on from log output or from the `WebServerApplicationContext` through its `WebServer`.
+The best way to get that and be sure it has been initialized is to add a `@Bean` of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
+
+Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/discoverport/MyWebIntegrationTests.java[]
+----
+
+[NOTE]
+====
+`@LocalServerPort` is a meta-annotation for `@Value("${local.server.port}")`.
+Do not try to inject the port in a regular application.
+As we just saw, the value is set only after the container has been initialized.
+Contrary to a test, application code callbacks are processed early (before the value is actually available).
+====
+
+
+
+[[howto.webserver.enable-response-compression]]
+=== Enable HTTP Response Compression
+HTTP response compression is supported by Jetty, Tomcat, and Undertow.
+It can be enabled in `application.properties`, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  compression:
+	    enabled: true
+----
+
+By default, responses must be at least 2048 bytes in length for compression to be performed.
+You can configure this behavior by setting the configprop:server.compression.min-response-size[] property.
+
+By default, responses are compressed only if their content type is one of the following:
+
+* `text/html`
+* `text/xml`
+* `text/plain`
+* `text/css`
+* `text/javascript`
+* `application/javascript`
+* `application/json`
+* `application/xml`
+
+You can configure this behavior by setting the configprop:server.compression.mime-types[] property.
+
+
+
+[[howto.webserver.configure-ssl]]
+=== Configure SSL
+SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
+The following example shows setting SSL properties in `application.properties`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  port: 8443
+	  ssl:
+	    key-store: "classpath:keystore.jks"
+	    key-store-password: "secret"
+	    key-password: "another-secret"
+----
+
+See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
+
+Using configuration such as the preceding example means the application no longer supports a plain HTTP connector at port 8080.
+Spring Boot does not support the configuration of both an HTTP connector and an HTTPS connector through `application.properties`.
+If you want to have both, you need to configure one of them programmatically.
+We recommend using `application.properties` to configure HTTPS, as the HTTP connector is the easier of the two to configure programmatically.
+
+
+
+[[howto.webserver.configure-http2]]
+=== Configure HTTP/2
+You can enable HTTP/2 support in your Spring Boot application with the configprop:server.http2.enabled[] configuration property.
+Both `h2` (HTTP/2 over TLS) and `h2c` (HTTP/2 over TCP) are supported.
+To use `h2`, SSL must also be enabled.
+When SSL is not enabled, `h2c` will be used.
+The details of the `h2` support depend on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by all JDK 8 releases.
+
+
+
+[[howto.webserver.configure-http2.tomcat]]
+==== HTTP/2 with Tomcat
+Spring Boot ships by default with Tomcat 9.0.x which supports `h2c` out of the box and `h2` out of the box when using JDK 9 or later.
+Alternatively, `h2` can be used on JDK 8 if the `libtcnative` library and its dependencies are installed on the host operating system.
+
+The library directory must be made available, if not already, to the JVM library path.
+You can do so with a JVM argument such as `-Djava.library.path=/usr/local/opt/tomcat-native/lib`.
+More on this in the https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official Tomcat documentation].
+
+Starting Tomcat 9.0.x on JDK 8 with HTTP/2 and SSL enabled but without that native support logs the following error:
+
+[indent=0,subs="verbatim"]
+----
+	ERROR 8787 --- [           main] o.a.coyote.http11.Http11NioProtocol      : The upgrade handler [org.apache.coyote.http2.Http2Protocol] for [h2] only supports upgrade via ALPN but has been configured for the ["https-jsse-nio-8443"] connector that does not support ALPN.
+----
+
+This error is not fatal, and the application still starts with HTTP/1.1 SSL support.
+
+
+
+[[howto.webserver.configure-http2.jetty]]
+==== HTTP/2 with Jetty
+For HTTP/2 support, Jetty requires the additional `org.eclipse.jetty.http2:http2-server` dependency.
+To use `h2c` no other dependencies are required.
+To use `h2`, you also need to choose one of the following dependencies, depending on your deployment:
+
+* `org.eclipse.jetty:jetty-alpn-java-server` for applications running on JDK9+
+* `org.eclipse.jetty:jetty-alpn-openjdk8-server` for applications running on JDK8u252+
+* `org.eclipse.jetty:jetty-alpn-conscrypt-server` and the https://www.conscrypt.org/[Conscrypt library] with no JDK requirement
+
+
+
+[[howto.webserver.configure-http2.netty]]
+==== HTTP/2 with Reactor Netty
+The `spring-boot-webflux-starter` is using by default Reactor Netty as a server.
+Reactor Netty supports `h2c` using JDK 8 or later with no additional dependencies.
+Reactor Netty supports `h2` using the JDK support with JDK 9 or later.
+For JDK 8 environments, or for optimal runtime performance, this server also supports `h2` with native libraries.
+To enable that, your application needs to have an additional dependency.
+
+Spring Boot manages the version for the `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for all platforms.
+Developers can choose to import only the required dependencies using a classifier (see https://netty.io/wiki/forked-tomcat-native.html[the Netty official documentation]).
+
+
+
+[[howto.webserver.configure-http2.undertow]]
+==== HTTP/2 with Undertow
+As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any additional dependencies.
+
+
+
+[[howto.webserver.configure]]
+=== Configure the Web Server
+Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` (or `application.yml`, or environment, etc. see "`<<howto#howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
+The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
+See the list of <<application-properties#application-properties>>.
+
+The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
+However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (Servlet or Reactive).
+
+The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/configure/MyTomcatWebServerCustomizer.java[]
+----
+
+NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
+Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
+
+Once you've got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
+
+In addition Spring Boot provides:
+
+[[howto-configure-webserver-customizers]]
+[cols="1,2,2", options="header"]
+|===
+| Server | Servlet stack | Reactive stack
+
+| Tomcat
+| `TomcatServletWebServerFactory`
+| `TomcatReactiveWebServerFactory`
+
+| Jetty
+| `JettyServletWebServerFactory`
+| `JettyReactiveWebServerFactory`
+
+| Undertow
+| `UndertowServletWebServerFactory`
+| `UndertowReactiveWebServerFactory`
+
+| Reactor
+| N/A
+| `NettyReactiveWebServerFactory`
+|===
+
+As a last resort, you can also declare your own `WebServerFactory` bean, which will override the one provided by Spring Boot.
+When you do so, auto-configured customizers are still applied on your custom factory, so use that option carefully.
+
+
+
+[[howto.webserver.add-servlet-filter-listener]]
+=== Add a Servlet, Filter, or Listener to an Application
+In a servlet stack application, i.e. with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
+
+* <<howto#howto.webserver.add-servlet-filter-listener.spring-bean>>
+* <<howto#howto.webserver.add-servlet-filter-listener.using-scanning>>
+
+
+
+[[howto.webserver.add-servlet-filter-listener.spring-bean]]
+==== Add a Servlet, Filter, or Listener by Using a Spring Bean
+To add a `Servlet`, `Filter`, or Servlet `*Listener` by using a Spring bean, you must provide a `@Bean` definition for it.
+Doing so can be very useful when you want to inject configuration or dependencies.
+However, you must be very careful that they do not cause eager initialization of too many other beans, because they have to be installed in the container very early in the application lifecycle.
+(For example, it is not a good idea to have them depend on your `DataSource` or JPA configuration.)
+You can work around such restrictions by initializing the beans lazily when first used instead of on initialization.
+
+In the case of `Filters` and `Servlets`, you can also add mappings and init parameters by adding a `FilterRegistrationBean` or a `ServletRegistrationBean` instead of or in addition to the underlying component.
+
+[NOTE]
+====
+If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
+This aligns with the Servlet Specification's default dispatcher type.
+====
+
+Like any other Spring bean, you can define the order of Servlet filter beans; please make sure to check the "`<<web#web.servlet.embedded-container.servlets-filters-listeners.beans>>`" section.
+
+
+
+[[howto.webserver.add-servlet-filter-listener.spring-bean.disable]]
+===== Disable Registration of a Servlet or Filter
+As <<howto#howto.webserver.add-servlet-filter-listener.spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
+To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/addservletfilterlistener/springbean/disable/MyFilterConfiguration.java[]
+----
+
+
+
+[[howto.webserver.add-servlet-filter-listener.using-scanning]]
+==== Add Servlets, Filters, and Listeners by Using Classpath Scanning
+`@WebServlet`, `@WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
+By default, `@ServletComponentScan` scans from the package of the annotated class.
+
+
+
+[[howto.webserver.configure-access-logs]]
+=== Configure Access Logging
+Access logs can be configured for Tomcat, Undertow, and Jetty through their respective namespaces.
+
+For instance, the following settings log access on Tomcat with a {tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  tomcat:
+	    basedir: "my-tomcat"
+	    accesslog:
+	      enabled: true
+	      pattern: "%t %a %r %s (%D ms)"
+----
+
+NOTE: The default location for logs is a `logs` directory relative to the Tomcat base directory.
+By default, the `logs` directory is a temporary directory, so you may want to fix Tomcat's base directory or use an absolute path for the logs.
+In the preceding example, the logs are available in `my-tomcat/logs` relative to the working directory of the application.
+
+Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  undertow:
+	    accesslog:
+	      enabled: true
+	      pattern: "%t %a %r %s (%D ms)"
+----
+
+Logs are stored in a `logs` directory relative to the working directory of the application.
+You can customize this location by setting the configprop:server.undertow.accesslog.dir[] property.
+
+Finally, access logging for Jetty can also be configured as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  jetty:
+	    accesslog:
+	      enabled: true
+	      filename: "/var/log/jetty-access.log"
+----
+
+By default, logs are redirected to `System.err`.
+For more details, see the Jetty documentation.
+
+
+
+[[howto.webserver.use-behind-a-proxy-server]]
+=== Running Behind a Front-end Proxy Server
+If your application is running behind a proxy, a load-balancer or in the cloud, the request information (like the host, port, scheme...) might change along the way.
+Your application may be running on `10.10.10.10:8080`, but HTTP clients should only see `example.org`.
+
+https://tools.ietf.org/html/rfc7239[RFC7239 "Forwarded Headers"] defines the `Forwarded` HTTP header; proxies can use this header to provide information about the original request.
+You can configure your application to read those headers and automatically use that information when creating links and sending them to clients in HTTP 302 responses, JSON documents or HTML pages.
+There are also non-standard headers, like `X-Forwarded-Host`, `X-Forwarded-Port`, `X-Forwarded-Proto`, `X-Forwarded-Ssl`, and `X-Forwarded-Prefix`.
+
+If the proxy adds the commonly used `X-Forwarded-For` and `X-Forwarded-Proto` headers, setting `server.forward-headers-strategy` to `NATIVE` is enough to support those.
+With this option, the Web servers themselves natively support this feature; you can check their specific documentation to learn about specific behavior.
+
+If this is not enough, Spring Framework provides a {spring-framework-docs}/web.html#filters-forwarded-headers[ForwardedHeaderFilter].
+You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
+
+TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
+This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
+
+NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
+In all other instances, it defaults to `NONE`.
+
+
+
+[[howto.webserver.use-behind-a-proxy-server.tomcat]]
+==== Customize Tomcat's Proxy Configuration
+If you use Tomcat, you can additionally configure the names of the headers used to carry "`forwarded`" information, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  tomcat:
+	    remoteip:
+	      remote-ip-header: "x-your-remote-ip-header"
+	      protocol-header: "x-your-protocol-header"
+----
+
+Tomcat is also configured with a default regular expression that matches internal proxies that are to be trusted.
+By default, IP addresses in `10/8`, `192.168/16`, `169.254/16` and `127/8` are trusted.
+You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  tomcat:
+	    remoteip:
+	      internal-proxies: "192\\.168\\.\\d{1,3}\\.\\d{1,3}"
+----
+
+NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
+
+You can take complete control of the configuration of Tomcat's `RemoteIpValve` by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a `WebServerFactoryCustomizer` bean.
+
+
+
+[[howto.webserver.enable-multiple-connectors-in-tomcat]]
+=== Enable Multiple Connectors with Tomcat
+You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWebServerFactory`, which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/enablemultipleconnectorsintomcat/MyTomcatConfiguration.java[]
+----
+
+
+
+[[howto.webserver.use-tomcat-legacycookieprocessor]]
+=== Use Tomcat's LegacyCookieProcessor
+By default, the embedded Tomcat used by Spring Boot does not support "Version 0" of the Cookie format, so you may see the following error:
+
+[indent=0]
+----
+	java.lang.IllegalArgumentException: An invalid character [32] was present in the Cookie value
+----
+
+If at all possible, you should consider updating your code to only store values compliant with later Cookie specifications.
+If, however, you cannot change the way that cookies are written, you can instead configure Tomcat to use a `LegacyCookieProcessor`.
+To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/usetomcatlegacycookieprocessor/MyLegacyCookieProcessorConfiguration.java[]
+----
+
+
+
+[[howto.webserver.enable-tomcat-mbean-registry]]
+=== Enable Tomcat's MBean Registry
+Embedded Tomcat's MBean registry is disabled by default.
+This minimizes Tomcat's memory footprint.
+If you want to use Tomcat's MBeans, for example so that they can be used to expose metrics via Micrometer, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+----
+
+
+
+[[howto.webserver.enable-multiple-listeners-in-undertow]]
+=== Enable Multiple Listeners with Undertow
+Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and add a listener to the `Builder`, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/MyUndertowConfiguration.java[]
+----
+
+
+
+[[howto.webserver.create-websocket-endpoints-using-serverendpoint]]
+=== Create WebSocket Endpoints Using @ServerEndpoint
+If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/webserver/createwebsocketendpointsusingserverendpoint/MyWebSocketConfiguration.java[]
+----
+
+The bean shown in the preceding example registers any `@ServerEndpoint` annotated beans with the underlying WebSocket container.
+When deployed to a standalone servlet container, this role is performed by a servlet container initializer, and the `ServerEndpointExporter` bean is not required.

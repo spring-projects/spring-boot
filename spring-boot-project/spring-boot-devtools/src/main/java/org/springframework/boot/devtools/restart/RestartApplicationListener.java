@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,12 +83,11 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		}
 		if (restartInitializer != null) {
 			String[] args = event.getArgs();
-			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 			boolean restartOnInitialize = !AgentReloader.isActive();
 			if (!restartOnInitialize) {
 				logger.info("Restart disabled due to an agent-based reloader being active");
 			}
-			Restarter.initialize(args, false, initializer, restartOnInitialize);
+			Restarter.initialize(args, false, restartInitializer, restartOnInitialize);
 		}
 		else {
 			logger.info(LogMessage.format("Restart disabled due to System property '%s' being set to false",

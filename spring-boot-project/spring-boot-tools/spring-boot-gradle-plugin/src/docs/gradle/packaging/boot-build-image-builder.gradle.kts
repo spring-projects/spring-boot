@@ -1,4 +1,5 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
 	java
@@ -15,3 +16,10 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 	runImage = "mine/java-cnb-run"
 }
 // end::builder[]
+
+tasks.register("bootBuildImageBuilder") {
+	doFirst {
+		println("builder=${tasks.getByName<BootBuildImage>("bootBuildImage").builder}")
+		println("runImage=${tasks.getByName<BootBuildImage>("bootBuildImage").runImage}")
+	}
+}

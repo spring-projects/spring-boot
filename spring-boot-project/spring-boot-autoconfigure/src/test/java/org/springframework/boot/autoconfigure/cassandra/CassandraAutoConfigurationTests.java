@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.time.Duration;
+
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.config.DriverConfig;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
 import com.datastax.oss.driver.internal.core.session.throttling.ConcurrencyLimitingRequestThrottler;
@@ -32,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link CassandraAutoConfiguration}
@@ -167,6 +172,16 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
+	void driverConfigLoaderCustomizeControlConnectionOptions() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.controlconnection.timeout=200ms")
+				.run((context) -> {
+					DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(config.getInt(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT)).isEqualTo(200);
+				});
+	}
+
+	@Test
 	void driverConfigLoaderUsePassThroughLimitingRequestThrottlerByDefault() {
 		this.contextRunner.withPropertyValues().run((context) -> {
 			DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
@@ -174,6 +189,14 @@ class CassandraAutoConfigurationTests {
 			assertThat(config.getString(DefaultDriverOption.REQUEST_THROTTLER_CLASS))
 					.isEqualTo(PassThroughRequestThrottler.class.getSimpleName());
 		});
+	}
+
+	@Test
+	void driverConfigLoaderWithRateLimitingRequiresExtraConfiguration() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.request.throttler.type=rate-limiting")
+				.run((context) -> assertThatThrownBy(() -> context.getBean(CqlSession.class))
+						.hasMessageContaining("Error instantiating class RateLimitingRequestThrottler")
+						.hasMessageContaining("No configuration setting found for key"));
 	}
 
 	@Test
@@ -206,6 +229,31 @@ class CassandraAutoConfigurationTests {
 					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(72);
 					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL)).isEqualTo(16);
 				});
+	}
+
+	@Test
+	void driverConfigLoaderWithConfigComplementSettings() {
+		String configLocation = "org/springframework/boot/autoconfigure/cassandra/simple.conf";
+		this.contextRunner.withPropertyValues("spring.data.cassandra.session-name=testcluster",
+				"spring.data.cassandra.config=" + configLocation).run((context) -> {
+					assertThat(context).hasSingleBean(DriverConfigLoader.class);
+					assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+							.getString(DefaultDriverOption.SESSION_NAME)).isEqualTo("testcluster");
+					assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+							.getDuration(DefaultDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofMillis(500));
+				});
+	}
+
+	@Test
+	void driverConfigLoaderWithConfigCreateProfiles() {
+		String configLocation = "org/springframework/boot/autoconfigure/cassandra/profiles.conf";
+		this.contextRunner.withPropertyValues("spring.data.cassandra.config=" + configLocation).run((context) -> {
+			assertThat(context).hasSingleBean(DriverConfigLoader.class);
+			DriverConfig driverConfig = context.getBean(DriverConfigLoader.class).getInitialConfig();
+			assertThat(driverConfig.getProfiles()).containsOnlyKeys("default", "first", "second");
+			assertThat(driverConfig.getProfile("first").getDuration(DefaultDriverOption.REQUEST_TIMEOUT))
+					.isEqualTo(Duration.ofMillis(100));
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,24 @@ class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setBeanClassLoader(new FilteredClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
+		assertThatExceptionOfType(DataSourceProperties.DataSourceBeanCreationException.class)
+				.isThrownBy(properties::determineUrl).withMessageContaining("Failed to determine suitable jdbc url");
+	}
+
+	@Test
+	void determineUrlWithSpecificEmbeddedConnection() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
+		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.HSQLDB);
+		properties.afterPropertiesSet();
+		assertThat(properties.determineUrl()).isEqualTo(EmbeddedDatabaseConnection.HSQLDB.getUrl("testdb"));
+	}
+
+	@Test
+	void whenEmbeddedConnectionIsNoneAndNoUrlIsConfiguredThenDetermineUrlThrows() {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
+		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.NONE);
 		assertThatExceptionOfType(DataSourceProperties.DataSourceBeanCreationException.class)
 				.isThrownBy(properties::determineUrl).withMessageContaining("Failed to determine suitable jdbc url");
 	}
@@ -161,6 +179,7 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	void determineCredentialsForSchemaScripts() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setSchemaUsername("foo");
@@ -170,6 +189,7 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	void determineCredentialsForDataScripts() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setDataUsername("foo");

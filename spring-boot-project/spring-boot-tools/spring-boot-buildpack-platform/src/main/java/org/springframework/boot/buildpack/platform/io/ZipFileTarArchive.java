@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,13 +74,12 @@ public class ZipFileTarArchive implements TarArchive {
 		tar.finish();
 	}
 
-	private void assertArchiveHasEntries(File jarFile) {
-		try (ZipFile zipFile = new ZipFile(jarFile)) {
-			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "File '" + jarFile
-					+ "' is not compatible with buildpacks; ensure jar file is valid and launch script is not enabled");
+	private void assertArchiveHasEntries(File file) {
+		try (ZipFile zipFile = new ZipFile(file)) {
+			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "Archive file '" + file + "' is not valid");
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("File is not readable", ex);
+			throw new IllegalStateException("File '" + file + "' is not readable", ex);
 		}
 	}
 
@@ -99,6 +98,7 @@ public class ZipFileTarArchive implements TarArchive {
 		tarEntry.setUserId(this.owner.getUid());
 		tarEntry.setGroupId(this.owner.getGid());
 		tarEntry.setModTime(NORMALIZED_MOD_TIME);
+		tarEntry.setMode(zipEntry.getUnixMode());
 		if (!zipEntry.isDirectory()) {
 			tarEntry.setSize(zipEntry.getSize());
 		}

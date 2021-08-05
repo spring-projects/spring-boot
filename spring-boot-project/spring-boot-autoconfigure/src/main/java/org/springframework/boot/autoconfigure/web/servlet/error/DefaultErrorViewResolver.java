@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,19 +73,6 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	private final TemplateAvailabilityProviders templateAvailabilityProviders;
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
-
-	/**
-	 * Create a new {@link DefaultErrorViewResolver} instance.
-	 * @param applicationContext the source application context
-	 * @param resourceProperties resource properties
-	 * @deprecated since 2.4.0 in favour of
-	 * {@link #DefaultErrorViewResolver(ApplicationContext, Resources)}
-	 */
-	@Deprecated
-	public DefaultErrorViewResolver(ApplicationContext applicationContext,
-			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties) {
-		this(applicationContext, (Resources) resourceProperties);
-	}
 
 	/**
 	 * Create a new {@link DefaultErrorViewResolver} instance.

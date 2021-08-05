@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,17 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.run(withMockMvc((mockMvc) -> {
 					mockMvc.perform(options("/actuator/beans").header("Origin", "bar.example.com")
+							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+							.andExpect(status().isForbidden());
+					performAcceptedCorsRequest(mockMvc);
+				}));
+	}
+
+	@Test
+	void settingAllowedOriginPatternsEnablesCors() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.com",
+				"management.endpoints.web.cors.allow-credentials:true").run(withMockMvc((mockMvc) -> {
+					mockMvc.perform(options("/actuator/beans").header("Origin", "bar.example.org")
 							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 							.andExpect(status().isForbidden());
 					performAcceptedCorsRequest(mockMvc);

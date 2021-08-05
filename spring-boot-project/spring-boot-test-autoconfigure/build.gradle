@@ -72,8 +72,9 @@ dependencies {
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.jooq:jooq")
-	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.junit.platform:junit-platform-engine")
+	testImplementation("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
@@ -84,8 +85,7 @@ dependencies {
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.thymeleaf:thymeleaf")
 }
 
 configurations {

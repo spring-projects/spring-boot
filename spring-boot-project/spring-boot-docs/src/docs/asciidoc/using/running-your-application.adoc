@@ -1,0 +1,95 @@
+[[using.running-your-application]]
+== Running Your Application
+One of the biggest advantages of packaging your application as a jar and using an embedded HTTP server is that you can run your application as you would any other.
+The sample applies to debugging Spring Boot applications.
+You do not need any special IDE plugins or extensions.
+
+NOTE: This section only covers jar based packaging.
+If you choose to package your application as a war file, you should refer to your server and IDE documentation.
+
+
+
+[[using.running-your-application.from-an-ide]]
+=== Running from an IDE
+You can run a Spring Boot application from your IDE as a Java application.
+However, you first need to import your project.
+Import steps vary depending on your IDE and build system.
+Most IDEs can import Maven projects directly.
+For example, Eclipse users can select `Import...` -> `Existing Maven Projects` from the `File` menu.
+
+If you cannot directly import your project into your IDE, you may be able to generate IDE metadata by using a build plugin.
+Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and https://maven.apache.org/plugins/maven-idea-plugin/[IDEA].
+Gradle offers plugins for {gradle-docs}/userguide.html[various IDEs].
+
+TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error.
+Spring Tools users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
+
+
+
+[[using.running-your-application.as-a-packaged-application]]
+=== Running as a Packaged Application
+If you use the Spring Boot Maven or Gradle plugins to create an executable jar, you can run your application using `java -jar`, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
+----
+
+It is also possible to run a packaged application with remote debugging support enabled.
+Doing so lets you attach a debugger to your packaged application, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+	       -jar target/myapplication-0.0.1-SNAPSHOT.jar
+----
+
+
+
+[[using.running-your-application.with-the-maven-plugin]]
+=== Using the Maven Plugin
+The Spring Boot Maven plugin includes a `run` goal that can be used to quickly compile and run your application.
+Applications run in an exploded form, as they do in your IDE.
+The following example shows a typical Maven command to run a Spring Boot application:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ mvn spring-boot:run
+----
+
+You might also want to use the `MAVEN_OPTS` operating system environment variable, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ export MAVEN_OPTS=-Xmx1024m
+----
+
+
+
+[[using.running-your-application.with-the-gradle-plugin]]
+=== Using the Gradle Plugin
+The Spring Boot Gradle plugin also includes a `bootRun` task that can be used to run your application in an exploded form.
+The `bootRun` task is added whenever you apply the `org.springframework.boot` and `java` plugins and is shown in the following example:
+
+[indent=0,subs="verbatim"]
+----
+	$ gradle bootRun
+----
+
+You might also want to use the `JAVA_OPTS` operating system environment variable, as shown in the following example:
+
+[indent=0,subs="verbatim"]
+----
+	$ export JAVA_OPTS=-Xmx1024m
+----
+
+
+
+[[using.running-your-application.hot-swapping]]
+=== Hot Swapping
+Since Spring Boot applications are plain Java applications, JVM hot-swapping should work out of the box.
+JVM hot swapping is somewhat limited with the bytecode that it can replace.
+For a more complete solution, https://www.jrebel.com/products/jrebel[JRebel] can be used.
+
+The `spring-boot-devtools` module also includes support for quick application restarts.
+See the <<howto#howto.hotswapping, Hot swapping "`How-to`">> for details.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.util.Assert;
 
 /**
@@ -31,13 +31,12 @@ import org.springframework.util.Assert;
  */
 public class EndpointMediaTypes {
 
-	private static final String JSON_MEDIA_TYPE = "application/json";
-
 	/**
 	 * Default {@link EndpointMediaTypes} for this version of Spring Boot.
 	 */
-	public static final EndpointMediaTypes DEFAULT = new EndpointMediaTypes(ActuatorMediaType.V3_JSON,
-			ActuatorMediaType.V2_JSON, JSON_MEDIA_TYPE);
+	public static final EndpointMediaTypes DEFAULT = new EndpointMediaTypes(
+			ApiVersion.V3.getProducedMimeType().toString(), ApiVersion.V2.getProducedMimeType().toString(),
+			"application/json");
 
 	private final List<String> produced;
 

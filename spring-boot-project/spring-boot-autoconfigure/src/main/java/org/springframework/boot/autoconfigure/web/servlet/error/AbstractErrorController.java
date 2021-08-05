@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -68,20 +67,6 @@ public abstract class AbstractErrorController implements ErrorController {
 			AnnotationAwareOrderComparator.sortIfNecessary(sorted);
 		}
 		return sorted;
-	}
-
-	/**
-	 * Returns a {@link Map} of the error attributes.
-	 * @param request the source request
-	 * @param includeStackTrace if stack trace elements should be included
-	 * @return the error attributes
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(HttpServletRequest, ErrorAttributeOptions)}
-	 */
-	@Deprecated
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-		return getErrorAttributes(request,
-				(includeStackTrace) ? ErrorAttributeOptions.of(Include.STACK_TRACE) : ErrorAttributeOptions.defaults());
 	}
 
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {

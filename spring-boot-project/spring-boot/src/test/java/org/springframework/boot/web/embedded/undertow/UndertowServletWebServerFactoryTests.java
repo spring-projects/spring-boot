@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,12 +177,12 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	@Test
-	void accessLogCanBeEnabled() throws IOException, URISyntaxException, InterruptedException {
+	void accessLogCanBeEnabled() throws IOException, URISyntaxException {
 		testAccessLog(null, null, "access_log.log");
 	}
 
 	@Test
-	void accessLogCanBeCustomized() throws IOException, URISyntaxException, InterruptedException {
+	void accessLogCanBeCustomized() throws IOException, URISyntaxException {
 		testAccessLog("my_access.", "logz", "my_access.logz");
 	}
 
@@ -213,7 +213,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	private void testAccessLog(String prefix, String suffix, String expectedFile)
-			throws IOException, URISyntaxException, InterruptedException {
+			throws IOException, URISyntaxException {
 		UndertowServletWebServerFactory factory = getFactory();
 		factory.setAccessLogEnabled(true);
 		factory.setAccessLogPrefix(prefix);
@@ -236,7 +236,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	@Test
-	void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
+	void sslRestrictedProtocolsEmptyCipherFailure() {
 		assertThatIOException()
 				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
 						new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" }))
@@ -244,7 +244,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	@Test
-	void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
+	void sslRestrictedProtocolsECDHETLS1Failure() {
 		assertThatIOException()
 				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 						new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" }))
@@ -264,7 +264,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	@Test
-	void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
+	void sslRestrictedProtocolsRSATLS11Failure() {
 		assertThatIOException()
 				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 						new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" }))

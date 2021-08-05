@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.samskivert.mustache.DefaultCollector;
 import com.samskivert.mustache.Mustache.Collector;
 import com.samskivert.mustache.Mustache.VariableFetcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -30,7 +34,10 @@ import org.springframework.core.env.Environment;
  * @author Dave Syer
  * @author Madhura Bhave
  * @since 1.2.2
+ * @deprecated since 2.5.0 for removal in 2.7.0 in favor of direct addition of values from
+ * the Environment to the model
  */
+@Deprecated
 public class MustacheEnvironmentCollector extends DefaultCollector implements EnvironmentAware {
 
 	private ConfigurableEnvironment environment;
@@ -56,9 +63,18 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements En
 
 	private class PropertyVariableFetcher implements VariableFetcher {
 
+		private final Log log = LogFactory.getLog(PropertyVariableFetcher.class);
+
+		private final AtomicBoolean logDeprecationWarning = new AtomicBoolean();
+
 		@Override
 		public Object get(Object ctx, String name) {
-			return MustacheEnvironmentCollector.this.environment.getProperty(name);
+			String property = MustacheEnvironmentCollector.this.environment.getProperty(name);
+			if (property != null && this.logDeprecationWarning.compareAndSet(false, true)) {
+				this.log.warn("Mustache variable resolution relied upon deprecated support for falling back to the "
+						+ "Spring Environment. Please add values from the Environment directly to the model instead.");
+			}
+			return property;
 		}
 
 	}

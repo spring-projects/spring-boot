@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -423,7 +423,20 @@ class ConfigurationPropertyNameTests {
 	@Test
 	void appendWhenElementNameIsNullShouldReturnName() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		assertThat((Object) name.append(null)).isSameAs(name);
+		assertThat((Object) name.append((String) null)).isSameAs(name);
+	}
+
+	@Test
+	void appendConfigurationPropertyNameShouldReturnAppendedName() {
+		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("spring.boot");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName.of("tests.code");
+		assertThat(n1.append(n2)).hasToString("spring.boot.tests.code");
+	}
+
+	@Test
+	void appendConfigurationPropertyNameWhenNullShouldReturnName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		assertThat((Object) name.append((ConfigurationPropertyName) null)).isSameAs(name);
 	}
 
 	@Test
@@ -463,6 +476,37 @@ class ConfigurationPropertyNameTests {
 	void chopWhenEqualToSizeShouldReturnExisting() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.chop(3)).isEqualTo(name);
+	}
+
+	@Test
+	void subNameWhenOffsetLessThanSizeShouldReturnSubName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
+		assertThat(name.subName(1)).hasToString("bar.baz");
+		assertThat(name.subName(2)).hasToString("baz");
+	}
+
+	@Test
+	void subNameWhenOffsetZeroShouldReturnName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
+		assertThat(name.subName(0)).isSameAs(name);
+	}
+
+	@Test
+	void subNameWhenOffsetEqualToSizeShouldReturnEmpty() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
+		assertThat(name.subName(3)).isSameAs(ConfigurationPropertyName.EMPTY);
+	}
+
+	@Test
+	void subNameWhenOffsetMoreThanSizeShouldReturnEmpty() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> name.subName(4));
+	}
+
+	@Test
+	void subNameWhenOffsetNegativeShouldThrowException() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> name.subName(-1));
 	}
 
 	@Test
@@ -543,9 +587,9 @@ class ConfigurationPropertyNameTests {
 
 	@Test
 	void compareDifferentLengthsShouldSortNames() {
-		ConfigurationPropertyName name = ConfigurationPropertyName.of("spring.resources.chain.strategy.content");
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("spring.web.resources.chain.strategy.content");
 		ConfigurationPropertyName other = ConfigurationPropertyName
-				.of("spring.resources.chain.strategy.content.enabled");
+				.of("spring.web.resources.chain.strategy.content.enabled");
 		assertThat(name.compareTo(other)).isLessThan(0);
 	}
 

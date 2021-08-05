@@ -164,7 +164,7 @@
     },
     {
       "name": "server.servlet.session.cookie.domain",
-      "description": " Domain for the session cookie."
+      "description": "Domain for the session cookie."
     },
     {
       "name": "server.servlet.session.cookie.http-only",
@@ -353,6 +353,10 @@
       "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
     },
     {
+      "name": "spring.artemis.broker-url",
+      "defaultValue": "tcp://localhost:61616"
+    },
+    {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
       "deprecation": {
         "replacement": "spring.artemis.pool.max-sessions-per-connection"
@@ -372,9 +376,13 @@
       "type": "java.lang.Boolean",
       "description": "Create the required batch tables on startup if necessary. Enabled automatically\n if no custom table prefix is set or if a custom schema is configured.",
       "deprecation": {
-        "replacement": "spring.batch.initialize-schema",
+        "replacement": "spring.batch.jdbc.initialize-schema",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.batch.jdbc.initialize-schema",
+      "defaultValue": "embedded"
     },
     {
       "name": "spring.batch.job.enabled",
@@ -504,6 +512,14 @@
       "defaultValue": "none"
     },
     {
+      "name": "spring.data.cassandra.connection.connection-timeout",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "spring.data.cassandra.connection.init-query-timeout",
+      "defaultValue": "5s"
+    },
+    {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
         "127.0.0.1:9042"
@@ -558,6 +574,14 @@
       "defaultValue": "auto"
     },
     {
+      "name": "spring.data.cassandra.request.page-size",
+      "defaultValue": 5000
+    },
+    {
+      "name": "spring.data.cassandra.request.timeout",
+      "defaultValue": "2s"
+    },
+    {
       "name": "spring.data.cassandra.request.throttler.type",
       "defaultValue": "none"
     },
@@ -568,6 +592,14 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "spring.data.cassandra.pool.heartbeat-interval",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.data.cassandra.pool.idle-timeout",
+      "defaultValue": "5s"
     },
     {
       "name": "spring.data.couchbase.consistency",
@@ -743,12 +775,6 @@
     {
       "name": "spring.data.rest.detection-strategy",
       "defaultValue": "default"
-    },
-    {
-      "name": "spring.data.solr.repositories.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Solr repositories.",
-      "defaultValue": true
     },
     {
       "name": "spring.datasource.initialization-mode",
@@ -1039,116 +1065,164 @@
     },
     {
       "name": "spring.jta.bitronix.properties.allow-multiple-lrc",
-      "description": "Whether to allow multiple LRC resources to be enlisted into the same transaction.",
-      "defaultValue": false
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.asynchronous2-pc",
-      "description": "Whether to enable asynchronously execution of two phase commit.",
-      "defaultValue": false
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.background-recovery-interval",
-      "description": "Interval in minutes at which to run the recovery process in the background.",
-      "defaultValue": 1,
+      "type": "java.lang.Integer",
       "deprecation": {
-        "replacement": "spring.jta.bitronix.properties.background-recovery-interval-seconds"
+        "level": "error"
       }
     },
     {
       "name": "spring.jta.bitronix.properties.background-recovery-interval-seconds",
-      "description": "Interval in seconds at which to run the recovery process in the background.",
-      "defaultValue": 60
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.current-node-only-recovery",
-      "description": "Whether to recover only the current node. Should be enabled if you run multiple instances of the transaction manager on the same JMS and JDBC resources.",
-      "defaultValue": true
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.debug-zero-resource-transaction",
-      "description": "Whether to log the creation and commit call stacks of transactions executed without a single enlisted resource.",
-      "defaultValue": false
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.default-transaction-timeout",
-      "description": "Default transaction timeout, in seconds.",
-      "defaultValue": 60
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.disable-jmx",
-      "description": "Whether to enable JMX support.",
-      "defaultValue": false
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.exception-analyzer",
-      "description": "Set the fully qualified name of the exception analyzer implementation to use."
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.filter-log-status",
-      "description": "Whether to enable filtering of logs so that only mandatory logs are written.",
-      "defaultValue": false
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.force-batching-enabled",
-      "description": "Whether disk forces are batched.",
-      "defaultValue": true
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.forced-write-enabled",
-      "description": "Whether logs are forced to disk.",
-      "defaultValue": true
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.graceful-shutdown-interval",
-      "description": "Maximum amount of seconds the TM waits for transactions to get done before aborting them at shutdown time.",
-      "defaultValue": 60
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name",
-      "description": "JNDI name of the TransactionSynchronizationRegistry."
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.jndi-user-transaction-name",
-      "description": "JNDI name of the UserTransaction."
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.journal",
-      "description": "Name of the journal. Can be 'disk', 'null', or a class name.",
-      "defaultValue": "disk"
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.log-part1-filename",
-      "description": "Name of the first fragment of the journal.",
-      "defaultValue": "btm1.tlog"
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.log-part2-filename",
-      "description": "Name of the second fragment of the journal.",
-      "defaultValue": "btm2.tlog"
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.max-log-size-in-mb",
-      "description": "Maximum size in megabytes of the journal fragments.",
-      "defaultValue": 2
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.resource-configuration-filename",
-      "description": "ResourceLoader configuration file name."
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.server-id",
-      "description": "ASCII ID that must uniquely identify this TM instance. Defaults to the machine's IP address."
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.skip-corrupted-logs",
-      "description": "Skip corrupted transactions log entries. Use only at last resort when all you have to recover is a pair of corrupted files.",
-      "defaultValue": false
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.bitronix.properties.warn-about-zero-resource-transaction",
-      "description": "Whether to log a warning for transactions executed without a single enlisted resource.",
-      "defaultValue": true
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jta.enabled",
@@ -1512,8 +1586,20 @@
       "defaultValue": false
     },
     {
+      "name": "spring.mvc.locale",
+      "type": "java.util.Locale",
+      "deprecation": {
+        "replacement": "spring.web.locale",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.mvc.locale-resolver",
-      "defaultValue": "accept-header"
+      "type": "org.springframework.boot.autoconfigure.web.WebProperties$LocaleResolver",
+      "deprecation": {
+        "replacement": "spring.web.locale-resolver",
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.pathmatch.matching-strategy",
@@ -1604,11 +1690,201 @@
       }
     },
     {
+      "name": "spring.resources.add-mappings",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.add-mappings",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.cache-private",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.cache-private",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.cache-public",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.cache-public",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.max-age",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.max-age",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.must-revalidate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.must-revalidate",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.no-cache",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.no-cache",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.no-store",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.no-store",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.no-transform",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.no-transform",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.proxy-revalidate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.proxy-revalidate",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.s-max-age",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.s-max-age",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.stale-if-error",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.stale-if-error",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.cachecontrol.stale-while-revalidate",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.cachecontrol.stale-while-revalidate",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.period",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.period",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache.use-last-modified",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.cache.use-last-modified",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.cache",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.cache",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.compressed",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.compressed",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.enabled",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.resources.chain.gzipped",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable resolution of already gzipped resources. Checks for a resource name variant with the \"*.gz\" extension.",
       "deprecation": {
-        "replacement": "spring.resources.chain.compressed",
+        "replacement": "spring.web.resources.chain.compressed",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.html-application-cache",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.content.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.content.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.content.paths",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.content.paths",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.fixed.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.fixed.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.fixed.paths",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.fixed.paths",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.chain.strategy.fixed.version",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.web.resources.chain.strategy.fixed.version",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.static-locations",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.web.resources.static-locations",
         "level": "error"
       }
     },
@@ -1669,6 +1945,20 @@
       ]
     },
     {
+      "name": "spring.sql.init.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether basic script-based initialization of an SQL database is enabled.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.sql.init.mode",
+        "level": "warning"
+      }
+    },
+    {
+      "name": "spring.sql.init.mode",
+      "defaultValue": "embedded"
+    },
+    {
       "name": "spring.thymeleaf.prefix",
       "defaultValue": "classpath:/templates/"
     },
@@ -1687,9 +1977,17 @@
       "defaultValue": false
     },
     {
+      "name": "spring.webflux.session.cookie.same-site",
+      "defaultValue": "lax"
+    },
+    {
       "name": "spring.webservices.wsdl-locations",
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
+    },
+    {
+      "name": "spring.netty.leak-detection",
+      "defaultValue": "simple"
     }
   ],
   "hints": [
@@ -1828,6 +2126,14 @@
           }
         }
       ]
+    },
+    {
+      "name": "spring.data.mongodb.grid-fs-database",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.data.mongodb.gridfs.database",
+        "level": "error"
+      }
     },
     {
       "name": "spring.datasource.data",
@@ -2090,6 +2396,28 @@
       "providers": [
         {
           "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.sql.init.data-locations",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.sql.init.schema-locations",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
         }
       ]
     },

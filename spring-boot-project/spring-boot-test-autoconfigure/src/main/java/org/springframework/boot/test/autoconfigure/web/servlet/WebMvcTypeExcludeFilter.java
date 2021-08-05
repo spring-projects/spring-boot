@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import com.fasterxml.jackson.databind.Module;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
@@ -51,9 +49,9 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
-	private static final String[] OPTIONAL_INCLUDES = {
+	private static final String[] OPTIONAL_INCLUDES = { "com.fasterxml.jackson.databind.Module",
 			"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
-			"org.springframework.security.web.SecurityFilterChain" };
+			"org.springframework.security.web.SecurityFilterChain", "org.thymeleaf.dialect.IDialect" };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
@@ -71,11 +69,6 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
 		includes.add(HandlerInterceptor.class);
-		try {
-			includes.add(Module.class);
-		}
-		catch (Throwable ex) {
-		}
 		for (String optionalInclude : OPTIONAL_INCLUDES) {
 			try {
 				includes.add(ClassUtils.forName(optionalInclude, null));

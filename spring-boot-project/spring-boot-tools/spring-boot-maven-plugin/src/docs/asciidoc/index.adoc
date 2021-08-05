@@ -1,5 +1,8 @@
+[[spring-boot-maven-plugin-documentation]]
 = Spring Boot Maven Plugin Documentation
-Stephane Nicoll, Andy Wilkinson, Scott Frederick
+Stephane Nicoll; Andy Wilkinson; Scott Frederick
+v{gradle-project-version}
+:!version-label:
 :doctype: book
 :toc: left
 :toclevels: 4
@@ -8,27 +11,33 @@ Stephane Nicoll, Andy Wilkinson, Scott Frederick
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
-
+:attribute-missing: warn
 :buildpacks-reference: https://buildpacks.io/docs
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{gradle-project-version}
 :spring-boot-api: {spring-boot-docs}/api/org/springframework/boot
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
 :version-properties-appendix: {spring-boot-reference}/#dependency-versions-properties
-:paketo-java-reference: https://paketo.io/docs/buildpacks/language-family-buildpacks/java
+:paketo-reference: https://paketo.io/docs
+:paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
 
 
-[[introduction]]
-== Introduction
 
-The Spring Boot Maven Plugin provides Spring Boot support in https://maven.org[Apache Maven].
-It allows you to package executable jar or war archives, run Spring Boot applications, generate build information and start your Spring Boot application prior to running integration tests.
+include::introduction.adoc[leveloffset=+1]
 
-include::getting-started.adoc[]
-include::using.adoc[]
-include::goals.adoc[]
-include::packaging.adoc[]
-include::packaging-oci-image.adoc[]
-include::running.adoc[]
-include::integration-tests.adoc[]
-include::build-info.adoc[]
-include::help.adoc[]
+include::getting-started.adoc[leveloffset=+1]
+
+include::using.adoc[leveloffset=+1]
+
+include::goals.adoc[leveloffset=+1]
+
+include::packaging.adoc[leveloffset=+1]
+
+include::packaging-oci-image.adoc[leveloffset=+1]
+
+include::running.adoc[leveloffset=+1]
+
+include::integration-tests.adoc[leveloffset=+1]
+
+include::build-info.adoc[leveloffset=+1]
+
+include::help.adoc[leveloffset=+1]

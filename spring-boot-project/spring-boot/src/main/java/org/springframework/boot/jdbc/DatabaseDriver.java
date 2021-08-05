@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.jdbc;
 
+import java.sql.DatabaseMetaData;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -70,7 +74,7 @@ public enum DatabaseDriver {
 	/**
 	 * Maria DB.
 	 */
-	MARIADB("MySQL", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
+	MARIADB("MariaDB", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
 
 		@Override
 		public String getId() {
@@ -98,7 +102,7 @@ public enum DatabaseDriver {
 	 * Amazon Redshift.
 	 * @since 2.2.0
 	 */
-	REDSHIFT("Amazon Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
+	REDSHIFT("Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
 
 	/**
 	 * HANA - SAP HANA Database - HDB.
@@ -314,6 +318,23 @@ public enum DatabaseDriver {
 			}
 		}
 		return UNKNOWN;
+	}
+
+	/**
+	 * Find a {@link DatabaseDriver} for the given {@code DataSource}.
+	 * @param dataSource data source to inspect
+	 * @return the database driver of {@link #UNKNOWN} if not found
+	 * @since 2.6.0
+	 */
+	public static DatabaseDriver fromDataSource(DataSource dataSource) {
+		try {
+			String productName = JdbcUtils.commonDatabaseName(
+					JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));
+			return DatabaseDriver.fromProductName(productName);
+		}
+		catch (Exception ex) {
+			return DatabaseDriver.UNKNOWN;
+		}
 	}
 
 }

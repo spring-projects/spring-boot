@@ -1,0 +1,101 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.springframework.example",
+    "module": "module-two",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.5.1",
+      "buildId": "mvqepqsdqjcahjl7cii6b6ucoe"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "module-two-1.0.0.jar",
+          "url": "module-two-1.0.0.jar",
+          "size": 261,
+          "sha512": "2730ac0859e1c2f450d54647c29ece43d095eb834e2130d4949dd1151317d013c072fa8f96f5f4b49836eff7c19a2eeeb5ca7483e5dac24c368bbcd522c27a00",
+          "sha256": "10ce8a82f7e53c67f2af8d4dc4b8cdb4d0630d0e1d21818da4d5b3ca2de08385",
+          "sha1": "8992b17455ce660da9c5fe47226b7ded9e872637",
+          "md5": "e84da489be91de821c95d41b8f0e0a0a"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "module-two-1.0.0.jar",
+          "url": "module-two-1.0.0.jar",
+          "size": 261,
+          "sha512": "2730ac0859e1c2f450d54647c29ece43d095eb834e2130d4949dd1151317d013c072fa8f96f5f4b49836eff7c19a2eeeb5ca7483e5dac24c368bbcd522c27a00",
+          "sha256": "10ce8a82f7e53c67f2af8d4dc4b8cdb4d0630d0e1d21818da4d5b3ca2de08385",
+          "sha1": "8992b17455ce660da9c5fe47226b7ded9e872637",
+          "md5": "e84da489be91de821c95d41b8f0e0a0a"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "module-two-1.0.0-javadoc.jar",
+          "url": "module-two-1.0.0-javadoc.jar",
+          "size": 261,
+          "sha512": "2730ac0859e1c2f450d54647c29ece43d095eb834e2130d4949dd1151317d013c072fa8f96f5f4b49836eff7c19a2eeeb5ca7483e5dac24c368bbcd522c27a00",
+          "sha256": "10ce8a82f7e53c67f2af8d4dc4b8cdb4d0630d0e1d21818da4d5b3ca2de08385",
+          "sha1": "8992b17455ce660da9c5fe47226b7ded9e872637",
+          "md5": "e84da489be91de821c95d41b8f0e0a0a"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "module-two-1.0.0-sources.jar",
+          "url": "module-two-1.0.0-sources.jar",
+          "size": 261,
+          "sha512": "2730ac0859e1c2f450d54647c29ece43d095eb834e2130d4949dd1151317d013c072fa8f96f5f4b49836eff7c19a2eeeb5ca7483e5dac24c368bbcd522c27a00",
+          "sha256": "10ce8a82f7e53c67f2af8d4dc4b8cdb4d0630d0e1d21818da4d5b3ca2de08385",
+          "sha1": "8992b17455ce660da9c5fe47226b7ded9e872637",
+          "md5": "e84da489be91de821c95d41b8f0e0a0a"
+        }
+      ]
+    }
+  ]
+}

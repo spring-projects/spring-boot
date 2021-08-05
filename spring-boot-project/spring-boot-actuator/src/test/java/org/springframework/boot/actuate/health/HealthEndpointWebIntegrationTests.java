@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Map;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -45,6 +45,10 @@ import org.springframework.util.ReflectionUtils;
  */
 class HealthEndpointWebIntegrationTests {
 
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
+
 	@WebEndpointTest
 	void whenHealthIsUp200ResponseIsReturned(WebTestClient client) {
 		client.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
@@ -54,8 +58,7 @@ class HealthEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void whenHealthIsUpAndAcceptsV3Request200ResponseIsReturned(WebTestClient client) {
-		client.get().uri("/actuator/health")
-				.headers((headers) -> headers.set(HttpHeaders.ACCEPT, ActuatorMediaType.V3_JSON)).exchange()
+		client.get().uri("/actuator/health").headers((headers) -> headers.set(HttpHeaders.ACCEPT, V3_JSON)).exchange()
 				.expectStatus().isOk().expectBody().jsonPath("status").isEqualTo("UP")
 				.jsonPath("components.alpha.status").isEqualTo("UP").jsonPath("components.bravo.status")
 				.isEqualTo("UP");
@@ -71,8 +74,7 @@ class HealthEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void whenHealthIsUpAndV2Request200ResponseIsReturnedInV2Format(WebTestClient client) {
-		client.get().uri("/actuator/health")
-				.headers((headers) -> headers.set(HttpHeaders.ACCEPT, ActuatorMediaType.V2_JSON)).exchange()
+		client.get().uri("/actuator/health").headers((headers) -> headers.set(HttpHeaders.ACCEPT, V2_JSON)).exchange()
 				.expectStatus().isOk().expectBody().jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
 				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
 	}

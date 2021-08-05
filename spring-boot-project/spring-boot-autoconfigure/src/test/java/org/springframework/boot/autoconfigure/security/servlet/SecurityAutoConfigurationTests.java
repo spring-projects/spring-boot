@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.security.interfaces.RSAPublicKey;
+
 import javax.servlet.DispatcherType;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -27,6 +29,10 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
@@ -34,6 +40,7 @@ import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
@@ -149,9 +156,7 @@ class SecurityAutoConfigurationTests {
 
 	@Test
 	void testJpaCoexistsHappily() {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
-						"spring.datasource.initialization-mode:never")
+		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb")
 				.withUserConfiguration(EntityConfiguration.class)
 				.withConfiguration(
 						AutoConfigurations.of(HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class))
@@ -202,6 +207,23 @@ class SecurityAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void whenAConfigurationPropertyBindingConverterIsDefinedThenBindingToAnRsaKeySucceeds() {
+		this.contextRunner.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
+				.withPropertyValues("jwt.public-key=classpath:public-key-location")
+				.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
+	}
+
+	@Test
+	void whenTheBeanFactoryHasAConversionServiceAndAConfigurationPropertyBindingConverterIsDefinedThenBindingToAnRsaKeySucceeds() {
+		this.contextRunner
+				.withInitializer(
+						(context) -> context.getBeanFactory().setConversionService(new ApplicationConversionService()))
+				.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
+				.withPropertyValues("jwt.public-key=classpath:public-key-location")
+				.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class EntityConfiguration {
@@ -247,6 +269,49 @@ class SecurityAutoConfigurationTests {
 					.build();
 
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConverterConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		Converter<String, TargetType> targetTypeConverter() {
+			return new Converter<String, TargetType>() {
+
+				@Override
+				public TargetType convert(String input) {
+					return new TargetType();
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(JwtProperties.class)
+	static class PropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("jwt")
+	static class JwtProperties {
+
+		private RSAPublicKey publicKey;
+
+		RSAPublicKey getPublicKey() {
+			return this.publicKey;
+		}
+
+		void setPublicKey(RSAPublicKey publicKey) {
+			this.publicKey = publicKey;
+		}
+
+	}
+
+	static class TargetType {
 
 	}
 

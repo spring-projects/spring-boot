@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
-@Document(indexName = "city", shards = 1, replicas = 0, refreshInterval = "-1")
+@Document(indexName = "city")
+@Setting(shards = 1, replicas = 0, refreshInterval = "-1")
 public class City implements Serializable {
 
 	private static final long serialVersionUID = 1L;

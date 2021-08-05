@@ -1,9 +1,10 @@
 [[integrating-with-actuator]]
-== Integrating with Actuator
+= Integrating with Actuator
 
 
-[[integrating-with-actuator-build-info]]
-=== Generating Build Information
+
+[[integrating-with-actuator.build-info]]
+== Generating Build Information
 Spring Boot Actuator's `info` endpoint automatically publishes information about your build in the presence of a `META-INF/build-info.properties` file.
 A {build-info-javadoc}[`BuildInfo`] task is provided to generate this file.
 The easiest way to use the task is via the plugin's DSL:
@@ -19,7 +20,6 @@ include::../gradle/integrating-with-actuator/build-info-basic.gradle[tags=build-
 ----
 include::../gradle/integrating-with-actuator/build-info-basic.gradle.kts[tags=build-info]
 ----
-
 
 This will configure a {build-info-javadoc}[`BuildInfo`] task named `bootBuildInfo` and, if it exists, make the Java plugin's `classes` task depend upon it.
 The task's destination directory will be `META-INF` in the output directory of the main source set's resources (typically `build/resources/main`).
@@ -60,7 +60,6 @@ include::../gradle/integrating-with-actuator/build-info-custom-values.gradle[tag
 ----
 include::../gradle/integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
 ----
-
 
 The default value for `build.time` is the instant at which the project is being built.
 A side-effect of this is that the task will never be up-to-date.

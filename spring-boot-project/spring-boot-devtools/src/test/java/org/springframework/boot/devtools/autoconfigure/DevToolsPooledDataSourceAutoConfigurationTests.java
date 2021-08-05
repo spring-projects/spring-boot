@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
@@ -52,7 +51,7 @@ import static org.mockito.Mockito.verify;
 class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@BeforeEach
-	void before(@TempDir File tempDir) throws IOException {
+	void before(@TempDir File tempDir) {
 		System.setProperty("derby.stream.error.file", new File(tempDir, "derby.log").getAbsolutePath());
 	}
 

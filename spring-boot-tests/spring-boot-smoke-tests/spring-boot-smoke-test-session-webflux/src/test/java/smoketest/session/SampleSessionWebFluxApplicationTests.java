@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Vedran Pavic
  */
-@SpringBootTest(properties = "spring.session.timeout:2", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = "spring.session.timeout:5", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort
@@ -59,7 +59,7 @@ class SampleSessionWebFluxApplicationTests {
 						.doOnNext((sessionId) -> assertThat(sessionId).isEqualTo(tuple.getT2()))
 						.thenReturn(sesssionCookie);
 			});
-		}).delayElement(Duration.ofSeconds(2))
+		}).delayElement(Duration.ofSeconds(5))
 				.flatMap((sessionCookie) -> client.get().cookie("SESSION", sessionCookie).exchangeToMono((response) -> {
 					assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 					return response.releaseBody();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import java.util.List;
  * @author Anand Shastri
  * @author Stephane Nicoll
  * @since 2.2.0
+ * @deprecated since 2.5.0 for removal in 2.7.0 as location checking is deprecated
  */
+@Deprecated
 public class FlywayMigrationScriptMissingException extends RuntimeException {
 
 	private final List<String> locations;

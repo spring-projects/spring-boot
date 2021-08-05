@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
-import org.springframework.boot.gradle.testkit.Dsl;
-import org.springframework.boot.gradle.testkit.GradleBuild;
-import org.springframework.boot.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.Dsl;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against the Groovy and
@@ -59,7 +60,9 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			return Arrays.asList(new GradleBuildFieldSetter(new GradleBuild(this.dsl)), new GradleBuildExtension());
+			GradleBuild gradleBuild = new GradleBuild(this.dsl);
+			gradleBuild.gradleVersion(GradleVersions.currentOrMinimumCompatible());
+			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
 		@Override

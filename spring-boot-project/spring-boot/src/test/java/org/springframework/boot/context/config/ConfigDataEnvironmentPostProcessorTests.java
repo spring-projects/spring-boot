@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
@@ -69,7 +71,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 	private ArgumentCaptor<ResourceLoader> resourceLoaderCaptor;
 
 	@Test
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	void defaultOrderMatchesDeprecatedListener() {
 		assertThat(ConfigDataEnvironmentPostProcessor.ORDER).isEqualTo(ConfigFileApplicationListener.DEFAULT_ORDER);
 	}
@@ -105,6 +107,15 @@ class ConfigDataEnvironmentPostProcessorTests {
 	}
 
 	@Test
+	void postProcessEnvironmentWhenNoActiveProfiles() {
+		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
+		verify(this.configDataEnvironment).processAndApply();
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
+	}
+
+	@Test
 	void postProcessEnvironmentWhenUseLegacyProcessingSwitchesToLegacyMethod() {
 		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
 				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
@@ -114,14 +125,40 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		verifyNoInteractions(this.configDataEnvironment);
 		verify(legacyListener).addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
+	}
+
+	@Test
+	void postProcessEnvironmentWhenHasAdditionalProfilesAndUseLegacyProcessing() {
+		this.application.setAdditionalProfiles("dev");
+		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
+				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
+		willThrow(new UseLegacyConfigProcessingException(null)).given(this.postProcessor)
+				.getConfigDataEnvironment(any(), any(), any());
+		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		verifyNoInteractions(this.configDataEnvironment);
+		verify(legacyListener).addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 	}
 
 	@Test
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
-		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, "dev");
+		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.singleton("dev"),
+				listener);
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
+		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
+				.isTrue();
+	}
+
+	private boolean hasDevProfile(ConfigDataResource resource) {
+		return (resource instanceof StandardConfigDataResource)
+				&& "dev".equals(((StandardConfigDataResource) resource).getProfile());
 	}
 
 }

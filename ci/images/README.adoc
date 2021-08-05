@@ -17,5 +17,5 @@ $ docker build --no-cache -f ci-image/Dockerfile .
 To test run:
 
 ----
-$ docker run -it --entrypoint /bin/bash <SHA>                                                                                                                                                                     ✈
+$ docker run -it --entrypoint /bin/bash <SHA>
 ----

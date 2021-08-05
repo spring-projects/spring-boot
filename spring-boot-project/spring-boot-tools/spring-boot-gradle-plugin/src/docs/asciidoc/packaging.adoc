@@ -1,27 +1,27 @@
 [[packaging-executable]]
-== Packaging Executable Archives
+= Packaging Executable Archives
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
 
 
 
-[[packaging-executable-jars]]
-=== Packaging Executable Jars
+[[packaging-executable.jars]]
+== Packaging Executable Jars
 Executable jars can be built using the `bootJar` task.
 The task is automatically created when the `java` plugin is applied and is an instance of {boot-jar-javadoc}[`BootJar`].
 The `assemble` task is automatically configured to depend upon the `bootJar` task so running `assemble` (or `build`) will also run the `bootJar` task.
 
 
 
-[[packaging-executable-wars]]
-=== Packaging Executable Wars
+[[packaging-executable.wars]]
+== Packaging Executable Wars
 Executable wars can be built using the `bootWar` task.
 The task is automatically created when the `war` plugin is applied and is an instance of {boot-war-javadoc}[`BootWar`].
 The `assemble` task is automatically configured to depend upon the `bootWar` task so running `assemble` (or `build`) will also run the `bootWar` task.
 
 
 
-[[packaging-executable-wars-deployable]]
-==== Packaging Executable and Deployable Wars
+[[packaging-executable.wars.deployable]]
+=== Packaging Executable and Deployable Wars
 A war file can be packaged such that it can be executed using `java -jar` and deployed to an external container.
 To do so, the embedded servlet container dependencies should be added to the `providedRuntime` configuration, for example:
 
@@ -37,58 +37,57 @@ include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
 include::../gradle/packaging/war-container-dependency.gradle.kts[tags=dependencies]
 ----
 
-
 This ensures that they are package in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
 
 NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other limitations, `compileOnly` dependencies are not on the test classpath so any web-based integration tests will fail.
 
 
 
-[[packaging-executable-and-normal]]
-=== Packaging Executable and Normal Archives
-By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are disabled.
-A project can be configured to build both an executable archive and a normal archive at the same time by enabling the `jar` or `war` task:
+[[packaging-executable.and-plain-archives]]
+== Packaging Executable and Plain Archives
+By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are configured to use `plain` as the convention for their archive classifier.
+This ensures that `bootJar` and `jar` or `bootWar` and `war` have different output locations, allowing both the executable archive and the plain archive to be built at the same time.
+
+If you prefer that its the executable archive, rather than the plain archive, that uses a classifier, configure the classifiers as shown in the following example for the `jar` and `bootJar` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle[tags=enable-jar]
+include::../gradle/packaging/boot-jar-and-jar-classifiers.gradle[tags=classifiers]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=enable-jar]
+include::../gradle/packaging/boot-jar-and-jar-classifiers.gradle.kts[tags=classifiers]
 ----
 
-
-To avoid the executable archive and the normal archive from being written to the same location, one or the other should be configured to use a different location.
-One way to do so is by configuring a classifier:
+Alternatively, if you prefer that the plain archive isn't built at all, disable its task as shown in the following example for the `jar` task:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle[tags=classifier]
+include::../gradle/packaging/only-boot-jar.gradle[tags=disable-jar]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=classifier]
+include::../gradle/packaging/only-boot-jar.gradle.kts[tags=disable-jar]
 ----
 
 
 
-[[packaging-executable-configuring]]
-=== Configuring Executable Archive Packaging
+[[packaging-executable.configuring]]
+== Configuring Executable Archive Packaging
 The {boot-jar-javadoc}[`BootJar`] and {boot-war-javadoc}[`BootWar`] tasks are subclasses of Gradle's `Jar` and `War` tasks respectively.
 As a result, all of the standard configuration options that are available when packaging a jar or war are also available when packaging an executable jar or war.
 A number of configuration options that are specific to executable jars and wars are also provided.
 
 
 
-[[packaging-executable-configuring-main-class]]
-==== Configuring the Main Class
+[[packaging-executable.configuring.main-class]]
+=== Configuring the Main Class
 By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
 
 The main class can also be configured explicitly using the task's `mainClass` property:
@@ -153,8 +152,9 @@ For example, `ExampleApplication` becomes `ExampleApplicationKt`.
 If another name is defined using `@JvmName` then that name should be used.
 
 
-[[packaging-executable-configuring-including-development-only-dependencies]]
-==== Including Development-only Dependencies
+
+[[packaging-executable.configuring.including-development-only-dependencies]]
+=== Including Development-only Dependencies
 By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
 
 If you want to include dependencies declared in the `developmentOnly` configuration in your archive, configure the classpath of its task to include the configuration, as shown in the following example for the `bootWar` task:
@@ -173,8 +173,8 @@ include::../gradle/packaging/boot-war-include-devtools.gradle.kts[tags=include-d
 
 
 
-[[packaging-executable-configuring-unpacking]]
-==== Configuring Libraries that Require Unpacking
+[[packaging-executable.configuring.unpacking]]
+=== Configuring Libraries that Require Unpacking
 Most libraries can be used directly when nested in an executable archive, however certain libraries can have problems.
 For example, JRuby includes its own nested jar support which assumes that `jruby-complete.jar` is always directly available on the file system.
 
@@ -193,21 +193,20 @@ include::../gradle/packaging/boot-jar-requires-unpack.gradle[tags=requires-unpac
 include::../gradle/packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
 ----
 
-
 For more control a closure can also be used.
 The closure is passed a `FileTreeElement` and should return a `boolean` indicating whether or not unpacking is required.
 
 
 
-[[packaging-executable-configuring-launch-script]]
-==== Making an Archive Fully Executable
+[[packaging-executable.configuring.launch-script]]
+=== Making an Archive Fully Executable
 Spring Boot provides support for fully executable archives.
 An archive is made fully executable by prepending a shell script that knows how to launch the application.
 On Unix-like platforms, this launch script allows the archive to be run directly like any other executable or to be installed as a service.
 
 NOTE: Currently, some tools do not accept this format so you may not always be able to use this technique.
 For example, `jar -xf` may silently fail to extract a jar or war that has been made fully-executable.
-It is recommended that you only enable this option if you intend to execute it directly, rather than running it with `java -jar`, deploying it to a servlet container, or including it in an OCI image.
+It is recommended that you only enable this option if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
 
 To use this feature, the inclusion of the launch script must be enabled:
 
@@ -255,8 +254,8 @@ include::../gradle/packaging/boot-jar-custom-launch-script.gradle.kts[tags=custo
 
 
 
-[[packaging-executable-configuring-properties-launcher]]
-==== Using the PropertiesLauncher
+[[packaging-executable.configuring.properties-launcher]]
+=== Using the PropertiesLauncher
 To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's manifest to set the `Main-Class` attribute:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -273,9 +272,10 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=proper
 
 
 
-[[packaging-layered-jars]]
-==== Packaging Layered Jars
+[[packaging-executable.configuring.layered-archives]]
+=== Packaging Layered Jar or War
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+Similarly, `bootWar` builds an archive that contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
@@ -305,7 +305,7 @@ include::../gradle/packaging/boot-jar-layered-disabled.gradle[tags=layered]
 include::../gradle/packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
 ----
 
-When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
@@ -323,11 +323,11 @@ include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=laye
 
 
 
-[[packaging-layers-configuration]]
-===== Custom Layers Configuration
+[[packaging-executable.configuring.layered-archives.configuration]]
+==== Custom Layers Configuration
 Depending on your application, you may want to tune how layers are created and add new ones.
 
-This can be done using configuration that describes how the jar can be separated into layers, and the order of those layers.
+This can be done using configuration that describes how the jar or war can be separated into layers, and the order of those layers.
 The following example shows how the default ordering described above can be defined explicitly:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]

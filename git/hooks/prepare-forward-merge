@@ -4,7 +4,7 @@ require 'net/http'
 require 'yaml'
 require 'logger'
 
-$master_branch = "2.5.x"
+$main_branch = "2.6.x"
 
 $log = Logger.new(STDOUT)
 $log.level = Logger::WARN
@@ -26,8 +26,8 @@ end
 
 def rewrite_message(message_file, fixed)
   current_branch = `git rev-parse --abbrev-ref HEAD`.strip
-  if current_branch == "master"
-    current_branch = $master_branch
+  if current_branch == "main"
+    current_branch = $main_branch
   end
   rewritten_message = ""
   message = File.read(message_file)

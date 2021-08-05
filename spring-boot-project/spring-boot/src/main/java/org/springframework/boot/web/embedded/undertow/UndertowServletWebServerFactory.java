@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -244,29 +244,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-	}
-
-	/**
-	 * Return if filters should be initialized eagerly.
-	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
-	 * @since 2.0.0
-	 * @deprecated since 2.4.0 in favor of {@link #isEagerFilterInit()}
-	 */
-	@Deprecated
-	public boolean isEagerInitFilters() {
-		return this.eagerFilterInit;
-	}
-
-	/**
-	 * Set whether filters should be initialized eagerly.
-	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
-	 * {@code false}.
-	 * @since 2.0.0
-	 * @deprecated since 2.4.0 in favor of {@link #isEagerFilterInit()}
-	 */
-	@Deprecated
-	public void setEagerInitFilters(boolean eagerInitFilters) {
-		this.eagerFilterInit = eagerInitFilters;
 	}
 
 	/**

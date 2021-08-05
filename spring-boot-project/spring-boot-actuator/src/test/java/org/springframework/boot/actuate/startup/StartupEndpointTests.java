@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package org.springframework.boot.actuate.startup;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.actuate.startup.StartupEndpoint.StartupResponse;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.metrics.ApplicationStartup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,17 +34,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link StartupEndpoint}.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  */
 class StartupEndpointTests {
 
 	@Test
 	void startupEventsAreFound() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withInitializer((context) -> context.setApplicationStartup(applicationStartup))
-				.withUserConfiguration(EndpointConfiguration.class);
-		contextRunner.run((context) -> {
-			StartupEndpoint.StartupResponse startup = context.getBean(StartupEndpoint.class).startup();
+		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
+			StartupResponse startup = startupEndpoint.startup();
 			assertThat(startup.getSpringBootVersion()).isEqualTo(SpringBootVersion.getVersion());
 			assertThat(startup.getTimeline().getStartTime())
 					.isEqualTo(applicationStartup.getBufferedTimeline().getStartTime());
@@ -48,15 +50,32 @@ class StartupEndpointTests {
 	}
 
 	@Test
-	void bufferIsDrained() {
+	void bufferWithGetIsNotDrained() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
+		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
+			StartupResponse startup = startupEndpoint.startupSnapshot();
+			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
+			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isNotEmpty();
+		});
+	}
+
+	@Test
+	void bufferWithPostIsDrained() {
+		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
+		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
+			StartupResponse startup = startupEndpoint.startup();
+			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
+			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isEmpty();
+		});
+	}
+
+	private void testStartupEndpoint(ApplicationStartup applicationStartup, Consumer<StartupEndpoint> startupEndpoint) {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withInitializer((context) -> context.setApplicationStartup(applicationStartup))
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
-			StartupEndpoint.StartupResponse startup = context.getBean(StartupEndpoint.class).startup();
-			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
-			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isEmpty();
+			assertThat(context).hasSingleBean(StartupEndpoint.class);
+			startupEndpoint.accept(context.getBean(StartupEndpoint.class));
 		});
 	}
 

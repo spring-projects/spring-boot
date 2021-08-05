@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,22 +94,6 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	/**
 	 * Create a new {@code DefaultErrorWebExceptionHandler} instance.
 	 * @param errorAttributes the error attributes
-	 * @param resourceProperties the resources configuration properties
-	 * @param errorProperties the error configuration properties
-	 * @param applicationContext the current application context
-	 * @deprecated since 2.4.0 in favor of
-	 * {@link #DefaultErrorWebExceptionHandler(ErrorAttributes, Resources, ErrorProperties, ApplicationContext)}
-	 */
-	@Deprecated
-	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-			ErrorProperties errorProperties, ApplicationContext applicationContext) {
-		this(errorAttributes, (Resources) resourceProperties, errorProperties, applicationContext);
-	}
-
-	/**
-	 * Create a new {@code DefaultErrorWebExceptionHandler} instance.
-	 * @param errorAttributes the error attributes
 	 * @param resources the resources configuration properties
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context
@@ -187,13 +171,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	@SuppressWarnings("deprecation")
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
 		case ON_PARAM:
-		case ON_TRACE_PARAM:
 			return isTraceEnabled(request);
 		default:
 			return false;
@@ -254,7 +236,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		return (serverRequest) -> {
 			try {
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
-				acceptedMediaTypes.remove(MediaType.ALL);
+				acceptedMediaTypes.removeIf(MediaType.ALL::equalsTypeAndSubtype);
 				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
 				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}

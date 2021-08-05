@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
@@ -36,18 +35,11 @@ import org.springframework.web.server.ServerWebExchange;
 public interface ErrorAttributes {
 
 	/**
-	 * Return a {@link Map} of the error attributes. The map can be used as the model of
-	 * an error page, or returned as a {@link ServerResponse} body.
-	 * @param request the source request
-	 * @param includeStackTrace if stack trace attribute should be included
-	 * @return a map of error attributes
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(ServerRequest, ErrorAttributeOptions)}
+	 * Name of the {@link ServerRequest#attribute(String) request attribute} holding the
+	 * error resolved by the {@code ErrorAttributes} implementation.
+	 * @since 2.5.0
 	 */
-	@Deprecated
-	default Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return Collections.emptyMap();
-	}
+	String ERROR_ATTRIBUTE = ErrorAttributes.class.getName() + ".error";
 
 	/**
 	 * Return a {@link Map} of the error attributes. The map can be used as the model of
@@ -57,7 +49,7 @@ public interface ErrorAttributes {
 	 * @return a map of error attributes
 	 */
 	default Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-		return getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
+		return Collections.emptyMap();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver;
+
+import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,6 +42,11 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 */
 	private String resourceType = "global";
 
+	/**
+	 * Monitored resource's labels.
+	 */
+	private Map<String, String> resourceLabels;
+
 	public String getProjectId() {
 		return this.projectId;
 	}
@@ -54,6 +61,14 @@ public class StackdriverProperties extends StepRegistryProperties {
 
 	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
+	}
+
+	public Map<String, String> getResourceLabels() {
+		return this.resourceLabels;
+	}
+
+	public void setResourceLabels(Map<String, String> resourceLabels) {
+		this.resourceLabels = resourceLabels;
 	}
 
 }

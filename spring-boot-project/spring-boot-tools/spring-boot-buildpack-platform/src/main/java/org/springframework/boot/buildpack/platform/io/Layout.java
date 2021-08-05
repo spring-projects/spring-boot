@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,25 +22,49 @@ import java.io.IOException;
  * Interface that can be used to write a file/directory layout.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public interface Layout {
 
 	/**
 	 * Add a directory to the content.
-	 * @param name the full name of the directory to add.
+	 * @param name the full name of the directory to add
 	 * @param owner the owner of the directory
 	 * @throws IOException on IO error
 	 */
-	void directory(String name, Owner owner) throws IOException;
+	default void directory(String name, Owner owner) throws IOException {
+		directory(name, owner, 0755);
+	}
+
+	/**
+	 * Add a directory to the content.
+	 * @param name the full name of the directory to add
+	 * @param owner the owner of the directory
+	 * @param mode the permissions for the file
+	 * @throws IOException on IO error
+	 */
+	void directory(String name, Owner owner, int mode) throws IOException;
 
 	/**
 	 * Write a file to the content.
-	 * @param name the full name of the file to add.
+	 * @param name the full name of the file to add
 	 * @param owner the owner of the file
 	 * @param content the content to add
 	 * @throws IOException on IO error
 	 */
-	void file(String name, Owner owner, Content content) throws IOException;
+	default void file(String name, Owner owner, Content content) throws IOException {
+		file(name, owner, 0644, content);
+	}
+
+	/**
+	 * Write a file to the content.
+	 * @param name the full name of the file to add
+	 * @param owner the owner of the file
+	 * @param mode the permissions for the file
+	 * @param content the content to add
+	 * @throws IOException on IO error
+	 */
+	void file(String name, Owner owner, int mode, Content content) throws IOException;
 
 }

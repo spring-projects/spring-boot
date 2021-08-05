@@ -1,28 +1,60 @@
 [[spring-boot-reference-documentation]]
 = Spring Boot Reference Documentation
 include::authors.adoc[]
-:docinfo: shared
+v{spring-boot-version}
 include::attributes.adoc[]
 
+This document is also available as {spring-boot-docs}/html/[Multi-page HTML], {spring-boot-docs}/htmlsingle/[Single page HTML] and {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF].
+
+
 include::legal.adoc[leveloffset=+1]
-include::documentation-overview.adoc[leveloffset=+1]
+
+include::getting-help.adoc[leveloffset=+1]
+
+include::documentation.adoc[leveloffset=+1]
+
 include::getting-started.adoc[leveloffset=+1]
-include::using-spring-boot.adoc[leveloffset=+1]
-include::spring-boot-features.adoc[leveloffset=+1]
-include::production-ready-features.adoc[leveloffset=+1]
+
+include::upgrading.adoc[leveloffset=+1]
+
+include::using.adoc[leveloffset=+1]
+
+include::features.adoc[leveloffset=+1]
+
+include::web.adoc[leveloffset=+1]
+
+include::data.adoc[leveloffset=+1]
+
+include::messaging.adoc[leveloffset=+1]
+
+include::io.adoc[leveloffset=+1]
+
+include::container-images.adoc[leveloffset=+1]
+
+include::actuator.adoc[leveloffset=+1]
+
 include::deployment.adoc[leveloffset=+1]
-include::spring-boot-cli.adoc[leveloffset=+1]
+
+include::cli.adoc[leveloffset=+1]
+
 include::build-tool-plugins.adoc[leveloffset=+1]
+
 include::howto.adoc[leveloffset=+1]
 
 
 
+:sectnums!:
 [[appendix]]
 == Appendices
 
-include::appendix-application-properties.adoc[leveloffset=+2]
-include::appendix-configuration-metadata.adoc[leveloffset=+2]
-include::appendix-auto-configuration-classes.adoc[leveloffset=+2]
-include::appendix-test-auto-configuration.adoc[leveloffset=+2]
-include::appendix-executable-jar-format.adoc[leveloffset=+2]
-include::appendix-dependency-versions.adoc[leveloffset=+2]
+include::application-properties.adoc[leveloffset=+1]
+
+include::configuration-metadata.adoc[leveloffset=+1]
+
+include::auto-configuration-classes.adoc[leveloffset=+1]
+
+include::test-auto-configuration.adoc[leveloffset=+1]
+
+include::executable-jar.adoc[leveloffset=+1]
+
+include::dependency-versions.adoc[leveloffset=+1]

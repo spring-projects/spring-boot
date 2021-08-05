@@ -1,0 +1,48 @@
+[appendix]
+[[application-properties]]
+= Common Application Properties
+include::attributes.adoc[]
+
+
+
+Various properties can be specified inside your `application.properties` file, inside your `application.yml` file, or as command line switches.
+This appendix provides a list of common Spring Boot properties and references to the underlying classes that consume them.
+
+TIP: Spring Boot provides various conversion mechanism with advanced value formatting, make sure to review <<features#features.external-config.typesafe-configuration-properties.conversion, the properties conversion section>>.
+
+NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
+Also, you can define your own properties.
+
+
+
+include::application-properties/core.adoc[]
+
+include::application-properties/cache.adoc[]
+
+include::application-properties/mail.adoc[]
+
+include::application-properties/json.adoc[]
+
+include::application-properties/data.adoc[]
+
+include::application-properties/transaction.adoc[]
+
+include::application-properties/data-migration.adoc[]
+
+include::application-properties/integration.adoc[]
+
+include::application-properties/web.adoc[]
+
+include::application-properties/templating.adoc[]
+
+include::application-properties/server.adoc[]
+
+include::application-properties/security.adoc[]
+
+include::application-properties/rsocket.adoc[]
+
+include::application-properties/actuator.adoc[]
+
+include::application-properties/devtools.adoc[]
+
+include::application-properties/testing.adoc[]

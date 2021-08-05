@@ -1,0 +1,14 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::disable-jar[]
+jar {
+	enabled = false
+}
+// end::disable-jar[]
+
+bootJar {
+	mainClass = 'com.example.Application'
+}

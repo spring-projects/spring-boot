@@ -43,8 +43,7 @@ org.springframework.boot.context.FileEncodingApplicationListener,\
 org.springframework.boot.context.config.AnsiOutputApplicationListener,\
 org.springframework.boot.context.config.DelegatingApplicationListener,\
 org.springframework.boot.context.logging.LoggingApplicationListener,\
-org.springframework.boot.env.EnvironmentPostProcessorApplicationListener,\
-org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
+org.springframework.boot.env.EnvironmentPostProcessorApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
@@ -79,3 +78,19 @@ org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
 org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
+
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
+org.springframework.boot.jdbc.AbstractDataSourceInitializerDatabaseInitializerDetector,\
+org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector,\
+org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
+org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector

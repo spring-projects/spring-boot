@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+bootJar {
+	launchScript()
+}
+
+bootBuildImage {
+	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1"
+}

@@ -1,5 +1,5 @@
 [[running-your-application]]
-== Running your Application with Gradle
+= Running your Application with Gradle
 To run your application without first building an archive use the `bootRun` task:
 
 [source,bash,indent=0,subs="verbatim"]
@@ -72,8 +72,8 @@ include::../gradle/running/application-plugin-main-class-name.gradle.kts[tags=ma
 
 
 
-[[running-your-application-passing-arguments]]
-=== Passing Arguments to your Application
+[[running-your-application.passing-arguments]]
+== Passing Arguments to your Application
 Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
 For example, to run your application with a profile named `dev` active the following command can be used:
 
@@ -86,8 +86,8 @@ See {gradle-api}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.Stri
 
 
 
-[[running-your-application-passing-system-properties]]
-=== Passing System properties to your application
+[[running-your-application.passing-system-properties]]
+== Passing System properties to your application
 Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
 To make that value of a system property to be configurable set its value using a {gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].
 To allow a project property to be optional, reference it using `findProperty`.
@@ -112,7 +112,7 @@ Gradle allows project properties to be set in a variety of ways, including on th
 
 [source,bash,indent=0,subs="verbatim,attributes"]
 ----
-$ ./gradlew -Pexample=custom
+$ ./gradlew bootRun -Pexample=custom
 ----
 
 The preceding example sets the value of the `example` project property to `custom`.
@@ -120,8 +120,8 @@ The preceding example sets the value of the `example` project property to `custo
 
 
 
-[[running-your-application-reloading-resources]]
-=== Reloading Resources
+[[running-your-application.reloading-resources]]
+== Reloading Resources
 If devtools has been added to your project it will automatically monitor your application for changes.
 Alternatively, you can configure `bootRun` such that your application's static resources are loaded from their source location:
 

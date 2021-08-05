@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ThreadDumpEndpointWebIntegrationTests {
 
 	@WebEndpointTest
-	void getRequestWithJsonAcceptHeaderShouldProduceJsonThreadDumpResponse(WebTestClient client) throws Exception {
+	void getRequestWithJsonAcceptHeaderShouldProduceJsonThreadDumpResponse(WebTestClient client) {
 		client.get().uri("/actuator/threaddump").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_JSON);
 	}
 
 	@WebEndpointTest
-	void getRequestWithTextPlainAcceptHeaderShouldProduceTextPlainResponse(WebTestClient client) throws Exception {
+	void getRequestWithTextPlainAcceptHeaderShouldProduceTextPlainResponse(WebTestClient client) {
 		String response = client.get().uri("/actuator/threaddump").accept(MediaType.TEXT_PLAIN).exchange()
 				.expectStatus().isOk().expectHeader().contentType("text/plain;charset=UTF-8").expectBody(String.class)
 				.returnResult().getResponseBody();

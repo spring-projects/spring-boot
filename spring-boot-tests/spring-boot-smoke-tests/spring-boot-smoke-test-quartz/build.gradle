@@ -6,8 +6,10 @@ plugins {
 description = "Spring Boot Quartz smoke test"
 
 dependencies {
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-quartz"))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
 
 	runtimeOnly("com.h2database:h2")
 

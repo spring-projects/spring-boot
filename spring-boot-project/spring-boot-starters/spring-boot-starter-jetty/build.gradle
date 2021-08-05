@@ -7,6 +7,7 @@ description = "Starter for using Jetty as the embedded servlet container. An alt
 dependencies {
 	api("jakarta.servlet:jakarta.servlet-api")
 	api("jakarta.websocket:jakarta.websocket-api")
+	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.eclipse.jetty:jetty-servlets")
 	api("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
@@ -21,5 +22,4 @@ dependencies {
 		exclude group: "javax.websocket", module: "javax.websocket-client-api"
 		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
 	}
-	api("org.glassfish:jakarta.el")
 }

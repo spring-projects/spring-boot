@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.env;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -203,15 +204,16 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
-				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile).forEach((path) -> {
-					String name = getName(sourceDirectory.relativize(path));
-					if (StringUtils.hasText(name)) {
-						if (options.contains(Option.USE_LOWERCASE_NAMES)) {
-							name = name.toLowerCase();
-						}
-						propertyFiles.put(name, new PropertyFile(path, options));
-					}
-				});
+				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile, FileVisitOption.FOLLOW_LINKS)
+						.forEach((path) -> {
+							String name = getName(sourceDirectory.relativize(path));
+							if (StringUtils.hasText(name)) {
+								if (options.contains(Option.USE_LOWERCASE_NAMES)) {
+									name = name.toLowerCase();
+								}
+								propertyFiles.put(name, new PropertyFile(path, options));
+							}
+						});
 				return Collections.unmodifiableMap(propertyFiles);
 			}
 			catch (IOException ex) {
@@ -308,7 +310,8 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 				return string;
 			}
 			int numberOfLines = 0;
-			for (char ch : string.toCharArray()) {
+			for (int i = 0; i < string.length(); i++) {
+				char ch = string.charAt(i);
 				if (ch == '\n') {
 					numberOfLines++;
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Nguyen Bao Sach
  */
 class SpringApplicationAdminJmxAutoConfigurationTests {
 
@@ -60,17 +61,10 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 	private final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MultipleMBeanExportersConfiguration.class,
-					SpringApplicationAdminJmxAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SpringApplicationAdminJmxAutoConfiguration.class));
 
 	@Test
-	void notRegisteredByDefault() {
-		this.contextRunner.run((context) -> assertThatExceptionOfType(InstanceNotFoundException.class)
-				.isThrownBy(() -> this.server.getObjectInstance(createDefaultObjectName())));
-	}
-
-	@Test
-	void registeredWithProperty() {
+	void notRegisteredWhenThereAreNoMBeanExporter() {
 		this.contextRunner.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
 			ObjectName objectName = createDefaultObjectName();
 			ObjectInstance objectInstance = this.server.getObjectInstance(objectName);
@@ -79,9 +73,27 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	@Test
-	void registerWithCustomJmxName() {
+	void notRegisteredByDefaultWhenThereAreMultipleMBeanExporters() {
+		this.contextRunner.withUserConfiguration(MultipleMBeanExportersConfiguration.class)
+				.run((context) -> assertThatExceptionOfType(InstanceNotFoundException.class)
+						.isThrownBy(() -> this.server.getObjectInstance(createDefaultObjectName())));
+	}
+
+	@Test
+	void registeredWithPropertyWhenThereAreMultipleMBeanExporters() {
+		this.contextRunner.withUserConfiguration(MultipleMBeanExportersConfiguration.class)
+				.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
+					ObjectName objectName = createDefaultObjectName();
+					ObjectInstance objectInstance = this.server.getObjectInstance(objectName);
+					assertThat(objectInstance).as("Lifecycle bean should have been registered").isNotNull();
+				});
+	}
+
+	@Test
+	void registerWithCustomJmxNameWhenThereAreMultipleMBeanExporters() {
 		String customJmxName = "org.acme:name=FooBar";
-		this.contextRunner.withSystemProperties("spring.application.admin.jmx-name=" + customJmxName)
+		this.contextRunner.withUserConfiguration(MultipleMBeanExportersConfiguration.class)
+				.withSystemProperties("spring.application.admin.jmx-name=" + customJmxName)
 				.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
 					try {
 						this.server.getObjectInstance(createObjectName(customJmxName));

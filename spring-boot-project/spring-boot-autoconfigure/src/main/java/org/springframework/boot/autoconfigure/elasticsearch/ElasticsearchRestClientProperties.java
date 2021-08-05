@@ -57,6 +57,8 @@ public class ElasticsearchRestClientProperties {
 	 */
 	private Duration readTimeout = Duration.ofSeconds(30);
 
+	private final Sniffer sniffer = new Sniffer();
+
 	public List<String> getUris() {
 		return this.uris;
 	}
@@ -95,6 +97,40 @@ public class ElasticsearchRestClientProperties {
 
 	public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
+	}
+
+	public Sniffer getSniffer() {
+		return this.sniffer;
+	}
+
+	public static class Sniffer {
+
+		/**
+		 * Interval between consecutive ordinary sniff executions.
+		 */
+		private Duration interval = Duration.ofMinutes(5);
+
+		/**
+		 * Delay of a sniff execution scheduled after a failure.
+		 */
+		private Duration delayAfterFailure = Duration.ofMinutes(1);
+
+		public Duration getInterval() {
+			return this.interval;
+		}
+
+		public void setInterval(Duration interval) {
+			this.interval = interval;
+		}
+
+		public Duration getDelayAfterFailure() {
+			return this.delayAfterFailure;
+		}
+
+		public void setDelayAfterFailure(Duration delayAfterFailure) {
+			this.delayAfterFailure = delayAfterFailure;
+		}
+
 	}
 
 }

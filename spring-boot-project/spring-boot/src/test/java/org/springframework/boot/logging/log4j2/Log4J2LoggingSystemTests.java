@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
@@ -34,7 +33,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
+import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -241,7 +243,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(getClass().getName());
-		julLogger.setLevel(Level.INFO);
+		julLogger.setLevel(java.util.logging.Level.INFO);
 		julLogger.severe("Hello world");
 		assertThat(output).contains("Hello world");
 	}
@@ -336,6 +338,45 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		verify(listener, times(4)).propertyChange(any(PropertyChangeEvent.class));
+	}
+
+	@Test
+	void getLoggingConfigurationWithResetLevelReturnsNull() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
+		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(configuration)
+				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
+		this.loggingSystem.setLogLevel("com.example.test", null);
+		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(updatedConfiguration).isNull();
+	}
+
+	@Test
+	void getLoggingConfigurationWithResetLevelWhenAlreadyConfiguredReturnsParentConfiguredLevel() {
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		loggerContext.getConfiguration().addLogger("com.example.test",
+				new LoggerConfig("com.example.test", org.apache.logging.log4j.Level.INFO, false));
+		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
+		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(configuration)
+				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
+		this.loggingSystem.setLogLevel("com.example.test", null);
+		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(updatedConfiguration)
+				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.WARN, LogLevel.WARN));
+	}
+
+	@Test
+	void shutdownHookIsDisabled() {
+		assertThat(
+				PropertiesUtil.getProperties().getBooleanProperty(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, true))
+						.isFalse();
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {

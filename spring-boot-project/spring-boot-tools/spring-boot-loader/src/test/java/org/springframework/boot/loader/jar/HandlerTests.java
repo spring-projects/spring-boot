@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,6 +163,7 @@ class HandlerTests {
 		URLConnection jdkConnection = new URL(null, "jar:file:" + testJar.toURI().toURL() + "!/nested.jar!/",
 				this.handler).openConnection();
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
+		assertThat(jdkConnection.getClass().getName()).endsWith(".JarURLConnection");
 	}
 
 	@Test
@@ -171,12 +172,8 @@ class HandlerTests {
 		TestJarCreator.createTestJar(testJar);
 		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
-		JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile());
-		try {
+		try (JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile())) {
 			assertThat(jarFile.getRootJarFile().getFile()).isEqualTo(testJar);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -186,12 +183,8 @@ class HandlerTests {
 		TestJarCreator.createTestJar(testJar);
 		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
-		JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile());
-		try {
+		try (JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile())) {
 			assertThat(jarFile.getRootJarFile().getFile()).isEqualTo(testJar);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 

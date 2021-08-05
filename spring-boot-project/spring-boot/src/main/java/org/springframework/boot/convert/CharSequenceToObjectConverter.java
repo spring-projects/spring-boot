@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 
 	private static final TypeDescriptor STRING = TypeDescriptor.valueOf(String.class);
 
+	private static final TypeDescriptor BYTE_ARRAY = TypeDescriptor.valueOf(byte[].class);
+
 	private static final Set<ConvertiblePair> TYPES;
 
 	private final ThreadLocal<Boolean> disable = new ThreadLocal<>();
@@ -59,12 +61,39 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 		}
 		this.disable.set(Boolean.TRUE);
 		try {
-			return !this.conversionService.canConvert(sourceType, targetType)
-					&& this.conversionService.canConvert(STRING, targetType);
+			boolean canDirectlyConvertCharSequence = this.conversionService.canConvert(sourceType, targetType);
+			if (canDirectlyConvertCharSequence && !isStringConversionBetter(sourceType, targetType)) {
+				return false;
+			}
+			return this.conversionService.canConvert(STRING, targetType);
 		}
 		finally {
 			this.disable.set(null);
 		}
+	}
+
+	/**
+	 * Return if String based conversion is better based on the target type. This is
+	 * required when ObjectTo... conversion produces incorrect results.
+	 * @param sourceType the source type to test
+	 * @param targetType the target type to test
+	 * @return if string conversion is better
+	 */
+	private boolean isStringConversionBetter(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (this.conversionService instanceof ApplicationConversionService) {
+			ApplicationConversionService applicationConversionService = (ApplicationConversionService) this.conversionService;
+			if (applicationConversionService.isConvertViaObjectSourceType(sourceType, targetType)) {
+				// If an ObjectTo... converter is being used then there might be a better
+				// StringTo... version
+				return true;
+			}
+		}
+		if ((targetType.isArray() || targetType.isCollection()) && !targetType.equals(BYTE_ARRAY)) {
+			// StringToArrayConverter / StringToCollectionConverter are better than
+			// ObjectToArrayConverter / ObjectToCollectionConverter
+			return true;
+		}
+		return false;
 	}
 
 	@Override

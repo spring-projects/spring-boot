@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,24 +42,24 @@ class InfluxDbHealthIndicatorTests {
 	void influxDbIsUp() {
 		Pong pong = mock(Pong.class);
 		given(pong.getVersion()).willReturn("0.9");
-		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.ping()).willReturn(pong);
-		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
+		InfluxDB influxDb = mock(InfluxDB.class);
+		given(influxDb.ping()).willReturn(pong);
+		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDb);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("0.9");
-		verify(influxDB).ping();
+		verify(influxDb).ping();
 	}
 
 	@Test
 	void influxDbIsDown() {
-		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.ping()).willThrow(new InfluxDBException(new IOException("Connection failed")));
-		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
+		InfluxDB influxDb = mock(InfluxDB.class);
+		given(influxDb.ping()).willThrow(new InfluxDBException(new IOException("Connection failed")));
+		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDb);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(influxDB).ping();
+		verify(influxDb).ping();
 	}
 
 }

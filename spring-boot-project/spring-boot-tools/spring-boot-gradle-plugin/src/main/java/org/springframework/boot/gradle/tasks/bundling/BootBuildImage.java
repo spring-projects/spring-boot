@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import groovy.lang.Closure;
 import org.gradle.api.Action;
@@ -28,6 +30,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
@@ -38,9 +41,11 @@ import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
+import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
@@ -63,7 +68,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private final Property<String> projectVersion;
 
-	private RegularFileProperty jar;
+	private RegularFileProperty archiveFile;
 
 	private Property<JavaVersion> targetJavaVersion;
 
@@ -83,24 +88,41 @@ public class BootBuildImage extends DefaultTask {
 
 	private boolean publish;
 
-	private DockerSpec docker = new DockerSpec();
+	private final ListProperty<String> buildpacks;
+
+	private final ListProperty<String> bindings;
+
+	private final DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
-		this.jar = getProject().getObjects().fileProperty();
+		this.archiveFile = getProject().getObjects().fileProperty();
 		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
 		this.projectName = getProject().getName();
 		this.projectVersion = getProject().getObjects().property(String.class);
 		Project project = getProject();
 		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
+		this.buildpacks = getProject().getObjects().listProperty(String.class);
+		this.bindings = getProject().getObjects().listProperty(String.class);
 	}
 
 	/**
-	 * Returns the property for the jar file from which the image will be built.
-	 * @return the jar property
+	 * Returns the property for the archive file from which the image will be built.
+	 * @return the archive file property
 	 */
 	@Input
+	public RegularFileProperty getArchiveFile() {
+		return this.archiveFile;
+	}
+
+	/**
+	 * Returns the property for the archive file from which the image will be built.
+	 * @return the archive file property
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of {@link #getArchiveFile()}
+	 */
+	@Deprecated
+	@Input
 	public RegularFileProperty getJar() {
-		return this.jar;
+		return this.archiveFile;
 	}
 
 	/**
@@ -283,6 +305,78 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the buildpacks that will be used when building the image.
+	 * @return the buildpack references
+	 */
+	@Input
+	@Optional
+	public List<String> getBuildpacks() {
+		return this.buildpacks.getOrNull();
+	}
+
+	/**
+	 * Sets the buildpacks that will be used when building the image.
+	 * @param buildpacks the buildpack references
+	 */
+	public void setBuildpacks(List<String> buildpacks) {
+		this.buildpacks.set(buildpacks);
+	}
+
+	/**
+	 * Add an entry to the buildpacks that will be used when building the image.
+	 * @param buildpack the buildpack reference
+	 */
+	public void buildpack(String buildpack) {
+		this.buildpacks.add(buildpack);
+	}
+
+	/**
+	 * Adds entries to the buildpacks that will be used when building the image.
+	 * @param buildpacks the buildpack references
+	 */
+	public void buildpacks(List<String> buildpacks) {
+		this.buildpacks.addAll(buildpacks);
+	}
+
+	/**
+	 * Returns the volume bindings that will be mounted to the container when building the
+	 * image.
+	 * @return the bindings
+	 */
+	@Input
+	@Optional
+	public List<String> getBindings() {
+		return this.bindings.getOrNull();
+	}
+
+	/**
+	 * Sets the volume bindings that will be mounted to the container when building the
+	 * image.
+	 * @param bindings the bindings
+	 */
+	public void setBindings(List<String> bindings) {
+		this.bindings.set(bindings);
+	}
+
+	/**
+	 * Add an entry to the volume bindings that will be mounted to the container when
+	 * building the image.
+	 * @param binding the binding
+	 */
+	public void binding(String binding) {
+		this.bindings.add(binding);
+	}
+
+	/**
+	 * Add entries to the volume bindings that will be mounted to the container when
+	 * building the image.
+	 * @param bindings the bindings
+	 */
+	public void bindings(List<String> bindings) {
+		this.bindings.addAll(bindings);
+	}
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -319,7 +413,7 @@ public class BootBuildImage extends DefaultTask {
 
 	BuildRequest createRequest() {
 		return customize(BuildRequest.of(determineImageReference(),
-				(owner) -> new ZipFileTarArchive(this.jar.get().getAsFile(), owner)));
+				(owner) -> new ZipFileTarArchive(this.archiveFile.get().getAsFile(), owner)));
 	}
 
 	private ImageReference determineImageReference() {
@@ -342,6 +436,8 @@ public class BootBuildImage extends DefaultTask {
 		request = request.withVerboseLogging(this.verboseLogging);
 		request = customizePullPolicy(request);
 		request = customizePublish(request);
+		request = customizeBuildpacks(request);
+		request = customizeBindings(request);
 		return request;
 	}
 
@@ -391,6 +487,22 @@ public class BootBuildImage extends DefaultTask {
 			throw new GradleException("Publishing an image requires docker.publishRegistry to be configured");
 		}
 		request = request.withPublish(this.publish);
+		return request;
+	}
+
+	private BuildRequest customizeBuildpacks(BuildRequest request) {
+		List<String> buildpacks = this.buildpacks.getOrNull();
+		if (buildpacks != null && !buildpacks.isEmpty()) {
+			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeBindings(BuildRequest request) {
+		List<String> bindings = this.bindings.getOrNull();
+		if (bindings != null && !bindings.isEmpty()) {
+			return request.withBindings(bindings.stream().map(Binding::of).collect(Collectors.toList()));
+		}
 		return request;
 	}
 

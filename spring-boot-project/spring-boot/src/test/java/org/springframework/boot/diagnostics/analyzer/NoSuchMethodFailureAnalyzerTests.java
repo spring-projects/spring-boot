@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 @ClassPathOverrides({ "javax.servlet:servlet-api:2.5",
 		"org.springframework.data:spring-data-relational:1.1.7.RELEASE" })
@@ -98,7 +99,10 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 				.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailure(").contains("addServlet(")
-				.contains("class, javax.servlet.ServletContext,");
+				.contains("calling method's class, " + NoSuchMethodFailureAnalyzerTests.class.getName() + ",")
+				.contains("called method's class, javax.servlet.ServletContext,");
+		assertThat(analysis.getAction()).contains(NoSuchMethodFailureAnalyzerTests.class.getName())
+				.contains("javax.servlet.ServletContext");
 	}
 
 	@Test
@@ -109,10 +113,12 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(R2dbcMappingContext.class.getName() + ".<init>(")
 				.contains(R2dbcMappingContext.class.getName() + ".setForceQuote(")
-				.contains("class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
+				.contains("calling method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
+				.contains("called method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
 				.contains("    org.springframework.data.r2dbc.mapping.R2dbcMappingContext")
 				.contains("    org.springframework.data.relational.core.mapping.RelationalMappingContext")
 				.contains("    org.springframework.data.mapping.context.AbstractMappingContext");
+		assertThat(analysis.getAction()).contains("org.springframework.data.r2dbc.mapping.R2dbcMappingContext");
 	}
 
 	private Throwable createFailure() {

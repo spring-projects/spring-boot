@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,20 +94,10 @@ public final class MeterValue {
 	}
 
 	/**
-	 * Return a new {@link MeterValue} instance for the given long value.
-	 * @param value the source value
-	 * @return a {@link MeterValue} instance
-	 * @deprecated as of 2.3.0 in favor of {@link #valueOf(double)}
-	 */
-	@Deprecated
-	public static MeterValue valueOf(long value) {
-		return new MeterValue(value);
-	}
-
-	/**
 	 * Return a new {@link MeterValue} instance for the given double value.
 	 * @param value the source value
 	 * @return a {@link MeterValue} instance
+	 * @since 2.3.0
 	 */
 	public static MeterValue valueOf(double value) {
 		return new MeterValue(value);
@@ -115,9 +105,9 @@ public final class MeterValue {
 
 	private static Double safeParseDouble(String value) {
 		try {
-			return Double.parseDouble(value);
+			return Double.valueOf(value);
 		}
-		catch (NumberFormatException nfe) {
+		catch (NumberFormatException ex) {
 			return null;
 		}
 	}

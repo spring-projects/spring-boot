@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.MongoDriverInformation;
 
-import org.springframework.core.env.Environment;
-
 /**
  * Base class for setup that is common to MongoDB client factories.
  *
@@ -39,13 +37,6 @@ public abstract class MongoClientFactorySupport<T> {
 	private final List<MongoClientSettingsBuilderCustomizer> builderCustomizers;
 
 	private final BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator;
-
-	@Deprecated
-	protected MongoClientFactorySupport(MongoProperties properties, Environment environment,
-			List<MongoClientSettingsBuilderCustomizer> builderCustomizers,
-			BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator) {
-		this(builderCustomizers, clientCreator);
-	}
 
 	protected MongoClientFactorySupport(List<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator) {

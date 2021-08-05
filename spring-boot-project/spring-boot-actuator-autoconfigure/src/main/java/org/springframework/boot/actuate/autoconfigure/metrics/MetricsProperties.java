@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -55,6 +54,8 @@ public class MetricsProperties {
 
 	private final Web web = new Web();
 
+	private final Data data = new Data();
+
 	private final Distribution distribution = new Distribution();
 
 	public boolean isUseGlobalRegistry() {
@@ -75,6 +76,10 @@ public class MetricsProperties {
 
 	public Web getWeb() {
 		return this.web;
+	}
+
+	public Data getData() {
+		return this.data;
 	}
 
 	public Distribution getDistribution() {
@@ -214,6 +219,43 @@ public class MetricsProperties {
 
 	}
 
+	public static class Data {
+
+		private final Repository repository = new Repository();
+
+		public Repository getRepository() {
+			return this.repository;
+		}
+
+		public static class Repository {
+
+			/**
+			 * Name of the metric for sent requests.
+			 */
+			private String metricName = "spring.data.repository.invocations";
+
+			/**
+			 * Auto-timed request settings.
+			 */
+			@NestedConfigurationProperty
+			private final AutoTimeProperties autotime = new AutoTimeProperties();
+
+			public String getMetricName() {
+				return this.metricName;
+			}
+
+			public void setMetricName(String metricName) {
+				this.metricName = metricName;
+			}
+
+			public AutoTimeProperties getAutotime() {
+				return this.autotime;
+			}
+
+		}
+
+	}
+
 	public static class Distribution {
 
 		/**
@@ -260,12 +302,6 @@ public class MetricsProperties {
 
 		public Map<String, double[]> getPercentiles() {
 			return this.percentiles;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "management.metrics.distribution.slo")
-		public Map<String, ServiceLevelObjectiveBoundary[]> getSla() {
-			return this.slo;
 		}
 
 		public Map<String, ServiceLevelObjectiveBoundary[]> getSlo() {

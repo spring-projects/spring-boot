@@ -1,0 +1,257 @@
+[[quartz]]
+= Quartz (`quartz`)
+The `quartz` endpoint provides information about jobs and triggers that are managed by the Quartz Scheduler.
+
+
+
+[[quartz.report]]
+== Retrieving Registered Groups
+Jobs and triggers are managed in groups.
+To retrieve the list of registered job and trigger groups, make a `GET` request to `/actuator/quartz`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/report/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/report/http-response.adoc[]
+
+
+
+[[quartz.report.response-structure]]
+=== Response Structure
+The response contains the groups names for registered jobs and triggers.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}/quartz/report/response-fields.adoc[]
+
+
+
+[[quartz.job-groups]]
+== Retrieving Registered Job Names
+To retrieve the list of registered job names, make a `GET` request to `/actuator/quartz/jobs`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/jobs/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/jobs/http-response.adoc[]
+
+
+
+[[quartz.job-groups.response-structure]]
+=== Response Structure
+The response contains the registered job names for each group.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}/quartz/jobs/response-fields.adoc[]
+
+
+
+[[quartz.trigger-groups]]
+== Retrieving Registered Trigger Names
+To retrieve the list of registered trigger names, make a `GET` request to `/actuator/quartz/triggers`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/triggers/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/triggers/http-response.adoc[]
+
+
+
+[[quartz.trigger-groups.response-structure]]
+=== Response Structure
+The response contains the registered trigger names for each group.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}/quartz/triggers/response-fields.adoc[]
+
+
+
+[[quartz.job-group]]
+== Retrieving Overview of a Job Group
+To retrieve an overview of the jobs in a particular group, make a `GET` request to `/actuator/quartz/jobs/\{groupName}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/job-group/curl-request.adoc[]
+
+The preceding example retrieves the summary for jobs in the `samples` group.
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/job-group/http-response.adoc[]
+
+
+
+[[quartz.job-group.response-structure]]
+=== Response Structure
+The response contains an overview of jobs in a particular group.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}/quartz/job-group/response-fields.adoc[]
+
+
+
+[[quartz.trigger-group]]
+== Retrieving Overview of a Trigger Group
+
+To retrieve an overview of the triggers in a particular group, make a `GET` request to `/actuator/quartz/triggers/\{groupName}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/trigger-group/curl-request.adoc[]
+
+The preceding example retrieves the summary for triggers in the `tests` group.
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/trigger-group/http-response.adoc[]
+
+
+
+[[quartz.trigger-group.response-structure]]
+=== Response Structure
+The response contains an overview of triggers in a particular group.
+Trigger implementation specific details are available.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}/quartz/trigger-group/response-fields.adoc[]
+
+
+
+[[quartz.job]]
+== Retrieving Details of a Job
+To retrieve the details about a particular job, make a `GET` request to `/actuator/quartz/jobs/\{groupName}/\{jobName}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/job-details/curl-request.adoc[]
+
+The preceding example retrieves the details of the job identified by the `samples` group and `jobOne` name.
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/job-details/http-response.adoc[]
+
+If a key in the data map is identified as sensitive, its value is sanitized.
+
+
+
+[[quartz.job.response-structure]]
+=== Response Structure
+The response contains the full details of a job including a summary of the triggers associated with it, if any.
+The triggers are sorted by next fire time and priority.
+The following table describes the structure of the response:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/job-details/response-fields.adoc[]
+
+
+
+[[quartz.trigger]]
+== Retrieving Details of a Trigger
+To retrieve the details about a particular trigger, make a `GET` request to `/actuator/quartz/triggers/\{groupName}/\{triggerName}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/trigger-details-cron/curl-request.adoc[]
+
+The preceding example retrieves the details of trigger identified by the `samples` group and `example` name.
+
+
+
+[[quartz.trigger.common-response-structure]]
+=== Common Response Structure
+The response has a common structure and an additional object that is specific to the trigger's type.
+There are five supported types:
+
+* `cron` for `CronTrigger`
+* `simple` for `SimpleTrigger`
+* `dailyTimeInterval` for `DailyTimeIntervalTrigger`
+* `calendarInterval` for `CalendarIntervalTrigger`
+* `custom` for any other trigger implementations
+
+The following table describes the structure of the common elements of the response:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-common/response-fields.adoc[]
+
+
+
+[[quartz.trigger.cron-response-structure]]
+=== Cron Trigger Response Structure
+A cron trigger defines the cron expression that is used to determine when it has to fire.
+The resulting response for such a trigger implementation is similar to the following:
+
+include::{snippets}/quartz/trigger-details-cron/http-response.adoc[]
+
+
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to cron triggers:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-cron/response-fields.adoc[]
+
+
+
+[[quartz.trigger.simple-response-structure]]
+=== Simple Trigger Response Structure
+A simple trigger is used to fire a Job at a given moment in time, and optionally repeated at a specified interval.
+The resulting response for such a trigger implementation is similar to the following:
+
+include::{snippets}/quartz/trigger-details-simple/http-response.adoc[]
+
+
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to simple triggers:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-simple/response-fields.adoc[]
+
+
+
+[[quartz.trigger.daily-time-interval-response-structure]]
+=== Daily Time Interval Trigger Response Structure
+A daily time interval trigger is used to fire a Job based upon daily repeating time intervals.
+The resulting response for such a trigger implementation is similar to the following:
+
+include::{snippets}/quartz/trigger-details-daily-time-interval/http-response.adoc[]
+
+
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to daily time interval triggers:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-daily-time-interval/response-fields.adoc[]
+
+
+
+[[quartz.trigger.calendar-interval-response-structure]]
+=== Calendar Interval Trigger Response Structure
+A calendar interval trigger is used to fire a Job based upon repeating calendar time intervals.
+The resulting response for such a trigger implementation is similar to the following:
+
+include::{snippets}/quartz/trigger-details-calendar-interval/http-response.adoc[]
+
+
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to calendar interval triggers:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-calendar-interval/response-fields.adoc[]
+
+
+
+[[quartz.trigger.custom-response-structure]]
+=== Custom Trigger Response Structure
+A custom trigger is any other implementation.
+The resulting response for such a trigger implementation is similar to the following:
+
+include::{snippets}/quartz/trigger-details-custom/http-response.adoc[]
+
+
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to custom triggers:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-custom/response-fields.adoc[]

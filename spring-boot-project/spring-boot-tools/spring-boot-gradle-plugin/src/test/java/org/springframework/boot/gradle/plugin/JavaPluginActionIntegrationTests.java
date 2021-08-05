@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,16 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link WarPluginAction}.
+ * Integration tests for {@link JavaPluginAction}.
  *
  * @author Andy Wilkinson
  */
-@GradleCompatibility
+@GradleCompatibility(configurationCache = true)
 class JavaPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -92,10 +92,14 @@ class JavaPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
-	void assembleRunsBootJarAndJarIsSkipped() {
+	void assembleRunsBootJarAndJar() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
+		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"),
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-plain.jar"));
 	}
 
 	@TestTemplate
@@ -103,17 +107,6 @@ class JavaPluginActionIntegrationTests {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyJavaPlugin");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");
-	}
-
-	@TestTemplate
-	void jarAndBootJarCanBothBeBuilt() {
-		BuildResult result = this.gradleBuild.build("assemble");
-		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
-		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
-				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"),
-				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-boot.jar"));
 	}
 
 	@TestTemplate
@@ -152,6 +145,18 @@ class JavaPluginActionIntegrationTests {
 				.getOutput()).contains("3 productionRuntimeClasspath attributes:")
 						.contains("org.gradle.usage: java-runtime").contains("org.gradle.libraryelements: jar")
 						.contains("org.gradle.dependency.bundling: external");
+	}
+
+	@TestTemplate
+	void productionRuntimeClasspathIsConfiguredWithResolvabilityAndConsumabilityThatMatchesRuntimeClasspath() {
+		String runtime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
+				"-PconfigurationName=runtimeClasspath", "-PapplyJavaPlugin").getOutput();
+		assertThat(runtime).contains("canBeResolved: true");
+		assertThat(runtime).contains("canBeConsumed: false");
+		String productionRuntime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
+				"-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin").getOutput();
+		assertThat(productionRuntime).contains("canBeResolved: true");
+		assertThat(productionRuntime).contains("canBeConsumed: false");
 	}
 
 	private void createMinimalMainSource() throws IOException {

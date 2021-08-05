@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean(destroyMethod = "shutdown")
 	@ConditionalOnMissingBean(ClientResources.class)
-	DefaultClientResources lettuceClientResources() {
-		return DefaultClientResources.create();
+	DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
+		DefaultClientResources.Builder builder = DefaultClientResources.builder();
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
 	}
 
 	@Bean
@@ -104,10 +106,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
-		if (pool == null) {
-			return LettuceClientConfiguration.builder();
+		if (isPoolEnabled(pool)) {
+			return new PoolBuilderFactory().createBuilder(pool);
 		}
-		return new PoolBuilderFactory().createBuilder(pool);
+		return LettuceClientConfiguration.builder();
 	}
 
 	private LettuceClientConfigurationBuilder applyProperties(
@@ -178,7 +180,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			config.setMaxIdle(properties.getMaxIdle());
 			config.setMinIdle(properties.getMinIdle());
 			if (properties.getTimeBetweenEvictionRuns() != null) {
-				config.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRuns().toMillis());
+				config.setTimeBetweenEvictionRuns(properties.getTimeBetweenEvictionRuns());
 			}
 			if (properties.getMaxWait() != null) {
 				config.setMaxWaitMillis(properties.getMaxWait().toMillis());

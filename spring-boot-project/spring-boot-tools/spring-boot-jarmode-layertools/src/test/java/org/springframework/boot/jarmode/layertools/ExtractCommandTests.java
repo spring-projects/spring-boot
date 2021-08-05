@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.function.Consumer;
+import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -33,6 +36,9 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
@@ -41,6 +47,7 @@ import static org.mockito.BDDMockito.given;
  * Tests for {@link ExtractCommand}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @ExtendWith(MockitoExtension.class)
 class ExtractCommandTests {
@@ -68,8 +75,8 @@ class ExtractCommandTests {
 	}
 
 	@Test
-	void runExtractsLayers() throws Exception {
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+	void runExtractsLayers() {
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("a", "b", "c", "d");
@@ -77,11 +84,12 @@ class ExtractCommandTests {
 		assertThat(new File(this.extract, "b/b/b.jar")).exists();
 		assertThat(new File(this.extract, "c/c/c.jar")).exists();
 		assertThat(new File(this.extract, "d")).isDirectory();
+		assertThat(new File(this.extract.getParentFile(), "e.jar")).doesNotExist();
 	}
 
 	@Test
 	void runWhenHasDestinationOptionExtractsLayers() {
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		File out = new File(this.extract, "out");
 		this.command.run(Collections.singletonMap(ExtractCommand.DESTINATION_OPTION, out.getAbsolutePath()),
 				Collections.emptyList());
@@ -93,12 +101,13 @@ class ExtractCommandTests {
 
 	@Test
 	void runWhenHasLayerParamsExtractsLimitedLayers() {
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Arrays.asList("a", "c"));
 		assertThat(this.extract.list()).containsOnly("a", "c");
 		assertThat(new File(this.extract, "a/a/a.jar")).exists();
 		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+		assertThat(new File(this.extract.getParentFile(), "e.jar")).doesNotExist();
 	}
 
 	@Test
@@ -107,14 +116,36 @@ class ExtractCommandTests {
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.write("text");
 		}
-		given(this.context.getJarFile()).willReturn(file);
+		given(this.context.getArchiveFile()).willReturn(file);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
 				.withMessageContaining("not compatible with layertools");
 	}
 
-	private File createJarFile(String name) throws IOException {
+	@Test
+	void runWithJarFileThatWouldWriteEntriesOutsideDestinationFails() throws Exception {
+		this.jarFile = createJarFile("test.jar", (out) -> {
+			try {
+				out.putNextEntry(new ZipEntry("e/../../e.jar"));
+				out.closeEntry();
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		});
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
+				.withMessageContaining("Entry 'e/../../e.jar' would be written");
+	}
+
+	private File createJarFile(String name) throws Exception {
+		return createJarFile(name, (out) -> {
+		});
+	}
+
+	private File createJarFile(String name, Consumer<ZipOutputStream> streamHandler) throws Exception {
 		File file = new File(this.temp, name);
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 			out.putNextEntry(new ZipEntry("a/"));
@@ -131,8 +162,18 @@ class ExtractCommandTests {
 			out.closeEntry();
 			out.putNextEntry(new ZipEntry("d/"));
 			out.closeEntry();
+			out.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
+			out.write(getFile("test-manifest.MF").getBytes());
+			out.closeEntry();
+			streamHandler.accept(out);
 		}
 		return file;
+	}
+
+	private String getFile(String fileName) throws Exception {
+		ClassPathResource resource = new ClassPathResource(fileName, getClass());
+		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
+		return FileCopyUtils.copyToString(reader);
 	}
 
 	private static class TestLayers implements Layers {

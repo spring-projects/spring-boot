@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Flyway database migrations.
@@ -33,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.flyway")
@@ -44,9 +46,16 @@ public class FlywayProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Whether to check that migration scripts location exists.
+	 * Whether to check that migration scripts location exists. Should be set to false
+	 * when using a wildcard location or a remote-hosted location such as S3 or GCS.
 	 */
+	@Deprecated
 	private boolean checkLocation = true;
+
+	/**
+	 * Whether to fail if a location of migration scripts doesn't exist.
+	 */
+	private boolean failOnMissingLocations;
 
 	/**
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
@@ -158,12 +167,6 @@ public class FlywayProperties {
 	private String target;
 
 	/**
-	 * JDBC url of the database to migrate. If not set, the primary configured data source
-	 * is used.
-	 */
-	private String url;
-
-	/**
 	 * Login user of the database to migrate.
 	 */
 	private String user;
@@ -172,6 +175,17 @@ public class FlywayProperties {
 	 * Login password of the database to migrate.
 	 */
 	private String password;
+
+	/**
+	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	 */
+	private String driverClassName;
+
+	/**
+	 * JDBC url of the database to migrate. If not set, the primary configured data source
+	 * is used.
+	 */
+	private String url;
 
 	/**
 	 * SQL statements to execute to initialize a connection immediately after obtaining
@@ -328,6 +342,36 @@ public class FlywayProperties {
 	 */
 	private Boolean skipExecutingMigrations;
 
+	/**
+	 * REST API URL of the Vault server. Requires Flyway teams.
+	 */
+	private String vaultUrl;
+
+	/**
+	 * Vault token required to access secrets. Requires Flyway teams.
+	 */
+	private String vaultToken;
+
+	/**
+	 * Comma-separated list of paths to secrets that contain Flyway configurations. This
+	 * must start with the name of the engine followed by '/data/' and end with the name
+	 * of the secret. The resulting form is '{engine}/data/{path}/{to}/{secret_name}'.
+	 * Requires Flyway teams.
+	 */
+	private List<String> vaultSecrets;
+
+	/**
+	 * Ignore migrations that match this comma-separated list of patterns when validating
+	 * migrations. Requires Flyway Teams.
+	 */
+	private List<String> ignoreMigrationPatterns;
+
+	/**
+	 * Whether to attempt to automatically detect SQL migration file encoding. Requires
+	 * Flyway Teams.
+	 */
+	private Boolean detectEncoding;
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -336,12 +380,24 @@ public class FlywayProperties {
 		this.enabled = enabled;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(
+			reason = "Locations can no longer be checked accurately due to changes in Flyway's location support.")
 	public boolean isCheckLocation() {
 		return this.checkLocation;
 	}
 
+	@Deprecated
 	public void setCheckLocation(boolean checkLocation) {
 		this.checkLocation = checkLocation;
+	}
+
+	public boolean isFailOnMissingLocations() {
+		return this.failOnMissingLocations;
+	}
+
+	public void setFailOnMissingLocations(boolean failOnMissingLocations) {
+		this.failOnMissingLocations = failOnMissingLocations;
 	}
 
 	public List<String> getLocations() {
@@ -512,16 +568,15 @@ public class FlywayProperties {
 		this.target = target;
 	}
 
+	/**
+	 * Return if a new datasource is being created.
+	 * @return {@code true} if a new datasource is created
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of directly checking user and
+	 * url.
+	 */
+	@Deprecated
 	public boolean isCreateDataSource() {
 		return this.url != null || this.user != null;
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 	public String getUser() {
@@ -538,6 +593,22 @@ public class FlywayProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getDriverClassName() {
+		return this.driverClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public List<String> getInitSqls() {
@@ -770,6 +841,46 @@ public class FlywayProperties {
 
 	public void setSkipExecutingMigrations(Boolean skipExecutingMigrations) {
 		this.skipExecutingMigrations = skipExecutingMigrations;
+	}
+
+	public String getVaultUrl() {
+		return this.vaultUrl;
+	}
+
+	public void setVaultUrl(String vaultUrl) {
+		this.vaultUrl = vaultUrl;
+	}
+
+	public String getVaultToken() {
+		return this.vaultToken;
+	}
+
+	public void setVaultToken(String vaultToken) {
+		this.vaultToken = vaultToken;
+	}
+
+	public List<String> getVaultSecrets() {
+		return this.vaultSecrets;
+	}
+
+	public void setVaultSecrets(List<String> vaultSecrets) {
+		this.vaultSecrets = vaultSecrets;
+	}
+
+	public List<String> getIgnoreMigrationPatterns() {
+		return this.ignoreMigrationPatterns;
+	}
+
+	public void setIgnoreMigrationPatterns(List<String> ignoreMigrationPatterns) {
+		this.ignoreMigrationPatterns = ignoreMigrationPatterns;
+	}
+
+	public Boolean getDetectEncoding() {
+		return this.detectEncoding;
+	}
+
+	public void setDetectEncoding(final Boolean detectEncoding) {
+		this.detectEncoding = detectEncoding;
 	}
 
 }

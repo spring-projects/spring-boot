@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.server;
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 
@@ -43,7 +43,9 @@ class SslConfigurationValidatorTests {
 	@BeforeEach
 	void loadKeystore() throws Exception {
 		this.keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		this.keyStore.load(new FileInputStream(new File("src/test/resources/test.jks")), "secret".toCharArray());
+		try (InputStream stream = new FileInputStream("src/test/resources/test.jks")) {
+			this.keyStore.load(stream, "secret".toCharArray());
+		}
 	}
 
 	@Test

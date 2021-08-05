@@ -15,5 +15,5 @@ dependencies {
 		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
 	}
 	api("jakarta.servlet:jakarta.servlet-api")
-	api("org.glassfish:jakarta.el")
+	api("org.apache.tomcat.embed:tomcat-embed-el")
 }

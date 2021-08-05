@@ -18,7 +18,7 @@ package org.springframework.boot.buildpack.platform.json;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.junit.jupiter.api.Test;
@@ -42,9 +42,9 @@ class SharedObjectMapperTests {
 		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 				.enabledIn(mapper.getDeserializationConfig().getDeserializationFeatures())).isFalse();
 		assertThat(mapper.getSerializationConfig().getPropertyNamingStrategy())
-				.isEqualTo(PropertyNamingStrategy.LOWER_CAMEL_CASE);
+				.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 		assertThat(mapper.getDeserializationConfig().getPropertyNamingStrategy())
-				.isEqualTo(PropertyNamingStrategy.LOWER_CAMEL_CASE);
+				.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 	}
 
 }

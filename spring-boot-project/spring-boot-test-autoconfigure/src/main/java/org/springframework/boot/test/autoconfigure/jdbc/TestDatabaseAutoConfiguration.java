@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.jdbc;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -173,8 +174,11 @@ public class TestDatabaseAutoConfiguration {
 		EmbeddedDataSourceFactory(Environment environment) {
 			this.environment = environment;
 			if (environment instanceof ConfigurableEnvironment) {
-				((ConfigurableEnvironment) environment).getPropertySources().addFirst(new MapPropertySource(
-						"testDatabase", Collections.singletonMap("spring.datasource.schema-username", "")));
+				Map<String, Object> source = new HashMap<>();
+				source.put("spring.datasource.schema-username", "");
+				source.put("spring.sql.init.username", "");
+				((ConfigurableEnvironment) environment).getPropertySources()
+						.addFirst(new MapPropertySource("testDatabase", source));
 			}
 		}
 

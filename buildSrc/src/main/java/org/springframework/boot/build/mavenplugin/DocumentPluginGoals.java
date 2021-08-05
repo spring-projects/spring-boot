@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println();
 			writer.println();
 			writer.printf("[[%s]]%n", sectionId);
-			writer.printf("== `%s:%s`%n", plugin.getGoalPrefix(), mojo.getGoal());
+			writer.printf("= `%s:%s`%n", plugin.getGoalPrefix(), mojo.getGoal());
 			writer.printf("`%s:%s:%s`%n", plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
 			writer.println();
 			writer.println(mojo.getDescription());
@@ -108,7 +108,7 @@ public class DocumentPluginGoals extends DefaultTask {
 				writer.println();
 				writer.println();
 				writer.printf("[[%s-required]]%n", parametersSectionId);
-				writer.println("=== Required parameters");
+				writer.println("== Required parameters");
 				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
 			List<Parameter> optionalParameters = parameters.stream().filter((parameter) -> !parameter.isRequired())
@@ -117,13 +117,13 @@ public class DocumentPluginGoals extends DefaultTask {
 				writer.println();
 				writer.println();
 				writer.printf("[[%s-optional]]%n", parametersSectionId);
-				writer.println("=== Optional parameters");
+				writer.println("== Optional parameters");
 				writeParametersTable(writer, detailsSectionId, optionalParameters);
 			}
 			writer.println();
 			writer.println();
 			writer.printf("[[%s]]%n", detailsSectionId);
-			writer.println("=== Parameter details");
+			writer.println("== Parameter details");
 			writeParameterDetails(writer, parameters, detailsSectionId);
 		}
 	}
@@ -155,7 +155,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println();
 			writer.println();
 			writer.printf("[[%s-%s]]%n", sectionId, name);
-			writer.printf("==== `%s`%n", name);
+			writer.printf("=== `%s`%n", name);
 			writer.println(parameter.getDescription());
 			writer.println();
 			writer.println("[cols=\"10h,90\"]");

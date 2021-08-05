@@ -1,0 +1,5 @@
+[[upgrading.from-1x]]
+== Upgrading from 1.x
+
+If you are upgrading from the `1.x` release of Spring Boot, check the {github-wiki}/Spring-Boot-2.0-Migration-Guide["`migration guide`" on the project wiki] that provides detailed upgrade instructions.
+Check also the {github-wiki}["`release notes`"] for a list of "`new and noteworthy`" features for each release.

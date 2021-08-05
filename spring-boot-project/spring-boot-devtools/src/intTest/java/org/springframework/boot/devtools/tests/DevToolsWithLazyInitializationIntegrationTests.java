@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.devtools.tests;
-
-import java.io.IOException;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -49,7 +47,7 @@ class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsInt
 		assertThat(template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 	}
 
-	static Object[] parameters() throws IOException {
+	static Object[] parameters() {
 		Directories directories = new Directories(buildOutput, temp);
 		return new Object[] { new Object[] { new LocalApplicationLauncher(directories) },
 				new Object[] { new ExplodedRemoteApplicationLauncher(directories) },

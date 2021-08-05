@@ -1,0 +1,235 @@
+[[getting-started.installing]]
+== Installing Spring Boot
+Spring Boot can be used with "`classic`" Java development tools or installed as a command line tool.
+Either way, you need https://www.java.com[Java SDK v1.8] or higher.
+Before you begin, you should check your current Java installation by using the following command:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -version
+----
+
+If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the <<getting-started#getting-started.installing.cli, Spring Boot CLI>> (Command Line Interface) first.
+Otherwise, read on for "`classic`" installation instructions.
+
+
+
+[[getting-started.installing.java]]
+=== Installation Instructions for the Java Developer
+You can use Spring Boot in the same way as any standard Java library.
+To do so, include the appropriate `+spring-boot-*.jar+` files on your classpath.
+Spring Boot does not require any special tools integration, so you can use any IDE or text editor.
+Also, there is nothing special about a Spring Boot application, so you can run and debug a Spring Boot application as you would any other Java program.
+
+Although you _could_ copy Spring Boot jars, we generally recommend that you use a build tool that supports dependency management (such as Maven or Gradle).
+
+
+
+[[getting-started.installing.java.maven]]
+==== Maven Installation
+Spring Boot is compatible with Apache Maven 3.3 or above.
+If you do not already have Maven installed, you can follow the instructions at https://maven.apache.org.
+
+TIP: On many operating systems, Maven can be installed with a package manager.
+If you use OSX Homebrew, try `brew install maven`.
+Ubuntu users can run `sudo apt-get install maven`.
+Windows users with https://chocolatey.org/[Chocolatey] can run `choco install maven` from an elevated (administrator) prompt.
+
+Spring Boot dependencies use the `org.springframework.boot` `groupId`.
+Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more <<using#using.build-systems.starters,"`Starters`">>.
+Spring Boot also provides an optional <<build-tool-plugins#build-tool-plugins.maven, Maven plugin>> to create executable jars.
+
+More details on getting started with Spring Boot and Maven can be found in the {spring-boot-maven-plugin-docs}#getting-started[Getting Started section] of the Maven plugin's reference guide.
+
+
+
+[[getting-started.installing.java.gradle]]
+==== Gradle Installation
+Spring Boot is compatible with Gradle 6.8, 6.9, and 7.x.
+If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
+
+Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
+Typically, your project declares dependencies to one or more <<using#using.build-systems.starters, "`Starters`">>.
+Spring Boot provides a useful <<build-tool-plugins#build-tool-plugins.gradle, Gradle plugin>> that can be used to simplify dependency declarations and to create executable jars.
+
+.Gradle Wrapper
+****
+The Gradle Wrapper provides a nice way of "`obtaining`" Gradle when you need to build a project.
+It is a small script and library that you commit alongside your code to bootstrap the build process.
+See {gradle-docs}/gradle_wrapper.html for details.
+****
+
+More details on getting started with Spring Boot and Gradle can be found in the {spring-boot-gradle-plugin-docs}#getting-started[Getting Started section] of the Gradle plugin's reference guide.
+
+
+
+[[getting-started.installing.cli]]
+=== Installing the Spring Boot CLI
+The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring.
+It lets you run https://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
+
+You do not need to use the CLI to work with Spring Boot, but it is a quick way to get a Spring application off the ground without an IDE.
+
+
+
+[[getting-started.installing.cli.manual-installation]]
+==== Manual Installation
+You can download the Spring CLI distribution from the Spring software repository:
+
+* https://repo.spring.io/{spring-boot-artifactory-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* https://repo.spring.io/{spring-boot-artifactory-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+
+Cutting edge
+https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions] are also available.
+
+Once downloaded, follow the {github-raw}/spring-boot-project/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt] instructions from the unpacked archive.
+In summary, there is a `spring` script (`spring.bat` for Windows) in a `bin/` directory in the `.zip` file.
+Alternatively, you can use `java -jar` with the `.jar` file (the script helps you to be sure that the classpath is set correctly).
+
+
+
+[[getting-started.installing.cli.sdkman]]
+==== Installation with SDKMAN!
+SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of various binary SDKs, including Groovy and the Spring Boot CLI.
+Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following commands:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ sdk install springboot
+	$ spring --version
+	Spring Boot v{spring-boot-version}
+----
+
+If you develop features for the CLI and want access to the version you built, use the following commands:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
+	$ sdk default springboot dev
+	$ spring --version
+	Spring CLI v{spring-boot-version}
+----
+
+The preceding instructions install a local instance of `spring` called the `dev` instance.
+It points at your target build location, so every time you rebuild Spring Boot, `spring` is up-to-date.
+
+You can see it by running the following command:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ sdk ls springboot
+
+	================================================================================
+	Available Springboot Versions
+	================================================================================
+	> + dev
+	* {spring-boot-version}
+
+	================================================================================
+	+ - local version
+	* - installed
+	> - currently in use
+	================================================================================
+----
+
+
+
+[[getting-started.installing.cli.homebrew]]
+==== OSX Homebrew Installation
+If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot CLI by using the following commands:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ brew tap spring-io/tap
+	$ brew install spring-boot
+----
+
+Homebrew installs `spring` to `/usr/local/bin`.
+
+NOTE: If you do not see the formula, your installation of brew might be out-of-date.
+In that case, run `brew update` and try again.
+
+
+
+[[getting-started.installing.cli.macports]]
+==== MacPorts Installation
+If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the Spring Boot CLI by using the following command:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ sudo port install spring-boot-cli
+----
+
+
+
+[[getting-started.installing.cli.completion]]
+==== Command-line Completion
+The Spring Boot CLI includes scripts that provide command completion for the https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and https://en.wikipedia.org/wiki/Z_shell[zsh] shells.
+You can `source` the script (also named `spring`) in any shell or put it in your personal or system-wide bash completion initialization.
+On a Debian system, the system-wide scripts are in `/shell-completion/bash` and all scripts in that directory are executed when a new shell starts.
+For example, to run the script manually if you have installed by using SDKMAN!, use the following commands:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
+	$ spring <HIT TAB HERE>
+	  grab  help  jar  run  test  version
+----
+
+NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the command-line completion scripts are automatically registered with your shell.
+
+
+
+[[getting-started.installing.cli.scoop]]
+==== Windows Scoop Installation
+If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot CLI by using the following commands:
+
+[indent=0]
+----
+	> scoop bucket add extras
+	> scoop install springboot
+----
+
+Scoop installs `spring` to `~/scoop/apps/springboot/current/bin`.
+
+NOTE: If you do not see the app manifest, your installation of scoop might be out-of-date.
+In that case, run `scoop update` and try again.
+
+
+
+[[getting-started.installing.cli.quick-start]]
+==== Quick-start Spring CLI Example
+You can use the following web application to test your installation.
+To start, create a file called `app.groovy`, as follows:
+
+[source,groovy,indent=0,pending-extract=true,subs="verbatim"]
+----
+	@RestController
+	class ThisWillActuallyRun {
+
+		@RequestMapping("/")
+		String home() {
+			"Hello World!"
+		}
+
+	}
+----
+
+Then run it from a shell, as follows:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ spring run app.groovy
+----
+
+NOTE: The first run of your application is slow, as dependencies are downloaded.
+Subsequent runs are much quicker.
+
+Open `http://localhost:8080` in your favorite web browser.
+You should see the following output:
+
+[indent=0]
+----
+	Hello World!
+----
+

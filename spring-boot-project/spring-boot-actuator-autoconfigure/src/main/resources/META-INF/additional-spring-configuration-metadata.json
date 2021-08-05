@@ -91,8 +91,7 @@
     {
       "name": "management.endpoints.web.exposure.include",
       "defaultValue": [
-        "health",
-        "info"
+        "health"
       ]
     },
     {
@@ -523,6 +522,16 @@
       }
     },
     {
+      "name": "management.metrics.mongo.command.enabled",
+      "description": "Whether to enable Mongo client command metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.mongo.connectionpool.enabled",
+      "description": "Whether to enable Mongo connection pool metrics.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.web.client.request.autotime.enabled",
       "description": "Whether to automatically time web client requests.",
       "defaultValue": true
@@ -579,6 +588,14 @@
       "type": "java.lang.Boolean",
       "description": "Add the \"X-Application-Context\" HTTP header in each response.",
       "defaultValue": false
+    },
+    {
+      "name": "management.server.servlet.context-path",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.server.base-path",
+        "level": "error"
+      }
     },
     {
       "name": "management.server.ssl.ciphers",
