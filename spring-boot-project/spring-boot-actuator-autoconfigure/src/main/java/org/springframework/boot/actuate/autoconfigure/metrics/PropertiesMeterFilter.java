@@ -83,6 +83,8 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return DistributionStatisticConfig.builder()
 				.percentilesHistogram(lookupWithFallbackToAll(distribution.getPercentilesHistogram(), id, null))
 				.percentiles(lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
+				.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
+				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null))
 				.serviceLevelObjectives(
 						convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id, null)))
 				.minimumExpectedValue(

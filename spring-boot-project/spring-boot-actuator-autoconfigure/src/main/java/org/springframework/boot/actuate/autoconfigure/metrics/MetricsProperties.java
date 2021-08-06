@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -296,6 +297,10 @@ public class MetricsProperties {
 		 */
 		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
+		private final Map<String, Duration> expiry = new LinkedHashMap<>();
+
+		private final Map<String, Integer> bufferLength = new LinkedHashMap<>();
+
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
 		}
@@ -314,6 +319,14 @@ public class MetricsProperties {
 
 		public Map<String, String> getMaximumExpectedValue() {
 			return this.maximumExpectedValue;
+		}
+
+		public Map<String, Duration> getExpiry() {
+			return this.expiry;
+		}
+
+		public Map<String, Integer> getBufferLength() {
+			return this.bufferLength;
 		}
 
 	}
