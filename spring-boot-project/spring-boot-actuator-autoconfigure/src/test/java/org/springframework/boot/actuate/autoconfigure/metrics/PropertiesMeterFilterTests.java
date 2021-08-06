@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Jon Schneider
  * @author Artsiom Yudovin
+ * @author Leo Li
  */
 class PropertiesMeterFilterTests {
 
@@ -273,6 +274,71 @@ class PropertiesMeterFilterTests {
 						"distribution.maximum-expected-value.spring.boot=10000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
 				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10000).toNanos());
+	}
+
+	@Test
+	void configureWhenHasExpiryShouldSetExpiryToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.expiry[spring.boot]=5ms"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getExpiry())
+				.isEqualTo(Duration.ofMillis(5));
+	}
+
+	@Test
+	void configureWhenHasHigherExpiryShouldSetExpiryToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.expiry.spring=5ms"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getExpiry())
+				.isEqualTo(Duration.ofMillis(5));
+	}
+
+	@Test
+	void configureWhenHasHigherExpiryAndLowerShouldSetExpiryToHigher() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.expiry.spring=5ms", "distribution.expiry[spring.boot]=10ms"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getExpiry())
+				.isEqualTo(Duration.ofMillis(10));
+	}
+
+	@Test
+	void configureWhenAllExpirySetShouldSetExpiryToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.expiry.all=5ms"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getExpiry())
+				.isEqualTo(Duration.ofMillis(5));
+	}
+
+	@Test
+	void configureWhenHasBufferLengthShouldSetBufferLengthToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.bufferLength[spring.boot]=3"));
+		assertThat(
+				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
+						.isEqualTo(3);
+	}
+
+	@Test
+	void configureWhenHasHigherBufferLengthShouldSetBufferLengthToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.bufferLength.spring=3"));
+		assertThat(
+				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
+						.isEqualTo(3);
+	}
+
+	@Test
+	void configureWhenHasHigherBufferLengthAndLowerShouldSetBufferLengthToHigher() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.bufferLength.spring=2", "distribution.bufferLength[spring.boot]=3"));
+		assertThat(
+				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
+						.isEqualTo(3);
+	}
+
+	@Test
+	void configureWhenAllBufferLengthSetShouldSetBufferLengthToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.bufferLength.all=3"));
+		assertThat(
+				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
+						.isEqualTo(3);
 	}
 
 	private Id createMeterId(String name) {
