@@ -1978,36 +1978,23 @@
     },
     {
       "name": "spring.webflux.session.timeout",
-      "description": "Session timeout. If a duration suffix is not specified, seconds will be used.",
       "defaultValue": "30m"
     },
     {
       "name": "spring.webflux.session.cookie.name",
-      "description": "Session cookie name.",
       "defaultValue": "SESSION"
     },
     {
-      "name": "spring.webflux.session.cookie.domain",
-      "description": "Domain for the session cookie."
-    },
-    {
       "name": "spring.webflux.session.cookie.path",
-      "description": "Path of the session cookie.",
       "defaultValue": "server.servlet.context-path"
     },
     {
       "name": "spring.webflux.session.cookie.max-age",
-      "description": "Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used.\nA positive value indicates when the cookie expires relative to the current time. A value of 0 means the cookie should expire immediately. A negative value means no \"Max-Age\" attribute in which case the cookie is removed when the browser is closed.",
       "defaultValue": "-1s"
     },
     {
       "name": "spring.webflux.session.cookie.http-only",
-      "description": "Whether to use \"HttpOnly\" cookies for session cookies.",
       "defaultValue": true
-    },
-    {
-      "name": "spring.webflux.session.cookie.secure",
-      "description": "Whether to always mark the session cookie as secure."
     },
     {
       "name": "spring.webflux.session.cookie.same-site",

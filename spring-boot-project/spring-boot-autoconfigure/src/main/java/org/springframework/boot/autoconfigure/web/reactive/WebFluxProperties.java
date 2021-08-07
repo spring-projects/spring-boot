@@ -128,6 +128,9 @@ public class WebFluxProperties {
 
 	public static class Session {
 
+		/**
+		 * Session timeout. If a duration suffix is not specified, seconds will be used.
+		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration timeout = Duration.ofMinutes(30);
 
@@ -151,17 +154,39 @@ public class WebFluxProperties {
 
 		private static final String COOKIE_NAME = "SESSION";
 
+		/**
+		 * Name attribute value for session Cookies.
+		 */
 		private String name = COOKIE_NAME;
 
+		/**
+		 * Domain attribute value for session Cookies.
+		 */
 		private String domain;
 
+		/**
+		 * Path attribute value for session Cookies.
+		 */
 		private String path;
 
+		/**
+		 * Maximum age of the session cookie. If a duration suffix is not specified,
+		 * seconds will be used. A positive value indicates when the cookie expires
+		 * relative to the current time. A value of 0 means the cookie should expire
+		 * immediately. A negative value means no "Max-Age" attribute in which case the
+		 * cookie is removed when the browser is closed.
+		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge = Duration.ofSeconds(-1);
 
+		/**
+		 * HttpOnly attribute value for session Cookies.
+		 */
 		private Boolean httpOnly = true;
 
+		/**
+		 * Secure attribute value for session Cookies.
+		 */
 		private Boolean secure;
 
 		/**
