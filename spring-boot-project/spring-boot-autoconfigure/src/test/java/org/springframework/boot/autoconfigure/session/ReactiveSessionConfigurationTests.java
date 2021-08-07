@@ -17,19 +17,26 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ReactiveSessionConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.ReactiveMapSessionRepository;
-import org.springframework.session.config.annotation.web.server.EnableSpringWebSession;
-import org.springframework.web.server.session.CookieWebSessionIdResolver;
-import org.springframework.web.server.session.WebSessionIdResolver;
+import org.springframework.http.ResponseCookie;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.web.server.WebSession;
+import org.springframework.web.server.session.WebSessionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,30 +47,53 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ReactiveSessionConfigurationTests {
 
+	private static final MockReactiveWebServerFactory mockReactiveWebServerFactory = new MockReactiveWebServerFactory();
+
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
-			.withUserConfiguration(ReactiveSessionRepositoryConfiguration.class);
+			.withUserConfiguration(Config.class);
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.name:sid",
-				"spring.webflux.session.cookie.max-age:60s").run((context) -> {
-					WebSessionIdResolver webSessionIdResolver = context.getBean(WebSessionIdResolver.class);
-					assertThat(webSessionIdResolver).isNotNull();
-					CookieWebSessionIdResolver cookieWebSessionIdResolver = (CookieWebSessionIdResolver) webSessionIdResolver;
-					assertThat(cookieWebSessionIdResolver).hasFieldOrPropertyWithValue("cookieName", "sid");
-					assertThat(cookieWebSessionIdResolver).hasFieldOrPropertyWithValue("cookieMaxAge",
-							Duration.ofSeconds(60L));
-				});
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=redis", "spring.webflux.session.cookie.name:JSESSIONID",
+						"spring.webflux.session.cookie.domain:.example.com",
+						"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
+						"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
+						"spring.webflux.session.cookie.same-site:strict")
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.run(assertExchangeWithSession((exchange) -> {
+					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+					assertThat(cookies).isNotEmpty();
+					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				}));
+	}
+
+	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
+			Consumer<MockServerWebExchange> exchange) {
+		return (context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
+			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+			WebSession webSession = webSessionManager.getSession(webExchange).block();
+			webSession.start();
+			webExchange.getResponse().setComplete().block();
+			exchange.accept(webExchange);
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableSpringWebSession
-	static class ReactiveSessionRepositoryConfiguration {
+	static class Config {
 
 		@Bean
-		ReactiveMapSessionRepository mySessionRepository() {
-			return new ReactiveMapSessionRepository(Collections.emptyMap());
+		MockReactiveWebServerFactory mockReactiveWebServerFactory() {
+			return mockReactiveWebServerFactory;
 		}
 
 	}
