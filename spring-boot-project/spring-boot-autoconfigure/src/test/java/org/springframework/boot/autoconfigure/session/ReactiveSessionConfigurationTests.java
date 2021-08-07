@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -29,6 +31,7 @@ import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.R
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,24 +48,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Weix Sun
  */
+@Testcontainers(disabledWithoutDocker = true)
 class ReactiveSessionConfigurationTests {
+
+	@Container
+	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private static final MockReactiveWebServerFactory mockReactiveWebServerFactory = new MockReactiveWebServerFactory();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
-			.withUserConfiguration(Config.class);
+			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class, RedisAutoConfiguration.class,
+					RedisReactiveAutoConfiguration.class))
+			.withUserConfiguration(Config.class).withPropertyValues("spring.session.store-type=redis",
+					"spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort());
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis", "spring.webflux.session.cookie.name:JSESSIONID",
-						"spring.webflux.session.cookie.domain:.example.com",
-						"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
-						"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
-						"spring.webflux.session.cookie.same-site:strict")
-				.withConfiguration(
-						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.name:JSESSIONID",
+				"spring.webflux.session.cookie.domain:.example.com", "spring.webflux.session.cookie.path:/example",
+				"spring.webflux.session.cookie.max-age:60", "spring.webflux.session.cookie.http-only:false",
+				"spring.webflux.session.cookie.secure:false", "spring.webflux.session.cookie.same-site:strict")
 				.run(assertExchangeWithSession((exchange) -> {
 					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 					assertThat(cookies).isNotEmpty();
