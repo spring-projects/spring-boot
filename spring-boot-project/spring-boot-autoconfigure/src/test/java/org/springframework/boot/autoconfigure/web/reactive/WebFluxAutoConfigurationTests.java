@@ -571,15 +571,11 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void customSessionTimeoutConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.timeout:123").run((context) -> {
-			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
-			MockServerWebExchange exchange = MockServerWebExchange.from(request);
-			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
-			WebSession webSession = webSessionManager.getSession(exchange).block();
-			webSession.start();
-			exchange.getResponse().setComplete().block();
-			assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
-		});
+		this.contextRunner.withPropertyValues("spring.webflux.session.timeout:123")
+				.run((assertSessionTimeoutWithWebSession((webSession) -> {
+					webSession.start();
+					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
+				})));
 	}
 
 	@Test
@@ -610,6 +606,17 @@ class WebFluxAutoConfigurationTests {
 			webSession.start();
 			webExchange.getResponse().setComplete().block();
 			exchange.accept(webExchange);
+		};
+	}
+
+	private ContextConsumer<ReactiveWebApplicationContext> assertSessionTimeoutWithWebSession(
+			Consumer<WebSession> session) {
+		return (context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
+			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+			WebSession webSession = webSessionManager.getSession(webExchange).block();
+			session.accept(webSession);
 		};
 	}
 
