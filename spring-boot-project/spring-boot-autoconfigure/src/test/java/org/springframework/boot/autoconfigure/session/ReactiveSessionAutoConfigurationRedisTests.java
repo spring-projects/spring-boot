@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,18 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 	@Test
 	void defaultConfigWithCustomTimeout() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis", "spring.session.timeout=1m")
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.run((context) -> {
+					ReactiveRedisSessionRepository repository = validateSessionRepository(context,
+							ReactiveRedisSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+				});
+	}
+
+	@Test
+	void defaultConfigWithCustomWebFluxTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=redis", "spring.webflux.session.timeout=1m")
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
 				.run((context) -> {

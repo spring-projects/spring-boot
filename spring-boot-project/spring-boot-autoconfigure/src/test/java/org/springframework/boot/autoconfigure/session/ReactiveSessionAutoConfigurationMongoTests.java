@@ -76,6 +76,19 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 	}
 
 	@Test
+	void defaultConfigWithCustomWebFluxTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "spring.webflux.session.timeout=1m")
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
+						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
+				.run((context) -> {
+					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
+							ReactiveMongoSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 60);
+				});
+	}
+
+	@Test
 	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,

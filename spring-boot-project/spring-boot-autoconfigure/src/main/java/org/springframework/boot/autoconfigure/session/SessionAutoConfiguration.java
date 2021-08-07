@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -43,6 +44,8 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.SameSite;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.servlet.server.Session.Cookie;
@@ -62,6 +65,8 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.WebSessionIdResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -71,12 +76,13 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Weix Sun
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
-@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
+@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class, WebFluxProperties.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 		RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class })
@@ -131,6 +137,29 @@ public class SessionAutoConfiguration {
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
+
+		private static final String WEB_SESSION_ID_RESOLVER_BEAN_NAME = "WebSessionIdResolver";
+
+		@Bean
+		@ConditionalOnMissingClass(WEB_SESSION_ID_RESOLVER_BEAN_NAME)
+		WebSessionIdResolver webSessionIdResolver(WebFluxProperties webFluxProperties) {
+			final WebFluxProperties.Cookie cookie = webFluxProperties.getSession().getCookie();
+			CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
+			webSessionIdResolver.setCookieName(cookie.getName());
+			webSessionIdResolver.setCookieMaxAge(cookie.getMaxAge());
+			webSessionIdResolver.addCookieInitializer((cookieBuilder) -> applyOtherProperties(cookie, cookieBuilder));
+			return webSessionIdResolver;
+		}
+
+		private void applyOtherProperties(WebFluxProperties.Cookie cookie,
+				org.springframework.http.ResponseCookie.ResponseCookieBuilder cookieBuilder) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(cookie::getDomain).to(cookieBuilder::domain);
+			map.from(cookie::getPath).to(cookieBuilder::path);
+			map.from(cookie::getHttpOnly).to(cookieBuilder::httpOnly);
+			map.from(cookie::getSecure).to(cookieBuilder::secure);
+			map.from(cookie::getSameSite).as(SameSite::attribute).to(cookieBuilder::sameSite);
+		}
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
