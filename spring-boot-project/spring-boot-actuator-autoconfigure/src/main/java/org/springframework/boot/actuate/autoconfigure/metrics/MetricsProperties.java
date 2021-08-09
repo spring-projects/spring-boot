@@ -297,8 +297,19 @@ public class MetricsProperties {
 		 */
 		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
+		/**
+		 * Specific statistic's expiry for meter IDs starting-with the specified name.
+		 * Values should be a Duration value, the key `all` can also be used to configure
+		 * all meters.
+		 */
 		private final Map<String, Duration> expiry = new LinkedHashMap<>();
 
+		/**
+		 * Specific statistic's bufferLength for meter IDs starting-with the specified
+		 * name. Samples are accumulated to statistics in ring buffers, and bufferLength
+		 * is the number to keep in the ring buffer, the key `all` can also be used to
+		 * configure all meters.
+		 */
 		private final Map<String, Integer> bufferLength = new LinkedHashMap<>();
 
 		public Map<String, Boolean> getPercentilesHistogram() {
