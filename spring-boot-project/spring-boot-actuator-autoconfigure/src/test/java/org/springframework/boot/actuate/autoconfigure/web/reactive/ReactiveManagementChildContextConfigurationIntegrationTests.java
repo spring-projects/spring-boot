@@ -76,6 +76,15 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 				}));
 	}
 
+	@Test
+	void whenRequestUriIsErrorThenResponseBodyIsNotNull() {
+		this.runner.withPropertyValues("management.server.port:0").run(withWebTestClient((client) -> {
+			String body = client.get().uri("/404").accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+			assertThat(body).isNotNull();
+		}));
+	}
+
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(Consumer<WebClient> webClient) {
 		return (context) -> {
 			String port = context.getEnvironment().getProperty("local.management.port");

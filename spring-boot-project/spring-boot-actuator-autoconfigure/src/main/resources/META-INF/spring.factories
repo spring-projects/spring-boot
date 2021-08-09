@@ -110,7 +110,8 @@ org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementCo
 org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
+org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration
 
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer
