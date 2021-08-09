@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,6 +31,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.http.ResponseCookie;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
@@ -37,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Mongo-specific tests for {@link SessionAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Weix Sun
  */
 class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
@@ -96,6 +101,31 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo")
 				.run(validateSpringSessionUsesMongo("foo"));
+	}
+
+	@Test
+	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
+						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
+				.withUserConfiguration(Config.class)
+				.withPropertyValues("spring.session.store-type=mongodb",
+						"spring.webflux.session.cookie.name:JSESSIONID",
+						"spring.webflux.session.cookie.domain:.example.com",
+						"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
+						"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
+						"spring.webflux.session.cookie.same-site:strict")
+				.run(assertExchangeWithSession((exchange) -> {
+					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+					assertThat(cookies).isNotEmpty();
+					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				}));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesMongo(

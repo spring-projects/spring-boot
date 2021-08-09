@@ -16,7 +16,12 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -25,6 +30,8 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.http.ResponseCookie;
 import org.springframework.session.MapSession;
 import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
@@ -38,8 +45,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Weix Sun
  */
+@Testcontainers(disabledWithoutDocker = true)
 class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
+
+	@Container
+	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
@@ -92,6 +105,31 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
 						"spring.session.redis.save-mode=on-get-attribute")
 				.run(validateSpringSessionUsesRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
+	}
+
+	@Test
+	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.withUserConfiguration(Config.class)
+				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
+						"spring.redis.port=" + redis.getFirstMappedPort(), "spring.session.store-type=redis",
+						"spring.webflux.session.cookie.name:JSESSIONID",
+						"spring.webflux.session.cookie.domain:.example.com",
+						"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
+						"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
+						"spring.webflux.session.cookie.same-site:strict")
+				.run(assertExchangeWithSession((exchange) -> {
+					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+					assertThat(cookies).isNotEmpty();
+					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				}));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,
