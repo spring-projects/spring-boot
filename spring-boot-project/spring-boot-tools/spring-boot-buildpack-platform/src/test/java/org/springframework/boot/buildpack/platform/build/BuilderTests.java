@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  */
 class BuilderTests {
 
@@ -274,6 +275,65 @@ class BuilderTests {
 		verify(docker.image()).remove(archive.getValue().getTag(), true);
 		verify(docker.image(), times(2)).inspect(any());
 		verify(docker.image(), times(2)).pull(any(), any(), isNull());
+	}
+
+	@Test
+	void buildInvokesBuilderWithTags() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(), isNull()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+				.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildRequest request = getTestRequest().withTags(ImageReference.of("my-application:1.2.3"));
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		assertThat(out.toString()).contains("Successfully created image tag 'docker.io/library/my-application:1.2.3'");
+		verify(docker.image()).tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+	}
+
+	@Test
+	void buildInvokesBuilderWithTagsAndPublishesImageAndTags() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration()
+				.withBuilderRegistryTokenAuthentication("builder token")
+				.withPublishRegistryTokenAuthentication("publish token");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+						.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+						.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
+		BuildRequest request = getTestRequest().withPublish(true).withTags(ImageReference.of("my-application:1.2.3"));
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		assertThat(out.toString()).contains("Successfully created image tag 'docker.io/library/my-application:1.2.3'");
+
+		verify(docker.image()).pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+		verify(docker.image()).pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+		verify(docker.image()).push(eq(request.getName()), any(),
+				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+		verify(docker.image()).tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
+		verify(docker.image()).push(eq(ImageReference.of("my-application:1.2.3")), any(),
+				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		verifyNoMoreInteractions(docker.image());
 	}
 
 	@Test

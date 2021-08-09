@@ -30,6 +30,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  */
 class ImageTests {
 
@@ -144,6 +146,15 @@ class ImageTests {
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBindings()).containsExactly(Binding.of("host-src:container-dest:ro"),
 				Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void getBuildRequestWhenHasTagsUsesTags() {
+		Image image = new Image();
+		image.tags = Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest");
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getTags()).containsExactly(ImageReference.of("my-app:latest"),
+				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}
 
 	private Artifact createArtifact() {

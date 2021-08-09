@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  */
 public class BuildRequestTests {
 
@@ -197,6 +198,25 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBindings((List<Binding>) null))
 				.withMessage("Bindings must not be null");
+	}
+
+	@Test
+	void withTagsAddsTags() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest witTags = request.withTags(ImageReference.of("docker.io/library/my-app:latest"),
+				ImageReference.of("example.com/custom/my-app:0.0.1"),
+				ImageReference.of("example.com/custom/my-app:latest"));
+		assertThat(request.getTags()).isEmpty();
+		assertThat(witTags.getTags()).containsExactly(ImageReference.of("docker.io/library/my-app:latest"),
+				ImageReference.of("example.com/custom/my-app:0.0.1"),
+				ImageReference.of("example.com/custom/my-app:latest"));
+	}
+
+	@Test
+	void withTagsWhenTagsIsNullThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withTags((List<ImageReference>) null))
+				.withMessage("Tags must not be null");
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

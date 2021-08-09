@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Andrey Shlykov
+ * @author Rafael Ceccone
  */
 class BootBuildImageTests {
 
@@ -276,6 +278,36 @@ class BootBuildImageTests {
 		this.buildImage.binding("volume-name:container-dest:rw");
 		assertThat(this.buildImage.createRequest().getBindings())
 				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void whenNoTagsAreConfiguredThenRequestHasNoTags() {
+		assertThat(this.buildImage.createRequest().getTags()).isEmpty();
+	}
+
+	@Test
+	void whenTagsAreConfiguredThenRequestHasTags() {
+		this.buildImage.setTags(
+				Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
+				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
+	}
+
+	@Test
+	void whenEntriesAreAddedToTagsThenRequestHasTags() {
+		this.buildImage
+				.tags(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
+				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
+	}
+
+	@Test
+	void whenIndividualEntriesAreAddedToTagsThenRequestHasTags() {
+		this.buildImage.tag("my-app:latest");
+		this.buildImage.tag("example.com/my-app:0.0.1-SNAPSHOT");
+		this.buildImage.tag("example.com/my-app:latest");
+		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
+				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}
 
 }

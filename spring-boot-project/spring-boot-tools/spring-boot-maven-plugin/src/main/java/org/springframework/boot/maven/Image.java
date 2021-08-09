@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public class Image {
@@ -62,6 +63,8 @@ public class Image {
 	List<String> buildpacks;
 
 	List<String> bindings;
+
+	List<String> tags;
 
 	/**
 	 * The name of the created image.
@@ -189,6 +192,9 @@ public class Image {
 		}
 		if (!CollectionUtils.isEmpty(this.bindings)) {
 			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
+		}
+		if (!CollectionUtils.isEmpty(this.tags)) {
+			request = request.withTags(this.tags.stream().map(ImageReference::of).collect(Collectors.toList()));
 		}
 		return request;
 	}

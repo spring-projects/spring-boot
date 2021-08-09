@@ -169,6 +169,11 @@ Where `<options>` can contain:
 | `--publishImage`
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
+| `tags`
+|
+| Multiple {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[tag names] to be created for the generated image.
+|
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.

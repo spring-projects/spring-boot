@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public class BootBuildImage extends DefaultTask {
@@ -92,6 +93,8 @@ public class BootBuildImage extends DefaultTask {
 
 	private final ListProperty<String> bindings;
 
+	private final ListProperty<String> tags;
+
 	private final DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
@@ -103,6 +106,7 @@ public class BootBuildImage extends DefaultTask {
 		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
 		this.buildpacks = getProject().getObjects().listProperty(String.class);
 		this.bindings = getProject().getObjects().listProperty(String.class);
+		this.tags = getProject().getObjects().listProperty(String.class);
 	}
 
 	/**
@@ -377,6 +381,40 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the tags that will be created for the built image.
+	 * @return the tags
+	 */
+	@Input
+	@Optional
+	public List<String> getTags() {
+		return this.tags.getOrNull();
+	}
+
+	/**
+	 * Sets the tags that will be created for the built image.
+	 * @param tags the tags
+	 */
+	public void setTags(List<String> tags) {
+		this.tags.set(tags);
+	}
+
+	/**
+	 * Add an entry to the tags that will be created for the built image.
+	 * @param tag the tag
+	 */
+	public void tag(String tag) {
+		this.tags.add(tag);
+	}
+
+	/**
+	 * Add entries to the tags that will be created for the built image.
+	 * @param tags the tags
+	 */
+	public void tags(List<String> tags) {
+		this.tags.addAll(tags);
+	}
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -438,6 +476,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizePublish(request);
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
+		request = customizeTags(request);
 		return request;
 	}
 
@@ -502,6 +541,14 @@ public class BootBuildImage extends DefaultTask {
 		List<String> bindings = this.bindings.getOrNull();
 		if (bindings != null && !bindings.isEmpty()) {
 			return request.withBindings(bindings.stream().map(Binding::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeTags(BuildRequest request) {
+		List<String> tags = this.tags.getOrNull();
+		if (tags != null && !tags.isEmpty()) {
+			return request.withTags(tags.stream().map(ImageReference::of).collect(Collectors.toList()));
 		}
 		return request;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link PrintStreamBuildLog}.
  *
  * @author Phillip Webb
+ * @author Rafael Ceccone
  */
 class PrintStreamBuildLogTests {
 
@@ -56,6 +57,8 @@ class PrintStreamBuildLogTests {
 		Image runImage = mock(Image.class);
 		given(runImage.getDigests()).willReturn(Collections.singletonList("00000002"));
 		given(request.getName()).willReturn(name);
+		ImageReference tag = ImageReference.of("my-app:1.0");
+		given(request.getTags()).willReturn(Collections.singletonList(tag));
 		log.start(request);
 		Consumer<TotalProgressEvent> pullBuildImageConsumer = log.pullingImage(builderImageReference,
 				ImageType.BUILDER);
@@ -73,6 +76,7 @@ class PrintStreamBuildLogTests {
 		phase2Consumer.accept(mockLogEvent("spring"));
 		phase2Consumer.accept(mockLogEvent("boot"));
 		log.executedLifecycle(request);
+		log.createdTag(tag);
 		String expected = FileCopyUtils.copyToString(new InputStreamReader(
 				getClass().getResourceAsStream("print-stream-build-log.txt"), StandardCharsets.UTF_8));
 		assertThat(out.toString()).isEqualToIgnoringNewLines(expected);
