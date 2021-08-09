@@ -52,6 +52,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public class DockerApi {
@@ -298,6 +299,13 @@ public class DockerApi {
 			try (Response response = http().get(imageUri)) {
 				return Image.of(response.getContent());
 			}
+		}
+
+		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {
+			Assert.notNull(sourceReference, "SourceReference must not be null");
+			Assert.notNull(targetReference, "TargetReference must not be null");
+			URI uri = buildUrl("/images/" + sourceReference + "/tag", "repo", targetReference.toString());
+			http().post(uri);
 		}
 
 	}

@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Jeroen Meijer
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public class Image {
@@ -65,6 +66,8 @@ public class Image {
 	List<String> bindings;
 
 	String network;
+
+	List<String> tags;
 
 	/**
 	 * The name of the created image.
@@ -206,6 +209,9 @@ public class Image {
 			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
 		}
 		request = request.withNetwork(this.network);
+		if (!CollectionUtils.isEmpty(this.tags)) {
+			request = request.withTags(this.tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+		}
 		return request;
 	}
 

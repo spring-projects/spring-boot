@@ -71,6 +71,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  */
 @ExtendWith(MockitoExtension.class)
 class DockerApiTests {
@@ -346,6 +347,30 @@ class DockerApiTests {
 					"93cd584bb189bfca4f51744bd19d836fd36da70710395af5a1523ee88f208c6a/layer.tar");
 			assertThat(contents.get("1bf6c63a1e9ed1dd7cb961273bf60b8e0f440361faf273baf866f408e4910601/layer.tar"))
 					.containsExactly("etc/", "etc/apt/", "etc/apt/sources.list");
+		}
+
+		@Test
+		void tagWhenReferenceIsNullThrowsException() {
+			ImageReference tag = ImageReference.of("localhost:5000/ubuntu");
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.tag(null, tag))
+					.withMessage("SourceReference must not be null");
+		}
+
+		@Test
+		void tagWhenTargetIsNullThrowsException() {
+			ImageReference reference = ImageReference.of("localhost:5000/ubuntu");
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.tag(reference, null))
+					.withMessage("TargetReference must not be null");
+		}
+
+		@Test
+		void tagTagsImage() throws Exception {
+			ImageReference sourceReference = ImageReference.of("localhost:5000/ubuntu");
+			ImageReference targetReference = ImageReference.of("localhost:5000/ubuntu:tagged");
+			URI tagURI = new URI(IMAGES_URL + "/localhost:5000/ubuntu/tag?repo=localhost%3A5000%2Fubuntu%3Atagged");
+			given(http().post(tagURI)).willReturn(emptyResponse());
+			this.api.tag(sourceReference, targetReference);
+			verify(http()).post(tagURI);
 		}
 
 	}

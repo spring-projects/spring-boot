@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Andrey Shlykov
+ * @author Rafael Ceccone
  * @since 2.3.0
  * @see #toSystemOut()
  */
@@ -98,6 +99,12 @@ public interface BuildLog {
 	 * @param request the build request
 	 */
 	void executedLifecycle(BuildRequest request);
+
+	/**
+	 * Log that a tag has been created.
+	 * @param tag the tag reference
+	 */
+	void createdTag(ImageReference tag);
 
 	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.

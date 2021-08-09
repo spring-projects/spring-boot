@@ -17,3 +17,5 @@ Building image 'docker.io/library/my-app:latest'
     [basket]      boot
 
 Successfully built image 'docker.io/library/my-app:latest'
+
+Successfully created image tag 'docker.io/library/my-app:1.0'

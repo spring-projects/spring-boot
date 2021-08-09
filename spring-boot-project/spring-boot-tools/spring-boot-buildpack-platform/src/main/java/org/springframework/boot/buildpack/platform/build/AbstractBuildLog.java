@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Andrey Shlykov
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public abstract class AbstractBuildLog implements BuildLog {
@@ -86,6 +87,12 @@ public abstract class AbstractBuildLog implements BuildLog {
 	public void executedLifecycle(BuildRequest request) {
 		log();
 		log("Successfully built image '" + request.getName() + "'");
+		log();
+	}
+
+	@Override
+	public void createdTag(ImageReference tag) {
+		log("Successfully created image tag '" + tag + "'");
 		log();
 	}
 
