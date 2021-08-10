@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,9 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 			WebServer webServer = ((WebServerApplicationContext) applicationContext).getWebServer();
 			if (webServer instanceof TomcatWebServer) {
 				Context context = findContext((TomcatWebServer) webServer);
-				return context.getManager();
+				if (context != null) {
+					return context.getManager();
+				}
 			}
 		}
 		return null;
