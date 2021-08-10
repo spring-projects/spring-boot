@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Jon Schneider
  * @author Alexander Abramov
  * @author Tadaya Tsuyukubo
+ * @author Leo Li
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")

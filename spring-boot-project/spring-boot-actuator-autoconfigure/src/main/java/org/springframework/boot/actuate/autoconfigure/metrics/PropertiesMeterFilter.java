@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  * @author Alexander Abramov
+ * @author Leo Li
  * @since 2.0.0
  */
 public class PropertiesMeterFilter implements MeterFilter {
