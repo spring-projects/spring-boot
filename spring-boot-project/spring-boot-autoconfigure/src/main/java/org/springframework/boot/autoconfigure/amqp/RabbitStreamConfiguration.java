@@ -35,28 +35,23 @@ import org.springframework.rabbit.stream.listener.StreamListenerContainer;
  * Configuration for Spring RabbitMQ Stream Plugin support.
  *
  * @author Gary Russell
- * @since 2.6
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(EnableRabbit.class)
+@ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
 @ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
-public class RabbitStreamConfiguration {
+class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
-			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizers,
-			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizers) {
+			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
+			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
 
 		StreamRabbitListenerContainerFactory factory = new StreamRabbitListenerContainerFactory(
 				rabbitStreamEnvironment);
 		factory.setNativeListener(properties.getListener().getStream().isNativeListener());
-		if (consumerCustomizers.getIfUnique() != null) {
-			factory.setConsumerCustomizer(consumerCustomizers.getIfUnique());
-		}
-		if (containerCustomizers.getIfUnique() != null) {
-			factory.setContainerCustomizer(containerCustomizers.getIfUnique());
-		}
+		consumerCustomizer.ifUnique(factory::setConsumerCustomizer);
+		containerCustomizer.ifUnique(factory::setContainerCustomizer);
 		return factory;
 	}
 
@@ -64,7 +59,7 @@ public class RabbitStreamConfiguration {
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
 	Environment rabbitStreamEnvironment(RabbitProperties properties) {
 		RabbitProperties.Stream stream = properties.getStream();
-		String username = stream.getUserName();
+		String username = stream.getUsername();
 		if (username == null) {
 			username = properties.getUsername();
 		}

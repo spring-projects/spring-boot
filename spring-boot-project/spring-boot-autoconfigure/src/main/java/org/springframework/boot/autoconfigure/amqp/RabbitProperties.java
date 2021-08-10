@@ -896,6 +896,10 @@ public class RabbitProperties {
 
 	public static class StreamContainer extends BaseContainer {
 
+		/**
+		 * When true, the container factory will create containers that support listeners
+		 * that consume native stream messages instead of spring-amqp {@code Message}s.
+		 */
 		boolean nativeListener;
 
 		public boolean isNativeListener() {
@@ -1167,12 +1171,26 @@ public class RabbitProperties {
 
 	public static final class Stream {
 
+		/**
+		 * Host of a RabbitMQ instance with the Stream Plugin Enabled
+		 */
 		private String host = "localhost";
 
+		/**
+		 * Stream port of a RabbitMQ instance with the Stream Plugin Enabled
+		 */
 		private int port = DEFAULT_STREAM_PORT;
 
-		private String userName;
+		/**
+		 * Login user to authenticate to the broker. If not set
+		 * {@code spring.rabbitmq.username} will be used.
+		 */
+		private String username;
 
+		/**
+		 * Login password to authenticate to the broker. If not set
+		 * {@code spring.rabbitmq.password} will be used.
+		 */
 		private String password;
 
 		public String getHost() {
@@ -1191,12 +1209,12 @@ public class RabbitProperties {
 			this.port = port;
 		}
 
-		public String getUserName() {
-			return this.userName;
+		public String getUsername() {
+			return this.username;
 		}
 
-		public void setUserName(String userName) {
-			this.userName = userName;
+		public void setUsername(String username) {
+			this.username = username;
 		}
 
 		public String getPassword() {
