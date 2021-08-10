@@ -296,6 +296,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private final List<PropertySourceLoader> propertySourceLoaders;
 
+		 private final Set<String> excludeFileExtentions;
+
 		private Deque<Profile> profiles;
 
 		private List<Profile> processedProfiles;
@@ -312,6 +314,13 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader(null);
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
 					getClass().getClassLoader());
+			String excludes = environment.getProperty("spring.config.exclude-file-extensions");
+			excludeFileExtentions = new HashSet<>();
+			if (excludes != null) {
+				for (String ext : excludes.split("[,; ]+")) {
+					excludeFileExtentions.add(ext);
+				}
+			}
 		}
 
 		void load() {
@@ -459,6 +468,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						+ "a directory, it must end in '/'");
 			}
 			Set<String> processed = new HashSet<>();
+			if (!excludeFileExtentions.isEmpty()) {
+				processed.addAll(excludeFileExtentions);
+			}
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				for (String fileExtension : loader.getFileExtensions()) {
 					if (processed.add(fileExtension)) {
