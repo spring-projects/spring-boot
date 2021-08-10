@@ -37,7 +37,9 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -49,7 +51,9 @@ import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -849,6 +853,20 @@ class RabbitAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void simpleContainerCustomizer() {
+		this.contextRunner.withUserConfiguration(SimpleContainerCustomizerConfiguration.class).run(
+				(context) -> assertThat(context.getBean(SimpleContainerCustomizerConfiguration.class).customizerCalled)
+						.isTrue());
+	}
+
+	@Test
+	void directContainerCustomizer() {
+		this.contextRunner.withUserConfiguration(DirectContainerCustomizerConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:direct").run((context) -> assertThat(
+						context.getBean(DirectContainerCustomizerConfiguration.class).customizerCalled).isTrue());
+	}
+
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {
 		CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 		return connectionFactory.getRabbitConnectionFactory();
@@ -1109,6 +1127,38 @@ class RabbitAutoConfigurationTests {
 		@Order(0)
 		ConnectionFactoryCustomizer firstCustomizer() {
 			return mock(ConnectionFactoryCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SimpleContainerCustomizerConfiguration {
+
+		boolean customizerCalled;
+
+		@RabbitListener(queues = "test", autoStartup = "false")
+		void listen(String in) {
+		}
+
+		@Bean
+		ContainerCustomizer<SimpleMessageListenerContainer> customizer() {
+			return (container) -> this.customizerCalled = true;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DirectContainerCustomizerConfiguration {
+
+		boolean customizerCalled;
+
+		@RabbitListener(queues = "test", autoStartup = "false")
+		void listen(String in) {
+		}
+
+		@Bean
+		ContainerCustomizer<DirectMessageListenerContainer> customizer() {
+			return (container) -> this.customizerCalled = true;
 		}
 
 	}
