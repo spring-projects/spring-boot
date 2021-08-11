@@ -64,6 +64,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -78,6 +79,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -854,17 +856,20 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void simpleContainerCustomizer() {
-		this.contextRunner.withUserConfiguration(SimpleContainerCustomizerConfiguration.class).run(
-				(context) -> assertThat(context.getBean(SimpleContainerCustomizerConfiguration.class).customizerCalled)
-						.isTrue());
+	@SuppressWarnings("unchecked")
+	void whenASimpleContainerCustomizerIsDefinedThenItIsCalledToConfigureTheContainer() {
+		this.contextRunner.withUserConfiguration(SimpleContainerCustomizerConfiguration.class)
+				.run((context) -> verify(context.getBean(ContainerCustomizer.class))
+						.configure(any(SimpleMessageListenerContainer.class)));
 	}
 
 	@Test
-	void directContainerCustomizer() {
+	@SuppressWarnings("unchecked")
+	void whenADirectContainerCustomizerIsDefinedThenItIsCalledToConfigureTheContainer() {
 		this.contextRunner.withUserConfiguration(DirectContainerCustomizerConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:direct").run((context) -> assertThat(
-						context.getBean(DirectContainerCustomizerConfiguration.class).customizerCalled).isTrue());
+				.withPropertyValues("spring.rabbitmq.listener.type:direct")
+				.run((context) -> verify(context.getBean(ContainerCustomizer.class))
+						.configure(any(DirectMessageListenerContainer.class)));
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {
@@ -1131,34 +1136,34 @@ class RabbitAutoConfigurationTests {
 
 	}
 
+	@Import(TestListener.class)
 	@Configuration(proxyBeanMethods = false)
 	static class SimpleContainerCustomizerConfiguration {
 
-		boolean customizerCalled;
-
-		@RabbitListener(queues = "test", autoStartup = "false")
-		void listen(String in) {
-		}
-
 		@Bean
+		@SuppressWarnings("unchecked")
 		ContainerCustomizer<SimpleMessageListenerContainer> customizer() {
-			return (container) -> this.customizerCalled = true;
+			return mock(ContainerCustomizer.class);
 		}
 
 	}
 
+	@Import(TestListener.class)
 	@Configuration(proxyBeanMethods = false)
 	static class DirectContainerCustomizerConfiguration {
 
-		boolean customizerCalled;
+		@Bean
+		@SuppressWarnings("unchecked")
+		ContainerCustomizer<DirectMessageListenerContainer> customizer() {
+			return mock(ContainerCustomizer.class);
+		}
+
+	}
+
+	static class TestListener {
 
 		@RabbitListener(queues = "test", autoStartup = "false")
 		void listen(String in) {
-		}
-
-		@Bean
-		ContainerCustomizer<DirectMessageListenerContainer> customizer() {
-			return (container) -> this.customizerCalled = true;
 		}
 
 	}
