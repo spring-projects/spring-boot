@@ -142,6 +142,7 @@ dependencies {
 	optional("org.springframework.session:spring-session-hazelcast")
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
+	optional("org.springframework.amqp:spring-rabbit-stream")
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.ws:spring-ws-core")
 	optional("org.thymeleaf:thymeleaf")
