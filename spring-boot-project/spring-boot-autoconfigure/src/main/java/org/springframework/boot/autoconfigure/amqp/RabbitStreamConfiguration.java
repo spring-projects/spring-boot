@@ -16,15 +16,18 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
 
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
@@ -32,7 +35,7 @@ import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
 
 /**
- * Configuration for Spring RabbitMQ Stream Plugin support.
+ * Configuration for Spring RabbitMQ Stream plugin support.
  *
  * @author Gary Russell
  */
@@ -46,7 +49,6 @@ class RabbitStreamConfiguration {
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
 			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
 			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
-
 		StreamRabbitListenerContainerFactory factory = new StreamRabbitListenerContainerFactory(
 				rabbitStreamEnvironment);
 		factory.setNativeListener(properties.getListener().getStream().isNativeListener());
@@ -58,24 +60,22 @@ class RabbitStreamConfiguration {
 	@Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
 	Environment rabbitStreamEnvironment(RabbitProperties properties) {
+		return configure(Environment.builder(), properties).build();
+	}
+
+	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
+		builder.lazyInitialization(true);
 		RabbitProperties.Stream stream = properties.getStream();
-		String username = stream.getUsername();
-		if (username == null) {
-			username = properties.getUsername();
-		}
-		String password = stream.getPassword();
-		if (password == null) {
-			password = properties.getPassword();
-		}
-		EnvironmentBuilder builder = Environment.builder().lazyInitialization(true).host(stream.getHost())
-				.port(stream.getPort());
-		if (username != null) {
-			builder.username(username);
-		}
-		if (password != null) {
-			builder.password(password);
-		}
-		return builder.build();
+		PropertyMapper mapper = PropertyMapper.get();
+		mapper.from(stream.getHost()).to(builder::host);
+		mapper.from(stream.getPort()).to(builder::port);
+		mapper.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
+		mapper.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
+		return builder;
+	}
+
+	private static Function<String, String> withFallback(Supplier<String> fallback) {
+		return (value) -> (value != null) ? value : fallback.get();
 	}
 
 }
