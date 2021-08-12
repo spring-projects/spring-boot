@@ -48,13 +48,13 @@ public class CloudFoundryReactiveHealthEndpointWebExtension {
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion) {
-		return this.delegate.health(apiVersion, SecurityContext.NONE, true);
+		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true);
 	}
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
-		return this.delegate.health(apiVersion, SecurityContext.NONE, true, path);
+		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true, path);
 	}
 
 }

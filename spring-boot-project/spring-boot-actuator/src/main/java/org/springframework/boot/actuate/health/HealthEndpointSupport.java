@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
 
 /**
@@ -53,12 +54,26 @@ abstract class HealthEndpointSupport<C, T> {
 		this.groups = groups;
 	}
 
-	HealthResult<T> getHealth(ApiVersion apiVersion, SecurityContext securityContext, boolean showAll, String... path) {
-		HealthEndpointGroup group = (path.length > 0) ? this.groups.get(path[0]) : null;
-		if (group != null) {
-			return getHealth(apiVersion, group, securityContext, showAll, path, 1);
+	HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+			SecurityContext securityContext, boolean showAll, String... path) {
+		if (path.length > 0) {
+			HealthEndpointGroup group = getHealthGroup(serverNamespace, path);
+			if (group != null) {
+				return getHealth(apiVersion, group, securityContext, showAll, path, 1);
+			}
 		}
 		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
+	}
+
+	private HealthEndpointGroup getHealthGroup(WebServerNamespace serverNamespace, String... path) {
+		if (this.groups.get(path[0]) != null) {
+			return this.groups.get(path[0]);
+		}
+		if (serverNamespace != null) {
+			AdditionalHealthEndpointPath additionalPath = AdditionalHealthEndpointPath.of(serverNamespace, path[0]);
+			return this.groups.get(additionalPath);
+		}
+		return null;
 	}
 
 	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
@@ -71,8 +86,8 @@ abstract class HealthEndpointSupport<C, T> {
 			return null;
 		}
 		Object contributor = getContributor(path, pathOffset);
-		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails,
-				isSystemHealth ? this.groups.getNames() : null, false);
+		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
+		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails, groupNames, false);
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 

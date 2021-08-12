@@ -37,7 +37,9 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -49,7 +51,9 @@ import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -60,6 +64,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -74,6 +79,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -849,6 +855,23 @@ class RabbitAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void whenASimpleContainerCustomizerIsDefinedThenItIsCalledToConfigureTheContainer() {
+		this.contextRunner.withUserConfiguration(SimpleContainerCustomizerConfiguration.class)
+				.run((context) -> verify(context.getBean(ContainerCustomizer.class))
+						.configure(any(SimpleMessageListenerContainer.class)));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void whenADirectContainerCustomizerIsDefinedThenItIsCalledToConfigureTheContainer() {
+		this.contextRunner.withUserConfiguration(DirectContainerCustomizerConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:direct")
+				.run((context) -> verify(context.getBean(ContainerCustomizer.class))
+						.configure(any(DirectMessageListenerContainer.class)));
+	}
+
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {
 		CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 		return connectionFactory.getRabbitConnectionFactory();
@@ -1109,6 +1132,38 @@ class RabbitAutoConfigurationTests {
 		@Order(0)
 		ConnectionFactoryCustomizer firstCustomizer() {
 			return mock(ConnectionFactoryCustomizer.class);
+		}
+
+	}
+
+	@Import(TestListener.class)
+	@Configuration(proxyBeanMethods = false)
+	static class SimpleContainerCustomizerConfiguration {
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		ContainerCustomizer<SimpleMessageListenerContainer> customizer() {
+			return mock(ContainerCustomizer.class);
+		}
+
+	}
+
+	@Import(TestListener.class)
+	@Configuration(proxyBeanMethods = false)
+	static class DirectContainerCustomizerConfiguration {
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		ContainerCustomizer<DirectMessageListenerContainer> customizer() {
+			return mock(ContainerCustomizer.class);
+		}
+
+	}
+
+	static class TestListener {
+
+		@RabbitListener(queues = "test", autoStartup = "false")
+		void listen(String in) {
 		}
 
 	}

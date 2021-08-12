@@ -57,12 +57,12 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
-import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
-import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
@@ -508,16 +508,17 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void testConcurrentKafkaListenerContainerFactoryWithCustomErrorHandler() {
-		this.contextRunner.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
-			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
-					.getBean(ConcurrentKafkaListenerContainerFactory.class);
-			assertThat(factory).hasFieldOrPropertyWithValue("errorHandler", context.getBean("errorHandler"));
-		});
+		this.contextRunner.withBean("errorHandler", ErrorHandler.class, () -> mock(ErrorHandler.class))
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(factory).hasFieldOrPropertyWithValue("errorHandler", context.getBean("errorHandler"));
+				});
 	}
 
 	@Test
 	void concurrentKafkaListenerContainerFactoryInBatchModeShouldUseBatchErrorHandler() {
-		this.contextRunner.withUserConfiguration(BatchErrorHandlerConfiguration.class)
+		this.contextRunner.withBean("batchErrorHandler", BatchErrorHandler.class, () -> mock(BatchErrorHandler.class))
 				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -538,7 +539,7 @@ class KafkaAutoConfigurationTests {
 	@Test
 	void concurrentKafkaListenerContainerFactoryInBatchModeAndSimpleErrorHandlerShouldBeNull() {
 		this.contextRunner.withPropertyValues("spring.kafka.listener.type=batch")
-				.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
+				.withBean("errorHandler", ErrorHandler.class, () -> mock(ErrorHandler.class)).run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					assertThat(factory).hasFieldOrPropertyWithValue("errorHandler", null);
@@ -659,26 +660,6 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		RecordFilterStrategy<Object, Object> recordFilterStrategy() {
 			return (record) -> false;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ErrorHandlerConfiguration {
-
-		@Bean
-		SeekToCurrentErrorHandler errorHandler() {
-			return new SeekToCurrentErrorHandler();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class BatchErrorHandlerConfiguration {
-
-		@Bean
-		SeekToCurrentBatchErrorHandler batchErrorHandler() {
-			return new SeekToCurrentBatchErrorHandler();
 		}
 
 	}

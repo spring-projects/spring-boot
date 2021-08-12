@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 	private Boolean showComponents;
 
 	private boolean showDetails = true;
+
+	private AdditionalHealthEndpointPath additionalPath;
 
 	TestHealthEndpointGroup() {
 		this((name) -> true);
@@ -76,6 +78,15 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return this.httpCodeStatusMapper;
+	}
+
+	@Override
+	public AdditionalHealthEndpointPath getAdditionalPath() {
+		return this.additionalPath;
+	}
+
+	void setAdditionalPath(AdditionalHealthEndpointPath additionalPath) {
+		this.additionalPath = additionalPath;
 	}
 
 }

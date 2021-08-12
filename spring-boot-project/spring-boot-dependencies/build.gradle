@@ -1208,7 +1208,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.8.0-M1") {
+	library("Micrometer", "1.8.0-SNAPSHOT") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1416,6 +1416,13 @@ bom {
 			]
 		}
 	}
+	library("Rabbit Stream Client", "0.3.0") {
+		group("com.rabbitmq") {
+			modules = [
+					"stream-client"
+			]
+		}
+	}
 	library("Reactive Streams", "1.0.3") {
 		group("org.reactivestreams") {
 			modules = [
@@ -1423,7 +1430,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.9") {
+	library("Reactor Bom", "2020.0.10") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1639,11 +1646,12 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.0-M1") {
+	library("Spring AMQP", "2.4.0-SNAPSHOT") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
 				"spring-rabbit",
+				"spring-rabbit-stream",
 				"spring-rabbit-junit",
 				"spring-rabbit-test"
 			]
@@ -1659,7 +1667,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.1.0-M1") {
+	library("Spring Data Bom", "2021.1.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1680,14 +1688,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.5.2") {
+	library("Spring Integration", "5.5.3-SNAPSHOT") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.0-M1") {
+	library("Spring Kafka", "2.8.0-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1725,14 +1733,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.6.0-M1") {
+	library("Spring Security", "5.6.0-SNAPSHOT") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.0.1") {
+	library("Spring Session Bom", "2021.1.0-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"

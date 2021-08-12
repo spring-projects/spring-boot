@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
 
 /**
@@ -47,6 +49,40 @@ public interface HealthEndpointGroups {
 	 * @return the {@link HealthEndpointGroup} or {@code null}
 	 */
 	HealthEndpointGroup get(String name);
+
+	/**
+	 * Return the group with the specified additional path or {@code null} if no group
+	 * with that path is found.
+	 * @param path the additional path
+	 * @return the matching {@link HealthEndpointGroup} or {@code null}
+	 * @since 2.6.0
+	 */
+	default HealthEndpointGroup get(AdditionalHealthEndpointPath path) {
+		Assert.notNull(path, "Path must not be null");
+		for (String name : getNames()) {
+			HealthEndpointGroup group = get(name);
+			if (path.equals(group.getAdditionalPath())) {
+				return group;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return all the groups with an additional path on the specified
+	 * {@link WebServerNamespace}.
+	 * @param namespace the {@link WebServerNamespace}
+	 * @return the matching groups
+	 * @since 2.6.0
+	 */
+	default Set<HealthEndpointGroup> getAllWithAdditionalPath(WebServerNamespace namespace) {
+		Assert.notNull(namespace, "Namespace must not be null");
+		Set<HealthEndpointGroup> filteredGroups = new LinkedHashSet<>();
+		getNames().stream().map(this::get).filter(
+				(group) -> group.getAdditionalPath() != null && group.getAdditionalPath().hasNamespace(namespace))
+				.forEach(filteredGroups::add);
+		return filteredGroups;
+	}
 
 	/**
 	 * Factory method to create a {@link HealthEndpointGroups} instance.

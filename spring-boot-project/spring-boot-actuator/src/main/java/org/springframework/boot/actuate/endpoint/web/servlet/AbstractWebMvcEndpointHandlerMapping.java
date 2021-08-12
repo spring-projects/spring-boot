@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -41,6 +42,8 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -54,6 +57,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -172,6 +177,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		if (matchAllRemainingPathSegmentsVariable != null) {
 			path = path.replace("{*" + matchAllRemainingPathSegmentsVariable + "}", "**");
 		}
+		registerMapping(endpoint, predicate, operation, path);
+	}
+
+	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
+			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
 				new ServletWebOperationAdapter(operation));
 		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
@@ -286,8 +296,17 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
+				ProducibleOperationArgumentResolver producibleOperationArgumentResolver = new ProducibleOperationArgumentResolver(
+						() -> headers.get("Accept"));
+				OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
+						.of(WebServerNamespace.class, () -> {
+							WebApplicationContext applicationContext = WebApplicationContextUtils
+									.getRequiredWebApplicationContext(request.getServletContext());
+							return WebServerNamespace
+									.from(WebServerApplicationContext.getServerNamepace(applicationContext));
+						});
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						new ProducibleOperationArgumentResolver(() -> headers.get("Accept")));
+						serverNamespaceArgumentResolver, producibleOperationArgumentResolver);
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
