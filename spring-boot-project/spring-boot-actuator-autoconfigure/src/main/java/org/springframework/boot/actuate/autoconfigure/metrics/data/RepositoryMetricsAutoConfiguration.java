@@ -64,11 +64,11 @@ public class RepositoryMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener(MeterRegistry registry,
-			RepositoryTagsProvider tagsProvider) {
+	public MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener(
+			ObjectProvider<MeterRegistry> registry, RepositoryTagsProvider tagsProvider) {
 		Repository properties = this.properties.getData().getRepository();
-		return new MetricsRepositoryMethodInvocationListener(registry, tagsProvider, properties.getMetricName(),
-				properties.getAutotime());
+		return new MetricsRepositoryMethodInvocationListener(registry::getObject, tagsProvider,
+				properties.getMetricName(), properties.getAutotime());
 	}
 
 	@Bean
