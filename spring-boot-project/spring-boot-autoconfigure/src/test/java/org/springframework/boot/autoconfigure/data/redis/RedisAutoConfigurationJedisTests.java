@@ -140,8 +140,8 @@ class RedisAutoConfigurationJedisTests {
 					assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
 					assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
 					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
-					assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
-					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
+					assertThat(cf.getPoolConfig().getMaxWaitDuration()).isEqualTo(Duration.ofSeconds(2));
+					assertThat(cf.getPoolConfig().getDurationBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
 				});
 	}
 
