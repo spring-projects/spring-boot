@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package smoketest.data.mongo;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,37 +25,36 @@ import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCu
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class SampleMongoApplication implements CommandLineRunner {
+public class SampleMongoApplication {
 
-	@Autowired
-	private CustomerRepository repository;
+	@Bean
+	public CommandLineRunner exampleRunner(CustomerRepository repository) {
+		return (args) -> {
+			repository.deleteAll();
 
-	@Override
-	public void run(String... args) throws Exception {
-		this.repository.deleteAll();
+			// save a couple of customers
+			repository.save(new Customer("Alice", "Smith"));
+			repository.save(new Customer("Bob", "Smith"));
 
-		// save a couple of customers
-		this.repository.save(new Customer("Alice", "Smith"));
-		this.repository.save(new Customer("Bob", "Smith"));
+			// fetch all customers
+			System.out.println("Customers found with findAll():");
+			System.out.println("-------------------------------");
+			for (Customer customer : repository.findAll()) {
+				System.out.println(customer);
+			}
+			System.out.println();
 
-		// fetch all customers
-		System.out.println("Customers found with findAll():");
-		System.out.println("-------------------------------");
-		for (Customer customer : this.repository.findAll()) {
-			System.out.println(customer);
-		}
-		System.out.println();
+			// fetch an individual customer
+			System.out.println("Customer found with findByFirstName('Alice'):");
+			System.out.println("--------------------------------");
+			System.out.println(repository.findByFirstName("Alice"));
 
-		// fetch an individual customer
-		System.out.println("Customer found with findByFirstName('Alice'):");
-		System.out.println("--------------------------------");
-		System.out.println(this.repository.findByFirstName("Alice"));
-
-		System.out.println("Customers found with findByLastName('Smith'):");
-		System.out.println("--------------------------------");
-		for (Customer customer : this.repository.findByLastName("Smith")) {
-			System.out.println(customer);
-		}
+			System.out.println("Customers found with findByLastName('Smith'):");
+			System.out.println("--------------------------------");
+			for (Customer customer : repository.findByLastName("Smith")) {
+				System.out.println(customer);
+			}
+		};
 	}
 
 	@Bean
