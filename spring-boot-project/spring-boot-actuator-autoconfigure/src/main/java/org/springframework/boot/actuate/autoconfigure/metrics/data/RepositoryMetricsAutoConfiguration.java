@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Repository metrics.
@@ -75,7 +76,7 @@ public class RepositoryMetricsAutoConfiguration {
 	public static MetricsRepositoryMethodInvocationListenerBeanPostProcessor metricsRepositoryMethodInvocationListenerBeanPostProcessor(
 			ObjectProvider<MetricsRepositoryMethodInvocationListener> metricsRepositoryMethodInvocationListener) {
 		return new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
-				metricsRepositoryMethodInvocationListener::getObject);
+				SingletonSupplier.of(metricsRepositoryMethodInvocationListener::getObject));
 	}
 
 }

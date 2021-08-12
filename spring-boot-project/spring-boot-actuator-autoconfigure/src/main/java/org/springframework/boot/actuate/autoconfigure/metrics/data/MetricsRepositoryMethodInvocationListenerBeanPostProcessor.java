@@ -16,14 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.data;
 
-import java.util.function.Supplier;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactoryCustomizer;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link BeanPostProcessor} to apply a {@link MetricsRepositoryMethodInvocationListener}
@@ -36,7 +35,7 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 	private final RepositoryFactoryCustomizer customizer;
 
 	MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
-			Supplier<MetricsRepositoryMethodInvocationListener> listener) {
+			SingletonSupplier<MetricsRepositoryMethodInvocationListener> listener) {
 		this.customizer = new MetricsRepositoryFactoryCustomizer(listener);
 	}
 
@@ -50,21 +49,16 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 
 	private static final class MetricsRepositoryFactoryCustomizer implements RepositoryFactoryCustomizer {
 
-		private final Supplier<MetricsRepositoryMethodInvocationListener> listenerSupplier;
-
-		private volatile MetricsRepositoryMethodInvocationListener listener;
+		private final SingletonSupplier<MetricsRepositoryMethodInvocationListener> listenerSupplier;
 
 		private MetricsRepositoryFactoryCustomizer(
-				Supplier<MetricsRepositoryMethodInvocationListener> listenerSupplier) {
+				SingletonSupplier<MetricsRepositoryMethodInvocationListener> listenerSupplier) {
 			this.listenerSupplier = listenerSupplier;
 		}
 
 		@Override
 		public void customize(RepositoryFactorySupport repositoryFactory) {
-			if (this.listener == null) {
-				this.listener = this.listenerSupplier.get();
-			}
-			repositoryFactory.addInvocationListener(this.listener);
+			repositoryFactory.addInvocationListener(this.listenerSupplier.get());
 		}
 
 	}
