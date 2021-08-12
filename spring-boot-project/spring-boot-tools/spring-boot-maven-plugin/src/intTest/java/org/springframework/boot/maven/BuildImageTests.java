@@ -271,6 +271,17 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenBuildImageIsInvokedWithNetworkModeNone(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-network").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-network:0.0.1.BUILD-SNAPSHOT")
+							.contains("Network status: curl failed").contains("Successfully built image");
+					removeImage("build-image-network", "0.0.1.BUILD-SNAPSHOT");
+				});
+	}
+
+	@TestTemplate
 	void whenBuildImageIsInvokedOnMultiModuleProjectWithPackageGoal(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-multi-module").goals("package")
 				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {

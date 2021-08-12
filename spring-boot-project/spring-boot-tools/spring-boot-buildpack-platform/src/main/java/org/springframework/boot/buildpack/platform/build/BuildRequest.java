@@ -265,6 +265,12 @@ public class BuildRequest {
 				this.network);
 	}
 
+	/**
+	 * Return a new {@link BuildRequest} with an updated network setting.
+	 * @param network the network the build container will connect to
+	 * @return an updated build request
+	 * @since 2.6.0
+	 */
 	public BuildRequest withNetwork(String network) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
@@ -371,6 +377,11 @@ public class BuildRequest {
 		return this.bindings;
 	}
 
+	/**
+	 * Return the network the build container will connect to.
+	 * @return the network
+	 * @since 2.6.0
+	 */
 	public String getNetwork() {
 		return this.network;
 	}

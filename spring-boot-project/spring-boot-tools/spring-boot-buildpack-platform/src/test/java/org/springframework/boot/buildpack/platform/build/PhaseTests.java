@@ -57,7 +57,6 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -71,7 +70,6 @@ class PhaseTests {
 		verify(update).withBinding(Binding.from("/var/run/docker.sock", "/var/run/docker.sock"));
 		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -83,7 +81,6 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test", "-log-level", "debug");
 		verify(update).withLabel("author", "spring-boot");
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -95,7 +92,6 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -107,7 +103,6 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test", "a", "b", "c");
 		verify(update).withLabel("author", "spring-boot");
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -121,7 +116,6 @@ class PhaseTests {
 		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
 		verify(update).withBinding(Binding.from(volumeName, "/test"));
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 
@@ -136,7 +130,6 @@ class PhaseTests {
 		verify(update).withLabel("author", "spring-boot");
 		verify(update).withEnv("name1", "value1");
 		verify(update).withEnv("name2", "value2");
-		verify(update).withNetworkMode(null);
 		verifyNoMoreInteractions(update);
 	}
 

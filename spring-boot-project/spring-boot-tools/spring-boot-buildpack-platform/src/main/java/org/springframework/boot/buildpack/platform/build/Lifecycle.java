@@ -148,7 +148,9 @@ class Lifecycle implements Closeable {
 			this.request.getBindings().forEach(phase::withBinding);
 		}
 		phase.withEnv(PLATFORM_API_VERSION_KEY, this.platformVersion.toString());
-		phase.withNetworkMode(this.request.getNetwork());
+		if (this.request.getNetwork() != null) {
+			phase.withNetworkMode(this.request.getNetwork());
+		}
 		return phase;
 	}
 

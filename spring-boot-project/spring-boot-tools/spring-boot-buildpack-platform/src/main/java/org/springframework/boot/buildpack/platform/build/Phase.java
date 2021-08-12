@@ -104,6 +104,10 @@ class Phase {
 		this.env.put(name, value);
 	}
 
+	/**
+	 * Update this phase with the network the build container will connect to.
+	 * @param networkMode the network
+	 */
 	void withNetworkMode(String networkMode) {
 		this.networkMode = networkMode;
 	}
@@ -134,7 +138,9 @@ class Phase {
 		update.withLabel("author", "spring-boot");
 		this.bindings.forEach(update::withBinding);
 		this.env.forEach(update::withEnv);
-		update.withNetworkMode(this.networkMode);
+		if (this.networkMode != null) {
+			update.withNetworkMode(this.networkMode);
+		}
 	}
 
 }

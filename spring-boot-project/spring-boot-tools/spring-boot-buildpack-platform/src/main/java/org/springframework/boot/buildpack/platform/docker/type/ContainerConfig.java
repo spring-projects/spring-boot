@@ -188,6 +188,11 @@ public class ContainerConfig {
 			this.env.put(name, value);
 		}
 
+		/**
+		 * Update the container config with the network that the build container will
+		 * connect to.
+		 * @param networkMode the network
+		 */
 		public void withNetworkMode(String networkMode) {
 			this.networkMode = networkMode;
 		}
