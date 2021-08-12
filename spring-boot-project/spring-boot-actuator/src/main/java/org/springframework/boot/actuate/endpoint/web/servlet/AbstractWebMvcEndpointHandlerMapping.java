@@ -303,7 +303,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 							WebApplicationContext applicationContext = WebApplicationContextUtils
 									.getRequiredWebApplicationContext(request.getServletContext());
 							return WebServerNamespace
-									.from(WebServerApplicationContext.getServerNamepace(applicationContext));
+									.from(WebServerApplicationContext.getServerNamespace(applicationContext));
 						});
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
 						serverNamespaceArgumentResolver, producibleOperationArgumentResolver);

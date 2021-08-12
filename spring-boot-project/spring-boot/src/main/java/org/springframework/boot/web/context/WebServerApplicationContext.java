@@ -66,7 +66,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * {@link WebServerApplicationContext}
 	 * @since 2.6.0
 	 */
-	static String getServerNamepace(ApplicationContext context) {
+	static String getServerNamespace(ApplicationContext context) {
 		return (context instanceof WebServerApplicationContext)
 				? ((WebServerApplicationContext) context).getServerNamespace() : null;
 

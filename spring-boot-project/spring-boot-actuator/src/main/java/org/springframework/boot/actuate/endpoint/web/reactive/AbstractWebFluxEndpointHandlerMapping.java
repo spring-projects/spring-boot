@@ -312,7 +312,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			Map<String, Object> arguments = getArguments(exchange, body);
 			OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
 					.of(WebServerNamespace.class, () -> WebServerNamespace
-							.from(WebServerApplicationContext.getServerNamepace(exchange.getApplicationContext())));
+							.from(WebServerApplicationContext.getServerNamespace(exchange.getApplicationContext())));
 			return this.securityContextSupplier.get()
 					.map((securityContext) -> new InvocationContext(securityContext, arguments,
 							serverNamespaceArgumentResolver,
