@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class Lifecycle implements Closeable {
 
@@ -147,6 +148,9 @@ class Lifecycle implements Closeable {
 			this.request.getBindings().forEach(phase::withBinding);
 		}
 		phase.withEnv(PLATFORM_API_VERSION_KEY, this.platformVersion.toString());
+		if (this.request.getNetwork() != null) {
+			phase.withNetworkMode(this.request.getNetwork());
+		}
 		return phase;
 	}
 

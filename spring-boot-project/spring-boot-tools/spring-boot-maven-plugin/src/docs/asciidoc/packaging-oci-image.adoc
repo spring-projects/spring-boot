@@ -163,6 +163,12 @@ Where `<options>` can contain:
 * `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
 |
 
+| `network` +
+(`spring-boot.build-image.network`)
+| The https://docs.docker.com/network/#network-drivers[network driver] the builder container will be configured to use.
+The value supplied will be passed unvalidated to Docker when creating the builder container.
+|
+
 | `cleanCache` +
 (`spring-boot.build-image.cleanCache`)
 | Whether to clean the cache before building.
@@ -176,6 +182,7 @@ Where `<options>` can contain:
 (`spring-boot.build-image.publish`)
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.

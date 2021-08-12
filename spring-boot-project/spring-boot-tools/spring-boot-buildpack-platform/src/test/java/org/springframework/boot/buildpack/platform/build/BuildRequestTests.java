@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 public class BuildRequestTests {
 
@@ -197,6 +198,12 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBindings((List<Binding>) null))
 				.withMessage("Bindings must not be null");
+	}
+
+	@Test
+	void withNetworkUpdatesNetwork() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar")).withNetwork("test");
+		assertThat(request.getNetwork()).isEqualTo("test");
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {
