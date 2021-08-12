@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * Utility that can be used to map values from a supplied source to a destination.
@@ -125,7 +126,7 @@ public final class PropertyMapper {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
 		}
-		return new Source<>(new CachingSupplier<>(supplier), (Predicate<T>) ALWAYS);
+		return new Source<>(SingletonSupplier.of(supplier), (Predicate<T>) ALWAYS);
 	}
 
 	/**
@@ -134,32 +135,6 @@ public final class PropertyMapper {
 	 */
 	public static PropertyMapper get() {
 		return INSTANCE;
-	}
-
-	/**
-	 * Supplier that caches the value to prevent multiple calls.
-	 */
-	private static class CachingSupplier<T> implements Supplier<T> {
-
-		private final Supplier<T> supplier;
-
-		private boolean hasResult;
-
-		private T result;
-
-		CachingSupplier(Supplier<T> supplier) {
-			this.supplier = supplier;
-		}
-
-		@Override
-		public T get() {
-			if (!this.hasResult) {
-				this.result = this.supplier.get();
-				this.hasResult = true;
-			}
-			return this.result;
-		}
-
 	}
 
 	/**
