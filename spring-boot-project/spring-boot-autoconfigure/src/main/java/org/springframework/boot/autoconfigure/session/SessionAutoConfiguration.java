@@ -138,7 +138,7 @@ public class SessionAutoConfiguration {
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		private static final String WEB_SESSION_ID_RESOLVER_BEAN_NAME = "WebSessionIdResolver";
+		private static final String WEB_SESSION_ID_RESOLVER_BEAN_NAME = "webSessionIdResolver";
 
 		@Bean
 		@ConditionalOnMissingClass(WEB_SESSION_ID_RESOLVER_BEAN_NAME)
