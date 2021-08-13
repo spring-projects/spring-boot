@@ -1564,7 +1564,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2020.0.12-SNAPSHOT") {
+	library("Spring Data Bom", "2020.0.12") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
