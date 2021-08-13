@@ -98,6 +98,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
  * @author Chris Bono
+ * @author Weix Sun
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -321,7 +322,7 @@ public class WebFluxAutoConfiguration {
 			return () -> {
 				CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
 				webSessionIdResolver.setCookieName(this.webFluxProperties.getSession().getCookie().getName());
-				webSessionIdResolver.addCookieInitializer((cookie) -> applyOtherProperties(cookie));
+				webSessionIdResolver.addCookieInitializer(cookie -> applyOtherProperties(cookie));
 				return webSessionIdResolver;
 			};
 		}
