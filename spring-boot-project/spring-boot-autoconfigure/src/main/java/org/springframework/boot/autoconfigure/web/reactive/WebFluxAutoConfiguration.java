@@ -322,7 +322,7 @@ public class WebFluxAutoConfiguration {
 			return () -> {
 				CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
 				webSessionIdResolver.setCookieName(this.webFluxProperties.getSession().getCookie().getName());
-				webSessionIdResolver.addCookieInitializer(cookie -> applyOtherProperties(cookie));
+				webSessionIdResolver.addCookieInitializer((cookie) -> applyOtherProperties(cookie));
 				return webSessionIdResolver;
 			};
 		}
