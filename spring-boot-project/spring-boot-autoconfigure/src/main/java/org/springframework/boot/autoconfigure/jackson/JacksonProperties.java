@@ -103,6 +103,11 @@ public class JacksonProperties {
 	 */
 	private Locale locale;
 
+	/**
+	 * Setting for leniency, in case of absence it will be considered lenient = true;
+	 */
+	private Boolean lenient;
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -165,6 +170,14 @@ public class JacksonProperties {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public Boolean getLenient() {
+		return lenient;
+	}
+
+	public void setLenient(Boolean lenient) {
+		this.lenient = lenient;
 	}
 
 }
