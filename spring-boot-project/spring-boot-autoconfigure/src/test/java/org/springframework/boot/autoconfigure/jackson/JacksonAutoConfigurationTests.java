@@ -26,6 +26,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -40,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -302,6 +304,40 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	void disableLeniency() {
+		this.contextRunner.withPropertyValues("spring.jackson.lenient:false").run((context) -> {
+			boolean invalidFormat = false;
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			try {
+				mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class);
+			}
+			catch (InvalidFormatException e) {
+				assertThat(e).isNotNull();
+				invalidFormat = true;
+			}
+			assertThat(invalidFormat).isTrue();
+		});
+	}
+
+	@Test
+	void enableLeniency() {
+		this.contextRunner.withPropertyValues("spring.jackson.lenient:true").run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			Person person = mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class);
+			assertThat(person.getBirthDate()).isNotNull();
+		});
+	}
+
+	@Test
+	void defaultLeniency() {
+		this.contextRunner.run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			Person person = mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class);
+			assertThat(person.getBirthDate()).isNotNull();
+		});
+	}
+
+	@Test
 	void additionalJacksonBuilderCustomization() {
 		this.contextRunner.withUserConfiguration(ObjectMapperBuilderCustomConfig.class).run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
@@ -533,6 +569,21 @@ class JacksonAutoConfigurationTests {
 
 		String getProperty3() {
 			return null;
+		}
+
+	}
+
+	static class Person {
+
+		@JsonFormat(pattern = "yyyyMMdd")
+		private Date birthDate;
+
+		public Date getBirthDate() {
+			return birthDate;
+		}
+
+		public void setBirthDate(Date birthDate) {
+			this.birthDate = birthDate;
 		}
 
 	}
