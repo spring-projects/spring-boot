@@ -60,6 +60,7 @@ class RestClientTestTwoComponentsIntegrationTests {
 		this.customizer.getServer(this.client1.getRestTemplate()).expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client1.test()).isEqualTo("hello");
+		this.customizer.getServer(this.client1.getRestTemplate()).reset();
 	}
 
 	@Test
@@ -67,6 +68,7 @@ class RestClientTestTwoComponentsIntegrationTests {
 		this.customizer.getServer(this.client2.getRestTemplate()).expect(requestTo("/test"))
 				.andRespond(withSuccess("there", MediaType.TEXT_HTML));
 		assertThat(this.client2.test()).isEqualTo("there");
+		this.customizer.getServer(this.client2.getRestTemplate()).reset();
 	}
 
 }

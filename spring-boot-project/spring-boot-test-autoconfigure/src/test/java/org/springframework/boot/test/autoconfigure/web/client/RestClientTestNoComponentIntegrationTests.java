@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -45,7 +45,7 @@ class RestClientTestNoComponentIntegrationTests {
 	private RestTemplateBuilder restTemplateBuilder;
 
 	@Autowired
-	private MockRestServiceServer server;
+	private MockServerRestTemplateCustomizer customizer;
 
 	@Test
 	void exampleRestClientIsNotInjected() {
@@ -62,8 +62,9 @@ class RestClientTestNoComponentIntegrationTests {
 	@Test
 	void manuallyCreateBean() {
 		ExampleRestClient client = new ExampleRestClient(this.restTemplateBuilder);
-		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		this.customizer.getServer(client.getRestTemplate()).expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(client.test()).isEqualTo("hello");
+		this.customizer.getServer(client.getRestTemplate()).reset();
 	}
 
 }
