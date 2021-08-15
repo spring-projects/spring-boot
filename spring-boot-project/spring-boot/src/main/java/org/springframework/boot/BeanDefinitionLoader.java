@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import groovy.lang.Closure;
 
@@ -62,6 +63,8 @@ class BeanDefinitionLoader {
 
 	// Static final field to facilitate code removal by Graal
 	private static final boolean XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
+
+	private static final Pattern GROOVY_CLOSURE_PATTERN = Pattern.compile(".*\\$_.*closure.*");
 
 	private final Object[] sources;
 
@@ -296,7 +299,7 @@ class BeanDefinitionLoader {
 	}
 
 	private boolean isGroovyClosure(Class<?> type) {
-		return type.getName().matches(".*\\$_.*closure.*");
+		return GROOVY_CLOSURE_PATTERN.matcher(type.getName()).matches();
 	}
 
 	private boolean hasNoConstructors(Class<?> type) {
