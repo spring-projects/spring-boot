@@ -103,9 +103,9 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 	@SuppressWarnings("varargs")
 	private final ContextConsumer<AssertableApplicationContext> validateIndicatorHasPathsExactly(
 			Map.Entry<File, DataSize>... entries) {
-		return (context -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class)
+		return (context) -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class)
 				.getBean(DiskSpaceHealthIndicator.class).extracting("paths")
-				.asInstanceOf(InstanceOfAssertFactories.map(File.class, DataSize.class)).containsExactly(entries));
+				.asInstanceOf(InstanceOfAssertFactories.map(File.class, DataSize.class)).containsExactly(entries);
 	}
 
 }
