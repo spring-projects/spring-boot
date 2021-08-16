@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Julio Gomez
+ * @author Safeer Ansari
  */
 class DataSourceHealthContributorAutoConfigurationTests {
 
@@ -102,10 +103,11 @@ class DataSourceHealthContributorAutoConfigurationTests {
 			assertThat(context).hasSingleBean(RoutingDataSourceHealthContributor.class);
 			RoutingDataSourceHealthContributor routingHealthContributor = context
 					.getBean(RoutingDataSourceHealthContributor.class);
+			assertThat(routingHealthContributor.getContributor("unnamed")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("one")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("two")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.iterator()).toIterable().extracting("name")
-					.containsExactlyInAnyOrder("one", "two");
+					.containsExactlyInAnyOrder("unnamed", "one", "two");
 		});
 	}
 
@@ -155,6 +157,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		@Bean
 		AbstractRoutingDataSource routingDataSource() {
 			Map<Object, DataSource> dataSources = new HashMap<>();
+			dataSources.put(null, mock(DataSource.class));
 			dataSources.put("one", mock(DataSource.class));
 			dataSources.put("two", mock(DataSource.class));
 			AbstractRoutingDataSource routingDataSource = mock(AbstractRoutingDataSource.class);
