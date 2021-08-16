@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,29 @@
 
 package org.springframework.boot.actuate.autoconfigure.system;
 
+import java.io.File;
+import java.util.Map;
+
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link DiskSpaceHealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class DiskSpaceHealthContributorAutoConfigurationTests {
 
@@ -39,29 +47,49 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 					HealthContributorAutoConfiguration.class));
 
 	@Test
-	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class));
+	void runShouldCreateIndicatorWithDefaultSinglePathAndThreshold() {
+		this.contextRunner
+				.run((context) -> validateIndicatorHasPathsExactly(entry(new File("."), DataSize.ofMegabytes(10))));
 	}
 
 	@Test
-	void thresholdMustBePositive() {
-		this.contextRunner.withPropertyValues("management.health.diskspace.threshold=-10MB")
-				.run((context) -> assertThat(context).hasFailed().getFailure()
-						.hasMessageContaining("Failed to bind properties under 'management.health.diskspace'"));
+	void pathCanBeCustomized() {
+		this.contextRunner.withPropertyValues("management.health.diskspace.paths[0].path=..")
+				.run((context) -> validateIndicatorHasPathsExactly(entry(new File(".."), DataSize.ofMegabytes(10))));
 	}
 
 	@Test
 	void thresholdCanBeCustomized() {
-		this.contextRunner.withPropertyValues("management.health.diskspace.threshold=20MB").run((context) -> {
-			assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class);
-			assertThat(context.getBean(DiskSpaceHealthIndicator.class)).hasFieldOrPropertyWithValue("threshold",
-					DataSize.ofMegabytes(20));
-		});
+		this.contextRunner.withPropertyValues("management.health.diskspace.paths[0].threshold=20MB")
+				.run((context) -> validateIndicatorHasPathsExactly(entry(new File("."), DataSize.ofMegabytes(20))));
+	}
+
+	@Test
+	void pathAndThresholdCanBeCustomized() {
+		this.contextRunner
+				.withPropertyValues("management.health.diskspace.paths[0].path=..",
+						"management.health.diskspace.paths[0].threshold=20MB")
+				.run((context) -> validateIndicatorHasPathsExactly(entry(new File(".."), DataSize.ofMegabytes(20))));
+	}
+
+	@Test
+	void multiplePathsCanBeConfigured() {
+		this.contextRunner.withPropertyValues("management.health.diskspace.paths[0].path=.",
+				"management.health.diskspace.paths[1].path=..", "management.health.diskspace.paths[1].threshold=33MB")
+				.run((context) -> validateIndicatorHasPathsExactly(entry(new File("."), DataSize.ofMegabytes(10)),
+						entry(new File(".."), DataSize.ofMegabytes(33))));
+	}
+
+	@Test
+	void thresholdMustBePositive() {
+		this.contextRunner.withPropertyValues("management.health.diskspace.paths[0].threshold=-10MB")
+				.run((context) -> assertThat(context).hasFailed().getFailure().getCause().hasMessageContaining(
+						"Failed to bind properties under 'management.health.diskspace.paths[0]'"));
 	}
 
 	@Test
 	void runWhenPathDoesNotExistShouldCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.diskspace.path=does/not/exist")
+		this.contextRunner.withPropertyValues("management.health.diskspace.paths[0].path=does/not/exist")
 				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class));
 	}
 
@@ -69,6 +97,15 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.diskspace.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DiskSpaceHealthIndicator.class));
+	}
+
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	private final ContextConsumer<AssertableApplicationContext> validateIndicatorHasPathsExactly(
+			Map.Entry<File, DataSize>... entries) {
+		return (context -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class)
+				.getBean(DiskSpaceHealthIndicator.class).extracting("paths")
+				.asInstanceOf(InstanceOfAssertFactories.map(File.class, DataSize.class)).containsExactly(entries));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.system;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,36 +30,54 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
 
 	/**
-	 * Path used to compute the available disk space.
+	 * Paths to consider for computing the available disk space.
 	 */
-	private File path = new File(".");
+	private List<PathInfo> paths = Arrays.asList(new PathInfo());
 
-	/**
-	 * Minimum disk space that should be available.
-	 */
-	private DataSize threshold = DataSize.ofMegabytes(10);
-
-	public File getPath() {
-		return this.path;
+	public List<PathInfo> getPaths() {
+		return this.paths;
 	}
 
-	public void setPath(File path) {
-		this.path = path;
+	public void setPaths(List<PathInfo> paths) {
+		this.paths = paths;
 	}
 
-	public DataSize getThreshold() {
-		return this.threshold;
-	}
+	public static class PathInfo {
 
-	public void setThreshold(DataSize threshold) {
-		Assert.isTrue(!threshold.isNegative(), "threshold must be greater than or equal to 0");
-		this.threshold = threshold;
+		/**
+		 * Path used to compute the available disk space.
+		 */
+		private File path = new File(".");
+
+		/**
+		 * Minimum disk space that should be available.
+		 */
+		private DataSize threshold = DataSize.ofMegabytes(10);
+
+		public File getPath() {
+			return this.path;
+		}
+
+		public void setPath(File path) {
+			this.path = path;
+		}
+
+		public DataSize getThreshold() {
+			return this.threshold;
+		}
+
+		public void setThreshold(DataSize threshold) {
+			Assert.isTrue(!threshold.isNegative(), "threshold must be greater than or equal to 0");
+			this.threshold = threshold;
+		}
+
 	}
 
 }
