@@ -187,6 +187,7 @@ public class JacksonAutoConfiguration {
 				configurePropertyNamingStrategy(builder);
 				configureModules(builder);
 				configureLocale(builder);
+				configureDefaultLeniency(builder);
 			}
 
 			private void configureFeatures(Jackson2ObjectMapperBuilder builder, Map<?, Boolean> features) {
@@ -286,6 +287,13 @@ public class JacksonAutoConfiguration {
 				Locale locale = this.jacksonProperties.getLocale();
 				if (locale != null) {
 					builder.locale(locale);
+				}
+			}
+
+			private void configureDefaultLeniency(Jackson2ObjectMapperBuilder builder) {
+				Boolean defaultLeniency = this.jacksonProperties.getDefaultLeniency();
+				if (defaultLeniency != null) {
+					builder.postConfigurer((objectMapper) -> objectMapper.setDefaultLeniency(defaultLeniency));
 				}
 			}
 

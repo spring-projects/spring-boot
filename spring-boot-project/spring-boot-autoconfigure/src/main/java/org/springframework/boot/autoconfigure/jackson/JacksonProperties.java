@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,6 +93,11 @@ public class JacksonProperties {
 	private JsonInclude.Include defaultPropertyInclusion;
 
 	/**
+	 * Global default setting (if any) for leniency.
+	 */
+	private Boolean defaultLeniency;
+
+	/**
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
 	 * "GMT+10".
 	 */
@@ -149,6 +154,14 @@ public class JacksonProperties {
 
 	public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
+	}
+
+	public Boolean getDefaultLeniency() {
+		return this.defaultLeniency;
+	}
+
+	public void setDefaultLeniency(Boolean defaultLeniency) {
+		this.defaultLeniency = defaultLeniency;
 	}
 
 	public TimeZone getTimeZone() {
