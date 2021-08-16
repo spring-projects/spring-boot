@@ -127,6 +127,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
 				Function<DataSource, HealthContributor> contributorFunction) {
 			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources().entrySet().stream()
+					.filter((e) -> e.getKey() != null)
 					.collect(Collectors.toMap((e) -> e.getKey().toString(), Map.Entry::getValue));
 			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);
 		}
