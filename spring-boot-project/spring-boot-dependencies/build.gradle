@@ -1028,7 +1028,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Enforcer Plugin", "3.0.0-M3") {
+	library("Maven Enforcer Plugin", "3.0.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-enforcer-plugin"
