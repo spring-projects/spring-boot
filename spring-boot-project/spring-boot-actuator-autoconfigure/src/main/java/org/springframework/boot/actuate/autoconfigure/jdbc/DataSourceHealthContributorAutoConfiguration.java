@@ -57,6 +57,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Arthur Kalimullin
  * @author Julio Gomez
+ * @author Safeer Ansari
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
