@@ -309,7 +309,7 @@ class PropertiesMeterFilterTests {
 	@Test
 	void configureWhenHasBufferLengthShouldSetBufferLengthToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.bufferLength[spring.boot]=3"));
+				createProperties("distribution.buffer-length.spring.boot=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
 						.isEqualTo(3);
@@ -318,7 +318,7 @@ class PropertiesMeterFilterTests {
 	@Test
 	void configureWhenHasHigherBufferLengthShouldSetBufferLengthToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.bufferLength.spring=3"));
+				createProperties("distribution.buffer-length.spring=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
 						.isEqualTo(3);
@@ -327,7 +327,7 @@ class PropertiesMeterFilterTests {
 	@Test
 	void configureWhenHasHigherBufferLengthAndLowerShouldSetBufferLengthToHigher() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.bufferLength.spring=2", "distribution.bufferLength[spring.boot]=3"));
+				createProperties("distribution.buffer-length.spring=2", "distribution.buffer-length.spring.boot=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
 						.isEqualTo(3);
@@ -335,7 +335,7 @@ class PropertiesMeterFilterTests {
 
 	@Test
 	void configureWhenAllBufferLengthSetShouldSetBufferLengthToValue() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.bufferLength.all=3"));
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.buffer-length.all=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
 						.isEqualTo(3);

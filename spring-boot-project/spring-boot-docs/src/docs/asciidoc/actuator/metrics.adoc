@@ -1153,6 +1153,10 @@ The following properties allow per-meter customization:
 | configprop:management.metrics.distribution.percentiles[]
 | Publish percentile values computed in your application
 
+| configprop:management.metrics.distribution.expiry[], configprop:management.metrics.distribution.buffer-length[]
+| Give greater weight to recent samples by accumulating them in ring buffers which rotate after a configurable expiry, with a
+configurable buffer length.
+
 | configprop:management.metrics.distribution.slo[]
 | Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===

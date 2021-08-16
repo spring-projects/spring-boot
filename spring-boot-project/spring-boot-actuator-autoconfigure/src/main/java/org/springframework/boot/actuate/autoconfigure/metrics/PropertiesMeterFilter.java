@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  * @author Alexander Abramov
- * @author Leo Li
  * @since 2.0.0
  */
 public class PropertiesMeterFilter implements MeterFilter {
@@ -84,15 +83,14 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return DistributionStatisticConfig.builder()
 				.percentilesHistogram(lookupWithFallbackToAll(distribution.getPercentilesHistogram(), id, null))
 				.percentiles(lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
-				.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
-				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null))
 				.serviceLevelObjectives(
 						convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id, null)))
 				.minimumExpectedValue(
 						convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id, null)))
 				.maximumExpectedValue(
 						convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
-				.build().merge(config);
+				.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
+				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null)).build().merge(config);
 	}
 
 	private double[] convertServiceLevelObjectives(Meter.Type meterType, ServiceLevelObjectiveBoundary[] slo) {

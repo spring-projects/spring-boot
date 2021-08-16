@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Jon Schneider
  * @author Alexander Abramov
  * @author Tadaya Tsuyukubo
- * @author Leo Li
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -299,16 +298,16 @@ public class MetricsProperties {
 		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
 		/**
-		 * Specific statistic's expiry for meter IDs starting-with the specified name.
-		 * Values should be a Duration value, the key `all` can also be used to configure
-		 * all meters.
+		 * Maximum amount of time that samples for meter IDs starting with the specified
+		 * name are accumulated to decaying distribution statistics before they are reset
+		 * and rotated. The longest match wins, the key `all` can also be used to
+		 * configure all meters.
 		 */
 		private final Map<String, Duration> expiry = new LinkedHashMap<>();
 
 		/**
-		 * Specific statistic's bufferLength for meter IDs starting-with the specified
-		 * name. Samples are accumulated to statistics in ring buffers, and bufferLength
-		 * is the number to keep in the ring buffer, the key `all` can also be used to
+		 * Number of histograms for meter IDs starting with the specified name to keep in
+		 * the ring buffer. The longest match wins, the key `all` can also be used to
 		 * configure all meters.
 		 */
 		private final Map<String, Integer> bufferLength = new LinkedHashMap<>();
