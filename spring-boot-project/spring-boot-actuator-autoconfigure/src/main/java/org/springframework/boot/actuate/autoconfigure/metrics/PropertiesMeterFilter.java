@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,8 @@ public class PropertiesMeterFilter implements MeterFilter {
 						convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id, null)))
 				.maximumExpectedValue(
 						convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
-				.build().merge(config);
+				.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
+				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null)).build().merge(config);
 	}
 
 	private double[] convertServiceLevelObjectives(Meter.Type meterType, ServiceLevelObjectiveBoundary[] slo) {

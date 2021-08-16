@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -296,6 +297,21 @@ public class MetricsProperties {
 		 */
 		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
+		/**
+		 * Maximum amount of time that samples for meter IDs starting with the specified
+		 * name are accumulated to decaying distribution statistics before they are reset
+		 * and rotated. The longest match wins, the key `all` can also be used to
+		 * configure all meters.
+		 */
+		private final Map<String, Duration> expiry = new LinkedHashMap<>();
+
+		/**
+		 * Number of histograms for meter IDs starting with the specified name to keep in
+		 * the ring buffer. The longest match wins, the key `all` can also be used to
+		 * configure all meters.
+		 */
+		private final Map<String, Integer> bufferLength = new LinkedHashMap<>();
+
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
 		}
@@ -314,6 +330,14 @@ public class MetricsProperties {
 
 		public Map<String, String> getMaximumExpectedValue() {
 			return this.maximumExpectedValue;
+		}
+
+		public Map<String, Duration> getExpiry() {
+			return this.expiry;
+		}
+
+		public Map<String, Integer> getBufferLength() {
+			return this.bufferLength;
 		}
 
 	}
