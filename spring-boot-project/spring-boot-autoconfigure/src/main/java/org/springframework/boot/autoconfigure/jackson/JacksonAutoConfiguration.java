@@ -187,7 +187,7 @@ public class JacksonAutoConfiguration {
 				configurePropertyNamingStrategy(builder);
 				configureModules(builder);
 				configureLocale(builder);
-				configureLeniency(builder);
+				configureDefaultLeniency(builder);
 			}
 
 			private void configureFeatures(Jackson2ObjectMapperBuilder builder, Map<?, Boolean> features) {
@@ -290,9 +290,11 @@ public class JacksonAutoConfiguration {
 				}
 			}
 
-			private void configureLeniency(Jackson2ObjectMapperBuilder builder) {
-				Boolean lenient = this.jacksonProperties.getLenient();
-				builder.postConfigurer(objectMapper -> objectMapper.setDefaultLeniency(lenient));
+			private void configureDefaultLeniency(Jackson2ObjectMapperBuilder builder) {
+				Boolean defaultLeniency = this.jacksonProperties.getDefaultLeniency();
+				if (defaultLeniency != null) {
+					builder.postConfigurer((objectMapper) -> objectMapper.setDefaultLeniency(defaultLeniency));
+				}
 			}
 
 			private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory, Class<T> type) {

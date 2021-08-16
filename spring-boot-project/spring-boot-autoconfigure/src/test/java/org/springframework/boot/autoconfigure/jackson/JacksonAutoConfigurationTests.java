@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -304,24 +305,8 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void disableLeniency() {
-		this.contextRunner.withPropertyValues("spring.jackson.lenient:false").run((context) -> {
-			boolean invalidFormat = false;
-			ObjectMapper mapper = context.getBean(ObjectMapper.class);
-			try {
-				mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class);
-			}
-			catch (InvalidFormatException e) {
-				assertThat(e).isNotNull();
-				invalidFormat = true;
-			}
-			assertThat(invalidFormat).isTrue();
-		});
-	}
-
-	@Test
-	void enableLeniency() {
-		this.contextRunner.withPropertyValues("spring.jackson.lenient:true").run((context) -> {
+	void enableDefaultLeniency() {
+		this.contextRunner.withPropertyValues("spring.jackson.default-leniency:true").run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
 			Person person = mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class);
 			assertThat(person.getBirthDate()).isNotNull();
@@ -329,11 +314,12 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void defaultLeniency() {
-		this.contextRunner.run((context) -> {
+	void disableDefaultLeniency() {
+		this.contextRunner.withPropertyValues("spring.jackson.default-leniency:false").run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
-			Person person = mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class);
-			assertThat(person.getBirthDate()).isNotNull();
+			assertThatThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
+					.isInstanceOf(InvalidFormatException.class).hasMessageContaining("expected format")
+					.hasMessageContaining("yyyyMMdd");
 		});
 	}
 
@@ -578,11 +564,11 @@ class JacksonAutoConfigurationTests {
 		@JsonFormat(pattern = "yyyyMMdd")
 		private Date birthDate;
 
-		public Date getBirthDate() {
-			return birthDate;
+		Date getBirthDate() {
+			return this.birthDate;
 		}
 
-		public void setBirthDate(Date birthDate) {
+		void setBirthDate(Date birthDate) {
 			this.birthDate = birthDate;
 		}
 
