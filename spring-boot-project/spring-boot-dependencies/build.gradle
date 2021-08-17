@@ -444,6 +444,9 @@ bom {
 		}
 	}
 	library("HikariCP", "4.0.3") {
+		prohibit("[5.0.0,)") {
+			because "it requires Java 11"
+		}
 		group("com.zaxxer") {
 			modules = [
 				"HikariCP"
