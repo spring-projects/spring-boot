@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Kazuki Shimizu
  */
 @ExtendWith(OutputCaptureExtension.class)
-public class FreeMarkerAutoConfigurationTests {
+class FreeMarkerAutoConfigurationTests {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 

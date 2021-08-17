@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class DefaultWebFluxTagsProviderTests {
+class DefaultWebFluxTagsProviderTests {
 
 	@Test
 	void whenTagsAreProvidedThenDefaultTagsArePresent() {

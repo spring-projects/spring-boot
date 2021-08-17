@@ -34,14 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class OptionalDependenciesPluginIntegrationTests {
+class OptionalDependenciesPluginIntegrationTests {
 
 	private File projectDir;
 
 	private File buildFile;
 
 	@BeforeEach
-	public void setup(@TempDir File projectDir) throws IOException {
+	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
 	}
@@ -80,7 +80,7 @@ public class OptionalDependenciesPluginIntegrationTests {
 		optionalDependenciesAreAddedToSourceSetClasspath("test", "runtimeClasspath");
 	}
 
-	public void optionalDependenciesAreAddedToSourceSetClasspath(String sourceSet, String classpath)
+	private void optionalDependenciesAreAddedToSourceSetClasspath(String sourceSet, String classpath)
 			throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");

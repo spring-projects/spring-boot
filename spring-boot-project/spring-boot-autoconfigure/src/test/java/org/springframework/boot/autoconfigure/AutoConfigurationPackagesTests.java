@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Oliver Gierke
  */
 @SuppressWarnings("resource")
-public class AutoConfigurationPackagesTests {
+class AutoConfigurationPackagesTests {
 
 	@Test
 	void setAndGet() {

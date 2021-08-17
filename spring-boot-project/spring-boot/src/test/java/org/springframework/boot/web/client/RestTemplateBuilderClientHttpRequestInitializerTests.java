@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Ilya Lukyanovich
  * @author Phillip Webb
  */
-public class RestTemplateBuilderClientHttpRequestInitializerTests {
+class RestTemplateBuilderClientHttpRequestInitializerTests {
 
 	private final MockClientHttpRequest request = new MockClientHttpRequest();
 

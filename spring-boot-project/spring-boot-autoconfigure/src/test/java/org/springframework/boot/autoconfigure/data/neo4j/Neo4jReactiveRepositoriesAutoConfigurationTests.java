@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Michael J. Simons
  */
-public class Neo4jReactiveRepositoriesAutoConfigurationTests {
+class Neo4jReactiveRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(MockedDriverConfiguration.class)

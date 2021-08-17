@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 @Testcontainers(disabledWithoutDocker = true)
 @Disabled("Disabled until differences between running locally and in CI can be diagnosed")
-public class BootBuildImageRegistryIntegrationTests {
+class BootBuildImageRegistryIntegrationTests {
 
 	@Container
 	static final RegistryContainer registry = new RegistryContainer().withStartupAttempts(5)

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  * @author Madhura Bhave
  */
 @ExtendWith(MockitoExtension.class)
-public class BoundPropertiesTrackingBindHandlerTests {
+class BoundPropertiesTrackingBindHandlerTests {
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 

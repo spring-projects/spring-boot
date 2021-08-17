@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class StandardConfigDataLoaderTests {
+class StandardConfigDataLoaderTests {
 
 	private StandardConfigDataLoader loader = new StandardConfigDataLoader();
 

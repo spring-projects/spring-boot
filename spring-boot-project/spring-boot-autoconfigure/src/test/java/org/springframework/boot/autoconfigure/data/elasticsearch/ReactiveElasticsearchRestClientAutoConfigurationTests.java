@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  */
 @Testcontainers(disabledWithoutDocker = true)
-public class ReactiveElasticsearchRestClientAutoConfigurationTests {
+class ReactiveElasticsearchRestClientAutoConfigurationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())

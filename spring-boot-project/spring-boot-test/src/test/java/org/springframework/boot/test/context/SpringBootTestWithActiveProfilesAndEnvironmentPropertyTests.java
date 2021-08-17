@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles({ "test1", "test2" })
 @ContextConfiguration(loader = SpringBootTestWithActiveProfilesAndEnvironmentPropertyTests.Loader.class)
-public class SpringBootTestWithActiveProfilesAndEnvironmentPropertyTests {
+class SpringBootTestWithActiveProfilesAndEnvironmentPropertyTests {
 
 	@Autowired
 	private Environment environment;

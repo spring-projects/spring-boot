@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class CalendarVersionDependencyVersionTests {
+class CalendarVersionDependencyVersionTests {
 
 	@Test
 	void parseWhenVersionIsNotACalendarVersionShouldReturnNull() {

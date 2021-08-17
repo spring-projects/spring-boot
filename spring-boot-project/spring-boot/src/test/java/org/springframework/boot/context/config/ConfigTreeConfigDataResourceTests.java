@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class ConfigTreeConfigDataResourceTests {
+class ConfigTreeConfigDataResourceTests {
 
 	@Test
 	void constructorWhenPathStringIsNullThrowsException() {

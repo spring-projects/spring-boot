@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ArtifactoryRepositoryTests {
+class ArtifactoryRepositoryTests {
 
 	@Test
 	void whenProjectVersionIsMilestoneThenRepositoryIsMilestone() {

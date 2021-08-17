@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class ConfigTreeConfigDataLoaderTests {
+class ConfigTreeConfigDataLoaderTests {
 
 	private ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
 
