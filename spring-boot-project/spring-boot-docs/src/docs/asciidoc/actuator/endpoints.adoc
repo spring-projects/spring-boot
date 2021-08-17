@@ -934,6 +934,20 @@ It's also possible to override the `show-details` and `roles` properties if requ
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
 
+A health group can also include/exclude a `CompositeHealthContributor`.
+You can also include/exclude only a certain component of a `CompositeHealthContributor`.
+This can be done using the fully qualified name of the component as follows:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	management.endpoint.health.group.custom.include="test/primary"
+	management.endpoint.health.group.custom.exclude="test/primary/b"
+----
+
+In the example above, the `custom` group will include the `HealthContributor` with the name `primary` which is a component of the composite `test`.
+Here, `primary` itself is a composite and the `HealthContributor` with the name `b` will be excluded from the `custom` group.
+
+
 Health groups can be made available at an additional path on either the main or management port.
 This is useful in cloud environments such as Kubernetes, where it is quite common to use a separate management port for the actuator endpoints for security purposes.
 Having a separate port could lead to unreliable health checks because the main application might not work properly even if the health check is successful.
