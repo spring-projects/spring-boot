@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import org.springframework.beans.BeanUtils;
@@ -41,6 +42,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jackson.JacksonProperties.ConstructorDetectorStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.context.ApplicationContext;
@@ -188,6 +190,7 @@ public class JacksonAutoConfiguration {
 				configureModules(builder);
 				configureLocale(builder);
 				configureDefaultLeniency(builder);
+				configureConstructorDetector(builder);
 			}
 
 			private void configureFeatures(Jackson2ObjectMapperBuilder builder, Map<?, Boolean> features) {
@@ -294,6 +297,27 @@ public class JacksonAutoConfiguration {
 				Boolean defaultLeniency = this.jacksonProperties.getDefaultLeniency();
 				if (defaultLeniency != null) {
 					builder.postConfigurer((objectMapper) -> objectMapper.setDefaultLeniency(defaultLeniency));
+				}
+			}
+
+			private void configureConstructorDetector(Jackson2ObjectMapperBuilder builder) {
+				ConstructorDetectorStrategy strategy = this.jacksonProperties.getConstructorDetector();
+				if (strategy != null) {
+					builder.postConfigurer((objectMapper) -> {
+						switch (strategy) {
+						case USE_PROPERTIES_BASED:
+							objectMapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
+							break;
+						case USE_DELEGATING:
+							objectMapper.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
+							break;
+						case EXPLICIT_ONLY:
+							objectMapper.setConstructorDetector(ConstructorDetector.EXPLICIT_ONLY);
+							break;
+						default:
+							objectMapper.setConstructorDetector(ConstructorDetector.DEFAULT);
+						}
+					});
 				}
 			}
 

@@ -1049,6 +1049,10 @@
       "defaultValue": "embedded"
     },
     {
+      "name": "spring.jackson.constructor-detector",
+      "defaultValue": "default"
+    },
+    {
       "name": "spring.jackson.joda-date-time-format",
       "type": "java.lang.String",
       "description": "Joda date time format string. If not configured, \"date-format\" is used as a fallback if it is configured with a format string.",

@@ -98,6 +98,12 @@ public class JacksonProperties {
 	private Boolean defaultLeniency;
 
 	/**
+	 * Strategy to use to to auto-detect constructor, and in particular behavior with
+	 * single-argument constructors.
+	 */
+	private ConstructorDetectorStrategy constructorDetector;
+
+	/**
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
 	 * "GMT+10".
 	 */
@@ -164,6 +170,14 @@ public class JacksonProperties {
 		this.defaultLeniency = defaultLeniency;
 	}
 
+	public ConstructorDetectorStrategy getConstructorDetector() {
+		return this.constructorDetector;
+	}
+
+	public void setConstructorDetector(ConstructorDetectorStrategy constructorDetector) {
+		this.constructorDetector = constructorDetector;
+	}
+
 	public TimeZone getTimeZone() {
 		return this.timeZone;
 	}
@@ -178,6 +192,31 @@ public class JacksonProperties {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public enum ConstructorDetectorStrategy {
+
+		/**
+		 * Use heuristics to see if "properties" mode is to be used.
+		 */
+		DEFAULT,
+
+		/**
+		 * Assume "properties" mode if not explicitly annotated otherwise.
+		 */
+		USE_PROPERTIES_BASED,
+
+		/**
+		 * Assume "delegating" mode if not explicitly annotated otherwise.
+		 */
+		USE_DELEGATING,
+
+		/**
+		 * Refuse to decide implicit mode and instead throw an InvalidDefinitionException
+		 * for ambiguous cases.
+		 */
+		EXPLICIT_ONLY;
+
 	}
 
 }

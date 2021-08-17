@@ -41,6 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
+import com.fasterxml.jackson.databind.cfg.ConstructorDetector.SingleArgConstructor;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
@@ -320,6 +322,62 @@ class JacksonAutoConfigurationTests {
 			assertThatThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
 					.isInstanceOf(InvalidFormatException.class).hasMessageContaining("expected format")
 					.hasMessageContaining("yyyyMMdd");
+		});
+	}
+
+	@Test
+	void constructorDetectorWithNoStrategyUseDefault() {
+		this.contextRunner.run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			ConstructorDetector cd = mapper.getDeserializationConfig().getConstructorDetector();
+			assertThat(cd.singleArgMode()).isEqualTo(SingleArgConstructor.HEURISTIC);
+			assertThat(cd.requireCtorAnnotation()).isFalse();
+			assertThat(cd.allowJDKTypeConstructors()).isFalse();
+		});
+	}
+
+	@Test
+	void constructorDetectorWithDefaultStrategy() {
+		this.contextRunner.withPropertyValues("spring.jackson.constructor-detector=default").run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			ConstructorDetector cd = mapper.getDeserializationConfig().getConstructorDetector();
+			assertThat(cd.singleArgMode()).isEqualTo(SingleArgConstructor.HEURISTIC);
+			assertThat(cd.requireCtorAnnotation()).isFalse();
+			assertThat(cd.allowJDKTypeConstructors()).isFalse();
+		});
+	}
+
+	@Test
+	void constructorDetectorWithUsePropertiesBasedStrategy() {
+		this.contextRunner.withPropertyValues("spring.jackson.constructor-detector=use-properties-based")
+				.run((context) -> {
+					ObjectMapper mapper = context.getBean(ObjectMapper.class);
+					ConstructorDetector cd = mapper.getDeserializationConfig().getConstructorDetector();
+					assertThat(cd.singleArgMode()).isEqualTo(SingleArgConstructor.PROPERTIES);
+					assertThat(cd.requireCtorAnnotation()).isFalse();
+					assertThat(cd.allowJDKTypeConstructors()).isFalse();
+				});
+	}
+
+	@Test
+	void constructorDetectorWithUseDelegatingStrategy() {
+		this.contextRunner.withPropertyValues("spring.jackson.constructor-detector=use-delegating").run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			ConstructorDetector cd = mapper.getDeserializationConfig().getConstructorDetector();
+			assertThat(cd.singleArgMode()).isEqualTo(SingleArgConstructor.DELEGATING);
+			assertThat(cd.requireCtorAnnotation()).isFalse();
+			assertThat(cd.allowJDKTypeConstructors()).isFalse();
+		});
+	}
+
+	@Test
+	void constructorDetectorWithExplicitOnlyStrategy() {
+		this.contextRunner.withPropertyValues("spring.jackson.constructor-detector=explicit-only").run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			ConstructorDetector cd = mapper.getDeserializationConfig().getConstructorDetector();
+			assertThat(cd.singleArgMode()).isEqualTo(SingleArgConstructor.REQUIRE_MODE);
+			assertThat(cd.requireCtorAnnotation()).isFalse();
+			assertThat(cd.allowJDKTypeConstructors()).isFalse();
 		});
 	}
 

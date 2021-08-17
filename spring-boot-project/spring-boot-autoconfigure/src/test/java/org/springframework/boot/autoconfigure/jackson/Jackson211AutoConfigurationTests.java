@@ -54,4 +54,25 @@ public class Jackson211AutoConfigurationTests extends JacksonAutoConfigurationTe
 				});
 	}
 
+	// ConstructorDetector only available as of Jackson 2.12
+	@Override
+	void constructorDetectorWithNoStrategyUseDefault() {
+	}
+
+	@Override
+	void constructorDetectorWithDefaultStrategy() {
+	}
+
+	@Override
+	void constructorDetectorWithUsePropertiesBasedStrategy() {
+	}
+
+	@Override
+	void constructorDetectorWithUseDelegatingStrategy() {
+	}
+
+	@Override
+	void constructorDetectorWithExplicitOnlyStrategy() {
+	}
+
 }
