@@ -1085,7 +1085,7 @@ bom {
 			]
 		}
 	}
-	library("Maven AntRun Plugin", "1.8") {
+	library("Maven AntRun Plugin", "3.0.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-antrun-plugin"
