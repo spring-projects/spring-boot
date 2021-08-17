@@ -1285,7 +1285,7 @@ bom {
 		}
 	}
 	library("OAuth2 OIDC SDK") {
-		version("9.9") {
+		version("9.9.1") {
 			shouldAlignWithVersionFrom("Spring Security")
 		}
 		group("com.nimbusds") {
