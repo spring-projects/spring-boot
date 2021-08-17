@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class StandardConfigDataLocationResolverTests {
+class StandardConfigDataLocationResolverTests {
 
 	private StandardConfigDataLocationResolver resolver;
 

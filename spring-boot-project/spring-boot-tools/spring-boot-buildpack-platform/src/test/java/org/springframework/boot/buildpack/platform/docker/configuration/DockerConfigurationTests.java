@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Wei Jiang
  * @author Scott Frederick
  */
-public class DockerConfigurationTests {
+class DockerConfigurationTests {
 
 	@Test
 	void createDockerConfigurationWithDefaults() {

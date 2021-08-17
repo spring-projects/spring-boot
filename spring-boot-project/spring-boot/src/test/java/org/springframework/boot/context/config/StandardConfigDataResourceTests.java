@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class StandardConfigDataResourceTests {
+class StandardConfigDataResourceTests {
 
 	StandardConfigDataReference reference = mock(StandardConfigDataReference.class);
 

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Wei Jiang
  * @author Scott Frederick
  */
-public class DockerSpecTests {
+class DockerSpecTests {
 
 	@Test
 	void asDockerConfigurationWithDefaults() {

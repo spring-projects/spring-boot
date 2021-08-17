@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Scott Frederick
  */
-public class CustomLayersProviderTests {
+class CustomLayersProviderTests {
 
 	private CustomLayersProvider customLayersProvider;
 

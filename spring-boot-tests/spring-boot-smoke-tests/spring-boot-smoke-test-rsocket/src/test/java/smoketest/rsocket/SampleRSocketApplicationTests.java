@@ -31,7 +31,7 @@ import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.util.MimeTypeUtils;
 
 @SpringBootTest(properties = "spring.rsocket.server.port=0")
-public class SampleRSocketApplicationTests {
+class SampleRSocketApplicationTests {
 
 	@LocalRSocketServerPort
 	private int port;

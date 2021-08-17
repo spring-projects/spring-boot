@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class WebServerApplicationContextTests {
+class WebServerApplicationContextTests {
 
 	@Test
 	void hasServerNamespaceWhenContextIsNotWebServerApplicationContextReturnsFalse() {

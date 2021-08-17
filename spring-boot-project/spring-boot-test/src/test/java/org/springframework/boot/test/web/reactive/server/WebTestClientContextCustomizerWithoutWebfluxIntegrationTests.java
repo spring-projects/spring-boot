@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("spring-webflux*.jar")
-public class WebTestClientContextCustomizerWithoutWebfluxIntegrationTests {
+class WebTestClientContextCustomizerWithoutWebfluxIntegrationTests {
 
 	@Test
 	void customizerIsNotCreatedWithoutWebClient() {

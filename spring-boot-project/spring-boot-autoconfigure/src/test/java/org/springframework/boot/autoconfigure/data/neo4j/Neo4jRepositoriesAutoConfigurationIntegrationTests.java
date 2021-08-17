@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
-public class Neo4jRepositoriesAutoConfigurationIntegrationTests {
+class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
 	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())

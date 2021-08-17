@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Andy Wilkinson
  * @author Mike Smithson
  */
-public class PluginXmlParserTests {
+class PluginXmlParserTests {
 
 	private final PluginXmlParser parser = new PluginXmlParser();
 

@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Wei Jiang
  * @author Scott Frederick
  */
-public class DockerTests {
+class DockerTests {
 
 	@Test
 	void asDockerConfigurationWithDefaults() {

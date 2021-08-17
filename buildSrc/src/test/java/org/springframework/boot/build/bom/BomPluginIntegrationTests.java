@@ -38,14 +38,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BomPluginIntegrationTests {
+class BomPluginIntegrationTests {
 
 	private File projectDir;
 
 	private File buildFile;
 
 	@BeforeEach
-	public void setup(@TempDir File projectDir) throws IOException {
+	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
 	}

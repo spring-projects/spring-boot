@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class CompoundRowTests {
+class CompoundRowTests {
 
 	private static final String NEWLINE = System.lineSeparator();
 
