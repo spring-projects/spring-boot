@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -38,6 +39,11 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
  */
 @Endpoint(id = "health")
 public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, HealthComponent> {
+
+	/**
+	 * Health endpoint id.
+	 */
+	public static final EndpointId ID = EndpointId.of("health");
 
 	private static final String[] EMPTY_PATH = {};
 
@@ -62,7 +68,7 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	}
 
 	private HealthComponent health(ApiVersion apiVersion, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, SecurityContext.NONE, true, path);
+		HealthResult<HealthComponent> result = getHealth(apiVersion, null, SecurityContext.NONE, true, path);
 		return (result != null) ? result.getHealth() : null;
 	}
 

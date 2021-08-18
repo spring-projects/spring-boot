@@ -53,13 +53,13 @@ class MetricsRepositoryMethodInvocationListenerTests {
 	void setup() {
 		MockClock clock = new MockClock();
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
-		this.listener = new MetricsRepositoryMethodInvocationListener(this.registry,
+		this.listener = new MetricsRepositoryMethodInvocationListener(() -> this.registry,
 				new DefaultRepositoryTagsProvider(), REQUEST_METRICS_NAME, AutoTimer.ENABLED);
 	}
 
 	@Test
 	void afterInvocationWhenNoTimerAnnotationsAndNoAutoTimerDoesNothing() {
-		this.listener = new MetricsRepositoryMethodInvocationListener(this.registry,
+		this.listener = new MetricsRepositoryMethodInvocationListener(() -> this.registry,
 				new DefaultRepositoryTagsProvider(), REQUEST_METRICS_NAME, null);
 		this.listener.afterInvocation(createInvocation(NoAnnotationsRepository.class));
 		assertThat(this.registry.find(REQUEST_METRICS_NAME).timers()).isEmpty();

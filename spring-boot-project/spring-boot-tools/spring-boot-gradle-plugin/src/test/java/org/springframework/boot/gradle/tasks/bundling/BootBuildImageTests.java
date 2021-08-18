@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Andrey Shlykov
+ * @author Jeroen Meijer
  */
 class BootBuildImageTests {
 
@@ -276,6 +277,12 @@ class BootBuildImageTests {
 		this.buildImage.binding("volume-name:container-dest:rw");
 		assertThat(this.buildImage.createRequest().getBindings())
 				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void whenNetworkIsConfiguredThenRequestHasNetwork() {
+		this.buildImage.setNetwork("test");
+		assertThat(this.buildImage.createRequest().getNetwork()).isEqualTo("test");
 	}
 
 }

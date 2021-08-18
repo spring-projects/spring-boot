@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.io.File;
+
+import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
@@ -34,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class SystemMetricsAutoConfigurationTests {
 
@@ -75,6 +79,18 @@ class SystemMetricsAutoConfigurationTests {
 						.hasBean("customFileDescriptorMetrics"));
 	}
 
+	@Test
+	void autoConfiguresDiskSpaceMetrics() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetrics.class));
+	}
+
+	@Test
+	void allowsCustomDiskSpaceMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetrics.class)
+						.hasBean("customDiskSpaceMetrics"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomUptimeMetricsConfiguration {
 
@@ -101,6 +117,16 @@ class SystemMetricsAutoConfigurationTests {
 		@Bean
 		FileDescriptorMetrics customFileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDiskSpaceMetricsConfiguration {
+
+		@Bean
+		DiskSpaceMetrics customDiskSpaceMetrics() {
+			return new DiskSpaceMetrics(new File(System.getProperty("user.dir")));
 		}
 
 	}

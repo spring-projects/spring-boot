@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class PhaseTests {
 
@@ -129,6 +130,18 @@ class PhaseTests {
 		verify(update).withLabel("author", "spring-boot");
 		verify(update).withEnv("name1", "value1");
 		verify(update).withEnv("name2", "value2");
+		verifyNoMoreInteractions(update);
+	}
+
+	@Test
+	void applyWhenWithNetworkModeUpdatesConfigurationWithNetworkMode() {
+		Phase phase = new Phase("test", true);
+		phase.withNetworkMode("test");
+		Update update = mock(Update.class);
+		phase.apply(update);
+		verify(update).withCommand("/cnb/lifecycle/test");
+		verify(update).withNetworkMode("test");
+		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
 

@@ -43,7 +43,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 	void healthReturnsSystemHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
 		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.groups)
-				.health(ApiVersion.LATEST, SecurityContext.NONE).block();
+				.health(ApiVersion.LATEST, null, SecurityContext.NONE).block();
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health).isInstanceOf(SystemHealth.class);
@@ -55,7 +55,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		assertThat(this.registry).isEmpty();
 		WebEndpointResponse<? extends HealthComponent> response = create(this.registry,
 				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap()))
-						.health(ApiVersion.LATEST, SecurityContext.NONE).block();
+						.health(ApiVersion.LATEST, null, SecurityContext.NONE).block();
 		assertThat(response.getStatus()).isEqualTo(200);
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -66,7 +66,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 	void healthWhenPathDoesNotExistReturnsHttp404() {
 		this.registry.registerContributor("test", createContributor(this.up));
 		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.groups)
-				.health(ApiVersion.LATEST, SecurityContext.NONE, "missing").block();
+				.health(ApiVersion.LATEST, null, SecurityContext.NONE, "missing").block();
 		assertThat(response.getBody()).isNull();
 		assertThat(response.getStatus()).isEqualTo(404);
 	}
@@ -75,7 +75,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 	void healthWhenPathExistsReturnsHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
 		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.groups)
-				.health(ApiVersion.LATEST, SecurityContext.NONE, "test").block();
+				.health(ApiVersion.LATEST, null, SecurityContext.NONE, "test").block();
 		assertThat(response.getBody()).isEqualTo(this.up);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}

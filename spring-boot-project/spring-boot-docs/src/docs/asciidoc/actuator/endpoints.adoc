@@ -934,6 +934,20 @@ It's also possible to override the `show-details` and `roles` properties if requ
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
 
+Health groups can be made available at an additional path on either the main or management port.
+This is useful in cloud environments such as Kubernetes, where it is quite common to use a separate management port for the actuator endpoints for security purposes.
+Having a separate port could lead to unreliable health checks because the main application might not work properly even if the health check is successful.
+The health group can be configured with an additional path as follows:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	management.endpoint.health.group.live.additional-path="server:/healthz"
+----
+
+This would make the `live` health group available on the main server port at `/healthz`.
+The prefix is mandatory and must be either `server:` (represents the main server port) or `management:` (represents the management port, if configured.)
+The path must be a single path segment.
+
 
 
 [[actuator.endpoints.health.datasource]]
@@ -983,8 +997,18 @@ You can enable them in any environment using the configprop:management.endpoint.
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mention the `"startupProbe"` as a possible solution.
 The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<actuator#actuator.endpoints.kubernetes-probes.lifecycle,how Probes behave during the application lifecycle>>.
 
-WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
+If your Actuator endpoints are deployed on a separate management context, the endpoints do not use the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
+For this reason, is it a good idea to make the `liveness` and `readiness` health groups available on the main server port.
+This can be done by setting the following property:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	management.endpoint.health.probes.add-additional-paths=true
+----
+
+This would make `liveness` available at `/livez` and `readiness` at `readyz` on the main server port.
+
 
 
 

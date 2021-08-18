@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
@@ -597,6 +598,19 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder applicationStartup(ApplicationStartup applicationStartup) {
 		this.application.setApplicationStartup(applicationStartup);
+		return this;
+	}
+
+	/**
+	 * Whether to allow circular references between beans and automatically try to resolve
+	 * them.
+	 * @param allowCircularReferences whether circular references are allows
+	 * @return the current builder
+	 * @since 2.6.0
+	 * @see AbstractAutowireCapableBeanFactory#setAllowCircularReferences(boolean)
+	 */
+	public SpringApplicationBuilder allowCircularReferences(boolean allowCircularReferences) {
+		this.application.setAllowCircularReferences(allowCircularReferences);
 		return this;
 	}
 

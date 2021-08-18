@@ -42,6 +42,10 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -115,6 +119,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -1100,6 +1105,21 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	void circularReferencesAreDisabledByDefault() {
+		assertThatExceptionOfType(UnsatisfiedDependencyException.class)
+				.isThrownBy(() -> new SpringApplication(ExampleProducerConfiguration.class,
+						ExampleConsumerConfiguration.class).run("--spring.main.web-application-type=none"))
+				.withRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
+	}
+
+	@Test
+	void circularReferencesCanBeEnabled() {
+		assertThatNoException().isThrownBy(
+				() -> new SpringApplication(ExampleProducerConfiguration.class, ExampleConsumerConfiguration.class).run(
+						"--spring.main.web-application-type=none", "--spring.main.allow-circular-references=true"));
+	}
+
+	@Test
 	void relaxedBindingShouldWorkBeforeEnvironmentIsPrepared() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -1694,6 +1714,43 @@ class SpringApplicationTests {
 		@SuppressWarnings("unchecked")
 		<E extends ApplicationEvent> E getEvent(Class<E> type) {
 			return (E) this.events.get(type).get(0);
+		}
+
+	}
+
+	static class Example {
+
+	}
+
+	@FunctionalInterface
+	interface ExampleConfigurer {
+
+		void configure(Example example);
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExampleProducerConfiguration {
+
+		@Bean
+		Example example(ObjectProvider<ExampleConfigurer> configurers) {
+			Example example = new Example();
+			configurers.orderedStream().forEach((configurer) -> configurer.configure(example));
+			return example;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExampleConsumerConfiguration {
+
+		@Autowired
+		Example example;
+
+		@Bean
+		ExampleConfigurer configurer() {
+			return (example) -> {
+			};
 		}
 
 	}

@@ -32,4 +32,6 @@ if [[ -f META-INF/MANIFEST.MF ]]; then
     cat META-INF/MANIFEST.MF
 fi
 
+echo "Network status: $(curl --silent --head https://spring.io | grep -E '^HTTP' || echo "curl failed")"
+
 echo "---> Test Info buildpack done"

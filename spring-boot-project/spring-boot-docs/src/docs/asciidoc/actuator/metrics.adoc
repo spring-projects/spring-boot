@@ -624,7 +624,7 @@ In most situations, the out-of-the-box defaults will provide sensible metrics th
 [[actuator.metrics.supported.jvm]]
 ==== JVM Metrics
 Auto-configuration will enable JVM Metrics using core Micrometer classes.
-JVM metrics are published under the `jvm.` and `disk.` meter names.
+JVM metrics are published under the `jvm.` meter name.
 
 The following JVM metrics are provided:
 
@@ -632,20 +632,20 @@ The following JVM metrics are provided:
 * Statistics related to garbage collection
 * Threads utilization
 * The Number of classes loaded/unloaded
-* Disk space available
 
 
 
 [[actuator.metrics.supported.system]]
 ==== System Metrics
 Auto-configuration will enable system metrics using core Micrometer classes.
-System metrics are published under the `system.` and `process.` meter names.
+System metrics are published under the `system.`, `process.`, and `disk.` meter names.
 
 The following system metrics are provided:
 
 * CPU metrics
 * File descriptor metrics
 * Uptime metrics (both the amount of time the application has been running as well as a fixed gauge of the absolute start time)
+* Disk space available
 
 
 
@@ -1152,6 +1152,10 @@ The following properties allow per-meter customization:
 
 | configprop:management.metrics.distribution.percentiles[]
 | Publish percentile values computed in your application
+
+| configprop:management.metrics.distribution.expiry[], configprop:management.metrics.distribution.buffer-length[]
+| Give greater weight to recent samples by accumulating them in ring buffers which rotate after a configurable expiry, with a
+configurable buffer length.
 
 | configprop:management.metrics.distribution.slo[]
 | Publish a cumulative histogram with buckets defined by your service-level objectives.

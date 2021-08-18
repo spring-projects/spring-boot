@@ -911,6 +911,30 @@
       }
     },
     {
+      "name": "spring.flyway.vault-secrets",
+      "type": "java.util.List<java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in the open source release of Flyway 7.12."
+      }
+    },
+    {
+      "name": "spring.flyway.vault-token",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in the open source release of Flyway 7.12."
+      }
+    },
+    {
+      "name": "spring.flyway.vault-url",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in the open source release of Flyway 7.12."
+      }
+    },
+    {
       "name": "spring.freemarker.prefix",
       "defaultValue": ""
     },
@@ -1023,6 +1047,10 @@
     {
       "name": "spring.integration.jdbc.initialize-schema",
       "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.jackson.constructor-detector",
+      "defaultValue": "default"
     },
     {
       "name": "spring.jackson.joda-date-time-format",

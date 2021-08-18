@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvo
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactoryCustomizer;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.util.function.SingletonSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -38,7 +39,7 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessorTests {
 	private MetricsRepositoryMethodInvocationListener listener = mock(MetricsRepositoryMethodInvocationListener.class);
 
 	private MetricsRepositoryMethodInvocationListenerBeanPostProcessor postProcessor = new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
-			() -> this.listener);
+			SingletonSupplier.of(this.listener));
 
 	@Test
 	@SuppressWarnings("rawtypes")

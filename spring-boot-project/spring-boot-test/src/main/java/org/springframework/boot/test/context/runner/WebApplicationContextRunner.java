@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,14 @@ public final class WebApplicationContextRunner extends
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
 	public WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory) {
-		super(contextFactory);
+		super(contextFactory, WebApplicationContextRunner::new);
 	}
 
+	private WebApplicationContextRunner(RunnerConfiguration<ConfigurableWebApplicationContext> configuration) {
+		super(configuration, WebApplicationContextRunner::new);
+	}
+
+	@Deprecated
 	private WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			boolean allowBeanDefinitionOverriding,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
@@ -73,6 +78,7 @@ public final class WebApplicationContextRunner extends
 	}
 
 	@Override
+	@Deprecated
 	protected WebApplicationContextRunner newInstance(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			boolean allowBeanDefinitionOverriding,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,

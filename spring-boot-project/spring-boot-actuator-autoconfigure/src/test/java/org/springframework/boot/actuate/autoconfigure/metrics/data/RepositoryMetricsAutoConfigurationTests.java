@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.data;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Meter;
@@ -28,6 +29,7 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
@@ -180,17 +182,18 @@ class RepositoryMetricsAutoConfigurationTests {
 	static class MetricsRepositoryMethodInvocationListenerConfiguration {
 
 		@Bean
-		MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener(MeterRegistry registry,
-				RepositoryTagsProvider tagsProvider) {
-			return new TestMetricsRepositoryMethodInvocationListener(registry, tagsProvider);
+		MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener(
+				ObjectFactory<MeterRegistry> registry, RepositoryTagsProvider tagsProvider) {
+			return new TestMetricsRepositoryMethodInvocationListener(registry::getObject, tagsProvider);
 		}
 
 	}
 
 	static class TestMetricsRepositoryMethodInvocationListener extends MetricsRepositoryMethodInvocationListener {
 
-		TestMetricsRepositoryMethodInvocationListener(MeterRegistry registry, RepositoryTagsProvider tagsProvider) {
-			super(registry, tagsProvider, "test", AutoTimer.DISABLED);
+		TestMetricsRepositoryMethodInvocationListener(Supplier<MeterRegistry> registrySupplier,
+				RepositoryTagsProvider tagsProvider) {
+			super(registrySupplier, tagsProvider, "test", AutoTimer.DISABLED);
 		}
 
 	}
