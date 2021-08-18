@@ -181,7 +181,7 @@ A "fixed" strategy adds a static version string in the URL without changing the 
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
 
-See {spring-boot-autoconfigure-module-code}/web/ResourceProperties.java[`ResourceProperties`] for more supported options.
+See {spring-boot-autoconfigure-module-code}/web/WebProperties.java[`WebProperties.Resources`] for more supported options.
 
 [TIP]
 ====
@@ -631,7 +631,7 @@ JSPs are not supported when using an executable jar.
 
 * Undertow does not support JSPs.
 
-* Creating a custom `error.jsp` page does not override the default view for <<servlet#web.servlet.spring-mvc.error-handling,error handling>>.
-  <<servlet#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
+* Creating a custom `error.jsp` page does not override the default view for <<web.servlet.spring-mvc.error-handling,error handling>>.
+  <<web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
 
 
