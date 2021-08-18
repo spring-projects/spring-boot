@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Scott Frederick
  */
-public class BuildRequestTests {
+class BuildRequestTests {
 
 	@TempDir
 	File tempDir;

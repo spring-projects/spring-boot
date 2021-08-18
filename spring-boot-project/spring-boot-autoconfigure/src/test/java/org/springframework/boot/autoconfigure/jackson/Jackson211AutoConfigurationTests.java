@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions({ "jackson-databind*.jar", "jackson-dataformat-xml*.jar" })
 @ClassPathOverrides({ "com.fasterxml.jackson.core:jackson-databind:2.11.3",
 		"com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.3" })
-public class Jackson211AutoConfigurationTests extends JacksonAutoConfigurationTests {
+class Jackson211AutoConfigurationTests extends JacksonAutoConfigurationTests {
 
 	public static final String STRATEGY_CLASS_NAME = "com.fasterxml.jackson.databind.PropertyNamingStrategy$SnakeCaseStrategy";
 
