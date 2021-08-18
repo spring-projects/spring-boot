@@ -30,7 +30,7 @@ import org.springframework.xml.transform.StringSource;
  * @author Daniil Razorenov
  */
 @WebServiceServerTest(endpoints = ExampleWebServiceEndpoint.class)
-public class WebServiceServerIntegrationTests {
+class WebServiceServerIntegrationTests {
 
 	@Autowired
 	private MockWebServiceClient mock;

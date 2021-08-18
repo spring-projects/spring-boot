@@ -17,21 +17,27 @@
 package org.springframework.boot.autoconfigure.condition.scan;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
-/**
- * Configuration for a factory bean produced by a bean method on a configuration class
- * found via component scanning.
- *
- * @author Andy Wilkinson
- */
-@Configuration(proxyBeanMethods = false)
-public class ScannedFactoryBeanConfiguration {
+class ScanFactoryBean implements FactoryBean<ScanBean> {
 
-	@Bean
-	public FactoryBean<ScanBean> exampleBeanFactoryBean() {
-		return new ScanFactoryBean("foo");
+	ScanFactoryBean(String value) {
+		Assert.state(!value.contains("$"), "value should not contain '$'");
+	}
+
+	@Override
+	public ScanBean getObject() {
+		return new ScanBean("fromFactory");
+	}
+
+	@Override
+	public Class<?> getObjectType() {
+		return ScanBean.class;
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return false;
 	}
 
 }

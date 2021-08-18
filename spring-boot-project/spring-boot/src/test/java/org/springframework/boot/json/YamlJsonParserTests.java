@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Dave Syer
  */
-public class YamlJsonParserTests extends AbstractJsonParserTests {
+class YamlJsonParserTests extends AbstractJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
