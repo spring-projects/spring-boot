@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class EclipseM2eIntegrationTests {
+class EclipseM2eIntegrationTests {
 
 	@Test // gh-21992
 	void pluginPomIncludesOptionalShadeDependency() throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.condition.scan.ScanBean;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
 import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -60,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @SuppressWarnings("resource")
-public class ConditionalOnMissingBeanTests {
+class ConditionalOnMissingBeanTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
@@ -161,7 +162,7 @@ public class ConditionalOnMissingBeanTests {
 		this.contextRunner
 				.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ScanBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
@@ -169,7 +170,7 @@ public class ConditionalOnMissingBeanTests {
 		this.contextRunner
 				.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
 						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ScanBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
@@ -617,9 +618,9 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
+	static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
 
-		public ExampleFactoryBean(String value) {
+		ExampleFactoryBean(String value) {
 			Assert.state(!value.contains("$"), "value should not contain '$'");
 		}
 
@@ -738,11 +739,11 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@TestAnnotation
-	public static class ExampleBean {
+	static class ExampleBean {
 
 		private String value;
 
-		public ExampleBean(String value) {
+		ExampleBean(String value) {
 			this.value = value;
 		}
 
