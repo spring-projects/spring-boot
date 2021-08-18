@@ -2,21 +2,72 @@ plugins {
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.maven-repository"
+	//id 'java'
+}
+
+dependencies {
+	//implementation 
+    mavenRepository "${project.group}:spring-boot-dependencies:${project.version}@pom";
 }
 
 description = "Parent pom providing dependency and plugin management for applications built with Maven"
 
 publishing.publications.withType(MavenPublication) {
-	pom.withXml { xml ->
-		def root = xml.asNode()
-		root.groupId.replaceNode {
-			parent {
-				delegate.groupId("${project.group}")
-				delegate.artifactId("spring-boot-dependencies")
-				delegate.version("${project.version}")
+//https://docs.gradle.org/current/javadoc/org/gradle/api/artifacts/Configuration.html
+	project.configurations.each {
+    println it.name;
+}
+    def parentPom = project.configurations.getByName("mavenRepository").getIncoming().getFiles().getFiles().find{it.name.endsWith('.pom')}
+	println "${parentPom}"
+	def parentPomXml = new XmlSlurper(false,false).parse(parentPom)
+	def propsMap = [:]
+	parentPomXml.properties.children ().each {
+		def verName =it.name()
+		def verVal = it.text()
+		propsMap.put(verName, verVal);
+	}
+	def pluginVerMap = [:]
+	def pluginMap = [:]
+	def verPattern = ~/[$][{]([^}]+)[}]/
+	parentPomXml.build.pluginManagement.plugins.children().each {
+		def artifactId = it.artifactId
+		pluginMap.put(artifactId.text(), it)
+		println it
+		def pVer = it.version //${xx}
+		if (!pVer) {
+			return;
+		}
+		def matcher = verPattern.matcher(pVer.text())
+		pVer = matcher.matches() ? matcher.group(1): null
+		def pv = pVer ? propsMap[pVer] : null
+		if(pv) {
+			pluginVerMap.put(pVer, pv)
+		}
+	}
+	def addPluginVer = {node, artifactId1 -> 
+		def pluginNode = pluginMap.remove(artifactId1);
+		if (!pluginNode) {
+			return
+		}
+		def pVer = pluginNode.version.text()
+		println "$artifactId1 => $pVer"
+		if (pVer) {
+			node.'version'(pVer)
+		}
+	} //end addPluginVer
+	def addParentPlugins = {node -> 
+		pluginMap.each {artifactId, pluginNode ->
+			node.plugin {
+				def pluginDelegate = delegate
+				pluginNode.children().each {
+					pluginDelegate."${it.name()}"(it.text())
+				}
 			}
 		}
-		root.remove(root.version)
+	} //end addParentPlugins
+	pom.withXml { xml ->
+		def root = xml.asNode()
+		//root.dependencies.replaceNode {}
 		root.description.plus {
 			properties {
 				delegate."java.version"('1.8')
@@ -25,9 +76,25 @@ publishing.publications.withType(MavenPublication) {
 				delegate."maven.compiler.target"('${java.version}')
 				delegate."project.build.sourceEncoding"('UTF-8')
 				delegate."project.reporting.outputEncoding"('UTF-8')
+				delegate."spring-boot.version"("${project.version}")
+				def propsNode = delegate;
+				pluginVerMap.each {prop,propVal ->
+					propsNode."$prop"(propVal)
+				}
 			}
 		}
 		root.scm.plus {
+			dependencyManagement {
+				delegate.dependencies {
+					delegate.dependency {
+						delegate.groupId('org.springframework.boot')
+						delegate.artifactId('spring-boot-dependencies')
+						delegate.version('${spring-boot.version}')
+						delegate.type('pom')
+						delegate.scope('import')
+					}
+				}
+			}
 			build {
 				resources {
 					resource {
@@ -53,6 +120,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.jetbrains.kotlin')
 							delegate.artifactId('kotlin-maven-plugin')
+							pluginMap.remove('kotlin-maven-plugin')
 							delegate.version('${kotlin.version}')
 							configuration {
 								delegate.jvmTarget('${java.version}')
@@ -78,6 +146,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-compiler-plugin')
+							addPluginVer(delegate, 'maven-compiler-plugin')
 							configuration {
 								delegate.parameters('true')
 							}
@@ -85,6 +154,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-failsafe-plugin')
+							addPluginVer(delegate, 'maven-failsafe-plugin')
 							executions {
 								execution {
 									goals {
@@ -100,6 +170,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-jar-plugin')
+							addPluginVer(delegate, 'maven-jar-plugin')
 							configuration {
 								archive {
 									manifest {
@@ -112,6 +183,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-war-plugin')
+							addPluginVer(delegate, 'maven-war-plugin')
 							configuration {
 								archive {
 									manifest {
@@ -124,6 +196,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-resources-plugin')
+							addPluginVer(delegate, 'maven-resources-plugin')
 							configuration {
 								delegate.propertiesEncoding('${project.build.sourceEncoding}')
 								delimiters {
@@ -135,6 +208,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('pl.project13.maven')
 							delegate.artifactId('git-commit-id-plugin')
+							addPluginVer(delegate, 'git-commit-id-plugin')
 							executions {
 								execution {
 									goals {
@@ -152,6 +226,8 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.springframework.boot')
 							delegate.artifactId('spring-boot-maven-plugin')
+                            pluginMap.remove('spring-boot-maven-plugin')
+							delegate.version('${spring-boot.version}')
 							executions {
 								execution {
 									delegate.id('repackage')
@@ -167,6 +243,7 @@ publishing.publications.withType(MavenPublication) {
 						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-shade-plugin')
+							addPluginVer(delegate, 'maven-shade-plugin')
 							configuration {
 								delegate.keepDependenciesWithProvidedScope('true')
 								delegate.createDependencyReducedPom('true')
@@ -185,7 +262,7 @@ publishing.publications.withType(MavenPublication) {
 								dependency {
 									delegate.groupId('org.springframework.boot')
 									delegate.artifactId('spring-boot-maven-plugin')
-									delegate.version("${project.version}")
+									delegate.version('${spring-boot.version}')
 								}
 							}
 							executions {
@@ -214,7 +291,8 @@ publishing.publications.withType(MavenPublication) {
 								}
 							}
 						}
-					}
+						addParentPlugins(delegate);
+					} // end plugins
 				}
 			}
 		}
