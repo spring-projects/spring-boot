@@ -2,13 +2,9 @@
 = Production-ready Features
 include::attributes.adoc[]
 
-
-
 Spring Boot includes a number of additional features to help you monitor and manage your application when you push it to production.
 You can choose to manage and monitor your application by using HTTP endpoints or with JMX.
-Auditing, health, and metrics gathering can also be automatically applied to your application.
-
-
+You can also automatically apply auditing, health, and metrics gathering to your application.
 
 include::actuator/enabling.adoc[]
 
