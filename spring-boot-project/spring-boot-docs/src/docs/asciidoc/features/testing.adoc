@@ -752,7 +752,8 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 ----
 
 If you want to make use of Spring REST Docs support for a parameterized output directory, you can create a `WebTestClientBuilderCustomizer` bean.
-The auto-configuration calls `entityExchangeResultConsumer` with this consumer, thereby causing each `WebTestClient` call to automatically generate the default snippets.
+The auto-configuration calls this `WebTestClientBuilderCustomizer` in order to create the `WebTestClient` bean for the current context
+with the consumer provided in the parameter of the method `entityExchangeResultConsumer`.
 The following example shows a `WebTestClientBuilderCustomizer` being defined:
 
 [source,java,indent=0,subs="verbatim"]
@@ -777,15 +778,6 @@ If you require more control over Spring REST Docs configuration than offered by 
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyRestDocsConfiguration.java[]
-----
-
-If you want to make use of Spring REST Docs support for a parameterized output directory, you can create a `RestDocumentationFilter` bean.
-The auto-configuration calls `addFilter` with this filter, thereby causing each `RestAssured` call to automatically generate the default snippets.
-The following example shows a `RestDocumentationFilter` being defined:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyFilterConfiguration.java[]
 ----
 
 
