@@ -2,7 +2,7 @@ anchors:
   git-repo-resource-source: &git-repo-resource-source
     uri: ((github-repo))
     username: ((github-username))
-    password: ((github-password))
+    password: ((github-ci-release-token))
     branch: ((branch))
   registry-image-resource-source: &registry-image-resource-source
     username: ((docker-hub-username))
@@ -75,7 +75,7 @@ anchors:
   homebrew-tap-repo-resource-source: &homebrew-tap-repo-resource-source
     uri: ((homebrew-tap-repo))
     username: ((github-username))
-    password: ((github-password))
+    password: ((github-ci-release-token))
     branch: main
   gradle-publish-params: &gradle-publish-params
     gradle_publish_key: ((gradle-publish-key))
