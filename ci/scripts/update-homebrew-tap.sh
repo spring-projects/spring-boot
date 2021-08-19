@@ -11,7 +11,7 @@ pushd updated-homebrew-tap-repo > /dev/null
   rm spring-boot.rb
   mv spring-boot-cli-*.rb spring-boot.rb
   git config user.name "Spring Buildmaster" > /dev/null
-  git config user.email "buildmaster@springframework.org" > /dev/null
+  git config user.email "spring-buildmaster@users.noreply.github.com" > /dev/null
   git add spring-boot.rb > /dev/null
   git commit -m "Upgrade to Spring Boot ${version}" > /dev/null
   echo "DONE"
