@@ -57,7 +57,8 @@ public abstract class SpringBootCondition implements Condition {
 					+ "put a @ComponentScan in the default package by mistake)", ex);
 		}
 		catch (RuntimeException ex) {
-			throw new IllegalStateException("Error processing condition on " + getName(metadata), ex);
+			throw new IllegalStateException("Error processing condition on " + getName(metadata) + " due to " 
+					+ ex.getClass().getCanonicalName() + ": " + ex.getMessage(), ex);
 		}
 	}
 
