@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc;
+package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringrestdocs.withwebtestclient;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
