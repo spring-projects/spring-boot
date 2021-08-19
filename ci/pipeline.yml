@@ -677,8 +677,9 @@ jobs:
       trigger: true
       passed: [promote-release]
       params:
-        download_artifacts: false
+        download_artifacts: true
         save_build_info: true
+        threads: 8
     - task: publish-gradle-plugin
       image: ci-image
       file: git-repo/ci/tasks/publish-gradle-plugin.yml
