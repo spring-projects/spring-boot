@@ -27,7 +27,7 @@ public class MyWebTestClientBuilderCustomizerConfiguration {
 
 	@Bean
 	public WebTestClientBuilderCustomizer restDocumentation() {
-		return builder -> builder.entityExchangeResultConsumer(document("{method-name}"));
+		return (builder) -> builder.entityExchangeResultConsumer(document("{method-name}"));
 	}
 
 }
