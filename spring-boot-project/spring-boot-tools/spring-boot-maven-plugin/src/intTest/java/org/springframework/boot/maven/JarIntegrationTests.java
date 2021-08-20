@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
 @ExtendWith(MavenBuildExtension.class)
 class JarIntegrationTests extends AbstractArchiveIntegrationTests {
@@ -392,6 +394,33 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			}
 		});
 		return jarHash.get();
+	}
+
+	@TestTemplate
+	void whenJarIsRepackagedWithDefaultsThenLibrariesAreNotSorted(MavenBuild mavenBuild) throws InterruptedException {
+		mavenBuild.project("jar").execute((project) -> {
+			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
+			List<String> unsortedLibs = Arrays.asList("BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-aop",
+					"BOOT-INF/lib/spring-beans", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-jcl",
+					"BOOT-INF/lib/spring-expression", "BOOT-INF/lib/jakarta.servlet-api",
+					"BOOT-INF/lib/spring-boot-jarmode-layertools");
+			assertThat(jar(repackaged)).entryNamesInPath("BOOT-INF/lib/").zipSatisfy(unsortedLibs,
+					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
+		});
+	}
+
+	@TestTemplate
+	void whenJarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild)
+			throws InterruptedException {
+		mavenBuild.project("jar-output-timestamp").execute((project) -> {
+			File repackaged = new File(project, "target/jar-output-timestamp-0.0.1.BUILD-SNAPSHOT.jar");
+			List<String> sortedLibs = Arrays.asList("BOOT-INF/lib/jakarta.servlet-api", "BOOT-INF/lib/spring-aop",
+					"BOOT-INF/lib/spring-beans", "BOOT-INF/lib/spring-boot-jarmode-layertools",
+					"BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-expression",
+					"BOOT-INF/lib/spring-jcl");
+			assertThat(jar(repackaged)).entryNamesInPath("BOOT-INF/lib/").zipSatisfy(sortedLibs,
+					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
+		});
 	}
 
 }
