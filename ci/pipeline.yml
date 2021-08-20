@@ -86,8 +86,8 @@ anchors:
     password: ((github-ci-release-token))
     branch: main
   gradle-publish-params: &gradle-publish-params
-    gradle_publish_key: ((gradle-publish-key))
-    gradle_publish_secret: ((gradle-publish-secret))
+    GRADLE_PUBLISH_KEY: ((gradle-publish-key))
+    GRADLE_PUBLISH_SECRET: ((gradle-publish-secret))
   registry-mirror-vars: &registry-mirror-vars
     registry-mirror-host: ((registry-mirror-host))
     registry-mirror-username: ((registry-mirror-username))
