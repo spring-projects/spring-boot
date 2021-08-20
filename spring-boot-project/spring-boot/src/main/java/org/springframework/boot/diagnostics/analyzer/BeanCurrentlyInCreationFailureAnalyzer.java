@@ -44,7 +44,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		return new FailureAnalysis(buildMessage(dependencyCycle),
 				"Relying upon circular references is discouraged and they are prohibited by default. "
 						+ "Update your application to remove the dependency cycle between beans. "
-						+ "As a last resort, it may be possible to break the cycle automatically be setting "
+						+ "As a last resort, it may be possible to break the cycle automatically by setting "
 						+ "spring.main.allow-circular-references to true if you have not already done so.",
 				cause);
 	}
