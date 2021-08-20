@@ -397,19 +397,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenJarIsRepackagedWithDefaultsThenLibrariesAreNotSorted(MavenBuild mavenBuild) throws InterruptedException {
-		mavenBuild.project("jar").execute((project) -> {
-			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
-			List<String> unsortedLibs = Arrays.asList("BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-aop",
-					"BOOT-INF/lib/spring-beans", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-jcl",
-					"BOOT-INF/lib/spring-expression", "BOOT-INF/lib/jakarta.servlet-api",
-					"BOOT-INF/lib/spring-boot-jarmode-layertools");
-			assertThat(jar(repackaged)).entryNamesInPath("BOOT-INF/lib/").zipSatisfy(unsortedLibs,
-					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
-		});
-	}
-
-	@TestTemplate
 	void whenJarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild)
 			throws InterruptedException {
 		mavenBuild.project("jar-output-timestamp").execute((project) -> {

@@ -113,18 +113,6 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenWarIsRepackagedWithDefaultsThenLibrariesAreNotSorted(MavenBuild mavenBuild) throws InterruptedException {
-		mavenBuild.project("war").execute((project) -> {
-			File repackaged = new File(project, "target/war-0.0.1.BUILD-SNAPSHOT.war");
-			List<String> unsortedLibs = Arrays.asList("WEB-INF/lib/spring-aop", "WEB-INF/lib/spring-beans",
-					"WEB-INF/lib/spring-expression", "WEB-INF/lib/spring-context", "WEB-INF/lib/spring-core",
-					"WEB-INF/lib/spring-jcl", "WEB-INF/lib/spring-boot-jarmode-layertools");
-			assertThat(jar(repackaged)).entryNamesInPath("WEB-INF/lib/").zipSatisfy(unsortedLibs,
-					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
-		});
-	}
-
-	@TestTemplate
 	void whenWarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild)
 			throws InterruptedException {
 		mavenBuild.project("war-output-timestamp").execute((project) -> {
