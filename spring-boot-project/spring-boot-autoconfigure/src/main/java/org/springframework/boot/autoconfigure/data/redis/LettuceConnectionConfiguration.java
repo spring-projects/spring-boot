@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
@@ -38,6 +39,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -45,6 +47,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -84,6 +87,11 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
+		if (StringUtils.hasText(this.getProperties().getUrl())) {
+			RedisURI redisURI = createRedisUri(getProperties().getUrl());
+			RedisConfiguration redisConfiguration = LettuceConnectionFactory.createRedisConfiguration(redisURI);
+			return new LettuceConnectionFactory(redisConfiguration, clientConfiguration);
+		}
 		if (getSentinelConfig() != null) {
 			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
@@ -161,10 +169,20 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
-		if (connectionInfo.isUseSsl()) {
-			builder.useSsl();
+		RedisURI redisURI = createRedisUri(this.getProperties().getUrl());
+		builder.apply(redisURI);
+	}
+
+	private RedisURI createRedisUri(String uri) {
+		RedisURI redisURI = RedisURI.create(uri);
+		// Set the sentinel password from properties on the sentinel nodes as there is no
+		// way to set that on the url
+		if (!ObjectUtils.isEmpty(redisURI.getSentinels()) && getProperties().getSentinel() != null
+				&& StringUtils.hasText(getProperties().getSentinel().getPassword())) {
+			redisURI.getSentinels().forEach((sentinelNodeRedisUri) -> sentinelNodeRedisUri
+					.setPassword(getProperties().getSentinel().getPassword().toCharArray()));
 		}
+		return redisURI;
 	}
 
 	/**

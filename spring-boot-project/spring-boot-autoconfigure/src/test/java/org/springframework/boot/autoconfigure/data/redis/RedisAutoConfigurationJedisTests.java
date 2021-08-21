@@ -32,6 +32,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link RedisAutoConfiguration} when Lettuce is not on the classpath.
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Weix Sun
+ * @author Chris Bono
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
@@ -207,6 +209,17 @@ class RedisAutoConfigurationJedisTests {
 					assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
 				});
+	}
+
+	@Test
+	void testRedisSentinelUrlConfiguration() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.redis.url=redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster")
+				.run((context) -> assertThatIllegalStateException()
+						.isThrownBy(() -> context.getBean(JedisConnectionFactory.class))
+						.withRootCauseInstanceOf(RedisUrlSyntaxException.class).havingRootCause().withMessageContaining(
+								"Invalid Redis URL 'redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster'"));
 	}
 
 	@Test

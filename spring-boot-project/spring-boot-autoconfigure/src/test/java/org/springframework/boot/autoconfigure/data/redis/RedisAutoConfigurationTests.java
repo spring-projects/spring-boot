@@ -56,7 +56,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -72,6 +71,7 @@ import static org.mockito.Mockito.mock;
  * @author Alen Turkovic
  * @author Scott Frederick
  * @author Weix Sun
+ * @author Chris Bono
  */
 class RedisAutoConfigurationTests {
 
@@ -117,57 +117,6 @@ class RedisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
-		});
-	}
-
-	@Test
-	void testRedisUrlConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.redis.host:foo", "spring.redis.url:redis://user:password@example:33")
-				.run((context) -> {
-					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-					assertThat(cf.getHostName()).isEqualTo("example");
-					assertThat(cf.getPort()).isEqualTo(33);
-					assertThat(getUserName(cf)).isEqualTo("user");
-					assertThat(cf.getPassword()).isEqualTo("password");
-					assertThat(cf.isUseSsl()).isFalse();
-				});
-	}
-
-	@Test
-	void testOverrideUrlRedisConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.redis.host:foo", "spring.redis.password:xyz", "spring.redis.port:1000",
-						"spring.redis.ssl:false", "spring.redis.url:rediss://user:password@example:33")
-				.run((context) -> {
-					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-					assertThat(cf.getHostName()).isEqualTo("example");
-					assertThat(cf.getPort()).isEqualTo(33);
-					assertThat(getUserName(cf)).isEqualTo("user");
-					assertThat(cf.getPassword()).isEqualTo("password");
-					assertThat(cf.isUseSsl()).isTrue();
-				});
-	}
-
-	@Test
-	void testPasswordInUrlWithColon() {
-		this.contextRunner.withPropertyValues("spring.redis.url:redis://:pass:word@example:33").run((context) -> {
-			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-			assertThat(cf.getHostName()).isEqualTo("example");
-			assertThat(cf.getPort()).isEqualTo(33);
-			assertThat(getUserName(cf)).isEqualTo("");
-			assertThat(cf.getPassword()).isEqualTo("pass:word");
-		});
-	}
-
-	@Test
-	void testPasswordInUrlStartsWithColon() {
-		this.contextRunner.withPropertyValues("spring.redis.url:redis://user::pass:word@example:33").run((context) -> {
-			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-			assertThat(cf.getHostName()).isEqualTo("example");
-			assertThat(cf.getPort()).isEqualTo(33);
-			assertThat(getUserName(cf)).isEqualTo("user");
-			assertThat(cf.getPassword()).isEqualTo(":pass:word");
 		});
 	}
 
@@ -320,17 +269,6 @@ class RedisAutoConfigurationTests {
 					assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
 							.contains("127.0.0.1:26379", "127.0.0.1:26380");
 				});
-	}
-
-	@Test
-	void testRedisSentinelUrlConfiguration() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.redis.url=redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster")
-				.run((context) -> assertThatIllegalStateException()
-						.isThrownBy(() -> context.getBean(LettuceConnectionFactory.class))
-						.withRootCauseInstanceOf(RedisUrlSyntaxException.class).havingRootCause().withMessageContaining(
-								"Invalid Redis URL 'redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster'"));
 	}
 
 	@Test
