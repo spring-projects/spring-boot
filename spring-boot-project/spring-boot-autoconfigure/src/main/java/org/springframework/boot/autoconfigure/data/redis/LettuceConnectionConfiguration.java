@@ -169,7 +169,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		RedisURI redisURI = createRedisUri(this.getProperties().getUrl());
+		RedisURI redisURI = createRedisUri(getProperties().getUrl());
 		builder.apply(redisURI);
 	}
 
