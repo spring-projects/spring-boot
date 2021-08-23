@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.jdbc;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -131,8 +131,8 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
 				Function<DataSource, HealthContributor> contributorFunction) {
 			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources().entrySet().stream()
-					.collect(Collectors.toMap((e) -> Optional.ofNullable(e.getKey()).map(Object::toString)
-									.orElse(UNNAMED_DATASOURCE_KEY), Map.Entry::getValue));
+					.collect(Collectors.toMap((e) -> Objects.toString(e.getKey(), UNNAMED_DATASOURCE_KEY),
+							Map.Entry::getValue));
 			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);
 		}
 

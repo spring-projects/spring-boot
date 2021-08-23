@@ -103,11 +103,10 @@ class DataSourceHealthContributorAutoConfigurationTests {
 			assertThat(context).hasSingleBean(RoutingDataSourceHealthContributor.class);
 			RoutingDataSourceHealthContributor routingHealthContributor = context
 					.getBean(RoutingDataSourceHealthContributor.class);
-			assertThat(routingHealthContributor.getContributor("unnamed")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("one")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("two")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.iterator()).toIterable().extracting("name")
-					.containsExactlyInAnyOrder("unnamed", "one", "two");
+					.containsExactlyInAnyOrder("one", "two");
 		});
 	}
 
@@ -138,6 +137,20 @@ class DataSourceHealthContributorAutoConfigurationTests {
 						.doesNotHaveBean(CompositeHealthContributor.class));
 	}
 
+	@Test
+	void runWhenDataSourceHasNullRoutingKeyShouldProduceUnnamedComposedIndicator() {
+		this.contextRunner.withUserConfiguration(NullKeyRoutingDataSourceConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(RoutingDataSourceHealthContributor.class);
+			RoutingDataSourceHealthContributor routingHealthContributor = context
+					.getBean(RoutingDataSourceHealthContributor.class);
+			assertThat(routingHealthContributor.getContributor("unnamed"))
+					.isInstanceOf(DataSourceHealthIndicator.class);
+			assertThat(routingHealthContributor.getContributor("one")).isInstanceOf(DataSourceHealthIndicator.class);
+			assertThat(routingHealthContributor.iterator()).toIterable().extracting("name")
+					.containsExactlyInAnyOrder("unnamed", "one");
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class DataSourceConfig {
@@ -157,9 +170,23 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		@Bean
 		AbstractRoutingDataSource routingDataSource() {
 			Map<Object, DataSource> dataSources = new HashMap<>();
-			dataSources.put(null, mock(DataSource.class));
 			dataSources.put("one", mock(DataSource.class));
 			dataSources.put("two", mock(DataSource.class));
+			AbstractRoutingDataSource routingDataSource = mock(AbstractRoutingDataSource.class);
+			given(routingDataSource.getResolvedDataSources()).willReturn(dataSources);
+			return routingDataSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NullKeyRoutingDataSourceConfig {
+
+		@Bean
+		AbstractRoutingDataSource routingDataSource() {
+			Map<Object, DataSource> dataSources = new HashMap<>();
+			dataSources.put(null, mock(DataSource.class));
+			dataSources.put("one", mock(DataSource.class));
 			AbstractRoutingDataSource routingDataSource = mock(AbstractRoutingDataSource.class);
 			given(routingDataSource.getResolvedDataSources()).willReturn(dataSources);
 			return routingDataSource;
