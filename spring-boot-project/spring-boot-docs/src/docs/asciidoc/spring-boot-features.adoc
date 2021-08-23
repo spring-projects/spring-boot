@@ -8063,6 +8063,14 @@ If you require more control over Spring REST Docs configuration than offered by 
 include::{code-examples}/test/autoconfigure/restdocs/webclient/AdvancedConfigurationExample.java[tag=configuration]
 ----
 
+If you want to make use of Spring REST Docs support for a parameterized output directory, you can use a `WebTestClientBuilderCustomizer` to configure a consumer for every entity exchange result.
+The following example shows such a `WebTestClientBuilderCustomizer` being defined:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/autoconfigure/restdocs/webclient/ParameterizedOutputConfigurationExample.java[tag=configuration]
+----
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-rest-assured]]
