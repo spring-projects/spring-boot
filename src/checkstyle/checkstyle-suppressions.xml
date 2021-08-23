@@ -40,6 +40,7 @@
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
+	<suppress files="MockBeanWithSpringMethodRuleRepeatJUnit4IntegrationTests" checks="SpringJUnit5" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
