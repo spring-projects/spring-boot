@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringrestdocs.withwebtestclient;
+package org.springframework.boot.docs.test.autoconfigure.restdocs.webclient;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
@@ -22,12 +22,18 @@ import org.springframework.context.annotation.Bean;
 
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
-@TestConfiguration(proxyBeanMethods = false)
-public class MyWebTestClientBuilderCustomizerConfiguration {
+class ParameterizedOutputConfigurationExample {
 
-	@Bean
-	public WebTestClientBuilderCustomizer restDocumentation() {
-		return (builder) -> builder.entityExchangeResultConsumer(document("{method-name}"));
+	// tag::configuration[]
+	@TestConfiguration(proxyBeanMethods = false)
+	static class ParameterizedOutputConfiguration {
+
+		@Bean
+		WebTestClientBuilderCustomizer restDocumentation() {
+			return (builder) -> builder.entityExchangeResultConsumer(document("{method-name}"));
+		}
+
 	}
+	// end::configuration[]
 
 }
