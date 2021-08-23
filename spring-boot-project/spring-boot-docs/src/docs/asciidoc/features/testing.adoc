@@ -748,6 +748,14 @@ If you require more control over Spring REST Docs configuration than offered by 
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyRestDocsConfiguration.java[]
 ----
 
+If you want to make use of Spring REST Docs support for a parameterized output directory, you can use a `WebTestClientBuilderCustomizer` to configure a consumer for every entity exchange result.
+The following example shows such a `WebTestClientBuilderCustomizer` being defined:
+
+[source,java,indent=0]
+----
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyWebTestClientBuilderCustomizerConfiguration.java[]
+----
+
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
