@@ -4,10 +4,10 @@ include::authors.adoc[]
 v{spring-boot-version}
 include::attributes.adoc[]
 
-ifdef::backend-html5[]
-This document is also available as {spring-boot-docs}/html/[multiple HTML pages] and as {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF].
+ifdef::backend-spring-html[]
+This document is also available as {spring-boot-docs}/html/[multiple HTML pages] and as {spring-boot-docs}/pdf/spring-boot-reference.pdf[a PDF].
 endif::[]
-ifdef::backend-pdf[]
+ifdef::backend-spring-pdf[]
 This document is also available as {spring-boot-docs}/html/[multiple HTML pages] and as {spring-boot-docs}/htmlsingle/[a single HTML page].
 endif::[]
 

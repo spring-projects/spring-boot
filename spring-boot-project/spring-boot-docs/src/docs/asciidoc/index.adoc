@@ -4,7 +4,7 @@ include::authors.adoc[]
 v{spring-boot-version}
 include::attributes.adoc[]
 
-This document is also available as  {spring-boot-docs}/htmlsingle/[a single HTML page] and as {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF].
+This document is also available as {spring-boot-docs}/htmlsingle/[a single HTML page] and as {spring-boot-docs}/pdf/spring-boot-reference.pdf[a PDF].
 
 The reference documentation consists of the following sections:
 
