@@ -239,10 +239,7 @@ public class SessionAutoConfiguration {
 
 		private void addCandidateIfAvailable(List<Class<?>> candidates, String type) {
 			try {
-				Class<?> candidate = Class.forName(type, false, this.classLoader);
-				if (candidate != null) {
-					candidates.add(candidate);
-				}
+				candidates.add(Class.forName(type, false, this.classLoader));
 			}
 			catch (Throwable ex) {
 				// Ignore
