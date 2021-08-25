@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @TestWithJetty10
-public class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFactoryTests {
+class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFactoryTests {
 
 	@Test
 	@Override

@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Stephane Nicoll
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleQuartzApplicationWebTests {
+class SampleQuartzApplicationWebTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;

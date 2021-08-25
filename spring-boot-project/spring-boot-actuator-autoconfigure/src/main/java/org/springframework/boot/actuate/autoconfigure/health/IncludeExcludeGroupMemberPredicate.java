@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  * Member predicate that matches based on {@code include} and {@code exclude} sets.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
@@ -40,15 +41,30 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
 	@Override
 	public boolean test(String name) {
+		return testCleanName(clean(name));
+	}
+
+	private boolean testCleanName(String name) {
 		return isIncluded(name) && !isExcluded(name);
 	}
 
 	private boolean isIncluded(String name) {
-		return this.include.isEmpty() || this.include.contains("*") || this.include.contains(clean(name));
+		return this.include.isEmpty() || this.include.contains("*") || isIncludedName(name);
+	}
+
+	private boolean isIncludedName(String name) {
+		if (this.include.contains(name)) {
+			return true;
+		}
+		if (name.contains("/")) {
+			String parent = name.substring(0, name.lastIndexOf("/"));
+			return isIncludedName(parent);
+		}
+		return false;
 	}
 
 	private boolean isExcluded(String name) {
-		return this.exclude.contains("*") || this.exclude.contains(clean(name));
+		return this.exclude.contains("*") || this.exclude.contains(name);
 	}
 
 	private Set<String> clean(Set<String> names) {
@@ -60,7 +76,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	private String clean(String name) {
-		return name.trim();
+		return (name != null) ? name.trim() : null;
 	}
 
 }

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Daniil Razorenov
  */
-public class WebServiceServerTypeExcludeFilterTests {
+class WebServiceServerTypeExcludeFilterTests {
 
 	private final MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 

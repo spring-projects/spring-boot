@@ -94,6 +94,24 @@ class IncludeExcludeGroupMemberPredicateTests {
 		assertThat(predicate).accepts("myEndpoint").rejects("d");
 	}
 
+	@Test
+	void testWhenSpecifiedIncludeWithSlash() {
+		Predicate<String> predicate = include("test/a").exclude();
+		assertThat(predicate).accepts("test/a").rejects("test").rejects("test/b");
+	}
+
+	@Test
+	void specifiedIncludeShouldIncludeNested() {
+		Predicate<String> predicate = include("test").exclude();
+		assertThat(predicate).accepts("test/a/d").accepts("test/b").rejects("foo");
+	}
+
+	@Test
+	void specifiedIncludeShouldNotIncludeExcludedNested() {
+		Predicate<String> predicate = include("test").exclude("test/b");
+		assertThat(predicate).accepts("test/a").rejects("test/b").rejects("foo");
+	}
+
 	private Builder include(String... include) {
 		return new Builder(include);
 	}

@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class for health endpoints and health endpoint extensions.
@@ -86,8 +87,12 @@ abstract class HealthEndpointSupport<C, T> {
 			return null;
 		}
 		Object contributor = getContributor(path, pathOffset);
+		if (contributor == null) {
+			return null;
+		}
+		String name = getName(path, pathOffset);
 		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
-		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails, groupNames, false);
+		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, groupNames);
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 
@@ -104,29 +109,39 @@ abstract class HealthEndpointSupport<C, T> {
 		return contributor;
 	}
 
-	@SuppressWarnings("unchecked")
-	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, Object contributor,
-			boolean showComponents, boolean showDetails, Set<String> groupNames, boolean isNested) {
-		if (contributor instanceof NamedContributors) {
-			return getAggregateHealth(apiVersion, group, (NamedContributors<C>) contributor, showComponents,
-					showDetails, groupNames, isNested);
+	private String getName(String[] path, int pathOffset) {
+		StringBuilder name = new StringBuilder();
+		while (pathOffset < path.length) {
+			name.append((name.length() != 0) ? "/" : "");
+			name.append(path[pathOffset]);
+			pathOffset++;
 		}
-		return (contributor != null) ? getHealth((C) contributor, showDetails) : null;
+		return name.toString();
 	}
 
-	private T getAggregateHealth(ApiVersion apiVersion, HealthEndpointGroup group,
-			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails, Set<String> groupNames,
-			boolean isNested) {
+	@SuppressWarnings("unchecked")
+	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name, Object contributor,
+			boolean showComponents, boolean showDetails, Set<String> groupNames) {
+		if (contributor instanceof NamedContributors) {
+			return getAggregateContribution(apiVersion, group, name, (NamedContributors<C>) contributor, showComponents,
+					showDetails, groupNames);
+		}
+		if (contributor != null && (name.isEmpty() || group.isMember(name))) {
+			return getHealth((C) contributor, showDetails);
+		}
+		return null;
+	}
+
+	private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails,
+			Set<String> groupNames) {
+		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
 		Map<String, T> contributions = new LinkedHashMap<>();
-		for (NamedContributor<C> namedContributor : namedContributors) {
-			String name = namedContributor.getName();
-			C contributor = namedContributor.getContributor();
-			if (group.isMember(name) || isNested) {
-				T contribution = getContribution(apiVersion, group, contributor, showComponents, showDetails, null,
-						true);
-				if (contribution != null) {
-					contributions.put(name, contribution);
-				}
+		for (NamedContributor<C> child : namedContributors) {
+			T contribution = getContribution(apiVersion, group, prefix + child.getName(), child.getContributor(),
+					showComponents, showDetails, null);
+			if (contribution != null) {
+				contributions.put(child.getName(), contribution);
 			}
 		}
 		if (contributions.isEmpty()) {

@@ -39,18 +39,18 @@ The cache abstraction does not provide an actual store and relies on abstraction
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
-. <<caching#io.caching.provider.generic,Generic>>
-. <<caching#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
-. <<caching#io.caching.provider.ehcache2,EhCache 2.x>>
-. <<caching#io.caching.provider.hazelcast,Hazelcast>>
-. <<caching#io.caching.provider.infinispan,Infinispan>>
-. <<caching#io.caching.provider.couchbase,Couchbase>>
-. <<caching#io.caching.provider.redis,Redis>>
-. <<caching#io.caching.provider.caffeine,Caffeine>>
-. <<caching#io.caching.provider.simple,Simple>>
+. <<io.caching.provider.generic,Generic>>
+. <<io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
+. <<io.caching.provider.ehcache2,EhCache 2.x>>
+. <<io.caching.provider.hazelcast,Hazelcast>>
+. <<io.caching.provider.infinispan,Infinispan>>
+. <<io.caching.provider.couchbase,Couchbase>>
+. <<io.caching.provider.redis,Redis>>
+. <<io.caching.provider.caffeine,Caffeine>>
+. <<io.caching.provider.simple,Simple>>
 
 TIP: It is also possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
-Use this property if you need to <<caching#io.caching.provider.none,disable caching altogether>> in certain environment (such as tests).
+Use this property if you need to <<io.caching.provider.none,disable caching altogether>> in certain environments (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.

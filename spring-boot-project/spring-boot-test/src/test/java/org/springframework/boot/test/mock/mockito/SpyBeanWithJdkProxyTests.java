@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanWithJdkProxyTests {
+class SpyBeanWithJdkProxyTests {
 
 	@Autowired
 	private ExampleService service;

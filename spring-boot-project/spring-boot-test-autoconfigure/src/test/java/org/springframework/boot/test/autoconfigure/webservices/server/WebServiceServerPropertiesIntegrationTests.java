@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Daniil Razorenov
  */
 @WebServiceServerTest(properties = "spring.profiles.active=test")
-public class WebServiceServerPropertiesIntegrationTests {
+class WebServiceServerPropertiesIntegrationTests {
 
 	@Autowired
 	private Environment environment;

@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.jar.Attributes;
@@ -192,8 +193,13 @@ public abstract class Packager {
 	}
 
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
+		write(sourceJar, libraries, writer, false);
+	}
+
+	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer,
+			boolean ensureReproducibleBuild) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
-		write(sourceJar, writer, new PackagedLibraries(libraries));
+		write(sourceJar, writer, new PackagedLibraries(libraries, ensureReproducibleBuild));
 	}
 
 	private void write(JarFile sourceJar, AbstractJarWriter writer, PackagedLibraries libraries) throws IOException {
@@ -454,18 +460,18 @@ public abstract class Packager {
 	}
 
 	/**
-	 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if a
-	 * library that requires unpacking has a matching entry name.
+	 * Libraries that should be packaged into the archive.
 	 */
 	private final class PackagedLibraries {
 
-		private final Map<String, Library> libraries = new LinkedHashMap<>();
+		private final Map<String, Library> libraries;
 
 		private final UnpackHandler unpackHandler;
 
 		private final Function<JarEntry, Library> libraryLookup;
 
-		PackagedLibraries(Libraries libraries) throws IOException {
+		PackagedLibraries(Libraries libraries, boolean ensureReproducibleBuild) throws IOException {
+			this.libraries = (ensureReproducibleBuild) ? new TreeMap<>() : new LinkedHashMap<>();
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library::openStream)) {
 					addLibrary(library);
@@ -521,6 +527,10 @@ public abstract class Packager {
 			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
 		}
 
+		/**
+		 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if
+		 * a library that requires unpacking has a matching entry name.
+		 */
 		private class PackagedLibrariesUnpackHandler implements UnpackHandler {
 
 			@Override

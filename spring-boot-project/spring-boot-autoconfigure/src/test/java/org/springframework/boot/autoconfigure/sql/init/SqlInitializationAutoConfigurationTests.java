@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SqlInitializationAutoConfigurationTests {
+class SqlInitializationAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class)).withPropertyValues(

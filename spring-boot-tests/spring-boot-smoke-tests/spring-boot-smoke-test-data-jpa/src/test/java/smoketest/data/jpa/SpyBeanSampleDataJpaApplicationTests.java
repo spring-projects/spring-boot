@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class SpyBeanSampleDataJpaApplicationTests {
+class SpyBeanSampleDataJpaApplicationTests {
 
 	@Autowired
 	private WebApplicationContext context;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class OptionalDependenciesPluginIntegrationTests {
+class OptionalDependenciesPluginIntegrationTests {
 
 	private File projectDir;
 
 	private File buildFile;
 
 	@BeforeEach
-	public void setup(@TempDir File projectDir) throws IOException {
+	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
 	}
@@ -80,7 +80,7 @@ public class OptionalDependenciesPluginIntegrationTests {
 		optionalDependenciesAreAddedToSourceSetClasspath("test", "runtimeClasspath");
 	}
 
-	public void optionalDependenciesAreAddedToSourceSetClasspath(String sourceSet, String classpath)
+	private void optionalDependenciesAreAddedToSourceSetClasspath(String sourceSet, String classpath)
 			throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");

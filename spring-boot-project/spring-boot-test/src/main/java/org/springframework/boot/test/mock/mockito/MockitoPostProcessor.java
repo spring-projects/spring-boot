@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -355,9 +355,13 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	private void inject(Field field, Object target, String beanName) {
 		try {
 			field.setAccessible(true);
-			Assert.state(ReflectionUtils.getField(field, target) == null,
-					() -> "The field " + field + " cannot have an existing value");
+			Object existingValue = ReflectionUtils.getField(field, target);
 			Object bean = this.beanFactory.getBean(beanName, field.getType());
+			if (existingValue == bean) {
+				return;
+			}
+			Assert.state(existingValue == null, () -> "The existing value '" + existingValue + "' of field '" + field
+					+ "' is not the same as the new value '" + bean + "'");
 			ReflectionUtils.setField(field, target, bean);
 		}
 		catch (Throwable ex) {

@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition.scan;
+package org.springframework.boot.docs.test.autoconfigure.restdocs.webclient;
 
-import org.springframework.beans.factory.FactoryBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-/**
- * Configuration for a factory bean produced by a bean method on a configuration class
- * found via component scanning.
- *
- * @author Andy Wilkinson
- */
-@Configuration(proxyBeanMethods = false)
-public class ScannedFactoryBeanConfiguration {
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+
+@TestConfiguration(proxyBeanMethods = false)
+public class MyWebTestClientBuilderCustomizerConfiguration {
 
 	@Bean
-	public FactoryBean<ScanBean> exampleBeanFactoryBean() {
-		return new ScanFactoryBean("foo");
+	public WebTestClientBuilderCustomizer restDocumentation() {
+		return (builder) -> builder.entityExchangeResultConsumer(document("{method-name}"));
 	}
 
 }

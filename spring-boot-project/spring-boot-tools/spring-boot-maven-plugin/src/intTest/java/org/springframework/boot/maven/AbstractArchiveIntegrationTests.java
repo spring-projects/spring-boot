@@ -30,11 +30,13 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
+import org.assertj.core.api.ListAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
@@ -43,6 +45,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * Base class for archive (jar or war) related Maven plugin integration tests.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 abstract class AbstractArchiveIntegrationTests {
 
@@ -153,6 +156,15 @@ abstract class AbstractArchiveIntegrationTests {
 				});
 			});
 			return this;
+		}
+
+		ListAssert<String> entryNamesInPath(String path) {
+			List<String> matches = new ArrayList<>();
+			withJarFile((jarFile) -> withEntries(jarFile,
+					(entries) -> matches.addAll(entries.map(ZipEntry::getName)
+							.filter((name) -> name.startsWith(path) && name.length() > path.length())
+							.collect(Collectors.toList()))));
+			return new ListAssert<>(matches);
 		}
 
 		JarAssert manifest(Consumer<ManifestAssert> consumer) {
