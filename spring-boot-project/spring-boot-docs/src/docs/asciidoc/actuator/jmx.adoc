@@ -1,7 +1,8 @@
 [[actuator.jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
-By default, this feature is not enabled. You can turn it on by setting the configprop:spring.jmx.enabled[] configuration property to `true`.
+By default, this feature is not enabled.
+You can turn it on by setting the configprop:spring.jmx.enabled[] configuration property to `true`.
 Spring Boot exposes the most suitable `MBeanServer` as a bean with an ID of `mbeanServer`.
 Any of your beans that are annotated with Spring JMX annotations (`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`) are exposed to it.
 
@@ -26,7 +27,6 @@ To solve this problem, you can set the configprop:spring.jmx.unique-names[] prop
 You can also customize the JMX domain under which endpoints are exposed.
 The following settings show an example of doing so in `application.properties`:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
@@ -37,7 +37,6 @@ The following settings show an example of doing so in `application.properties`:
 	    jmx:
 	      domain: "com.example.myapp"
 ----
-====
 
 
 
@@ -45,7 +44,6 @@ The following settings show an example of doing so in `application.properties`:
 === Disabling JMX Endpoints
 If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as the following example shows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -54,7 +52,6 @@ If you do not want to expose endpoints over JMX, you can set the configprop:mana
 	      exposure:
 	        exclude: "*"
 ----
-====
 
 
 
@@ -64,7 +61,6 @@ Jolokia is a JMX-HTTP bridge that provides an alternative method of accessing JM
 To use Jolokia, include a dependency to `org.jolokia:jolokia-core`.
 For example, with Maven, you would add the following dependency:
 
-====
 [source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
@@ -72,7 +68,6 @@ For example, with Maven, you would add the following dependency:
 		<artifactId>jolokia-core</artifactId>
 	</dependency>
 ----
-====
 
 You can then expose the Jolokia endpoint by adding `jolokia` or `*` to the configprop:management.endpoints.web.exposure.include[] property.
 You can then access it by using `/actuator/jolokia` on your management HTTP server.
@@ -89,7 +84,6 @@ Jolokia has a number of settings that you would traditionally configure by setti
 With Spring Boot, you can use your `application.properties` file.
 To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as the following example shows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -98,7 +92,6 @@ To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as th
 	      config:
 	        debug: true
 ----
-====
 
 
 
@@ -106,7 +99,6 @@ To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as th
 ==== Disabling Jolokia
 If you use Jolokia but do not want Spring Boot to configure it, set the configprop:management.endpoint.jolokia.enabled[] property to `false`, as follows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -114,4 +106,3 @@ If you use Jolokia but do not want Spring Boot to configure it, set the configpr
 	    jolokia:
 	      enabled: false
 ----
-====

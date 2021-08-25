@@ -16,14 +16,12 @@ By default, these writers are not activated, but you can enable them:
 === Extending Configuration
 In the `META-INF/spring.factories` file, you can activate the listener (or listeners) that writes a PID file:
 
-====
 [indent=0]
 ----
 	org.springframework.context.ApplicationListener=\
 	org.springframework.boot.context.ApplicationPidFileWriter,\
 	org.springframework.boot.web.context.WebServerPortFileWriter
 ----
-====
 
 
 [[actuator.process-monitoring.programmatically]]

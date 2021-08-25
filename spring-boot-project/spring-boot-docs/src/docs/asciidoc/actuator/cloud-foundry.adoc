@@ -15,14 +15,12 @@ To use the endpoint, you must pass a valid UAA token with the request.
 === Disabling Extended Cloud Foundry Actuator Support
 If you want to fully disable the `/cloudfoundryapplication` endpoints, you can add the following setting to your `application.properties` file:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  cloudfoundry:
 	    enabled: false
 ----
-====
 
 
 
@@ -31,14 +29,12 @@ If you want to fully disable the `/cloudfoundryapplication` endpoints, you can a
 By default, the security verification for `/cloudfoundryapplication` endpoints makes SSL calls to various Cloud Foundry services.
 If your Cloud Foundry UAA or Cloud Controller services use self-signed certificates, you need to set the following property:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  cloudfoundry:
 	    skip-ssl-validation: true
 ----
-====
 
 
 
@@ -51,9 +47,7 @@ If you expect the Cloud Foundry endpoints to always be available at `/cloudfound
 The configuration differs, depending on the web server in use.
 For Tomcat, you can add the following configuration:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/cloudfoundry/customcontextpath/MyCloudFoundryConfiguration.java[]
 ----
-====

@@ -34,7 +34,6 @@ Most registries share common features.
 For instance, you can disable a particular registry even if the Micrometer registry implementation is on the classpath.
 The following example disables Datadog:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -43,11 +42,9 @@ The following example disables Datadog:
 	      datadog:
 	        enabled: false
 ----
-====
 
 You can also disable all registries unless stated otherwise by the registry-specific property, as the following example shows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -56,36 +53,29 @@ You can also disable all registries unless stated otherwise by the registry-spec
 	      defaults:
 	        enabled: false
 ----
-====
 
 Spring Boot also adds any auto-configured registries to the global static composite registry on the `Metrics` class, unless you explicitly tell it not to:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  metrics:
 	    use-global-registry: false
 ----
-====
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/gettingstarted/commontags/MyMeterRegistryConfiguration.java[]
 ----
-====
 
 You can apply customizations to particular registry implementations by being more specific about the generic type:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/gettingstarted/specifictype/MyMeterRegistryConfiguration.java[]
 ----
-====
 
 Spring Boot also <<actuator#actuator.metrics.supported,configures built-in instrumentation>> that you can control through configuration or dedicated annotation markers.
 
@@ -102,7 +92,6 @@ This section briefly describes each of the supported monitoring systems.
 By default, the AppOptics registry periodically pushes metrics to `https://api.appoptics.com/v1/measurements`.
 To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your API token must be provided:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -111,7 +100,6 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 	      appoptics:
 	        api-token: "YOUR_TOKEN"
 ----
-====
 
 
 
@@ -120,7 +108,6 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
 You can provide the location of the https://github.com/Netflix/atlas[Atlas server]:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -129,16 +116,14 @@ You can provide the location of the https://github.com/Netflix/atlas[Atlas serve
 	      atlas:
 	        uri: "https://atlas.example.com:7101/api/v1/publish"
 ----
-====
 
 
 
 [[actuator.metrics.export.datadog]]
 ==== Datadog
 A Datadog registry periodically pushes metrics to https://www.datadoghq.com[datadoghq].
-To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provide API key:
+To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provide your API key:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -147,11 +132,9 @@ To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provi
 	      datadog:
 	        api-key: "YOUR_KEY"
 ----
-====
 
 You can also change the interval at which metrics are sent to Datadog:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -160,7 +143,6 @@ You can also change the interval at which metrics are sent to Datadog:
 	      datadog:
 	        step: "30s"
 ----
-====
 
 
 
@@ -188,7 +170,6 @@ The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API toke
 We recommend limiting the scope of the token to this one permission.
 You must ensure that the endpoint URI contains the path (for example, `/api/v2/metrics/ingest`):
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -199,7 +180,6 @@ You must ensure that the endpoint URI contains the path (for example, `/api/v2/m
 	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
 	        api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
 ----
-====
 
 When using the Dynatrace v2 API, the following optional features are available:
 
@@ -208,7 +188,6 @@ When using the Dynatrace v2 API, the following optional features are available:
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
   If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -223,7 +202,6 @@ When using the Dynatrace v2 API, the following optional features are available:
 	            key1: "value1"
 	            key2: "value2"
 ----
-====
 
 
 
@@ -233,7 +211,6 @@ The Dynatrace v1 API metrics registry pushes metrics to the configured URI perio
 For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics are exported to the Timeseries v1 endpoint.
 To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -246,7 +223,6 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 	        v1:
 	          device-id: "YOUR_DEVICE_ID"
 ----
-====
 
 For the v1 API, you must specify the base environment URI without a path, as the v1 endpoint path is added automatically.
 
@@ -258,7 +234,6 @@ In addition to the API endpoint and token, you can also change the interval at w
 The default export interval is `60s`.
 The following example sets the export interval to 30 seconds:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -267,7 +242,6 @@ The following example sets the export interval to 30 seconds:
 	      dynatrace:
 	        step: "30s"
 ----
-====
 
 You can find more information on how to set up the Dynatrace exporter for Micrometer in {micrometer-registry-docs}/dynatrace[the Micrometer documentation].
 
@@ -278,7 +252,6 @@ You can find more information on how to set up the Dynatrace exporter for Microm
 By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
 You can provide the location of the Elastic server to use by using the following property:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -287,14 +260,12 @@ You can provide the location of the Elastic server to use by using the following
 	      elastic:
 	        host: "https://elastic.example.com:8086"
 ----
-====
 
 [[actuator.metrics.export.ganglia]]
 ==== Ganglia
 By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
-You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port to use by using:
+You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port, as the following example shows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -304,15 +275,13 @@ You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port
 	        host: "ganglia.example.com"
 	        port: 9649
 ----
-====
 
 
 [[actuator.metrics.export.graphite]]
 ==== Graphite
 By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
-You can provide the https://graphiteapp.org[Graphite server] host and port to use by using:
+You can provide the https://graphiteapp.org[Graphite server] host and port, as the following example shows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -322,7 +291,6 @@ You can provide the https://graphiteapp.org[Graphite server] host and port to us
 	         host: "graphite.example.com"
 	         port: 9004
 ----
-====
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
@@ -343,7 +311,6 @@ include::{docs-java}/actuator/metrics/export/graphite/MyGraphiteConfiguration.ja
 By default, the Humio registry periodically pushes metrics to https://cloud.humio.com.
 To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], you must provide your API token:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -352,11 +319,9 @@ To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], you must prov
 	      humio:
 	        api-token: "YOUR_TOKEN"
 ----
-====
 
 You should also configure one or more tags to identify the data source to which metrics are pushed:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -367,7 +332,6 @@ You should also configure one or more tags to identify the data source to which 
 	          alpha: "a"
 	          bravo: "b"
 ----
-====
 
 
 [[actuator.metrics.export.influx]]
@@ -376,7 +340,6 @@ By default, metrics are exported to an {micrometer-registry-docs}/influx[Influx]
 To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
 You can provide the location of the https://www.influxdata.com[Influx server] to use by using:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -385,7 +348,6 @@ You can provide the location of the https://www.influxdata.com[Influx server] to
 	      influx:
 	        uri: "https://influx.example.com:8086"
 ----
-====
 
 
 
@@ -395,7 +357,6 @@ Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX
 By default, metrics are exported to the `metrics` JMX domain.
 You can provide the domain to use by using:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -404,7 +365,6 @@ You can provide the domain to use by using:
 	      jmx:
 	        domain: "com.example.app.metrics"
 ----
-====
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
@@ -426,7 +386,6 @@ include::{docs-java}/actuator/metrics/export/jmx/MyJmxConfiguration.java[]
 By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
 You can provide the location of the https://kairosdb.github.io/[KairosDB server] to use by using:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -435,7 +394,6 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 	      kairos:
 	        uri: "https://kairosdb.example.com:8080/api/v1/datapoints"
 ----
-====
 
 
 
@@ -444,7 +402,6 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 A New Relic registry periodically pushes metrics to {micrometer-registry-docs}/new-relic[New Relic].
 To export metrics to https://newrelic.com[New Relic], you must provide your API key and account ID:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -454,11 +411,9 @@ To export metrics to https://newrelic.com[New Relic], you must provide your API 
 	        api-key: "YOUR_KEY"
 	        account-id: "YOUR_ACCOUNT_ID"
 ----
-====
 
 You can also change the interval at which metrics are sent to New Relic:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -467,11 +422,9 @@ You can also change the interval at which metrics are sent to New Relic:
 	      newrelic:
 	        step: "30s"
 ----
-====
 
 By default, metrics are published through REST calls, but you can also use the Java Agent API if you have it on the classpath:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -480,7 +433,6 @@ By default, metrics are published through REST calls, but you can also use the J
 	      newrelic:
 	        client-provider-type: "insights-agent"
 ----
-====
 
 Finally, you can take full control by defining your own `NewRelicClientProvider` bean.
 
@@ -489,13 +441,12 @@ Finally, you can take full control by defining your own `NewRelicClientProvider`
 [[actuator.metrics.export.prometheus]]
 ==== Prometheus
 {micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
-Spring Boot provides an available actuator endpoint at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
+Spring Boot provides an actuator endpoint at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
 
-TIP: By default, he endpoint is not available and must be exposed. See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
+TIP: By default, the endpoint is not available and must be exposed. See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
 
 The following example `scrape_config` adds to `prometheus.yml`:
 
-====
 [source,yaml,indent=0,subs="verbatim"]
 ----
 	scrape_configs:
@@ -504,12 +455,10 @@ The following example `scrape_config` adds to `prometheus.yml`:
 		static_configs:
 		  - targets: ['HOST:PORT']
 ----
-====
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
 To enable Prometheus Pushgateway support, add the following dependency to your project:
 
-====
 [source,xml,indent=0,subs="verbatim"]
 ----
 <dependency>
@@ -517,7 +466,6 @@ To enable Prometheus Pushgateway support, add the following dependency to your p
 	<artifactId>simpleclient_pushgateway</artifactId>
 </dependency>
 ----
-====
 
 When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.metrics.export.prometheus.pushgateway.enabled[] property is set to `true`, a `PrometheusPushGatewayManager` bean is auto-configured.
 This manages the pushing of metrics to a Prometheus Pushgateway.
@@ -532,7 +480,6 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 SignalFx registry periodically pushes metrics to {micrometer-registry-docs}/signalFx[SignalFx].
 To export metrics to https://www.signalfx.com[SignalFx], you must provide your access token:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -541,11 +488,9 @@ To export metrics to https://www.signalfx.com[SignalFx], you must provide your a
 	      signalfx:
 	        access-token: "YOUR_ACCESS_TOKEN"
 ----
-====
 
 You can also change the interval at which metrics are sent to SignalFx:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -554,7 +499,6 @@ You can also change the interval at which metrics are sent to SignalFx:
 	      signalfx:
 	        step: "30s"
 ----
-====
 
 
 
@@ -566,7 +510,6 @@ This lets you see what metrics are collected in the <<actuator#actuator.metrics.
 The in-memory backend disables itself as soon as you use any other available backend.
 You can also disable it explicitly:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -575,7 +518,6 @@ You can also disable it explicitly:
 	      simple:
 	        enabled: false
 ----
-====
 
 
 [[actuator.metrics.export.stackdriver]]
@@ -583,7 +525,6 @@ You can also disable it explicitly:
 The Stackdriver registry periodically pushes metrics to https://cloud.google.com/stackdriver/[Stackdriver].
 To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], you must provide your Google Cloud project ID:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -592,11 +533,9 @@ To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], y
 	      stackdriver:
 	        project-id: "my-project"
 ----
-====
 
 You can also change the interval at which metrics are sent to Stackdriver:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -605,7 +544,6 @@ You can also change the interval at which metrics are sent to Stackdriver:
 	      stackdriver:
 	        step: "30s"
 ----
-====
 
 
 [[actuator.metrics.export.statsd]]
@@ -614,7 +552,6 @@ The StatsD registry eagerly pushes metrics over UDP to a StatsD agent.
 By default, metrics are exported to a {micrometer-registry-docs}/statsD[StatsD] agent running on your local machine.
 You can provide the StatsD agent host, port, and protocol to use by using:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -625,11 +562,9 @@ You can provide the StatsD agent host, port, and protocol to use by using:
 	        port: 9125
 	        protocol: "udp"
 ----
-====
 
 You can also change the StatsD line protocol to use (it defaults to Datadog):
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -638,7 +573,6 @@ You can also change the StatsD line protocol to use (it defaults to Datadog):
 	      statsd:
 	        flavor: "etsy"
 ----
-====
 
 
 
@@ -647,7 +581,6 @@ You can also change the StatsD line protocol to use (it defaults to Datadog):
 The Wavefront registry periodically pushes metrics to {micrometer-registry-docs}/wavefront[Wavefront].
 If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, you must provide your API token:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -656,11 +589,9 @@ If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, 
 	      wavefront:
 	        api-token: "YOUR_API_TOKEN"
 ----
-====
 
 Alternatively, you can use a Wavefront sidecar or an internal proxy in your environment to forward metrics data to the Wavefront API host:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -669,13 +600,11 @@ Alternatively, you can use a Wavefront sidecar or an internal proxy in your envi
 	      wavefront:
 	        uri: "proxy://localhost:2878"
 ----
-====
 
 NOTE: If you publish metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the Wavefront documentation]), the host must be in the `proxy://HOST:PORT` format.
 
 You can also change the interval at which metrics are sent to Wavefront:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -684,7 +613,6 @@ You can also change the interval at which metrics are sent to Wavefront:
 	      wavefront:
 	        step: "30s"
 ----
-====
 
 
 
@@ -807,8 +735,8 @@ By default, WebFlux related metrics are tagged with the following information:
 | The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide one or more `@Bean` instances that implement `WebFluxTagsContributor`.
-To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
+To add to the default tags, provide one or more beans that implement `WebFluxTagsContributor`.
+To replace the default tags, provide a bean that implements `WebFluxTagsProvider`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
 Applications can opt in and record exceptions by <<web#web.reactive.webflux.error-handling, setting handled exceptions as request attributes>>.
@@ -945,7 +873,6 @@ Metrics are also tagged by the name of the `EntityManagerFactory` , which is der
 To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
 You can enable that on the auto-configured `EntityManagerFactory`:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
@@ -953,7 +880,6 @@ You can enable that on the auto-configured `EntityManagerFactory`:
 	    properties:
 	      "[hibernate.generate_statistics]": true
 ----
-====
 
 
 
@@ -1004,7 +930,7 @@ Metrics are published under the `spring.integration.` meter name.
 [[actuator.metrics.supported.kafka]]
 ==== Kafka Metrics
 Auto-configuration registers a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory, respectively.
-It alsos register a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
+It alsos registers a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
 For more detail, see the {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
 
@@ -1036,18 +962,15 @@ Each metric is tagged with the following information by default:
 | The outcome of the command (`SUCCESS` or `FAILED`).
 |===
 
-To replace the default metric tags, define a `MongoCommandTagsProvider` bean:
+To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as the following example shows:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/supported/mongodb/command/MyCommandTagsProviderConfiguration.java[]
 ----
-====
 
 To disable the auto-configured command metrics, set the following property:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1056,7 +979,6 @@ To disable the auto-configured command metrics, set the following property:
 	      command:
 	        enabled: false
 ----
-====
 
 
 
@@ -1083,16 +1005,13 @@ Each metric is tagged with the following information by default:
 
 To replace the default metric tags, define a `MongoConnectionPoolTagsProvider` bean:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/supported/mongodb/connectionpool/MyConnectionPoolTagsProviderConfiguration.java[]
 ----
-====
 
 To disable the auto-configured connection pool metrics, set the following property:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1101,7 +1020,6 @@ To disable the auto-configured connection pool metrics, set the following proper
 	      connectionpool:
 	        enabled: false
 ----
-====
 
 
 
@@ -1119,30 +1037,24 @@ If supported, you can use the annotation at either the class level or the method
 
 For example, the following code shows how you can use the annotation to instrument all request mappings in a `@RestController`:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/supported/timedannotation/all/MyController.java[]
 ----
-====
 
 If you want only to instrument a single mapping, you can use the annotation on the method instead of the class:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/supported/timedannotation/single/MyController.java[]
 ----
-====
 
 You can also combine class-level and method-level annotations if you want to change the timing details for a specific method:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/supported/timedannotation/change/MyController.java[]
 ----
-====
 
 NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
 Long task timers require a separate metric name and can be stacked with a short task timer.
@@ -1153,21 +1065,17 @@ Long task timers require a separate metric name and can be stacked with a short 
 === Registering Custom Metrics
 To register custom metrics, inject `MeterRegistry` into your component:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/registeringcustom/MyBean.java[]
 ----
-====
 
 If your metrics depend on other beans, we recommend that you use a `MeterBinder` to register them:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/registeringcustom/MyMeterBinderConfiguration.java[]
 ----
-====
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
 A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications.
@@ -1182,12 +1090,10 @@ If you need to apply customizations to specific `Meter` instances, you can use t
 
 For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/customizing/MyMetricsFilterConfiguration.java[]
 ----
-====
 
 NOTE: By default, all `MeterFilter` beans are automatically bound to the Spring-managed `MeterRegistry`.
 Make sure to register your metrics by using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.
@@ -1200,7 +1106,6 @@ These use the global registry that is not Spring-managed.
 Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
 Commons tags are applied to all meters and can be configured, as the following example shows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1209,7 +1114,6 @@ Commons tags are applied to all meters and can be configured, as the following e
 	      region: "us-east-1"
 	      stack: "prod"
 ----
-====
 
 The preceding example adds `region` and `stack` tags to all meters with a value of `us-east-1` and `prod`, respectively.
 
@@ -1224,7 +1128,6 @@ In addition to `MeterFilter` beans, you can apply a limited set of customization
 Per-meter customizations apply to any meter IDs that start with the given name.
 The following example disables any meters that have an ID starting with `example.remote`
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1233,7 +1136,6 @@ The following example disables any meters that have an ID starting with `example
 	      example:
 	        remote: false
 ----
-====
 
 The following properties allow per-meter customization:
 

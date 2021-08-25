@@ -6,7 +6,7 @@ For example, the `health` endpoint provides basic application health information
 
 You can <<actuator#actuator.endpoints.enabling, enable or disable>> each individual endpoint and <<actuator#actuator.endpoints.exposing, expose them (make them remotely accessible) over HTTP or JMX>>.
 An endpoint is considered to be available when it is both enabled and exposed.
-You can auto-configure the built-in endpoints only when they are available.
+The built-in endpoints are auto-configured only when they are available.
 Most applications choose exposure over HTTP, where the ID of the endpoint and a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
 
@@ -76,7 +76,7 @@ The following technology-agnostic endpoints are available:
 
 | `sessions`
 | Allows retrieval and deletion of user sessions from a Spring Session-backed session store.
-  Requires a Servlet-based web application that uses Spring Session.
+  Requires a servlet-based web application that uses Spring Session.
 
 | `shutdown`
 | Lets the application be gracefully shutdown.
@@ -122,7 +122,6 @@ By default, all endpoints except for `shutdown` are enabled.
 To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
 The following example enables the `shutdown` endpoint:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -130,12 +129,10 @@ The following example enables the `shutdown` endpoint:
 	    shutdown:
 	      enabled: true
 ----
-====
 
 If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
 The following example enables the `info` endpoint and disables all other endpoints:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -145,7 +142,6 @@ The following example enables the `info` endpoint and disables all other endpoin
 	    info:
 	      enabled: true
 ----
-====
 
 NOTE: Disabled endpoints are removed entirely from the application context.
 If you want to change only the technologies over which an endpoint is exposed, use the <<actuator#actuator.endpoints.exposing, `include` and `exclude` properties>> instead.
@@ -288,7 +284,6 @@ You can configure both the `include` and the `exclude` properties with a list of
 
 For example, to stop exposing all endpoints over JMX and only expose the `health` and `info` endpoints, use the following property:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -297,12 +292,10 @@ For example, to stop exposing all endpoints over JMX and only expose the `health
 	      exposure:
 	        include: "health,info"
 ----
-====
 
 `*` can be used to select all endpoints.
 For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -312,7 +305,6 @@ For example, to expose everything over HTTP except the `env` and `beans` endpoin
 	        include: "*"
 	        exclude: "env,beans"
 ----
-====
 
 NOTE: `*` has a special meaning in YAML, so be sure to add quotation marks if you want to include (or exclude) all endpoints.
 
@@ -332,16 +324,14 @@ NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure tha
 If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` are secured by Spring Boot auto-configuration.
 If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration backs off and lets you fully control the actuator access rules.
 
-If you wish to configure custom security for HTTP endpoints (for example, allow only users with a certain role to access them), Spring Boot provides some convenient `RequestMatcher` objects that you can use in combination with Spring Security.
+If you wish to configure custom security for HTTP endpoints (for example, to allow only users with a certain role to access them), Spring Boot provides some convenient `RequestMatcher` objects that you can use in combination with Spring Security.
 
 A typical Spring Security configuration might look something like the following example:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/security/typical/MySecurityConfiguration.java[]
 ----
-====
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
@@ -350,7 +340,6 @@ See the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -359,16 +348,13 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 	      exposure:
 	        include: "*"
 ----
-====
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints, as the following example shows:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/security/exposeall/MySecurityConfiguration.java[]
 ----
-====
 
 NOTE: In both of the preceding examples, the configuration applies only to the actuator endpoints.
 Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.
@@ -392,7 +378,6 @@ Endpoints automatically cache responses to read operations that do not take any 
 To configure the amount of time for which an endpoint caches a response, use its `cache.time-to-live` property.
 The following example sets the time-to-live of the `beans` endpoint's cache to 10 seconds:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -401,7 +386,6 @@ The following example sets the time-to-live of the `beans` endpoint's cache to 1
 	      cache:
 	        time-to-live: "10s"
 ----
-====
 
 NOTE: The `management.endpoint.<name>` prefix uniquely identifies the endpoint that is being configured.
 
@@ -414,7 +398,6 @@ The "`discovery page`" is available on `/actuator` by default.
 
 To disable the "`discovery page`", add the following property to your application properties:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -423,7 +406,6 @@ To disable the "`discovery page`", add the following property to your applicatio
 	      discovery:
 	        enabled: false
 ----
-====
 
 When a custom management context path is configured, the "`discovery page`" automatically moves from `/actuator` to the root of the management context.
 For example, if the management context path is `/management`, the discovery page is available from `/management`.
@@ -439,7 +421,6 @@ If you use Spring MVC or Spring WebFlux, you can configure Actuator's web endpoi
 CORS support is disabled by default and is only enabled once you have set the configprop:management.endpoints.web.cors.allowed-origins[] property.
 The following configuration permits `GET` and `POST` calls from the `example.com` domain:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -449,7 +430,6 @@ The following configuration permits `GET` and `POST` calls from the `example.com
 	        allowed-origins: "https://example.com"
 	        allowed-methods: "GET,POST"
 ----
-====
 
 TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[`CorsEndpointProperties`] for a complete list of options.
 
@@ -463,12 +443,10 @@ If both Jersey and Spring MVC are available, Spring MVC is used.
 
 The following example exposes a read operation that returns a custom object:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/implementingcustom/MyEndpoint.java[tag=read]
 ----
-====
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
 These endpoints are restricted to their respective technologies.
@@ -492,7 +470,6 @@ They can be made optional by annotating them with either `@javax.annotation.Null
 You can map each root property in the JSON request body to a parameter of the endpoint.
 Consider the following JSON request body:
 
-====
 [source,json,indent=0,subs="verbatim"]
 ----
 	{
@@ -500,16 +477,13 @@ Consider the following JSON request body:
 		"counter": 42
 	}
 ----
-====
 
 You can use this to invoke a write operation that takes `String name` and `int counter` parameters, as the following example shows:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/implementingcustom/MyEndpoint.java[tag=write]
 ----
-====
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
 In particular, declaring a single parameter with a `CustomData` type that defines a `name` and `counter` properties is not supported.
@@ -522,7 +496,7 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 [[actuator.endpoints.implementing-custom.input.conversion]]
 ===== Input Type Conversion
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
-Before calling an operation method, the input received over JMX or an HTTP request is converted to the required types by using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
+Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
 
 
 
@@ -785,12 +759,10 @@ You need to provide an implementation of the `health()` method and return a `Hea
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/health/writingcustomhealthindicators/MyHealthIndicator.java[]
 ----
-====
 
 NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the `HealthIndicator` suffix, if it exists.
 In the preceding example, the health information is available in an entry named `my`.
@@ -801,7 +773,6 @@ In such cases, you also need to provide a custom implementation of the {spring-b
 For example, assume a new `Status` with a code of `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -810,7 +781,6 @@ To configure the severity order, add the following property to your application 
 	      status:
 	        order: "fatal,down,out-of-service,unknown,up"
 ----
-====
 
 The HTTP status code in the response reflects the overall health status.
 By default, `OUT_OF_SERVICE` and `DOWN` map to 503.
@@ -820,7 +790,6 @@ Configuring a custom mapping disables the defaults mappings for `DOWN` and `OUT_
 If you want to retain the default mappings, you must explicitly configure them, alongside any custom mappings.
 For example, the following property maps `FATAL` to 503 (service unavailable) and retains the default mappings for `DOWN` and `OUT_OF_SERVICE`:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -832,7 +801,6 @@ For example, the following property maps `FATAL` to 503 (service unavailable) an
 	          fatal: 503
 	          out-of-service: 503
 ----
-====
 
 TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
 
@@ -869,12 +837,10 @@ If you need to register a regular `HealthContributor`, you should wrap it with `
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/health/reactivehealthindicators/MyReactiveHealthIndicator.java[]
 ----
-====
 
 TIP: To handle the error automatically, consider extending from `AbstractReactiveHealthIndicator`.
 
@@ -925,7 +891,6 @@ It is sometimes useful to organize health indicators into groups that you can us
 To create a health indicator group, you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -935,13 +900,11 @@ For example, to create a group that includes only database indicators you can de
 	        custom:
 	          include: "db"
 ----
-====
 
 You can then check the result by hitting `http://localhost:8080/actuator/health/custom`.
 
 Similarly, to create a group that excludes the database indicators from the group and includes all the other indicators, you can define the following:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -951,13 +914,11 @@ Similarly, to create a group that excludes the database indicators from the grou
 	        custom:
 	          exclude: "db"
 ----
-====
 
 By default, groups inherit the same `StatusAggregator` and `HttpCodeStatusMapper` settings as the system health.
 However, you can also define these on a per-group basis.
 You can also override the `show-details` and `roles` properties if required:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -973,7 +934,6 @@ You can also override the `show-details` and `roles` properties if required:
 	              fatal: 500
 	              out-of-service: 500
 ----
-====
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
 
@@ -1028,7 +988,6 @@ They are also exposed as separate HTTP Probes by using <<actuator#actuator.endpo
 
 You can then configure your Kubernetes infrastructure with the following endpoint information:
 
-====
 [source,yml,indent=0,subs="verbatim"]
 ----
 livenessProbe:
@@ -1045,7 +1004,6 @@ readinessProbe:
   failureThreshold: ...
   periodSeconds: ...
 ----
-====
 
 NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
 It could be the main web server port or a separate management port if the `"management.server.port"` property has been set.
@@ -1054,7 +1012,7 @@ These health groups are automatically enabled only if the application <<deployme
 You can enable them in any environment by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mentions the `"startupProbe"` as a possible solution.
-The `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done. See <<actuator#actuator.endpoints.kubernetes-probes.lifecycle,How Probes behave during the application lifecycle>>.
+The `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done. See the section that describes <<actuator#actuator.endpoints.kubernetes-probes.lifecycle,how probes behave during the application lifecycle>>.
 
 If your Actuator endpoints are deployed on a separate management context, the endpoints do not use the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
@@ -1077,7 +1035,6 @@ Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
 This means that all the <<actuator#actuator.endpoints.health.groups, health groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1087,7 +1044,6 @@ You can, for example, configure additional Health Indicators:
 	        readiness:
 	          include: "readinessState,customCheck"
 ----
-====
 
 By default, Spring Boot does not add other health indicators to these groups.
 
@@ -1096,7 +1052,7 @@ If the <<features#features.spring-application.application-availability.liveness,
 This means that if an external system (such as a database, a Web API, or an external cache) fails, Kubernetes might restart all application instances and create cascading failures.
 
 As for the "`readiness`" probe, the choice of checking external systems must be made carefully by the application developers.
-Spring Boot does not include any additional health checks in the readiness probe.
+For this reason, Spring Boot does not include any additional health checks in the readiness probe.
 If the <<features#features.spring-application.application-availability.readiness,readiness state of an application instance>> is unready, Kubernetes does not route traffic to that instance.
 Some external systems might not be shared by application instances, in which case they could be included in a readiness probe.
 Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
@@ -1212,7 +1168,6 @@ You can customize the data exposed by the `info` endpoint by setting `+info.*+` 
 All `Environment` properties under the `info` key are automatically exposed.
 For example, you could add the following settings to your `application.properties` file:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	info:
@@ -1222,7 +1177,6 @@ For example, you could add the following settings to your `application.propertie
 	      source: "11"
 	      target: "11"
 ----
-====
 
 [TIP]
 ====
@@ -1255,7 +1209,6 @@ By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.
 If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
 If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1263,11 +1216,9 @@ If you want to display the full git information (that is, the full content of `g
 	    git:
 	      mode: "full"
 ----
-====
 
 To disable the git commit information from the `info` endpoint completely, set the configprop:management.info.git.enabled[] property to `false`, as follows:
 
-====
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
@@ -1275,7 +1226,6 @@ To disable the git commit information from the `info` endpoint completely, set t
 	    git:
 	      enabled: false
 ----
-====
 
 
 
@@ -1295,16 +1245,13 @@ To provide custom application information, you can register Spring beans that im
 
 The following example contributes an `example` entry with a single value:
 
-====
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/endpoints/info/writingcustominfocontributors/MyInfoContributor.java[]
 ----
-====
 
 If you reach the `info` endpoint, you should see a response that contains the following additional entry:
 
-====
 [source,json,indent=0,subs="verbatim"]
 ----
 	{
@@ -1313,4 +1260,3 @@ If you reach the `info` endpoint, you should see a response that contains the fo
 		}
 	}
 ----
-====
