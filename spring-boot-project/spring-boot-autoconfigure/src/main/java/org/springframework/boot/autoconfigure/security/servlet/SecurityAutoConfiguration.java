@@ -16,18 +16,23 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityDataConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.core.context.SecurityContextChangedListener;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
@@ -43,6 +48,12 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 @Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
 		SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
+
+	public SecurityAutoConfiguration(ApplicationContext applicationContext,
+			List<SecurityContextChangedListener> securityContextChangedListeners) {
+		SecurityContextHolder.addListener(applicationContext::publishEvent);
+		securityContextChangedListeners.forEach(SecurityContextHolder::addListener);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
