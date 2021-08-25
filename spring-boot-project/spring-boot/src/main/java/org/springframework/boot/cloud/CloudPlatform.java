@@ -140,12 +140,18 @@ public enum CloudPlatform {
 
 		private static final String WEBSITE_SITE_NAME = "WEBSITE_SITE_NAME";
 
-		private static final String WEBSITES_ENABLE_APP_SERVICE_STORAGE = "WEBSITES_ENABLE_APP_SERVICE_STORAGE";
+		private static final String WEBSITE_INSTANCE_ID = "WEBSITE_INSTANCE_ID";
+
+		private static final String WEBSITE_RESOURCE_GROUP = "WEBSITE_RESOURCE_GROUP";
+
+		private static final String WEBSITE_SKU = "WEBSITE_SKU";
 
 		@Override
 		public boolean isDetected(Environment environment) {
 			return environment.containsProperty(WEBSITE_SITE_NAME)
-					&& environment.containsProperty(WEBSITES_ENABLE_APP_SERVICE_STORAGE);
+					&& environment.containsProperty(WEBSITE_INSTANCE_ID)
+					&& environment.containsProperty(WEBSITE_RESOURCE_GROUP)
+					&& environment.containsProperty(WEBSITE_SKU);
 		}
 
 	};
