@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.io.File;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -30,6 +33,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Jon Schneider
  * @author Alexander Abramov
  * @author Tadaya Tsuyukubo
+ * @author Chris Bono
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -56,6 +60,8 @@ public class MetricsProperties {
 	private final Web web = new Web();
 
 	private final Data data = new Data();
+
+	private final System system = new System();
 
 	private final Distribution distribution = new Distribution();
 
@@ -85,6 +91,10 @@ public class MetricsProperties {
 
 	public Distribution getDistribution() {
 		return this.distribution;
+	}
+
+	public System getSystem() {
+		return this.system;
 	}
 
 	public static class Web {
@@ -338,6 +348,33 @@ public class MetricsProperties {
 
 		public Map<String, Integer> getBufferLength() {
 			return this.bufferLength;
+		}
+
+	}
+
+	public static class System {
+
+		private final Diskspace diskspace = new Diskspace();
+
+		public Diskspace getDiskspace() {
+			return this.diskspace;
+		}
+
+		public static class Diskspace {
+
+			/**
+			 * Comma-separated list of paths to report disk metrics for.
+			 */
+			private List<File> paths = Arrays.asList(new File("."));
+
+			public List<File> getPaths() {
+				return this.paths;
+			}
+
+			public void setPaths(List<File> paths) {
+				this.paths = paths;
+			}
+
 		}
 
 	}
