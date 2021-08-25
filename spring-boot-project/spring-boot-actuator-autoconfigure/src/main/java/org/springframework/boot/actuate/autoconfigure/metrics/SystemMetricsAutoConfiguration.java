@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.io.File;
-
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
+import org.springframework.boot.actuate.metrics.system.DiskSpaceMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -36,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for system metrics.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -43,6 +43,12 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
 public class SystemMetricsAutoConfiguration {
+
+	private final MetricsProperties properties;
+
+	public SystemMetricsAutoConfiguration(MetricsProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -64,8 +70,8 @@ public class SystemMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DiskSpaceMetrics diskSpaceMetrics() {
-		return new DiskSpaceMetrics(new File("."));
+	public DiskSpaceMetricsBinder diskSpaceMetrics() {
+		return new DiskSpaceMetricsBinder(this.properties.getSystem().getDiskspace().getPaths(), Tags.empty());
 	}
 
 }
