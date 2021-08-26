@@ -148,8 +148,7 @@ public enum CloudPlatform {
 
 		@Override
 		public boolean isDetected(Environment environment) {
-			return environment.containsProperty(WEBSITE_SITE_NAME)
-					&& environment.containsProperty(WEBSITE_INSTANCE_ID)
+			return environment.containsProperty(WEBSITE_SITE_NAME) && environment.containsProperty(WEBSITE_INSTANCE_ID)
 					&& environment.containsProperty(WEBSITE_RESOURCE_GROUP)
 					&& environment.containsProperty(WEBSITE_SKU);
 		}
