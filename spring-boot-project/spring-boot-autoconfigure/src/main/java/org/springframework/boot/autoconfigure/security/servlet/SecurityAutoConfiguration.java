@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.core.context.SecurityContextChangedListener;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
@@ -48,6 +51,12 @@ public class SecurityAutoConfiguration {
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
 	public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
+	}
+
+	@Bean
+	public SecurityContextChangedListenerRegistrar securityContextChangedListenerRegistrar(
+			List<SecurityContextChangedListener> securityContextChangedListeners) {
+		return new SecurityContextChangedListenerRegistrar(securityContextChangedListeners);
 	}
 
 }
