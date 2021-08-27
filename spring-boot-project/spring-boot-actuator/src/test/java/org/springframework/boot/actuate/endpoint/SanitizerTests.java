@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Chris Bono
  * @author David Good
+ * @author Madhura Bhave
  */
 class SanitizerTests {
 
@@ -63,6 +65,22 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("confidential", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("private", "secret")).isEqualTo("secret");
+	}
+
+	@Test
+	void whenCustomSanitizingFunctionPresentValueShouldBeSanitized() {
+		Sanitizer sanitizer = new Sanitizer(Collections.singletonList((data) -> {
+			if (data.getKey().equals("custom")) {
+				return data.withValue("$$$$$$");
+			}
+			return data;
+		}));
+		SanitizableData secret = new SanitizableData(null, "secret", "xyz");
+		assertThat(sanitizer.sanitize(secret)).isEqualTo("******");
+		SanitizableData custom = new SanitizableData(null, "custom", "abcde");
+		assertThat(sanitizer.sanitize(custom)).isEqualTo("$$$$$$");
+		SanitizableData hello = new SanitizableData(null, "hello", "abc");
+		assertThat(sanitizer.sanitize(hello)).isEqualTo("abc");
 	}
 
 	@ParameterizedTest(name = "key = {0}")

@@ -61,7 +61,7 @@ class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	void getValueOrigin() {
+	void getValueOriginAndPropertySource() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -69,8 +69,9 @@ class SpringConfigurationPropertySourceTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
-				.isEqualTo("\"key\" from property source \"test\"");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty.getOrigin().toString()).isEqualTo("\"key\" from property source \"test\"");
+		assertThat(configurationProperty.getSource()).isEqualTo(adapter);
 	}
 
 	@Test
