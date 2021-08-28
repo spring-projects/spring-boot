@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties.bind;
 import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -192,6 +194,30 @@ class BindConverterTests {
 				.withRootCauseInstanceOf(ClassNotFoundException.class);
 	}
 
+	@Test
+	void convertWhenUsingTypeConverterConversionServiceFromMultipleThreads() {
+		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
+		ResolvableType type = ResolvableType.forClass(SampleType.class);
+		List<Thread> threads = new ArrayList<>();
+		List<SampleType> results = Collections.synchronizedList(new ArrayList<>());
+		for (int i = 0; i < 40; i++) {
+			threads.add(new Thread(() -> {
+				for (int j = 0; j < 20; j++) {
+					results.add(bindConverter.convert("test", type));
+				}
+			}));
+		}
+		threads.forEach(Thread::start);
+		for (Thread thread : threads) {
+			try {
+				thread.join();
+			}
+			catch (InterruptedException ex) {
+			}
+		}
+		assertThat(results).isNotEmpty().doesNotContainNull();
+	}
+
 	private BindConverter getPropertyEditorOnlyBindConverter(
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		return BindConverter.get(new ThrowingConversionService(), propertyEditorInitializer);
@@ -221,9 +247,12 @@ class BindConverterTests {
 
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
-			SampleType value = new SampleType();
-			value.text = text;
-			setValue(value);
+			setValue(null);
+			if (text != null) {
+				SampleType value = new SampleType();
+				value.text = text;
+				setValue(value);
+			}
 		}
 
 	}
