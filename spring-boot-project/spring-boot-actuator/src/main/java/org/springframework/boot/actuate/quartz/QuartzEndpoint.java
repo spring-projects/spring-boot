@@ -72,6 +72,15 @@ public class QuartzEndpoint {
 	private final Sanitizer sanitizer;
 
 	/**
+	 * Create an instance for the specified {@link Scheduler} using a default
+	 * {@link Sanitizer}.
+	 * @param scheduler the scheduler to use to retrieve jobs and triggers details
+	 */
+	public QuartzEndpoint(Scheduler scheduler) {
+		this(scheduler, new Sanitizer());
+	}
+
+	/**
 	 * Create an instance for the specified {@link Scheduler} and {@link Sanitizer}.
 	 * @param scheduler the scheduler to use to retrieve jobs and triggers details
 	 * @param sanitizer the sanitizer to use to sanitize data maps
@@ -81,15 +90,6 @@ public class QuartzEndpoint {
 		Assert.notNull(sanitizer, "Sanitizer must not be null");
 		this.scheduler = scheduler;
 		this.sanitizer = sanitizer;
-	}
-
-	/**
-	 * Create an instance for the specified {@link Scheduler} using a default
-	 * {@link Sanitizer}.
-	 * @param scheduler the scheduler to use to retrieve jobs and triggers details
-	 */
-	public QuartzEndpoint(Scheduler scheduler) {
-		this(scheduler, new Sanitizer());
 	}
 
 	/**
