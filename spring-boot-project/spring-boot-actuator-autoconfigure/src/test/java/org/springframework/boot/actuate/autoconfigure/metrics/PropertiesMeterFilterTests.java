@@ -189,7 +189,7 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasHigherPercentilesAndLowerShouldSetPercentilesToHigher() {
+	void configureWhenHasHigherPercentilesAndLowerShouldSetPercentilesToLower() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties(
 				"distribution.percentiles.spring=1,1.5,2", "distribution.percentiles.spring.boot=3,3.5,4"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getPercentiles())
@@ -220,7 +220,7 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasHigherSloAndLowerShouldSetSloToHigher() {
+	void configureWhenHasHigherSloAndLowerShouldSetSloToLower() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.slo.spring=1,2,3", "distribution.slo.spring.boot=4,5,6"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
@@ -244,7 +244,7 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasHigherMinimumExpectedValueAndLowerShouldSetMinimumExpectedValueToHigher() {
+	void configureWhenHasHigherMinimumExpectedValueAndLowerShouldSetMinimumExpectedValueToLower() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties(
 				"distribution.minimum-expected-value.spring=10", "distribution.minimum-expected-value.spring.boot=50"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
@@ -268,7 +268,7 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasHigherMaximumExpectedValueAndLowerShouldSetMaximumExpectedValueToHigher() {
+	void configureWhenHasHigherMaximumExpectedValueAndLowerShouldSetMaximumExpectedValueToLower() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.maximum-expected-value.spring=5000",
 						"distribution.maximum-expected-value.spring.boot=10000"));
@@ -292,7 +292,7 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasHigherExpiryAndLowerShouldSetExpiryToHigher() {
+	void configureWhenHasHigherExpiryAndLowerShouldSetExpiryToLower() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.expiry.spring=5ms", "distribution.expiry[spring.boot]=10ms"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getExpiry())
@@ -325,7 +325,7 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasHigherBufferLengthAndLowerShouldSetBufferLengthToHigher() {
+	void configureWhenHasHigherBufferLengthAndLowerShouldSetBufferLengthToLower() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.buffer-length.spring=2", "distribution.buffer-length.spring.boot=3"));
 		assertThat(
