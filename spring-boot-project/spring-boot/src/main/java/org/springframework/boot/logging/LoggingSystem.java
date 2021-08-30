@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
@@ -57,6 +59,8 @@ public abstract class LoggingSystem {
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 
 	private static final LoggingSystemFactory SYSTEM_FACTORY = LoggingSystemFactory.fromSpringFactories();
+
+	private static final AtomicReference<LoggingSystemFactory> explicitlySetLoggingSystemFactory = new AtomicReference<>();
 
 	/**
 	 * Return the {@link LoggingSystemProperties} that should be applied.
@@ -143,12 +147,20 @@ public abstract class LoggingSystem {
 		throw new UnsupportedOperationException("Unable to get logger configuration");
 	}
 
+	public static void setLoggingSystemFactory(LoggingSystemFactory loggingSystemFactory){
+		explicitlySetLoggingSystemFactory.set(loggingSystemFactory);
+	}
+
 	/**
 	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return the logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
+		LoggingSystemFactory explicitLoggingSystem = explicitlySetLoggingSystemFactory.get();
+		if (explicitLoggingSystem != null) {
+			return explicitLoggingSystem.getLoggingSystem(classLoader);
+		}
 		String loggingSystemClassName = System.getProperty(SYSTEM_PROPERTY);
 		if (StringUtils.hasLength(loggingSystemClassName)) {
 			if (NONE.equals(loggingSystemClassName)) {
