@@ -41,21 +41,23 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Yanming Zhou
+ * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
 @ConditionalOnMissingBean(RedisConnectionFactory.class)
 @ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "jedis", matchIfMissing = true)
-class JedisConnectionConfiguration extends RedisConnectionConfiguration {
+public class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
-	JedisConnectionConfiguration(RedisProperties properties,
+	public JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
 		super(properties, sentinelConfiguration, clusterConfiguration);
 	}
 
 	@Bean
-	JedisConnectionFactory redisConnectionFactory(
+	public JedisConnectionFactory redisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		return createJedisConnectionFactory(builderCustomizers);
 	}

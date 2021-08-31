@@ -51,13 +51,15 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Andy Wilkinson
+ * @author Yanming Zhou
+ * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
 @ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
-class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
+public class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
-	LettuceConnectionConfiguration(RedisProperties properties,
+	public LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
 		super(properties, sentinelConfigurationProvider, clusterConfigurationProvider);
@@ -65,7 +67,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean(destroyMethod = "shutdown")
 	@ConditionalOnMissingBean(ClientResources.class)
-	DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
+	public DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
 		DefaultClientResources.Builder builder = DefaultClientResources.builder();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -73,7 +75,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
-	LettuceConnectionFactory redisConnectionFactory(
+	public LettuceConnectionFactory redisConnectionFactory(
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
 			ClientResources clientResources) {
 		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(builderCustomizers, clientResources,

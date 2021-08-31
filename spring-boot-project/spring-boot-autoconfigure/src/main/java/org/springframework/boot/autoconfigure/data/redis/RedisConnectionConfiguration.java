@@ -39,8 +39,10 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Alen Turkovic
  * @author Scott Frederick
+ * @author Yanming Zhou
+ * @since 2.6.0
  */
-abstract class RedisConnectionConfiguration {
+public abstract class RedisConnectionConfiguration {
 
 	private static final boolean COMMONS_POOL2_AVAILABLE = ClassUtils.isPresent("org.apache.commons.pool2.ObjectPool",
 			RedisConnectionConfiguration.class.getClassLoader());
