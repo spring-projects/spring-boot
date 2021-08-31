@@ -837,7 +837,8 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	@Deprecated
 	void useSuffixPatternMatch() {
-		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
+		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy=ant-path-matcher",
+				"spring.mvc.pathmatch.use-suffix-pattern:true",
 				"spring.mvc.pathmatch.use-registered-suffix-pattern:true").run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
 					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
