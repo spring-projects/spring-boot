@@ -62,9 +62,7 @@ public class RedisAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
 	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		StringRedisTemplate template = new StringRedisTemplate();
-		template.setConnectionFactory(redisConnectionFactory);
-		return template;
+		return new StringRedisTemplate(redisConnectionFactory);
 	}
 
 }
