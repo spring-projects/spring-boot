@@ -22,6 +22,6 @@ package smoketest.jersey;
  *
  * @author Andy Wilkinson
  */
-public class JerseyServletManagementPortTests extends AbstractJerseyManagementPortTests {
+class JerseyServletManagementPortTests extends AbstractJerseyManagementPortTests {
 
 }

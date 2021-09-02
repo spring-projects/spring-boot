@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the Maven plugin's war support.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @ExtendWith(MavenBuildExtension.class)
 class WarIntegrationTests extends AbstractArchiveIntegrationTests {
@@ -108,6 +110,24 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			}
 		});
 		return warHash.get();
+	}
+
+	@TestTemplate
+	void whenWarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild)
+			throws InterruptedException {
+		mavenBuild.project("war-output-timestamp").execute((project) -> {
+			File repackaged = new File(project, "target/war-output-timestamp-0.0.1.BUILD-SNAPSHOT.war");
+			List<String> sortedLibs = Arrays.asList(
+					// these libraries are copied from the original war, sorted when
+					// packaged by Maven
+					"WEB-INF/lib/spring-aop", "WEB-INF/lib/spring-beans", "WEB-INF/lib/spring-context",
+					"WEB-INF/lib/spring-core", "WEB-INF/lib/spring-expression", "WEB-INF/lib/spring-jcl",
+					// these libraries are contributed by Spring Boot repackaging, and
+					// sorted separately
+					"WEB-INF/lib/spring-boot-jarmode-layertools");
+			assertThat(jar(repackaged)).entryNamesInPath("WEB-INF/lib/").zipSatisfy(sortedLibs,
+					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
+		});
 	}
 
 	@TestTemplate

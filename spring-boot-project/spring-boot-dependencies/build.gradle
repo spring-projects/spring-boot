@@ -1672,7 +1672,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.5.3-SNAPSHOT") {
+	library("Spring Integration", "5.5.3") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
@@ -1724,7 +1724,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.1.0-SNAPSHOT") {
+	library("Spring Session Bom", "2021.1.0-M1") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"

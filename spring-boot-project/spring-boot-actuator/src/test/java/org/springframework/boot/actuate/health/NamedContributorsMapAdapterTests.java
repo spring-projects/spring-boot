@@ -65,6 +65,14 @@ class NamedContributorsMapAdapterTests {
 	}
 
 	@Test
+	void createWhenMapContainsKeyWithSlashThrowsException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test/key", "test"),
+						Function.identity()))
+				.withMessage("Map keys must not contain a '/'");
+	}
+
+	@Test
 	void iterateReturnsAdaptedEntries() {
 		TestNamedContributorsMapAdapter<String> adapter = createAdapter();
 		Iterator<NamedContributor<String>> iterator = adapter.iterator();

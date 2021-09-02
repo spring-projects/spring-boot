@@ -16,22 +16,17 @@
 
 package org.springframework.boot.autoconfigure.condition.scan;
 
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+public class ScanBean {
 
-/**
- * Configuration for a factory bean produced by a bean method on a configuration class
- * found via component scanning.
- *
- * @author Andy Wilkinson
- */
-@Configuration(proxyBeanMethods = false)
-public class ScannedFactoryBeanConfiguration {
+	private String value;
 
-	@Bean
-	public FactoryBean<ScanBean> exampleBeanFactoryBean() {
-		return new ScanFactoryBean("foo");
+	public ScanBean(String value) {
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return this.value;
 	}
 
 }
