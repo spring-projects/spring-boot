@@ -27,6 +27,7 @@ import org.springframework.boot.convert.DurationUnit;
  * Session properties.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 public class Session {
@@ -109,6 +110,8 @@ public class Session {
 
 		private String domain;
 
+		private String domainPattern;
+
 		private String path;
 
 		private String comment;
@@ -119,6 +122,8 @@ public class Session {
 
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge;
+
+		private String sameSite;
 
 		/**
 		 * Return the session cookie name.
@@ -140,8 +145,26 @@ public class Session {
 			return this.domain;
 		}
 
+		/**
+		 * Cannot set both domain and domainPattern
+		 */
 		public void setDomain(String domain) {
 			this.domain = domain;
+		}
+
+		/**
+		 * Return the case insensitive pattern to extract the domain name.
+		 * @return the pattern to extract the domain
+		 */
+		public String getDomainPattern() {
+			return this.domainPattern;
+		}
+
+		/**
+		 * Cannot set both domain and domainPattern
+		 */
+		public void setDomainPattern(String domainPattern) {
+			this.domainPattern = domainPattern;
 		}
 
 		/**
@@ -203,6 +226,17 @@ public class Session {
 
 		public void setMaxAge(Duration maxAge) {
 			this.maxAge = maxAge;
+		}
+
+		/**
+		 * Return the value for the {@code SameSite} cookie directive.
+		 */
+		public String getSameSite() {
+			return sameSite;
+		}
+
+		public void setSameSite(String sameSite) {
+			this.sameSite = sameSite;
 		}
 
 	}

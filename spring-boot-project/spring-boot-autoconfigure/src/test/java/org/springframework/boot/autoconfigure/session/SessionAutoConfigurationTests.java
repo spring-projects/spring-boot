@@ -54,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Yanming Zhou
  */
 class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTests {
 
@@ -143,7 +144,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 				.withPropertyValues("server.servlet.session.cookie.name=sid",
 						"server.servlet.session.cookie.domain=spring", "server.servlet.session.cookie.path=/test",
 						"server.servlet.session.cookie.httpOnly=false", "server.servlet.session.cookie.secure=false",
-						"server.servlet.session.cookie.maxAge=10s")
+						"server.servlet.session.cookie.maxAge=10s", "server.servlet.session.cookie.sameSite=Strict")
 				.run((context) -> {
 					DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName", "sid");
@@ -152,6 +153,17 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("useHttpOnlyCookie", false);
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("useSecureCookie", false);
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieMaxAge", 10);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Strict");
+				});
+	}
+
+	@Test
+	void sessionCookieDomainPatternConfigurationIsAppliedToAutoConfiguredCookieSerializer() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.cookie.domainPattern=^.+?\\\\.(\\\\w+\\\\.[a-z]+)$")
+				.run((context) -> {
+					DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
+					assertThat(cookieSerializer).extracting("domainNamePattern").isNotNull();
 				});
 	}
 

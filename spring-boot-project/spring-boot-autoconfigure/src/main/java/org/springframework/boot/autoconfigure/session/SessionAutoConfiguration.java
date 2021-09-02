@@ -71,6 +71,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Yanming Zhou
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -97,10 +98,12 @@ public class SessionAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(cookie::getName).to(cookieSerializer::setCookieName);
 			map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
+			map.from(cookie::getDomainPattern).to(cookieSerializer::setDomainNamePattern);
 			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer.setCookieMaxAge((int) maxAge.getSeconds()));
+			map.from(cookie::getSameSite).to(cookieSerializer::setSameSite);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
 		}
