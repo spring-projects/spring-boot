@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,16 @@
 package org.springframework.boot.system;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
+import java.util.EnumSet;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -34,9 +43,14 @@ public class ApplicationTemp {
 
 	private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
+	private static final FileAttribute<?>[] NO_FILE_ATTRIBUTES = {};
+
+	private static final EnumSet<PosixFilePermission> DIRECTORY_PERMISSIONS = EnumSet.of(PosixFilePermission.OWNER_READ,
+			PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
+
 	private final Class<?> sourceClass;
 
-	private volatile File dir;
+	private volatile Path path;
 
 	/**
 	 * Create a new {@link ApplicationTemp} instance.
@@ -59,39 +73,59 @@ public class ApplicationTemp {
 	}
 
 	/**
+	 * Return the directory to be used for application specific temp files.
+	 * @return the application temp directory
+	 */
+	public File getDir() {
+		return getPath().toFile();
+	}
+
+	/**
 	 * Return a sub-directory of the application temp.
 	 * @param subDir the sub-directory name
 	 * @return a sub-directory
 	 */
 	public File getDir(String subDir) {
-		File dir = new File(getDir(), subDir);
-		dir.mkdirs();
-		return dir;
+		return createDirectory(getPath().resolve(subDir)).toFile();
 	}
 
-	/**
-	 * Return the directory to be used for application specific temp files.
-	 * @return the application temp directory
-	 */
-	public File getDir() {
-		if (this.dir == null) {
+	private Path getPath() {
+		if (this.path == null) {
 			synchronized (this) {
-				byte[] hash = generateHash(this.sourceClass);
-				this.dir = new File(getTempDirectory(), toHexString(hash));
-				this.dir.mkdirs();
-				Assert.state(this.dir.exists(), () -> "Unable to create temp directory " + this.dir);
+				String hash = toHexString(generateHash(this.sourceClass));
+				this.path = createDirectory(getTempDirectory().resolve(hash));
 			}
 		}
-		return this.dir;
+		return this.path;
 	}
 
-	private File getTempDirectory() {
+	private Path createDirectory(Path path) {
+		try {
+			if (!Files.exists(path)) {
+				Files.createDirectory(path, getFileAttributes(path.getFileSystem(), DIRECTORY_PERMISSIONS));
+			}
+			return path;
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to create application temp directory " + path, ex);
+		}
+	}
+
+	private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, EnumSet<PosixFilePermission> ownerReadWrite) {
+		if (!fileSystem.supportedFileAttributeViews().contains("posix")) {
+			return NO_FILE_ATTRIBUTES;
+		}
+		return new FileAttribute<?>[] { PosixFilePermissions.asFileAttribute(ownerReadWrite) };
+	}
+
+	private Path getTempDirectory() {
 		String property = System.getProperty("java.io.tmpdir");
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
-		File file = new File(property);
-		Assert.state(file.exists(), () -> "Temp directory " + file + " does not exist");
-		Assert.state(file.isDirectory(), () -> "Temp location " + file + " is not a directory");
-		return file;
+		Path tempDirectory = Paths.get(property);
+		Assert.state(Files.exists(tempDirectory), () -> "Temp directory '" + tempDirectory + "' does not exist");
+		Assert.state(Files.isDirectory(tempDirectory),
+				() -> "Temp location '" + tempDirectory + "' is not a directory");
+		return tempDirectory;
 	}
 
 	private byte[] generateHash(Class<?> sourceClass) {
