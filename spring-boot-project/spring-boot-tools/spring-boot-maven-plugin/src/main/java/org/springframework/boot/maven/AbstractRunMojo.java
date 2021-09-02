@@ -44,7 +44,6 @@ import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
-import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * Base class to run a spring application.
@@ -58,9 +57,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @see RunMojo
  * @see StartMojo
  */
-public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
-
-	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+public abstract class AbstractRunMojo extends FindMainClassMojo {
 
 	/**
 	 * The Maven project.
@@ -166,14 +163,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.profiles")
 	private String[] profiles;
-
-	/**
-	 * The name of the main class. If not specified the first compiled class found that
-	 * contains a 'main' method will be used.
-	 * @since 1.0.0
-	 */
-	@Parameter(property = "spring-boot.run.main-class")
-	private String mainClass;
 
 	/**
 	 * Additional directories besides the classes directory that should be added to the
@@ -418,23 +407,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
 		}
-	}
-
-	private String getStartClass() throws MojoExecutionException {
-		String mainClass = this.mainClass;
-		if (mainClass == null) {
-			try {
-				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
-						SPRING_BOOT_APPLICATION_CLASS_NAME);
-			}
-			catch (IOException ex) {
-				throw new MojoExecutionException(ex.getMessage(), ex);
-			}
-		}
-		if (mainClass == null) {
-			throw new MojoExecutionException("Unable to find a suitable main class, please add a 'mainClass' property");
-		}
-		return mainClass;
 	}
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
