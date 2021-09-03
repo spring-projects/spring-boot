@@ -55,6 +55,7 @@ import org.springframework.util.ClassUtils;
  * @author Ivan Sopov
  * @author Eddú Meléndez
  * @author Brian Clozel
+ * @author Lee SeoJune
  * @since 2.0.0
  */
 public abstract class AbstractServletWebServerFactory extends AbstractConfigurableWebServerFactory
@@ -89,7 +90,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	/**
 	 * Create a new {@link AbstractServletWebServerFactory} instance.
 	 */
-	public AbstractServletWebServerFactory() {
+	protected AbstractServletWebServerFactory() {
 	}
 
 	/**
@@ -97,7 +98,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	 * port.
 	 * @param port the port number for the web server
 	 */
-	public AbstractServletWebServerFactory(int port) {
+	protected AbstractServletWebServerFactory(int port) {
 		super(port);
 	}
 
@@ -107,7 +108,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	 * @param contextPath the context path for the web server
 	 * @param port the port number for the web server
 	 */
-	public AbstractServletWebServerFactory(String contextPath, int port) {
+	protected AbstractServletWebServerFactory(String contextPath, int port) {
 		super(port);
 		checkContextPath(contextPath);
 		this.contextPath = contextPath;
@@ -331,7 +332,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 		private Set<javax.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
 			if (modes == null) {
-				return null;
+				return Collections.emptySet();
 			}
 			Set<javax.servlet.SessionTrackingMode> result = new LinkedHashSet<>();
 			for (Session.SessionTrackingMode mode : modes) {

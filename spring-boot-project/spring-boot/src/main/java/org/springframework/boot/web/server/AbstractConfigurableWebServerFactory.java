@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Ivan Sopov
  * @author Eddú Meléndez
  * @author Brian Clozel
+ * @author Lee SeoJune
  * @since 2.0.0
  */
 public abstract class AbstractConfigurableWebServerFactory implements ConfigurableWebServerFactory {
@@ -61,7 +62,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	/**
 	 * Create a new {@link AbstractConfigurableWebServerFactory} instance.
 	 */
-	public AbstractConfigurableWebServerFactory() {
+	protected AbstractConfigurableWebServerFactory() {
 	}
 
 	/**
@@ -69,7 +70,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 * specified port.
 	 * @param port the port number for the web server
 	 */
-	public AbstractConfigurableWebServerFactory(int port) {
+	protected AbstractConfigurableWebServerFactory(int port) {
 		this.port = port;
 	}
 

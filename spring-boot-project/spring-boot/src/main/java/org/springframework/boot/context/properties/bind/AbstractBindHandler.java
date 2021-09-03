@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Lee SeoJune
  * @since 2.0.0
  */
 public abstract class AbstractBindHandler implements BindHandler {
@@ -33,7 +34,7 @@ public abstract class AbstractBindHandler implements BindHandler {
 	/**
 	 * Create a new binding handler instance.
 	 */
-	public AbstractBindHandler() {
+	protected AbstractBindHandler() {
 		this(BindHandler.DEFAULT);
 	}
 
@@ -41,7 +42,7 @@ public abstract class AbstractBindHandler implements BindHandler {
 	 * Create a new binding handler instance with a specific parent.
 	 * @param parent the parent handler
 	 */
-	public AbstractBindHandler(BindHandler parent) {
+	protected AbstractBindHandler(BindHandler parent) {
 		Assert.notNull(parent, "Parent must not be null");
 		this.parent = parent;
 	}
