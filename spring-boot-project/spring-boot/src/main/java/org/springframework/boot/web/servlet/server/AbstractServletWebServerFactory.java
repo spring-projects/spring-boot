@@ -332,7 +332,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 		private Set<javax.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
 			if (modes == null) {
-				return Collections.emptySet();
+				return null;
 			}
 			Set<javax.servlet.SessionTrackingMode> result = new LinkedHashSet<>();
 			for (Session.SessionTrackingMode mode : modes) {
