@@ -25,6 +25,7 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 /**
  * A {@link DatabaseInitializerDetector} for {@link AbstractDataSourceInitializer}.
  *
+ * @deprecated
  * @author Henning Pöttker
  */
 @Deprecated
