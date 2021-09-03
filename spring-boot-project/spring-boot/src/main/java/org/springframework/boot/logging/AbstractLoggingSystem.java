@@ -34,6 +34,7 @@ import org.springframework.util.SystemPropertyUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Lee SeoJune
  * @since 1.0.0
  */
 public abstract class AbstractLoggingSystem extends LoggingSystem {
@@ -43,7 +44,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private final ClassLoader classLoader;
 
-	public AbstractLoggingSystem(ClassLoader classLoader) {
+	protected AbstractLoggingSystem(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
