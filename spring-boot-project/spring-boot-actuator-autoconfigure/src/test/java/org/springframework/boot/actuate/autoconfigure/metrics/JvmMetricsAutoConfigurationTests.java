@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,8 @@ class JvmMetricsAutoConfigurationTests {
 
 	private ContextConsumer<AssertableApplicationContext> assertMetricsBeans() {
 		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class);
+				.hasSingleBean(JvmHeapPressureMetrics.class).hasSingleBean(JvmThreadMetrics.class)
+				.hasSingleBean(ClassLoaderMetrics.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
