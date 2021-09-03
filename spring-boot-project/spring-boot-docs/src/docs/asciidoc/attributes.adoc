@@ -105,3 +105,4 @@
 :micrometer-concepts-docs: {micrometer-docs}/concepts
 :micrometer-registry-docs: {micrometer-docs}/registry
 :tomcat-docs: https://tomcat.apache.org/tomcat-9.0-doc
+:lettuce-docs: https://lettuce.io/core/{lettuce-version}/reference/index.html
