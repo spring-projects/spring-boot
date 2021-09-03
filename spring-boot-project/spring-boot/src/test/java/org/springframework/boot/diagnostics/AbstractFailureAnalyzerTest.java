@@ -38,13 +38,24 @@ class AbstractFailureAnalyzerTest {
 	}
 
 	static class FailureAnalyzerConcrete extends AbstractFailureAnalyzer<Throwable> {
+
 		@Override
 		protected FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
 			return null;
 		}
+
 	}
 
-	static class ThrowableExtendsException extends Throwable { }
-	static class ExtendsThrowableExtendsException extends ThrowableExtendsException { }
-	static class OtherException extends Throwable { }
+	static class ThrowableExtendsException extends Throwable {
+
+	}
+
+	static class ExtendsThrowableExtendsException extends ThrowableExtendsException {
+
+	}
+
+	static class OtherException extends Throwable {
+
+	}
+
 }
