@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
  * {@link DataSourceScriptDatabaseInitializer} with DDL and DML scripts.
  *
  * @author Andy Wilkinson
+ * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
  */
 @Deprecated
 class DataSourceInitializationConfiguration {
