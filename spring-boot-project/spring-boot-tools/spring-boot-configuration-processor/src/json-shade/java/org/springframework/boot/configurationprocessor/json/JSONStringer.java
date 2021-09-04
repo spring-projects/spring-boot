@@ -394,10 +394,12 @@ public class JSONStringer {
 	 */
 	private void beforeKey() throws JSONException {
 		Scope context = peek();
-		if (context == Scope.NONEMPTY_OBJECT) { // first in object
+		switch (context) {
+		case NONEMPTY_OBJECT:
 			this.out.append(',');
-		}
-		else if (context != Scope.EMPTY_OBJECT) { // not in an object!
+			break;
+			
+		case EMPTY_OBJECT:
 			throw new JSONException("Nesting problem");
 		}
 		newline();
