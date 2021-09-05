@@ -1353,7 +1353,7 @@ public class SpringApplication {
 	 * {@link ExitCodeGenerator}. In the case of multiple exit codes the highest value
 	 * will be used (or if all values are negative, the lowest value will be used)
 	 * @param context the context to close if possible
-	 * @param exitCodeGenerators exist code generators
+	 * @param exitCodeGenerators exit code generators
 	 * @return the outcome (0 if successful)
 	 */
 	public static int exit(ApplicationContext context, ExitCodeGenerator... exitCodeGenerators) {
