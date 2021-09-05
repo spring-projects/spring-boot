@@ -241,6 +241,9 @@ do as they were designed before this was clarified.
 | https://github.com/valiktor/valiktor[Valiktor]
 | https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter
 
+| https://github.com/Yubico/java-webauthn-server[WebAuthn]
+| https://github.com/mihaita-tinta/webauthn-spring-boot-starter
+
 | https://github.com/tomakehurst/wiremock[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
