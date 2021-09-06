@@ -354,16 +354,16 @@ public class MetricsProperties {
 
 	public static class System {
 
-		private final DiskSpace diskspace = new DiskSpace();
+		private final Diskspace diskspace = new Diskspace();
 
-		public DiskSpace getDiskspace() {
+		public Diskspace getDiskspace() {
 			return this.diskspace;
 		}
 
-		public static class DiskSpace {
+		public static class Diskspace {
 
 			/**
-			 * Paths to report disk metrics for.
+			 * Comma-separated list of paths to report disk metrics for.
 			 */
 			private List<File> paths = Arrays.asList(new File("."));
 
