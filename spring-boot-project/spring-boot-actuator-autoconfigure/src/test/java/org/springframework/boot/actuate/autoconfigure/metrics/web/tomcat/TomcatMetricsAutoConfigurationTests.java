@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +63,7 @@ class TomcatMetricsAutoConfigurationTests {
 				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true").run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("tomcat.sessions.active.max").meter()).isNotNull();
@@ -79,7 +80,7 @@ class TomcatMetricsAutoConfigurationTests {
 				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true").run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("tomcat.sessions.active.max").meter()).isNotNull();
 					assertThat(registry.find("tomcat.threads.current").meter()).isNotNull();

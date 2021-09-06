@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -305,7 +306,7 @@ public class SpringApplication {
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
-			listeners.started(context);
+			listeners.started(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {

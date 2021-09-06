@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,8 +72,8 @@ class SpringApplicationRunListeners {
 		doWithListeners("spring.boot.application.context-loaded", (listener) -> listener.contextLoaded(context));
 	}
 
-	void started(ConfigurableApplicationContext context) {
-		doWithListeners("spring.boot.application.started", (listener) -> listener.started(context));
+	void started(ConfigurableApplicationContext context, Duration startupTime) {
+		doWithListeners("spring.boot.application.started", (listener) -> listener.started(context, startupTime));
 	}
 
 	void running(ConfigurableApplicationContext context) {

@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import java.time.Duration;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -75,8 +77,24 @@ public interface SpringApplicationRunListener {
 	 * ApplicationRunners} have not been called.
 	 * @param context the application context.
 	 * @since 2.0.0
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favour of
+	 * {@link #started(ConfigurableApplicationContext, Duration)}
 	 */
+	@Deprecated
 	default void started(ConfigurableApplicationContext context) {
+	}
+
+	/**
+	 * The context has been refreshed and the application has started but
+	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
+	 * ApplicationRunners} have not been called.
+	 * @param context the application context.
+	 * @param startupTime the time taken to start the application or {@code null} if
+	 * unknown
+	 * @since 2.0.0
+	 */
+	default void started(ConfigurableApplicationContext context, Duration startupTime) {
+		started(context);
 	}
 
 	/**

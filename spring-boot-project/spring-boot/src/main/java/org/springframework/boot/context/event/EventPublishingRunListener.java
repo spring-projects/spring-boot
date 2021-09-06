@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.event;
 
+import java.time.Duration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -101,8 +103,14 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	}
 
 	@Override
+	@Deprecated
 	public void started(ConfigurableApplicationContext context) {
-		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context));
+		started(context, null);
+	}
+
+	@Override
+	public void started(ConfigurableApplicationContext context, Duration startupTime) {
+		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context, startupTime));
 		AvailabilityChangeEvent.publish(context, LivenessState.CORRECT);
 	}
 
