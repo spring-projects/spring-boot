@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.event;
 
+import java.time.Duration;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -26,6 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * have been completed by then.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 1.3.0
  * @see ApplicationFailedEvent
  */
@@ -34,15 +37,32 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
+	private final Duration startupTime;
+
 	/**
 	 * Create a new {@link ApplicationReadyEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param context the context that was being created
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #ApplicationReadyEvent(SpringApplication, String[], ConfigurableApplicationContext, Duration)}
 	 */
 	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context) {
+		this(application, args, context, null);
+	}
+
+	/**
+	 * Create a new {@link ApplicationReadyEvent} instance.
+	 * @param application the current application
+	 * @param args the arguments the application is running with
+	 * @param context the context that was being created
+	 * @param startupTime the time taken to get the application ready to service requests
+	 */
+	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
+			Duration startupTime) {
 		super(application, args);
 		this.context = context;
+		this.startupTime = startupTime;
 	}
 
 	/**
@@ -51,6 +71,14 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 */
 	public ConfigurableApplicationContext getApplicationContext() {
 		return this.context;
+	}
+
+	/**
+	 * Return the time taken for the application to be ready to service requests.
+	 * @return the startup time
+	 */
+	public Duration getStartupTime() {
+		return this.startupTime;
 	}
 
 }

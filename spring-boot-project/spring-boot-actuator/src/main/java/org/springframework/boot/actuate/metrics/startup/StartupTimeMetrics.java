@@ -24,8 +24,11 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.TimeGauge;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.SmartApplicationListener;
 
 /**
  * Binds application startup metrics in response to an {@link ApplicationStartedEvent}.
@@ -33,7 +36,7 @@ import org.springframework.context.ApplicationListener;
  * @author Chris Bono
  * @since 2.6.0
  */
-public class StartupTimeMetrics implements ApplicationListener<ApplicationStartedEvent> {
+public class StartupTimeMetrics implements SmartApplicationListener {
 
 	private final MeterRegistry meterRegistry;
 
@@ -49,19 +52,46 @@ public class StartupTimeMetrics implements ApplicationListener<ApplicationStarte
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationStartedEvent event) {
+	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+		return ApplicationStartedEvent.class.isAssignableFrom(eventType)
+				|| ApplicationReadyEvent.class.isAssignableFrom(eventType);
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ApplicationStartedEvent) {
+			onApplicationStarted((ApplicationStartedEvent) event);
+		}
+		if (event instanceof ApplicationReadyEvent) {
+			onApplicationReady((ApplicationReadyEvent) event);
+		}
+	}
+
+	private void onApplicationStarted(ApplicationStartedEvent event) {
 		if (event.getStartupTime() == null) {
 			return;
 		}
 		TimeGauge
 				.builder("spring.boot.application.started", () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
-				.tags(maybeDcorateTagsWithEventInfo(event)).description("Application startup time in milliseconds")
+				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
+				.description("Time taken to start the application in milliseconds").register(this.meterRegistry);
+	}
+
+	private void onApplicationReady(ApplicationReadyEvent event) {
+		if (event.getStartupTime() == null) {
+			return;
+		}
+		TimeGauge
+				.builder("spring.boot.application.running", () -> event.getStartupTime().toMillis(),
+						TimeUnit.MILLISECONDS)
+				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
+				.description("Time taken for the application to be ready to serve requests in milliseconds")
 				.register(this.meterRegistry);
 	}
 
-	private Iterable<Tag> maybeDcorateTagsWithEventInfo(ApplicationStartedEvent event) {
-		Class<?> mainClass = event.getSpringApplication().getMainApplicationClass();
+	private Iterable<Tag> maybeDcorateTagsWithApplicationInfo(SpringApplication springApplication) {
+		Class<?> mainClass = springApplication.getMainApplicationClass();
 		if (mainClass == null) {
 			return this.tags;
 		}

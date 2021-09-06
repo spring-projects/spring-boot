@@ -25,6 +25,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.metrics.startup.StartupTimeMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -47,20 +48,26 @@ class StartupTimeMetricsAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 					context.getSourceApplicationContext(), Duration.ofMillis(2500)));
+			context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+					context.getSourceApplicationContext(), Duration.ofMillis(3000)));
 			assertThat(context).hasSingleBean(StartupTimeMetrics.class);
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 			assertThat(registry.find("spring.boot.application.started").timeGauge()).isNotNull();
+			assertThat(registry.find("spring.boot.application.running").timeGauge()).isNotNull();
 		});
 	}
 
 	@Test
 	void startupTimeMetricsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.spring.boot.application.started:false")
+		this.contextRunner.withPropertyValues("management.metrics.enable.spring.boot.application:false")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
+					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext(), Duration.ofMillis(3000)));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("spring.boot.application.started").timeGauge()).isNull();
+					assertThat(registry.find("spring.boot.application.running").timeGauge()).isNull();
 				});
 	}
 

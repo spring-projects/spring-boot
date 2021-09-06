@@ -151,6 +151,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
+ * @author Chris Bono
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -286,7 +287,7 @@ public class SpringApplication {
 	 */
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		stopWatch.start("applicationStarted");
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -303,6 +304,7 @@ public class SpringApplication {
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
+			stopWatch.start("applicationReady");
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
@@ -315,7 +317,8 @@ public class SpringApplication {
 		}
 
 		try {
-			listeners.running(context);
+			stopWatch.stop();
+			listeners.running(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);
