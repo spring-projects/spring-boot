@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
+import java.time.Duration;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -58,7 +60,7 @@ class JettyMetricsAutoConfigurationTests {
 				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class);
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
@@ -73,7 +75,7 @@ class JettyMetricsAutoConfigurationTests {
 				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
 				});
@@ -95,7 +97,7 @@ class JettyMetricsAutoConfigurationTests {
 				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class);
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
@@ -110,7 +112,7 @@ class JettyMetricsAutoConfigurationTests {
 				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
 				});
@@ -125,7 +127,7 @@ class JettyMetricsAutoConfigurationTests {
 						MeterRegistryConfiguration.class)
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
 							.hasBean("customJettyConnectionMetricsBinder");
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
@@ -144,7 +146,7 @@ class JettyMetricsAutoConfigurationTests {
 						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class);
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
@@ -161,7 +163,7 @@ class JettyMetricsAutoConfigurationTests {
 						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
 				});
@@ -178,7 +180,7 @@ class JettyMetricsAutoConfigurationTests {
 						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+							context.getSourceApplicationContext(), Duration.ZERO));
 					assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
 							.hasBean("customJettySslHandshakeMetricsBinder");
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);

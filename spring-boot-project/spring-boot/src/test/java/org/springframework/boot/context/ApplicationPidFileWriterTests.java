@@ -18,6 +18,7 @@ package org.springframework.boot.context;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.AfterEach;
@@ -187,7 +188,7 @@ class ApplicationPidFileWriterTests {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
-		return new ApplicationReadyEvent(new SpringApplication(), new String[] {}, context);
+		return new ApplicationReadyEvent(new SpringApplication(), new String[] {}, context, Duration.ZERO);
 	}
 
 	private ConfigurableEnvironment createEnvironment(String propName, String propValue) {

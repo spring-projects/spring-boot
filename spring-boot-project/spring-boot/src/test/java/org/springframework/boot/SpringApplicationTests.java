@@ -149,6 +149,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Artsiom Yudovin
  * @author Marten Deinum
  * @author Nguyen Bao Sach
+ * @author Chris Bono
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -415,6 +416,42 @@ class SpringApplicationTests {
 		inOrder.verify(listener)
 				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(ReadinessState.ACCEPTING_TRAFFIC)));
 		inOrder.verifyNoMoreInteractions();
+	}
+
+	@Test
+	void applicationStartedEventHasStartupTime() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		final AtomicReference<ApplicationStartedEvent> reference = new AtomicReference<>();
+		class ApplicationStartedEventListener implements ApplicationListener<ApplicationStartedEvent> {
+
+			@Override
+			public void onApplicationEvent(ApplicationStartedEvent event) {
+				reference.set(event);
+			}
+
+		}
+		application.addListeners(new ApplicationStartedEventListener());
+		this.context = application.run();
+		assertThat(reference.get()).isNotNull().extracting(ApplicationStartedEvent::getStartupTime).isNotNull();
+	}
+
+	@Test
+	void applicationReadyEventHasStartupTime() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		final AtomicReference<ApplicationReadyEvent> reference = new AtomicReference<>();
+		class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
+
+			@Override
+			public void onApplicationEvent(ApplicationReadyEvent event) {
+				reference.set(event);
+			}
+
+		}
+		application.addListeners(new ApplicationReadyEventListener());
+		this.context = application.run();
+		assertThat(reference.get()).isNotNull().extracting(ApplicationReadyEvent::getStartupTime).isNotNull();
 	}
 
 	@Test
