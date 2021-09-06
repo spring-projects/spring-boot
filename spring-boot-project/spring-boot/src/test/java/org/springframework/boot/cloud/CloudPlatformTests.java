@@ -133,7 +133,7 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void getActiveWhenHasWebsiteSiteNameAndWebsitesEnableAppServiceStorageShouldReturnAzureAppService() {
+	void getActiveWhenHasAllAzureEnvVariablesShouldReturnAzureAppService() {
 		Map<String, Object> envVars = new HashMap<>();
 		envVars.put("WEBSITE_SITE_NAME", "---");
 		envVars.put("WEBSITE_INSTANCE_ID", "1234");
@@ -146,16 +146,45 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void getActiveWhenHasWebsiteSiteNameAndNoWebsitesEnableAppServiceStorageShouldNotReturnAzureAppService() {
-		Environment environment = getEnvironmentWithEnvVariables(Collections.singletonMap("WEBSITE_SITE_NAME", "---"));
+	void getActiveWhenHasMissingWebsiteSiteNameShouldNotReturnAzureAppService() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("WEBSITE_INSTANCE_ID", "1234");
+		envVars.put("WEBSITE_RESOURCE_GROUP", "test");
+		envVars.put("WEBSITE_SKU", "1234");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
 	}
 
 	@Test
-	void getActiveWhenHasWebsitesEnableAppServiceStorageAndNoWebsiteSiteNameShouldNotReturnAzureAppService() {
-		Environment environment = getEnvironmentWithEnvVariables(
-				Collections.singletonMap("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "false"));
+	void getActiveWhenHasMissingWebsiteInstanceIdShouldNotReturnAzureAppService() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("WEBSITE_SITE_NAME", "---");
+		envVars.put("WEBSITE_RESOURCE_GROUP", "test");
+		envVars.put("WEBSITE_SKU", "1234");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasMissingWebsiteResourceGroupShouldNotReturnAzureAppService() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("WEBSITE_SITE_NAME", "---");
+		envVars.put("WEBSITE_INSTANCE_ID", "1234");
+		envVars.put("WEBSITE_SKU", "1234");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasMissingWebsiteSkuShouldNotReturnAzureAppService() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("WEBSITE_SITE_NAME", "---");
+		envVars.put("WEBSITE_INSTANCE_ID", "1234");
+		envVars.put("WEBSITE_RESOURCE_GROUP", "test");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
 	}
