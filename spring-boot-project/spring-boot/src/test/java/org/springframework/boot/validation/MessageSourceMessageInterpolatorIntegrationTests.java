@@ -25,6 +25,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -40,8 +42,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Dmytro Nosan
  */
 class MessageSourceMessageInterpolatorIntegrationTests {
-
-	private final Validator validator = buildValidator();
 
 	@NotNull
 	private String defaultMessage;
@@ -69,6 +69,22 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 
 	@NotNull(message = "\\\\{null}")
 	private String escapeEscape;
+
+	private Locale defaultLocale;
+
+	private Validator validator;
+
+	@BeforeEach
+	void init() {
+		this.defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.ENGLISH);
+		this.validator = buildValidator();
+	}
+
+	@AfterEach
+	void restoreLocale() {
+		Locale.setDefault(this.defaultLocale);
+	}
 
 	@Test
 	void defaultMessage() {
