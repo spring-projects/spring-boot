@@ -156,7 +156,7 @@ bom {
 			]
 		}
 	}
-	library("Testcontainers", "1.15.3") {
+	library("Testcontainers", "1.16.0") {
 		group("org.testcontainers") {
 			imports = [
 				"testcontainers-bom"
