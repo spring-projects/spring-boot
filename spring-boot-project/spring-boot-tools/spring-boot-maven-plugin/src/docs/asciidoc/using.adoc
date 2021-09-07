@@ -5,6 +5,7 @@ The parent project provides the following features:
 
 * Java 1.8 as the default compiler level.
 * UTF-8 source encoding.
+* Compilation with `-parameters`.
 * A dependency management section, inherited from the `spring-boot-dependencies` POM, that manages the versions of common dependencies.
 This dependency management lets you omit `<version>` tags for those dependencies when used in your own POM.
 * An execution of the <<goals.adoc#goals-repackage, `repackage` goal>> with a `repackage` execution id.
