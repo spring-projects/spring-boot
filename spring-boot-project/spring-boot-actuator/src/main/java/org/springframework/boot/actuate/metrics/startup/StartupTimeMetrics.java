@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.startup;
 
+import java.lang.management.RuntimeMXBean;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -40,14 +41,17 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 
 	private final MeterRegistry meterRegistry;
 
+	private final RuntimeMXBean runtimeMXBean;
+
 	private final Iterable<Tag> tags;
 
-	public StartupTimeMetrics(MeterRegistry meterRegistry) {
-		this(meterRegistry, Collections.emptyList());
+	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean) {
+		this(meterRegistry, runtimeMXBean, Collections.emptyList());
 	}
 
-	public StartupTimeMetrics(MeterRegistry meterRegistry, Iterable<Tag> tags) {
+	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean, Iterable<Tag> tags) {
 		this.meterRegistry = meterRegistry;
+		this.runtimeMXBean = runtimeMXBean;
 		this.tags = (tags != null) ? tags : Collections.emptyList();
 	}
 
@@ -75,7 +79,7 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 				.builder("spring.boot.application.started", () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
-				.description("Time taken to start the application in milliseconds").register(this.meterRegistry);
+				.description("Time taken (ms) to start the application").register(this.meterRegistry);
 	}
 
 	private void onApplicationReady(ApplicationReadyEvent event) {
@@ -86,7 +90,11 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 				.builder("spring.boot.application.running", () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
-				.description("Time taken for the application to be ready to serve requests in milliseconds")
+				.description("Time taken (ms) for the application to be ready to serve requests")
+				.register(this.meterRegistry);
+		TimeGauge.builder("spring.boot.application.running.jvm", () -> this.runtimeMXBean.getUptime(), TimeUnit.MILLISECONDS)
+				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
+				.description("The uptime of the JVM (ms) when the application is ready to serve requests")
 				.register(this.meterRegistry);
 	}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.startup;
 
+import java.lang.management.ManagementFactory;
+
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -44,7 +46,7 @@ public class StartupTimeMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	StartupTimeMetrics startupTimeMetrics(MeterRegistry meterRegistry) {
-		return new StartupTimeMetrics(meterRegistry);
+		return new StartupTimeMetrics(meterRegistry, ManagementFactory.getRuntimeMXBean());
 	}
 
 }

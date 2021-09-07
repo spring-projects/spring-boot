@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.startup;
 
+import java.lang.management.ManagementFactory;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -54,6 +55,7 @@ class StartupTimeMetricsAutoConfigurationTests {
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 			assertThat(registry.find("spring.boot.application.started").timeGauge()).isNotNull();
 			assertThat(registry.find("spring.boot.application.running").timeGauge()).isNotNull();
+			assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNotNull();
 		});
 	}
 
@@ -68,6 +70,7 @@ class StartupTimeMetricsAutoConfigurationTests {
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("spring.boot.application.started").timeGauge()).isNull();
 					assertThat(registry.find("spring.boot.application.running").timeGauge()).isNull();
+					assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNull();
 				});
 	}
 
@@ -83,7 +86,7 @@ class StartupTimeMetricsAutoConfigurationTests {
 
 		@Bean
 		StartupTimeMetrics customStartTimeMetrics() {
-			return new StartupTimeMetrics(new SimpleMeterRegistry());
+			return new StartupTimeMetrics(new SimpleMeterRegistry(), ManagementFactory.getRuntimeMXBean());
 		}
 
 	}

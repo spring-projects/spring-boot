@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.actuate.metrics.startup;
 
+import java.lang.management.RuntimeMXBean;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -40,98 +41,81 @@ import static org.mockito.Mockito.mock;
  */
 class StartupTimeMetricsTests {
 
-	@Nested
-	class WhenApplicationStartedEvent {
+	private static final long APP_STARTED_TIME_MS = 2500;
+	private static final long APP_RUNNING_TIME_MS = 2900;
+	private static final long APP_RUNNING_JVM_UPTIME_MS  = 3200;
 
-		@Test
-		void metricRecordedWithoutAdditionalTags() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry);
-			metrics.onApplicationEvent(applicationStartedEvent(TestMainApplication.class, Duration.ofMillis(2500)));
-			assertThat(registry.find("spring.boot.application.started")
-					.tag("main-application-class", TestMainApplication.class.getName()).timeGauge()).isNotNull()
-							.extracting((m) -> m.value(TimeUnit.MILLISECONDS)).isEqualTo(2500d);
-		}
+	private MeterRegistry registry;
+	private RuntimeMXBean runtimeMXBean;
+	private StartupTimeMetrics metrics;
 
-		@Test
-		void metricRecordedWithAdditionalTags() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry, Tags.of("foo", "bar"));
-			metrics.onApplicationEvent(applicationStartedEvent(TestMainApplication.class, Duration.ofMillis(2500)));
-			assertThat(registry.find("spring.boot.application.started")
-					.tags("main-application-class", TestMainApplication.class.getName(), "foo", "bar").timeGauge())
-							.isNotNull().extracting((m) -> m.value(TimeUnit.MILLISECONDS)).isEqualTo(2500d);
-		}
-
-		@Test
-		void metricRecordedWithoutMainAppClassTagWhenMainAppClassNotAvailable() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry);
-			metrics.onApplicationEvent(applicationStartedEvent(null, Duration.ofMillis(2500)));
-			assertThat(registry.find("spring.boot.application.started").timeGauge()).isNotNull();
-		}
-
-		@Test
-		void metricNotRecordedWhenStartupTimeNotAvailable() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry);
-			metrics.onApplicationEvent(applicationStartedEvent(null, null));
-			assertThat(registry.find("spring.boot.application.started").timeGauge()).isNull();
-		}
-
-		private ApplicationStartedEvent applicationStartedEvent(Class<?> mainAppClass, Duration startupTime) {
-			SpringApplication application = mock(SpringApplication.class);
-			doReturn(mainAppClass).when(application).getMainApplicationClass();
-			return new ApplicationStartedEvent(application, null, null, startupTime);
-		}
-
+	@BeforeEach
+	void prepareUnit() {
+		registry = new SimpleMeterRegistry();
+		runtimeMXBean = mock(RuntimeMXBean.class);
+		given(runtimeMXBean.getUptime()).willReturn(APP_RUNNING_JVM_UPTIME_MS);
+		metrics = new StartupTimeMetrics(registry, runtimeMXBean);
 	}
 
-	@Nested
-	class WhenApplicationReadyEvent {
+	@Test
+	void metricsRecordedWithoutCustomTags() {
+		metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
+		metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
+		assertMetricExistsWithValue("spring.boot.application.started", APP_STARTED_TIME_MS);
+		assertMetricExistsWithValue("spring.boot.application.running", APP_RUNNING_TIME_MS);
+		assertMetricExistsWithValue("spring.boot.application.running.jvm", APP_RUNNING_JVM_UPTIME_MS);
+	}
 
-		@Test
-		void metricRecordedWithoutAdditionalTags() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry);
-			metrics.onApplicationEvent(applicationReadyEvent(TestMainApplication.class, Duration.ofMillis(2500)));
-			assertThat(registry.find("spring.boot.application.running")
-					.tag("main-application-class", TestMainApplication.class.getName()).timeGauge()).isNotNull()
-							.extracting((m) -> m.value(TimeUnit.MILLISECONDS)).isEqualTo(2500d);
-		}
+	@Test
+	void metricsRecordedWithCustomTags() {
+		Tags tags = Tags.of("foo", "bar");
+		metrics = new StartupTimeMetrics(registry, runtimeMXBean, tags);
+		metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
+		metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
+		assertMetricExistsWithCustomTagsAndValue("spring.boot.application.started", tags, APP_STARTED_TIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("spring.boot.application.running", tags, APP_RUNNING_TIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("spring.boot.application.running.jvm", tags, APP_RUNNING_JVM_UPTIME_MS);
+	}
 
-		@Test
-		void metricRecordedWithAdditionalTags() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry, Tags.of("foo", "bar"));
-			metrics.onApplicationEvent(applicationReadyEvent(TestMainApplication.class, Duration.ofMillis(2500)));
-			assertThat(registry.find("spring.boot.application.running")
-					.tags("main-application-class", TestMainApplication.class.getName(), "foo", "bar").timeGauge())
-							.isNotNull().extracting((m) -> m.value(TimeUnit.MILLISECONDS)).isEqualTo(2500d);
-		}
+	@Test
+	void metricsRecordedWithoutMainAppClassTagWhenMainAppClassNotAvailable() {
+		metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
+		metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
+		assertThat(registry.find("spring.boot.application.started").timeGauge()).isNotNull();
+		assertThat(registry.find("spring.boot.application.running").timeGauge()).isNotNull();
+		assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNotNull();
+	}
 
-		@Test
-		void metricRecordedWithoutMainAppClassTagWhenMainAppClassNotAvailable() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry);
-			metrics.onApplicationEvent(applicationReadyEvent(null, Duration.ofMillis(2500)));
-			assertThat(registry.find("spring.boot.application.running").timeGauge()).isNotNull();
-		}
+	@Test
+	void metricsNotRecordedWhenStartupTimeNotAvailable() {
+		metrics.onApplicationEvent(applicationStartedEvent(null));
+		metrics.onApplicationEvent(applicationReadyEvent(null));
+		assertThat(registry.find("spring.boot.application.started").timeGauge()).isNull();
+		assertThat(registry.find("spring.boot.application.running").timeGauge()).isNull();
+		assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNull();
+	}
 
-		@Test
-		void metricNotRecordedWhenStartupTimeNotAvailable() {
-			SimpleMeterRegistry registry = new SimpleMeterRegistry();
-			StartupTimeMetrics metrics = new StartupTimeMetrics(registry);
-			metrics.onApplicationEvent(applicationReadyEvent(null, null));
-			assertThat(registry.find("spring.boot.application.running").timeGauge()).isNull();
-		}
+	private ApplicationStartedEvent applicationStartedEvent(Long startupTimeMs) {
+		SpringApplication application = mock(SpringApplication.class);
+		doReturn(TestMainApplication.class).when(application).getMainApplicationClass();
+		return new ApplicationStartedEvent(application, null, null, startupTimeMs != null ? Duration.ofMillis(startupTimeMs) : null);
+	}
 
-		private ApplicationReadyEvent applicationReadyEvent(Class<?> mainAppClass, Duration startupTime) {
-			SpringApplication application = mock(SpringApplication.class);
-			doReturn(mainAppClass).when(application).getMainApplicationClass();
-			return new ApplicationReadyEvent(application, null, null, startupTime);
-		}
+	private ApplicationReadyEvent applicationReadyEvent(Long startupTimeMs) {
+		SpringApplication application = mock(SpringApplication.class);
+		doReturn(TestMainApplication.class).when(application).getMainApplicationClass();
+		return new ApplicationReadyEvent(application, null, null, startupTimeMs != null ? Duration.ofMillis(startupTimeMs) : null);
+	}
 
+	private void assertMetricExistsWithValue(String metricName, double expectedValueInMillis) {
+		assertMetricExistsWithCustomTagsAndValue(metricName, Tags.empty(), expectedValueInMillis);
+	}
+
+	private void assertMetricExistsWithCustomTagsAndValue(String metricName, Tags expectedCustomTags, double expectedValueInMillis) {
+		assertThat(registry.find(metricName)
+				.tags(Tags.concat(expectedCustomTags, "main-application-class", TestMainApplication.class.getName()))
+				.timeGauge()).isNotNull()
+				.extracting((m) -> m.value(TimeUnit.MILLISECONDS)).isEqualTo(expectedValueInMillis);
 	}
 
 	static class TestMainApplication {
