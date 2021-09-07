@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private int[] hashCodes;
 
-	private int[] centralDirectoryOffsets;
+	private Offsets centralDirectoryOffsets;
 
 	private int[] positions;
 
@@ -120,21 +120,21 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
-		this.centralDirectoryOffsets = new int[maxSize];
+		this.centralDirectoryOffsets = Offsets.of(endRecord);
 		this.positions = new int[maxSize];
 	}
 
 	@Override
-	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
+	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, long dataOffset) {
 		AsciiBytes name = applyFilter(fileHeader.getName());
 		if (name != null) {
 			add(name, dataOffset);
 		}
 	}
 
-	private void add(AsciiBytes name, int dataOffset) {
+	private void add(AsciiBytes name, long dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
-		this.centralDirectoryOffsets[this.size] = dataOffset;
+		this.centralDirectoryOffsets.set(this.size, dataOffset);
 		this.positions[this.size] = this.size;
 		this.size++;
 	}
@@ -183,11 +183,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private void swap(int i, int j) {
 		swap(this.hashCodes, i, j);
-		swap(this.centralDirectoryOffsets, i, j);
+		this.centralDirectoryOffsets.swap(i, j);
 		swap(this.positions, i, j);
 	}
 
-	private void swap(int[] array, int i, int j) {
+	private static void swap(int[] array, int i, int j) {
 		int temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
@@ -316,9 +316,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	@SuppressWarnings("unchecked")
 	private <T extends FileHeader> T getEntry(int index, Class<T> type, boolean cacheEntry, AsciiBytes nameAlias) {
 		try {
+			long offset = this.centralDirectoryOffsets.get(index);
 			FileHeader cached = this.entriesCache.get(index);
-			FileHeader entry = (cached != null) ? cached : CentralDirectoryFileHeader
-					.fromRandomAccessData(this.centralDirectoryData, this.centralDirectoryOffsets[index], this.filter);
+			FileHeader entry = (cached != null) ? cached
+					: CentralDirectoryFileHeader.fromRandomAccessData(this.centralDirectoryData, offset, this.filter);
 			if (CentralDirectoryFileHeader.class.equals(entry.getClass()) && type.equals(JarEntry.class)) {
 				entry = new JarEntry(this.jarFile, index, (CentralDirectoryFileHeader) entry, nameAlias);
 			}
@@ -416,6 +417,73 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			int entryIndex = JarFileEntries.this.positions[this.index];
 			this.index++;
 			return getEntry(entryIndex, JarEntry.class, false, null);
+		}
+
+	}
+
+	private interface Offsets {
+
+		void set(int index, long value);
+
+		long get(int index);
+
+		void swap(int i, int j);
+
+		static Offsets of(CentralDirectoryEndRecord endRecord) {
+			return endRecord.isZip64() ? new Zip64Offsets(endRecord.getNumberOfRecords())
+					: new ZipOffsets(endRecord.getNumberOfRecords());
+		}
+
+	}
+
+	private static final class ZipOffsets implements Offsets {
+
+		private final int[] offsets;
+
+		private ZipOffsets(int size) {
+			this.offsets = new int[size];
+		}
+
+		@Override
+		public void swap(int i, int j) {
+			JarFileEntries.swap(this.offsets, i, j);
+		}
+
+		@Override
+		public void set(int index, long value) {
+			this.offsets[index] = (int) value;
+		}
+
+		@Override
+		public long get(int index) {
+			return this.offsets[index];
+		}
+
+	}
+
+	private static final class Zip64Offsets implements Offsets {
+
+		private final long[] offsets;
+
+		private Zip64Offsets(int size) {
+			this.offsets = new long[size];
+		}
+
+		@Override
+		public void swap(int i, int j) {
+			long temp = this.offsets[i];
+			this.offsets[i] = this.offsets[j];
+			this.offsets[j] = temp;
+		}
+
+		@Override
+		public void set(int index, long value) {
+			this.offsets[index] = value;
+		}
+
+		@Override
+		public long get(int index) {
+			return this.offsets[index];
 		}
 
 	}
