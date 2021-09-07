@@ -53,24 +53,24 @@ class StartupTimeMetricsAutoConfigurationTests {
 					context.getSourceApplicationContext(), Duration.ofMillis(3000)));
 			assertThat(context).hasSingleBean(StartupTimeMetrics.class);
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-			assertThat(registry.find("spring.boot.application.started").timeGauge()).isNotNull();
-			assertThat(registry.find("spring.boot.application.running").timeGauge()).isNotNull();
-			assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNotNull();
+			assertThat(registry.find("spring.boot.startup.app.started").timeGauge()).isNotNull();
+			assertThat(registry.find("spring.boot.startup.app.running").timeGauge()).isNotNull();
+			assertThat(registry.find("spring.boot.startup.app.running.jvm").timeGauge()).isNotNull();
 		});
 	}
 
 	@Test
 	void startupTimeMetricsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.spring.boot.application:false")
+		this.contextRunner.withPropertyValues("management.metrics.enable.spring.boot.startup:false")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
 					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(3000)));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("spring.boot.application.started").timeGauge()).isNull();
-					assertThat(registry.find("spring.boot.application.running").timeGauge()).isNull();
-					assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNull();
+					assertThat(registry.find("spring.boot.startup.app.started").timeGauge()).isNull();
+					assertThat(registry.find("spring.boot.startup.app.running").timeGauge()).isNull();
+					assertThat(registry.find("spring.boot.startup.app.running.jvm").timeGauge()).isNull();
 				});
 	}
 

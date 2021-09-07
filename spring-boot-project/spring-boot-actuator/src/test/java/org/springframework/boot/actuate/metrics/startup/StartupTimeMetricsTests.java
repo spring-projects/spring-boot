@@ -61,9 +61,9 @@ class StartupTimeMetricsTests {
 	void metricsRecordedWithoutCustomTags() {
 		metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
 		metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertMetricExistsWithValue("spring.boot.application.started", APP_STARTED_TIME_MS);
-		assertMetricExistsWithValue("spring.boot.application.running", APP_RUNNING_TIME_MS);
-		assertMetricExistsWithValue("spring.boot.application.running.jvm", APP_RUNNING_JVM_UPTIME_MS);
+		assertMetricExistsWithValue("spring.boot.startup.app.started", APP_STARTED_TIME_MS);
+		assertMetricExistsWithValue("spring.boot.startup.app.running", APP_RUNNING_TIME_MS);
+		assertMetricExistsWithValue("spring.boot.startup.app.running.jvm", APP_RUNNING_JVM_UPTIME_MS);
 	}
 
 	@Test
@@ -72,27 +72,27 @@ class StartupTimeMetricsTests {
 		metrics = new StartupTimeMetrics(registry, runtimeMXBean, tags);
 		metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
 		metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertMetricExistsWithCustomTagsAndValue("spring.boot.application.started", tags, APP_STARTED_TIME_MS);
-		assertMetricExistsWithCustomTagsAndValue("spring.boot.application.running", tags, APP_RUNNING_TIME_MS);
-		assertMetricExistsWithCustomTagsAndValue("spring.boot.application.running.jvm", tags, APP_RUNNING_JVM_UPTIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("spring.boot.startup.app.started", tags, APP_STARTED_TIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("spring.boot.startup.app.running", tags, APP_RUNNING_TIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("spring.boot.startup.app.running.jvm", tags, APP_RUNNING_JVM_UPTIME_MS);
 	}
 
 	@Test
 	void metricsRecordedWithoutMainAppClassTagWhenMainAppClassNotAvailable() {
 		metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
 		metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertThat(registry.find("spring.boot.application.started").timeGauge()).isNotNull();
-		assertThat(registry.find("spring.boot.application.running").timeGauge()).isNotNull();
-		assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNotNull();
+		assertThat(registry.find("spring.boot.startup.app.started").timeGauge()).isNotNull();
+		assertThat(registry.find("spring.boot.startup.app.running").timeGauge()).isNotNull();
+		assertThat(registry.find("spring.boot.startup.app.running.jvm").timeGauge()).isNotNull();
 	}
 
 	@Test
 	void metricsNotRecordedWhenStartupTimeNotAvailable() {
 		metrics.onApplicationEvent(applicationStartedEvent(null));
 		metrics.onApplicationEvent(applicationReadyEvent(null));
-		assertThat(registry.find("spring.boot.application.started").timeGauge()).isNull();
-		assertThat(registry.find("spring.boot.application.running").timeGauge()).isNull();
-		assertThat(registry.find("spring.boot.application.running.jvm").timeGauge()).isNull();
+		assertThat(registry.find("spring.boot.startup.app.started").timeGauge()).isNull();
+		assertThat(registry.find("spring.boot.startup.app.running").timeGauge()).isNull();
+		assertThat(registry.find("spring.boot.startup.app.running.jvm").timeGauge()).isNull();
 	}
 
 	private ApplicationStartedEvent applicationStartedEvent(Long startupTimeMs) {
