@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes web endpoints available over HTTP using
@@ -58,6 +59,27 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			EndpointLinksResolver linksResolver, boolean shouldRegisterLinksMapping) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping);
+		this.linksResolver = linksResolver;
+		setOrder(-100);
+	}
+
+	/**
+	 * Creates a new {@code WebMvcEndpointHandlerMapping} instance that provides mappings
+	 * for the given endpoints.
+	 * @param endpointMapping the base mapping for all endpoints
+	 * @param endpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param linksResolver resolver for determining links to available endpoints
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
+	 * @param pathPatternParser the path pattern parser
+	 */
+	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping, Collection<ExposableWebEndpoint> endpoints,
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
+			EndpointLinksResolver linksResolver, boolean shouldRegisterLinksMapping,
+			PathPatternParser pathPatternParser) {
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping,
+				pathPatternParser);
 		this.linksResolver = linksResolver;
 		setOrder(-100);
 	}
