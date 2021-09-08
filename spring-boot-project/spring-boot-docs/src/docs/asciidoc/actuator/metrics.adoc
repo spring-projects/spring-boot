@@ -294,13 +294,16 @@ The https://graphiteapp.org[Graphite server] host and port to use can be provide
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
-TIP: To take control over this behavior, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
+[TIP]
+====
+To take control over this behavior, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
 
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/export/graphite/MyGraphiteConfiguration.java[]
 ----
+====
 
 
 
@@ -367,13 +370,16 @@ The domain to use can be provided using:
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
-TIP: To take control over this behavior, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
+[TIP]
+====
+To take control over this behavior, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
 
 [source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/actuator/metrics/export/jmx/MyJmxConfiguration.java[]
 ----
+====
 
 
 
@@ -854,7 +860,8 @@ Data source instrumentation results in gauges representing the currently active,
 
 Metrics are also tagged by the name of the `DataSource` computed based on the bean name.
 
-TIP: By default, Spring Boot provides metadata for all supported data sources; you can add additional `DataSourcePoolMetadataProvider` beans if your favorite data source isn't supported out of the box.
+TIP: By default, Spring Boot provides metadata for all supported data sources.
+You can add additional `DataSourcePoolMetadataProvider` beans if your favorite data source is not supported.
 See `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
 Also, Hikari-specific metrics are exposed with a `hikaricp` prefix.
@@ -935,6 +942,7 @@ For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Nativ
 
 [[actuator.metrics.supported.mongodb]]
 ==== MongoDB Metrics
+This section briefly describes the available metrics for MongoDB.
 
 
 
@@ -1168,10 +1176,11 @@ For more details on concepts behind `percentiles-histogram`, `percentiles` and `
 [[actuator.metrics.endpoint]]
 === Metrics Endpoint
 Spring Boot provides a `metrics` endpoint that can be used diagnostically to examine the metrics collected by an application.
-The endpoint is not available by default and must be exposed, see <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
+The endpoint is not available by default and must be exposed. 
+See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
 
 Navigating to `/actuator/metrics` displays a list of available meter names.
-You can drill down to view information about a particular meter by providing its name as a selector, e.g. `/actuator/metrics/jvm.memory.max`.
+You can drill down to view information about a particular meter by providing its name as a selector -- for example, `/actuator/metrics/jvm.memory.max`.
 
 [TIP]
 ====

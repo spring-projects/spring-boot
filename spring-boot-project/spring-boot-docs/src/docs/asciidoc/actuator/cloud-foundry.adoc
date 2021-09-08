@@ -15,7 +15,6 @@ In order to use the endpoint, a valid UAA token must be passed with the request.
 === Disabling Extended Cloud Foundry Actuator Support
 If you want to fully disable the `/cloudfoundryapplication` endpoints, you can add the following setting to your `application.properties` file:
 
-
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:

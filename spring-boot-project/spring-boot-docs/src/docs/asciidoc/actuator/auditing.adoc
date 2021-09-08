@@ -5,7 +5,7 @@ This feature can be very useful for reporting and for implementing a lock-out po
 
 Auditing can be enabled by providing a bean of type `AuditEventRepository` in your application's configuration.
 For convenience, Spring Boot offers an `InMemoryAuditEventRepository`.
-`InMemoryAuditEventRepository` has limited capabilities and we recommend using it only for development environments.
+`InMemoryAuditEventRepository` has limited capabilities, and we recommend using it only for development environments.
 For production environments, consider creating your own alternative `AuditEventRepository` implementation.
 
 

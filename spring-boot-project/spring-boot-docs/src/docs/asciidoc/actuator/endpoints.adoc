@@ -63,7 +63,7 @@ The following technology-agnostic endpoints are available:
   Requires one or more `Liquibase` beans.
 
 | `metrics`
-| Shows '`metrics`' information for the current application.
+| Shows "`metrics`" information for the current application.
 
 | `mappings`
 | Displays a collated list of all `@RequestMapping` paths.
@@ -429,7 +429,7 @@ The following configuration permits `GET` and `POST` calls from the `example.com
 	        allowed-methods: "GET,POST"
 ----
 
-TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[CorsEndpointProperties] for a complete list of options.
+TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[`CorsEndpointProperties`] for a complete list of options.
 
 
 
@@ -547,19 +547,19 @@ The HTTP method of the predicate is determined by the operation type, as shown i
 [[actuator.endpoints.implementing-custom.web.consumes-predicates]]
 ===== Consumes
 For a `@WriteOperation` (HTTP `POST`) that uses the request body, the consumes clause of the predicate is `application/vnd.spring-boot.actuator.v2+json, application/json`.
-For all other operations the consumes clause is empty.
+For all other operations, the `consumes` clause is empty.
 
 
 
 [[actuator.endpoints.implementing-custom.web.produces-predicates]]
 ===== Produces
-The produces clause of the predicate can be determined by the `produces` attribute of the `@DeleteOperation`, `@ReadOperation`, and `@WriteOperation` annotations.
+The `produces` clause of the predicate can be determined by the `produces` attribute of the `@DeleteOperation`, `@ReadOperation`, and `@WriteOperation` annotations.
 The attribute is optional.
-If it is not used, the produces clause is determined automatically.
+If it is not used, the `produces` clause is determined automatically.
 
-If the operation method returns `void` or `Void` the produces clause is empty.
-If the operation method returns a `org.springframework.core.io.Resource`, the produces clause is `application/octet-stream`.
-For all other operations the produces clause is `application/vnd.spring-boot.actuator.v2+json, application/json`.
+If the operation method returns `void` or `Void`, the `produces` clause is empty.
+If the operation method returns a `org.springframework.core.io.Resource`, the `produces` clause is `application/octet-stream`.
+For all other operations, the `produces` clause is `application/vnd.spring-boot.actuator.v2+json, application/json`.
 
 
 
@@ -741,11 +741,11 @@ Additional `HealthIndicators` are available but not enabled by default:
 
 | `livenessstate`
 | {spring-boot-actuator-module-code}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
-| Exposes the "Liveness" application availability state.
+| Exposes the "`Liveness`" application availability state.
 
 | `readinessstate`
 | {spring-boot-actuator-module-code}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
-| Exposes the "Readiness" application availability state.
+| Exposes the "`Readiness`" application availability state.
 |===
 
 
@@ -886,7 +886,7 @@ Also, any `HealthIndicator` that is not handled explicitly is wrapped automatica
 ==== Health Groups
 It's sometimes useful to organize health indicators into groups that can be used for different purposes.
 
-To create a health indicator group you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
+To create a health indicator group, you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -1028,7 +1028,8 @@ This would make `liveness` available at `/livez` and `readiness` at `readyz` on 
 
 [[actuator.endpoints.kubernetes-probes.external-state]]
 ==== Checking External State with Kubernetes Probes
-Actuator configures the "liveness" and "readiness" probes as Health Groups; this means that all the <<actuator#actuator.endpoints.health.groups, Health Groups features>> are available for them.
+Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
+This means that all the <<actuator#actuator.endpoints.health.groups, health groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
