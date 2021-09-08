@@ -40,11 +40,11 @@ If your Cloud Foundry UAA or Cloud Controller services use self-signed certifica
 
 [[actuator.cloud-foundry.custom-context-path]]
 === Custom Context Path
-If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints will not be available at the root of the application.
-For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at `/app/cloudfoundryapplication/*`.
+If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints are not available at the root of the application.
+For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints are available at `/app/cloudfoundryapplication/*`.
 
-If you expect the Cloud Foundry endpoints to always be available at `/cloudfoundryapplication/*`, regardless of the server's context-path, you will need to explicitly configure that in your application.
-The configuration will differ depending on the web server in use.
+If you expect the Cloud Foundry endpoints to always be available at `/cloudfoundryapplication/*`, regardless of the server's context-path, you need to explicitly configure that in your application.
+The configuration differs, depending on the web server in use.
 For Tomcat, you can add the following configuration:
 
 [source,java,indent=0,subs="verbatim"]

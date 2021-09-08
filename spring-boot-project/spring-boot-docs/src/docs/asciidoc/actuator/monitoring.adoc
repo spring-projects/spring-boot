@@ -5,7 +5,7 @@ The default convention is to use the `id` of the endpoint with a prefix of `/act
 For example, `health` is exposed as `/actuator/health`.
 
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
-If both Jersey and Spring MVC are available, Spring MVC will be used.
+If both Jersey and Spring MVC are available, Spring MVC is used.
 
 NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
 
@@ -27,7 +27,7 @@ You can use the configprop:management.endpoints.web.base-path[] property to chan
 
 The preceding `application.properties` example changes the endpoint from `/actuator/\{id}` to `/manage/\{id}` (for example, `/manage/info`).
 
-NOTE: Unless the management port has been configured to <<actuator#actuator.monitoring.customizing-management-server-port,expose endpoints by using a different HTTP port>>, `management.endpoints.web.base-path` is relative to `server.servlet.context-path` (Servlet web applications) or `spring.webflux.base-path` (reactive web applications).
+NOTE: Unless the management port has been configured to <<actuator#actuator.monitoring.customizing-management-server-port,expose endpoints by using a different HTTP port>>, `management.endpoints.web.base-path` is relative to `server.servlet.context-path` (for servlet web applications) or `spring.webflux.base-path` (for reactive web applications).
 If `management.server.port` is configured, `management.endpoints.web.base-path` is relative to `management.server.base-path`.
 
 If you want to map endpoints to a different path, you can use the configprop:management.endpoints.web.path-mapping[] property.
@@ -60,15 +60,15 @@ You can set the configprop:management.server.port[] property to change the HTTP 
 	    port: 8081
 ----
 
-NOTE: On Cloud Foundry, applications only receive requests on port 8080 for both HTTP and TCP routing, by default.
-If you want to use a custom management port on Cloud Foundry, you will need to explicitly set up the application's routes to forward traffic to the custom port.
+NOTE: On Cloud Foundry, by default, applications receive requests only on port 8080 for both HTTP and TCP routing.
+If you want to use a custom management port on Cloud Foundry, you need to explicitly set up the application's routes to forward traffic to the custom port.
 
 
 
 [[actuator.monitoring.management-specific-ssl]]
 === Configuring Management-specific SSL
-When configured to use a custom port, the management server can also be configured with its own SSL by using the various `management.server.ssl.*` properties.
-For example, doing so lets a management server be available over HTTP while the main application uses HTTPS, as shown in the following property settings:
+When configured to use a custom port, you can also configure the management server with its own SSL by using the various `management.server.ssl.*` properties.
+For example, doing so lets a management server be available over HTTP while the main application uses HTTPS, as the following property settings show:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -108,7 +108,7 @@ Alternatively, both the main server and the management server can use SSL but wi
 
 [[actuator.monitoring.customizing-management-server-address]]
 === Customizing the Management Server Address
-You can customize the address that the management endpoints are available on by setting the configprop:management.server.address[] property.
+You can customize the address on which the management endpoints are available by setting the configprop:management.server.address[] property.
 Doing so can be useful if you want to listen only on an internal or ops-facing network or to listen only for connections from `localhost`.
 
 NOTE: You can listen on a different address only when the port differs from the main server port.
