@@ -4,10 +4,10 @@ Spring Boot's actuator module includes additional support that is activated when
 The `/cloudfoundryapplication` path provides an alternative secured route to all `@Endpoint` beans.
 
 The extended support lets Cloud Foundry management UIs (such as the web application that you can use to view deployed applications) be augmented with Spring Boot actuator information.
-For example, an application status page may include full health information instead of the typical "`running`" or "`stopped`" status.
+For example, an application status page can include full health information instead of the typical "`running`" or "`stopped`" status.
 
 NOTE: The `/cloudfoundryapplication` path is not directly accessible to regular users.
-In order to use the endpoint, a valid UAA token must be passed with the request.
+To use the endpoint, you must pass a valid UAA token with the request.
 
 
 
@@ -45,7 +45,7 @@ For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will
 
 If you expect the Cloud Foundry endpoints to always be available at `/cloudfoundryapplication/*`, regardless of the server's context-path, you will need to explicitly configure that in your application.
 The configuration will differ depending on the web server in use.
-For Tomcat, the following configuration can be added:
+For Tomcat, you can add the following configuration:
 
 [source,java,indent=0,subs="verbatim"]
 ----

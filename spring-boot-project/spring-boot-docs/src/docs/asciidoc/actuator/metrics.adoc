@@ -105,7 +105,7 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 [[actuator.metrics.export.atlas]]
 ==== Atlas
 By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
-The location of the https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
+You can provide the location of the https://github.com/Netflix/atlas[Atlas server]:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -158,7 +158,7 @@ Otherwise, `v2` is assumed.
 
 [[actuator.metrics.export.dynatrace.v2-api]]
 ===== v2 API
-The v2 API can be used in two ways.
+You can use the v2 API in two ways.
 
 If a local OneAgent is running on the host, metrics will be automatically exported to the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint].
 The ingest endpoint forwards the metrics to the Dynatrace backend.
@@ -243,14 +243,14 @@ The following example sets the export interval to 30 seconds:
 	        step: "30s"
 ----
 
-More information on how to set up the Dynatrace exporter for Micrometer can be found in {micrometer-registry-docs}/dynatrace[the Micrometer documentation].
+You can find more information on how to set up the Dynatrace exporter for Micrometer in {micrometer-registry-docs}/dynatrace[the Micrometer documentation].
 
 
 
 [[actuator.metrics.export.elastic]]
 ==== Elastic
 By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
-The location of the Elastic server to use can be provided using the following property:
+You can provide the location of the Elastic server to use by using the following property:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -341,7 +341,7 @@ You should also configure one or more tags to identify the data source to which 
 ==== Influx
 By default, metrics are exported to an {micrometer-registry-docs}/influx[Influx] v1 instance running on your local machine with the default configuration.
 To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
-The location of the https://www.influxdata.com[Influx server] to use can be provided using:
+You can provide the location of the https://www.influxdata.com[Influx server] to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -358,7 +358,7 @@ The location of the https://www.influxdata.com[Influx server] to use can be prov
 ==== JMX
 Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
 By default, metrics are exported to the `metrics` JMX domain.
-The domain to use can be provided using:
+You can provide the domain to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -387,7 +387,7 @@ include::{docs-java}/actuator/metrics/export/jmx/MyJmxConfiguration.java[]
 [[actuator.metrics.export.kairos]]
 ==== KairosDB
 By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
-The location of the https://kairosdb.github.io/[KairosDB server] to use can be provided using:
+You can provide the location of the https://kairosdb.github.io/[KairosDB server] to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -473,7 +473,7 @@ To enable Prometheus Pushgateway support, add the following dependency to your p
 When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.metrics.export.prometheus.pushgateway.enabled[] property is set to `true`, a `PrometheusPushGatewayManager` bean is auto-configured.
 This manages the pushing of metrics to a Prometheus Pushgateway.
 
-The `PrometheusPushGatewayManager` can be tuned using properties under `management.metrics.export.prometheus.pushgateway`.
+You can tune the `PrometheusPushGatewayManager` by using properties under `management.metrics.export.prometheus.pushgateway`.
 For advanced configuration, you can also provide your own `PrometheusPushGatewayManager` bean.
 
 
@@ -555,7 +555,7 @@ You can also change the interval at which metrics are sent to Stackdriver:
 ==== StatsD
 The StatsD registry pushes metrics over UDP to a StatsD agent eagerly.
 By default, metrics are exported to a {micrometer-registry-docs}/statsD[StatsD] agent running on your local machine.
-The StatsD agent host, port, and protocol to use can be provided using:
+You can provide the StatsD agent host, port, and protocol to use by using:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -674,7 +674,7 @@ Metrics are tagged by the name of the executor that is derived from the bean nam
 ==== Spring MVC Metrics
 Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+You can customized the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
 `@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
 If you don't want to record metrics for all Spring MVC requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
@@ -713,7 +713,7 @@ Applications can opt-in and record exceptions by <<web#web.servlet.spring-mvc.er
 ==== Spring WebFlux Metrics
 Auto-configuration enables the instrumentation of all requests handled by Spring WebFlux controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
 `@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
 If you don't want to record metrics for all Spring WebFlux requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
@@ -752,7 +752,7 @@ Applications can opt-in and record exceptions by <<web#web.reactive.webflux.erro
 ==== Jersey Server Metrics
 Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation whenever Micrometer's `micrometer-jersey2` module is on the classpath.
 By default, metrics are generated with the name, `http.server.requests`.
-The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
 `@Timed` annotations are supported on request-handling classes and methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
 If you don't want to record metrics for all Jersey requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
@@ -791,10 +791,10 @@ For that, you have to inject the auto-configured builder and use it to create in
 * `RestTemplateBuilder` for `RestTemplate`
 * `WebClient.Builder` for `WebClient`
 
-It is also possible to apply manually the customizers responsible for this instrumentation, namely `MetricsRestTemplateCustomizer` and `MetricsWebClientCustomizer`.
+You can also manually apply the customizers responsible for this instrumentation, namely `MetricsRestTemplateCustomizer` and `MetricsWebClientCustomizer`.
 
 By default, metrics are generated with the name, `http.client.requests`.
-The name can be customized by setting the configprop:management.metrics.web.client.request.metric-name[] property.
+You can customize the name by setting the configprop:management.metrics.web.client.request.metric-name[] property.
 
 By default, metrics generated by an instrumented client are tagged with the following information:
 
@@ -893,7 +893,7 @@ You can enable that on the auto-configured `EntityManagerFactory` as shown in th
 ==== Spring Data Repository Metrics
 Auto-configuration enables the instrumentation of all Spring Data `Repository` method invocations.
 By default, metrics are generated with the name, `spring.data.repository.invocations`.
-The name can be customized by setting the configprop:management.metrics.data.repository.metric-name[] property.
+You can customize the name by setting the configprop:management.metrics.data.repository.metric-name[] property.
 
 `@Timed` annotations are supported on `Repository` classes and methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
 If you don't want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
@@ -1039,8 +1039,8 @@ Metrics for Jetty's ``Connector``s are bound using Micrometer's `JettyConnection
 
 [[actuator.metrics.supported.timed-annotation]]
 ==== @Timed Annotation Support
-The `@Timed` annotation from the `io.micrometer.core.annotation` package can be used with several of the supported technologies listed above.
-If supported, the annotation can be used either at the class-level or the method-level.
+You can use the `@Timed` annotation from the `io.micrometer.core.annotation` package with several of the supported technologies described earlier.
+If supported, you can use the annotation at either the class level or the method level.
 
 For example, the following code shows how the annotation can be used to instrument all request mappings in a `@RestController`:
 
@@ -1131,8 +1131,8 @@ As the order of common tags cannot be guaranteed using this approach, Graphite u
 
 [[actuator.metrics.customizing.per-meter-properties]]
 ==== Per-meter Properties
-In addition to `MeterFilter` beans, it's also possible to apply a limited set of customization on a per-meter basis using properties.
-Per-meter customizations apply to any all meter IDs that start with the given name.
+In addition to `MeterFilter` beans, you can apply a limited set of customization on a per-meter basis by using properties.
+Per-meter customizations apply to any meter IDs that start with the given name.
 The following example disables any meters that have an ID starting with `example.remote`
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]

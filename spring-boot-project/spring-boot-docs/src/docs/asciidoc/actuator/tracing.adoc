@@ -1,12 +1,12 @@
 [[actuator.tracing]]
 == HTTP Tracing
-HTTP Tracing can be enabled by providing a bean of type `HttpTraceRepository` in your application's configuration.
+You can enable HTTP Tracing by providing a bean of type `HttpTraceRepository` in your application's configuration.
 For convenience, Spring Boot offers an `InMemoryHttpTraceRepository` that stores traces for the last 100 request-response exchanges, by default.
 `InMemoryHttpTraceRepository` is limited compared to other tracing solutions and we recommend using it only for development environments.
 For production environments, use of a production-ready tracing or observability solution, such as Zipkin or Spring Cloud Sleuth, is recommended.
 Alternatively, create your own `HttpTraceRepository` that meets your needs.
 
-The `httptrace` endpoint can be used to obtain information about the request-response exchanges that are stored in the `HttpTraceRepository`.
+You can use the `httptrace` endpoint to obtain information about the request-response exchanges that are stored in the `HttpTraceRepository`.
 
 
 

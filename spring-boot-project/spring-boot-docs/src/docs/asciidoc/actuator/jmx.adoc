@@ -1,7 +1,8 @@
 [[actuator.jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
-By default, this feature is not enabled and can be turned on by setting the configuration property configprop:spring.jmx.enabled[] to `true`.
+By default, this feature is not enabled.
+You can turn it on by setting the configprop:spring.jmx.enabled[] configuration property to `true`.
 Spring Boot exposes the most suitable `MBeanServer` as a bean with an ID of `mbeanServer`.
 Any of your beans that are annotated with Spring JMX annotations (`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`) are exposed to it.
 
@@ -68,7 +69,7 @@ For example, with Maven, you would add the following dependency:
 	</dependency>
 ----
 
-The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the configprop:management.endpoints.web.exposure.include[] property.
+You can then expose the Jolokia endpoint by adding `jolokia` or `*` to the configprop:management.endpoints.web.exposure.include[] property.
 You can then access it by using `/actuator/jolokia` on your management HTTP server.
 
 NOTE: The Jolokia endpoint exposes Jolokia's servlet as an actuator endpoint.

@@ -4,7 +4,7 @@ Actuator endpoints let you monitor and interact with your application.
 Spring Boot includes a number of built-in endpoints and lets you add your own.
 For example, the `health` endpoint provides basic application health information.
 
-Each individual endpoint can be <<actuator#actuator.endpoints.enabling, enabled or disabled>> and <<actuator#actuator.endpoints.exposing, exposed (made remotely accessible) over HTTP or JMX>>.
+You can <<actuator#actuator.endpoints.enabling, enable or disable>> each individual endpoint and <<actuator#actuator.endpoints.exposing, expose them (make them remotely accessible) over HTTP or JMX>>.
 An endpoint is considered to be available when it is both enabled and exposed.
 The built-in endpoints will only be auto-configured when they are available.
 Most applications choose exposure via HTTP, where the ID of the endpoint along with a prefix of `/actuator` is mapped to a URL.
@@ -150,7 +150,7 @@ If you want to change only the technologies over which an endpoint is exposed, u
 
 [[actuator.endpoints.exposing]]
 === Exposing Endpoints
-Since Endpoints may contain sensitive information, careful consideration should be given about when to expose them.
+Since Endpoints may contain sensitive information, you should carefully consider when to expose them.
 The following table shows the default exposure for the built-in endpoints:
 
 [cols="1,1,1"]
@@ -280,7 +280,7 @@ To change which endpoints are exposed, use the following technology-specific `in
 The `include` property lists the IDs of the endpoints that are exposed.
 The `exclude` property lists the IDs of the endpoints that should not be exposed.
 The `exclude` property takes precedence over the `include` property.
-Both `include` and `exclude` properties can be configured with a list of endpoint IDs.
+You can configure both the `include` and the `exclude` properties with a list of endpoint IDs.
 
 For example, to stop exposing all endpoints over JMX and only expose the `health` and `info` endpoints, use the following property:
 
@@ -317,7 +317,7 @@ TIP: If you want to implement your own strategy for when endpoints are exposed, 
 [[actuator.endpoints.security]]
 === Security
 For security purposes, all actuators other than `/health` are disabled by default.
-The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
+You can use the configprop:management.endpoints.web.exposure.include[] property to enable the actuators.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.
 
@@ -366,7 +366,7 @@ This means that the actuator endpoints that require a `POST` (shutdown and logge
 
 NOTE: We recommend disabling CSRF protection completely only if you are creating a service that is used by non-browser clients.
 
-Additional information about CSRF protection can be found in the {spring-security-docs}#csrf[Spring Security Reference Guide].
+You can find additional information about CSRF protection in the {spring-security-docs}#csrf[Spring Security Reference Guide].
 
 
 
@@ -465,7 +465,7 @@ When exposed via JMX, the parameters are mapped to the parameters of the MBean's
 Parameters are required by default.
 They can be made optional by annotating them with either `@javax.annotation.Nullable` or `@org.springframework.lang.Nullable`.
 
-Each root property in the JSON request body can be mapped to a parameter of the endpoint.
+You can map each root property in the JSON request body to a parameter of the endpoint.
 Consider the following JSON request body:
 
 [source,json,indent=0,subs="verbatim"]
@@ -517,7 +517,7 @@ The path of the predicate is determined by the ID of the endpoint and the base p
 The default base path is `/actuator`.
 For example, an endpoint with the ID `sessions` will use `/actuator/sessions` as its path in the predicate.
 
-The path can be further customized by annotating one or more parameters of the operation method with `@Selector`.
+You can further customize the path by annotating one or more parameters of the operation method with `@Selector`.
 Such a parameter is added to the path predicate as a path variable.
 The variable's value is passed into the operation method when the endpoint operation is invoked.
 If you want to capture all remaining path elements, you can add `@Selector(Match=ALL_REMAINING)` to the last parameter and make it a type that is conversion compatible with a `String[]`.
@@ -579,7 +579,7 @@ If an operation is invoked without a required parameter, or with a parameter tha
 
 [[actuator.endpoints.implementing-custom.web.range-requests]]
 ===== Web Endpoint Range Requests
-An HTTP range request can be used to request part of an HTTP resource.
+You can use an HTTP range request to request part of an HTTP resource.
 When using Spring MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource` automatically support range requests.
 
 NOTE: Range requests are not supported when using Jersey.
@@ -605,8 +605,8 @@ For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be pref
 
 [[actuator.endpoints.implementing-custom.controller]]
 ==== Controller Endpoints
-`@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint that is only exposed by Spring MVC or Spring WebFlux.
-Methods are mapped using the standard annotations for Spring MVC and Spring WebFlux such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.
+You can use `@ControllerEndpoint` and `@RestControllerEndpoint` to implement an endpoint that is exposed only by Spring MVC or Spring WebFlux.
+Methods are mapped by using the standard annotations for Spring MVC and Spring WebFlux, such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.
 Controller endpoints provide deeper integration with Spring's web frameworks but at the expense of portability.
 The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever possible.
 
@@ -652,7 +652,7 @@ By default, the final system health is derived by a `StatusAggregator` which sor
 The first status in the sorted list is used as the overall health status.
 If no `HealthIndicator` returns a status that is known to the `StatusAggregator`, an `UNKNOWN` status is used.
 
-TIP: The `HealthContributorRegistry` can be used to register and unregister health indicators at runtime.
+TIP: You can use the `HealthContributorRegistry` to register and unregister health indicators at runtime.
 
 
 
@@ -1154,7 +1154,7 @@ The following `InfoContributor` beans are auto-configured by Spring Boot, when a
 | Exposes build information if a `META-INF/build-info.properties` file is available.
 |===
 
-TIP: It is possible to disable them all by setting the configprop:management.info.defaults.enabled[] property.
+TIP: You can disable them all by setting the configprop:management.info.defaults.enabled[] property.
 
 
 
