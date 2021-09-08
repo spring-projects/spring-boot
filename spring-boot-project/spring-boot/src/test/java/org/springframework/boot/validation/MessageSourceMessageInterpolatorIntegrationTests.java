@@ -20,13 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -69,22 +68,6 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 
 	@NotNull(message = "\\\\{null}")
 	private String escapeEscape;
-
-	private Locale defaultLocale;
-
-	private Validator validator;
-
-	@BeforeEach
-	void init() {
-		this.defaultLocale = Locale.getDefault();
-		Locale.setDefault(Locale.ENGLISH);
-		this.validator = buildValidator();
-	}
-
-	@AfterEach
-	void restoreLocale() {
-		Locale.setDefault(this.defaultLocale);
-	}
 
 	@Test
 	void defaultMessage() {
@@ -133,12 +116,15 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 	}
 
 	private List<String> validate(String property) {
-		List<String> messages = new ArrayList<>();
-		Set<ConstraintViolation<Object>> constraints = this.validator.validateProperty(this, property);
-		for (ConstraintViolation<Object> constraint : constraints) {
-			messages.add(constraint.getMessage());
-		}
-		return messages;
+		return withEnglishLocale(() -> {
+			Validator validator = buildValidator();
+			List<String> messages = new ArrayList<>();
+			Set<ConstraintViolation<Object>> constraints = validator.validateProperty(this, property);
+			for (ConstraintViolation<Object> constraint : constraints) {
+				messages.add(constraint.getMessage());
+			}
+			return messages;
+		});
 	}
 
 	private static Validator buildValidator() {
@@ -153,6 +139,17 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 			validatorFactory.setMessageInterpolator(messageInterpolatorFactory.getObject());
 			validatorFactory.afterPropertiesSet();
 			return validatorFactory.getValidator();
+		}
+	}
+
+	private static <T> T withEnglishLocale(Supplier<T> supplier) {
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.ENGLISH);
+			return supplier.get();
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
 		}
 	}
 
