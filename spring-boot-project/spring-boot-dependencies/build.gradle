@@ -1295,30 +1295,6 @@ bom {
 			]
 		}
 	}
-	library("OJDBC", "19.3.0.0") {
-		group("com.oracle.ojdbc") {
-			modules = [
-				"dms",
-				"ojdbc10",
-				"ojdbc10_g",
-				"ojdbc10dms",
-				"ojdbc10dms_g",
-				"ojdbc8",
-				"ojdbc8_g",
-				"ojdbc8dms",
-				"ojdbc8dms_g",
-				"ons",
-				"oraclepki",
-				"orai18n",
-				"osdt_cert",
-				"osdt_core",
-				"simplefan",
-				"ucp",
-				"xdb",
-				"xmlparserv2"
-			]
-		}
-	}
 	library("OkHttp3", "3.14.9") {
 		prohibit("[4.0.0-alpha01,)") {
 			because "it requires Kotlin"
