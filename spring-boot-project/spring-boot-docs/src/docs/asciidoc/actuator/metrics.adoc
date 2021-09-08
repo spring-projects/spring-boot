@@ -32,7 +32,7 @@ Having a dependency on `micrometer-registry-\{system}` in your runtime classpath
 
 Most registries share common features.
 For instance, you can disable a particular registry even if the Micrometer registry implementation is on the classpath.
-For example, to disable Datadog:
+The following example disables Datadog:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -43,7 +43,7 @@ For example, to disable Datadog:
 	        enabled: false
 ----
 
-You can also disable all registries unless stated otherwise by the registry-specific property, as shown in the following example:
+You can also disable all registries unless stated otherwise by the registry-specific property, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -232,6 +232,7 @@ For the v1 API, the base environment URI must be specified without a path as the
 ===== Version-independent Settings
 In addition to the API endpoint and token, you can also change the interval at which metrics are sent to Dynatrace.
 The default export interval is `60s`.
+The following example sets the export interval to 30 seconds:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -263,7 +264,7 @@ The location of the Elastic server to use can be provided using the following pr
 [[actuator.metrics.export.ganglia]]
 ==== Ganglia
 By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
-The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be provided using:
+You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -280,7 +281,7 @@ The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be p
 [[actuator.metrics.export.graphite]]
 ==== Graphite
 By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
-The https://graphiteapp.org[Graphite server] host and port to use can be provided using:
+You can provide the https://graphiteapp.org[Graphite server] host and port, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -447,7 +448,7 @@ Spring Boot provides an actuator endpoint available at `/actuator/prometheus` to
 
 TIP: The endpoint is not available by default and must be exposed, see <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
 
-Here is an example `scrape_config` to add to `prometheus.yml`:
+The following example `scrape_config` adds to `prometheus.yml`:
 
 [source,yaml,indent=0,subs="verbatim"]
 ----
@@ -968,7 +969,7 @@ Each metric is tagged with the following information by default:
 | Outcome of the command - one of (`SUCCESS`, `FAILED`)
 |===
 
-To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as shown in the following example:
+To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as the following example shows:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -1110,7 +1111,7 @@ These use the global registry that is not Spring-managed.
 [[actuator.metrics.customizing.common-tags]]
 ==== Common Tags
 Common tags are generally used for dimensional drill-down on the operating environment like host, instance, region, stack, etc.
-Commons tags are applied to all meters and can be configured as shown in the following example:
+Commons tags are applied to all meters and can be configured, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -1132,7 +1133,7 @@ As the order of common tags cannot be guaranteed using this approach, Graphite u
 ==== Per-meter Properties
 In addition to `MeterFilter` beans, it's also possible to apply a limited set of customization on a per-meter basis using properties.
 Per-meter customizations apply to any all meter IDs that start with the given name.
-For example, the following will disable any meters that have an ID starting with `example.remote`
+The following example disables any meters that have an ID starting with `example.remote`
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

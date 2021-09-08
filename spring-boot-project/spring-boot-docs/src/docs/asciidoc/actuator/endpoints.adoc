@@ -349,7 +349,7 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 	        include: "*"
 ----
 
-Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints as shown in the following example:
+Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints, as the following example shows:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -476,7 +476,7 @@ Consider the following JSON request body:
 	}
 ----
 
-This can be used to invoke a write operation that takes `String name` and `int counter` parameters, as shown in the following example:
+You can use this to invoke a write operation that takes `String name` and `int counter` parameters, as the following example shows:
 
 [source,java,indent=0,subs="verbatim"]
 ----

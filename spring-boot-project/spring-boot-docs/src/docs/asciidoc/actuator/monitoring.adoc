@@ -15,7 +15,7 @@ NOTE: Jackson is a required dependency in order to get the correct JSON response
 === Customizing the Management Endpoint Paths
 Sometimes, it is useful to customize the prefix for the management endpoints.
 For example, your application might already use `/actuator` for another purpose.
-You can use the configprop:management.endpoints.web.base-path[] property to change the prefix for your management endpoint, as shown in the following example:
+You can use the configprop:management.endpoints.web.base-path[] property to change the prefix for your management endpoint, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -51,7 +51,7 @@ The following example remaps `/actuator/health` to `/healthcheck`:
 Exposing management endpoints by using the default HTTP port is a sensible choice for cloud-based deployments.
 If, however, your application runs inside your own data center, you may prefer to expose endpoints by using a different HTTP port.
 
-You can set the configprop:management.server.port[] property to change the HTTP port, as shown in the following example:
+You can set the configprop:management.server.port[] property to change the HTTP port, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -127,7 +127,7 @@ The following example `application.properties` does not allow remote management 
 
 [[actuator.monitoring.disabling-http-endpoints]]
 === Disabling HTTP Endpoints
-If you do not want to expose endpoints over HTTP, you can set the management port to `-1`, as shown in the following example:
+If you do not want to expose endpoints over HTTP, you can set the management port to `-1`, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -136,7 +136,7 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 	    port: -1
 ----
 
-This can be achieved using the configprop:management.endpoints.web.exposure.exclude[] property as well, as shown in the following example:
+You can also achieve this by using the configprop:management.endpoints.web.exposure.exclude[] property, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

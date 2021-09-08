@@ -41,7 +41,7 @@ The following settings show an example of doing so in `application.properties`:
 
 [[actuator.jmx.disable-jmx-endpoints]]
 === Disabling JMX Endpoints
-If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as shown in the following example:
+If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -81,7 +81,7 @@ The endpoint will not be available in a WebFlux application.
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure by setting servlet parameters.
 With Spring Boot, you can use your `application.properties` file.
-To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as shown in the following example:
+To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
