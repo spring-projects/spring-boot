@@ -25,6 +25,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchErrorHandler;
+import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
@@ -57,6 +58,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private ErrorHandler errorHandler;
 
 	private BatchErrorHandler batchErrorHandler;
+
+	private CommonErrorHandler commonErrorHandler;
 
 	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
@@ -128,6 +131,15 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link CommonErrorHandler} to use.
+	 * @param commonErrorHandler the error handler.
+	 * @since 2.6
+	 */
+	public void setCommonErrorHandler(CommonErrorHandler commonErrorHandler) {
+		this.commonErrorHandler = commonErrorHandler;
+	}
+
+	/**
 	 * Set the {@link AfterRollbackProcessor} to use.
 	 * @param afterRollbackProcessor the after rollback processor
 	 */
@@ -171,6 +183,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		else {
 			factory.setErrorHandler(this.errorHandler);
 		}
+		map.from(this.commonErrorHandler).to(factory::setCommonErrorHandler);
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
 		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
 	}
