@@ -455,7 +455,7 @@ For example, `@WebEndpoint` is exposed only over HTTP and not over JMX.
 You can write technology-specific extensions by using `@EndpointWebExtension` and `@EndpointJmxExtension`.
 These annotations let you provide technology-specific operations to augment an existing endpoint.
 
-Finally, if you need access to web-framework-specific functionality, you can implement Servlet or Spring `@Controller` and `@RestController` endpoints at the cost of them not being available over JMX or when using a different web framework.
+Finally, if you need access to web-framework-specific functionality, you can implement servlet or Spring `@Controller` and `@RestController` endpoints at the cost of them not being available over JMX or when using a different web framework.
 
 
 
@@ -598,9 +598,9 @@ The latter is typically used to perform authorization checks by using its `isUse
 
 [[actuator.endpoints.implementing-custom.servlet]]
 ==== Servlet Endpoints
-A `Servlet` can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
+A servlet can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
 Servlet endpoints provide deeper integration with the servlet container but at the expense of portability.
-They are intended to be used to expose an existing `Servlet` as an endpoint.
+They are intended to be used to expose an existing servlet as an endpoint.
 For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever possible.
 
 

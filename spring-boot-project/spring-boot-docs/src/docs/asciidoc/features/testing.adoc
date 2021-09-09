@@ -192,10 +192,10 @@ include::{docs-java}/features/testing/springbootapplications/withmockenvironment
 
 [TIP]
 ====
-Testing within a mocked environment is usually faster than running with a full Servlet container.
-However, since mocking occurs at the Spring MVC layer, code that relies on lower-level Servlet container behavior cannot be directly tested with MockMvc.
+Testing within a mocked environment is usually faster than running with a full servlet container.
+However, since mocking occurs at the Spring MVC layer, code that relies on lower-level servlet container behavior cannot be directly tested with MockMvc.
 
-For example, Spring Boot's error handling is based on the "`error page`" support provided by the Servlet container.
+For example, Spring Boot's error handling is based on the "`error page`" support provided by the servlet container.
 This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<web#web.servlet.spring-mvc.error-handling.error-pages, custom error page>> is rendered.
 If you need to test these lower-level concerns, you can start a fully running server as described in the next section.
 ====
@@ -708,7 +708,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-mock-mvc]]
 ===== Auto-configured Spring REST Docs Tests with Mock MVC
-`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
+`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]

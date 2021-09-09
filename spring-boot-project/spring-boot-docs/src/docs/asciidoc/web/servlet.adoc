@@ -124,7 +124,7 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 ----
 
 You can also customize the static resource locations by using the configprop:spring.web.resources.static-locations[] property (replacing the default values with a list of directory locations).
-The root Servlet context path, `"/"`, is automatically added as a location as well.
+The root servlet context path, `"/"`, is automatically added as a location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special case is made for https://www.webjars.org/[Webjars content].
 Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
@@ -287,7 +287,7 @@ NOTE: `PathPatternParser` is an optimized implementation but restricts usage of
 {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants]
 and is incompatible with suffix pattern matching (configprop:spring.mvc.pathmatch.use-suffix-pattern[deprecated],
 configprop:spring.mvc.pathmatch.use-registered-suffix-pattern[deprecated]) or mapping the `DispatcherServlet`
-with a Servlet prefix (configprop:spring.mvc.servlet.path[]).
+with a servlet prefix (configprop:spring.mvc.servlet.path[]).
 
 
 
@@ -429,7 +429,7 @@ Note that the default `FilterRegistrationBean` does not include the `ERROR` disp
 [[web.servlet.spring-mvc.error-handling.in-a-war-deployment]]
 ===== Error handling in a war deployment
 When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
-This is necessary as the Servlet specification does not provide an API for registering error pages.
+This is necessary as the servlet specification does not provide an API for registering error pages.
 Depending on the container that you are deploying your war file to and the technologies that your application uses, some additional configuration may be required.
 
 The error page filter can only forward the request to the correct error page if the response has not already been committed.
@@ -487,12 +487,12 @@ Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Sprin
 By default, the Jersey servlet is registered and mapped to `/*`.
 You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
 
-By default, Jersey is set up as a Servlet in a `@Bean` of type `ServletRegistrationBean` named `jerseyServletRegistration`.
+By default, Jersey is set up as a servlet in a `@Bean` of type `ServletRegistrationBean` named `jerseyServletRegistration`.
 By default, the servlet is initialized lazily, but you can customize that behavior by setting `spring.jersey.servlet.load-on-startup`.
 You can disable or override that bean by creating one of your own with the same name.
 You can also use a filter instead of a servlet by setting `spring.jersey.type=filter` (in which case, the `@Bean` to replace or override is `jerseyFilterRegistration`).
 The filter has an `@Order`, which you can set with `spring.jersey.filter.order`.
-When using Jersey as a filter, a Servlet that will handle any requests that are not intercepted by Jersey must be present.
+When using Jersey as a filter, a servlet that will handle any requests that are not intercepted by Jersey must be present.
 If your application does not contain such a servlet, you may want to enable the default servlet by setting configprop:server.servlet.register-default-servlet[] to `true`.
 Both the servlet and the filter registrations can be given init parameters by using `spring.jersey.init.*` to specify a map of properties.
 
@@ -508,7 +508,7 @@ By default, the embedded server listens for HTTP requests on port `8080`.
 
 [[web.servlet.embedded-container.servlets-filters-listeners]]
 ==== Servlets, Filters, and listeners
-When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the Servlet spec, either by using Spring beans or by scanning for Servlet components.
+When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the servlet spec, either by using Spring beans or by scanning for servlet components.
 
 
 
@@ -523,12 +523,12 @@ Filters map to `+/*+`.
 
 If convention-based mapping is not flexible enough, you can use the `ServletRegistrationBean`, `FilterRegistrationBean`, and `ServletListenerRegistrationBean` classes for complete control.
 
-It is usually safe to leave Filter beans unordered.
+It is usually safe to leave filter beans unordered.
 If a specific order is required, you should annotate the `Filter` with `@Order` or make it implement `Ordered`.
 You cannot configure the order of a `Filter` by annotating its bean method with `@Order`.
 If you cannot change the `Filter` class to add `@Order` or implement `Ordered`, you must define a `FilterRegistrationBean` for the `Filter` and set the registration bean's order using the `setOrder(int)` method.
-Avoid configuring a Filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
-If a Servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
+Avoid configuring a filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
+If a servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 
 TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<features#features.logging.log-groups,logging group>> (`logging.level.web=debug`).
 Details of the registered filters, including their order and URL patterns, will then be logged at startup.
@@ -540,7 +540,7 @@ If you need to register a `Filter` that interacts with other beans, consider usi
 
 [[web.servlet.embedded-container.context-initializer]]
 ==== Servlet Context Initialization
-Embedded servlet containers do not directly execute the Servlet 3.0+ `javax.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
+Embedded servlet containers do not directly execute the servlet 3.0+ `javax.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
 This is an intentional design decision intended to reduce the risk that third party libraries designed to run inside a war may break Spring Boot applications.
 
 If you need to perform servlet context initialization in a Spring Boot application, you should register a bean that implements the `org.springframework.boot.web.servlet.ServletContextInitializer` interface.

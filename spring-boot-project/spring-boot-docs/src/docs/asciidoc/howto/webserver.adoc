@@ -41,8 +41,8 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 	</dependency>
 ----
 
-NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support Servlet 4.0.
-If you wish to use Jetty 10, which does support Servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
+NOTE: The version of the servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support servlet 4.0.
+If you wish to use Jetty 10, which does support servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
 
 The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
@@ -239,9 +239,9 @@ See the list of <<application-properties#application-properties>>.
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
 However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
-You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (Servlet or Reactive).
+You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (servlet or reactive).
 
-The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
+The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -293,21 +293,21 @@ In a servlet stack application, i.e. with the `spring-boot-starter-web`, there a
 
 [[howto.webserver.add-servlet-filter-listener.spring-bean]]
 ==== Add a Servlet, Filter, or Listener by Using a Spring Bean
-To add a `Servlet`, `Filter`, or Servlet `*Listener` by using a Spring bean, you must provide a `@Bean` definition for it.
+To add a `Servlet`, `Filter`, or servlet `*Listener` by using a Spring bean, you must provide a `@Bean` definition for it.
 Doing so can be very useful when you want to inject configuration or dependencies.
 However, you must be very careful that they do not cause eager initialization of too many other beans, because they have to be installed in the container very early in the application lifecycle.
 (For example, it is not a good idea to have them depend on your `DataSource` or JPA configuration.)
 You can work around such restrictions by initializing the beans lazily when first used instead of on initialization.
 
-In the case of `Filters` and `Servlets`, you can also add mappings and init parameters by adding a `FilterRegistrationBean` or a `ServletRegistrationBean` instead of or in addition to the underlying component.
+In the case of filters and servlets, you can also add mappings and init parameters by adding a `FilterRegistrationBean` or a `ServletRegistrationBean` instead of or in addition to the underlying component.
 
 [NOTE]
 ====
 If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
-This aligns with the Servlet Specification's default dispatcher type.
+This aligns with the servlet specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of Servlet filter beans; please make sure to check the "`<<web#web.servlet.embedded-container.servlets-filters-listeners.beans>>`" section.
+Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`<<web#web.servlet.embedded-container.servlets-filters-listeners.beans>>`" section.
 
 
 
@@ -393,7 +393,7 @@ If the proxy adds the commonly used `X-Forwarded-For` and `X-Forwarded-Proto` he
 With this option, the Web servers themselves natively support this feature; you can check their specific documentation to learn about specific behavior.
 
 If this is not enough, Spring Framework provides a {spring-framework-docs}/web.html#filters-forwarded-headers[ForwardedHeaderFilter].
-You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
+You can register it as a servlet filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
 
 TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
