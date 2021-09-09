@@ -169,7 +169,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 			}
 
 			@Override
-			public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
+			public void visitFileHeader(CentralDirectoryFileHeader fileHeader, long dataOffset) {
 				AsciiBytes name = fileHeader.getName();
 				if (name.startsWith(META_INF) && name.endsWith(SIGNATURE_FILE_EXTENSION)) {
 					JarFile.this.signed = true;
