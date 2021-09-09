@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ class CentralDirectoryEndRecord {
 	private static final int MINIMUM_SIZE = 22;
 
 	private static final int MAXIMUM_COMMENT_LENGTH = 0xFFFF;
-
-	private static final int ZIP64_MAGICCOUNT = 0xFFFF;
 
 	private static final int MAXIMUM_SIZE = MINIMUM_SIZE + MAXIMUM_COMMENT_LENGTH;
 
@@ -74,8 +72,9 @@ class CentralDirectoryEndRecord {
 			}
 			this.offset = this.block.length - this.size;
 		}
-		int startOfCentralDirectoryEndRecord = (int) (data.getSize() - this.size);
-		this.zip64End = isZip64() ? new Zip64End(data, startOfCentralDirectoryEndRecord) : null;
+		long startOfCentralDirectoryEndRecord = data.getSize() - this.size;
+		Zip64Locator zip64Locator = Zip64Locator.find(data, startOfCentralDirectoryEndRecord);
+		this.zip64End = (zip64Locator != null) ? new Zip64End(data, zip64Locator) : null;
 	}
 
 	private byte[] createBlockFromEndOfData(RandomAccessData data, int size) throws IOException {
@@ -92,10 +91,6 @@ class CentralDirectoryEndRecord {
 		return this.size == MINIMUM_SIZE + commentLength;
 	}
 
-	private boolean isZip64() {
-		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2) == ZIP64_MAGICCOUNT;
-	}
-
 	/**
 	 * Returns the location in the data that the archive actually starts. For most files
 	 * the archive data will start at 0, however, it is possible to have prefixed bytes
@@ -105,7 +100,8 @@ class CentralDirectoryEndRecord {
 	 */
 	long getStartOfArchive(RandomAccessData data) {
 		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
-		long specifiedOffset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
+		long specifiedOffset = (this.zip64End != null) ? this.zip64End.centralDirectoryOffset
+				: Bytes.littleEndianValue(this.block, this.offset + 16, 4);
 		long zip64EndSize = (this.zip64End != null) ? this.zip64End.getSize() : 0L;
 		int zip64LocSize = (this.zip64End != null) ? Zip64Locator.ZIP64_LOCSIZE : 0;
 		long actualOffset = data.getSize() - this.size - length - zip64EndSize - zip64LocSize;
@@ -145,6 +141,10 @@ class CentralDirectoryEndRecord {
 		return comment.toString();
 	}
 
+	boolean isZip64() {
+		return this.zip64End != null;
+	}
+
 	/**
 	 * A Zip64 end of central directory record.
 	 *
@@ -166,10 +166,6 @@ class CentralDirectoryEndRecord {
 		private final long centralDirectoryLength;
 
 		private final int numberOfRecords;
-
-		private Zip64End(RandomAccessData data, int centralDirectoryEndOffset) throws IOException {
-			this(data, new Zip64Locator(data, centralDirectoryEndOffset));
-		}
 
 		private Zip64End(RandomAccessData data, Zip64Locator locator) throws IOException {
 			this.locator = locator;
@@ -215,16 +211,18 @@ class CentralDirectoryEndRecord {
 	 */
 	private static final class Zip64Locator {
 
+		static final int SIGNATURE = 0x07064b50;
+
 		static final int ZIP64_LOCSIZE = 20; // locator size
+
 		static final int ZIP64_LOCOFF = 8; // offset of zip64 end
 
 		private final long zip64EndOffset;
 
-		private final int offset;
+		private final long offset;
 
-		private Zip64Locator(RandomAccessData data, int centralDirectoryEndOffset) throws IOException {
-			this.offset = centralDirectoryEndOffset - ZIP64_LOCSIZE;
-			byte[] block = data.read(this.offset, ZIP64_LOCSIZE);
+		private Zip64Locator(long offset, byte[] block) throws IOException {
+			this.offset = offset;
 			this.zip64EndOffset = Bytes.littleEndianValue(block, ZIP64_LOCOFF, 8);
 		}
 
@@ -242,6 +240,17 @@ class CentralDirectoryEndRecord {
 		 */
 		private long getZip64EndOffset() {
 			return this.zip64EndOffset;
+		}
+
+		private static Zip64Locator find(RandomAccessData data, long centralDirectoryEndOffset) throws IOException {
+			long offset = centralDirectoryEndOffset - ZIP64_LOCSIZE;
+			if (offset >= 0) {
+				byte[] block = data.read(offset, ZIP64_LOCSIZE);
+				if (Bytes.littleEndianValue(block, 0, 4) == SIGNATURE) {
+					return new Zip64Locator(offset, block);
+				}
+			}
+			return null;
 		}
 
 	}
