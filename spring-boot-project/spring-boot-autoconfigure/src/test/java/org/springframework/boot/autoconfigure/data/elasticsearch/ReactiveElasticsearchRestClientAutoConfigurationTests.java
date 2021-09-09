@@ -16,12 +16,20 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.List;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -50,8 +58,14 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 
 	@Test
 	void configureShouldCreateDefaultBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ClientConfiguration.class)
-				.hasSingleBean(ReactiveElasticsearchClient.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ClientConfiguration.class)
+					.hasSingleBean(ReactiveElasticsearchClient.class);
+			List<InetSocketAddress> endpoints = context.getBean(ClientConfiguration.class).getEndpoints();
+			assertThat(endpoints).hasSize(1);
+			assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
+			assertThat(endpoints.get(0).getPort()).isEqualTo(9200);
+		});
 	}
 
 	@Test
@@ -68,6 +82,7 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenEndpointIsCustomizedThenClientConfigurationHasCustomEndpoint() {
 		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints=localhost:9876")
 				.run((context) -> {
@@ -79,6 +94,7 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenMultipleEndpointsAreConfiguredThenClientConfigurationHasMultipleEndpoints() {
 		this.contextRunner
 				.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints=localhost:9876,localhost:8765")
@@ -93,6 +109,122 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void whenUriIsCustomizedThenClientConfigurationHasCustomEndpoint() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://localhost:9876").run((context) -> {
+			List<InetSocketAddress> endpoints = context.getBean(ClientConfiguration.class).getEndpoints();
+			assertThat(endpoints).hasSize(1);
+			assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
+			assertThat(endpoints.get(0).getPort()).isEqualTo(9876);
+		});
+	}
+
+	@Test
+	void whenUriHasHttpsSchemeThenClientConfigurationUsesSsl() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=https://localhost:9876").run((context) -> {
+			ClientConfiguration clientConfiguration = context.getBean(ClientConfiguration.class);
+			List<InetSocketAddress> endpoints = clientConfiguration.getEndpoints();
+			assertThat(endpoints).hasSize(1);
+			assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
+			assertThat(endpoints.get(0).getPort()).isEqualTo(9876);
+			assertThat(clientConfiguration.useSsl()).isTrue();
+		});
+	}
+
+	@Test
+	void whenMultipleUrisAreConfiguredThenClientConfigurationHasMultipleEndpoints() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://localhost:9876,http://localhost:8765")
+				.run((context) -> {
+					List<InetSocketAddress> endpoints = context.getBean(ClientConfiguration.class).getEndpoints();
+					assertThat(endpoints).hasSize(2);
+					assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
+					assertThat(endpoints.get(0).getPort()).isEqualTo(9876);
+					assertThat(endpoints.get(1).getHostString()).isEqualTo("localhost");
+					assertThat(endpoints.get(1).getPort()).isEqualTo(8765);
+				});
+	}
+
+	@Test
+	void whenMultipleUrisHaveHttpsSchemeThenClientConfigurationUsesSsl() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=https://localhost:9876,https://localhost:8765")
+				.run((context) -> {
+					ClientConfiguration clientConfiguration = context.getBean(ClientConfiguration.class);
+					List<InetSocketAddress> endpoints = clientConfiguration.getEndpoints();
+					assertThat(endpoints).hasSize(2);
+					assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
+					assertThat(endpoints.get(0).getPort()).isEqualTo(9876);
+					assertThat(endpoints.get(1).getHostString()).isEqualTo("localhost");
+					assertThat(endpoints.get(1).getPort()).isEqualTo(8765);
+					assertThat(clientConfiguration.useSsl()).isTrue();
+				});
+	}
+
+	@Test
+	void whenMultipleUrisHaveVaryingSchemesThenRunFails() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=https://localhost:9876,http://localhost:8765")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasRootCauseInstanceOf(IllegalArgumentException.class)
+							.hasRootCauseMessage("Configured Elasticsearch URIs have varying schemes");
+				});
+	}
+
+	@Test
+	void whenUriHasUsernameOnlyThenDefaultAuthorizationHeaderHasUsernameAndEmptyPassword() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user@localhost:9200").run((context) -> {
+			ClientConfiguration clientConfiguration = context.getBean(ClientConfiguration.class);
+			assertThat(clientConfiguration.getDefaultHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly(
+					"Basic " + Base64.getEncoder().encodeToString("user:".getBytes(StandardCharsets.UTF_8)));
+		});
+	}
+
+	@Test
+	void whenUriHasUsernameAndPasswordThenDefaultAuthorizationHeaderHasUsernameAndPassword() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user:secret@localhost:9200")
+				.run((context) -> {
+					ClientConfiguration clientConfiguration = context.getBean(ClientConfiguration.class);
+					assertThat(clientConfiguration.getDefaultHeaders().get(HttpHeaders.AUTHORIZATION))
+							.containsExactly("Basic " + Base64.getEncoder()
+									.encodeToString("user:secret".getBytes(StandardCharsets.UTF_8)));
+				});
+	}
+
+	@Test
+	void whenMultipleUrisHaveVaryingUserInfosThenRunFails() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.uris=http://user:secret@localhost:9876,http://localhost:8765")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasRootCauseInstanceOf(IllegalArgumentException.class)
+							.hasRootCauseMessage("Configured Elasticsearch URIs have varying user infos");
+				});
+	}
+
+	@Test
+	void whenUriUserInfoMatchesUsernameAndPasswordPropertiesThenDefaultAuthorizationHeaderIsConfigured() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user:secret@localhost:9876",
+				"spring.elasticsearch.username=user", "spring.elasticsearch.password=secret").run((context) -> {
+					ClientConfiguration clientConfiguration = context.getBean(ClientConfiguration.class);
+					assertThat(clientConfiguration.getDefaultHeaders().get(HttpHeaders.AUTHORIZATION))
+							.containsExactly("Basic " + Base64.getEncoder()
+									.encodeToString("user:secret".getBytes(StandardCharsets.UTF_8)));
+				});
+	}
+
+	@Test
+	void whenUriUserInfoAndUsernameAndPasswordPropertiesDoNotMatchThenRunFails() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.uris=http://user:secret@localhost:9876",
+						"spring.elasticsearch.username=alice", "spring.elasticsearch.password=confidential")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasRootCauseInstanceOf(IllegalArgumentException.class)
+							.hasRootCauseMessage("Credentials from URI user info do not match those from "
+									+ "spring.elasticsearch.username and spring.elasticsearch.password");
+				});
+	}
+
+	@Test
+	@Deprecated
 	void whenConfiguredToUseSslThenClientConfigurationUsesSsl() {
 		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.use-ssl=true")
 				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).useSsl()).isTrue());
@@ -101,50 +233,46 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void whenSocketTimeoutIsNotConfiguredThenClientConfigurationUsesDefault() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getSocketTimeout())
-				.isEqualTo(Duration.ofSeconds(5)));
+				.isEqualTo(Duration.ofSeconds(30)));
 	}
 
 	@Test
 	void whenConnectionTimeoutIsNotConfiguredThenClientConfigurationUsesDefault() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getConnectTimeout())
-				.isEqualTo(Duration.ofSeconds(10)));
+				.isEqualTo(Duration.ofSeconds(1)));
 	}
 
-	@Test
-	void whenSocketTimeoutIsConfiguredThenClientConfigurationHasCustomSocketTimeout() {
-		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.socket-timeout=2s")
+	@ParameterizedPropertyPrefixTest
+	void whenSocketTimeoutIsConfiguredThenClientConfigurationHasCustomSocketTimeout(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "socket-timeout=2s")
 				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getSocketTimeout())
 						.isEqualTo(Duration.ofSeconds(2)));
 	}
 
-	@Test
-	void whenConnectionTimeoutIsConfiguredThenClientConfigurationHasCustomConnectTimeout() {
-		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.connection-timeout=2s")
+	@ParameterizedPropertyPrefixTest
+	void whenConnectionTimeoutIsConfiguredThenClientConfigurationHasCustomConnectTimeout(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "connection-timeout=2s")
 				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getConnectTimeout())
 						.isEqualTo(Duration.ofSeconds(2)));
 	}
 
-	@Test
-	void whenCredentialsAreConfiguredThenClientConfigurationHasDefaultAuthorizationHeader() {
-		this.contextRunner
-				.withPropertyValues("spring.data.elasticsearch.client.reactive.username=alice",
-						"spring.data.elasticsearch.client.reactive.password=secret")
+	@ParameterizedPropertyPrefixTest
+	void whenCredentialsAreConfiguredThenClientConfigurationHasDefaultAuthorizationHeader(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "username=alice", prefix + "password=secret")
 				.run((context) -> assertThat(
 						context.getBean(ClientConfiguration.class).getDefaultHeaders().get(HttpHeaders.AUTHORIZATION))
 								.containsExactly("Basic YWxpY2U6c2VjcmV0"));
 	}
 
-	@Test
-	void whenMaxInMemorySizeIsConfiguredThenUnderlyingWebClientHasCustomMaxInMemorySize() {
-		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.max-in-memory-size=1MB")
-				.run((context) -> {
-					WebClient client = configureWebClient(
-							context.getBean(ClientConfiguration.class).getClientConfigurers());
-					assertThat(client).extracting("exchangeFunction").extracting("strategies")
-							.extracting("codecConfigurer").extracting("defaultCodecs")
-							.asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
-							.extracting(DefaultCodecConfig::maxInMemorySize).isEqualTo(1024 * 1024);
-				});
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.elasticsearch.webclient.", "spring.data.elasticsearch.client.reactive." })
+	void whenMaxInMemorySizeIsConfiguredThenUnderlyingWebClientHasCustomMaxInMemorySize(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "max-in-memory-size=1MB").run((context) -> {
+			WebClient client = configureWebClient(context.getBean(ClientConfiguration.class).getClientConfigurers());
+			assertThat(client).extracting("exchangeFunction").extracting("strategies").extracting("codecConfigurer")
+					.extracting("defaultCodecs").asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
+					.extracting(DefaultCodecConfig::maxInMemorySize).isEqualTo(1024 * 1024);
+		});
 	}
 
 	private WebClient configureWebClient(List<ClientConfigurationCallback<?>> callbacks) {
@@ -172,6 +300,14 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 		ClientConfiguration customClientConfiguration() {
 			return ClientConfiguration.localhost();
 		}
+
+	}
+
+	@ParameterizedTest
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@ValueSource(strings = { "spring.data.elasticsearch.client.reactive.", "spring.elasticsearch." })
+	static @interface ParameterizedPropertyPrefixTest {
 
 	}
 

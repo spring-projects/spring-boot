@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,12 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
+@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestHighLevelClient.class)
 @ConditionalOnMissingBean(RestClient.class)
-@EnableConfigurationProperties(ElasticsearchRestClientProperties.class)
+@EnableConfigurationProperties({ ElasticsearchProperties.class, ElasticsearchRestClientProperties.class,
+		DeprecatedElasticsearchRestClientProperties.class })
 @Import({ RestClientBuilderConfiguration.class, RestHighLevelClientConfiguration.class,
 		RestClientSnifferConfiguration.class })
 public class ElasticsearchRestClientAutoConfiguration {

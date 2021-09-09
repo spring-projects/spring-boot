@@ -861,6 +861,12 @@
       ]
     },
     {
+      "name": "spring.elasticsearch.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
       "name": "spring.flyway.connect-retries-interval",
       "defaultValue": 120
     },

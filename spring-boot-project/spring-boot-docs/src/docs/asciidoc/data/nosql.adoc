@@ -261,7 +261,7 @@ If you add your own `@Bean` of type `SolrClient`, it replaces the default.
 [[data.nosql.elasticsearch]]
 === Elasticsearch
 https://www.elastic.co/products/elasticsearch[Elasticsearch] is an open source, distributed, RESTful search and analytics engine.
-Spring Boot offers basic auto-configuration for Elasticsearch.
+Spring Boot offers basic auto-configuration for Elasticsearch clients.
 
 Spring Boot supports several clients:
 
@@ -276,34 +276,36 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 ==== Connecting to Elasticsearch using REST clients
 Elasticsearch ships https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients] that you can use to query a cluster: the "Low Level" client and the "High Level" client.
 Spring Boot provides support for the "High Level" client, which ships with `org.elasticsearch.client:elasticsearch-rest-high-level-client`.
-
-If you have this dependency on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean that by default targets `http://localhost:9200`.
-You can further tune how `RestHighLevelClient` is configured, as shown in the following example:
+Additionally, Spring Boot provides support for a reactive client, based on Spring Framework's `WebClient`, that ships with `org.springframework.data:spring-data-elasticsearch`.
+By default, the clients will target `http://localhost:9200`.
+You can use `spring.elasticsearch.*` properties to further tune how the clients are configured, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  elasticsearch:
-	    rest:
-	      uris: "https://search.example.com:9200"
-	      read-timeout: "10s"
-	      username: "user"
-	      password: "secret"
+	    uris: "https://search.example.com:9200"
+	    socket-timeout: "10s"
+	    username: "user"
+	    password: "secret"
 ----
 
-You can also register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
-To take full control over the registration, define a `RestClientBuilder` bean.
+[[data.nosql.elasticsearch.connecting-using-rest.restclient]]
+===== Connecting to Elasticsearch using RestHighLevelClient
+If you have `elasticsearch-rest-high-level-client` on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean.
+In addition to the properties described previously, to fine-tune the `RestHighLevelClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
+To take full control over its registration, define a `RestClientBuilder` bean.
 
 TIP: If your application needs access to a "Low Level" `RestClient`, you can get it by calling `client.getLowLevelClient()` on the auto-configured `RestHighLevelClient`.
 
-Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them to the `RestHighLevelClient` bean.
+Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestHighLevelClient` bean.
 You can further tune how `Sniffer` is configured, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  elasticsearch:
-	    rest:
+	    restclient:
 	      sniffer:
 	        interval: 10m
 	        delay-after-failure: 30s
@@ -311,31 +313,23 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 
 
 
-[[data.nosql.elasticsearch.connecting-using-reactive-rest]]
-==== Connecting to Elasticsearch using Reactive REST clients
+[[data.nosql.elasticsearch.connecting-using-rest.webclient]]
+===== Connecting to Elasticsearch using ReactiveElasticsearchClient
 {spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
 It is built on top of WebFlux's `WebClient`, so both `spring-boot-starter-elasticsearch` and `spring-boot-starter-webflux` dependencies are useful to enable this support.
 
-By default, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`
-bean that targets `http://localhost:9200`.
-You can further tune how it is configured, as shown in the following example:
+By default, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`.
+In addition to the properties described previously, the `spring.elasticsearch.webclient.*` properties can be used to configure reactive-specific settings, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
-	  data:
-	    elasticsearch:
-	      client:
-	        reactive:
-	          endpoints: "search.example.com:9200"
-	          use-ssl: true
-	          socket-timeout: "10s"
-	          username: "user"
-	          password: "secret"
+	  elasticsearch:
+	    webclient:
+	      max-in-memory-size: 1MB
 ----
 
-If the configuration properties are not enough and you'd like to fully control the client
-configuration, you can register a custom `ClientConfiguration` bean.
+If the `spring.elasticsearch.*` and `spring.elasticsearch.webclient.*` configuration properties are not enough and you'd like to fully control the client configuration, you can register a custom `ClientConfiguration` bean.
 
 
 
@@ -352,7 +346,7 @@ as shown in the following example:
 include::{docs-java}/features/nosql/elasticsearch/connectingusingspringdata/MyBean.java[]
 ----
 
-In the presence of `spring-data-elasticsearch` and the required dependencies for using a `WebClient` (typically `spring-boot-starter-webflux`), Spring Boot can also auto-configure a <<features#data.nosql.elasticsearch.connecting-using-reactive-rest,ReactiveElasticsearchClient>> and a `ReactiveElasticsearchTemplate` as beans.
+In the presence of `spring-data-elasticsearch` and the required dependencies for using a `WebClient` (typically `spring-boot-starter-webflux`), Spring Boot can also auto-configure a <<features#data.nosql.elasticsearch.connecting-using-rest.webclient,ReactiveElasticsearchClient>> and a `ReactiveElasticsearchTemplate` as beans.
 They are the reactive equivalent of the other REST clients.
 
 

@@ -55,7 +55,8 @@ class ElasticsearchRestClientAutoConfigurationIntegrationTests {
 	@Test
 	void restClientCanQueryElasticsearchNode() {
 		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://" + elasticsearch.getHttpHostAddress())
+				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
+						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
 				.run((context) -> {
 					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();
