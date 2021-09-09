@@ -1649,7 +1649,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.0.4") {
+	library("Spring Data Bom", "2021.0.5-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
