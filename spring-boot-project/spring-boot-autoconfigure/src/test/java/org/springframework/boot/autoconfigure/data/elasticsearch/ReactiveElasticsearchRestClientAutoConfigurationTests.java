@@ -28,7 +28,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
+import org.springframework.data.elasticsearch.client.ClientConfiguration.ClientConfigurationCallback;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.codec.CodecConfigurer.DefaultCodecConfig;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -136,13 +138,21 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	void whenMaxInMemorySizeIsConfiguredThenUnderlyingWebClientHasCustomMaxInMemorySize() {
 		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.max-in-memory-size=1MB")
 				.run((context) -> {
-					WebClient client = context.getBean(ClientConfiguration.class).getWebClientConfigurer()
-							.apply(WebClient.create());
+					WebClient client = configureWebClient(
+							context.getBean(ClientConfiguration.class).getClientConfigurers());
 					assertThat(client).extracting("exchangeFunction").extracting("strategies")
 							.extracting("codecConfigurer").extracting("defaultCodecs")
 							.asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
 							.extracting(DefaultCodecConfig::maxInMemorySize).isEqualTo(1024 * 1024);
 				});
+	}
+
+	private WebClient configureWebClient(List<ClientConfigurationCallback<?>> callbacks) {
+		WebClient webClient = WebClient.create();
+		for (ClientConfigurationCallback<?> callback : callbacks) {
+			webClient = ((ReactiveRestClients.WebClientConfigurationCallback) callback).configure(webClient);
+		}
+		return webClient;
 	}
 
 	@Configuration(proxyBeanMethods = false)
