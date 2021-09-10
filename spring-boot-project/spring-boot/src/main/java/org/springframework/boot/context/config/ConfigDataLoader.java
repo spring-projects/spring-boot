@@ -26,10 +26,9 @@ import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 
 /**
- * Strategy class that can be used used to load {@link ConfigData} for a given
- * {@link ConfigDataResource}. Implementations should be added as a
- * {@code spring.factories} entries. The following constructor parameter types are
- * supported:
+ * Strategy class that can be used to load {@link ConfigData} for a given
+ * {@link ConfigDataResource}. Implementations should be added as {@code spring.factories}
+ * entries. The following constructor parameter types are supported:
  * <ul>
  * <li>{@link Log} or {@link DeferredLogFactory} - if the loader needs deferred
  * logging</li>

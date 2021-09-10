@@ -53,7 +53,7 @@ public final class ConfigDataLocation implements OriginProvider {
 	}
 
 	/**
-	 * Return the the location is optional and should ignore
+	 * Return if the location is optional and should ignore
 	 * {@link ConfigDataNotFoundException}.
 	 * @return if the location is optional
 	 */
