@@ -32,7 +32,7 @@ public class JCacheCacheMeterBinderProvider implements CacheMeterBinderProvider<
 
 	@Override
 	public MeterBinder getMeterBinder(JCacheCache cache, Iterable<Tag> tags) {
-		return new JCacheMetrics(cache.getNativeCache(), tags);
+		return new JCacheMetrics<>(cache.getNativeCache(), tags);
 	}
 
 }

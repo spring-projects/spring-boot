@@ -32,7 +32,7 @@ public class CaffeineCacheMeterBinderProvider implements CacheMeterBinderProvide
 
 	@Override
 	public MeterBinder getMeterBinder(CaffeineCache cache, Iterable<Tag> tags) {
-		return new CaffeineCacheMetrics(cache.getNativeCache(), cache.getName(), tags);
+		return new CaffeineCacheMetrics<>(cache.getNativeCache(), cache.getName(), tags);
 	}
 
 }

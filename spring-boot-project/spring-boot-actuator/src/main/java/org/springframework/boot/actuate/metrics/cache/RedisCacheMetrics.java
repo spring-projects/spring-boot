@@ -32,7 +32,7 @@ import org.springframework.data.redis.cache.RedisCache;
  * @author Stephane Nicoll
  * @since 2.4.0
  */
-public class RedisCacheMetrics extends CacheMeterBinder {
+public class RedisCacheMetrics extends CacheMeterBinder<RedisCache> {
 
 	private final RedisCache cache;
 
