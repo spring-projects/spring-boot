@@ -85,17 +85,6 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		writeEntry(entry, manifest::write);
 	}
 
-	/**
-	 * Write all entries from the specified jar file.
-	 * @param jarFile the source jar file
-	 * @throws IOException if the entries cannot be written
-	 * @deprecated since 2.4.8 for removal in 2.6.0
-	 */
-	@Deprecated
-	public void writeEntries(JarFile jarFile) throws IOException {
-		writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER, (entry) -> null);
-	}
-
 	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
 			Function<JarEntry, Library> libraryLookup) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();

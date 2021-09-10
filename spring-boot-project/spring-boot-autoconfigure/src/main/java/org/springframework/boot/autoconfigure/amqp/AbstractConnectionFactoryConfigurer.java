@@ -44,7 +44,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 		return this.connectionNameStrategy;
 	}
 
-	protected final void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
+	public final void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
 		this.connectionNameStrategy = connectionNameStrategy;
 	}
 

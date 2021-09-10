@@ -331,6 +331,12 @@ public class FlywayProperties {
 	private String oracleKerberosConfigFile;
 
 	/**
+	 * Location of the Oracle Wallet, used to sign-in to the database automatically.
+	 * Requires Flyway Teams.
+	 */
+	private String oracleWalletLocation;
+
+	/**
 	 * Whether Flyway should output a table with the results of queries when executing
 	 * migrations. Requires Flyway Teams.
 	 */
@@ -343,24 +349,6 @@ public class FlywayProperties {
 	private Boolean skipExecutingMigrations;
 
 	/**
-	 * REST API URL of the Vault server. Requires Flyway teams.
-	 */
-	private String vaultUrl;
-
-	/**
-	 * Vault token required to access secrets. Requires Flyway teams.
-	 */
-	private String vaultToken;
-
-	/**
-	 * Comma-separated list of paths to secrets that contain Flyway configurations. This
-	 * must start with the name of the engine followed by '/data/' and end with the name
-	 * of the secret. The resulting form is '{engine}/data/{path}/{to}/{secret_name}'.
-	 * Requires Flyway teams.
-	 */
-	private List<String> vaultSecrets;
-
-	/**
 	 * Ignore migrations that match this comma-separated list of patterns when validating
 	 * migrations. Requires Flyway Teams.
 	 */
@@ -371,6 +359,11 @@ public class FlywayProperties {
 	 * Flyway Teams.
 	 */
 	private Boolean detectEncoding;
+
+	/**
+	 * Filename prefix of state scripts. Requires Flyway Teams.
+	 */
+	private String stateScriptPrefix;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -779,6 +772,14 @@ public class FlywayProperties {
 		this.oracleSqlplusWarn = oracleSqlplusWarn;
 	}
 
+	public String getOracleWalletLocation() {
+		return this.oracleWalletLocation;
+	}
+
+	public void setOracleWalletLocation(String oracleWalletLocation) {
+		this.oracleWalletLocation = oracleWalletLocation;
+	}
+
 	public Boolean getStream() {
 		return this.stream;
 	}
@@ -843,30 +844,6 @@ public class FlywayProperties {
 		this.skipExecutingMigrations = skipExecutingMigrations;
 	}
 
-	public String getVaultUrl() {
-		return this.vaultUrl;
-	}
-
-	public void setVaultUrl(String vaultUrl) {
-		this.vaultUrl = vaultUrl;
-	}
-
-	public String getVaultToken() {
-		return this.vaultToken;
-	}
-
-	public void setVaultToken(String vaultToken) {
-		this.vaultToken = vaultToken;
-	}
-
-	public List<String> getVaultSecrets() {
-		return this.vaultSecrets;
-	}
-
-	public void setVaultSecrets(List<String> vaultSecrets) {
-		this.vaultSecrets = vaultSecrets;
-	}
-
 	public List<String> getIgnoreMigrationPatterns() {
 		return this.ignoreMigrationPatterns;
 	}
@@ -881,6 +858,14 @@ public class FlywayProperties {
 
 	public void setDetectEncoding(final Boolean detectEncoding) {
 		this.detectEncoding = detectEncoding;
+	}
+
+	public String getStateScriptPrefix() {
+		return this.stateScriptPrefix;
+	}
+
+	public void setStateScriptPrefix(String stateScriptPrefix) {
+		this.stateScriptPrefix = stateScriptPrefix;
 	}
 
 }

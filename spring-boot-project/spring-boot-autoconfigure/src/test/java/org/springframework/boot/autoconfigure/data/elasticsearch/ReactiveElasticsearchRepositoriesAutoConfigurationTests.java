@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @Testcontainers(disabledWithoutDocker = true)
-public class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
+class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())

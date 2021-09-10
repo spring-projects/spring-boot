@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class ImageTests {
 
@@ -70,6 +71,7 @@ class ImageTests {
 		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
 		assertThat(request.getBuildpacks()).isEmpty();
 		assertThat(request.getBindings()).isEmpty();
+		assertThat(request.getNetwork()).isNull();
 	}
 
 	@Test
@@ -144,6 +146,14 @@ class ImageTests {
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBindings()).containsExactly(Binding.of("host-src:container-dest:ro"),
 				Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void getBuildRequestWhenNetworkUsesNetwork() {
+		Image image = new Image();
+		image.network = "test";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getNetwork()).isEqualTo("test");
 	}
 
 	private Artifact createArtifact() {

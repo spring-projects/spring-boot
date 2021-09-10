@@ -5,7 +5,7 @@ Spring Boot simplifies development of reactive web applications by providing aut
 [[web.reactive.webflux]]
 === The "`Spring WebFlux Framework`"
 Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
-Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous and non-blocking, and implements the https://www.reactive-streams.org/[Reactive Streams] specification through https://projectreactor.io/[the Reactor project].
+Unlike Spring MVC, it does not require the servlet API, is fully asynchronous and non-blocking, and implements the https://www.reactive-streams.org/[Reactive Streams] specification through https://projectreactor.io/[the Reactor project].
 
 Spring WebFlux comes in two flavors: functional and annotation-based.
 The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
@@ -120,7 +120,7 @@ So, if there is an `index.html` in any of your locations on startup, it is the h
 In addition to the "`standard`" static resource locations listed earlier, a special case is made for https://www.webjars.org/[Webjars content].
 Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
 
-TIP: Spring WebFlux applications do not strictly depend on the Servlet API, so they cannot be deployed as war files and do not use the `src/main/webapp` directory.
+TIP: Spring WebFlux applications do not strictly depend on the servlet API, so they cannot be deployed as war files and do not use the `src/main/webapp` directory.
 
 
 

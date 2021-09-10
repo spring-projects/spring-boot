@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Chris Bono
  * @author David Good
+ * @author Madhura Bhave
  */
 class SanitizerTests {
 
@@ -65,12 +67,36 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("private", "secret")).isEqualTo("secret");
 	}
 
+	@Test
+	void whenCustomSanitizingFunctionPresentValueShouldBeSanitized() {
+		Sanitizer sanitizer = new Sanitizer(Collections.singletonList((data) -> {
+			if (data.getKey().equals("custom")) {
+				return data.withValue("$$$$$$");
+			}
+			return data;
+		}));
+		SanitizableData secret = new SanitizableData(null, "secret", "xyz");
+		assertThat(sanitizer.sanitize(secret)).isEqualTo("******");
+		SanitizableData custom = new SanitizableData(null, "custom", "abcde");
+		assertThat(sanitizer.sanitize(custom)).isEqualTo("$$$$$$");
+		SanitizableData hello = new SanitizableData(null, "hello", "abc");
+		assertThat(sanitizer.sanitize(hello)).isEqualTo("abc");
+	}
+
 	@ParameterizedTest(name = "key = {0}")
 	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080"))
 				.isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithNonAlphaSchemeCharactersAndSingleValueWithPasswordShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "s-ch3m.+-e://user:password@localhost:8080"))
+				.isEqualTo("s-ch3m.+-e://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")

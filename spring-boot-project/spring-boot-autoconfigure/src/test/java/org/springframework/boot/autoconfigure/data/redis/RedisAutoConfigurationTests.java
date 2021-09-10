@@ -180,7 +180,7 @@ class RedisAutoConfigurationTests {
 			assertThat(poolConfig.getMinIdle()).isEqualTo(defaultPool.getMinIdle());
 			assertThat(poolConfig.getMaxIdle()).isEqualTo(defaultPool.getMaxIdle());
 			assertThat(poolConfig.getMaxTotal()).isEqualTo(defaultPool.getMaxActive());
-			assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(defaultPool.getMaxWait().toMillis());
+			assertThat(poolConfig.getMaxWaitDuration()).isEqualTo(defaultPool.getMaxWait());
 		});
 	}
 
@@ -196,8 +196,8 @@ class RedisAutoConfigurationTests {
 					assertThat(poolConfig.getMinIdle()).isEqualTo(1);
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
-					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(2000);
-					assertThat(poolConfig.getTimeBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
+					assertThat(poolConfig.getMaxWaitDuration()).isEqualTo(Duration.ofSeconds(2));
+					assertThat(poolConfig.getDurationBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
 					assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
 				});
 	}

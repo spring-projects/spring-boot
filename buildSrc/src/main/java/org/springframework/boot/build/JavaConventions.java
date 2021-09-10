@@ -16,12 +16,6 @@
 
 package org.springframework.boot.build;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,10 +27,8 @@ import java.util.stream.Collectors;
 import io.spring.javaformat.gradle.CheckTask;
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
-import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
@@ -164,13 +156,6 @@ class JavaConventions {
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
-			if (buildingWithJava8(project)) {
-				CopyJdk8156584SecurityProperties copyJdk8156584SecurityProperties = new CopyJdk8156584SecurityProperties(
-						project);
-				test.systemProperty("java.security.properties",
-						"file:" + test.getWorkingDir().toPath().relativize(copyJdk8156584SecurityProperties.output));
-				test.doFirst(copyJdk8156584SecurityProperties);
-			}
 			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
 			project.getTasks().withType(CheckTask.class, (checkFormat) -> test.mustRunAfter(checkFormat));
 		});
@@ -252,29 +237,6 @@ class JavaConventions {
 
 	private void configureToolchain(Project project) {
 		project.getPlugins().apply(ToolchainPlugin.class);
-	}
-
-	private static final class CopyJdk8156584SecurityProperties implements Action<Task> {
-
-		private static final String SECURITY_PROPERTIES_FILE_NAME = "jdk-8156584-security.properties";
-
-		private final Path output;
-
-		private CopyJdk8156584SecurityProperties(Project project) {
-			this.output = new File(project.getBuildDir(), SECURITY_PROPERTIES_FILE_NAME).toPath();
-		}
-
-		@Override
-		public void execute(Task task) {
-			try (InputStream input = getClass().getClassLoader()
-					.getResourceAsStream(CopyJdk8156584SecurityProperties.SECURITY_PROPERTIES_FILE_NAME)) {
-				Files.copy(input, this.output, StandardCopyOption.REPLACE_EXISTING);
-			}
-			catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
 	}
 
 }

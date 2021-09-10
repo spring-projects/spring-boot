@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,7 +73,7 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 	@BeforeEach
 	void webTestClient(RestDocumentationContextProvider restDocumentation) {
 		this.client = WebTestClient.bindToServer().filter(documentationConfiguration(restDocumentation))
-				.baseUrl("http://localhost:" + this.port).build();
+				.baseUrl("http://localhost:" + this.port).responseTimeout(Duration.ofMinutes(5)).build();
 	}
 
 	@Test

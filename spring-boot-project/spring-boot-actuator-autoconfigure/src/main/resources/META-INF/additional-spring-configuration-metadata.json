@@ -590,6 +590,14 @@
       "defaultValue": false
     },
     {
+      "name": "management.server.servlet.context-path",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.server.base-path",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.server.ssl.ciphers",
       "description": "Supported SSL ciphers."
     },

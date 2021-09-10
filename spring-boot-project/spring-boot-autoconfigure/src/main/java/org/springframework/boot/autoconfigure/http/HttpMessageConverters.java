@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
@@ -61,6 +63,15 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		addClassIfExists(nonReplacingConverters,
 				"org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter");
 		NON_REPLACING_CONVERTERS = Collections.unmodifiableList(nonReplacingConverters);
+	}
+
+	private static final Map<Class<?>, Class<?>> EQUIVALENT_CONVERTERS;
+
+	static {
+		Map<Class<?>, Class<?>> equivalentConverters = new HashMap<>();
+		putIfExists(equivalentConverters, "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
+				"org.springframework.http.converter.json.GsonHttpMessageConverter");
+		EQUIVALENT_CONVERTERS = Collections.unmodifiableMap(equivalentConverters);
 	}
 
 	private final List<HttpMessageConverter<?>> converters;
@@ -132,7 +143,12 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 				return false;
 			}
 		}
-		return ClassUtils.isAssignableValue(defaultConverter.getClass(), candidate);
+		Class<?> converterClass = defaultConverter.getClass();
+		if (ClassUtils.isAssignableValue(converterClass, candidate)) {
+			return true;
+		}
+		Class<?> equivalentClass = EQUIVALENT_CONVERTERS.get(converterClass);
+		return equivalentClass != null && ClassUtils.isAssignableValue(equivalentClass, candidate);
 	}
 
 	private void configurePartConverters(AllEncompassingFormHttpMessageConverter formConverter,
@@ -214,6 +230,15 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	private static void addClassIfExists(List<Class<?>> list, String className) {
 		try {
 			list.add(Class.forName(className));
+		}
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
+			// Ignore
+		}
+	}
+
+	private static void putIfExists(Map<Class<?>, Class<?>> map, String keyClassName, String valueClassName) {
+		try {
+			map.put(Class.forName(keyClassName), Class.forName(valueClassName));
 		}
 		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			// Ignore

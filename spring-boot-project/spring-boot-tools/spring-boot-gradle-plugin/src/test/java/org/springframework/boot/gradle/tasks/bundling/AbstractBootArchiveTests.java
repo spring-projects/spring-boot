@@ -61,11 +61,11 @@ import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.internal.file.archive.ZipCopyAction;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 
@@ -115,7 +115,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		try {
 			File projectDir = new File(this.temp, "project");
 			projectDir.mkdirs();
-			this.project = ProjectBuilder.builder().withProjectDir(projectDir).build();
+			this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).build();
 			this.project.setDescription("Test project for " + this.taskClass.getSimpleName());
 			this.task = configure(this.project.getTasks().create("testArchive", this.taskClass));
 		}
@@ -279,11 +279,14 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		properties.put("initInfoProvides", this.task.getArchiveBaseName().get());
 		properties.put("initInfoShortDescription", this.project.getDescription());
 		properties.put("initInfoDescription", this.project.getDescription());
-		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
+		File archiveFile = this.task.getArchiveFile().get().getAsFile();
+		assertThat(Files.readAllBytes(archiveFile.toPath()))
 				.startsWith(new DefaultLaunchScript(null, properties).toByteArray());
+		try (ZipFile zipFile = new ZipFile(archiveFile)) {
+			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
+		}
 		try {
-			Set<PosixFilePermission> permissions = Files
-					.getPosixFilePermissions(this.task.getArchiveFile().get().getAsFile().toPath());
+			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(archiveFile.toPath());
 			assertThat(permissions).contains(PosixFilePermission.OWNER_EXECUTE);
 		}
 		catch (UnsupportedOperationException ex) {

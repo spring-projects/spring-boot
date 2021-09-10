@@ -16,11 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.io.File;
-
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
- * @author Chris Bono
  */
 class JvmMetricsAutoConfigurationTests {
 
@@ -56,6 +53,12 @@ class JvmMetricsAutoConfigurationTests {
 	void allowsCustomJvmGcMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class)
 				.run(assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmGcMetrics")));
+	}
+
+	@Test
+	void allowsCustomJvmHeapPressureMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomJvmHeapPressureMetricsConfiguration.class).run(
+				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmHeapPressureMetrics")));
 	}
 
 	@Test
@@ -76,16 +79,10 @@ class JvmMetricsAutoConfigurationTests {
 				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customClassLoaderMetrics")));
 	}
 
-	@Test
-	void allowsCustomDiskSpaceMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class)
-				.run(assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customDiskSpaceMetrics")));
-	}
-
 	private ContextConsumer<AssertableApplicationContext> assertMetricsBeans() {
-		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class)
-				.hasSingleBean(DiskSpaceMetrics.class);
+		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+				.hasSingleBean(JvmHeapPressureMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
+				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -94,6 +91,16 @@ class JvmMetricsAutoConfigurationTests {
 		@Bean
 		JvmGcMetrics customJvmGcMetrics() {
 			return new JvmGcMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmHeapPressureMetricsConfiguration {
+
+		@Bean
+		JvmHeapPressureMetrics customJvmHeapPressureMetrics() {
+			return new JvmHeapPressureMetrics();
 		}
 
 	}
@@ -124,16 +131,6 @@ class JvmMetricsAutoConfigurationTests {
 		@Bean
 		ClassLoaderMetrics customClassLoaderMetrics() {
 			return new ClassLoaderMetrics();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomDiskSpaceMetricsConfiguration {
-
-		@Bean
-		DiskSpaceMetrics customDiskSpaceMetrics() {
-			return new DiskSpaceMetrics(new File(System.getProperty("user.dir")));
 		}
 
 	}

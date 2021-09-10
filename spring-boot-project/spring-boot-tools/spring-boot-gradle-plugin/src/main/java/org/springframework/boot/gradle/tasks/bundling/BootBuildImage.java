@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Jeroen Meijer
  * @since 2.3.0
  */
 public class BootBuildImage extends DefaultTask {
@@ -91,6 +92,8 @@ public class BootBuildImage extends DefaultTask {
 	private final ListProperty<String> buildpacks;
 
 	private final ListProperty<String> bindings;
+
+	private String network;
 
 	private final DockerSpec docker = new DockerSpec();
 
@@ -377,6 +380,25 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the network the build container will connect to.
+	 * @return the network
+	 */
+	@Input
+	@Optional
+	public String getNetwork() {
+		return this.network;
+	}
+
+	/**
+	 * Sets the network the build container will connect to.
+	 * @param network the network
+	 */
+	@Option(option = "network", description = "Connect detect and build containers to network")
+	public void setNetwork(String network) {
+		this.network = network;
+	}
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -438,6 +460,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizePublish(request);
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
+		request = request.withNetwork(this.network);
 		return request;
 	}
 

@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author HaiTao Zhang
  * @author Chris Bono
  * @author David Good
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class Sanitizer {
@@ -50,9 +54,12 @@ public class Sanitizer {
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
 			Arrays.asList("uri", "uris", "url", "urls", "address", "addresses"));
 
-	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("\\[?[A-Za-z]+://.+:(.*)@.+$");
+	private static final Pattern URI_USERINFO_PATTERN = Pattern
+			.compile("^\\[?[A-Za-z][A-Za-z0-9\\+\\.\\-]+://.+:(.*)@.+$");
 
 	private Pattern[] keysToSanitize;
+
+	private final List<SanitizingFunction> sanitizingFunctions = new ArrayList<>();
 
 	static {
 		DEFAULT_KEYS_TO_SANITIZE.addAll(URI_USERINFO_KEYS);
@@ -63,7 +70,24 @@ public class Sanitizer {
 	}
 
 	public Sanitizer(String... keysToSanitize) {
+		this(Collections.emptyList(), keysToSanitize);
+	}
+
+	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions) {
+		this(sanitizingFunctions, DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
+	}
+
+	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions, String... keysToSanitize) {
+		sanitizingFunctions.forEach(this.sanitizingFunctions::add);
+		this.sanitizingFunctions.add(getDefaultSanitizingFunction());
 		setKeysToSanitize(keysToSanitize);
+	}
+
+	private SanitizingFunction getDefaultSanitizingFunction() {
+		return (data) -> {
+			Object sanitizedValue = sanitize(data.getKey(), data.getValue());
+			return data.withValue(sanitizedValue);
+		};
 	}
 
 	/**
@@ -125,10 +149,27 @@ public class Sanitizer {
 				if (keyIsUriWithUserInfo(pattern)) {
 					return sanitizeUris(value.toString());
 				}
-				return "******";
+				return SanitizableData.SANITIZED_VALUE;
 			}
 		}
 		return value;
+	}
+
+	/**
+	 * Sanitize the value from the given {@link SanitizableData} using the available
+	 * {@link SanitizingFunction}s.
+	 * @param data the sanitizable data
+	 * @return the potentially updated data
+	 * @since 2.6.0
+	 */
+	public Object sanitize(SanitizableData data) {
+		if (data.getValue() == null) {
+			return null;
+		}
+		for (SanitizingFunction sanitizingFunction : this.sanitizingFunctions) {
+			data = sanitizingFunction.apply(data);
+		}
+		return data.getValue();
 	}
 
 	private boolean keyIsUriWithUserInfo(Pattern pattern) {
@@ -148,7 +189,7 @@ public class Sanitizer {
 		Matcher matcher = URI_USERINFO_PATTERN.matcher(value);
 		String password = matcher.matches() ? matcher.group(1) : null;
 		if (password != null) {
-			return StringUtils.replace(value, ":" + password + "@", ":******@");
+			return StringUtils.replace(value, ":" + password + "@", ":" + SanitizableData.SANITIZED_VALUE + "@");
 		}
 		return value;
 	}

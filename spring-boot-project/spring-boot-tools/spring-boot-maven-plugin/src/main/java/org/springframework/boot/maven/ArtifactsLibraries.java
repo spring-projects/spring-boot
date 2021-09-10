@@ -71,19 +71,6 @@ public class ArtifactsLibraries implements Libraries {
 	/**
 	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
 	 * @param artifacts the artifacts to represent as libraries
-	 * @param unpacks artifacts that should be unpacked on launch
-	 * @param log the log
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #ArtifactsLibraries(Set, Collection, Collection, Log)}
-	 */
-	@Deprecated
-	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks, Log log) {
-		this(artifacts, Collections.emptyList(), unpacks, log);
-	}
-
-	/**
-	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
-	 * @param artifacts the artifacts to represent as libraries
 	 * @param localProjects projects for which {@link Library#isLocal() local} libraries
 	 * should be created
 	 * @param unpacks artifacts that should be unpacked on launch

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
 class RepackagerTests extends AbstractPackagerTests<Repackager> {
 
@@ -159,6 +160,9 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		assertThat(new String(bytes)).startsWith("ABC");
 		assertThat(hasLauncherClasses(source)).isFalse();
 		assertThat(hasLauncherClasses(this.destination)).isTrue();
+		try (ZipFile zipFile = new ZipFile(this.destination)) {
+			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
+		}
 		try {
 			assertThat(Files.getPosixFilePermissions(this.destination.toPath()))
 					.contains(PosixFilePermission.OWNER_EXECUTE);

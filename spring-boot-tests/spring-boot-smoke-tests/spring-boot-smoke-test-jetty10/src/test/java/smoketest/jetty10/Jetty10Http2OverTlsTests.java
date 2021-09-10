@@ -16,12 +16,19 @@
 
 package smoketest.jetty10;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http2.client.HTTP2Client;
-import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
-import org.eclipse.jetty.io.ClientConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import javax.net.ssl.SSLContext;
+
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -29,7 +36,6 @@ import org.junit.jupiter.api.condition.JRE;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,27 +48,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "server.http2.enabled=true", "server.ssl.enabled=true",
 				"server.ssl.keystore=classpath:sample.jks", "server.ssl.key-store-password=secret",
-				"server.ssl.key-password=password", "logging.level.org.eclipse.jetty=debug" })
-public class Jetty10Http2OverTlsTests {
+				"server.ssl.key-password=password" })
+class Jetty10Http2OverTlsTests {
 
 	@LocalServerPort
 	private int port;
 
 	@Test
 	void httpOverTlsGetWhenHttp2AndSslAreEnabledSucceeds() throws Exception {
-		SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-		sslContextFactory.setTrustAll(true);
-		ClientConnector clientConnector = new ClientConnector();
-		clientConnector.setSslContextFactory(sslContextFactory);
-		HttpClient client = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client(clientConnector)));
-		client.start();
-		try {
-			ContentResponse response = client.GET("https://localhost:" + this.port + "/");
-			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-			assertThat(response.getContentAsString()).isEqualTo("Hello World");
-		}
-		finally {
-			client.stop();
+		SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(new TrustAllStrategy()).build();
+		TlsStrategy tlsStrategy = ClientTlsStrategyBuilder.create().setSslContext(sslContext).build();
+		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.customHttp2().setTlsStrategy(tlsStrategy)
+				.build()) {
+			http2Client.start();
+			SimpleHttpRequest request = SimpleRequestBuilder.get("https://localhost:" + this.port).build();
+			request.setBody("Hello World", ContentType.TEXT_PLAIN);
+			SimpleHttpResponse response = http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
+
+				@Override
+				public void failed(Exception ex) {
+				}
+
+				@Override
+				public void completed(SimpleHttpResponse result) {
+				}
+
+				@Override
+				public void cancelled() {
+				}
+
+			}).get();
+			assertThat(response.getCode()).isEqualTo(200);
+			assertThat(response.getBodyText()).isEqualTo("Hello World");
 		}
 	}
 

@@ -119,6 +119,20 @@ class EntityScannerTests {
 		assertThat(annotationTypeFilter.getValue().getAnnotationType()).isEqualTo(Entity.class);
 	}
 
+	@Test
+	void scanShouldScanCommaSeparatedPackagesInPlaceholderPackage() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of(
+				"com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan.a,org.springframework.boot.autoconfigure.domain.scan.b")
+				.applyTo(context);
+		context.register(ScanPlaceholderConfig.class);
+		context.refresh();
+		EntityScanner scanner = new EntityScanner(context);
+		Set<Class<?>> scanned = scanner.scan(Entity.class);
+		assertThat(scanned).containsOnly(EntityA.class, EntityB.class);
+		context.close();
+	}
+
 	private static class TestEntityScanner extends EntityScanner {
 
 		private final ClassPathScanningCandidateComponentProvider candidateComponentProvider;

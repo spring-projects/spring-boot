@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(MavenBuildExtension.class)
 @DisabledIfDockerUnavailable
-public class BuildImageTests extends AbstractArchiveIntegrationTests {
+class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
@@ -268,6 +268,35 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 							.contains("Successfully built image");
 					removeImage("build-image-bindings", "0.0.1.BUILD-SNAPSHOT");
 				});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithNetworkModeNone(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-network").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-network:0.0.1.BUILD-SNAPSHOT")
+							.contains("Network status: curl failed").contains("Successfully built image");
+					removeImage("build-image-network", "0.0.1.BUILD-SNAPSHOT");
+				});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedOnMultiModuleProjectWithPackageGoal(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-multi-module").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-multi-module-app:0.0.1.BUILD-SNAPSHOT")
+							.contains("Successfully built image");
+					removeImage("build-image-multi-module-app", "0.0.1.BUILD-SNAPSHOT");
+				});
+	}
+
+	@TestTemplate
+	void failsWhenBuildImageIsInvokedOnMultiModuleProjectWithBuildImageGoal(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-multi-module").goals("spring-boot:build-image")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").executeAndFail(
+						(project) -> assertThat(buildLog(project)).contains("Error packaging archive for image"));
 	}
 
 	@TestTemplate

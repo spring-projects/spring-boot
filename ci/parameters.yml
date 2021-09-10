@@ -11,3 +11,6 @@ milestone: "2.6.x"
 build-name: "spring-boot"
 concourse-url: "https://ci.spring.io"
 task-timeout: 2h00m
+registry-mirror-host: docker.repo.spring.io
+registry-mirror-username: ((artifactory-username))
+registry-mirror-password: ((artifactory-password))

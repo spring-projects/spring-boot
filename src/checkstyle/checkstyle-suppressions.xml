@@ -41,11 +41,13 @@
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
+	<suppress files="MockBeanWithSpringMethodRuleRepeatJUnit4IntegrationTests" checks="SpringJUnit5" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]spring-boot-smoke-test-testng[\\/]" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-gradle-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]src[\\/]systemTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />

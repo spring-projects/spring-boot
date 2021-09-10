@@ -91,6 +91,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -98,7 +99,7 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -113,13 +114,9 @@ public class WebFluxAutoConfiguration {
 	public static class WelcomePageConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		public RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
-				WebFluxProperties webFluxProperties,
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties) {
-			String[] staticLocations = resourceProperties.hasBeenCustomized() ? resourceProperties.getStaticLocations()
-					: webProperties.getResources().getStaticLocations();
+				WebFluxProperties webFluxProperties, WebProperties webProperties) {
+			String[] staticLocations = webProperties.getResources().getStaticLocations();
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
 					new TemplateAvailabilityProviders(applicationContext), applicationContext, staticLocations,
 					webFluxProperties.getStaticPathPattern());
@@ -134,10 +131,8 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.web.ResourceProperties.class,
-			WebProperties.class, WebFluxProperties.class })
+	@EnableConfigurationProperties({ WebProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })
 	@Order(0)
 	public static class WebFluxConfig implements WebFluxConfigurer {
@@ -158,14 +153,12 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties, WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+		public WebFluxConfig(WebProperties webProperties, WebFluxProperties webFluxProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<ViewResolver> viewResolvers) {
-			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
+			this.resourceProperties = webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers;
@@ -331,13 +324,9 @@ public class WebFluxAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
 				WebProperties webProperties) {
-			Resources resources = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
-			return new ResourceChainResourceHandlerRegistrationCustomizer(resources);
+			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());
 		}
 
 	}

@@ -3,7 +3,7 @@ pluginManagement {
 		mavenCentral()
 		gradlePluginPortal()
 		maven {
-			url 'https://repo.spring.io/plugins-release'
+			url 'https://repo.spring.io/release'
 		}
 		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
@@ -23,7 +23,7 @@ pluginManagement {
 
 plugins {
 	id "com.gradle.enterprise" version "3.6.1"
-	id "io.spring.ge.conventions" version "0.0.7"
+	id "io.spring.ge.conventions" version "0.0.8"
 }
 
 rootProject.name="spring-boot-build"
@@ -55,6 +55,7 @@ include "spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
+include "spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"
 include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader-tools"
@@ -70,11 +71,11 @@ include "spring-boot-project:spring-boot-docs"
 include "spring-boot-project:spring-boot-properties-migrator"
 include "spring-boot-project:spring-boot-test"
 include "spring-boot-project:spring-boot-test-autoconfigure"
-include "spring-boot-tests:spring-boot-deployment-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
+include "spring-boot-system-tests:spring-boot-deployment-tests"
 include "spring-boot-system-tests:spring-boot-image-tests"
 
 file("${rootDir}/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -44,11 +45,12 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -226,8 +228,10 @@ class JobLauncherApplicationRunnerTests {
 		}
 
 		@Bean
-		BatchDataSourceInitializer batchDataSourceInitializer(ResourceLoader resourceLoader) {
-			return new BatchDataSourceInitializer(this.dataSource, resourceLoader, new BatchProperties());
+		DataSourceScriptDatabaseInitializer batchDataSourceInitializer() {
+			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+			settings.setSchemaLocations(Arrays.asList("classpath:org/springframework/batch/core/schema-h2.sql"));
+			return new DataSourceScriptDatabaseInitializer(this.dataSource, settings);
 		}
 
 	}

@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@DataJpaTest
-@TestPropertySource(properties = { "spring.sql.init.username=alice", "spring.sql.init.password=secret" })
+@DataJpaTest(properties = { "spring.sql.init.username=alice", "spring.sql.init.password=secret",
+		"spring.sql.init.schema-locations=classpath:org/springframework/boot/test/autoconfigure/orm/jpa/schema.sql" })
 class DataJpaTestSchemaCredentialsIntegrationTests {
 
 	@Autowired
@@ -42,6 +42,8 @@ class DataJpaTestSchemaCredentialsIntegrationTests {
 	void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
 		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
+		assertThat(new JdbcTemplate(this.dataSource).queryForList("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES",
+				String.class)).contains("EXAMPLE");
 	}
 
 }

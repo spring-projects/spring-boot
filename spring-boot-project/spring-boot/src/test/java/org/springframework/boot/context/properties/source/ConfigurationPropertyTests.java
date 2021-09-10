@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -35,6 +36,8 @@ class ConfigurationPropertyTests {
 
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
+	private ConfigurationPropertySource source = ConfigurationPropertySource.from(mock(PropertySource.class));
+
 	@Test
 	void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
@@ -49,21 +52,28 @@ class ConfigurationPropertyTests {
 
 	@Test
 	void getNameShouldReturnName() {
-		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
+		ConfigurationProperty property = ConfigurationProperty.of(this.source, NAME, "foo", null);
 		assertThat((Object) property.getName()).isEqualTo(NAME);
 	}
 
 	@Test
 	void getValueShouldReturnValue() {
-		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
+		ConfigurationProperty property = ConfigurationProperty.of(this.source, NAME, "foo", null);
 		assertThat(property.getValue()).isEqualTo("foo");
 	}
 
 	@Test
 	void getPropertyOriginShouldReturnValuePropertyOrigin() {
 		Origin origin = mock(Origin.class);
-		OriginProvider property = ConfigurationProperty.of(NAME, "foo", origin);
+		OriginProvider property = ConfigurationProperty.of(this.source, NAME, "foo", origin);
 		assertThat(property.getOrigin()).isEqualTo(origin);
+	}
+
+	@Test
+	void getPropertySourceShouldReturnPropertySource() {
+		Origin origin = mock(Origin.class);
+		ConfigurationProperty property = ConfigurationProperty.of(this.source, NAME, "foo", origin);
+		assertThat(property.getSource()).isEqualTo(this.source);
 	}
 
 	@Test
@@ -78,7 +88,7 @@ class ConfigurationPropertyTests {
 
 	@Test
 	void toStringShouldReturnValue() {
-		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
+		ConfigurationProperty property = ConfigurationProperty.of(this.source, NAME, "foo", null);
 		assertThat(property.toString()).contains("name").contains("value");
 	}
 

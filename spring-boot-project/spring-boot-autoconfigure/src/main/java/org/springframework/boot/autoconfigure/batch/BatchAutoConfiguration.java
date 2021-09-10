@@ -39,7 +39,6 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializationDepend
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
@@ -107,12 +106,12 @@ public class BatchAutoConfiguration {
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
-				@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader,
-				BatchProperties properties) {
-			return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(() -> dataSource), resourceLoader,
-					properties);
+		@SuppressWarnings("deprecation")
+		@ConditionalOnMissingBean({ BatchDataSourceScriptDatabaseInitializer.class, BatchDataSourceInitializer.class })
+		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
+				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
+			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),
+					properties.getJdbc());
 		}
 
 	}

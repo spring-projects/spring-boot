@@ -7,6 +7,7 @@ description = "Spring Boot Data Neo4j smoke test"
 
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-neo4j"))
+	implementation("org.apiguardian:apiguardian-api")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

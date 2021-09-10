@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
@@ -56,12 +55,14 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
 class JdbcSessionConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(
+	@SuppressWarnings("deprecation")
+	@ConditionalOnMissingBean({ JdbcSessionDataSourceScriptDatabaseInitializer.class,
+			JdbcSessionDataSourceInitializer.class })
+	JdbcSessionDataSourceScriptDatabaseInitializer jdbcSessionDataSourceScriptDatabaseInitializer(
 			@SpringSessionDataSource ObjectProvider<DataSource> sessionDataSource,
-			ObjectProvider<DataSource> dataSource, ResourceLoader resourceLoader, JdbcSessionProperties properties) {
-		return new JdbcSessionDataSourceInitializer(sessionDataSource.getIfAvailable(dataSource::getObject),
-				resourceLoader, properties);
+			ObjectProvider<DataSource> dataSource, JdbcSessionProperties properties) {
+		DataSource dataSourceToInitialize = sessionDataSource.getIfAvailable(dataSource::getObject);
+		return new JdbcSessionDataSourceScriptDatabaseInitializer(dataSourceToInitialize, properties);
 	}
 
 	@Configuration(proxyBeanMethods = false)

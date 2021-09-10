@@ -123,7 +123,7 @@ class RandomValuePropertySourceTests {
 	}
 
 	@Test
-	void longRangeWhenLowerBoundNegativeShouldFailWithIllegalArgumentException() {
+	void longRangeWhenLowerBoundNegative() {
 		Long value = (Long) this.source.getProperty("random.long[-4,4]");
 		assertThat(value >= -4).isTrue();
 		assertThat(value < 4).isTrue();

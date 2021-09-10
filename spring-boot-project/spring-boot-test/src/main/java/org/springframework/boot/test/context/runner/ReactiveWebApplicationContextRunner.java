@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,15 @@ public final class ReactiveWebApplicationContextRunner extends
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
 	public ReactiveWebApplicationContextRunner(Supplier<ConfigurableReactiveWebApplicationContext> contextFactory) {
-		super(contextFactory);
+		super(contextFactory, ReactiveWebApplicationContextRunner::new);
 	}
 
+	private ReactiveWebApplicationContextRunner(
+			RunnerConfiguration<ConfigurableReactiveWebApplicationContext> configuration) {
+		super(configuration, ReactiveWebApplicationContextRunner::new);
+	}
+
+	@Deprecated
 	private ReactiveWebApplicationContextRunner(Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
 			boolean allowBeanDefinitionOverriding,
 			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
@@ -69,6 +75,7 @@ public final class ReactiveWebApplicationContextRunner extends
 	}
 
 	@Override
+	@Deprecated
 	protected ReactiveWebApplicationContextRunner newInstance(
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory, boolean allowBeanDefinitionOverriding,
 			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,

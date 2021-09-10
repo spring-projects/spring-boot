@@ -20,7 +20,14 @@ bom {
 			]
 		}
 	}
-	library("Commons Compress", "1.20") {
+	library("API Guardian", "1.1.0") {
+		group("org.apiguardian") {
+			modules = [
+				"apiguardian-api"
+			]
+		}
+	}
+	library("Commons Compress", "1.21") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-compress"
@@ -156,7 +163,7 @@ bom {
 			]
 		}
 	}
-	library("Testcontainers", "1.15.3") {
+	library("Testcontainers", "1.16.0") {
 		group("org.testcontainers") {
 			imports = [
 				"testcontainers-bom"

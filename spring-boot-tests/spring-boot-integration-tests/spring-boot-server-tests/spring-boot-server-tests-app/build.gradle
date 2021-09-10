@@ -1,0 +1,78 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.springframework.boot.gradle.tasks.bundling.BootWar
+
+plugins {
+	id "java"
+	id "org.springframework.boot"
+	id "war"
+}
+
+apply plugin: "io.spring.dependency-management"
+
+repositories {
+	maven { url "file:${rootDir}/../test-repository"}
+	mavenCentral()
+	maven { 
+		url "https://repo.spring.io/milestone"
+		content {
+			excludeGroup "org.springframework.boot"
+		}
+	}
+	maven { 
+		url "https://repo.spring.io/snapshot"
+		content {
+			excludeGroup "org.springframework.boot"
+		}
+	}
+}
+
+configurations {
+	jetty
+	tomcat
+	undertow
+}
+
+tasks.register("resourcesJar", Jar) { jar -> 
+	def nested = project.resources.text.fromString("nested")
+	from(nested) {
+		into "META-INF/resources/"
+		rename (".*", "nested-meta-inf-resource.txt")
+	}
+	if (!isWindows()) {
+		def encodedName = project.resources.text.fromString("encoded-name")
+		from(encodedName) {
+			into "META-INF/resources/"
+			rename (".*", 'nested-reserved-!#\\$%&()*+,:=?@[]-meta-inf-resource.txt')
+		}
+	}
+	classifier = 'resources'
+}
+
+dependencies {
+	compileOnly("org.eclipse.jetty:jetty-server")
+
+	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework:spring-web")
+
+	jetty("org.springframework.boot:spring-boot-starter-jetty")
+	jetty files(resourcesJar)
+	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
+	tomcat files(resourcesJar)
+	undertow("org.springframework.boot:spring-boot-starter-undertow")
+	undertow files(resourcesJar)
+}
+
+def boolean isWindows() {
+	return File.separatorChar == '\\';
+}
+
+["jetty", "tomcat", "undertow"].each { container ->
+	def configurer = { task -> 
+		task.dependsOn resourcesJar
+		task.mainClass = "com.example.ResourceHandlingApplication"
+		task.classpath = sourceSets.main.runtimeClasspath.plus(configurations.getByName(container))
+		task.classifier = container
+	}
+	tasks.register("${container}BootJar", BootJar, configurer)
+	tasks.register("${container}BootWar", BootWar, configurer)
+}

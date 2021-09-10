@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,31 @@ import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link HealthEndpointGroupsPostProcessor} to add
  * {@link AvailabilityProbesHealthEndpointGroups}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpointGroupsPostProcessor {
+
+	private final boolean addAdditionalPaths;
+
+	AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment) {
+		this.addAdditionalPaths = "true"
+				.equalsIgnoreCase(environment.getProperty("management.endpoint.health.probes.add-additional-paths"));
+	}
 
 	@Override
 	public HealthEndpointGroups postProcessHealthEndpointGroups(HealthEndpointGroups groups) {
 		if (AvailabilityProbesHealthEndpointGroups.containsAllProbeGroups(groups)) {
 			return groups;
 		}
-		return new AvailabilityProbesHealthEndpointGroups(groups);
+		return new AvailabilityProbesHealthEndpointGroups(groups, this.addAdditionalPaths);
 	}
 
 }

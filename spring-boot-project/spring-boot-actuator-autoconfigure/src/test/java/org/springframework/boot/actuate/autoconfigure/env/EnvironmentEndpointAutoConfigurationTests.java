@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor;
@@ -28,6 +29,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,6 +71,21 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	void sanitizingFunctionsCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withUserConfiguration(SanitizingFunctionConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=env")
+				.withSystemProperties("custom=123456", "password=123456").run((context) -> {
+					assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
+					EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
+					EnvironmentDescriptor env = endpoint.environment(null);
+					Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env)
+							.getProperties();
+					assertThat(systemProperties.get("custom").getValue()).isEqualTo("$$$");
+					assertThat(systemProperties.get("password").getValue()).isEqualTo("******");
+				});
+	}
+
+	@Test
 	void additionalKeysToSanitizeCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
 				.withSystemProperties("dbPassword=123456", "apiKey=123456")
@@ -89,6 +107,16 @@ class EnvironmentEndpointAutoConfigurationTests {
 	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
 		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
 				.get();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SanitizingFunctionConfiguration {
+
+		@Bean
+		SanitizingFunction testSanitizingFunction() {
+			return (data) -> data.withValue("$$$");
+		}
+
 	}
 
 }

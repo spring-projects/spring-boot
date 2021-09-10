@@ -74,13 +74,12 @@ public class ZipFileTarArchive implements TarArchive {
 		tar.finish();
 	}
 
-	private void assertArchiveHasEntries(File jarFile) {
-		try (ZipFile zipFile = new ZipFile(jarFile)) {
-			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "File '" + jarFile
-					+ "' is not compatible with buildpacks; ensure jar file is valid and launch script is not enabled");
+	private void assertArchiveHasEntries(File file) {
+		try (ZipFile zipFile = new ZipFile(file)) {
+			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "Archive file '" + file + "' is not valid");
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("File '" + jarFile + "' is not readable", ex);
+			throw new IllegalStateException("File '" + file + "' is not readable", ex);
 		}
 	}
 

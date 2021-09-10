@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  * @since 2.3.0
  */
 public class Image {
@@ -62,6 +63,8 @@ public class Image {
 	List<String> buildpacks;
 
 	List<String> bindings;
+
+	String network;
 
 	/**
 	 * The name of the created image.
@@ -151,6 +154,18 @@ public class Image {
 		this.publish = publish;
 	}
 
+	/**
+	 * Returns the network the build container will connect to.
+	 * @return the network
+	 */
+	public String getNetwork() {
+		return this.network;
+	}
+
+	public void setNetwork(String network) {
+		this.network = network;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -190,6 +205,7 @@ public class Image {
 		if (!CollectionUtils.isEmpty(this.bindings)) {
 			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
 		}
+		request = request.withNetwork(this.network);
 		return request;
 	}
 

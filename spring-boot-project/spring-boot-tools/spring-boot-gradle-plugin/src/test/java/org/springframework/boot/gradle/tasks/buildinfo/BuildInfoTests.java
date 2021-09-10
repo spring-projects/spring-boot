@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import java.util.Properties;
 import org.gradle.api.Project;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.initialization.GradlePropertiesController;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -131,7 +131,7 @@ class BuildInfoTests {
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
-		Project project = ProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
+		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 		((ProjectInternal) project).getServices().get(GradlePropertiesController.class)
 				.loadGradlePropertiesFrom(projectDir);
 		return project;

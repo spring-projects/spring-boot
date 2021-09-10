@@ -165,6 +165,28 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
+	void keysMatchingCustomSanitizingFunctionHaveTheirValuesSanitized() {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		TestPropertyValues.of("other.service=abcde").applyTo(environment);
+		TestPropertyValues.of("system.service=123456").applyToSystemProperties(() -> {
+			EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment,
+					Collections.singletonList((data) -> {
+						String name = data.getPropertySource().getName();
+						if (name.equals(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)) {
+							return data.withValue("******");
+						}
+						return data;
+					})).environment(null);
+			assertThat(propertySources(descriptor).get("test").getProperties().get("other.service").getValue())
+					.isEqualTo("abcde");
+			Map<String, PropertyValueDescriptor> systemProperties = propertySources(descriptor).get("systemProperties")
+					.getProperties();
+			assertThat(systemProperties.get("system.service").getValue()).isEqualTo("******");
+			return null;
+		});
+	}
+
+	@Test
 	void propertyWithPlaceholderResolved() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		TestPropertyValues.of("my.foo: ${bar.blah}", "bar.blah: hello").applyTo(environment);
@@ -197,6 +219,17 @@ class EnvironmentEndpointTests {
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
 		assertThat(propertySources(descriptor).get("test").getProperties().get("my.foo").getValue())
 				.isEqualTo("http://${bar.password}://hello");
+	}
+
+	@Test
+	void propertyWithSensitivePlaceholderWithCustomFunctionResolved() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		TestPropertyValues.of("my.foo: http://${bar.password}://hello", "bar.password: hello").applyTo(environment);
+		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment,
+				Collections.singletonList((data) -> data.withValue(data.getPropertySource().getName() + "******")))
+						.environment(null);
+		assertThat(propertySources(descriptor).get("test").getProperties().get("my.foo").getValue())
+				.isEqualTo("test******");
 	}
 
 	@Test

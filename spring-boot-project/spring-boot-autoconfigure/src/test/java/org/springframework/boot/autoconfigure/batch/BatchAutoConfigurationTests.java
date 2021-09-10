@@ -45,19 +45,24 @@ import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -88,7 +93,7 @@ class BatchAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(context).hasSingleBean(JobExplorer.class);
 					assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
-							.isEqualTo(DataSourceInitializationMode.EMBEDDED);
+							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 				});
@@ -198,7 +203,7 @@ class BatchAutoConfigurationTests {
 		return (context) -> {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
-					.isEqualTo(DataSourceInitializationMode.NEVER);
+					.isEqualTo(DatabaseInitializationMode.NEVER);
 			assertThatExceptionOfType(BadSqlGrammarException.class)
 					.isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION"));
@@ -248,7 +253,7 @@ class BatchAutoConfigurationTests {
 		return (context) -> {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
-					.isEqualTo(DataSourceInitializationMode.EMBEDDED);
+					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 			assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
 			JobExplorer jobExplorer = context.getBean(JobExplorer.class);
@@ -293,11 +298,11 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, BatchDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(BatchConfigurer.class)
-							.hasSingleBean(BatchDataSourceInitializer.class).hasBean("batchDataSource");
+							.hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class).hasBean("batchDataSource");
 					DataSource batchDataSource = context.getBean("batchDataSource", DataSource.class);
 					assertThat(context.getBean(BatchConfigurer.class)).hasFieldOrPropertyWithValue("dataSource",
 							batchDataSource);
-					assertThat(context.getBean(BatchDataSourceInitializer.class))
+					assertThat(context.getBean(BatchDataSourceScriptDatabaseInitializer.class))
 							.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
 				});
 	}
@@ -344,6 +349,37 @@ class BatchAutoConfigurationTests {
 								.contains("liquibase");
 					}
 				});
+	}
+
+	@Test
+	void whenTheUserDefinesTheirOwnBatchDatabaseInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner
+				.withUserConfiguration(TestConfiguration.class, CustomBatchDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("batchDataSourceScriptDatabaseInitializer").hasBean("customInitializer"));
+	}
+
+	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
+	void whenTheUserDefinesTheirOwnBatchDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner
+				.withUserConfiguration(TestConfiguration.class, CustomBatchDataSourceInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(BatchDataSourceInitializer.class).hasBean("customInitializer"));
+	}
+
+	@Test
+	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredBatchInitializerRemains() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, CustomDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
+						.hasBean("customInitializer"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -486,6 +522,38 @@ class BatchAutoConfigurationTests {
 			};
 			job.setJobRepository(this.jobRepository);
 			return job;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomBatchDatabaseInitializerConfiguration {
+
+		@Bean
+		BatchDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource, BatchProperties properties) {
+			return new BatchDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDatabaseInitializerConfiguration {
+
+		@Bean
+		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
+			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
+		}
+
+	}
+
+	@Deprecated
+	@Configuration(proxyBeanMethods = false)
+	static class CustomBatchDataSourceInitializerConfiguration {
+
+		@Bean
+		BatchDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+				BatchProperties properties) {
+			return new BatchDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

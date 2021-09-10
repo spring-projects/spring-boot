@@ -8,10 +8,10 @@ This section answers common questions about traditional deployment.
 [[howto.traditional-deployment.war]]
 === Create a Deployable War File
 
-WARNING: Because Spring WebFlux does not strictly depend on the Servlet API and applications are deployed by default on an embedded Reactor Netty server, War deployment is not supported for WebFlux applications.
+WARNING: Because Spring WebFlux does not strictly depend on the servlet API and applications are deployed by default on an embedded Reactor Netty server, War deployment is not supported for WebFlux applications.
 
 The first step in producing a deployable war file is to provide a `SpringBootServletInitializer` subclass and override its `configure` method.
-Doing so makes use of Spring Framework's Servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
+Doing so makes use of Spring Framework's servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
 Typically, you should update your application's main class to extend `SpringBootServletInitializer`, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]

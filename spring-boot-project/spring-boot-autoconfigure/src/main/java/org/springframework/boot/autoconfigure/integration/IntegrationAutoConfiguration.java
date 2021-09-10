@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
@@ -189,10 +188,12 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public IntegrationDataSourceInitializer integrationDataSourceInitializer(DataSource dataSource,
-				ResourceLoader resourceLoader, IntegrationProperties properties) {
-			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
+		@SuppressWarnings("deprecation")
+		@ConditionalOnMissingBean({ IntegrationDataSourceScriptDatabaseInitializer.class,
+				IntegrationDataSourceInitializer.class })
+		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
+				IntegrationProperties properties) {
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
 		}
 
 	}

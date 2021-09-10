@@ -30,7 +30,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.util.Assert;
@@ -101,7 +100,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * using the available DDL and DML scripts.
 	 */
 	@Deprecated
-	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
+	private org.springframework.boot.jdbc.DataSourceInitializationMode initializationMode = org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
 
 	/**
 	 * Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or
@@ -394,12 +393,12 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.mode")
-	public DataSourceInitializationMode getInitializationMode() {
+	public org.springframework.boot.jdbc.DataSourceInitializationMode getInitializationMode() {
 		return this.initializationMode;
 	}
 
 	@Deprecated
-	public void setInitializationMode(DataSourceInitializationMode initializationMode) {
+	public void setInitializationMode(org.springframework.boot.jdbc.DataSourceInitializationMode initializationMode) {
 		this.initializationMode = initializationMode;
 	}
 

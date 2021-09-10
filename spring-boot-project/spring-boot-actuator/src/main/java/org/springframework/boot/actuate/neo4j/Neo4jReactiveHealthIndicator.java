@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import org.neo4j.driver.Driver;
 import org.neo4j.driver.exceptions.SessionExpiredException;
 import org.neo4j.driver.reactive.RxResult;
 import org.neo4j.driver.reactive.RxSession;
-import org.neo4j.driver.summary.ResultSummary;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 import reactor.util.retry.Retry;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
@@ -57,19 +55,19 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 		return runHealthCheckQuery()
 				.doOnError(SessionExpiredException.class,
 						(e) -> logger.warn(Neo4jHealthIndicator.MESSAGE_SESSION_EXPIRED))
-				.retryWhen(Retry.max(1).filter(SessionExpiredException.class::isInstance)).map((result) -> {
-					this.healthDetailsHandler.addHealthDetails(builder, result.getT1(), result.getT2());
+				.retryWhen(Retry.max(1).filter(SessionExpiredException.class::isInstance)).map((healthDetails) -> {
+					this.healthDetailsHandler.addHealthDetails(builder, healthDetails);
 					return builder.build();
 				});
 	}
 
-	Mono<Tuple2<String, ResultSummary>> runHealthCheckQuery() {
+	Mono<Neo4jHealthDetails> runHealthCheckQuery() {
 		// We use WRITE here to make sure UP is returned for a server that supports
 		// all possible workloads
 		return Mono.using(() -> this.driver.rxSession(Neo4jHealthIndicator.DEFAULT_SESSION_CONFIG), (session) -> {
 			RxResult result = session.run(Neo4jHealthIndicator.CYPHER);
-			return Mono.from(result.records()).map((record) -> record.get("edition").asString())
-					.zipWhen((edition) -> Mono.from(result.consume()));
+			return Mono.from(result.records()).zipWhen((record) -> Mono.from(result.consume()))
+					.map((tuple) -> new Neo4jHealthDetails(tuple.getT1(), tuple.getT2()));
 		}, RxSession::close);
 	}
 

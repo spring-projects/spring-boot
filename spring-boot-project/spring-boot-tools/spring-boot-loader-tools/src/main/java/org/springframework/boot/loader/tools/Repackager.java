@@ -141,7 +141,7 @@ public class Repackager extends Packager {
 	private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript,
 			FileTime lastModifiedTime) throws IOException {
 		try (JarWriter writer = new JarWriter(destination, launchScript, lastModifiedTime)) {
-			write(sourceJar, libraries, writer);
+			write(sourceJar, libraries, writer, lastModifiedTime != null);
 		}
 		if (lastModifiedTime != null) {
 			destination.setLastModified(lastModifiedTime.toMillis());

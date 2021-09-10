@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.Health;
@@ -162,6 +163,11 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		@Override
 		public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 			return this.httpCodeStatusMapper;
+		}
+
+		@Override
+		public AdditionalHealthEndpointPath getAdditionalPath() {
+			return null;
 		}
 
 	}

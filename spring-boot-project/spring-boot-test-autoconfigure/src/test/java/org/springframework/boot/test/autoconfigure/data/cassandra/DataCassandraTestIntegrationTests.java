@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 
 package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import java.time.Duration;
 import java.util.UUID;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,7 +28,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.CassandraTemplate;
@@ -48,13 +46,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @DataCassandraTest(properties = { "spring.data.cassandra.local-datacenter=datacenter1",
 		"spring.data.cassandra.schema-action=create-if-not-exists",
 		"spring.data.cassandra.connection.connect-timeout=20s",
-		"spring.data.cassandra.connection.init-query-timeout=2s", "spring.data.cassandra.request.timeout=10s" })
+		"spring.data.cassandra.connection.init-query-timeout=10s", "spring.data.cassandra.request.timeout=10s" })
 @Testcontainers(disabledWithoutDocker = true)
 class DataCassandraTestIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+	static final CassandraContainer cassandra = new CassandraContainer();
 
 	@DynamicPropertySource
 	static void cassandraProperties(DynamicPropertyRegistry registry) {

@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
@@ -57,19 +58,21 @@ public class ReactiveHealthEndpointWebExtension
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
-			SecurityContext securityContext) {
-		return health(apiVersion, securityContext, false, NO_PATH);
+			WebServerNamespace serverNamespace, SecurityContext securityContext) {
+		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
-			SecurityContext securityContext, @Selector(match = Match.ALL_REMAINING) String... path) {
-		return health(apiVersion, securityContext, false, path);
+			WebServerNamespace serverNamespace, SecurityContext securityContext,
+			@Selector(match = Match.ALL_REMAINING) String... path) {
+		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
-			SecurityContext securityContext, boolean showAll, String... path) {
-		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, securityContext, showAll, path);
+			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
+		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, serverNamespace, securityContext,
+				showAll, path);
 		if (result == null) {
 			return (Arrays.equals(path, NO_PATH))
 					? Mono.just(new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK))

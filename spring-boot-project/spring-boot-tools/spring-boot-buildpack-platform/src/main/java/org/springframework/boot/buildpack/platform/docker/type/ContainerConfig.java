@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  * @since 2.3.0
  */
 public class ContainerConfig {
@@ -47,7 +48,7 @@ public class ContainerConfig {
 	private final String json;
 
 	ContainerConfig(String user, ImageReference image, String command, List<String> args, Map<String, String> labels,
-			List<Binding> bindings, Map<String, String> env) throws IOException {
+			List<Binding> bindings, Map<String, String> env, String networkMode) throws IOException {
 		Assert.notNull(image, "Image must not be null");
 		Assert.hasText(command, "Command must not be empty");
 		ObjectMapper objectMapper = SharedObjectMapper.get();
@@ -64,6 +65,9 @@ public class ContainerConfig {
 		ObjectNode labelsNode = node.putObject("Labels");
 		labels.forEach(labelsNode::put);
 		ObjectNode hostConfigNode = node.putObject("HostConfig");
+		if (networkMode != null) {
+			hostConfigNode.put("NetworkMode", networkMode);
+		}
 		ArrayNode bindsNode = hostConfigNode.putArray("Binds");
 		bindings.forEach((binding) -> bindsNode.add(binding.toString()));
 		this.json = objectMapper.writeValueAsString(node);
@@ -114,6 +118,8 @@ public class ContainerConfig {
 
 		private final Map<String, String> env = new LinkedHashMap<>();
 
+		private String networkMode;
+
 		Update(ImageReference image) {
 			this.image = image;
 		}
@@ -122,7 +128,7 @@ public class ContainerConfig {
 			update.accept(this);
 			try {
 				return new ContainerConfig(this.user, this.image, this.command, this.args, this.labels, this.bindings,
-						this.env);
+						this.env, this.networkMode);
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
@@ -180,6 +186,15 @@ public class ContainerConfig {
 		 */
 		public void withEnv(String name, String value) {
 			this.env.put(name, value);
+		}
+
+		/**
+		 * Update the container config with the network that the build container will
+		 * connect to.
+		 * @param networkMode the network
+		 */
+		public void withNetworkMode(String networkMode) {
+			this.networkMode = networkMode;
 		}
 
 	}

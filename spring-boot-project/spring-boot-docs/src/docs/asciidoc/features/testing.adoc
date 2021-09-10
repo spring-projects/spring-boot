@@ -172,8 +172,9 @@ include::{docs-java}/features/testing/springbootapplications/usingapplicationarg
 
 [[features.testing.spring-boot-applications.with-mock-environment]]
 ==== Testing with a mock environment
-By default, `@SpringBootTest` does not start the server.
-If you have web endpoints that you want to test against this mock environment, you can additionally configure {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] as shown in the following example:
+By default, `@SpringBootTest` does not start the server but instead sets up a mock environment for testing web endpoints.
+
+With Spring MVC, we can query our web endpoints using {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] or `WebTestClient`, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -182,7 +183,7 @@ include::{docs-java}/features/testing/springbootapplications/withmockenvironment
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<features#features.testing.spring-boot-applications.spring-mvc-tests,using `@WebMvcTest` instead>>.
 
-Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
+With Spring WebFlux endpoints, you can use {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -191,10 +192,10 @@ include::{docs-java}/features/testing/springbootapplications/withmockenvironment
 
 [TIP]
 ====
-Testing within a mocked environment is usually faster than running with a full Servlet container.
-However, since mocking occurs at the Spring MVC layer, code that relies on lower-level Servlet container behavior cannot be directly tested with MockMvc.
+Testing within a mocked environment is usually faster than running with a full servlet container.
+However, since mocking occurs at the Spring MVC layer, code that relies on lower-level servlet container behavior cannot be directly tested with MockMvc.
 
-For example, Spring Boot's error handling is based on the "`error page`" support provided by the Servlet container.
+For example, Spring Boot's error handling is based on the "`error page`" support provided by the servlet container.
 This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<web#web.servlet.spring-mvc.error-handling.error-pages, custom error page>> is rendered.
 If you need to test these lower-level concerns, you can start a fully running server as described in the next section.
 ====
@@ -213,6 +214,8 @@ For convenience, tests that need to make REST calls to the started server can ad
 ----
 include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortWebTestClientTests.java[]
 ----
+
+TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
 
 This setup requires `spring-webflux` on the classpath.
 If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate` facility:
@@ -705,7 +708,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-mock-mvc]]
 ===== Auto-configured Spring REST Docs Tests with Mock MVC
-`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
+`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
@@ -748,6 +751,14 @@ If you require more control over Spring REST Docs configuration than offered by 
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyRestDocsConfiguration.java[]
 ----
 
+If you want to make use of Spring REST Docs support for a parameterized output directory, you can use a `WebTestClientBuilderCustomizer` to configure a consumer for every entity exchange result.
+The following example shows such a `WebTestClientBuilderCustomizer` being defined:
+
+[source,java,indent=0]
+----
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyWebTestClientBuilderCustomizerConfiguration.java[]
+----
+
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
@@ -771,7 +782,12 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 
 [[features.testing.spring-boot-applications.autoconfigured-webservices]]
 ==== Auto-configured Spring Web Services Tests
-You can use `@WebServiceClientTest` to test applications that use call web services using the Spring Web Services project.
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.client]]
+===== Auto-configured Spring Web Services Client Tests
+You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
 By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
 (For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
 
@@ -782,7 +798,25 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/MyWebServiceClientTests.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/client/MyWebServiceClientTests.java[]
+----
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.server]]
+===== Auto-configured Spring Web Services Server Tests
+You can use `@WebServiceServerTest` to test applications that implement web services using the Spring Web Services project.
+By default, it configures a `MockWebServiceClient` bean that can be used to call your web service endpoints.
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
+
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@WebServiceServerTest` annotation in use:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/server/MyWebServiceServerTests.java[]
 ----
 
 

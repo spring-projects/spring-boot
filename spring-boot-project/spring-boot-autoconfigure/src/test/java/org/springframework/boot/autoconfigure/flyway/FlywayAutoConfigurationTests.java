@@ -630,27 +630,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void vaultUrlIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.vault-url=https://example.com/secrets")
-				.run(validateFlywayTeamsPropertyOnly("vaultUrl"));
-	}
-
-	@Test
-	void vaultTokenIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.vault-token=5150")
-				.run(validateFlywayTeamsPropertyOnly("vaultToken"));
-	}
-
-	@Test
-	void vaultSecretsIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.vault-secrets=kv/data/test/1/config,kv/data/test/2/config")
-				.run(validateFlywayTeamsPropertyOnly("vaultSecrets"));
-	}
-
-	@Test
 	void whenFlywayIsAutoConfiguredThenJooqDslContextDependsOnFlywayBeans() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class)
 				.run((context) -> {
@@ -1026,6 +1005,11 @@ class FlywayAutoConfigurationTests {
 		@Override
 		public void migrate(org.flywaydb.core.api.migration.Context context) {
 
+		}
+
+		@Override
+		public boolean isStateScript() {
+			return false;
 		}
 
 	}

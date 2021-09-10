@@ -1,29 +1,24 @@
 plugins {
 	id "java"
 	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.integration-test"
 }
 
-description = "Spring Boot Server Tests"
+description = "Spring Boot Server Integration Tests"
 
 configurations {
 	testRepository
 }
 
 dependencies {
-	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("com.samskivert:jmustache")
-	testImplementation("jakarta.servlet:jakarta.servlet-api")
-	testImplementation("org.apache.httpcomponents:httpasyncclient")
-	testImplementation("org.apache.maven.shared:maven-invoker:3.0.0")
-	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.eclipse.jetty:jetty-webapp") {
-		exclude group: "javax.servlet", module: "javax-servlet-api"
-	}
-	testImplementation("org.springframework:spring-web")
+	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation("org.apache.httpcomponents:httpasyncclient")
+	intTestImplementation("org.awaitility:awaitility")
+	intTestImplementation("org.springframework:spring-web")
 
 	testRepository(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-json", configuration: "mavenRepository"))
@@ -34,11 +29,6 @@ dependencies {
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
 }
 
-task prepareMavenBinaries(type: org.springframework.boot.build.mavenplugin.PrepareMavenBinaries) {
-	outputDir = file("${buildDir}/maven-binaries")
-	versions "3.6.2"
-}
-
 task syncTestRepository(type: Sync) {
 	destinationDir = file("${buildDir}/test-repository")
 	from {
@@ -46,6 +36,28 @@ task syncTestRepository(type: Sync) {
 	}
 }
 
-test {
-	dependsOn prepareMavenBinaries, syncTestRepository
+task syncAppSource(type: Sync) {
+	from "spring-boot-server-tests-app"
+	into "${buildDir}/spring-boot-server-tests-app"
+	filter { line ->
+		line.replace("id \"org.springframework.boot\"", "id \"org.springframework.boot\" version \"${project.version}\"")
+	}
+}
+
+task buildApps(type: GradleBuild) {
+	dependsOn syncAppSource, syncTestRepository
+	dir = "${buildDir}/spring-boot-server-tests-app"
+	startParameter.buildCacheEnabled = false
+	tasks = [
+		"jettyBootJar",
+		"jettyBootWar",
+		"tomcatBootJar",
+		"tomcatBootWar",
+		"undertowBootJar",
+		"undertowBootWar"
+	]
+}
+
+intTest {
+	dependsOn buildApps
 }

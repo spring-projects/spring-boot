@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,19 @@
 package org.springframework.boot.system;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 class ApplicationTempTests {
+
+	@BeforeEach
+	@AfterEach
+	void cleanup() {
+		FileSystemUtils.deleteRecursively(new ApplicationTemp().getDir());
+	}
 
 	@Test
 	void generatesConsistentTemp() {
@@ -55,6 +72,24 @@ class ApplicationTempTests {
 	void getSubDir() {
 		ApplicationTemp temp = new ApplicationTemp();
 		assertThat(temp.getDir("abc")).isEqualTo(new File(temp.getDir(), "abc"));
+	}
+
+	@Test
+	void posixPermissions() throws IOException {
+		ApplicationTemp temp = new ApplicationTemp();
+		Path path = temp.getDir().toPath();
+		FileSystem fileSystem = path.getFileSystem();
+		if (fileSystem.supportedFileAttributeViews().contains("posix")) {
+			assertDirectoryPermissions(path);
+			assertDirectoryPermissions(temp.getDir("sub").toPath());
+		}
+	}
+
+	private void assertDirectoryPermissions(Path path) throws IOException {
+		Set<PosixFilePermission> permissions = Files.getFileAttributeView(path, PosixFileAttributeView.class)
+				.readAttributes().permissions();
+		assertThat(permissions).containsExactlyInAnyOrder(PosixFilePermission.OWNER_READ,
+				PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
 	}
 
 }

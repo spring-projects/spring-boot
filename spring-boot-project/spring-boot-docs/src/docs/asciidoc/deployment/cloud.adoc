@@ -140,7 +140,7 @@ Once the pre-stop hook has completed, SIGTERM will be sent to the container and 
 
 NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specified time called the termination grace period (the default for which is 30 seconds).
 If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.
-If the pod takes longer than 30 seconds to shut down, which could be because you've increased spring.lifecycle.timeout-per-shutdown-phase, make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
+If the pod takes longer than 30 seconds to shut down, which could be because you've increased configprop:spring.lifecycle.timeout-per-shutdown-phase[], make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
 
 
 
@@ -359,7 +359,7 @@ See the blog post on https://boxfuse.com/blog/spring-boot-ec2.html[deploying Spr
 
 [[deployment.cloud.azure]]
 === Azure
-This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-ca/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-ca/azure/app-service/overview[Azure App Service].
+This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-us/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-us/azure/app-service/overview[Azure App Service].
 
 
 

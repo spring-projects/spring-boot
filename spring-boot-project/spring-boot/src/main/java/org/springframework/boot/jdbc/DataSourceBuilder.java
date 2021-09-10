@@ -174,7 +174,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		Set<DataSourceProperty> applied = new HashSet<>();
 		for (DataSourceProperty property : DataSourceProperty.values()) {
 			String value = this.values.get(property);
-			if (!this.values.containsKey(property) && deriveFromProperties != null && properties.canSet(property)) {
+			if (value == null && deriveFromProperties != null && properties.canSet(property)) {
 				value = deriveFromProperties.get(this.deriveFrom, property);
 			}
 			if (value != null) {
@@ -262,7 +262,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		PASSWORD(false, "password");
 
-		private boolean optional;
+		private final boolean optional;
 
 		private final String[] names;
 
@@ -281,17 +281,17 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 
 		Method findSetter(Class<?> type) {
-			return extracted("set", type);
+			return findMethod("set", type, String.class);
 		}
 
 		Method findGetter(Class<?> type) {
-			return extracted("get", type);
+			return findMethod("get", type);
 		}
 
-		private Method extracted(String prefix, Class<?> type) {
-			for (String candidate : this.names) {
-				Method method = ReflectionUtils.findMethod(type, prefix + StringUtils.capitalize(candidate),
-						String.class);
+		private Method findMethod(String prefix, Class<?> type, Class<?>... paramTypes) {
+			for (String name : this.names) {
+				String candidate = prefix + StringUtils.capitalize(name);
+				Method method = ReflectionUtils.findMethod(type, candidate, paramTypes);
 				if (method != null) {
 					return method;
 				}

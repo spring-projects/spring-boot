@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Jeroen Meijer
  */
 class Phase {
 
@@ -47,6 +48,8 @@ class Phase {
 	private final List<Binding> bindings = new ArrayList<>();
 
 	private final Map<String, String> env = new LinkedHashMap<>();
+
+	private String networkMode;
 
 	/**
 	 * Create a new {@link Phase} instance.
@@ -102,6 +105,14 @@ class Phase {
 	}
 
 	/**
+	 * Update this phase with the network the build container will connect to.
+	 * @param networkMode the network
+	 */
+	void withNetworkMode(String networkMode) {
+		this.networkMode = networkMode;
+	}
+
+	/**
 	 * Return the name of the phase.
 	 * @return the phase name
 	 */
@@ -127,6 +138,9 @@ class Phase {
 		update.withLabel("author", "spring-boot");
 		this.bindings.forEach(update::withBinding);
 		this.env.forEach(update::withEnv);
+		if (this.networkMode != null) {
+			update.withNetworkMode(this.networkMode);
+		}
 	}
 
 }

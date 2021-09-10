@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class for health endpoints and health endpoint extensions.
@@ -53,12 +55,26 @@ abstract class HealthEndpointSupport<C, T> {
 		this.groups = groups;
 	}
 
-	HealthResult<T> getHealth(ApiVersion apiVersion, SecurityContext securityContext, boolean showAll, String... path) {
-		HealthEndpointGroup group = (path.length > 0) ? this.groups.get(path[0]) : null;
-		if (group != null) {
-			return getHealth(apiVersion, group, securityContext, showAll, path, 1);
+	HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+			SecurityContext securityContext, boolean showAll, String... path) {
+		if (path.length > 0) {
+			HealthEndpointGroup group = getHealthGroup(serverNamespace, path);
+			if (group != null) {
+				return getHealth(apiVersion, group, securityContext, showAll, path, 1);
+			}
 		}
 		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
+	}
+
+	private HealthEndpointGroup getHealthGroup(WebServerNamespace serverNamespace, String... path) {
+		if (this.groups.get(path[0]) != null) {
+			return this.groups.get(path[0]);
+		}
+		if (serverNamespace != null) {
+			AdditionalHealthEndpointPath additionalPath = AdditionalHealthEndpointPath.of(serverNamespace, path[0]);
+			return this.groups.get(additionalPath);
+		}
+		return null;
 	}
 
 	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
@@ -71,8 +87,12 @@ abstract class HealthEndpointSupport<C, T> {
 			return null;
 		}
 		Object contributor = getContributor(path, pathOffset);
-		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails,
-				isSystemHealth ? this.groups.getNames() : null, false);
+		if (contributor == null) {
+			return null;
+		}
+		String name = getName(path, pathOffset);
+		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
+		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, groupNames);
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 
@@ -89,29 +109,39 @@ abstract class HealthEndpointSupport<C, T> {
 		return contributor;
 	}
 
-	@SuppressWarnings("unchecked")
-	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, Object contributor,
-			boolean showComponents, boolean showDetails, Set<String> groupNames, boolean isNested) {
-		if (contributor instanceof NamedContributors) {
-			return getAggregateHealth(apiVersion, group, (NamedContributors<C>) contributor, showComponents,
-					showDetails, groupNames, isNested);
+	private String getName(String[] path, int pathOffset) {
+		StringBuilder name = new StringBuilder();
+		while (pathOffset < path.length) {
+			name.append((name.length() != 0) ? "/" : "");
+			name.append(path[pathOffset]);
+			pathOffset++;
 		}
-		return (contributor != null) ? getHealth((C) contributor, showDetails) : null;
+		return name.toString();
 	}
 
-	private T getAggregateHealth(ApiVersion apiVersion, HealthEndpointGroup group,
-			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails, Set<String> groupNames,
-			boolean isNested) {
+	@SuppressWarnings("unchecked")
+	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name, Object contributor,
+			boolean showComponents, boolean showDetails, Set<String> groupNames) {
+		if (contributor instanceof NamedContributors) {
+			return getAggregateContribution(apiVersion, group, name, (NamedContributors<C>) contributor, showComponents,
+					showDetails, groupNames);
+		}
+		if (contributor != null && (name.isEmpty() || group.isMember(name))) {
+			return getHealth((C) contributor, showDetails);
+		}
+		return null;
+	}
+
+	private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails,
+			Set<String> groupNames) {
+		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
 		Map<String, T> contributions = new LinkedHashMap<>();
-		for (NamedContributor<C> namedContributor : namedContributors) {
-			String name = namedContributor.getName();
-			C contributor = namedContributor.getContributor();
-			if (group.isMember(name) || isNested) {
-				T contribution = getContribution(apiVersion, group, contributor, showComponents, showDetails, null,
-						true);
-				if (contribution != null) {
-					contributions.put(name, contribution);
-				}
+		for (NamedContributor<C> child : namedContributors) {
+			T contribution = getContribution(apiVersion, group, prefix + child.getName(), child.getContributor(),
+					showComponents, showDetails, null);
+			if (contribution != null) {
+				contributions.put(child.getName(), contribution);
 			}
 		}
 		if (contributions.isEmpty()) {

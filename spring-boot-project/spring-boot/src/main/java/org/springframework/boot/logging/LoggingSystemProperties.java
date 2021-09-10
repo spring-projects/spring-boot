@@ -81,47 +81,6 @@ public class LoggingSystemProperties {
 	public static final String FILE_LOG_CHARSET = "FILE_LOG_CHARSET";
 
 	/**
-	 * The name of the System property that contains the rolled-over log file name
-	 * pattern.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_FILE_NAME_PATTERN}
-	 */
-	@Deprecated
-	public static final String ROLLING_FILE_NAME_PATTERN = "ROLLING_FILE_NAME_PATTERN";
-
-	/**
-	 * The name of the System property that contains the clean history on start flag.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_CLEAN_HISTORY_ON_START}
-	 */
-	@Deprecated
-	public static final String FILE_CLEAN_HISTORY_ON_START = "LOG_FILE_CLEAN_HISTORY_ON_START";
-
-	/**
-	 * The name of the System property that contains the file log max size.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_MAX_FILE_SIZE}
-	 */
-	@Deprecated
-	public static final String FILE_MAX_SIZE = "LOG_FILE_MAX_SIZE";
-
-	/**
-	 * The name of the System property that contains the file total size cap.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_TOTAL_SIZE_CAP}
-	 */
-	@Deprecated
-	public static final String FILE_TOTAL_SIZE_CAP = "LOG_FILE_TOTAL_SIZE_CAP";
-
-	/**
-	 * The name of the System property that contains the file log max history.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_MAX_HISTORY}
-	 */
-	@Deprecated
-	public static final String FILE_MAX_HISTORY = "LOG_FILE_MAX_HISTORY";
-
-	/**
 	 * The name of the System property that contains the log level pattern.
 	 */
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
@@ -184,18 +143,9 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");
 		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
-		applyDeprecated(resolver);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
-	}
-
-	private void applyDeprecated(PropertyResolver resolver) {
-		setSystemProperty(resolver, FILE_CLEAN_HISTORY_ON_START, "logging.file.clean-history-on-start");
-		setSystemProperty(resolver, FILE_MAX_HISTORY, "logging.file.max-history");
-		setSystemProperty(resolver, FILE_MAX_SIZE, "logging.file.max-size");
-		setSystemProperty(resolver, FILE_TOTAL_SIZE_CAP, "logging.file.total-size-cap");
-		setSystemProperty(resolver, ROLLING_FILE_NAME_PATTERN, "logging.pattern.rolling-file-name");
 	}
 
 	private PropertyResolver getPropertyResolver() {

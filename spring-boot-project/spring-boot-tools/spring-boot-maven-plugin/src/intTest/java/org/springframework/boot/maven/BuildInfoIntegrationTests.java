@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(MavenBuildExtension.class)
-public class BuildInfoIntegrationTests {
+class BuildInfoIntegrationTests {
 
 	@TestTemplate
 	void buildInfoPropertiesAreGenerated(MavenBuild mavenBuild) {

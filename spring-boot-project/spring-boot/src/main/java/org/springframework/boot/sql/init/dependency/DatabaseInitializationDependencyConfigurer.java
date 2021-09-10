@@ -20,8 +20,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -38,6 +40,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -100,48 +103,49 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-			Set<String> initializerBeanNames = detectInitializerBeanNames(beanFactory);
+			InitializerBeanNames initializerBeanNames = detectInitializerBeanNames(beanFactory);
 			if (initializerBeanNames.isEmpty()) {
 				return;
 			}
-			String previousInitializerBeanName = null;
-			for (String initializerBeanName : initializerBeanNames) {
-				BeanDefinition beanDefinition = getBeanDefinition(initializerBeanName, beanFactory);
-				beanDefinition.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanName));
-				previousInitializerBeanName = initializerBeanName;
+			Set<String> previousInitializerBeanNamesBatch = null;
+			for (Set<String> initializerBeanNamesBatch : initializerBeanNames.batchedBeanNames()) {
+				for (String initializerBeanName : initializerBeanNamesBatch) {
+					BeanDefinition beanDefinition = getBeanDefinition(initializerBeanName, beanFactory);
+					beanDefinition
+							.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanNamesBatch));
+				}
+				previousInitializerBeanNamesBatch = initializerBeanNamesBatch;
 			}
 			for (String dependsOnInitializationBeanNames : detectDependsOnInitializationBeanNames(beanFactory)) {
 				BeanDefinition beanDefinition = getBeanDefinition(dependsOnInitializationBeanNames, beanFactory);
-				beanDefinition.setDependsOn(merge(beanDefinition.getDependsOn(), initializerBeanNames));
+				beanDefinition.setDependsOn(merge(beanDefinition.getDependsOn(), initializerBeanNames.beanNames()));
 			}
 		}
 
-		private String[] merge(String[] source, String additional) {
-			return merge(source, (additional != null) ? Collections.singleton(additional) : Collections.emptySet());
-		}
-
 		private String[] merge(String[] source, Set<String> additional) {
+			if (CollectionUtils.isEmpty(additional)) {
+				return source;
+			}
 			Set<String> result = new LinkedHashSet<>((source != null) ? Arrays.asList(source) : Collections.emptySet());
 			result.addAll(additional);
 			return StringUtils.toStringArray(result);
 		}
 
-		private Set<String> detectInitializerBeanNames(ConfigurableListableBeanFactory beanFactory) {
+		private InitializerBeanNames detectInitializerBeanNames(ConfigurableListableBeanFactory beanFactory) {
 			List<DatabaseInitializerDetector> detectors = getDetectors(beanFactory, DatabaseInitializerDetector.class);
-			Set<String> beanNames = new LinkedHashSet<>();
+			InitializerBeanNames initializerBeanNames = new InitializerBeanNames();
 			for (DatabaseInitializerDetector detector : detectors) {
 				for (String beanName : detector.detect(beanFactory)) {
 					BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
 					beanDefinition.setAttribute(DatabaseInitializerDetector.class.getName(),
 							detector.getClass().getName());
-					beanNames.add(beanName);
+					initializerBeanNames.detected(detector, beanName);
 				}
 			}
-			beanNames = Collections.unmodifiableSet(beanNames);
 			for (DatabaseInitializerDetector detector : detectors) {
-				detector.detectionComplete(beanFactory, beanNames);
+				detector.detectionComplete(beanFactory, initializerBeanNames.beanNames());
 			}
-			return beanNames;
+			return initializerBeanNames;
 		}
 
 		private Collection<String> detectDependsOnInitializationBeanNames(ConfigurableListableBeanFactory beanFactory) {
@@ -158,7 +162,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			List<String> names = SpringFactoriesLoader.loadFactoryNames(type, beanFactory.getBeanClassLoader());
 			Instantiator<T> instantiator = new Instantiator<>(type,
 					(availableParameters) -> availableParameters.add(Environment.class, this.environment));
-			return instantiator.instantiate(names);
+			return instantiator.instantiate(beanFactory.getBeanClassLoader(), names);
 		}
 
 		private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
@@ -172,6 +176,31 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 				}
 				throw ex;
 			}
+		}
+
+		static class InitializerBeanNames {
+
+			private final Map<DatabaseInitializerDetector, Set<String>> byDetectorBeanNames = new LinkedHashMap<>();
+
+			private final Set<String> beanNames = new LinkedHashSet<>();
+
+			private void detected(DatabaseInitializerDetector detector, String beanName) {
+				this.byDetectorBeanNames.computeIfAbsent(detector, (key) -> new LinkedHashSet<>()).add(beanName);
+				this.beanNames.add(beanName);
+			}
+
+			private boolean isEmpty() {
+				return this.beanNames.isEmpty();
+			}
+
+			private Iterable<Set<String>> batchedBeanNames() {
+				return this.byDetectorBeanNames.values();
+			}
+
+			private Set<String> beanNames() {
+				return Collections.unmodifiableSet(this.beanNames);
+			}
+
 		}
 
 	}

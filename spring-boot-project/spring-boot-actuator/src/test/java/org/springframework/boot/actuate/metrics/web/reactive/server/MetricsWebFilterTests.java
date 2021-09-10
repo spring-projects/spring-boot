@@ -260,7 +260,7 @@ class MetricsWebFilterTests {
 
 	class FaultyWebFluxTagsProvider extends DefaultWebFluxTagsProvider {
 
-		private volatile AtomicBoolean fail = new AtomicBoolean(false);
+		private final AtomicBoolean fail = new AtomicBoolean(false);
 
 		FaultyWebFluxTagsProvider() {
 			super(true);

@@ -24,7 +24,6 @@ import java.util.Map;
 import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -32,6 +31,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Andrey Shlykov
+ * @author Jeroen Meijer
  */
 class BootBuildImageTests {
 
@@ -55,7 +56,7 @@ class BootBuildImageTests {
 	BootBuildImageTests() {
 		File projectDir = new File(this.temp, "project");
 		projectDir.mkdirs();
-		this.project = ProjectBuilder.builder().withProjectDir(projectDir).withName("build-image-test").build();
+		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName("build-image-test").build();
 		this.project.setDescription("Test project for BootBuildImage");
 		this.buildImage = this.project.getTasks().create("buildImage", BootBuildImage.class);
 	}
@@ -276,6 +277,12 @@ class BootBuildImageTests {
 		this.buildImage.binding("volume-name:container-dest:rw");
 		assertThat(this.buildImage.createRequest().getBindings())
 				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void whenNetworkIsConfiguredThenRequestHasNetwork() {
+		this.buildImage.setNetwork("test");
+		assertThat(this.buildImage.createRequest().getNetwork()).isEqualTo("test");
 	}
 
 }

@@ -8,9 +8,6 @@ See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specificat
 
 The task is automatically created when the `java` or `war` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
 
-NOTE: The `bootBuildImage` task can not be used with a <<packaging-executable.configuring.launch-script, fully executable Spring Boot archive>> that includes a launch script.
-Disable launch script configuration in the `bootJar` task when building a jar file that is intended to be used with `bootBuildImage`.
-
 
 
 [[build-image.docker-daemon]]
@@ -158,6 +155,12 @@ Where `<options>` can contain:
 * `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
 |
 
+| `network`
+| `--network`
+| The https://docs.docker.com/network/#network-drivers[network driver] the builder container will be configured to use.
+The value supplied will be passed unvalidated to Docker when creating the builder container.
+|
+
 | `cleanCache`
 | `--cleanCache`
 | Whether to clean the cache before building.
@@ -172,6 +175,7 @@ Where `<options>` can contain:
 | `--publishImage`
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.

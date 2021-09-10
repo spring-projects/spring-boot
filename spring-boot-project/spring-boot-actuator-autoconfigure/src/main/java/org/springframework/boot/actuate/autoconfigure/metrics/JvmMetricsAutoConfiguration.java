@@ -16,12 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.io.File;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 
@@ -53,6 +51,12 @@ public class JvmMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public JvmHeapPressureMetrics jvmHeapPressureMetrics() {
+		return new JvmHeapPressureMetrics();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
 	}
@@ -67,12 +71,6 @@ public class JvmMetricsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ClassLoaderMetrics classLoaderMetrics() {
 		return new ClassLoaderMetrics();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public DiskSpaceMetrics diskSpaceMetrics() {
-		return new DiskSpaceMetrics(new File("."));
 	}
 
 }
