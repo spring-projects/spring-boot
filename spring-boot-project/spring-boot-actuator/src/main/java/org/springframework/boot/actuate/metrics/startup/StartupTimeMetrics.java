@@ -76,7 +76,7 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 			return;
 		}
 		TimeGauge
-				.builder("spring.boot.startup.app.started", () -> event.getStartupTime().toMillis(),
+				.builder("application.started.time", () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
 				.description("Time taken (ms) to start the application").register(this.meterRegistry);
@@ -87,12 +87,12 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 			return;
 		}
 		TimeGauge
-				.builder("spring.boot.startup.app.running", () -> event.getStartupTime().toMillis(),
+				.builder("application.ready.time", () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
 				.description("Time taken (ms) for the application to be ready to serve requests")
 				.register(this.meterRegistry);
-		TimeGauge.builder("spring.boot.startup.app.running.jvm", () -> this.runtimeMXBean.getUptime(), TimeUnit.MILLISECONDS)
+		TimeGauge.builder("application.ready.jvm.time", () -> this.runtimeMXBean.getUptime(), TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
 				.description("The uptime of the JVM (ms) when the application is ready to serve requests")
 				.register(this.meterRegistry);
