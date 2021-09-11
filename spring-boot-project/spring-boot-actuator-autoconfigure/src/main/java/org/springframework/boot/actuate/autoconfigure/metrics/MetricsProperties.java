@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.startup.StartupTimeMetricsProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -60,9 +59,6 @@ public class MetricsProperties {
 
 	private final Distribution distribution = new Distribution();
 
-	@NestedConfigurationProperty
-	private final StartupTimeMetricsProperties startup = new StartupTimeMetricsProperties();
-
 	public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
 	}
@@ -89,10 +85,6 @@ public class MetricsProperties {
 
 	public Distribution getDistribution() {
 		return this.distribution;
-	}
-
-	public StartupTimeMetricsProperties getStartup() {
-		return this.startup;
 	}
 
 	public static class Web {

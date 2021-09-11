@@ -52,11 +52,9 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 
 	private final Iterable<Tag> tags;
 
-	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean,
-			String applicationStartedTimeMetricName, String applicationReadyTimeMetricName,
-			String applicationReadyJvmTimeMetricName) {
-		this(meterRegistry, runtimeMXBean, Collections.emptyList(), applicationStartedTimeMetricName,
-				applicationReadyTimeMetricName, applicationReadyJvmTimeMetricName);
+	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean) {
+		this(meterRegistry, runtimeMXBean, Collections.emptyList(), "application.started.time",
+				"application.ready.time", "application.ready.jvm.time");
 	}
 
 	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean, Iterable<Tag> tags,

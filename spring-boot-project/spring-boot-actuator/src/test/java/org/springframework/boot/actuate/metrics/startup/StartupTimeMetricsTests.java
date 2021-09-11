@@ -59,8 +59,7 @@ class StartupTimeMetricsTests {
 		this.registry = new SimpleMeterRegistry();
 		this.runtimeMXBean = mock(RuntimeMXBean.class);
 		given(this.runtimeMXBean.getUptime()).willReturn(APP_RUNNING_JVM_UPTIME_MS);
-		this.metrics = new StartupTimeMetrics(this.registry, this.runtimeMXBean, "application.started.time", "application.ready.time",
-				"application.ready.jvm.time");
+		this.metrics = new StartupTimeMetrics(this.registry, this.runtimeMXBean);
 	}
 
 	@Test
@@ -73,15 +72,14 @@ class StartupTimeMetricsTests {
 	}
 
 	@Test
-	void metricsRecordedWithCustomTags() {
+	void metricsRecordedWithCustomTagsAndMetricNames() {
 		Tags tags = Tags.of("foo", "bar");
-		this.metrics = new StartupTimeMetrics(this.registry, this.runtimeMXBean, tags, "application.started.time",
-				"application.ready.time", "application.ready.jvm.time");
+		this.metrics = new StartupTimeMetrics(this.registry, this.runtimeMXBean, tags, "m1", "m2", "m3");
 		this.metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
 		this.metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertMetricExistsWithCustomTagsAndValue("application.started.time", tags, APP_STARTED_TIME_MS);
-		assertMetricExistsWithCustomTagsAndValue("application.ready.time", tags, APP_RUNNING_TIME_MS);
-		assertMetricExistsWithCustomTagsAndValue("application.ready.jvm.time", tags, APP_RUNNING_JVM_UPTIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("m1", tags, APP_STARTED_TIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("m2", tags, APP_RUNNING_TIME_MS);
+		assertMetricExistsWithCustomTagsAndValue("m3", tags, APP_RUNNING_JVM_UPTIME_MS);
 	}
 
 	@Test
