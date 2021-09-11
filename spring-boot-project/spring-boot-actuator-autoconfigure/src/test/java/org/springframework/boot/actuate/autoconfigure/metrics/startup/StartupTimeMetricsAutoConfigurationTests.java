@@ -60,10 +60,29 @@ class StartupTimeMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void startupTimeMetricsWithCustomNamesAreRecorded() {
+		this.contextRunner
+				.withPropertyValues("management.metrics.startup.application-started-time-metric-name:myapp.started",
+						"management.metrics.startup.application-ready-time-metric-name:myapp.ready",
+						"management.metrics.startup.application-ready-jvm-time-metric-name:myapp.jvm.ready")
+				.run((context) -> {
+					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
+					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext(), Duration.ofMillis(3000)));
+					assertThat(context).hasSingleBean(StartupTimeMetrics.class);
+					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+					assertThat(registry.find("myapp.started").timeGauge()).isNotNull();
+					assertThat(registry.find("myapp.ready").timeGauge()).isNotNull();
+					assertThat(registry.find("myapp.jvm.ready").timeGauge()).isNotNull();
+				});
+	}
+
+	@Test
 	void startupTimeMetricsCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.application.started.time:false",
-				"management.metrics.enable.application.ready.time:false", "management.metrics.enable.application.ready.jvm.time:false")
-				.run((context) -> {
+				"management.metrics.enable.application.ready.time:false",
+				"management.metrics.enable.application.ready.jvm.time:false").run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
 					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
@@ -87,7 +106,8 @@ class StartupTimeMetricsAutoConfigurationTests {
 
 		@Bean
 		StartupTimeMetrics customStartTimeMetrics() {
-			return new StartupTimeMetrics(new SimpleMeterRegistry(), ManagementFactory.getRuntimeMXBean());
+			return new StartupTimeMetrics(new SimpleMeterRegistry(), ManagementFactory.getRuntimeMXBean(),
+					"application.started.time", "application.ready.time", "application.ready.jvm.time");
 		}
 
 	}

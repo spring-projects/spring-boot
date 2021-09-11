@@ -32,7 +32,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.SmartApplicationListener;
 
 /**
- * Binds application startup metrics in response to an {@link ApplicationStartedEvent}.
+ * Binds application startup metrics in response to {@link ApplicationStartedEvent} and
+ * {@link ApplicationReadyEvent}.
  *
  * @author Chris Bono
  * @since 2.6.0
@@ -43,16 +44,30 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 
 	private final RuntimeMXBean runtimeMXBean;
 
+	private final String applicationStartedTimeMetricName;
+
+	private final String applicationReadyTimeMetricName;
+
+	private final String applicationReadyJvmTimeMetricName;
+
 	private final Iterable<Tag> tags;
 
-	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean) {
-		this(meterRegistry, runtimeMXBean, Collections.emptyList());
+	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean,
+			String applicationStartedTimeMetricName, String applicationReadyTimeMetricName,
+			String applicationReadyJvmTimeMetricName) {
+		this(meterRegistry, runtimeMXBean, Collections.emptyList(), applicationStartedTimeMetricName,
+				applicationReadyTimeMetricName, applicationReadyJvmTimeMetricName);
 	}
 
-	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean, Iterable<Tag> tags) {
+	public StartupTimeMetrics(MeterRegistry meterRegistry, RuntimeMXBean runtimeMXBean, Iterable<Tag> tags,
+			String applicationStartedTimeMetricName, String applicationReadyTimeMetricName,
+			String applicationReadyJvmTimeMetricName) {
 		this.meterRegistry = meterRegistry;
 		this.runtimeMXBean = runtimeMXBean;
 		this.tags = (tags != null) ? tags : Collections.emptyList();
+		this.applicationStartedTimeMetricName = applicationStartedTimeMetricName;
+		this.applicationReadyTimeMetricName = applicationReadyTimeMetricName;
+		this.applicationReadyJvmTimeMetricName = applicationReadyJvmTimeMetricName;
 	}
 
 	@Override
@@ -76,7 +91,7 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 			return;
 		}
 		TimeGauge
-				.builder("application.started.time", () -> event.getStartupTime().toMillis(),
+				.builder(this.applicationStartedTimeMetricName, () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
 				.description("Time taken (ms) to start the application").register(this.meterRegistry);
@@ -87,12 +102,14 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 			return;
 		}
 		TimeGauge
-				.builder("application.ready.time", () -> event.getStartupTime().toMillis(),
+				.builder(this.applicationReadyTimeMetricName, () -> event.getStartupTime().toMillis(),
 						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
 				.description("Time taken (ms) for the application to be ready to serve requests")
 				.register(this.meterRegistry);
-		TimeGauge.builder("application.ready.jvm.time", () -> this.runtimeMXBean.getUptime(), TimeUnit.MILLISECONDS)
+		TimeGauge
+				.builder(this.applicationReadyJvmTimeMetricName, () -> this.runtimeMXBean.getUptime(),
+						TimeUnit.MILLISECONDS)
 				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
 				.description("The uptime of the JVM (ms) when the application is ready to serve requests")
 				.register(this.meterRegistry);

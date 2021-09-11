@@ -22,12 +22,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.startup.StartupTimeMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,12 +43,16 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
+@EnableConfigurationProperties(MetricsProperties.class)
 public class StartupTimeMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	StartupTimeMetrics startupTimeMetrics(MeterRegistry meterRegistry) {
-		return new StartupTimeMetrics(meterRegistry, ManagementFactory.getRuntimeMXBean());
+	StartupTimeMetrics startupTimeMetrics(MeterRegistry meterRegistry, MetricsProperties properties) {
+		return new StartupTimeMetrics(meterRegistry, ManagementFactory.getRuntimeMXBean(),
+				properties.getStartup().getApplicationStartedTimeMetricName(),
+				properties.getStartup().getApplicationReadyTimeMetricName(),
+				properties.getStartup().getApplicationReadyJvmTimeMetricName());
 	}
 
 }
