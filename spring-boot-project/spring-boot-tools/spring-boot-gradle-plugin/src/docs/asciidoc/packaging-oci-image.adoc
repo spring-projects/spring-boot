@@ -392,7 +392,7 @@ include::../gradle/packaging/boot-build-image-docker-host.gradle[tags=docker-hos
 include::../gradle/packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
 ----
 
-If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.buiderRegistry` properties as shown in the following example:
+If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` properties as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

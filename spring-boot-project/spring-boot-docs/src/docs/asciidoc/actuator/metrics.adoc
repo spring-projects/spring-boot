@@ -936,7 +936,7 @@ Metrics are published under the `spring.integration.` meter name.
 [[actuator.metrics.supported.kafka]]
 ==== Kafka Metrics
 Auto-configuration registers a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory, respectively.
-It alsos registers a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
+It also registers a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
 For more detail, see the {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
 

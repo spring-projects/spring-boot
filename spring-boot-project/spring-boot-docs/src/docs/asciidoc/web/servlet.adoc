@@ -1,6 +1,6 @@
 [[web.servlet]]
 == Servlet Web Applications
-If you're looking to build servlet-based web applications, you can take advantange of Spring Boot's auto-configuration for Spring MVC or Jersey.
+If you're looking to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC or Jersey.
 
 [[web.servlet.spring-mvc]]
 === The "`Spring Web MVC Framework`"

@@ -30,7 +30,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Utility class that can resolve placholder text with the actual {@link DatabaseDriver}
+ * Utility class that can resolve placeholder text with the actual {@link DatabaseDriver}
  * platform.
  * <p>
  * By default, the name of the platform is the {@link DatabaseDriver#getId ID of the
@@ -70,7 +70,7 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 	}
 
 	/**
-	 * Creates a new {@code PlatformPlaceholdDatabaseDriverResolver} that will map the
+	 * Creates a new {@link PlatformPlaceholderDatabaseDriverResolver} that will map the
 	 * given {@code driver} to the given {@code platform}.
 	 * @param driver the driver
 	 * @param platform the platform

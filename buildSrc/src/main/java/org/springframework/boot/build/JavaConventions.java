@@ -57,7 +57,7 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * plugin is applied:
  *
  * <ul>
- * <li>The project is configered with source and target compatibility of 1.8
+ * <li>The project is configured with source and target compatibility of 1.8
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied

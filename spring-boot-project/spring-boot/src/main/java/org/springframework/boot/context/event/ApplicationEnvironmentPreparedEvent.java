@@ -50,7 +50,7 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 	}
 
 	/**
-	 * Return the bootstap context.
+	 * Return the bootstrap context.
 	 * @return the bootstrap context
 	 * @since 2.4.0
 	 */

@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for initializaton of an SQL database.
+ * Support for initialization of an SQL database.
  */
 package org.springframework.boot.sql.init;

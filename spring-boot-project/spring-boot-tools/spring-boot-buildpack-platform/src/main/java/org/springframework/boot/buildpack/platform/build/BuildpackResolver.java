@@ -17,7 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 /**
- * Strategy inerface used to resolve a {@link BuildpackReference} to a {@link Buildpack}.
+ * Strategy interface used to resolve a {@link BuildpackReference} to a {@link Buildpack}.
  *
  * @author Scott Frederick
  * @author Phillip Webb
