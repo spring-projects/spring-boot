@@ -27,7 +27,7 @@ import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.Owner;
 
 /**
- * An short lived builder that is created for each {@link Lifecycle} run.
+ * A short lived builder that is created for each {@link Lifecycle} run.
  *
  * @author Phillip Webb
  * @author Scott Frederick

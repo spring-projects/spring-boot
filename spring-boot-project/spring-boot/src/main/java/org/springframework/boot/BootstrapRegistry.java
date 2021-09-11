@@ -175,7 +175,7 @@ public interface BootstrapRegistry {
 		SINGLETON,
 
 		/**
-		 * A prototype instance. The {@link InstanceSupplier} will be called whenver an
+		 * A prototype instance. The {@link InstanceSupplier} will be called whenever an
 		 * instance is needed.
 		 */
 		PROTOTYPE
