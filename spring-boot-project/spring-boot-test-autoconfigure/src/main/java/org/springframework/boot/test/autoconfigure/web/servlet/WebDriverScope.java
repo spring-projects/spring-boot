@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverTestExecutionListener
  */
-class WebDriverScope implements Scope {
+public class WebDriverScope implements Scope {
 
 	public static final String NAME = "webDriver";
 

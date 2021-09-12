@@ -29,7 +29,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverScope
  */
-class WebDriverTestExecutionListener extends AbstractTestExecutionListener {
+public class WebDriverTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public int getOrder() {
