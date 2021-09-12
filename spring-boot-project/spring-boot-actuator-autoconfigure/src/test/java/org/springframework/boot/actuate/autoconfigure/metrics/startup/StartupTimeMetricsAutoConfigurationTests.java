@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.startup;
 
-import java.lang.management.ManagementFactory;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.Tags;
@@ -56,15 +55,13 @@ class StartupTimeMetricsAutoConfigurationTests {
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 			assertThat(registry.find("application.started.time").timeGauge()).isNotNull();
 			assertThat(registry.find("application.ready.time").timeGauge()).isNotNull();
-			assertThat(registry.find("application.ready.jvm.time").timeGauge()).isNotNull();
 		});
 	}
 
 	@Test
 	void startupTimeMetricsCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.application.started.time:false",
-				"management.metrics.enable.application.ready.time:false",
-				"management.metrics.enable.application.ready.jvm.time:false").run((context) -> {
+				"management.metrics.enable.application.ready.time:false").run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
 					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
@@ -72,7 +69,6 @@ class StartupTimeMetricsAutoConfigurationTests {
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("application.started.time").timeGauge()).isNull();
 					assertThat(registry.find("application.ready.time").timeGauge()).isNull();
-					assertThat(registry.find("application.ready.jvm.time").timeGauge()).isNull();
 				});
 	}
 
@@ -88,8 +84,7 @@ class StartupTimeMetricsAutoConfigurationTests {
 
 		@Bean
 		StartupTimeMetrics customStartTimeMetrics() {
-			return new StartupTimeMetrics(new SimpleMeterRegistry(), ManagementFactory.getRuntimeMXBean(), Tags.empty(),
-					"myapp.started", "myapp.ready", "myapp.jvm.ready");
+			return new StartupTimeMetrics(new SimpleMeterRegistry(), Tags.empty(), "myapp.started", "myapp.ready");
 		}
 
 	}
