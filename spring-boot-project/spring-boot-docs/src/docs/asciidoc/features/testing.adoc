@@ -391,7 +391,7 @@ include::{docs-java}/features/testing/springbootapplications/springmvctests/MyCo
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
-If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
+If you use HtmlUnit and Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
 [source,java,indent=0,subs="verbatim"]
