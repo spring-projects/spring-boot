@@ -36,11 +36,15 @@ import org.springframework.util.StringUtils;
  * {@link WebDriverTestExecutionListener}.
  *
  * @author Phillip Webb
+ * @since 2.6.0
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverTestExecutionListener
  */
-class WebDriverScope implements Scope {
+public class WebDriverScope implements Scope {
 
+	/**
+	 * WebDriver bean scope name.
+	 */
 	public static final String NAME = "webDriver";
 
 	private static final String WEB_DRIVER_CLASS = "org.openqa.selenium.WebDriver";
