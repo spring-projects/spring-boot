@@ -12,7 +12,7 @@ Properties are considered in the following order (with values from lower items o
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
-. Config data (such as `application.properties` files)
+. Config data (such as `application.properties` files).
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
 . OS environment variables.
 . Java System properties (`System.getProperties()`).
@@ -56,7 +56,7 @@ See the "<<actuator#actuator.endpoints, Production ready features>>" section for
 [[features.external-config.command-line-args]]
 === Accessing Command Line Properties
 By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
-As mentioned previously, command line properties always take precedence over file based property sources.
+As mentioned previously, command line properties always take precedence over file-based property sources.
 
 If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
 
@@ -668,11 +668,11 @@ The preceding POJO defines the following properties:
 * `my.service.enabled`, with a value of `false` by default.
 * `my.service.remote-address`, with a type that can be coerced from `String`.
 * `my.service.security.username`, with a nested "security" object whose name is determined by the name of the property.
-  In particular, the return type is not used at all there and could have been `SecurityProperties`.
+  In particular, the type is not used at all there and could have been `SecurityProperties`.
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables, etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
