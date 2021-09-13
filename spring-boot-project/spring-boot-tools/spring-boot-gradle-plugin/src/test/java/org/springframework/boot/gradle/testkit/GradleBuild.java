@@ -44,9 +44,6 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.util.GradleVersion;
-import org.jetbrains.kotlin.cli.common.PropertiesKt;
-import org.jetbrains.kotlin.compilerRunner.KotlinLogger;
-import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
@@ -110,9 +107,10 @@ public class GradleBuild {
 				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
 				new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
-				new File(pathOfJarContaining(PropertiesKt.class)), new File(pathOfJarContaining(KotlinLogger.class)),
+				new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")),
+				new File(pathOfJarContaining("org.jetbrains.kotlin.compilerRunner.KotlinLogger")),
 				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
-				new File(pathOfJarContaining(KotlinCompilerClient.class)),
+				new File(pathOfJarContaining("org.jetbrains.kotlin.daemon.client.KotlinCompilerClient")),
 				new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)),
 				new File(pathOfJarContaining(LanguageSettings.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
@@ -122,6 +120,15 @@ public class GradleBuild {
 				new File(pathOfJarContaining(ParameterNamesModule.class)),
 				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
 				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)));
+	}
+
+	private String pathOfJarContaining(String className) {
+		try {
+			return pathOfJarContaining(Class.forName(className));
+		}
+		catch (ClassNotFoundException ex) {
+			throw new IllegalArgumentException(ex);
+		}
 	}
 
 	private String pathOfJarContaining(Class<?> type) {
