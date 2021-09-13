@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverTestExecutionListener
+ * @since 2.6.0
  */
 public class WebDriverScope implements Scope {
 

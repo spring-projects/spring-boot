@@ -28,6 +28,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @author Phillip Webb
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverScope
+ * @since 2.6.0
  */
 public class WebDriverTestExecutionListener extends AbstractTestExecutionListener {
 
