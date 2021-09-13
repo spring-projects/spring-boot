@@ -274,7 +274,7 @@ You can configure global devtools settings by adding any of the following files 
 . `spring-boot-devtools.yaml`
 . `spring-boot-devtools.yml`
 
-Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
+Any properties added to these files apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a <<using#using.devtools.restart.triggerfile, trigger file>>, you would add the following property to your `spring-boot-devtools` file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
