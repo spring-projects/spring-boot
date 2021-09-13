@@ -775,7 +775,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty EL", "8.5.68") {
+	library("Jetty EL", "8.5.70") {
 		group("org.mortbay.jasper") {
 			modules = [
 				"apache-el"
