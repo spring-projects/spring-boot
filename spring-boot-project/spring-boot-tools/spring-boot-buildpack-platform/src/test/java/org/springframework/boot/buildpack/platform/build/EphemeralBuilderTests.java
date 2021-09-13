@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link EphemeralBuilder}.
@@ -58,15 +59,18 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	private Image image;
 
+	private ImageReference targetImage;
+
 	private BuilderMetadata metadata;
 
 	private Map<String, String> env;
 
-	private Creator creator = Creator.withVersion("dev");
+	private final Creator creator = Creator.withVersion("dev");
 
 	@BeforeEach
 	void setup() throws Exception {
 		this.image = Image.of(getContent("image.json"));
+		this.targetImage = ImageReference.of("my-image:latest");
 		this.metadata = BuilderMetadata.fromImage(this.image);
 		this.env = new HashMap<>();
 		this.env.put("spring", "boot");
@@ -75,15 +79,18 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getNameHasRandomName() throws Exception {
-		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
-		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
+		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
 		assertThat(b1.getName().toString()).startsWith("pack.local/builder/").endsWith(":latest");
 		assertThat(b1.getName().toString()).isNotEqualTo(b2.getName().toString());
 	}
 
 	@Test
 	void getArchiveHasCreatedByConfig() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
 		ImageConfig config = builder.getArchive().getImageConfig();
 		BuilderMetadata ephemeralMetadata = BuilderMetadata.fromImageConfig(config);
 		assertThat(ephemeralMetadata.getCreatedBy().getName()).isEqualTo("Spring Boot");
@@ -92,14 +99,16 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getArchiveHasTag() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
 		ImageReference tag = builder.getArchive().getTag();
 		assertThat(tag.toString()).startsWith("pack.local/builder/").endsWith(":latest");
 	}
 
 	@Test
 	void getArchiveHasFixedCreateDate() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
 		Instant createInstant = builder.getArchive().getCreateDate();
 		OffsetDateTime createDateTime = OffsetDateTime.ofInstant(createInstant, ZoneId.of("UTC"));
 		assertThat(createDateTime.getYear()).isEqualTo(1980);
@@ -112,10 +121,20 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getArchiveContainsEnvLayer() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
 		File directory = unpack(getLayer(builder.getArchive(), 0), "env");
 		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 		assertThat(new File(directory, "platform/env/empty")).usingCharset(StandardCharsets.UTF_8).hasContent("");
+	}
+
+	@Test
+	void getArchiveHasBuilderForLabel() throws Exception {
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env);
+		ImageConfig config = builder.getArchive().getImageConfig();
+		assertThat(config.getLabels())
+				.contains(entry(EphemeralBuilder.BUILDER_FOR_LABEL_NAME, this.targetImage.toString()));
 	}
 
 	private TarArchiveInputStream getLayer(ImageArchive archive, int index) throws Exception {

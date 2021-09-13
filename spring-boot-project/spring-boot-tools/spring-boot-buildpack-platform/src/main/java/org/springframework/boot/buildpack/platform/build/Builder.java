@@ -96,8 +96,8 @@ public class Builder {
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		request = determineRunImage(request, builderImage, builderMetadata.getStack());
-		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getCreator(),
-				request.getEnv());
+		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, request.getName(), builderMetadata,
+				request.getCreator(), request.getEnv());
 		this.docker.image().load(builder.getArchive(), UpdateListener.none());
 		try {
 			executeLifecycle(request, builder);
