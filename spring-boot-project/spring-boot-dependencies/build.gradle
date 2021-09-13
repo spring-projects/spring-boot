@@ -331,7 +331,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish EL", "3.0.3") {
+	library("Glassfish EL", "3.0.4") {
 		group("org.glassfish") {
 			modules = [
 				"jakarta.el"
