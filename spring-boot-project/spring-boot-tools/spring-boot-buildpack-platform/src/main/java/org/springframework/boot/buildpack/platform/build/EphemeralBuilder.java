@@ -34,6 +34,8 @@ import org.springframework.boot.buildpack.platform.io.Owner;
  */
 class EphemeralBuilder {
 
+	static final String BUILDER_FOR_LABEL_NAME = "org.springframework.boot.builderFor";
+
 	private final BuildOwner buildOwner;
 
 	private final BuilderMetadata builderMetadata;
@@ -45,21 +47,24 @@ class EphemeralBuilder {
 	/**
 	 * Create a new {@link EphemeralBuilder} instance.
 	 * @param buildOwner the build owner
-	 * @param builderImage the image
+	 * @param builderImage the base builder image
+	 * @param targetImage the image being built
 	 * @param builderMetadata the builder metadata
 	 * @param creator the builder creator
 	 * @param env the builder env
 	 * @param buildpacks an optional set of buildpacks to apply
 	 * @throws IOException on IO error
 	 */
-	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata, Creator creator,
-			Map<String, String> env, Buildpacks buildpacks) throws IOException {
+	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, ImageReference targetImage,
+			BuilderMetadata builderMetadata, Creator creator, Map<String, String> env, Buildpacks buildpacks)
+			throws IOException {
 		ImageReference name = ImageReference.random("pack.local/builder/").inTaggedForm();
 		this.buildOwner = buildOwner;
 		this.creator = creator;
 		this.builderMetadata = builderMetadata.copy(this::updateMetadata);
 		this.archive = ImageArchive.from(builderImage, (update) -> {
 			update.withUpdatedConfig(this.builderMetadata::attachTo);
+			update.withUpdatedConfig((config) -> config.withLabel(BUILDER_FOR_LABEL_NAME, targetImage.toString()));
 			update.withTag(name);
 			if (env != null && !env.isEmpty()) {
 				update.withNewLayer(getEnvLayer(env));
