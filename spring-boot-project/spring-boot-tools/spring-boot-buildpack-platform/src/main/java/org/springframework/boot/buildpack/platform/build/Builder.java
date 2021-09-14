@@ -105,8 +105,8 @@ public class Builder {
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata);
-		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata,
-				request.getCreator(), request.getEnv(), buildpacks);
+		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, request.getName(),
+				builderMetadata, request.getCreator(), request.getEnv(), buildpacks);
 		this.docker.image().load(ephemeralBuilder.getArchive(), UpdateListener.none());
 		try {
 			executeLifecycle(request, ephemeralBuilder);
