@@ -112,5 +112,6 @@ org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementC
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
+
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer

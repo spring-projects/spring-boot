@@ -101,8 +101,8 @@
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/
+:lettuce-docs: https://lettuce.io/core/{lettuce-version}/reference/index.html
 :micrometer-docs: https://micrometer.io/docs
 :micrometer-concepts-docs: {micrometer-docs}/concepts
 :micrometer-registry-docs: {micrometer-docs}/registry
 :tomcat-docs: https://tomcat.apache.org/tomcat-9.0-doc
-:lettuce-docs: https://lettuce.io/core/{lettuce-version}/reference/index.html

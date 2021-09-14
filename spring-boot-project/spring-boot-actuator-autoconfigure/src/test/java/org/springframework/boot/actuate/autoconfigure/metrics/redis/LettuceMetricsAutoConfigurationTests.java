@@ -28,6 +28,11 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for {@link LettuceMetricsAutoConfiguration}.
+ *
+ * @author Antonin Arquey
+ */
 class LettuceMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -39,7 +44,7 @@ class LettuceMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
 					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
 							.getClientResources();
-					assertThat(clientResources.commandLatencyRecorder()).isNotNull()
+					assertThat(clientResources.commandLatencyRecorder())
 							.isInstanceOf(MicrometerCommandLatencyRecorder.class);
 				});
 	}
