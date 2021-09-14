@@ -21,12 +21,14 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
  * {@link ConfigurationProperties Configuration properties} for initializing an SQL
  * database.
  *
  * @author Andy Wilkinson
+ * @author Radosław Dąbrowski
  * @since 2.5.0
  */
 @ConfigurationProperties("spring.sql.init")
@@ -150,6 +152,15 @@ public class SqlInitializationProperties {
 
 	public void setMode(DatabaseInitializationMode mode) {
 		this.mode = mode;
+	}
+
+	/**
+	 * Adapts {@link SqlInitializationProperties SQL initialization properties} to
+	 * {@link DatabaseInitializationSettings}.
+	 * @return a new {@link DatabaseInitializationSettings} instance
+	 */
+	public DatabaseInitializationSettings toDatabaseInitializationSettings() {
+		return SettingsCreator.createFrom(this);
 	}
 
 }
