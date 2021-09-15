@@ -336,7 +336,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish EL", "3.0.3") {
+	library("Glassfish EL", "3.0.4") {
 		prohibit("[4.0.0-RC1,)") {
 			because "it uses the jakarta.* namespace"
 		}
