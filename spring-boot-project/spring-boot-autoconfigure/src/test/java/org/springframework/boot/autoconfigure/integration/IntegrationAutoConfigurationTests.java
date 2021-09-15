@@ -16,13 +16,16 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.junit.jupiter.api.Test;
-
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
@@ -75,10 +78,6 @@ import org.springframework.scheduling.support.CronTrigger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
@@ -523,7 +522,7 @@ class IntegrationAutoConfigurationTests {
 
 		@ServiceActivator(inputChannel = "testChannel")
 		@Bean
-		public MessageHandler handler(BlockingQueue<Message<?>> sink) {
+		MessageHandler handler(BlockingQueue<Message<?>> sink) {
 			return sink::add;
 		}
 

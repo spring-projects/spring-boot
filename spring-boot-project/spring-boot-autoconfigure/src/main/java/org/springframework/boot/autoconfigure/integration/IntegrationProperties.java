@@ -315,26 +315,24 @@ public class IntegrationProperties {
 		private Duration receiveTimeout = Duration.ofSeconds(1); // PollerMetadata.DEFAULT_RECEIVE_TIMEOUT
 
 		/**
-		 * Polling delay period.
-		 * Mutually explusive with 'cron' and 'fixedRate'.
+		 * Polling delay period. Mutually explusive with 'cron' and 'fixedRate'.
 		 */
 		private Duration fixedDelay;
 
 		/**
-		 * Polling rate period.
-		 * Mutually explusive with 'fixedDelay' and 'cron'.
+		 * Polling rate period. Mutually explusive with 'fixedDelay' and 'cron'.
 		 */
 		private Duration fixedRate;
 
 		/**
-		 * Polling initial delay.
-		 * Applied for 'fixedDelay' and 'fixedRate'; ignored for 'cron'.
+		 * Polling initial delay. Applied for 'fixedDelay' and 'fixedRate'; ignored for
+		 * 'cron'.
 		 */
 		private Duration initialDelay;
 
 		/**
-		 * Cron expression for polling.
-		 * Mutually explusive with 'fixedDelay' and 'fixedRate'.
+		 * Cron expression for polling. Mutually explusive with 'fixedDelay' and
+		 * 'fixedRate'.
 		 */
 		private String cron;
 

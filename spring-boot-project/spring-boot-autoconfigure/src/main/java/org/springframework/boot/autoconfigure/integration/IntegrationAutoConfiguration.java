@@ -124,7 +124,7 @@ public class IntegrationAutoConfiguration {
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
 			map.from(poller::getCron).whenHasText().as(CronTrigger::new).to(pollerMetadata::setTrigger);
-			map.from(poller.getFixedDelay() != null ? poller.getFixedDelay() : poller.getFixedRate())
+			map.from((poller.getFixedDelay() != null) ? poller.getFixedDelay() : poller.getFixedRate())
 					.as(Duration::toMillis).as(PeriodicTrigger::new).as((trigger) -> {
 						map.from(poller::getInitialDelay).as(Duration::toMillis).to(trigger::setInitialDelay);
 						trigger.setFixedRate(poller.getFixedRate() != null);
