@@ -861,7 +861,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty EL", "9.0.48") {
+	library("Jetty EL", "9.0.52") {
 		prohibit("[10.0.0-M1,)") {
 			because "it requires Java 11"
 		}
