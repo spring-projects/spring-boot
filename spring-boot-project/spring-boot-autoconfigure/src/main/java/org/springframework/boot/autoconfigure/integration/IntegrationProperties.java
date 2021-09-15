@@ -307,38 +307,42 @@ public class IntegrationProperties {
 		/**
 		 * Maximum of messages to poll per polling cycle.
 		 */
-		private Long maxMessagesPerPoll;
+		private int maxMessagesPerPoll = Integer.MIN_VALUE; // PollerMetadata.MAX_MESSAGES_UNBOUNDED
 
 		/**
 		 * How long to wait for messages on poll.
 		 */
-		private Duration receiveTimeout;
+		private Duration receiveTimeout = Duration.ofSeconds(1); // PollerMetadata.DEFAULT_RECEIVE_TIMEOUT
 
 		/**
 		 * Polling delay period.
+		 * Mutually explusive with 'cron' and 'fixedRate'.
 		 */
 		private Duration fixedDelay;
 
 		/**
 		 * Polling rate period.
+		 * Mutually explusive with 'fixedDelay' and 'cron'.
 		 */
 		private Duration fixedRate;
 
 		/**
 		 * Polling initial delay.
+		 * Applied for 'fixedDelay' and 'fixedRate'; ignored for 'cron'.
 		 */
 		private Duration initialDelay;
 
 		/**
 		 * Cron expression for polling.
+		 * Mutually explusive with 'fixedDelay' and 'fixedRate'.
 		 */
 		private String cron;
 
-		public Long getMaxMessagesPerPoll() {
+		public int getMaxMessagesPerPoll() {
 			return this.maxMessagesPerPoll;
 		}
 
-		public void setMaxMessagesPerPoll(Long maxMessagesPerPoll) {
+		public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
 			this.maxMessagesPerPoll = maxMessagesPerPoll;
 		}
 
