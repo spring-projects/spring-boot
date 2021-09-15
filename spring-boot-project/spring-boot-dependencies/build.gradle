@@ -1369,7 +1369,7 @@ bom {
 			]
 		}
 	}
-	library("Rabbit AMQP Client", "5.13.0") {
+	library("Rabbit AMQP Client", "5.13.1") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
