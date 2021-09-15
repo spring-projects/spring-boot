@@ -171,12 +171,6 @@ resources:
   source:
     <<: *registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci-jdk11
-- name: ci-image-jdk16
-  type: registry-image
-  icon: docker
-  source:
-    <<: *registry-image-resource-source
-    repository: ((docker-hub-organization))/spring-boot-ci-jdk16
 - name: ci-image-jdk17
   type: registry-image
   icon: docker
@@ -213,14 +207,6 @@ resources:
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk11-build
-- name: repo-status-jdk16-build
-  type: github-status-resource
-  icon: eye-check-outline
-  source:
-    repository: ((github-repo-name))
-    access_token: ((github-ci-status-token))
-    branch: ((branch))
-    context: jdk16-build
 - name: repo-status-jdk17-build
   type: github-status-resource
   icon: eye-check-outline
@@ -273,14 +259,6 @@ jobs:
       vars:
         ci-image-name: ci-image-jdk11
         <<: *registry-mirror-vars
-    - task: build-ci-image-jdk16
-      privileged: true
-      file: git-repo/ci/tasks/build-ci-image.yml
-      output_mapping:
-        image: ci-image-jdk16
-      vars:
-        ci-image-name: ci-image-jdk16
-        <<: *registry-mirror-vars
     - task: build-ci-image-jdk17
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
@@ -296,9 +274,6 @@ jobs:
     - put: ci-image-jdk11
       params:
         image: ci-image-jdk11/image.tar
-    - put: ci-image-jdk16
-      params:
-        image: ci-image-jdk16/image.tar
     - put: ci-image-jdk17
       params:
         image: ci-image-jdk17/image.tar
@@ -321,12 +296,6 @@ jobs:
       params:
         <<: *github-task-params
         JDK_VERSION: java11
-    - task: detect-jdk16-update
-      image: ci-image
-      file: git-repo/ci/tasks/detect-jdk-updates.yml
-      params:
-        <<: *github-task-params
-        JDK_VERSION: java16
     - task: detect-jdk17-update
       image: ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
@@ -445,38 +414,6 @@ jobs:
   - put: slack-alert
     params:
       <<: *slack-success-params
-- name: jdk16-build
-  serial: true
-  public: true
-  plan:
-    - get: ci-image-jdk16
-    - get: git-repo
-      trigger: true
-    - put: repo-status-jdk16-build
-      params: { state: "pending", commit: "git-repo" }
-    - do:
-      - task: build-project
-        image: ci-image-jdk16
-        privileged: true
-        timeout: ((task-timeout))
-        file: git-repo/ci/tasks/build-project.yml
-        params:
-          BRANCH: ((branch))
-          TOOLCHAIN_JAVA_VERSION: 16
-          <<: *gradle-enterprise-task-params
-          <<: *docker-hub-task-params
-      on_failure:
-        do:
-          - put: repo-status-jdk16-build
-            params: { state: "failure", commit: "git-repo" }
-          - put: slack-alert
-            params:
-              <<: *slack-fail-params
-    - put: repo-status-jdk16-build
-      params: { state: "success", commit: "git-repo" }
-    - put: slack-alert
-      params:
-       <<: *slack-success-params
 - name: jdk17-build
   serial: true
   public: true
@@ -804,11 +741,11 @@ jobs:
     - put: slack-alert
       params:
         <<: *slack-success-params
-- name: jdk16-run-system-tests
+- name: jdk17-run-system-tests
   serial: true
   public: true
   plan:
-    - get: ci-image-jdk16
+    - get: ci-image-jdk17
     - get: git-repo
     - get: paketo-builder-base-image
       trigger: true
@@ -816,13 +753,13 @@ jobs:
       trigger: true
     - do:
         - task: run-system-tests
-          image: ci-image-jdk16
+          image: ci-image-jdk17
           privileged: true
           timeout: ((task-timeout))
           file: git-repo/ci/tasks/run-system-tests.yml
           params:
             BRANCH: ((branch))
-            TOOLCHAIN_JAVA_VERSION: 16
+            TOOLCHAIN_JAVA_VERSION: 17
             <<: *gradle-enterprise-task-params
             <<: *docker-hub-task-params
       on_failure:
@@ -835,11 +772,11 @@ jobs:
         <<: *slack-success-params
 groups:
 - name: "builds"
-  jobs: ["build", "jdk11-build", "jdk16-build", "jdk17-build", "windows-build"]
+  jobs: ["build", "jdk11-build", "jdk17-build", "windows-build"]
 - name: "releases"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-gradle-plugin", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "system-tests"
-  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk16-run-system-tests"]
+  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk17-run-system-tests"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
