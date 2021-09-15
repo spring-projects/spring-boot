@@ -370,7 +370,7 @@ bom {
 			]
 		}
 	}
-	library("Gson", "2.8.7") {
+	library("Gson", "2.8.8") {
 		group("com.google.code.gson") {
 			modules = [
 				"gson"
