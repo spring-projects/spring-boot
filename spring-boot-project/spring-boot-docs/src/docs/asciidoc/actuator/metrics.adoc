@@ -661,7 +661,7 @@ The following system metrics are provided:
 Auto-configuration exposes application startup time metrics:
 
 * `application.started.time`: time taken to start the application.
-* `application.ready.time`: time taken for the application to be ready to serve requests.
+* `application.ready.time`: time taken for the application to be ready to service requests.
 
 Metrics are tagged by the fully qualified name of the application class.
 
