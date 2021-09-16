@@ -18,7 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,12 +90,12 @@ public class MetricsProperties {
 		return this.data;
 	}
 
-	public Distribution getDistribution() {
-		return this.distribution;
-	}
-
 	public System getSystem() {
 		return this.system;
+	}
+
+	public Distribution getDistribution() {
+		return this.distribution;
 	}
 
 	public static class Web {
@@ -267,6 +268,33 @@ public class MetricsProperties {
 
 	}
 
+	public static class System {
+
+		private final Diskspace diskspace = new Diskspace();
+
+		public Diskspace getDiskspace() {
+			return this.diskspace;
+		}
+
+		public static class Diskspace {
+
+			/**
+			 * Comma-separated list of paths to report disk metrics for.
+			 */
+			private List<File> paths = new ArrayList<>(Collections.singletonList(new File(".")));
+
+			public List<File> getPaths() {
+				return this.paths;
+			}
+
+			public void setPaths(List<File> paths) {
+				this.paths = paths;
+			}
+
+		}
+
+	}
+
 	public static class Distribution {
 
 		/**
@@ -348,33 +376,6 @@ public class MetricsProperties {
 
 		public Map<String, Integer> getBufferLength() {
 			return this.bufferLength;
-		}
-
-	}
-
-	public static class System {
-
-		private final Diskspace diskspace = new Diskspace();
-
-		public Diskspace getDiskspace() {
-			return this.diskspace;
-		}
-
-		public static class Diskspace {
-
-			/**
-			 * Comma-separated list of paths to report disk metrics for.
-			 */
-			private List<File> paths = Arrays.asList(new File("."));
-
-			public List<File> getPaths() {
-				return this.paths;
-			}
-
-			public void setPaths(List<File> paths) {
-				this.paths = paths;
-			}
-
 		}
 
 	}

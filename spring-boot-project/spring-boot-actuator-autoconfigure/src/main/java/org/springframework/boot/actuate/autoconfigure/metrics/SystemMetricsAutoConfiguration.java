@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.io.File;
+import java.util.List;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
@@ -28,6 +31,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,13 +46,8 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
+@EnableConfigurationProperties(MetricsProperties.class)
 public class SystemMetricsAutoConfiguration {
-
-	private final MetricsProperties properties;
-
-	public SystemMetricsAutoConfiguration(MetricsProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -70,8 +69,9 @@ public class SystemMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DiskSpaceMetricsBinder diskSpaceMetrics() {
-		return new DiskSpaceMetricsBinder(this.properties.getSystem().getDiskspace().getPaths(), Tags.empty());
+	public DiskSpaceMetricsBinder diskSpaceMetrics(MetricsProperties properties) {
+		List<File> paths = properties.getSystem().getDiskspace().getPaths();
+		return new DiskSpaceMetricsBinder(paths, Tags.empty());
 	}
 
 }
