@@ -36,7 +36,7 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
-	private final Duration startupTime;
+	private final Duration startedTime;
 
 	/**
 	 * Create a new {@link ApplicationStartedEvent} instance.
@@ -57,13 +57,14 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param context the context that was being created
-	 * @param startupTime the time taken to start the application
+	 * @param startedTime the time taken to start the application
+	 * @since 2.6.0
 	 */
 	public ApplicationStartedEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
-			Duration startupTime) {
+			Duration startedTime) {
 		super(application, args);
 		this.context = context;
-		this.startupTime = startupTime;
+		this.startedTime = startedTime;
 	}
 
 	/**
@@ -75,11 +76,11 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 	}
 
 	/**
-	 * Return the time taken to start the application.
+	 * Return the time taken to start the application, or {@code null} if unknown.
 	 * @return the startup time
 	 */
-	public Duration getStartupTime() {
-		return this.startupTime;
+	public Duration getStartedTime() {
+		return this.startedTime;
 	}
 
 }

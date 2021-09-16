@@ -16,7 +16,6 @@
 
 package org.springframework.boot.devtools.restart;
 
-import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -111,7 +110,7 @@ class RestartApplicationListenerTests {
 			listener.onApplicationEvent(new ApplicationFailedEvent(application, ARGS, context, new RuntimeException()));
 		}
 		else {
-			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS, context, Duration.ZERO));
+			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS, context, null));
 		}
 	}
 

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.startup;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,16 @@ import org.springframework.context.event.SmartApplicationListener;
  */
 public class StartupTimeMetrics implements SmartApplicationListener {
 
+	/**
+	 * The default name to use for the application started time metric.
+	 */
+	public static final String APPLICATION_STARTED_TIME_METRIC_NAME = "application.started.time";
+
+	/**
+	 * The default name to use for the application ready time metric.
+	 */
+	public static final String APPLICATION_READY_TIME_METRIC_NAME = "application.ready.time";
+
 	private final MeterRegistry meterRegistry;
 
 	private final String applicationStartedTimeMetricName;
@@ -47,10 +58,26 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 
 	private final Iterable<Tag> tags;
 
+	/**
+	 * Create a new instance using default metric names.
+	 * @param meterRegistry the registry to use
+	 * @see #APPLICATION_STARTED_TIME_METRIC_NAME
+	 * @see #APPLICATION_READY_TIME_METRIC_NAME
+	 */
 	public StartupTimeMetrics(MeterRegistry meterRegistry) {
-		this(meterRegistry, Collections.emptyList(), "application.started.time", "application.ready.time");
+		this(meterRegistry, Collections.emptyList(), APPLICATION_STARTED_TIME_METRIC_NAME,
+				APPLICATION_READY_TIME_METRIC_NAME);
 	}
 
+	/**
+	 * Create a new instance using the specified options.
+	 * @param meterRegistry the registry to use
+	 * @param tags the tags to associate to application startup metrics
+	 * @param applicationStartedTimeMetricName the name to use for the application started
+	 * time metric
+	 * @param applicationReadyTimeMetricName the name to use for the application ready
+	 * time metric
+	 */
 	public StartupTimeMetrics(MeterRegistry meterRegistry, Iterable<Tag> tags, String applicationStartedTimeMetricName,
 			String applicationReadyTimeMetricName) {
 		this.meterRegistry = meterRegistry;
@@ -76,29 +103,28 @@ public class StartupTimeMetrics implements SmartApplicationListener {
 	}
 
 	private void onApplicationStarted(ApplicationStartedEvent event) {
-		if (event.getStartupTime() == null) {
+		if (event.getStartedTime() == null) {
 			return;
 		}
-		TimeGauge
-				.builder(this.applicationStartedTimeMetricName, () -> event.getStartupTime().toMillis(),
-						TimeUnit.MILLISECONDS)
-				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
-				.description("Time taken (ms) to start the application").register(this.meterRegistry);
+		registerGauge(this.applicationStartedTimeMetricName, "Time taken (ms) to start the application",
+				event.getStartedTime(), createTagsFrom(event.getSpringApplication()));
 	}
 
 	private void onApplicationReady(ApplicationReadyEvent event) {
-		if (event.getStartupTime() == null) {
+		if (event.getReadyTime() == null) {
 			return;
 		}
-		TimeGauge
-				.builder(this.applicationReadyTimeMetricName, () -> event.getStartupTime().toMillis(),
-						TimeUnit.MILLISECONDS)
-				.tags(maybeDcorateTagsWithApplicationInfo(event.getSpringApplication()))
-				.description("Time taken (ms) for the application to be ready to serve requests")
+		registerGauge(this.applicationReadyTimeMetricName,
+				"Time taken (ms) for the application to be ready to serve requests", event.getReadyTime(),
+				createTagsFrom(event.getSpringApplication()));
+	}
+
+	private void registerGauge(String metricName, String description, Duration time, Iterable<Tag> tags) {
+		TimeGauge.builder(metricName, time::toMillis, TimeUnit.MILLISECONDS).tags(tags).description(description)
 				.register(this.meterRegistry);
 	}
 
-	private Iterable<Tag> maybeDcorateTagsWithApplicationInfo(SpringApplication springApplication) {
+	private Iterable<Tag> createTagsFrom(SpringApplication springApplication) {
 		Class<?> mainClass = springApplication.getMainApplicationClass();
 		if (mainClass == null) {
 			return this.tags;

@@ -17,8 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.startup;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
-import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -29,15 +30,15 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link StartupTimeMetricsAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Stephane Nicoll
  */
 class StartupTimeMetricsAutoConfigurationTests {
 
@@ -47,14 +48,18 @@ class StartupTimeMetricsAutoConfigurationTests {
 	@Test
 	void startupTimeMetricsAreRecorded() {
 		this.contextRunner.run((context) -> {
-			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-					context.getSourceApplicationContext(), Duration.ofMillis(2500)));
-			context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
-					context.getSourceApplicationContext(), Duration.ofMillis(3000)));
 			assertThat(context).hasSingleBean(StartupTimeMetrics.class);
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-			assertThat(registry.find("application.started.time").timeGauge()).isNotNull();
-			assertThat(registry.find("application.ready.time").timeGauge()).isNotNull();
+			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+					context.getSourceApplicationContext(), Duration.ofMillis(1500)));
+			TimeGauge startedTimeGage = registry.find("application.started.time").timeGauge();
+			assertThat(startedTimeGage).isNotNull();
+			assertThat(startedTimeGage.value(TimeUnit.MILLISECONDS)).isEqualTo(1500L);
+			context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+					context.getSourceApplicationContext(), Duration.ofMillis(2000)));
+			TimeGauge readyTimeGage = registry.find("application.ready.time").timeGauge();
+			assertThat(readyTimeGage).isNotNull();
+			assertThat(readyTimeGage.value(TimeUnit.MILLISECONDS)).isEqualTo(2000L);
 		});
 	}
 
@@ -74,19 +79,10 @@ class StartupTimeMetricsAutoConfigurationTests {
 
 	@Test
 	void customStartupTimeMetricsAreRespected() {
-		this.contextRunner.withUserConfiguration(CustomStartupTimeMetricsConfiguration.class)
+		this.contextRunner
+				.withBean("customStartupTimeMetrics", StartupTimeMetrics.class, () -> mock(StartupTimeMetrics.class))
 				.run((context) -> assertThat(context).hasSingleBean(StartupTimeMetrics.class)
-						.hasBean("customStartTimeMetrics"));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomStartupTimeMetricsConfiguration {
-
-		@Bean
-		StartupTimeMetrics customStartTimeMetrics() {
-			return new StartupTimeMetrics(new SimpleMeterRegistry(), Tags.empty(), "myapp.started", "myapp.ready");
-		}
-
+						.hasBean("customStartupTimeMetrics"));
 	}
 
 }

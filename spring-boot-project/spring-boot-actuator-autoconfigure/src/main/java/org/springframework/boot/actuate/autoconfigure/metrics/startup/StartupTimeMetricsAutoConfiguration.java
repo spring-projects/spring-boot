@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for the {@link StartupTimeMetrics}.
+ * {@link EnableAutoConfiguration Auto-configuration} for startup time metrics.
  *
  * @author Chris Bono
  * @since 2.6.0
@@ -43,7 +43,7 @@ public class StartupTimeMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	StartupTimeMetrics startupTimeMetrics(MeterRegistry meterRegistry) {
+	public StartupTimeMetrics startupTimeMetrics(MeterRegistry meterRegistry) {
 		return new StartupTimeMetrics(meterRegistry);
 	}
 

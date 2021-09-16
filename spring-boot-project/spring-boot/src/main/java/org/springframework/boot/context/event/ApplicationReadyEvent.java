@@ -37,7 +37,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
-	private final Duration startupTime;
+	private final Duration readyTime;
 
 	/**
 	 * Create a new {@link ApplicationReadyEvent} instance.
@@ -47,6 +47,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
 	 * {@link #ApplicationReadyEvent(SpringApplication, String[], ConfigurableApplicationContext, Duration)}
 	 */
+	@Deprecated
 	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context) {
 		this(application, args, context, null);
 	}
@@ -56,13 +57,14 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param context the context that was being created
-	 * @param startupTime the time taken to get the application ready to service requests
+	 * @param readyTime the time taken to get the application ready to service requests
+	 * @since 2.6.0
 	 */
 	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
-			Duration startupTime) {
+			Duration readyTime) {
 		super(application, args);
 		this.context = context;
-		this.startupTime = startupTime;
+		this.readyTime = readyTime;
 	}
 
 	/**
@@ -74,11 +76,12 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	}
 
 	/**
-	 * Return the time taken for the application to be ready to service requests.
-	 * @return the startup time
+	 * Return the time taken for the application to be ready to service requests, or
+	 * {@code null} if unknown.
+	 * @return the time taken to be ready to service requests
 	 */
-	public Duration getStartupTime() {
-		return this.startupTime;
+	public Duration getReadyTime() {
+		return this.readyTime;
 	}
 
 }

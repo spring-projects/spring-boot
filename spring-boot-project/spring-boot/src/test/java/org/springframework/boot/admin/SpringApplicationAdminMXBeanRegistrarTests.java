@@ -17,7 +17,6 @@
 package org.springframework.boot.admin;
 
 import java.lang.management.ManagementFactory;
-import java.time.Duration;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
@@ -90,10 +89,9 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
 		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null,
-				mock(ConfigurableApplicationContext.class), Duration.ZERO));
+				mock(ConfigurableApplicationContext.class), null));
 		assertThat(isApplicationReady(registrar)).isFalse();
-		registrar.onApplicationReadyEvent(
-				new ApplicationReadyEvent(new SpringApplication(), null, context, Duration.ZERO));
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context, null));
 		assertThat(isApplicationReady(registrar)).isTrue();
 	}
 

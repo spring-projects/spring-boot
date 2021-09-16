@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,44 +41,52 @@ import static org.mockito.Mockito.mock;
  */
 class StartupTimeMetricsTests {
 
-	private static final long APP_STARTED_TIME_MS = 2500;
-
-	private static final long APP_RUNNING_TIME_MS = 2900;
-
 	private MeterRegistry registry;
 
 	private StartupTimeMetrics metrics;
 
 	@BeforeEach
-	void prepareUnit() {
+	void setup() {
 		this.registry = new SimpleMeterRegistry();
 		this.metrics = new StartupTimeMetrics(this.registry);
 	}
 
 	@Test
 	void metricsRecordedWithoutCustomTags() {
-		this.metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
-		this.metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertMetricExistsWithValue("application.started.time", APP_STARTED_TIME_MS);
-		assertMetricExistsWithValue("application.ready.time", APP_RUNNING_TIME_MS);
+		this.metrics.onApplicationEvent(applicationStartedEvent(2000L));
+		this.metrics.onApplicationEvent(applicationReadyEvent(2200L));
+		assertMetricExistsWithValue("application.started.time", 2000L);
+		assertMetricExistsWithValue("application.ready.time", 2200L);
 	}
 
 	@Test
 	void metricsRecordedWithCustomTagsAndMetricNames() {
 		Tags tags = Tags.of("foo", "bar");
 		this.metrics = new StartupTimeMetrics(this.registry, tags, "m1", "m2");
-		this.metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
-		this.metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertMetricExistsWithCustomTagsAndValue("m1", tags, APP_STARTED_TIME_MS);
-		assertMetricExistsWithCustomTagsAndValue("m2", tags, APP_RUNNING_TIME_MS);
+		this.metrics.onApplicationEvent(applicationStartedEvent(1000L));
+		this.metrics.onApplicationEvent(applicationReadyEvent(1050L));
+		assertMetricExistsWithCustomTagsAndValue("m1", tags, 1000L);
+		assertMetricExistsWithCustomTagsAndValue("m2", tags, 1050L);
 	}
 
 	@Test
-	void metricsRecordedWithoutMainAppClassTagWhenMainAppClassNotAvailable() {
-		this.metrics.onApplicationEvent(applicationStartedEvent(APP_STARTED_TIME_MS));
-		this.metrics.onApplicationEvent(applicationReadyEvent(APP_RUNNING_TIME_MS));
-		assertThat(this.registry.find("application.started.time").timeGauge()).isNotNull();
-		assertThat(this.registry.find("application.ready.time").timeGauge()).isNotNull();
+	void metricRecordedWithoutMainAppClassTag() {
+		SpringApplication application = mock(SpringApplication.class);
+		this.metrics.onApplicationEvent(new ApplicationStartedEvent(application, null, null, Duration.ofSeconds(2)));
+		TimeGauge applicationStartedGague = this.registry.find("application.started.time").timeGauge();
+		assertThat(applicationStartedGague).isNotNull();
+		assertThat(applicationStartedGague.getId().getTags()).isEmpty();
+	}
+
+	@Test
+	void metricRecordedWithoutMainAppClassTagAndAdditionalTags() {
+		SpringApplication application = mock(SpringApplication.class);
+		Tags tags = Tags.of("foo", "bar");
+		this.metrics = new StartupTimeMetrics(this.registry, tags, "started", "ready");
+		this.metrics.onApplicationEvent(new ApplicationReadyEvent(application, null, null, Duration.ofSeconds(2)));
+		TimeGauge applicationReadyGague = this.registry.find("ready").timeGauge();
+		assertThat(applicationReadyGague).isNotNull();
+		assertThat(applicationReadyGague.getId().getTags()).containsExactlyElementsOf(tags);
 	}
 
 	@Test
@@ -102,16 +111,16 @@ class StartupTimeMetricsTests {
 				(startupTimeMs != null) ? Duration.ofMillis(startupTimeMs) : null);
 	}
 
-	private void assertMetricExistsWithValue(String metricName, double expectedValueInMillis) {
+	private void assertMetricExistsWithValue(String metricName, long expectedValueInMillis) {
 		assertMetricExistsWithCustomTagsAndValue(metricName, Tags.empty(), expectedValueInMillis);
 	}
 
 	private void assertMetricExistsWithCustomTagsAndValue(String metricName, Tags expectedCustomTags,
-			double expectedValueInMillis) {
+			Long expectedValueInMillis) {
 		assertThat(this.registry.find(metricName)
 				.tags(Tags.concat(expectedCustomTags, "main-application-class", TestMainApplication.class.getName()))
 				.timeGauge()).isNotNull().extracting((m) -> m.value(TimeUnit.MILLISECONDS))
-						.isEqualTo(expectedValueInMillis);
+						.isEqualTo(expectedValueInMillis.doubleValue());
 	}
 
 	static class TestMainApplication {

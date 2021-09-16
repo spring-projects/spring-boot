@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.event;
 
-import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,9 +72,9 @@ class EventPublishingRunListenerTests {
 		this.runListener.contextLoaded(context);
 		checkApplicationEvents(ApplicationPreparedEvent.class);
 		context.refresh();
-		this.runListener.started(context, Duration.ZERO);
+		this.runListener.started(context, null);
 		checkApplicationEvents(ApplicationStartedEvent.class, AvailabilityChangeEvent.class);
-		this.runListener.running(context, Duration.ZERO);
+		this.runListener.running(context, null);
 		checkApplicationEvents(ApplicationReadyEvent.class, AvailabilityChangeEvent.class);
 	}
 

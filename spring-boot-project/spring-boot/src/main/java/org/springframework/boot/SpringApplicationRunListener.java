@@ -83,6 +83,7 @@ public interface SpringApplicationRunListener {
 	 */
 	@Deprecated
 	default void started(ConfigurableApplicationContext context) {
+		started(context, null);
 	}
 
 	/**
@@ -90,11 +91,11 @@ public interface SpringApplicationRunListener {
 	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
 	 * ApplicationRunners} have not been called.
 	 * @param context the application context.
-	 * @param startupTime the time taken to start the application or {@code null} if
+	 * @param startedTime the time taken to start the application or {@code null} if
 	 * unknown
-	 * @since 2.0.0
+	 * @since 2.6.0
 	 */
-	default void started(ConfigurableApplicationContext context, Duration startupTime) {
+	default void started(ConfigurableApplicationContext context, Duration startedTime) {
 		started(context);
 	}
 
@@ -109,6 +110,7 @@ public interface SpringApplicationRunListener {
 	 */
 	@Deprecated
 	default void running(ConfigurableApplicationContext context) {
+		running(context, null);
 	}
 
 	/**
@@ -116,11 +118,11 @@ public interface SpringApplicationRunListener {
 	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
 	 * {@link ApplicationRunner ApplicationRunners} have been called.
 	 * @param context the application context.
-	 * @param startupTime the time taken for the application to be ready to service
-	 * requests or {@code null} if unknown
+	 * @param readyTime the time taken for the application to be ready to service requests
+	 * or {@code null} if unknown
 	 * @since 2.6.0
 	 */
-	default void running(ConfigurableApplicationContext context, Duration startupTime) {
+	default void running(ConfigurableApplicationContext context, Duration readyTime) {
 		running(context);
 	}
 

@@ -287,7 +287,7 @@ public class SpringApplication {
 	 */
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
-		stopWatch.start("applicationStarted");
+		stopWatch.start();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -304,11 +304,12 @@ public class SpringApplication {
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
-			stopWatch.start("applicationReady");
+			Duration startedTime = Duration.ofMillis(stopWatch.getTotalTimeMillis());
+			stopWatch.start();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), startedTime);
 			}
-			listeners.started(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
+			listeners.started(context, startedTime);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
