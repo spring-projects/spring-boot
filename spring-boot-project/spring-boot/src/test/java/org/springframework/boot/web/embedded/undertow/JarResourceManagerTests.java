@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,23 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.List;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceManager;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,46 +46,58 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JarResourceManagerTests {
 
-	private ResourceManager resourceManager;
+	@TempDir
+	static File tempDir;
 
-	@BeforeEach
-	void createJar(@TempDir File tempDir) throws IOException {
+	@ResourceManagersTest
+	void emptyPathIsHandledCorrectly(String filename, ResourceManager resourceManager) throws IOException {
+		Resource resource = resourceManager.getResource("");
+		assertThat(resource).isNotNull();
+		assertThat(resource.isDirectory()).isTrue();
+	}
+
+	@ResourceManagersTest
+	void rootPathIsHandledCorrectly(String filename, ResourceManager resourceManager) throws IOException {
+		Resource resource = resourceManager.getResource("/");
+		assertThat(resource).isNotNull();
+		assertThat(resource.isDirectory()).isTrue();
+	}
+
+	@ResourceManagersTest
+	void resourceIsFoundInJarFile(String filename, ResourceManager resourceManager) throws IOException {
+		Resource resource = resourceManager.getResource("/hello.txt");
+		assertThat(resource).isNotNull();
+		assertThat(resource.isDirectory()).isFalse();
+		assertThat(resource.getContentLength()).isEqualTo(5);
+	}
+
+	@ResourceManagersTest
+	void resourceIsFoundInJarFileWithoutLeadingSlash(String filename, ResourceManager resourceManager)
+			throws IOException {
+		Resource resource = resourceManager.getResource("hello.txt");
+		assertThat(resource).isNotNull();
+		assertThat(resource.isDirectory()).isFalse();
+		assertThat(resource.getContentLength()).isEqualTo(5);
+	}
+
+	static List<Arguments> resourceManagers() throws IOException {
 		File jar = new File(tempDir, "test.jar");
 		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jar))) {
 			out.putNextEntry(new ZipEntry("hello.txt"));
 			out.write("hello".getBytes());
 		}
-		this.resourceManager = new JarResourceManager(jar);
+		File troublesomeNameJar = new File(tempDir, "test##1.0.jar");
+		FileCopyUtils.copy(jar, troublesomeNameJar);
+		return Arrays.asList(Arguments.of(jar.getName(), new JarResourceManager(jar)),
+				Arguments.of(troublesomeNameJar.getName(), new JarResourceManager(troublesomeNameJar)));
 	}
 
-	@Test
-	void emptyPathIsHandledCorrectly() throws IOException {
-		Resource resource = this.resourceManager.getResource("");
-		assertThat(resource).isNotNull();
-		assertThat(resource.isDirectory()).isTrue();
-	}
+	@ParameterizedTest(name = "[{index}] {0}")
+	@MethodSource("resourceManagers")
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface ResourceManagersTest {
 
-	@Test
-	void rootPathIsHandledCorrectly() throws IOException {
-		Resource resource = this.resourceManager.getResource("/");
-		assertThat(resource).isNotNull();
-		assertThat(resource.isDirectory()).isTrue();
-	}
-
-	@Test
-	void resourceIsFoundInJarFile() throws IOException {
-		Resource resource = this.resourceManager.getResource("/hello.txt");
-		assertThat(resource).isNotNull();
-		assertThat(resource.isDirectory()).isFalse();
-		assertThat(resource.getContentLength()).isEqualTo(5);
-	}
-
-	@Test
-	void resourceIsFoundInJarFileWithoutLeadingSlash() throws IOException {
-		Resource resource = this.resourceManager.getResource("hello.txt");
-		assertThat(resource).isNotNull();
-		assertThat(resource.isDirectory()).isFalse();
-		assertThat(resource.getContentLength()).isEqualTo(5);
 	}
 
 }
