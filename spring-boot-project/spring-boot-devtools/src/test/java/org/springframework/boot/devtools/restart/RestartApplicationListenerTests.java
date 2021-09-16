@@ -110,7 +110,7 @@ class RestartApplicationListenerTests {
 			listener.onApplicationEvent(new ApplicationFailedEvent(application, ARGS, context, new RuntimeException()));
 		}
 		else {
-			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS, context));
+			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS, context, null));
 		}
 	}
 

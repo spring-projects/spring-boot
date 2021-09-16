@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -150,6 +151,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
+ * @author Chris Bono
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -302,10 +304,12 @@ public class SpringApplication {
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
+			Duration startedTime = Duration.ofMillis(stopWatch.getTotalTimeMillis());
+			stopWatch.start();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), startedTime);
 			}
-			listeners.started(context);
+			listeners.started(context, startedTime);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -314,7 +318,8 @@ public class SpringApplication {
 		}
 
 		try {
-			listeners.running(context);
+			stopWatch.stop();
+			listeners.running(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);

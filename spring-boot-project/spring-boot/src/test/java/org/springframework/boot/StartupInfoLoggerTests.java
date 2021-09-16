@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ class StartupInfoLoggerTests {
 		stopWatch.start();
 		given(this.log.isInfoEnabled()).willReturn(true);
 		stopWatch.stop();
-		new StartupInfoLogger(getClass()).logStarted(this.log, stopWatch);
+		new StartupInfoLogger(getClass()).logStarted(this.log, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
 		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()

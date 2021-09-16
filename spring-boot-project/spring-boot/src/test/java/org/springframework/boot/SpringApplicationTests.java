@@ -88,6 +88,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
@@ -149,6 +150,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Artsiom Yudovin
  * @author Marten Deinum
  * @author Nguyen Bao Sach
+ * @author Chris Bono
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -361,36 +363,18 @@ class SpringApplicationTests {
 	void applicationRunningEventListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		final AtomicReference<SpringApplication> reference = new AtomicReference<>();
-		class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
-
-			@Override
-			public void onApplicationEvent(ApplicationReadyEvent event) {
-				reference.set(event.getSpringApplication());
-			}
-
-		}
-		application.addListeners(new ApplicationReadyEventListener());
+		AtomicReference<ApplicationReadyEvent> reference = setupListener(application, ApplicationReadyEvent.class);
 		this.context = application.run("--foo=bar");
-		assertThat(application).isSameAs(reference.get());
+		assertThat(application).isSameAs(reference.get().getSpringApplication());
 	}
 
 	@Test
 	void contextRefreshedEventListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		final AtomicReference<ApplicationContext> reference = new AtomicReference<>();
-		class InitializerListener implements ApplicationListener<ContextRefreshedEvent> {
-
-			@Override
-			public void onApplicationEvent(ContextRefreshedEvent event) {
-				reference.set(event.getApplicationContext());
-			}
-
-		}
-		application.setListeners(Collections.singletonList(new InitializerListener()));
+		AtomicReference<ContextRefreshedEvent> reference = setupListener(application, ContextRefreshedEvent.class);
 		this.context = application.run("--foo=bar");
-		assertThat(this.context).isSameAs(reference.get());
+		assertThat(this.context).isSameAs(reference.get().getApplicationContext());
 		// Custom initializers do not switch off the defaults
 		assertThat(getEnvironment().getProperty("foo")).isEqualTo("bar");
 	}
@@ -415,6 +399,24 @@ class SpringApplicationTests {
 		inOrder.verify(listener)
 				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(ReadinessState.ACCEPTING_TRAFFIC)));
 		inOrder.verifyNoMoreInteractions();
+	}
+
+	@Test
+	void applicationStartedEventHasStartedTime() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		AtomicReference<ApplicationStartedEvent> reference = setupListener(application, ApplicationStartedEvent.class);
+		this.context = application.run();
+		assertThat(reference.get()).isNotNull().extracting(ApplicationStartedEvent::getStartedTime).isNotNull();
+	}
+
+	@Test
+	void applicationReadyEventHasReadyTime() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		AtomicReference<ApplicationReadyEvent> reference = setupListener(application, ApplicationReadyEvent.class);
+		this.context = application.run();
+		assertThat(reference.get()).isNotNull().extracting(ApplicationReadyEvent::getReadyTime).isNotNull();
 	}
 
 	@Test
@@ -1248,6 +1250,27 @@ class SpringApplicationTests {
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
 				&& ((AvailabilityChangeEvent<?>) argument).getState().equals(state);
+	}
+
+	private <T extends ApplicationEvent> AtomicReference<T> setupListener(SpringApplication application,
+			Class<T> targetEventType) {
+		final AtomicReference<T> reference = new AtomicReference<>();
+		class TestEventListener implements SmartApplicationListener {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public void onApplicationEvent(ApplicationEvent event) {
+				reference.set((T) event);
+			}
+
+			@Override
+			public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+				return targetEventType.isAssignableFrom(eventType);
+			}
+
+		}
+		application.addListeners(new TestEventListener());
+		return reference;
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final Class<?> propertySourceClass,

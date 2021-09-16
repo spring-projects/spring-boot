@@ -38,6 +38,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -61,8 +62,7 @@ class TomcatMetricsAutoConfigurationTests {
 						ServletWebServerFactoryAutoConfiguration.class))
 				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true").run((context) -> {
-					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 					assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("tomcat.sessions.active.max").meter()).isNotNull();
@@ -78,8 +78,7 @@ class TomcatMetricsAutoConfigurationTests {
 						ReactiveWebServerFactoryAutoConfiguration.class))
 				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true").run((context) -> {
-					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext()));
+					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("tomcat.sessions.active.max").meter()).isNotNull();
 					assertThat(registry.find("tomcat.threads.current").meter()).isNotNull();
@@ -107,6 +106,10 @@ class TomcatMetricsAutoConfigurationTests {
 				.withUserConfiguration(MeterRegistryConfiguration.class, CustomTomcatMetrics.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(TomcatMetricsBinder.class)
 						.hasBean("customTomcatMetrics"));
+	}
+
+	private ApplicationStartedEvent createApplicationStartedEvent(ConfigurableApplicationContext context) {
+		return new ApplicationStartedEvent(new SpringApplication(), null, context, null);
 	}
 
 	private void resetTomcatState() {

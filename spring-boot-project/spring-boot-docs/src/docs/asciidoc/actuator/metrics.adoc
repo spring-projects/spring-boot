@@ -656,6 +656,17 @@ The following system metrics are provided:
 
 
 
+[[actuator.metrics.supported.application-startup]]
+==== Application Startup Metrics
+Auto-configuration exposes application startup time metrics:
+
+* `application.started.time`: time taken to start the application.
+* `application.ready.time`: time taken for the application to be ready to serve requests.
+
+Metrics are tagged by the fully qualified name of the application class.
+
+
+
 [[actuator.metrics.supported.logger]]
 ==== Logger Metrics
 Auto-configuration enables the event metrics for both Logback and Log4J2.
