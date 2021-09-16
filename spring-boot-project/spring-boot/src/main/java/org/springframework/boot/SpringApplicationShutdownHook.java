@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,30 +60,35 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	private final ApplicationContextClosedListener contextCloseListener = new ApplicationContextClosedListener();
 
+	private final AtomicBoolean shutdownHookAdded = new AtomicBoolean(false);
+
 	private boolean inProgress;
-
-	SpringApplicationShutdownHook() {
-		try {
-			addRuntimeShutdownHook();
-		}
-		catch (AccessControlException ex) {
-			// Not allowed in some environments
-		}
-	}
-
-	protected void addRuntimeShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(new Thread(this, "SpringApplicationShutdownHook"));
-	}
 
 	SpringApplicationShutdownHandlers getHandlers() {
 		return this.handlers;
 	}
 
 	void registerApplicationContext(ConfigurableApplicationContext context) {
+		addRuntimeShutdownHookIfNecessary();
 		synchronized (SpringApplicationShutdownHook.class) {
 			assertNotInProgress();
 			context.addApplicationListener(this.contextCloseListener);
 			this.contexts.add(context);
+		}
+	}
+
+	private void addRuntimeShutdownHookIfNecessary() {
+		if (this.shutdownHookAdded.compareAndSet(false, true)) {
+			addRuntimeShutdownHook();
+		}
+	}
+
+	void addRuntimeShutdownHook() {
+		try {
+			Runtime.getRuntime().addShutdownHook(new Thread(this, "SpringApplicationShutdownHook"));
+		}
+		catch (AccessControlException ex) {
+			// Not allowed in some environments
 		}
 	}
 
