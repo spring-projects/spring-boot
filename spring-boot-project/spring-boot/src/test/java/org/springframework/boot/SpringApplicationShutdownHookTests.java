@@ -46,8 +46,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class SpringApplicationShutdownHookTests {
 
 	@Test
-	void createCallsRegister() {
+	void shutdownHookIsNotAddedUntilContextIsRegistered() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isFalse();
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		shutdownHook.registerApplicationContext(context);
 		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isTrue();
 	}
 
