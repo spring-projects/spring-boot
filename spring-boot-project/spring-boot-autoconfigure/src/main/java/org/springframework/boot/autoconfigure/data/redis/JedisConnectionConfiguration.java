@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -41,6 +42,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -49,9 +51,10 @@ import org.springframework.util.StringUtils;
 class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	JedisConnectionConfiguration(RedisProperties properties,
+			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
-		super(properties, sentinelConfiguration, clusterConfiguration);
+		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration);
 	}
 
 	@Bean

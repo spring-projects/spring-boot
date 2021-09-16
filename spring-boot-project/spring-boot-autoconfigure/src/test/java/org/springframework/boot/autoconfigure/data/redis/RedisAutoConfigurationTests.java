@@ -40,10 +40,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisClusterConfiguration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisNode;
-import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
@@ -232,6 +229,14 @@ class RedisAutoConfigurationTests {
 			assertThat(cf.getTimeout()).isEqualTo(60000);
 			assertThat(cf.getClientConfiguration().getClientOptions().get().getSocketOptions().getConnectTimeout()
 					.toMillis()).isEqualTo(10000);
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithCustomBean() {
+		this.contextRunner.withUserConfiguration(RedisStandaloneConfig.class).run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getHostName()).isEqualTo("foo");
 		});
 	}
 
@@ -452,6 +457,18 @@ class RedisAutoConfigurationTests {
 		@Bean
 		LettuceClientConfigurationBuilderCustomizer customizer() {
 			return LettuceClientConfigurationBuilder::useSsl;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RedisStandaloneConfig {
+
+		@Bean
+		RedisStandaloneConfiguration standaloneConfiguration() {
+			RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+			config.setHostName("foo");
+			return config;
 		}
 
 	}
