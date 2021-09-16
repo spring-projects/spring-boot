@@ -256,6 +256,13 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 						.isEqualTo(Duration.ofSeconds(2)));
 	}
 
+	@Test
+	void whenPathPrefixIsConfiguredThenClientConfigurationHasPathPrefix() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.path-prefix=/some/prefix")
+				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getPathPrefix())
+						.isEqualTo("/some/prefix"));
+	}
+
 	@ParameterizedPropertyPrefixTest
 	void whenCredentialsAreConfiguredThenClientConfigurationHasDefaultAuthorizationHeader(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "username=alice", prefix + "password=secret")

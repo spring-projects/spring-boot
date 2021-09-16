@@ -80,6 +80,9 @@ class ElasticsearchRestClientConfigurations {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
+			if (this.properties.getPathPrefix() != null) {
+				builder.setPathPrefix(this.properties.properties.getPathPrefix());
+			}
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}
@@ -251,6 +254,10 @@ class ElasticsearchRestClientConfigurations {
 		private Duration getSocketTimeout() {
 			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getReadTimeout()
 					: this.properties.getSocketTimeout();
+		}
+
+		private String getPathPrefix() {
+			return this.deprecatedProperties.isCustomized() ? null : this.properties.getPathPrefix();
 		}
 
 	}

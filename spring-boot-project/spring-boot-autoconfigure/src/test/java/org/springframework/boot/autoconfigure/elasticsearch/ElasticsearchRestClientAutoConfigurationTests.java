@@ -202,6 +202,14 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void configureWithCustomPathPrefix() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.path-prefix=/some/prefix").run((context) -> {
+			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			assertThat(client).extracting("pathPrefix").isEqualTo("/some/prefix");
+		});
+	}
+
+	@Test
 	void configureWithoutSnifferLibraryShouldNotCreateSniffer() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.elasticsearch.client.sniff"))
 				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class)

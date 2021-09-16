@@ -57,6 +57,11 @@ public class ElasticsearchProperties {
 	 */
 	private Duration socketTimeout = Duration.ofSeconds(30);
 
+	/**
+	 * Prefix added to the path of every request sent to Elasticsearch.
+	 */
+	private String pathPrefix;
+
 	public List<String> getUris() {
 		return this.uris;
 	}
@@ -95,6 +100,14 @@ public class ElasticsearchProperties {
 
 	public void setSocketTimeout(Duration socketTimeout) {
 		this.socketTimeout = socketTimeout;
+	}
+
+	public String getPathPrefix() {
+		return this.pathPrefix;
+	}
+
+	public void setPathPrefix(String pathPrefix) {
+		this.pathPrefix = pathPrefix;
 	}
 
 }

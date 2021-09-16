@@ -74,6 +74,7 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 				.to((credentials) -> builder.withBasicAuth(credentials.getUsername(), credentials.getPassword()));
 		map.from(this.properties.getConnectionTimeout()).to(builder::withConnectTimeout);
 		map.from(this.properties.getSocketTimeout()).to(builder::withSocketTimeout);
+		map.from(this.properties.getPathPrefix()).to(builder::withPathPrefix);
 		configureExchangeStrategies(map, builder);
 		return builder.build();
 	}
@@ -162,6 +163,10 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 		private DataSize getMaxInMemorySize() {
 			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getMaxInMemorySize()
 					: this.restClientProperties.getMaxInMemorySize();
+		}
+
+		private String getPathPrefix() {
+			return this.deprecatedProperties.isCustomized() ? null : this.properties.getPathPrefix();
 		}
 
 		private static final class Credentials {
