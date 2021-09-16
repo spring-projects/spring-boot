@@ -63,6 +63,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenProjectVersionIsUnspecifiedThenItIsIgnoredWhenDerivingImageName() {
+		assertThat(this.buildImage.getImageName()).isEqualTo("docker.io/library/build-image-test");
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getName().getDomain()).isEqualTo("docker.io");
 		assertThat(request.getName().getName()).isEqualTo("library/build-image-test");
@@ -73,6 +74,7 @@ class BootBuildImageTests {
 	@Test
 	void whenProjectVersionIsSpecifiedThenItIsUsedInTagOfImageName() {
 		this.project.setVersion("1.2.3");
+		assertThat(this.buildImage.getImageName()).isEqualTo("docker.io/library/build-image-test:1.2.3");
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getName().getDomain()).isEqualTo("docker.io");
 		assertThat(request.getName().getName()).isEqualTo("library/build-image-test");
@@ -84,6 +86,7 @@ class BootBuildImageTests {
 	void whenImageNameIsSpecifiedThenItIsUsedInRequest() {
 		this.project.setVersion("1.2.3");
 		this.buildImage.setImageName("example.com/test/build-image:1.0");
+		assertThat(this.buildImage.getImageName()).isEqualTo("example.com/test/build-image:1.0");
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getName().getDomain()).isEqualTo("example.com");
 		assertThat(request.getName().getName()).isEqualTo("test/build-image");
