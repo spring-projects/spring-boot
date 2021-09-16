@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import javax.ws.rs.PathParam;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.jersey2.server.DefaultJerseyTagsProvider;
-import io.micrometer.jersey2.server.JerseyTagsProvider;
-import io.micrometer.jersey2.server.MetricsApplicationEventListener;
+import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
+import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
+import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.junit.jupiter.api.Test;
