@@ -104,13 +104,9 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 				record(timingContext, request, response, exception);
 			}
 		}
-		catch (NestedServletException ex) {
+		catch (Exception ex) {
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			record(timingContext, request, response, ex.getCause());
-			throw ex;
-		}
-		catch (ServletException | IOException | RuntimeException ex) {
-			record(timingContext, request, response, ex);
+			record(timingContext, request, response, (ex instanceof NestedServletException) ? ex.getCause() : ex);
 			throw ex;
 		}
 	}
