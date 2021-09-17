@@ -861,6 +861,10 @@
       ]
     },
     {
+      "name": "spring.flyway.connect-retries-interval",
+      "defaultValue": 120
+    },
+    {
       "name": "spring.flyway.dry-run-output",
       "type": "java.io.OutputStream",
       "deprecation": {
@@ -886,6 +890,14 @@
     {
       "name": "spring.flyway.lock-retry-count",
       "defaultValue": 50
+    },
+    {
+      "name": "spring.flyway.script-placeholder-prefix",
+      "defaultValue": "FP__"
+    },
+    {
+      "name": "spring.flyway.script-placeholder-suffix",
+      "defaultValue": "__"
     },
     {
       "name": "spring.flyway.sql-migration-suffix",
