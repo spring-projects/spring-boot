@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
+import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients.WebClientConfigurationCallback;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -63,11 +64,11 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			ClientConfiguration.TerminalClientConfigurationBuilder builder,
 			ReactiveElasticsearchRestClientProperties properties) {
 		map.from(properties.getMaxInMemorySize()).asInt(DataSize::toBytes).to((maxInMemorySize) -> {
-			builder.withWebClientConfigurer((webClient) -> {
+			builder.withClientConfigurer(WebClientConfigurationCallback.from((webClient) -> {
 				ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
 						.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize)).build();
 				return webClient.mutate().exchangeStrategies(exchangeStrategies).build();
-			});
+			}));
 		});
 	}
 
