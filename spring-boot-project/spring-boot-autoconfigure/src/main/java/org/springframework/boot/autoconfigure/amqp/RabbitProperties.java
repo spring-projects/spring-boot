@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Gary Russell
  * @author Artsiom Yudovin
  * @author Franjo Zilic
+ * @author Eddú Meléndez
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -1193,6 +1194,11 @@ public class RabbitProperties {
 		 */
 		private String password;
 
+		/**
+		 * Name of the stream.
+		 */
+		private String name;
+
 		public String getHost() {
 			return this.host;
 		}
@@ -1223,6 +1229,14 @@ public class RabbitProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 	}

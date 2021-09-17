@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
+import com.rabbitmq.stream.Environment;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -43,6 +44,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.rabbit.stream.producer.ProducerCustomizer;
+import org.springframework.rabbit.stream.producer.RabbitStreamOperations;
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
+import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -83,6 +88,7 @@ import org.springframework.core.io.ResourceLoader;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Chris Bono
+ * @author Eddú Meléndez
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -182,6 +188,38 @@ public class RabbitAutoConfiguration {
 		@ConditionalOnSingleCandidate(RabbitTemplate.class)
 		public RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(RabbitStreamTemplate.class)
+	@ConditionalOnMissingBean(RabbitStreamTemplate.class)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
+	protected static class RabbitStreamTemplateConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(RabbitStreamOperations.class)
+		@ConditionalOnProperty(prefix = "spring.rabbitmq.stream", name = "name")
+		public RabbitStreamTemplate rabbitStreamTemplate(Environment rabbitStreamEnvironment,
+				RabbitProperties properties, ObjectProvider<MessageConverter> messageConverters,
+				ObjectProvider<StreamMessageConverter> streamMessageConverters,
+				ObjectProvider<ProducerCustomizer> producerCustomizers) {
+			RabbitStreamTemplate template = new RabbitStreamTemplate(rabbitStreamEnvironment,
+					properties.getStream().getName());
+			MessageConverter messageConverter = messageConverters.getIfUnique();
+			if (messageConverter != null) {
+				template.setMessageConverter(messageConverter);
+			}
+			StreamMessageConverter streamMessageConverter = streamMessageConverters.getIfUnique();
+			if (streamMessageConverter != null) {
+				template.setStreamConverter(streamMessageConverter);
+			}
+			ProducerCustomizer producerCustomizer = producerCustomizers.getIfUnique();
+			if (producerCustomizer != null) {
+				template.setProducerCustomizer(producerCustomizer);
+			}
+			return template;
 		}
 
 	}
