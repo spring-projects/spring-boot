@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
-import org.springframework.http.HttpHeaders;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -50,37 +49,26 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 	public ClientConfiguration clientConfiguration(ReactiveElasticsearchRestClientProperties properties) {
 		ClientConfiguration.MaybeSecureClientConfigurationBuilder builder = ClientConfiguration.builder()
 				.connectedTo(properties.getEndpoints().toArray(new String[0]));
-		if (properties.isUseSsl()) {
-			builder.usingSsl();
-		}
-		configureTimeouts(builder, properties);
-		configureExchangeStrategies(builder, properties);
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties.isUseSsl()).whenTrue().toCall(builder::usingSsl);
+		map.from(properties.getUsername()).whenHasText()
+				.to((username) -> builder.withBasicAuth(username, properties.getPassword()));
+		map.from(properties.getConnectionTimeout()).to(builder::withConnectTimeout);
+		map.from(properties.getSocketTimeout()).to(builder::withSocketTimeout);
+		configureExchangeStrategies(map, builder, properties);
 		return builder.build();
 	}
 
-	private void configureTimeouts(ClientConfiguration.TerminalClientConfigurationBuilder builder,
+	private void configureExchangeStrategies(PropertyMapper map,
+			ClientConfiguration.TerminalClientConfigurationBuilder builder,
 			ReactiveElasticsearchRestClientProperties properties) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(properties.getConnectionTimeout()).whenNonNull().to(builder::withConnectTimeout);
-		map.from(properties.getSocketTimeout()).whenNonNull().to(builder::withSocketTimeout);
-		map.from(properties.getUsername()).whenHasText().to((username) -> {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setBasicAuth(username, properties.getPassword());
-			builder.withDefaultHeaders(headers);
+		map.from(properties.getMaxInMemorySize()).asInt(DataSize::toBytes).to((maxInMemorySize) -> {
+			builder.withWebClientConfigurer((webClient) -> {
+				ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+						.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize)).build();
+				return webClient.mutate().exchangeStrategies(exchangeStrategies).build();
+			});
 		});
-	}
-
-	private void configureExchangeStrategies(ClientConfiguration.TerminalClientConfigurationBuilder builder,
-			ReactiveElasticsearchRestClientProperties properties) {
-		PropertyMapper map = PropertyMapper.get();
-		builder.withClientConfigurer(ReactiveRestClients.WebClientConfigurationCallback.from((webClient) -> {
-			ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
-					.codecs((configurer) -> map.from(properties.getMaxInMemorySize()).whenNonNull()
-							.asInt(DataSize::toBytes)
-							.to((maxInMemorySize) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize)))
-					.build();
-			return webClient.mutate().exchangeStrategies(exchangeStrategies).build();
-		}));
 	}
 
 	@Bean
