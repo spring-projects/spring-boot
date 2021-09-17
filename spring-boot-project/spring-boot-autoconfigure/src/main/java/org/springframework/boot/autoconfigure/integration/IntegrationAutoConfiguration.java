@@ -65,6 +65,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -119,6 +120,11 @@ public class IntegrationAutoConfiguration {
 		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
 		public PollerMetadata defaultPoller(IntegrationProperties integrationProperties) {
 			IntegrationProperties.Poller poller = integrationProperties.getPoller();
+			int hasCron = poller.getCron() != null ? 1 : 0;
+			int hasFixedDelay = poller.getFixedDelay() != null ? 1 : 0;
+			int hasFixedRate = poller.getFixedRate() != null ? 1 : 0;
+			Assert.isTrue((hasCron + hasFixedDelay + hasFixedRate) <= 1,
+					"The 'cron', 'fixedDelay' and 'fixedRate' are mutually exclusive 'spring.integration.poller' properties.");
 			PollerMetadata pollerMetadata = new PollerMetadata();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);

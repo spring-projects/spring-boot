@@ -420,6 +420,16 @@ class IntegrationAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void triggerPropertiesAreMutuallyExclusive() {
+		this.contextRunner
+				.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
+						"spring.integration.poller.fixed-delay=1s")
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasRootCauseExactlyInstanceOf(IllegalArgumentException.class).hasMessageContaining(
+								"The 'cron', 'fixedDelay' and 'fixedRate' are mutually exclusive 'spring.integration.poller' properties."));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
