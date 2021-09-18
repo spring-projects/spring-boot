@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import org.springframework.boot.configurationprocessor.fieldvalues.UnresolvableDefaultValue;
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 
 /**
@@ -33,6 +34,7 @@ import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesPa
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 1.2.0
  */
 public class JavaCompilerFieldValuesParser implements FieldValuesParser {
@@ -165,7 +167,11 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
 			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
 			if (initializer != null) {
-				return getValue(initializer, defaultValue);
+			    Object initializerResolvedValue = getValue(initializer, defaultValue);
+			    if (initializerResolvedValue == null) {
+                    initializerResolvedValue = new UnresolvableDefaultValue(initializer.toString());
+                }
+			    return initializerResolvedValue;
 			}
 			return defaultValue;
 		}
