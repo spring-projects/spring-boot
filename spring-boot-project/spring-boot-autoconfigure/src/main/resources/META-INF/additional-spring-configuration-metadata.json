@@ -613,6 +613,12 @@
       "defaultValue": true
     },
     {
+      "name": "spring.data.elasticsearch.client.reactive.endpoints",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
       "name": "spring.data.jdbc.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JDBC repositories.",
