@@ -13,7 +13,7 @@ The following example shows a `@Service` Bean that uses constructor injection to
 include::{docs-java}/using/springbeansanddependencyinjection/singleconstructor/MyAccountService.java[]
 ----
 
-If a bean has more than one constructor, you'll need to mark the one you want Spring to use with `@Autowired`:
+If a bean has more than one constructor, you will need to mark the one you want Spring to use with `@Autowired`:
 
 [source,java,indent=0,subs="verbatim"]
 ----

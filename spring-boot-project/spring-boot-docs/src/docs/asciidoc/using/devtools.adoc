@@ -57,7 +57,7 @@ Because you need more information about web requests while developing Spring MVC
 This will give you information about the incoming request, which handler is processing it, the response outcome, etc.
 If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
 
-NOTE: If you don't want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
+NOTE: If you do not want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
 
 TIP: For a complete list of the properties that are applied by the devtools, see {spring-boot-devtools-module-code}/env/DevToolsPropertyDefaultsPostProcessor.java[DevToolsPropertyDefaultsPostProcessor].
 

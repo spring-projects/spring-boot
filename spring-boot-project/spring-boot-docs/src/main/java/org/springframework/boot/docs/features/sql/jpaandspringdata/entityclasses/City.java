@@ -40,7 +40,7 @@ public class City implements Serializable {
 
 	protected City() {
 		// no-args constructor required by JPA spec
-		// this one is protected since it shouldn't be used directly
+		// this one is protected since it should not be used directly
 	}
 
 	public City(String name, String state) {

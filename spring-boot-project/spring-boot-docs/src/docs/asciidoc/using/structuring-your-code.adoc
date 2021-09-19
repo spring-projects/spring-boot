@@ -22,7 +22,7 @@ The <<using#using.using-the-springbootapplication-annotation, `@SpringBootApplic
 For example, if you are writing a JPA application, the package of the `@SpringBootApplication` annotated class is used to search for `@Entity` items.
 Using a root package also allows component scan to apply only on your project.
 
-TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` and `@ComponentScan` annotations that it imports defines that behavior so you can also use those instead.
+TIP: If you do not want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` and `@ComponentScan` annotations that it imports defines that behavior so you can also use those instead.
 
 The following listing shows a typical layout:
 

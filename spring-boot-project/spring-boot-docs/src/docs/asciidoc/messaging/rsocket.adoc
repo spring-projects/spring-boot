@@ -76,7 +76,7 @@ As a client, you need to configure and establish an RSocket connection first.
 Spring Boot auto-configures an `RSocketRequester.Builder` for such cases with the expected codecs and applies any `RSocketConnectorConfigurer` bean.
 
 The `RSocketRequester.Builder` instance is a prototype bean, meaning each injection point will provide you with a new instance .
-This is done on purpose since this builder is stateful and you shouldn't create requesters with different setups using the same instance.
+This is done on purpose since this builder is stateful and you should not create requesters with different setups using the same instance.
 
 The following code shows a typical example:
 

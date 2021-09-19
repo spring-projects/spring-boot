@@ -203,12 +203,12 @@ If either is found, it is automatically used as the welcome page of the applicat
 ==== Path Matching and Content Negotiation
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
 
-Spring Boot chooses to disable suffix pattern matching by default, which means that requests like `"GET /projects/spring-boot.json"` won't be matched to `@GetMapping("/projects/spring-boot")` mappings.
+Spring Boot chooses to disable suffix pattern matching by default, which means that requests like `"GET /projects/spring-boot.json"` will not be matched to `@GetMapping("/projects/spring-boot")` mappings.
 This is considered as a {spring-framework-docs}/web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice for Spring MVC applications].
 This feature was mainly useful in the past for HTTP clients which did not send proper "Accept" request headers; we needed to make sure to send the correct Content Type to the client.
 Nowadays, Content Negotiation is much more reliable.
 
-There are other ways to deal with HTTP clients that don't consistently send proper "Accept" request headers.
+There are other ways to deal with HTTP clients that do not consistently send proper "Accept" request headers.
 Instead of using suffix matching, we can use a query parameter to ensure that requests like `"GET /projects/spring-boot?format=json"` will be mapped to `@GetMapping("/projects/spring-boot")`:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -256,7 +256,7 @@ If you understand the caveats and would still like your application to use suffi
 	      use-suffix-pattern: true
 ----
 
-Alternatively, rather than open all suffix patterns, it's more secure to only support registered suffix patterns:
+Alternatively, rather than open all suffix patterns, it is more secure to only support registered suffix patterns:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----
