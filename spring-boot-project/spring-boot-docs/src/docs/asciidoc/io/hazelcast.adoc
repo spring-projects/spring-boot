@@ -13,7 +13,7 @@ Spring Boot first attempts to create a client by checking the following configur
 NOTE: Spring Boot supports both Hazelcast 4 and Hazelcast 3.
 If you downgrade to Hazelcast 3, `hazelcast-client` should be added to the classpath to configure a client.
 
-If a client can't be created, Spring Boot attempts to configure an embedded server.
+If a client can not be created, Spring Boot attempts to configure an embedded server.
 If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.
 If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
 

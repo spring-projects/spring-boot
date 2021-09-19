@@ -109,7 +109,7 @@ TIP: If you do not use Spring Data MongoDB, you can inject a `MongoClient` bean 
 If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDatabaseFactory` or `MongoClient` bean.
 
 NOTE: If you are using the reactive driver, Netty is required for SSL.
-The auto-configuration configures this factory automatically if Netty is available and the factory to use hasn't been customized already.
+The auto-configuration configures this factory automatically if Netty is available and the factory to use has not been customized already.
 
 
 
