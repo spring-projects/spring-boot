@@ -9,9 +9,11 @@ We'll also cover calling remote REST or SOAP services and sending email.
 
 include::io/caching.adoc[]
 
+include::io/hazelcast.adoc[]
+
 include::io/quartz.adoc[]
 
-include::io/mail.adoc[]
+include::io/email.adoc[]
 
 include::io/validation.adoc[]
 
@@ -20,3 +22,5 @@ include::io/rest-client.adoc[]
 include::io/webservices.adoc[]
 
 include::io/jta.adoc[]
+
+include::io/whats-next.adoc[]

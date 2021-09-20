@@ -98,7 +98,7 @@ Even if the JSR-107 standard does not enforce a standardized way to define the l
 
 NOTE: When a cache library offers both a native implementation and JSR-107 support, Spring Boot prefers the JSR-107 support, so that the same features are available if you switch to a different JSR-107 implementation.
 
-TIP: Spring Boot has <<features#features.hazelcast,general support for Hazelcast>>.
+TIP: Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a single `HazelcastInstance` is available, it is automatically reused for the `CacheManager` as well, unless the configprop:spring.cache.jcache.config[] property is specified.
 
 There are two ways to customize the underlying `javax.cache.cacheManager`:
@@ -130,7 +130,7 @@ An alternate configuration file can be provided as well, as shown in the followi
 
 [[io.caching.provider.hazelcast]]
 ==== Hazelcast
-Spring Boot has <<features#features.hazelcast,general support for Hazelcast>>.
+Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
 
 

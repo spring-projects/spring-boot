@@ -1,4 +1,4 @@
-[[features.hazelcast]]
+[[io.hazelcast]]
 == Hazelcast
 If https://hazelcast.com/[Hazelcast] is on the classpath and a suitable configuration is found, Spring Boot auto-configures a `HazelcastInstance` that you can inject in your application.
 

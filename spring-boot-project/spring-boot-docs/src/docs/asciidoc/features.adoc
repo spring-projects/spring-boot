@@ -22,8 +22,6 @@ include::features/internationalization.adoc[]
 
 include::features/json.adoc[]
 
-include::features/hazelcast.adoc[]
-
 include::features/task-execution-and-scheduling.adoc[]
 
 include::features/testing.adoc[]

@@ -9,3 +9,5 @@ include::container-images/efficient-images.adoc[]
 include::container-images/dockerfiles.adoc[]
 
 include::container-images/cloud-native-buildpacks.adoc[]
+
+include::container-images/whats-next.adoc[]
