@@ -1313,7 +1313,7 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "21.1.0.0") {
+	library("Oracle Database", "21.3.0.0") {
 		group("com.oracle.database.jdbc") {
 			imports = [
 				"ojdbc-bom"
