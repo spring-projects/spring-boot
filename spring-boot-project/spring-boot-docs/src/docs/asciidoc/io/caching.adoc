@@ -11,7 +11,7 @@ In a nutshell, to add caching to an operation of your service add the relevant a
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/MyMathService.java[]
+include::{docs-java}/io/caching/MyMathService.java[]
 ----
 
 This example demonstrates the use of caching on a potentially costly operation.
@@ -61,7 +61,7 @@ The following example sets a flag to say that `null` values should be passed dow
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/provider/MyCacheManagerConfiguration.java[]
+include::{docs-java}/io/caching/provider/MyCacheManagerConfiguration.java[]
 ----
 
 NOTE: In the preceding example, an auto-configured `ConcurrentMapCacheManager` is expected.
@@ -177,7 +177,7 @@ The following example shows a customizer that configures a specific entry expira
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
+include::{docs-java}/io/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
 ----
 
 
@@ -208,7 +208,7 @@ The following example shows a customizer that configures a specific time to live
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/provider/redis/MyRedisCacheManagerConfiguration.java[]
+include::{docs-java}/io/caching/provider/redis/MyRedisCacheManagerConfiguration.java[]
 ----
 
 

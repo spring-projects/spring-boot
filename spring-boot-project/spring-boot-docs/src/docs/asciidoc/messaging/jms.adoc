@@ -128,7 +128,7 @@ Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/jms/sending/MyBean.java[]
+include::{docs-java}/messaging/jms/sending/MyBean.java[]
 ----
 
 NOTE: {spring-framework-api}/jms/core/JmsMessagingTemplate.html[`JmsMessagingTemplate`] can be injected in a similar manner.
@@ -153,7 +153,7 @@ The following component creates a listener endpoint on the `someQueue` destinati
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/jms/receiving/MyBean.java[]
+include::{docs-java}/messaging/jms/receiving/MyBean.java[]
 ----
 
 TIP: See {spring-framework-api}/jms/annotation/EnableJms.html[the Javadoc of `@EnableJms`] for more details.
@@ -164,12 +164,12 @@ For instance, the following example exposes another factory that uses a specific
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/jms/receiving/custom/MyJmsConfiguration.java[]
+include::{docs-java}/messaging/jms/receiving/custom/MyJmsConfiguration.java[]
 ----
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/jms/receiving/custom/MyBean.java[]
+include::{docs-java}/messaging/jms/receiving/custom/MyBean.java[]
 ----

@@ -82,5 +82,5 @@ The following code shows a typical example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/rsocket//requester/MyService.java[]
+include::{docs-java}/messaging/rsocket/requester/MyService.java[]
 ----
