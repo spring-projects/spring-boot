@@ -26,9 +26,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * {@link TestExecutionListener} to reset the {@link WebDriverScope}.
  *
  * @author Phillip Webb
+ * @since 2.6.0
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverScope
- * @since 2.6.0
  */
 public class WebDriverTestExecutionListener extends AbstractTestExecutionListener {
 
