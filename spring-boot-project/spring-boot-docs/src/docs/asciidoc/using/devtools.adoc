@@ -95,7 +95,7 @@ NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationC
 If your application provides one already, it is going to be wrapped.
 Direct override of the `getResource` method on the `ApplicationContext` is not supported.
 
-[[using-spring-boot-restart-vs-reload]]
+[[using.devtools.restart.restart-vs-reload]]
 .Restart vs Reload
 ****
 The restart technology provided by Spring Boot works by using two classloaders.
@@ -212,7 +212,7 @@ For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring
 
 [[using.devtools.restart.customizing-the-classload]]
 ==== Customizing the Restart Classloader
-As described earlier in the <<using-spring-boot-restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
+As described earlier in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
 For most applications, this approach works well.
 However, it can sometimes cause classloading issues.
 

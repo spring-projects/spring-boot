@@ -631,7 +631,7 @@ JSPs are not supported when using an executable jar.
 
 * Undertow does not support JSPs.
 
-* Creating a custom `error.jsp` page does not override the default view for <<web.servlet.spring-mvc.error-handling,error handling>>.
-  <<web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
+* Creating a custom `error.jsp` page does not override the default view for <<web#web.servlet.spring-mvc.error-handling,error handling>>.
+  <<web#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
 
 
