@@ -120,7 +120,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
-		this.centralDirectoryOffsets = Offsets.get(endRecord);
+		this.centralDirectoryOffsets = Offsets.from(endRecord);
 		this.positions = new int[maxSize];
 	}
 
@@ -440,7 +440,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 		void swap(int i, int j);
 
-		static Offsets get(CentralDirectoryEndRecord endRecord) {
+		static Offsets from(CentralDirectoryEndRecord endRecord) {
 			int size = endRecord.getNumberOfRecords();
 			return endRecord.isZip64() ? new Zip64Offsets(size) : new ZipOffsets(size);
 		}
