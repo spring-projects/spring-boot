@@ -44,8 +44,9 @@ public class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
-	private static final Set<String> DEFAULT_KEYS_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "secret",
-			"key", "token", ".*credentials.*", "vcap_services", "sun.java.command"));
+	private static final Set<String> DEFAULT_KEYS_TO_SANITIZE = new LinkedHashSet<>(
+			Arrays.asList("password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command",
+					"^spring[\\._]application[\\\\._]json$"));
 
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
 			Arrays.asList("uri", "uris", "address", "addresses"));
