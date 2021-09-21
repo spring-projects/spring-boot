@@ -37,6 +37,7 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
 import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients.WebClientConfigurationCallback;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -120,7 +121,11 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			if (this.deprecatedProperties.isCustomized()) {
 				return this.deprecatedProperties.getEndpoints();
 			}
-			return this.uris.stream().map((uri) -> uri.getHost() + ":" + uri.getPort()).collect(Collectors.toList());
+			return this.uris.stream().map(this::getEndpoint).collect(Collectors.toList());
+		}
+
+		private String getEndpoint(URI uri) {
+			return uri.getHost() + ":" + uri.getPort();
 		}
 
 		private Credentials getCredentials() {
@@ -132,13 +137,10 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			if (uriCredentials == null) {
 				return propertyCredentials;
 			}
-			if (propertyCredentials != null && !uriCredentials.equals(propertyCredentials)) {
-				throw new IllegalArgumentException(
-						"Credentials from URI user info do not match those from spring.elasticsearch.username and "
-								+ "spring.elasticsearch.password");
-			}
+			Assert.isTrue(propertyCredentials == null || uriCredentials.equals(propertyCredentials),
+					"Credentials from URI user info do not match those from spring.elasticsearch.username and "
+							+ "spring.elasticsearch.password");
 			return uriCredentials;
-
 		}
 
 		private Duration getConnectionTimeout() {
@@ -155,8 +157,8 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			if (this.deprecatedProperties.isCustomized()) {
 				return this.deprecatedProperties.isUseSsl();
 			}
-			Set<String> schemes = this.uris.stream().map((uri) -> uri.getScheme()).collect(Collectors.toSet());
-			Assert.isTrue(schemes.size() == 1, () -> "Configured Elasticsearch URIs have varying schemes");
+			Set<String> schemes = this.uris.stream().map(URI::getScheme).collect(Collectors.toSet());
+			Assert.isTrue(schemes.size() == 1, "Configured Elasticsearch URIs have varying schemes");
 			return schemes.iterator().next().equals("https");
 		}
 
@@ -189,29 +191,28 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			}
 
 			private static Credentials from(List<String> uris) {
-				Set<String> userInfos = uris.stream().map(URI::create).map((uri) -> uri.getUserInfo())
+				Set<String> userInfos = uris.stream().map(URI::create).map(URI::getUserInfo)
 						.collect(Collectors.toSet());
-				Assert.isTrue(userInfos.size() == 1, () -> "Configured Elasticsearch URIs have varying user infos");
+				Assert.isTrue(userInfos.size() == 1, "Configured Elasticsearch URIs have varying user infos");
 				String userInfo = userInfos.iterator().next();
-				if (userInfo != null) {
-					String[] parts = userInfo.split(":");
-					return new Credentials(parts[0], (parts.length == 2) ? parts[1] : "");
-				}
-				return null;
-			}
-
-			private static Credentials from(ElasticsearchProperties properties) {
-				String username = properties.getUsername();
-				String password = properties.getPassword();
-				if (username == null && password == null) {
+				if (userInfo == null) {
 					return null;
 				}
+				String[] parts = userInfo.split(":");
+				String username = parts[0];
+				String password = (parts.length != 2) ? "" : parts[1];
 				return new Credentials(username, password);
 			}
 
+			private static Credentials from(ElasticsearchProperties properties) {
+				return getCredentials(properties.getUsername(), properties.getPassword());
+			}
+
 			private static Credentials from(DeprecatedReactiveElasticsearchRestClientProperties properties) {
-				String username = properties.getUsername();
-				String password = properties.getPassword();
+				return getCredentials(properties.getUsername(), properties.getPassword());
+			}
+
+			private static Credentials getCredentials(String username, String password) {
 				if (username == null && password == null) {
 					return null;
 				}
@@ -223,38 +224,20 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 				if (this == obj) {
 					return true;
 				}
-				if (obj == null) {
-					return false;
-				}
-				if (getClass() != obj.getClass()) {
+				if (obj == null || getClass() != obj.getClass()) {
 					return false;
 				}
 				Credentials other = (Credentials) obj;
-				if (this.password == null) {
-					if (other.password != null) {
-						return false;
-					}
-				}
-				else if (!this.password.equals(other.password)) {
-					return false;
-				}
-				if (this.username == null) {
-					if (other.username != null) {
-						return false;
-					}
-				}
-				else if (!this.username.equals(other.username)) {
-					return false;
-				}
-				return true;
+				return ObjectUtils.nullSafeEquals(this.username, other.username)
+						&& ObjectUtils.nullSafeEquals(this.password, other.password);
 			}
 
 			@Override
 			public int hashCode() {
 				final int prime = 31;
 				int result = 1;
-				result = prime * result + ((this.password == null) ? 0 : this.password.hashCode());
-				result = prime * result + ((this.username == null) ? 0 : this.username.hashCode());
+				result = prime * result + ObjectUtils.nullSafeHashCode(this.username);
+				result = prime * result + ObjectUtils.nullSafeHashCode(this.password);
 				return result;
 			}
 

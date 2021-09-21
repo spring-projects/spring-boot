@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -36,76 +38,78 @@ class AbstractHealthIndicatorTests {
 
 	@Test
 	void healthCheckWhenUpDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
-		Health heath = new AbstractHealthIndicator("Test message") {
-			@Override
-			protected void doHealthCheck(Builder builder) {
-				builder.up();
-			}
-		}.health();
+		TestHealthIndicator indicator = new TestHealthIndicator("Test message", Builder::up);
+		Health heath = indicator.health();
 		assertThat(heath.getStatus()).isEqualTo(Status.UP);
 		assertThat(output).doesNotContain("Test message");
 	}
 
 	@Test
 	void healthCheckWhenDownWithExceptionThrownDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
-		Health heath = new AbstractHealthIndicator("Test message") {
-			@Override
-			protected void doHealthCheck(Builder builder) {
-				throw new IllegalStateException("Test exception");
-			}
-		}.health();
+		TestHealthIndicator indicator = new TestHealthIndicator("Test message", (builder) -> {
+			throw new IllegalStateException("Test exception");
+		});
+		Health heath = indicator.health();
 		assertThat(heath.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(output).contains("Test message").contains("Test exception");
 	}
 
 	@Test
 	void healthCheckWhenDownWithExceptionConfiguredDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
-		Health heath = new AbstractHealthIndicator("Test message") {
-			@Override
-			protected void doHealthCheck(Builder builder) {
-				builder.down().withException(new IllegalStateException("Test exception"));
-			}
-		}.health();
+		Health heath = new TestHealthIndicator("Test message",
+				(builder) -> builder.down().withException(new IllegalStateException("Test exception"))).health();
 		assertThat(heath.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(output).contains("Test message").contains("Test exception");
 	}
 
 	@Test
 	void healthCheckWhenDownWithExceptionConfiguredDoesNotLogHealthCheckFailedMessageTwice(CapturedOutput output) {
-		Health heath = new AbstractHealthIndicator("Test message") {
-			@Override
-			protected void doHealthCheck(Builder builder) {
-				IllegalStateException ex = new IllegalStateException("Test exception");
-				builder.down().withException(ex);
-				throw ex;
-			}
-		}.health();
+		TestHealthIndicator indicator = new TestHealthIndicator("Test message", (builder) -> {
+			IllegalStateException ex = new IllegalStateException("Test exception");
+			builder.down().withException(ex);
+			throw ex;
+		});
+		Health heath = indicator.health();
 		assertThat(heath.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(output).contains("Test message").containsOnlyOnce("Test exception");
 	}
 
 	@Test
 	void healthCheckWhenDownWithExceptionAndNoFailureMessageLogsDefaultMessage(CapturedOutput output) {
-		Health heath = new AbstractHealthIndicator() {
-			@Override
-			protected void doHealthCheck(Builder builder) {
-				builder.down().withException(new IllegalStateException("Test exception"));
-			}
-		}.health();
+		TestHealthIndicator indicator = new TestHealthIndicator(
+				(builder) -> builder.down().withException(new IllegalStateException("Test exception")));
+		Health heath = indicator.health();
 		assertThat(heath.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(output).contains("Health check failed").contains("Test exception");
 	}
 
 	@Test
 	void healthCheckWhenDownWithErrorLogsDefaultMessage(CapturedOutput output) {
-		Health heath = new AbstractHealthIndicator("Test Message") {
-			@Override
-			protected void doHealthCheck(Builder builder) {
-				builder.down().withException(new Error("Test error"));
-			}
-		}.health();
+		TestHealthIndicator indicator = new TestHealthIndicator("Test Message",
+				(builder) -> builder.down().withException(new Error("Test error")));
+		Health heath = indicator.health();
 		assertThat(heath.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(output).contains("Health check failed").contains("Test error");
+	}
+
+	static class TestHealthIndicator extends AbstractHealthIndicator {
+
+		private Consumer<Builder> action;
+
+		TestHealthIndicator(String message, Consumer<Builder> action) {
+			super(message);
+			this.action = action;
+		}
+
+		TestHealthIndicator(Consumer<Builder> action) {
+			this.action = action;
+		}
+
+		@Override
+		protected void doHealthCheck(Builder builder) throws Exception {
+			this.action.accept(builder);
+		}
+
 	}
 
 }

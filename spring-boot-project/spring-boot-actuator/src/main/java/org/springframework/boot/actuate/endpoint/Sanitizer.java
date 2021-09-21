@@ -65,18 +65,38 @@ public class Sanitizer {
 		DEFAULT_KEYS_TO_SANITIZE.addAll(URI_USERINFO_KEYS);
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with a default set of keys to sanitize.
+	 */
 	public Sanitizer() {
 		this(DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with specific keys to sanitize.
+	 * @param keysToSanitize the keys to sanitize
+	 */
 	public Sanitizer(String... keysToSanitize) {
 		this(Collections.emptyList(), keysToSanitize);
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with a default set of keys to sanitize and
+	 * additional sanitizing functions.
+	 * @param sanitizingFunctions the sanitizing functions to apply
+	 * @since 2.6.0
+	 */
 	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions) {
 		this(sanitizingFunctions, DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with specific keys to sanitize and
+	 * additional sanitizing functions.
+	 * @param sanitizingFunctions the sanitizing functions to apply
+	 * @param keysToSanitize the keys to sanitize
+	 * @since 2.6.0
+	 */
 	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions, String... keysToSanitize) {
 		sanitizingFunctions.forEach(this.sanitizingFunctions::add);
 		this.sanitizingFunctions.add(getDefaultSanitizingFunction());

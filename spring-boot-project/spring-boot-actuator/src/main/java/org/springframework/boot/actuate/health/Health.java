@@ -324,21 +324,20 @@ public final class Health extends HealthComponent {
 		}
 
 		/**
-		 * Return the {@link Exception}.
-		 * @return the exception or {@code null} if the builder has no exception
-		 * @since 2.6.0
-		 */
-		public Throwable getException() {
-			return this.exception;
-		}
-
-		/**
 		 * Create a new {@link Health} instance with the previously specified code and
 		 * details.
 		 * @return a new {@link Health} instance
 		 */
 		public Health build() {
 			return new Health(this);
+		}
+
+		/**
+		 * Return the {@link Exception}.
+		 * @return the exception or {@code null} if the builder has no exception
+		 */
+		Throwable getException() {
+			return this.exception;
 		}
 
 	}
