@@ -52,7 +52,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Andy Wilkinson
- * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
