@@ -73,7 +73,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		String name = DependsOnDatabaseInitializationPostProcessor.class.getName();
 		if (!registry.containsBeanDefinition(name)) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(
 					DependsOnDatabaseInitializationPostProcessor.class,
 					this::createDependsOnDatabaseInitializationPostProcessor);
 			registry.registerBeanDefinition(name, builder.getBeanDefinition());
