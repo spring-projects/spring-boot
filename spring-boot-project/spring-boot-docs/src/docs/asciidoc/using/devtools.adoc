@@ -95,6 +95,8 @@ NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationC
 If your application provides one already, it is going to be wrapped.
 Direct override of the `getResource` method on the `ApplicationContext` is not supported.
 
+CAUTION: Automatic restart is not supported when using AspectJ weaving.
+
 [[using.devtools.restart.restart-vs-reload]]
 .Restart vs Reload
 ****
