@@ -22,7 +22,7 @@ Otherwise, the method is invoked, and the cache is updated before returning the 
 CAUTION: You can also use the standard JSR-107 (JCache) annotations (such as `@CacheResult`) transparently.
 However, we strongly advise you to not mix and match the Spring Cache and JCache annotations.
 
-If you do not add any specific cache library, Spring Boot auto-configures a <<caching#io.caching.provider.simple,simple provider>> that uses concurrent maps in memory.
+If you do not add any specific cache library, Spring Boot auto-configures a <<io.caching.provider.simple,simple provider>> that uses concurrent maps in memory.
 When a cache is required (such as `piDecimals` in the preceding example), this provider creates it for you.
 The simple provider is not really recommended for production usage, but it is great for getting started and making sure that you understand the features.
 When you have made up your mind about the cache provider to use, please make sure to read its documentation to figure out how to configure the caches that your application uses.
