@@ -221,7 +221,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	}
 
 	/**
-	 * Create an new {@link ConfigDataEnvironmentContributor} with bound
+	 * Create a new {@link ConfigDataEnvironmentContributor} with bound
 	 * {@link ConfigDataProperties}.
 	 * @param binder the binder to use
 	 * @return a new contributor instance
@@ -305,7 +305,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	}
 
 	/**
-	 * Create a new {@link ConfigDataEnvironmentContributor} instance where a existing
+	 * Create a new {@link ConfigDataEnvironmentContributor} instance where an existing
 	 * child is replaced.
 	 * @param existing the existing node that should be replaced
 	 * @param replacement the replacement node that should be used instead

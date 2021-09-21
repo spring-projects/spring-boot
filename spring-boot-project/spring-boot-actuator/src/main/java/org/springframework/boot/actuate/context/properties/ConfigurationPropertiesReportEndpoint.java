@@ -502,7 +502,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
-			// that its a nested class used solely for binding to config props, so it
+			// that it is a nested class used solely for binding to config props, so it
 			// should be kosher. Lists and Maps are also auto-detected by default since
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.

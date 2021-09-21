@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for initializaton of an SQL database using a JDBC {@link javax.sql.DataSource
+ * Support for initialization of an SQL database using a JDBC {@link javax.sql.DataSource
  * DataSource}.
  */
 package org.springframework.boot.jdbc.init;

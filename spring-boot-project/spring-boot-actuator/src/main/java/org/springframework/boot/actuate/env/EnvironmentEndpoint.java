@@ -194,7 +194,7 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * Apply sanitiation to the given name and value.
+	 * Apply sanitization to the given name and value.
 	 * @param key the name to sanitize
 	 * @param value the value to sanitize
 	 * @return the sanitized value

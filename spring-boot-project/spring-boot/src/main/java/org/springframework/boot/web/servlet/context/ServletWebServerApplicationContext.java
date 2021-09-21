@@ -336,9 +336,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	/**
-	 * Utility class to store and restore any user defined scopes. This allow scopes to be
-	 * registered in an ApplicationContextInitializer in the same way as they would in a
-	 * classic non-embedded web application context.
+	 * Utility class to store and restore any user defined scopes. This allows scopes to
+	 * be registered in an ApplicationContextInitializer in the same way as they would in
+	 * a classic non-embedded web application context.
 	 */
 	public static class ExistingWebApplicationScopes {
 

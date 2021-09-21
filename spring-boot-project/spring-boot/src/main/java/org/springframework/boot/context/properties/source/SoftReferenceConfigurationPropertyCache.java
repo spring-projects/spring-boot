@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	}
 
 	/**
-	 * Get an value from the cache, creating it if necessary.
+	 * Get a value from the cache, creating it if necessary.
 	 * @param factory a factory used to create the item if there is no reference to it.
 	 * @param refreshAction action called to refresh the value if it has expired
 	 * @return the value from the cache

@@ -57,7 +57,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 
 	/**
 	 * Configure the specified rabbit connection factory bean. The factory bean can be
-	 * further tuned and default settings can be overridden. It is the repsonsiblity of
+	 * further tuned and default settings can be overridden. It is the responsibility of
 	 * the caller to invoke {@link RabbitConnectionFactoryBean#afterPropertiesSet()}
 	 * though.
 	 * @param factory the {@link RabbitConnectionFactoryBean} instance to configure

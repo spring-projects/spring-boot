@@ -110,7 +110,7 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		// For some reason the annotation processor resolves a type for SimpleLombokPojo
 		// that is resolved (compiled) and the source annotations are gone. Because we
 		// don't see the @Data annotation anymore, no field is harvested. What is crazy is
-		// that a sample project works fine so this seem to be related to the unit test
+		// that a sample project works fine so this seems to be related to the unit test
 		// environment for some reason. assertThat(metadata,
 		// containsProperty("config.third.value"));
 		assertThat(metadata).has(Metadata.withProperty("config.fourth"));
