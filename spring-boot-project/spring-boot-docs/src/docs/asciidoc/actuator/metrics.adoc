@@ -872,7 +872,7 @@ Data source instrumentation results in gauges that represent the currently activ
 
 Metrics are also tagged by the name of the `DataSource` computed based on the bean name.
 
-TIP: By default, Spring Boot provides metadata for all supported data sources. 
+TIP: By default, Spring Boot provides metadata for all supported data sources.
 You can add additional `DataSourcePoolMetadataProvider` beans if your favorite data source is not supported.
 See `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
