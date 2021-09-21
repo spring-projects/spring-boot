@@ -48,6 +48,8 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("SPRING_APPLICATION_JSON", "{password:123}")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("spring.application.json", "{password:123}")).isEqualTo("******");
 	}
 
 	@Test
