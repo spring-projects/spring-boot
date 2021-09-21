@@ -583,6 +583,12 @@
       "defaultValue": "auto"
     },
     {
+      "name": "spring.data.elasticsearch.client.reactive.endpoints",
+      "defaultValue": [
+        "localhost:9200"
+      ]
+    },
+    {
       "name": "spring.data.elasticsearch.cluster-name",
       "type": "java.lang.String",
       "description": "Elasticsearch cluster name.",
@@ -611,12 +617,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Elasticsearch repositories.",
       "defaultValue": true
-    },
-    {
-      "name": "spring.data.elasticsearch.client.reactive.endpoints",
-      "defaultValue": [
-        "http://localhost:9200"
-      ]
     },
     {
       "name": "spring.data.jdbc.repositories.enabled",
