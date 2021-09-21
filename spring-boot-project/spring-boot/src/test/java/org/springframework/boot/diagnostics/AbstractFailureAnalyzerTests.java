@@ -16,44 +16,66 @@
 
 package org.springframework.boot.diagnostics;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for {@link AbstractFailureAnalyzer}.
+ *
+ * @author Kim Jung Bin
+ * @author Stephane Nicoll
+ */
 class AbstractFailureAnalyzerTests {
 
-	private FailureAnalyzerConcrete failureAnalyzerConcrete;
+	private final TestFailureAnalyzer failureAnalyzer = new TestFailureAnalyzer();
 
-	@BeforeEach
-	void configureFailureAnalyzer() {
-		this.failureAnalyzerConcrete = new FailureAnalyzerConcrete();
+	@Test
+	void findCauseWithNullException() {
+		assertThat(this.failureAnalyzer.findCause(null, Throwable.class)).isNull();
 	}
 
 	@Test
-	void findCauseExtendsThrowable() {
-		ThrowableExtendsException ex = new ThrowableExtendsException();
-		assertThat(this.failureAnalyzerConcrete.findCause(ex, Throwable.class).getClass()).isNotNull();
+	void findCauseWithDirectExactMatch() {
+		TestException ex = new TestException();
+		assertThat(this.failureAnalyzer.findCause(ex, TestException.class)).isEqualTo(ex);
 	}
 
 	@Test
-	void findCauseExtendsOtherException() {
-		ExtendsThrowableExtendsException ex = new ExtendsThrowableExtendsException();
-		assertThat(this.failureAnalyzerConcrete.findCause(ex, ThrowableExtendsException.class).getClass()).isNotNull();
+	void findCauseWithDirectSubClass() {
+		SpecificTestException ex = new SpecificTestException();
+		assertThat(this.failureAnalyzer.findCause(ex, TestException.class)).isEqualTo(ex);
 	}
 
 	@Test
-	void findCauseOtherException() {
-		ThrowableExtendsException ex = new ThrowableExtendsException();
-		assertThat(this.failureAnalyzerConcrete.findCause(ex, OtherException.class)).isNull();
+	void findCauseWitNestedAndExactMatch() {
+		TestException ex = new TestException();
+		assertThat(this.failureAnalyzer.findCause(new IllegalArgumentException(new IllegalStateException(ex)),
+				TestException.class)).isEqualTo(ex);
 	}
 
 	@Test
-	void findCauseNullObject() {
-		assertThat(this.failureAnalyzerConcrete.findCause(null, Throwable.class)).isNull();
+	void findCauseWitNestedAndSubClass() {
+		SpecificTestException ex = new SpecificTestException();
+		assertThat(this.failureAnalyzer.findCause(new IOException(new IllegalStateException(ex)), TestException.class))
+				.isEqualTo(ex);
 	}
 
-	static class FailureAnalyzerConcrete extends AbstractFailureAnalyzer<Throwable> {
+	@Test
+	void findCauseWithUnrelatedException() {
+		IOException ex = new IOException();
+		assertThat(this.failureAnalyzer.findCause(ex, TestException.class)).isNull();
+	}
+
+	@Test
+	void findCauseWithMoreSpecificException() {
+		TestException ex = new TestException();
+		assertThat(this.failureAnalyzer.findCause(ex, SpecificTestException.class)).isNull();
+	}
+
+	static class TestFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 		@Override
 		protected FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
@@ -62,15 +84,11 @@ class AbstractFailureAnalyzerTests {
 
 	}
 
-	static class ThrowableExtendsException extends Throwable {
+	static class TestException extends Exception {
 
 	}
 
-	static class ExtendsThrowableExtendsException extends ThrowableExtendsException {
-
-	}
-
-	static class OtherException extends Throwable {
+	static class SpecificTestException extends TestException {
 
 	}
 
