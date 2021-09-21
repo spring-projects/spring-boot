@@ -119,7 +119,7 @@ Firstly, configure its permissions so that it cannot be written and can only be 
 	$ chmod 500 your-app.jar
 ----
 
-Second, you should also take steps to limit the damage if your application or the account that's running it is compromised.
+Second, you should also take steps to limit the damage if your application or the account that is running it is compromised.
 If an attacker does gain access, they could make the jar file writable and change its contents.
 One way to protect against this is to make it immutable by using `chattr`, as shown in the following example:
 
@@ -286,7 +286,7 @@ The following property substitutions are supported with the default script:
 |
 
 | `useStartStopDaemon`
-| Whether the `start-stop-daemon` command, when it's available, should be used to control the process
+| Whether the `start-stop-daemon` command, when it is available, should be used to control the process
 | `true`
 | `true`
 
@@ -319,7 +319,7 @@ The following environment properties are supported with the default script:
   When not set, the user that owns the jar file will be used.
 
 | `USE_START_STOP_DAEMON`
-| Whether the `start-stop-daemon` command, when it's available, should be used to control the process.
+| Whether the `start-stop-daemon` command, when it is available, should be used to control the process.
   Defaults to `true`.
 
 | `PID_FOLDER`

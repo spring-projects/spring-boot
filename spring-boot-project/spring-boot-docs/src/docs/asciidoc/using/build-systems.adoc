@@ -113,7 +113,7 @@ For example, if you want to get started using Spring and JPA for database access
 
 The starters contain a lot of the dependencies that you need to get a project up and running quickly and with a consistent, supported set of managed transitive dependencies.
 
-.What's in a name
+.What is in a name
 ****
 All **official** starters follow a similar naming pattern; `+spring-boot-starter-*+`, where `+*+` is a particular type of application.
 This naming structure is intended to help when you need to find a starter.

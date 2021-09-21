@@ -62,7 +62,7 @@ Alternatively, additional patterns can be configured using configprop:management
 Spring Boot health indicators return a `Status` type to indicate the overall system health.
 If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics via Micrometer.
 By default, the status codes "`UP`", "`DOWN`", "`OUT_OF_SERVICE`" and "`UNKNOWN`" are used by Spring Boot.
-To export these, you'll need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
+To export these, you will need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
 
 The following example shows one way to write such an exporter:
 
