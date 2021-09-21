@@ -182,7 +182,7 @@ The URLs of the Metrics API v2 ingest endpoint are:
 	    export:
 	      dynatrace:
 	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
-	        api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
+	        api-token: "YOUR_TOKEN"
 ----
 
 Depending on your setup, the environment variables `+DT_METRICS_INGEST_URL+` and `+DT_METRICS_INGEST_API_TOKEN+` might be populated accordingly already and can be used via the Spring placeholder notation:
@@ -204,17 +204,16 @@ When using the Dynatrace v2 API, the following optional features are available:
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
   If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
 
+In the example below URI and API token are not specified, therefore the local OneAgent endpoint is used.
+It is also possible to explicitly use the `uri` and `api-token` properties as shown in the examples above.
+
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  metrics:
 	    export:
 	      dynatrace:
-	        # Specify API token and URI or leave blank for OneAgent export, e.g:
-	        # uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
-	        # api-token: "YOUR_TOKEN" # should be read from a secure source and not hard-coded.
-
-	        # Configure v2-specific properties:
+	        # Specify uri and api-token here if not using the local OneAgent endpoint.
 	        v2:
 	          metric-key-prefix: "your.key.prefix"
 	          enrich-with-dynatrace-metadata: true
@@ -237,9 +236,7 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 	  metrics:
 	    export:
 	      dynatrace:
-	        # uri: "https://{your-domain}/e/{your-environment-id}" on managed deployments.
 	        uri: "https://{your-environment-id}.live.dynatrace.com"
-	        # should be read from a secure property source
 	        api-token: "YOUR_TOKEN"
 	        v1:
 	          device-id: "YOUR_DEVICE_ID"
