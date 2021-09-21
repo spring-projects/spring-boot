@@ -363,7 +363,7 @@ class SpringApplicationTests {
 	void applicationRunningEventListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		AtomicReference<ApplicationReadyEvent> reference = setupListener(application, ApplicationReadyEvent.class);
+		AtomicReference<ApplicationReadyEvent> reference = addListener(application, ApplicationReadyEvent.class);
 		this.context = application.run("--foo=bar");
 		assertThat(application).isSameAs(reference.get().getSpringApplication());
 	}
@@ -372,7 +372,7 @@ class SpringApplicationTests {
 	void contextRefreshedEventListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		AtomicReference<ContextRefreshedEvent> reference = setupListener(application, ContextRefreshedEvent.class);
+		AtomicReference<ContextRefreshedEvent> reference = addListener(application, ContextRefreshedEvent.class);
 		this.context = application.run("--foo=bar");
 		assertThat(this.context).isSameAs(reference.get().getApplicationContext());
 		// Custom initializers do not switch off the defaults
@@ -405,18 +405,18 @@ class SpringApplicationTests {
 	void applicationStartedEventHasStartedTime() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		AtomicReference<ApplicationStartedEvent> reference = setupListener(application, ApplicationStartedEvent.class);
+		AtomicReference<ApplicationStartedEvent> reference = addListener(application, ApplicationStartedEvent.class);
 		this.context = application.run();
-		assertThat(reference.get()).isNotNull().extracting(ApplicationStartedEvent::getStartedTime).isNotNull();
+		assertThat(reference.get()).isNotNull().extracting(ApplicationStartedEvent::getTimeTaken).isNotNull();
 	}
 
 	@Test
 	void applicationReadyEventHasReadyTime() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		AtomicReference<ApplicationReadyEvent> reference = setupListener(application, ApplicationReadyEvent.class);
+		AtomicReference<ApplicationReadyEvent> reference = addListener(application, ApplicationReadyEvent.class);
 		this.context = application.run();
-		assertThat(reference.get()).isNotNull().extracting(ApplicationReadyEvent::getReadyTime).isNotNull();
+		assertThat(reference.get()).isNotNull().extracting(ApplicationReadyEvent::getTimeTaken).isNotNull();
 	}
 
 	@Test
@@ -1252,24 +1252,10 @@ class SpringApplicationTests {
 				&& ((AvailabilityChangeEvent<?>) argument).getState().equals(state);
 	}
 
-	private <T extends ApplicationEvent> AtomicReference<T> setupListener(SpringApplication application,
-			Class<T> targetEventType) {
-		final AtomicReference<T> reference = new AtomicReference<>();
-		class TestEventListener implements SmartApplicationListener {
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public void onApplicationEvent(ApplicationEvent event) {
-				reference.set((T) event);
-			}
-
-			@Override
-			public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-				return targetEventType.isAssignableFrom(eventType);
-			}
-
-		}
-		application.addListeners(new TestEventListener());
+	private <E extends ApplicationEvent> AtomicReference<E> addListener(SpringApplication application,
+			Class<E> eventType) {
+		AtomicReference<E> reference = new AtomicReference<>();
+		application.addListeners(new TestEventListener<>(eventType, reference));
 		return reference;
 	}
 
@@ -1300,6 +1286,30 @@ class SpringApplicationTests {
 			}
 
 		};
+	}
+
+	static class TestEventListener<E extends ApplicationEvent> implements SmartApplicationListener {
+
+		private final Class<E> eventType;
+
+		private final AtomicReference<E> reference;
+
+		TestEventListener(Class<E> eventType, AtomicReference<E> reference) {
+			this.eventType = eventType;
+			this.reference = reference;
+		}
+
+		@Override
+		public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+			return this.eventType.isAssignableFrom(eventType);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void onApplicationEvent(ApplicationEvent event) {
+			this.reference.set((E) event);
+		}
+
 	}
 
 	@Configuration

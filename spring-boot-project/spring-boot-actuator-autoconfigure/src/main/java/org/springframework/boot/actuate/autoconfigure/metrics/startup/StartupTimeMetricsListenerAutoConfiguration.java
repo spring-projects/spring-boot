@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.metrics.startup.StartupTimeMetrics;
+import org.springframework.boot.actuate.metrics.startup.StartupTimeMetricsListener;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -39,12 +39,12 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
-public class StartupTimeMetricsAutoConfiguration {
+public class StartupTimeMetricsListenerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StartupTimeMetrics startupTimeMetrics(MeterRegistry meterRegistry) {
-		return new StartupTimeMetrics(meterRegistry);
+	public StartupTimeMetricsListener startupTimeMetrics(MeterRegistry meterRegistry) {
+		return new StartupTimeMetricsListener(meterRegistry);
 	}
 
 }

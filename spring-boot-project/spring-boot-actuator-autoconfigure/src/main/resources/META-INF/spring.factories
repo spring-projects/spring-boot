@@ -75,7 +75,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.mongo.MongoMetricsAutoCon
 org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.r2dbc.ConnectionPoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.redis.LettuceMetricsAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.startup.StartupTimeMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.startup.StartupTimeMetricsListenerAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.task.TaskExecutorMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.jetty.JettyMetricsAutoConfiguration,\

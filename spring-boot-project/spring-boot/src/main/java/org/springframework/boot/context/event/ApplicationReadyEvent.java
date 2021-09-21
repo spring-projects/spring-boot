@@ -37,7 +37,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
-	private final Duration readyTime;
+	private final Duration timeTaken;
 
 	/**
 	 * Create a new {@link ApplicationReadyEvent} instance.
@@ -57,14 +57,14 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param context the context that was being created
-	 * @param readyTime the time taken to get the application ready to service requests
+	 * @param timeTaken the time taken to get the application ready to service requests
 	 * @since 2.6.0
 	 */
 	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
-			Duration readyTime) {
+			Duration timeTaken) {
 		super(application, args);
 		this.context = context;
-		this.readyTime = readyTime;
+		this.timeTaken = timeTaken;
 	}
 
 	/**
@@ -79,9 +79,10 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * Return the time taken for the application to be ready to service requests, or
 	 * {@code null} if unknown.
 	 * @return the time taken to be ready to service requests
+	 * @since 2.6.0
 	 */
-	public Duration getReadyTime() {
-		return this.readyTime;
+	public Duration getTimeTaken() {
+		return this.timeTaken;
 	}
 
 }

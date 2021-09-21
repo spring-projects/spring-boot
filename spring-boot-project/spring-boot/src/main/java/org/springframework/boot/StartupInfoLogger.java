@@ -56,9 +56,9 @@ class StartupInfoLogger {
 		applicationLog.debug(LogMessage.of(this::getRunningMessage));
 	}
 
-	void logStarted(Log applicationLog, Duration startupTime) {
+	void logStarted(Log applicationLog, Duration timeTakeToStartup) {
 		if (applicationLog.isInfoEnabled()) {
-			applicationLog.info(getStartedMessage(startupTime));
+			applicationLog.info(getStartedMessage(timeTakeToStartup));
 		}
 	}
 
@@ -83,12 +83,12 @@ class StartupInfoLogger {
 		return message;
 	}
 
-	private CharSequence getStartedMessage(Duration startupTime) {
+	private CharSequence getStartedMessage(Duration timeTakeToStartup) {
 		StringBuilder message = new StringBuilder();
 		message.append("Started ");
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(startupTime.toMillis() / 1000.0);
+		message.append(timeTakeToStartup.toMillis() / 1000.0);
 		message.append(" seconds");
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;

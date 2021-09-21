@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.metrics.startup.StartupTimeMetrics;
+import org.springframework.boot.actuate.metrics.startup.StartupTimeMetricsListener;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -35,20 +35,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link StartupTimeMetricsAutoConfiguration}.
+ * Tests for {@link StartupTimeMetricsListenerAutoConfiguration}.
  *
  * @author Chris Bono
  * @author Stephane Nicoll
  */
-class StartupTimeMetricsAutoConfigurationTests {
+class StartupTimeMetricsListenerAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(StartupTimeMetricsAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(StartupTimeMetricsListenerAutoConfiguration.class));
 
 	@Test
 	void startupTimeMetricsAreRecorded() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(StartupTimeMetrics.class);
+			assertThat(context).hasSingleBean(StartupTimeMetricsListener.class);
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 					context.getSourceApplicationContext(), Duration.ofMillis(1500)));
@@ -80,8 +80,9 @@ class StartupTimeMetricsAutoConfigurationTests {
 	@Test
 	void customStartupTimeMetricsAreRespected() {
 		this.contextRunner
-				.withBean("customStartupTimeMetrics", StartupTimeMetrics.class, () -> mock(StartupTimeMetrics.class))
-				.run((context) -> assertThat(context).hasSingleBean(StartupTimeMetrics.class)
+				.withBean("customStartupTimeMetrics", StartupTimeMetricsListener.class,
+						() -> mock(StartupTimeMetricsListener.class))
+				.run((context) -> assertThat(context).hasSingleBean(StartupTimeMetricsListener.class)
 						.hasBean("customStartupTimeMetrics"));
 	}
 

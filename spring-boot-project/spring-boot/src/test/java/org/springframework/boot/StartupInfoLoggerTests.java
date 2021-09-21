@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.system.ApplicationPid;
-import org.springframework.util.StopWatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -56,11 +55,9 @@ class StartupInfoLoggerTests {
 
 	@Test
 	void startedFormat() {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
 		given(this.log.isInfoEnabled()).willReturn(true);
-		stopWatch.stop();
-		new StartupInfoLogger(getClass()).logStarted(this.log, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
+		Duration timeTakeToStartup = Duration.ofMillis(10);
+		new StartupInfoLogger(getClass()).logStarted(this.log, timeTakeToStartup);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
 		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()

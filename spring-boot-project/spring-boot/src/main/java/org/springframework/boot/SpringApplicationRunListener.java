@@ -77,13 +77,11 @@ public interface SpringApplicationRunListener {
 	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
 	 * ApplicationRunners} have not been called.
 	 * @param context the application context.
-	 * @since 2.0.0
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favour of
-	 * {@link #started(ConfigurableApplicationContext, Duration)}
+	 * @param timeTaken the time taken to start the application or {@code null} if unknown
+	 * @since 2.6.0
 	 */
-	@Deprecated
-	default void started(ConfigurableApplicationContext context) {
-		started(context, null);
+	default void started(ConfigurableApplicationContext context, Duration timeTaken) {
+		started(context);
 	}
 
 	/**
@@ -91,12 +89,12 @@ public interface SpringApplicationRunListener {
 	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
 	 * ApplicationRunners} have not been called.
 	 * @param context the application context.
-	 * @param startedTime the time taken to start the application or {@code null} if
-	 * unknown
-	 * @since 2.6.0
+	 * @since 2.0.0
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #started(ConfigurableApplicationContext, Duration)}
 	 */
-	default void started(ConfigurableApplicationContext context, Duration startedTime) {
-		started(context);
+	@Deprecated
+	default void started(ConfigurableApplicationContext context) {
 	}
 
 	/**
@@ -104,26 +102,25 @@ public interface SpringApplicationRunListener {
 	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
 	 * {@link ApplicationRunner ApplicationRunners} have been called.
 	 * @param context the application context.
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favour of
-	 * {@link #running(ConfigurableApplicationContext, Duration)}
+	 * @param timeTaken the time taken for the application to be ready or {@code null} if
+	 * unknown
+	 * @since 2.6.0
+	 */
+	default void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+		running(context);
+	}
+
+	/**
+	 * Called immediately before the run method finishes, when the application context has
+	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
+	 * {@link ApplicationRunner ApplicationRunners} have been called.
+	 * @param context the application context.
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #ready(ConfigurableApplicationContext, Duration)}
 	 * @since 2.0.0
 	 */
 	@Deprecated
 	default void running(ConfigurableApplicationContext context) {
-		running(context, null);
-	}
-
-	/**
-	 * Called immediately before the run method finishes, when the application context has
-	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
-	 * {@link ApplicationRunner ApplicationRunners} have been called.
-	 * @param context the application context.
-	 * @param readyTime the time taken for the application to be ready to service requests
-	 * or {@code null} if unknown
-	 * @since 2.6.0
-	 */
-	default void running(ConfigurableApplicationContext context, Duration readyTime) {
-		running(context);
 	}
 
 	/**

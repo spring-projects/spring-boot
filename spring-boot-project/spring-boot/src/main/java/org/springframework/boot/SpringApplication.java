@@ -78,7 +78,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 /**
@@ -286,8 +285,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -303,23 +301,20 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			stopWatch.stop();
-			Duration startedTime = Duration.ofMillis(stopWatch.getTotalTimeMillis());
-			stopWatch.start();
+			Duration timeTakeToStartup = Duration.ofNanos(System.nanoTime() - startTime);
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), startedTime);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakeToStartup);
 			}
-			listeners.started(context, startedTime);
+			listeners.started(context, timeTakeToStartup);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, listeners);
 			throw new IllegalStateException(ex);
 		}
-
 		try {
-			stopWatch.stop();
-			listeners.running(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
+			Duration timeTakenToReady = Duration.ofNanos(System.nanoTime() - startTime);
+			listeners.ready(context, timeTakenToReady);
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);

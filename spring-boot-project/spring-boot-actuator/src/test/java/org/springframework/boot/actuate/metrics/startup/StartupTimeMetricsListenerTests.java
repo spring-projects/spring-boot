@@ -35,26 +35,26 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link StartupTimeMetrics}.
+ * Tests for {@link StartupTimeMetricsListener}.
  *
  * @author Chris Bono
  */
-class StartupTimeMetricsTests {
+class StartupTimeMetricsListenerTests {
 
 	private MeterRegistry registry;
 
-	private StartupTimeMetrics metrics;
+	private StartupTimeMetricsListener listener;
 
 	@BeforeEach
 	void setup() {
 		this.registry = new SimpleMeterRegistry();
-		this.metrics = new StartupTimeMetrics(this.registry);
+		this.listener = new StartupTimeMetricsListener(this.registry);
 	}
 
 	@Test
 	void metricsRecordedWithoutCustomTags() {
-		this.metrics.onApplicationEvent(applicationStartedEvent(2000L));
-		this.metrics.onApplicationEvent(applicationReadyEvent(2200L));
+		this.listener.onApplicationEvent(applicationStartedEvent(2000L));
+		this.listener.onApplicationEvent(applicationReadyEvent(2200L));
 		assertMetricExistsWithValue("application.started.time", 2000L);
 		assertMetricExistsWithValue("application.ready.time", 2200L);
 	}
@@ -62,9 +62,9 @@ class StartupTimeMetricsTests {
 	@Test
 	void metricsRecordedWithCustomTagsAndMetricNames() {
 		Tags tags = Tags.of("foo", "bar");
-		this.metrics = new StartupTimeMetrics(this.registry, tags, "m1", "m2");
-		this.metrics.onApplicationEvent(applicationStartedEvent(1000L));
-		this.metrics.onApplicationEvent(applicationReadyEvent(1050L));
+		this.listener = new StartupTimeMetricsListener(this.registry, "m1", "m2", tags);
+		this.listener.onApplicationEvent(applicationStartedEvent(1000L));
+		this.listener.onApplicationEvent(applicationReadyEvent(1050L));
 		assertMetricExistsWithCustomTagsAndValue("m1", tags, 1000L);
 		assertMetricExistsWithCustomTagsAndValue("m2", tags, 1050L);
 	}
@@ -72,7 +72,7 @@ class StartupTimeMetricsTests {
 	@Test
 	void metricRecordedWithoutMainAppClassTag() {
 		SpringApplication application = mock(SpringApplication.class);
-		this.metrics.onApplicationEvent(new ApplicationStartedEvent(application, null, null, Duration.ofSeconds(2)));
+		this.listener.onApplicationEvent(new ApplicationStartedEvent(application, null, null, Duration.ofSeconds(2)));
 		TimeGauge applicationStartedGague = this.registry.find("application.started.time").timeGauge();
 		assertThat(applicationStartedGague).isNotNull();
 		assertThat(applicationStartedGague.getId().getTags()).isEmpty();
@@ -82,8 +82,8 @@ class StartupTimeMetricsTests {
 	void metricRecordedWithoutMainAppClassTagAndAdditionalTags() {
 		SpringApplication application = mock(SpringApplication.class);
 		Tags tags = Tags.of("foo", "bar");
-		this.metrics = new StartupTimeMetrics(this.registry, tags, "started", "ready");
-		this.metrics.onApplicationEvent(new ApplicationReadyEvent(application, null, null, Duration.ofSeconds(2)));
+		this.listener = new StartupTimeMetricsListener(this.registry, "started", "ready", tags);
+		this.listener.onApplicationEvent(new ApplicationReadyEvent(application, null, null, Duration.ofSeconds(2)));
 		TimeGauge applicationReadyGague = this.registry.find("ready").timeGauge();
 		assertThat(applicationReadyGague).isNotNull();
 		assertThat(applicationReadyGague.getId().getTags()).containsExactlyElementsOf(tags);
@@ -91,8 +91,8 @@ class StartupTimeMetricsTests {
 
 	@Test
 	void metricsNotRecordedWhenStartupTimeNotAvailable() {
-		this.metrics.onApplicationEvent(applicationStartedEvent(null));
-		this.metrics.onApplicationEvent(applicationReadyEvent(null));
+		this.listener.onApplicationEvent(applicationStartedEvent(null));
+		this.listener.onApplicationEvent(applicationReadyEvent(null));
 		assertThat(this.registry.find("application.started.time").timeGauge()).isNull();
 		assertThat(this.registry.find("application.ready.time").timeGauge()).isNull();
 	}
