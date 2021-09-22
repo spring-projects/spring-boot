@@ -924,7 +924,7 @@ bom {
 			]
 		}
 	}
-	library("Jolokia", "1.7.0") {
+	library("Jolokia", "1.7.1") {
 		group("org.jolokia") {
 			modules = [
 				"jolokia-core"
