@@ -9,7 +9,7 @@ case "$1" in
 		 echo "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz"
 	;;
 	java17)
-		 echo "https://github.com/adoptium/temurin17-binaries/releases/download/jdk17-2021-09-15-08-15-beta/OpenJDK17-jdk_x64_linux_hotspot_2021-09-15-08-15.tar.gz"
+		 echo "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz"
 	;;
   *)
 		echo $"Unknown java version"
