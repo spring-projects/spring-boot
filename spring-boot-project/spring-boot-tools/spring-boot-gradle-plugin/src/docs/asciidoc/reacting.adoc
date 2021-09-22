@@ -63,11 +63,3 @@ When Gradle's {application-plugin}[`application` plugin] is applied to a project
 5. Configures the `bootJar` task to use the `mainClassName` property as a convention for the `Start-Class` entry in its manifest.
 6. Configures the `bootWar` task to use the `mainClassName` property as a convention for the `Start-Class` entry in its manifest.
 
-
-
-[[reacting-to-other-plugins.maven]]
-== Reacting to the Maven plugin
-WARNING: Support for reacting to Gradle's `maven` plugin is deprecated and will be removed in a future release.
-Please use the `maven-publish` plugin instead.
-
-When Gradle's {maven-plugin}[`maven` plugin] is applied to a project, the Spring Boot plugin will configure the `uploadBootArchives` `Upload` task to ensure that no dependencies are declared in the pom that it generates.

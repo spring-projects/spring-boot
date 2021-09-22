@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -37,7 +36,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
-import org.gradle.util.ConfigureUtil;
+import org.gradle.work.DisableCachingByDefault;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
@@ -63,6 +62,7 @@ import org.springframework.util.StringUtils;
  * @author Julian Liebig
  * @since 2.3.0
  */
+@DisableCachingByDefault
 public class BootBuildImage extends DefaultTask {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
@@ -99,11 +99,11 @@ public class BootBuildImage extends DefaultTask {
 
 	private final ListProperty<String> tags;
 
-	private final CacheSpec buildCache = new CacheSpec();
+	private final CacheSpec buildCache;
 
-	private final CacheSpec launchCache = new CacheSpec();
+	private final CacheSpec launchCache;
 
-	private final DockerSpec docker = new DockerSpec();
+	private final DockerSpec docker;
 
 	public BootBuildImage() {
 		this.archiveFile = getProject().getObjects().fileProperty();
@@ -115,6 +115,9 @@ public class BootBuildImage extends DefaultTask {
 		this.buildpacks = getProject().getObjects().listProperty(String.class);
 		this.bindings = getProject().getObjects().listProperty(String.class);
 		this.tags = getProject().getObjects().listProperty(String.class);
+		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
+		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
+		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
 	}
 
 	/**
@@ -461,15 +464,6 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Customizes the {@link CacheSpec} for the build cache using the given
-	 * {@code closure}.
-	 * @param closure the closure
-	 */
-	public void buildCache(Closure<?> closure) {
-		buildCache(ConfigureUtil.configureUsing(closure));
-	}
-
-	/**
 	 * Returns the launch cache that will be used when building the image.
 	 * @return the cache
 	 */
@@ -489,15 +483,6 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Customizes the {@link CacheSpec} for the launch cache using the given
-	 * {@code closure}.
-	 * @param closure the closure
-	 */
-	public void launchCache(Closure<?> closure) {
-		launchCache(ConfigureUtil.configureUsing(closure));
-	}
-
-	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -514,15 +499,6 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	public void docker(Action<DockerSpec> action) {
 		action.execute(this.docker);
-	}
-
-	/**
-	 * Configures the Docker connection using the given {@code closure}.
-	 * @param closure the closure to apply
-	 * @since 2.4.0
-	 */
-	public void docker(Closure<?> closure) {
-		docker(ConfigureUtil.configureUsing(closure));
 	}
 
 	@TaskAction

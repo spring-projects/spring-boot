@@ -41,7 +41,7 @@ public class ReproducibleLog4j2PluginsDatAction implements Action<JavaCompile> {
 
 	@Override
 	public void execute(JavaCompile javaCompile) {
-		File datFile = new File(javaCompile.getDestinationDir(),
+		File datFile = new File(javaCompile.getDestinationDirectory().getAsFile().get(),
 				"META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat");
 		try {
 			postProcess(datFile);

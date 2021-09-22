@@ -30,6 +30,7 @@ public class CreateBootStartScripts extends CreateStartScripts {
 
 	@Override
 	@Optional
+	@Deprecated
 	public String getMainClassName() {
 		return super.getMainClassName();
 	}

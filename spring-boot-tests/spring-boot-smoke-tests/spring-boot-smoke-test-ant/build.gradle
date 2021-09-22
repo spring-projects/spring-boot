@@ -50,7 +50,7 @@ task syncTestRepository(type: Sync) {
 task antRun(type: JavaExec) {
 	dependsOn syncTestRepository, configurations.antDependencies
 	classpath = configurations.antDependencies;
-	main = "org.apache.tools.ant.launch.Launcher"
+	mainClass = "org.apache.tools.ant.launch.Launcher"
 	systemProperties = [
 		"ant-spring-boot.version" : version,
 		"projectDir": project.layout.projectDirectory
