@@ -22,10 +22,10 @@ import javax.sql.DataSource;
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -49,10 +49,8 @@ import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
 import org.springframework.integration.context.IntegrationContextUtils;
-import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
-import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.rsocket.ClientRSocketConnector;
 import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
 import org.springframework.integration.rsocket.ServerRSocketConnector;
@@ -161,6 +159,27 @@ class IntegrationAutoConfigurationTests {
 				.run((context) -> {
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
+					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP")).isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_LOCK")).isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE")).isEmpty();
+				});
+	}
+
+	@Test
+	void whenIntegrationJdbcDataSourceInitializerIsEnabledThenFlywayCanBeUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class,
+						FlywayAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.integration.jdbc.initialize-schema=always")
+				.run((context) -> {
+					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
+					assertThat(properties.getJdbc().getInitializeSchema())
+							.isEqualTo(DataSourceInitializationMode.ALWAYS);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
@@ -398,8 +417,9 @@ class IntegrationAutoConfigurationTests {
 	static class MessageSourceConfiguration {
 
 		@Bean
-		MessageSource<?> myMessageSource() {
-			return new MessageProcessorMessageSource(mock(MessageProcessor.class));
+		org.springframework.integration.core.MessageSource<?> myMessageSource() {
+			return new MessageProcessorMessageSource(
+					mock(org.springframework.integration.handler.MessageProcessor.class));
 		}
 
 	}
@@ -412,7 +432,7 @@ class IntegrationAutoConfigurationTests {
 			return new IntegrationRSocketEndpoint() {
 
 				@Override
-				public Mono<Void> handleMessage(Message<?> message) {
+				public reactor.core.publisher.Mono<Void> handleMessage(Message<?> message) {
 					return null;
 				}
 
