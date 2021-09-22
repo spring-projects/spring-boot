@@ -178,8 +178,7 @@ class IntegrationAutoConfigurationTests {
 						"spring.integration.jdbc.initialize-schema=always")
 				.run((context) -> {
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema())
-							.isEqualTo(DataSourceInitializationMode.ALWAYS);
+					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
