@@ -235,8 +235,8 @@ public class RedisProperties {
 
 		/**
 		 * Whether to enable the pool. Enabled automatically if "commons-pool2" is
-		 * available.This setting only applies to Jedis when using non-sentinel mode and
-		 * that pooling is implicitly enabled in sentinel mode.
+		 * available. With Jedis, pooling is implicitly enabled in sentinel mode and this
+		 * setting only applies to single node setup.
 		 */
 		private Boolean enabled;
 
