@@ -1173,7 +1173,7 @@ class SpringApplicationTests {
 		verify(applicationStartup).start("spring.boot.application.context-prepared");
 		verify(applicationStartup).start("spring.boot.application.context-loaded");
 		verify(applicationStartup).start("spring.boot.application.started");
-		verify(applicationStartup).start("spring.boot.application.running");
+		verify(applicationStartup).start("spring.boot.application.ready");
 		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
 				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
 		long endCount = mockingDetails(startupStep).getInvocations().stream()
