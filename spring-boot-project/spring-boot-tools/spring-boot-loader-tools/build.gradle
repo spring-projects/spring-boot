@@ -35,12 +35,6 @@ dependencies {
 	testImplementation("org.zeroturnaround:zt-zip:1.13")
 }
 
-sourceSets {
-	main {
-		resources.srcDirs generatedResources
-	}
-}
-
 task reproducibleLoaderJar(type: Jar) {
 	dependsOn configurations.loader
 	from {
@@ -69,9 +63,10 @@ task reproducibleJarModeLayerToolsJar(type: Jar) {
 	destinationDirectory = file("${generatedResources}/META-INF/jarmode")
 }
 
-processResources {
-	dependsOn reproducibleLoaderJar
-	dependsOn reproducibleJarModeLayerToolsJar
+sourceSets {
+	main {
+		output.dir(generatedResources, builtBy: [reproducibleJarModeLayerToolsJar, reproducibleLoaderJar])
+	}
 }
 
 compileJava {
