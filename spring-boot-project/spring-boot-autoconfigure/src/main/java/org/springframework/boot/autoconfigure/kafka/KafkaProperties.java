@@ -1105,7 +1105,7 @@ public class KafkaProperties {
 		}
 
 		public String getKeyStoreCertificateChain() {
-			return keyStoreCertificateChain;
+			return this.keyStoreCertificateChain;
 		}
 
 		public void setKeyStoreCertificateChain(String keyStoreCertificateChain) {
@@ -1113,7 +1113,7 @@ public class KafkaProperties {
 		}
 
 		public String getKeyStoreKey() {
-			return keyStoreKey;
+			return this.keyStoreKey;
 		}
 
 		public void setKeyStoreKey(String keyStoreKey) {
@@ -1145,7 +1145,7 @@ public class KafkaProperties {
 		}
 
 		public String getTrustStoreCertificates() {
-			return trustStoreCertificates;
+			return this.trustStoreCertificates;
 		}
 
 		public void setTrustStoreCertificates(String trustStoreCertificates) {
