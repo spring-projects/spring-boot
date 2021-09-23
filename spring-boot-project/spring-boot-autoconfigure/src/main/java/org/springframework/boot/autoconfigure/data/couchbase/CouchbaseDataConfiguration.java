@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Persistent;
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
@@ -38,6 +37,7 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
  * Configuration for Spring Data's couchbase support.
  *
  * @author Stephane Nicoll
+ * @author Radosław Dąbrowski
  */
 @Configuration(proxyBeanMethods = false)
 class CouchbaseDataConfiguration {
@@ -65,7 +65,7 @@ class CouchbaseDataConfiguration {
 			throws Exception {
 		CouchbaseMappingContext mappingContext = new CouchbaseMappingContext();
 		mappingContext
-				.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class, Persistent.class));
+				.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class));
 		mappingContext.setSimpleTypeHolder(couchbaseCustomConversions.getSimpleTypeHolder());
 		Class<?> fieldNamingStrategy = properties.getFieldNamingStrategy();
 		if (fieldNamingStrategy != null) {
