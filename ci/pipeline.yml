@@ -105,6 +105,11 @@ resource_types:
   source:
     repository: cfcommunity/slack-notification-resource
     tag: latest
+- name: github-release
+  type: registry-image
+  source:
+    repository: concourse/github-release-resource
+    tag: 1.5.5
 resources:
 - name: git-repo
   type: git
