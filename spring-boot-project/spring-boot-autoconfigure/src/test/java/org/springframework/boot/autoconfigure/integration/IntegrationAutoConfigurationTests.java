@@ -18,15 +18,14 @@ package org.springframework.boot.autoconfigure.integration;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -42,6 +41,7 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfig
 import org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
@@ -70,7 +70,6 @@ import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
-import org.springframework.messaging.support.GenericMessage;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
@@ -404,49 +403,48 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void defaultPoller() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(PollerMetadata.class).getBean(PollerMetadata.DEFAULT_POLLER)
-					.hasFieldOrPropertyWithValue("maxMessagesPerPoll", (long) PollerMetadata.MAX_MESSAGES_UNBOUNDED)
-					.hasFieldOrPropertyWithValue("receiveTimeout", PollerMetadata.DEFAULT_RECEIVE_TIMEOUT)
-					.hasFieldOrPropertyWithValue("trigger", null);
-
-			GenericMessage<String> testMessage = new GenericMessage<>("test");
-			context.getBean("testChannel", QueueChannel.class).send(testMessage);
-			@SuppressWarnings("unchecked")
-			BlockingQueue<Message<?>> sink = context.getBean("sink", BlockingQueue.class);
-			assertThat(sink.poll(10, TimeUnit.SECONDS)).isSameAs(testMessage);
+			assertThat(context).hasSingleBean(PollerMetadata.class);
+			PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+			assertThat(metadata.getMaxMessagesPerPoll()).isEqualTo(PollerMetadata.MAX_MESSAGES_UNBOUNDED);
+			assertThat(metadata.getReceiveTimeout()).isEqualTo(PollerMetadata.DEFAULT_RECEIVE_TIMEOUT);
+			assertThat(metadata.getTrigger()).isNull();
 		});
 	}
 
 	@Test
-	void customPollerProperties() {
+	void whenCustomPollerPropertiesAreSetThenTheyAreReflectedInPollerMetadata() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
 				.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
 						"spring.integration.poller.max-messages-per-poll=1",
 						"spring.integration.poller.receive-timeout=10s")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(PollerMetadata.class)
-							.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class)
-							.hasFieldOrPropertyWithValue("maxMessagesPerPoll", 1L)
-							.hasFieldOrPropertyWithValue("receiveTimeout", 10000L)
-							.extracting(PollerMetadata::getTrigger).isInstanceOf(CronTrigger.class)
-							.hasFieldOrPropertyWithValue("expression", "* * * ? * *");
-
-					GenericMessage<String> testMessage = new GenericMessage<>("test");
-					context.getBean("testChannel", QueueChannel.class).send(testMessage);
-					@SuppressWarnings("unchecked")
-					BlockingQueue<Message<?>> sink = context.getBean("sink", BlockingQueue.class);
-					assertThat(sink.poll(10, TimeUnit.SECONDS)).isSameAs(testMessage);
+					assertThat(context).hasSingleBean(PollerMetadata.class);
+					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+					assertThat(metadata.getMaxMessagesPerPoll()).isEqualTo(1L);
+					assertThat(metadata.getReceiveTimeout()).isEqualTo(10000L);
+					assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(CronTrigger.class))
+							.satisfies((trigger) -> assertThat(trigger.getExpression()).isEqualTo("* * * ? * *"));
 				});
 	}
 
 	@Test
-	void triggerPropertiesAreMutuallyExclusive() {
+	void whenPollerPropertiesForMultipleTriggerTypesAreSetThenRefreshFails() {
 		this.contextRunner
 				.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
 						"spring.integration.poller.fixed-delay=1s")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
-						.hasRootCauseExactlyInstanceOf(IllegalArgumentException.class).hasMessageContaining(
-								"The 'cron', 'fixedDelay' and 'fixedRate' are mutually exclusive 'spring.integration.poller' properties."));
+						.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
+						.getRootCause()
+						.asInstanceOf(
+								InstanceOfAssertFactories.type(MutuallyExclusiveConfigurationPropertiesException.class))
+						.satisfies((ex) -> {
+							assertThat(ex.getConfiguredNames()).containsExactlyInAnyOrder(
+									"spring.integration.poller.cron", "spring.integration.poller.fixed-delay");
+							assertThat(ex.getMutuallyExclusiveNames()).containsExactlyInAnyOrder(
+									"spring.integration.poller.cron", "spring.integration.poller.fixed-delay",
+									"spring.integration.poller.fixed-rate");
+						}));
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
