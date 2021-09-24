@@ -1,0 +1,6 @@
+[[io.whats-next]]
+== What to Read Next
+You should now have a good understanding of Spring Boot's <<features#features, core features>> and the various technologies that Spring Boot provides support for via auto-configuration.
+
+The next few sections go into detail about deploying applications to cloud platforms.
+You can read about <<container-images#container-images, building container images>> in the next section or skip to the <<actuator#actuator, production-ready features>> section.

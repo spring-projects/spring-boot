@@ -28,7 +28,7 @@ Available commands:
 ----
 
 The `extract` command can be used to easily split the application into layers to be added to the dockerfile.
-Here's an example of a Dockerfile using `jarmode`.
+Here is an example of a Dockerfile using `jarmode`.
 
 [source,dockerfile,indent=0,subs="verbatim"]
 ----

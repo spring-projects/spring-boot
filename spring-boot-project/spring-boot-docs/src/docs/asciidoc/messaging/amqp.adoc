@@ -51,7 +51,7 @@ Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowir
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/amqp/sending/MyBean.java[]
+include::{docs-java}/messaging/amqp/sending/MyBean.java[]
 ----
 
 NOTE: {spring-amqp-api}/rabbit/core/RabbitMessagingTemplate.html[`RabbitMessagingTemplate`] can be injected in a similar manner.
@@ -88,7 +88,7 @@ The following sample component creates a listener endpoint on the `someQueue` qu
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/amqp/receiving/MyBean.java[]
+include::{docs-java}/messaging/amqp/receiving/MyBean.java[]
 ----
 
 TIP: See {spring-amqp-api}/rabbit/annotation/EnableRabbit.html[the Javadoc of `@EnableRabbit`] for more details.
@@ -102,14 +102,14 @@ For instance, the following configuration class exposes another factory that use
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/amqp/receiving/custom/MyRabbitConfiguration.java[]
+include::{docs-java}/messaging/amqp/receiving/custom/MyRabbitConfiguration.java[]
 ----
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/amqp/receiving/custom/MyBean.java[]
+include::{docs-java}/messaging/amqp/receiving/custom/MyBean.java[]
 ----
 
 You can enable retries to handle situations where your listener throws an exception.

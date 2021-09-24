@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ class TomcatEmbeddedContext extends StandardContext {
 	 * Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
 	 * loader to create servlet instances in this phase. If they do that and then try to
 	 * initialize them later the class loader may have changed, so wrap the call to
-	 * loadOnStartup in what we think its going to be the main webapp classloader at
+	 * loadOnStartup in what we think is going to be the main webapp classloader at
 	 * runtime.
 	 * @param classLoader the class loader to use
 	 * @param code the code to run

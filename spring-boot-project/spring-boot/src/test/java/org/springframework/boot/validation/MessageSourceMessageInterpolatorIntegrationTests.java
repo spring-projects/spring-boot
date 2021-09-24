@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -40,8 +41,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Dmytro Nosan
  */
 class MessageSourceMessageInterpolatorIntegrationTests {
-
-	private final Validator validator = buildValidator();
 
 	@NotNull
 	private String defaultMessage;
@@ -117,12 +116,15 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 	}
 
 	private List<String> validate(String property) {
-		List<String> messages = new ArrayList<>();
-		Set<ConstraintViolation<Object>> constraints = this.validator.validateProperty(this, property);
-		for (ConstraintViolation<Object> constraint : constraints) {
-			messages.add(constraint.getMessage());
-		}
-		return messages;
+		return withEnglishLocale(() -> {
+			Validator validator = buildValidator();
+			List<String> messages = new ArrayList<>();
+			Set<ConstraintViolation<Object>> constraints = validator.validateProperty(this, property);
+			for (ConstraintViolation<Object> constraint : constraints) {
+				messages.add(constraint.getMessage());
+			}
+			return messages;
+		});
 	}
 
 	private static Validator buildValidator() {
@@ -137,6 +139,17 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 			validatorFactory.setMessageInterpolator(messageInterpolatorFactory.getObject());
 			validatorFactory.afterPropertiesSet();
 			return validatorFactory.getValidator();
+		}
+	}
+
+	private static <T> T withEnglishLocale(Supplier<T> supplier) {
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.ENGLISH);
+			return supplier.get();
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
 		}
 	}
 

@@ -19,6 +19,8 @@ include::messaging/rsocket.adoc[]
 
 include::messaging/spring-integration.adoc[]
 
+include::messaging/whats-next.adoc[]
+
 
 
 

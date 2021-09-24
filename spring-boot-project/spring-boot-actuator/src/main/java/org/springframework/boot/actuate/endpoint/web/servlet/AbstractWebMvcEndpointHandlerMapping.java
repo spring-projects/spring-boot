@@ -67,7 +67,7 @@ import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.servlet.handler.RequestMatchResult;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
-import org.springframework.web.util.UrlPathHelper;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
@@ -95,7 +95,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
 			HttpServletRequest.class, Map.class);
 
-	private static final RequestMappingInfo.BuilderConfiguration builderConfig = getBuilderConfig();
+	private RequestMappingInfo.BuilderConfiguration builderConfig = new RequestMappingInfo.BuilderConfiguration();
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
@@ -123,12 +123,46 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
+		this(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping, null);
+	}
+
+	/**
+	 * Creates a new {@code AbstractWebMvcEndpointHandlerMapping} that provides mappings
+	 * for the operations of the given endpoints.
+	 * @param endpointMapping the base mapping for all endpoints
+	 * @param endpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
+	 * @param pathPatternParser the path pattern parser
+	 */
+	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping,
+			PathPatternParser pathPatternParser) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
 		this.shouldRegisterLinksMapping = shouldRegisterLinksMapping;
+		setPatternParser(pathPatternParser);
 		setOrder(-100);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void afterPropertiesSet() {
+		this.builderConfig = new RequestMappingInfo.BuilderConfiguration();
+		if (getPatternParser() != null) {
+			this.builderConfig.setPatternParser(getPatternParser());
+		}
+		else {
+			this.builderConfig.setPathMatcher(null);
+			this.builderConfig.setTrailingSlashMatch(true);
+			this.builderConfig.setSuffixPatternMatch(false);
+
+		}
+		super.afterPropertiesSet();
 	}
 
 	@Override
@@ -151,7 +185,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	@Override
 	public RequestMatchResult match(HttpServletRequest request, String pattern) {
-		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(builderConfig).build();
+		Assert.isNull(getPatternParser(), "This HandlerMapping uses PathPatterns.");
+		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(this.builderConfig).build();
 		RequestMappingInfo matchingInfo = info.getMatchingCondition(request);
 		if (matchingInfo == null) {
 			return null;
@@ -159,15 +194,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		Set<String> patterns = matchingInfo.getPatternsCondition().getPatterns();
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		return new RequestMatchResult(patterns.iterator().next(), lookupPath, getPathMatcher());
-	}
-
-	@SuppressWarnings("deprecation")
-	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
-		RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
-		config.setPathMatcher(null);
-		config.setSuffixPatternMatch(false);
-		config.setTrailingSlashMatch(true);
-		return config;
 	}
 
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
@@ -202,7 +228,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
-		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path))
+		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path)).options(this.builderConfig)
 				.methods(RequestMethod.valueOf(predicate.getHttpMethod().name()))
 				.consumes(predicate.getConsumes().toArray(new String[0]))
 				.produces(predicate.getProduces().toArray(new String[0])).build();
@@ -211,7 +237,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	private void registerLinksMapping() {
 		RequestMappingInfo mapping = RequestMappingInfo.paths(this.endpointMapping.createSubPath(""))
 				.methods(RequestMethod.GET).produces(this.endpointMediaTypes.getProduced().toArray(new String[0]))
-				.options(builderConfig).build();
+				.options(this.builderConfig).build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
 				HttpServletRequest.class, HttpServletResponse.class));
@@ -335,7 +361,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			String[] pathTokens = tokenize(request, UrlPathHelper.PATH_ATTRIBUTE, true);
+			String[] pathTokens = tokenize(request, HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, true);
 			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
 			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
 			Assert.state(numberOfRemainingPathSegments >= 0, "Unable to extract remaining path segments");

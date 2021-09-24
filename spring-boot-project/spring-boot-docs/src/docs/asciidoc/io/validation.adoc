@@ -8,7 +8,7 @@ For instance, the following service triggers the validation of the first argumen
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/validation/MyBean.java[]
+include::{docs-java}/io/validation/MyBean.java[]
 ----
 
 The application's `MessageSource` is used when resolving +`{parameters}`+ in constraint messages.

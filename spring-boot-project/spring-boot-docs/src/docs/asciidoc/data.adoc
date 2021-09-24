@@ -7,3 +7,5 @@ Spring Boot integrates with a number of data technologies, both SQL and NoSQL.
 include::data/sql.adoc[]
 
 include::data/nosql.adoc[]
+
+include::data/whats-next.adoc[]

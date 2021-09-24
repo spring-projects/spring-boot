@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	/**
-	 * Perform a HTTP GET operation.
+	 * Perform an HTTP GET operation.
 	 * @param uri the destination URI
 	 * @return the operation response
 	 */
@@ -76,7 +76,7 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	/**
-	 * Perform a HTTP POST operation.
+	 * Perform an HTTP POST operation.
 	 * @param uri the destination URI
 	 * @return the operation response
 	 */
@@ -86,7 +86,7 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	/**
-	 * Perform a HTTP POST operation.
+	 * Perform an HTTP POST operation.
 	 * @param uri the destination URI
 	 * @param registryAuth registry authentication credentials
 	 * @return the operation response
@@ -97,7 +97,7 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	/**
-	 * Perform a HTTP POST operation.
+	 * Perform an HTTP POST operation.
 	 * @param uri the destination URI
 	 * @param contentType the content type to write
 	 * @param writer a content writer
@@ -109,7 +109,7 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	/**
-	 * Perform a HTTP PUT operation.
+	 * Perform an HTTP PUT operation.
 	 * @param uri the destination URI
 	 * @param contentType the content type to write
 	 * @param writer a content writer
@@ -121,7 +121,7 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	/**
-	 * Perform a HTTP DELETE operation.
+	 * Perform an HTTP DELETE operation.
 	 * @param uri the destination URI
 	 * @return the operation response
 	 */

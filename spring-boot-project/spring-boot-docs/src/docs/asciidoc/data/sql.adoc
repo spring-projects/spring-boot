@@ -160,7 +160,7 @@ Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-config
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jdbctemplate/MyBean.java[]
+include::{docs-java}/data/sql/jdbctemplate/MyBean.java[]
 ----
 
 You can customize some properties of the template by using the `spring.jdbc.template.*` properties, as shown in the following example:
@@ -204,7 +204,7 @@ A typical entity class resembles the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jpaandspringdata/entityclasses/City.java[]
+include::{docs-java}/data/sql/jpaandspringdata/entityclasses/City.java[]
 ----
 
 TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
@@ -227,7 +227,7 @@ The following example shows a typical Spring Data repository interface definitio
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jpaandspringdata/repositories/CityRepository.java[]
+include::{docs-java}/data/sql/jpaandspringdata/repositories/CityRepository.java[]
 ----
 
 Spring Data JPA repositories support three different modes of bootstrapping: default, deferred, and lazy.
@@ -255,7 +255,7 @@ To use Spring Data Envers, make sure your repository extends from `RevisionRepos
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jpaandspringdata/repositories/CountryRepository.java[]
+include::{docs-java}/data/sql/jpaandspringdata/repositories/CountryRepository.java[]
 ----
 
 NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers reference documentation].
@@ -389,7 +389,7 @@ To use the `DSLContext`, you can inject it, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jooq/dslcontext/MyBean.java[tag=!method]
+include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=!method]
 ----
 
 TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`.
@@ -398,7 +398,7 @@ You can then use the `DSLContext` to construct your queries, as shown in the fol
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jooq/dslcontext/MyBean.java[tag=method]
+include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=method]
 ----
 
 
@@ -451,14 +451,14 @@ The following example shows how to manually override the database port while the
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/MyR2dbcConfiguration.java[]
+include::{docs-java}/data/sql/r2dbc/MyR2dbcConfiguration.java[]
 ----
 
 The following examples show how to set some PostgreSQL connection options:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/MyPostgresR2dbcConfiguration.java[]
+include::{docs-java}/data/sql/r2dbc/MyPostgresR2dbcConfiguration.java[]
 ----
 
 When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
@@ -495,7 +495,7 @@ A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly 
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/usingdatabaseclient/MyBean.java[]
+include::{docs-java}/data/sql/r2dbc/usingdatabaseclient/MyBean.java[]
 ----
 
 
@@ -515,7 +515,7 @@ The following example shows a typical Spring Data repository interface definitio
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/repositories/CityRepository.java[]
+include::{docs-java}/data/sql/r2dbc/repositories/CityRepository.java[]
 ----
 
 TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].

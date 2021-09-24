@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,15 +67,17 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		this.localHeaderOffset = localHeaderOffset;
 	}
 
-	void load(byte[] data, int dataOffset, RandomAccessData variableData, int variableOffset, JarEntryFilter filter)
+	void load(byte[] data, int dataOffset, RandomAccessData variableData, long variableOffset, JarEntryFilter filter)
 			throws IOException {
 		// Load fixed part
 		this.header = data;
 		this.headerOffset = dataOffset;
+		long compressedSize = Bytes.littleEndianValue(data, dataOffset + 20, 4);
+		long uncompressedSize = Bytes.littleEndianValue(data, dataOffset + 24, 4);
 		long nameLength = Bytes.littleEndianValue(data, dataOffset + 28, 2);
 		long extraLength = Bytes.littleEndianValue(data, dataOffset + 30, 2);
 		long commentLength = Bytes.littleEndianValue(data, dataOffset + 32, 2);
-		this.localHeaderOffset = Bytes.littleEndianValue(data, dataOffset + 42, 4);
+		long localHeaderOffset = Bytes.littleEndianValue(data, dataOffset + 42, 4);
 		// Load variable part
 		dataOffset += 46;
 		if (variableData != null) {
@@ -92,9 +94,35 @@ final class CentralDirectoryFileHeader implements FileHeader {
 			this.extra = new byte[(int) extraLength];
 			System.arraycopy(data, (int) (dataOffset + nameLength), this.extra, 0, this.extra.length);
 		}
+		this.localHeaderOffset = getLocalHeaderOffset(compressedSize, uncompressedSize, localHeaderOffset, this.extra);
 		if (commentLength > 0) {
 			this.comment = new AsciiBytes(data, (int) (dataOffset + nameLength + extraLength), (int) commentLength);
 		}
+	}
+
+	private long getLocalHeaderOffset(long compressedSize, long uncompressedSize, long localHeaderOffset, byte[] extra)
+			throws IOException {
+		if (localHeaderOffset != 0xFFFFFFFFL) {
+			return localHeaderOffset;
+		}
+		int extraOffset = 0;
+		while (extraOffset < extra.length - 2) {
+			int id = (int) Bytes.littleEndianValue(extra, extraOffset, 2);
+			int length = (int) Bytes.littleEndianValue(extra, extraOffset, 2);
+			extraOffset += 4;
+			if (id == 1) {
+				int localHeaderExtraOffset = 0;
+				if (compressedSize == 0xFFFFFFFFL) {
+					localHeaderExtraOffset += 4;
+				}
+				if (uncompressedSize == 0xFFFFFFFFL) {
+					localHeaderExtraOffset += 4;
+				}
+				return Bytes.littleEndianValue(extra, extraOffset + localHeaderExtraOffset, 8);
+			}
+			extraOffset += length;
+		}
+		throw new IOException("Zip64 Extended Information Extra Field not found");
 	}
 
 	AsciiBytes getName() {
@@ -176,7 +204,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return new CentralDirectoryFileHeader(header, 0, this.name, header, this.comment, this.localHeaderOffset);
 	}
 
-	static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, int offset, JarEntryFilter filter)
+	static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, long offset, JarEntryFilter filter)
 			throws IOException {
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		byte[] bytes = data.read(offset, 46);

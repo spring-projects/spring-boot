@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,13 +82,17 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 			doHealthCheck(builder);
 		}
 		catch (Exception ex) {
-			if (this.logger.isWarnEnabled()) {
-				String message = this.healthCheckFailedMessage.apply(ex);
-				this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, ex);
-			}
 			builder.down(ex);
 		}
+		logExceptionIfPresent(builder.getException());
 		return builder.build();
+	}
+
+	private void logExceptionIfPresent(Throwable ex) {
+		if (ex != null && this.logger.isWarnEnabled()) {
+			String message = (ex instanceof Exception) ? this.healthCheckFailedMessage.apply((Exception) ex) : null;
+			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, ex);
+		}
 	}
 
 	/**

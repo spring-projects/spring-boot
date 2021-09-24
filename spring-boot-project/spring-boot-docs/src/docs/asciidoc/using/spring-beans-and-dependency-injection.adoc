@@ -4,7 +4,7 @@ You are free to use any of the standard Spring Framework techniques to define yo
 We generally recommend using constructor injection to wire up dependencies and `@ComponentScan` to find beans.
 
 If you structure your code as suggested above (locating your application class in a top package), you can add `@ComponentScan` without any arguments or use the `@SpringBootApplication` annotation which implicitly includes it.
-All of your application components (`@Component`, `@Service`, `@Repository`, `@Controller` etc.) are automatically registered as Spring Beans.
+All of your application components (`@Component`, `@Service`, `@Repository`, `@Controller`, etc.) are automatically registered as Spring Beans.
 
 The following example shows a `@Service` Bean that uses constructor injection to obtain a required `RiskAssessor` bean:
 
@@ -13,7 +13,7 @@ The following example shows a `@Service` Bean that uses constructor injection to
 include::{docs-java}/using/springbeansanddependencyinjection/singleconstructor/MyAccountService.java[]
 ----
 
-If a bean has more than one constructor, you'll need to mark the one you want Spring to use with `@Autowired`:
+If a bean has more than one constructor, you will need to mark the one you want Spring to use with `@Autowired`:
 
 [source,java,indent=0,subs="verbatim"]
 ----

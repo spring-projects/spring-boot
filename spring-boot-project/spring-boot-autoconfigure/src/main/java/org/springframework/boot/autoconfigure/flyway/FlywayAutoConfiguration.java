@@ -180,6 +180,9 @@ public class FlywayAutoConfiguration {
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
+			// No method reference for compatibility with Flyway < 7.15
+			map.from(properties.getConnectRetriesInterval())
+					.to((interval) -> configuration.connectRetriesInterval((int) interval.getSeconds()));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getLockRetryCount())
 					.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
@@ -220,6 +223,10 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
 					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
 					.to(configuration::initSql);
+			map.from(properties.getScriptPlaceholderPrefix())
+					.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
+			map.from(properties.getScriptPlaceholderPrefix())
+					.to((suffix) -> configuration.scriptPlaceholderPrefix(suffix));
 			// Pro properties
 			map.from(properties.getBatch()).to(configuration::batch);
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);

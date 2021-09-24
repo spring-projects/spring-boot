@@ -19,7 +19,7 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 
 /**
- * An pre-built application that can be launched.
+ * A pre-built application that can be launched.
  *
  * @author Andy Wilkinson
  */

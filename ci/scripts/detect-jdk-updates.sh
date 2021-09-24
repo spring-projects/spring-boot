@@ -16,12 +16,8 @@ case "$JDK_VERSION" in
 		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/11/ga"
 		 ISSUE_TITLE="Upgrade Java 11 version in CI image"
 	;;
-	java16)
-		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/16/ga"
-		 ISSUE_TITLE="Upgrade Java 16 version in CI image"
-	;;
 	java17)
-		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/17/ea"
+		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/17/ga"
 		 ISSUE_TITLE="Upgrade Java 17 version in CI image"
 	;;
 	*)
@@ -51,7 +47,7 @@ if [[ ${milestone_result} = "null" || ${milestone_result} = "" ]]; then
 fi
 
 milestone_number=$( jq -r '.number' <<< "$milestone_result" )
-existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster\&milestone\=${milestone_number} )
+existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-builds\&milestone\=${milestone_number} )
 existing_jdk_issues=$( jq -r -c --arg TITLE "$ISSUE_TITLE" '.[] | select(has("title")) | select(.title==$TITLE)' <<< "$existing_tasks" )
 
 if [[ ${existing_jdk_issues} = "" ]]; then

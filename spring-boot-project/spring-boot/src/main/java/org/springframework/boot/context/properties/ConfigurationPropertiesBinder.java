@@ -26,7 +26,6 @@ import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
@@ -113,7 +112,7 @@ class ConfigurationPropertiesBinder {
 	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
 		BindHandler handler = getHandler();
-		handler = new ConfigurationPropertiesBindHander(handler);
+		handler = new ConfigurationPropertiesBindHandler(handler);
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
@@ -193,16 +192,14 @@ class ConfigurationPropertiesBinder {
 
 	static void register(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(FACTORY_BEAN_NAME)) {
-			AbstractBeanDefinition definition = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesBinder.Factory.class,
-							ConfigurationPropertiesBinder.Factory::new)
-					.getBeanDefinition();
+			BeanDefinition definition = BeanDefinitionBuilder
+					.rootBeanDefinition(ConfigurationPropertiesBinder.Factory.class).getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.FACTORY_BEAN_NAME, definition);
 		}
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			AbstractBeanDefinition definition = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesBinder.class,
+			BeanDefinition definition = BeanDefinitionBuilder
+					.rootBeanDefinition(ConfigurationPropertiesBinder.class,
 							() -> ((BeanFactory) registry)
 									.getBean(FACTORY_BEAN_NAME, ConfigurationPropertiesBinder.Factory.class).create())
 					.getBeanDefinition();
@@ -240,9 +237,9 @@ class ConfigurationPropertiesBinder {
 	 * {@link BindHandler} to deal with
 	 * {@link ConfigurationProperties @ConfigurationProperties} concerns.
 	 */
-	private static class ConfigurationPropertiesBindHander extends AbstractBindHandler {
+	private static class ConfigurationPropertiesBindHandler extends AbstractBindHandler {
 
-		ConfigurationPropertiesBindHander(BindHandler handler) {
+		ConfigurationPropertiesBindHandler(BindHandler handler) {
 			super(handler);
 		}
 

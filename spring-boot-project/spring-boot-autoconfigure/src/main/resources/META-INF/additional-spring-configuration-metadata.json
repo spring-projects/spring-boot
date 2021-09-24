@@ -615,6 +615,12 @@
       "defaultValue": "auto"
     },
     {
+      "name": "spring.data.elasticsearch.client.reactive.endpoints",
+      "defaultValue": [
+        "localhost:9200"
+      ]
+    },
+    {
       "name": "spring.data.elasticsearch.cluster-name",
       "type": "java.lang.String",
       "description": "Elasticsearch cluster name.",
@@ -861,6 +867,16 @@
       ]
     },
     {
+      "name": "spring.elasticsearch.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
+      "name": "spring.flyway.connect-retries-interval",
+      "defaultValue": 120
+    },
+    {
       "name": "spring.flyway.dry-run-output",
       "type": "java.io.OutputStream",
       "deprecation": {
@@ -886,6 +902,14 @@
     {
       "name": "spring.flyway.lock-retry-count",
       "defaultValue": 50
+    },
+    {
+      "name": "spring.flyway.script-placeholder-prefix",
+      "defaultValue": "FP__"
+    },
+    {
+      "name": "spring.flyway.script-placeholder-suffix",
+      "defaultValue": "__"
     },
     {
       "name": "spring.flyway.sql-migration-suffix",

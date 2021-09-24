@@ -148,7 +148,7 @@ public class BootBuildImage extends DefaultTask {
 	@Input
 	@Optional
 	public String getImageName() {
-		return this.imageName;
+		return determineImageReference().toString();
 	}
 
 	/**

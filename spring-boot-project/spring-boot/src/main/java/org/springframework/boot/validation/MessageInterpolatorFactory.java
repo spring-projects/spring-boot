@@ -93,7 +93,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 				return getFallback(fallback);
 			}
 			catch (Exception ex) {
-				// Swallow an continue
+				// Swallow and continue
 			}
 		}
 		return null;

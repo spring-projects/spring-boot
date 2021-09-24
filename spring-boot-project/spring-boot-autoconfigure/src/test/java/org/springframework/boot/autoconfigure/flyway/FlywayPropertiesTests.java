@@ -53,6 +53,9 @@ class FlywayPropertiesTests {
 				.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
+		// Can't assert connect retries interval as it is new in Flyway 7.15
+		// Asserting hard-coded value in the metadata instead
+		assertThat(configuration.getConnectRetriesInterval()).isEqualTo(120);
 		// Can't assert lock retry count default as it is new in Flyway 7.1
 		// Asserting hard-coded value in the metadata instead
 		assertThat(configuration.getLockRetryCount()).isEqualTo(50);
@@ -93,6 +96,8 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isValidateOnMigrate()).isEqualTo(properties.isValidateOnMigrate());
 		assertThat(properties.getDetectEncoding()).isNull();
+		assertThat(configuration.getScriptPlaceholderPrefix()).isEqualTo("FP__");
+		assertThat(configuration.getScriptPlaceholderSuffix()).isEqualTo("__");
 	}
 
 	@Test
@@ -108,7 +113,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "apiExtensions");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "apiExtensions", "loggers");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

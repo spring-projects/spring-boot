@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,17 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 
-import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.system.DiskSpaceMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -81,14 +84,35 @@ class SystemMetricsAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresDiskSpaceMetrics() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetrics.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetricsBinder.class));
 	}
 
 	@Test
 	void allowsCustomDiskSpaceMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetrics.class)
+				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetricsBinder.class)
 						.hasBean("customDiskSpaceMetrics"));
+	}
+
+	@Test
+	void diskSpaceMetricsUsesDefaultPath() {
+		this.contextRunner
+				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
+						.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File("."))));
+	}
+
+	@Test
+	void allowsDiskSpaceMetricsPathToBeConfiguredWithSinglePath() {
+		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:..")
+				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
+						.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File(".."))));
+	}
+
+	@Test
+	void allowsDiskSpaceMetricsPathToBeConfiguredWithMultiplePaths() {
+		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:.,..")
+				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
+						.hasFieldOrPropertyWithValue("paths", Arrays.asList(new File("."), new File(".."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -125,8 +149,9 @@ class SystemMetricsAutoConfigurationTests {
 	static class CustomDiskSpaceMetricsConfiguration {
 
 		@Bean
-		DiskSpaceMetrics customDiskSpaceMetrics() {
-			return new DiskSpaceMetrics(new File(System.getProperty("user.dir")));
+		DiskSpaceMetricsBinder customDiskSpaceMetrics() {
+			return new DiskSpaceMetricsBinder(Collections.singletonList(new File(System.getProperty("user.dir"))),
+					Tags.empty());
 		}
 
 	}

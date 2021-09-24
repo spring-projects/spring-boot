@@ -73,8 +73,8 @@ Spring Boot provides a `@SpringBootTest` annotation, which can be used as an alt
 The annotation works by <<features#features.testing.spring-boot-applications.detecting-configuration,creating the `ApplicationContext` used in your tests through `SpringApplication`>>.
 In addition to `@SpringBootTest` a number of other annotations are also provided for <<features#features.testing.spring-boot-applications.autoconfigured-tests,testing more specific slices>> of an application.
 
-TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there's no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@...Test` annotations are already annotated with it.
+TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
+If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@...Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server.
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how your tests run:
@@ -100,7 +100,7 @@ NOTE: `@SpringBootTest` with `webEnvironment = WebEnvironment.RANDOM_PORT` will 
 [[features.testing.spring-boot-applications.detecting-web-app-type]]
 ==== Detecting Web Application Type
 If Spring MVC is available, a regular MVC-based application context is configured.
-If you have only Spring WebFlux, we'll detect that and configure a WebFlux-based application context instead.
+If you have only Spring WebFlux, we will detect that and configure a WebFlux-based application context instead.
 
 If both are present, Spring MVC takes precedence.
 If you want to test a reactive web application in this scenario, you must set the configprop:spring.main.web-application-type[] property:
@@ -192,10 +192,10 @@ include::{docs-java}/features/testing/springbootapplications/withmockenvironment
 
 [TIP]
 ====
-Testing within a mocked environment is usually faster than running with a full Servlet container.
-However, since mocking occurs at the Spring MVC layer, code that relies on lower-level Servlet container behavior cannot be directly tested with MockMvc.
+Testing within a mocked environment is usually faster than running with a full servlet container.
+However, since mocking occurs at the Spring MVC layer, code that relies on lower-level servlet container behavior cannot be directly tested with MockMvc.
 
-For example, Spring Boot's error handling is based on the "`error page`" support provided by the Servlet container.
+For example, Spring Boot's error handling is based on the "`error page`" support provided by the servlet container.
 This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<web#web.servlet.spring-mvc.error-handling.error-pages, custom error page>> is rendered.
 If you need to test these lower-level concerns, you can start a fully running server as described in the next section.
 ====
@@ -218,7 +218,7 @@ include::{docs-java}/features/testing/springbootapplications/withrunningserver/M
 TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
 
 This setup requires `spring-webflux` on the classpath.
-If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate` facility:
+If you can not or will not add webflux, Spring Boot also provides a `TestRestTemplate` facility:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -285,7 +285,7 @@ The following example replaces an existing `RemoteService` bean with a mock impl
 include::{docs-java}/features/testing/springbootapplications/mockingbeans/bean/MyTests.java[]
 ----
 
-NOTE: `@MockBean` cannot be used to mock the behavior of a bean that's exercised during application context refresh.
+NOTE: `@MockBean` cannot be used to mock the behavior of a bean that is exercised during application context refresh.
 By the time the test is executed, the application context refresh has completed and it is too late to configure the mocked behavior.
 We recommend using a `@Bean` method to create and configure the mock in this situation.
 
@@ -368,7 +368,7 @@ include::{docs-java}/features/testing/springbootapplications/jsontests/MyJsonAss
 [[features.testing.spring-boot-applications.spring-mvc-tests]]
 ==== Auto-configured Spring MVC Tests
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest` annotation.
-`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
+`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, `WebMvcRegistrations`, and `HandlerMethodArgumentResolver`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -391,7 +391,7 @@ include::{docs-java}/features/testing/springbootapplications/springmvctests/MyCo
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
-If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
+If you use HtmlUnit and Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
 [source,java,indent=0,subs="verbatim"]
@@ -708,7 +708,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-mock-mvc]]
 ===== Auto-configured Spring REST Docs Tests with Mock MVC
-`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
+`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]

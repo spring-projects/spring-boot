@@ -98,7 +98,7 @@ public class JacksonProperties {
 	private Boolean defaultLeniency;
 
 	/**
-	 * Strategy to use to to auto-detect constructor, and in particular behavior with
+	 * Strategy to use to auto-detect constructor, and in particular behavior with
 	 * single-argument constructors.
 	 */
 	private ConstructorDetectorStrategy constructorDetector;

@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpHost;
@@ -27,23 +30,18 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Node;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.sniff.Sniffer;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -58,12 +56,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Vedran Pavic
  * @author Evgeniy Cheban
  */
-@Testcontainers(disabledWithoutDocker = true)
 class ElasticsearchRestClientAutoConfigurationTests {
-
-	@Container
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
@@ -118,9 +111,19 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void configureWithCustomTimeouts() {
+	void configureWithLegacyCustomTimeouts() {
 		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
 				"spring.elasticsearch.rest.read-timeout=1m").run((context) -> {
+					assertThat(context).hasSingleBean(RestHighLevelClient.class);
+					RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
+					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
+				});
+	}
+
+	@Test
+	void configureWithCustomTimeouts() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.connection-timeout=15s",
+				"spring.elasticsearch.socket-timeout=1m").run((context) -> {
 					assertThat(context).hasSingleBean(RestHighLevelClient.class);
 					RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
 					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
@@ -134,66 +137,51 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				.isEqualTo(Math.toIntExact(connectTimeout.toMillis()));
 	}
 
-	@Test
-	void restClientCanQueryElasticsearchNode() {
-		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://" + elasticsearch.getHttpHostAddress())
-				.run((context) -> {
-					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
-					Map<String, String> source = new HashMap<>();
-					source.put("a", "alpha");
-					source.put("b", "bravo");
-					IndexRequest index = new IndexRequest("test").id("1").source(source);
-					client.index(index, RequestOptions.DEFAULT);
-					GetRequest getRequest = new GetRequest("test").id("1");
-					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists()).isTrue();
-				});
+	@ParameterizedPropertyPrefixTest
+	void configureUriWithNoScheme(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "uris=localhost:9876").run((context) -> {
+			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+					.containsExactly("http://localhost:9876");
+		});
 	}
 
-	@Test
-	void configureUriWithUsernameOnly() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.uris=http://user@localhost:9200")
-				.run((context) -> {
-					RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
-					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
-							.containsExactly("http://localhost:9200");
-					assertThat(client).extracting("client")
-							.extracting("credentialsProvider",
-									InstanceOfAssertFactories.type(CredentialsProvider.class))
-							.satisfies((credentialsProvider) -> {
-								Credentials credentials = credentialsProvider
-										.getCredentials(new AuthScope("localhost", 9200));
-								assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
-								assertThat(credentials.getPassword()).isNull();
-							});
-				});
+	@ParameterizedPropertyPrefixTest
+	void configureUriWithUsernameOnly(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "uris=http://user@localhost:9200").run((context) -> {
+			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+					.containsExactly("http://localhost:9200");
+			assertThat(client).extracting("client")
+					.extracting("credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+					.satisfies((credentialsProvider) -> {
+						Credentials credentials = credentialsProvider.getCredentials(new AuthScope("localhost", 9200));
+						assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
+						assertThat(credentials.getPassword()).isNull();
+					});
+		});
 	}
 
-	@Test
-	void configureUriWithUsernameAndEmptyPassword() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.uris=http://user:@localhost:9200")
-				.run((context) -> {
-					RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
-					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
-							.containsExactly("http://localhost:9200");
-					assertThat(client).extracting("client")
-							.extracting("credentialsProvider",
-									InstanceOfAssertFactories.type(CredentialsProvider.class))
-							.satisfies((credentialsProvider) -> {
-								Credentials credentials = credentialsProvider
-										.getCredentials(new AuthScope("localhost", 9200));
-								assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
-								assertThat(credentials.getPassword()).isEmpty();
-							});
-				});
+	@ParameterizedPropertyPrefixTest
+	void configureUriWithUsernameAndEmptyPassword(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "uris=http://user:@localhost:9200").run((context) -> {
+			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+					.containsExactly("http://localhost:9200");
+			assertThat(client).extracting("client")
+					.extracting("credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+					.satisfies((credentialsProvider) -> {
+						Credentials credentials = credentialsProvider.getCredentials(new AuthScope("localhost", 9200));
+						assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
+						assertThat(credentials.getPassword()).isEmpty();
+					});
+		});
 	}
 
-	@Test
-	void configureUriWithUsernameAndPasswordWhenUsernameAndPasswordPropertiesSet() {
-		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://user:password@localhost:9200,localhost:9201",
-						"spring.elasticsearch.rest.username=admin", "spring.elasticsearch.rest.password=admin")
-				.run((context) -> {
+	@ParameterizedPropertyPrefixTest
+	void configureUriWithUsernameAndPasswordWhenUsernameAndPasswordPropertiesSet(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "uris=http://user:password@localhost:9200,localhost:9201",
+				prefix + "username=admin", prefix + "password=admin").run((context) -> {
 					RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
 					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 							.containsExactly("http://localhost:9200", "http://localhost:9201");
@@ -211,6 +199,14 @@ class ElasticsearchRestClientAutoConfigurationTests {
 								assertThat(defaultCredentials.getPassword()).isEqualTo("admin");
 							});
 				});
+	}
+
+	@Test
+	void configureWithCustomPathPrefix() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.path-prefix=/some/prefix").run((context) -> {
+			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			assertThat(client).extracting("pathPrefix").isEqualTo("/some/prefix");
+		});
 	}
 
 	@Test
@@ -232,10 +228,10 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void configureWithCustomSnifferSettings() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.sniffer.interval=180s",
-				"spring.elasticsearch.rest.sniffer.delay-after-failure=30s").run((context) -> {
+	@ParameterizedSnifferPropertyPrefixTest
+	void configureWithCustomSnifferSettings(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "interval=180s", prefix + "delay-after-failure=30s")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Sniffer.class);
 					Sniffer sniffer = context.getBean(Sniffer.class);
 					assertThat(sniffer).hasFieldOrPropertyWithValue("sniffIntervalMillis",
@@ -305,6 +301,22 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		RestHighLevelClient customRestHighLevelClient1(RestClientBuilder builder) {
 			return new RestHighLevelClient(builder);
 		}
+
+	}
+
+	@ParameterizedTest
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@ValueSource(strings = { "spring.elasticsearch.rest.", "spring.elasticsearch." })
+	static @interface ParameterizedPropertyPrefixTest {
+
+	}
+
+	@ParameterizedTest
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@ValueSource(strings = { "spring.elasticsearch.rest.sniffer.", "spring.elasticsearch.restclient.sniffer." })
+	static @interface ParameterizedSnifferPropertyPrefixTest {
 
 	}
 

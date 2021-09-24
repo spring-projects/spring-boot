@@ -27,7 +27,7 @@ Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/kafka/sending/MyBean.java[]
+include::{docs-java}/messaging/kafka/sending/MyBean.java[]
 ----
 
 NOTE: If the property configprop:spring.kafka.producer.transaction-id-prefix[] is defined, a `KafkaTransactionManager` is automatically configured.
@@ -44,11 +44,11 @@ The following component creates a listener endpoint on the `someTopic` topic:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/kafka/receiving/MyBean.java[]
+include::{docs-java}/messaging/kafka/receiving/MyBean.java[]
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
-Similarly, if a `RecordFilterStrategy`, `ErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
+Similarly, if a `RecordFilterStrategy`, `ErrorHandler`, `CommonErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
 
 Depending on the listener type, a `RecordMessageConverter` or `BatchMessageConverter` bean is associated to the default factory.
 If only a `RecordMessageConverter` bean is present for a batch listener, it is wrapped in a `BatchMessageConverter`.
@@ -73,7 +73,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/kafka/streams/MyKafkaStreamsConfiguration.java[]
+include::{docs-java}/messaging/kafka/streams/MyKafkaStreamsConfiguration.java[]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -158,14 +158,14 @@ There are several ways to do that:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/kafka/embedded/property/MyTest.java[tag=*]
+include::{docs-java}/messaging/kafka/embedded/property/MyTest.java[tag=*]
 ----
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/kafka/embedded/annotation/MyTest.java[]
+include::{docs-java}/messaging/kafka/embedded/annotation/MyTest.java[]
 ----
 
 * Use a placeholder in configuration properties:

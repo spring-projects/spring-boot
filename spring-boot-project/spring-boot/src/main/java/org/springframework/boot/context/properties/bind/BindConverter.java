@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.beans.propertyeditors.CustomBooleanEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.beans.propertyeditors.FileEditor;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.ResolvableType;
@@ -152,16 +154,8 @@ final class BindConverter {
 	private static class TypeConverterConversionService extends GenericConversionService {
 
 		TypeConverterConversionService(Consumer<PropertyEditorRegistry> initializer) {
-			addConverter(new TypeConverterConverter(createTypeConverter(initializer)));
+			addConverter(new TypeConverterConverter(initializer));
 			ApplicationConversionService.addDelimitedStringConverters(this);
-		}
-
-		private SimpleTypeConverter createTypeConverter(Consumer<PropertyEditorRegistry> initializer) {
-			SimpleTypeConverter typeConverter = new SimpleTypeConverter();
-			if (initializer != null) {
-				initializer.accept(typeConverter);
-			}
-			return typeConverter;
 		}
 
 		@Override
@@ -183,14 +177,21 @@ final class BindConverter {
 		private static final Set<Class<?>> EXCLUDED_EDITORS;
 		static {
 			Set<Class<?>> excluded = new HashSet<>();
-			excluded.add(FileEditor.class); // gh-12163
+			excluded.add(CustomNumberEditor.class);
+			excluded.add(CustomBooleanEditor.class);
+			excluded.add(FileEditor.class);
 			EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
 		}
 
-		private final SimpleTypeConverter typeConverter;
+		private final Consumer<PropertyEditorRegistry> initializer;
 
-		TypeConverterConverter(SimpleTypeConverter typeConverter) {
-			this.typeConverter = typeConverter;
+		// SimpleTypeConverter is not thread-safe to use for conversion but we can use it
+		// in a thread-safe way to check if conversion is possible.
+		private final SimpleTypeConverter matchesOnlyTypeConverter;
+
+		TypeConverterConverter(Consumer<PropertyEditorRegistry> initializer) {
+			this.initializer = initializer;
+			this.matchesOnlyTypeConverter = createTypeConverter();
 		}
 
 		@Override
@@ -200,32 +201,32 @@ final class BindConverter {
 
 		@Override
 		public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-			return getPropertyEditor(targetType.getType()) != null;
-		}
-
-		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-			SimpleTypeConverter typeConverter = this.typeConverter;
-			return typeConverter.convertIfNecessary(source, targetType.getType());
-		}
-
-		private PropertyEditor getPropertyEditor(Class<?> type) {
+			Class<?> type = targetType.getType();
 			if (type == null || type == Object.class || Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)) {
-				return null;
+				return false;
 			}
-			SimpleTypeConverter typeConverter = this.typeConverter;
-			PropertyEditor editor = typeConverter.getDefaultEditor(type);
+			PropertyEditor editor = this.matchesOnlyTypeConverter.getDefaultEditor(type);
 			if (editor == null) {
-				editor = typeConverter.findCustomEditor(type, null);
+				editor = this.matchesOnlyTypeConverter.findCustomEditor(type, null);
 			}
 			if (editor == null && String.class != type) {
 				editor = BeanUtils.findEditorByConvention(type);
 			}
-			if (editor == null || EXCLUDED_EDITORS.contains(editor.getClass())) {
-				return null;
+			return (editor != null && !EXCLUDED_EDITORS.contains(editor.getClass()));
+		}
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+			return createTypeConverter().convertIfNecessary(source, targetType.getType());
+		}
+
+		private SimpleTypeConverter createTypeConverter() {
+			SimpleTypeConverter typeConverter = new SimpleTypeConverter();
+			if (this.initializer != null) {
+				this.initializer.accept(typeConverter);
 			}
-			return editor;
+			return typeConverter;
 		}
 
 	}

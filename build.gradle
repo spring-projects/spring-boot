@@ -1,6 +1,6 @@
 plugins {
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
-	id "io.spring.nohttp" version "0.0.6.RELEASE"
+	id "io.spring.nohttp" version "0.0.10"
 }
 
 description = "Spring Boot Build"
