@@ -17,14 +17,18 @@
 package org.springframework.boot.actuate.info.java;
 
 /**
- * A simple DTO that holds information about the Java environment the application is running in.
+ * A simple DTO that holds information about the Java environment the application is
+ * running in.
  *
  * @author Jonatan Ivanov
  * @since 2.6.0
  */
 public class JavaInfo {
+
 	private final String vendor;
+
 	private final JreInfo runtime;
+
 	private final VmInfo vm;
 
 	public JavaInfo() {
@@ -44,4 +48,5 @@ public class JavaInfo {
 	public VmInfo getVm() {
 		return this.vm;
 	}
+
 }

@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jonatan Ivanov
  */
 class JavaInfoContributorTests {
+
 	@Test
 	void javaInfoShouldBeAdded() {
 		JavaInfoContributor javaInfoContributor = new JavaInfoContributor();
@@ -43,4 +44,5 @@ class JavaInfoContributorTests {
 		assertThat(javaInfo.getVm().getName()).isEqualTo(System.getProperty("java.vm.name"));
 		assertThat(javaInfo.getVm().getVersion()).isEqualTo(System.getProperty("java.vm.version"));
 	}
+
 }

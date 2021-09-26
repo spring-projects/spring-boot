@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.info.InfoContributor;
  * @since 2.6.0
  */
 public class JavaInfoContributor implements InfoContributor {
+
 	private final JavaInfo javaInfo;
 
 	public JavaInfoContributor() {
@@ -36,4 +37,5 @@ public class JavaInfoContributor implements InfoContributor {
 	public void contribute(Builder builder) {
 		builder.withDetail("java", this.javaInfo);
 	}
+
 }

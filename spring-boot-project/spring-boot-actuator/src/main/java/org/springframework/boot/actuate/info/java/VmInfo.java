@@ -16,13 +16,16 @@
 package org.springframework.boot.actuate.info.java;
 
 /**
- * A simple DTO that holds information about the JVM (Java Virtual Machine) the application is running in.
+ * A simple DTO that holds information about the JVM (Java Virtual Machine) the
+ * application is running in.
  *
  * @author Jonatan Ivanov
  * @since 2.6.0
  */
-public 	class VmInfo {
+public class VmInfo {
+
 	private final String name;
+
 	private final String version;
 
 	public VmInfo() {
@@ -37,4 +40,5 @@ public 	class VmInfo {
 	public String getVersion() {
 		return this.version;
 	}
+
 }
