@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1083,7 +1083,7 @@ public class RabbitProperties {
 		}
 
 		private void parseHostAndPort(String input, boolean sslEnabled) {
-			int portIndex = input.indexOf(':');
+			int portIndex = input.lastIndexOf(':');
 			if (portIndex == -1) {
 				this.host = input;
 				this.port = (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
