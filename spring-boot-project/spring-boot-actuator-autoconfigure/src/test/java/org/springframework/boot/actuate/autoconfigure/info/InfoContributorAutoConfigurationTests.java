@@ -59,29 +59,26 @@ class InfoContributorAutoConfigurationTests {
 	void disableEnvContributor() {
 		load("management.info.env.enabled:false");
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans)
-				.extractingFromEntries(Map.Entry::getValue)
-				.allSatisfy(infoContributor -> assertThat(infoContributor).isNotInstanceOf(EnvironmentInfoContributor.class));
+		assertThat(beans).extractingFromEntries(Map.Entry::getValue).allSatisfy(
+				(infoContributor) -> assertThat(infoContributor).isNotInstanceOf(EnvironmentInfoContributor.class));
 	}
 
 	@Test
 	void disableJavaContributor() {
 		load("management.info.java.enabled:false");
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans)
-				.extractingFromEntries(Map.Entry::getValue)
-				.allSatisfy(infoContributor -> assertThat(infoContributor).isNotInstanceOf(JavaInfoContributor.class));
+		assertThat(beans).extractingFromEntries(Map.Entry::getValue).allSatisfy(
+				(infoContributor) -> assertThat(infoContributor).isNotInstanceOf(JavaInfoContributor.class));
 	}
 
 	@Test
 	void defaultInfoContributorsEnabled() {
 		load();
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans)
-				.hasSize(2)
-				.extractingFromEntries(Map.Entry::getValue)
-				.anySatisfy(infoContributor -> assertThat(infoContributor).isInstanceOf(EnvironmentInfoContributor.class))
-				.anySatisfy(infoContributor -> assertThat(infoContributor).isInstanceOf(JavaInfoContributor.class));
+		assertThat(beans).hasSize(2).extractingFromEntries(Map.Entry::getValue)
+				.anySatisfy(
+						(infoContributor) -> assertThat(infoContributor).isInstanceOf(EnvironmentInfoContributor.class))
+				.anySatisfy((infoContributor) -> assertThat(infoContributor).isInstanceOf(JavaInfoContributor.class));
 	}
 
 	@Test
@@ -160,7 +157,8 @@ class InfoContributorAutoConfigurationTests {
 		load();
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("javaInfoContributor");
-		Map<String, Object> content = invokeContributor(this.context.getBean("javaInfoContributor", InfoContributor.class));
+		Map<String, Object> content = invokeContributor(
+				this.context.getBean("javaInfoContributor", InfoContributor.class));
 		Object javaInfo = content.get("java");
 		assertThat(javaInfo).isInstanceOf(JavaInfo.class);
 	}
