@@ -39,9 +39,11 @@ class JavaInfoContributorTests {
 		JavaInfo javaInfo = (JavaInfo) builder.build().getDetails().get("java");
 
 		assertThat(javaInfo.getVendor()).isEqualTo(System.getProperty("java.vendor"));
+		assertThat(javaInfo.getVersion()).isEqualTo(System.getProperty("java.version"));
 		assertThat(javaInfo.getRuntime().getName()).isEqualTo(System.getProperty("java.runtime.name"));
 		assertThat(javaInfo.getRuntime().getVersion()).isEqualTo(System.getProperty("java.runtime.version"));
 		assertThat(javaInfo.getVm().getName()).isEqualTo(System.getProperty("java.vm.name"));
+		assertThat(javaInfo.getVm().getVendor()).isEqualTo(System.getProperty("java.vm.vendor"));
 		assertThat(javaInfo.getVm().getVersion()).isEqualTo(System.getProperty("java.vm.version"));
 	}
 

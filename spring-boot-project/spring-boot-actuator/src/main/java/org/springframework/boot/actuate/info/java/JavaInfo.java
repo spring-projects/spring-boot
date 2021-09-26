@@ -27,18 +27,25 @@ public class JavaInfo {
 
 	private final String vendor;
 
+	private final String version;
+
 	private final JreInfo runtime;
 
 	private final VmInfo vm;
 
 	public JavaInfo() {
 		this.vendor = System.getProperty("java.vendor");
+		this.version = System.getProperty("java.version");
 		this.runtime = new JreInfo();
 		this.vm = new VmInfo();
 	}
 
 	public String getVendor() {
 		return this.vendor;
+	}
+
+	public String getVersion() {
+		return this.version;
 	}
 
 	public JreInfo getRuntime() {

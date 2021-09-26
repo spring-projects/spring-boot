@@ -27,15 +27,22 @@ public class VmInfo {
 
 	private final String name;
 
+	private final String vendor;
+
 	private final String version;
 
 	public VmInfo() {
 		this.name = System.getProperty("java.vm.name");
+		this.vendor = System.getProperty("java.vm.vendor");
 		this.version = System.getProperty("java.vm.version");
 	}
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getVendor() {
+		return this.vendor;
 	}
 
 	public String getVersion() {
