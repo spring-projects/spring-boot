@@ -23,9 +23,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.BuildInfoContributor;
+import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.info.java.JavaInfo;
+import org.springframework.boot.actuate.info.java.JavaInfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -39,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link InfoContributorAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Jonatan Ivanov
  */
 class InfoContributorAutoConfigurationTests {
 
@@ -55,7 +59,29 @@ class InfoContributorAutoConfigurationTests {
 	void disableEnvContributor() {
 		load("management.info.env.enabled:false");
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).hasSize(0);
+		assertThat(beans)
+				.extractingFromEntries(Map.Entry::getValue)
+				.allSatisfy(infoContributor -> assertThat(infoContributor).isNotInstanceOf(EnvironmentInfoContributor.class));
+	}
+
+	@Test
+	void disableJavaContributor() {
+		load("management.info.java.enabled:false");
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
+		assertThat(beans)
+				.extractingFromEntries(Map.Entry::getValue)
+				.allSatisfy(infoContributor -> assertThat(infoContributor).isNotInstanceOf(JavaInfoContributor.class));
+	}
+
+	@Test
+	void defaultInfoContributorsEnabled() {
+		load();
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
+		assertThat(beans)
+				.hasSize(2)
+				.extractingFromEntries(Map.Entry::getValue)
+				.anySatisfy(infoContributor -> assertThat(infoContributor).isInstanceOf(EnvironmentInfoContributor.class))
+				.anySatisfy(infoContributor -> assertThat(infoContributor).isInstanceOf(JavaInfoContributor.class));
 	}
 
 	@Test
@@ -127,6 +153,16 @@ class InfoContributorAutoConfigurationTests {
 		load(CustomBuildInfoContributorConfiguration.class);
 		assertThat(this.context.getBean(BuildInfoContributor.class))
 				.isSameAs(this.context.getBean("customBuildInfoContributor"));
+	}
+
+	@Test
+	void javaInfoContributor() {
+		load();
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
+		assertThat(beans).containsKeys("javaInfoContributor");
+		Map<String, Object> content = invokeContributor(this.context.getBean("javaInfoContributor", InfoContributor.class));
+		Object javaInfo = content.get("java");
+		assertThat(javaInfo).isInstanceOf(JavaInfo.class);
 	}
 
 	private Map<String, Object> invokeContributor(InfoContributor contributor) {

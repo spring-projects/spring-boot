@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.info.java.JavaInfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,6 +41,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll
+ * @author Jonatan Ivanov
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -75,6 +77,13 @@ public class InfoContributorAutoConfiguration {
 	@Order(DEFAULT_ORDER)
 	public InfoContributor buildInfoContributor(BuildProperties buildProperties) {
 		return new BuildInfoContributor(buildProperties);
+	}
+
+	@Bean
+	@ConditionalOnEnabledInfoContributor("java")
+	@Order(DEFAULT_ORDER)
+	public InfoContributor javaInfoContributor() {
+		return new JavaInfoContributor();
 	}
 
 }
