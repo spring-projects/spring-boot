@@ -1152,7 +1152,7 @@ public class RabbitProperties {
 		}
 
 		private void parseHostAndPort(String input, boolean sslEnabled) {
-			int portIndex = input.indexOf(':');
+			int portIndex = input.lastIndexOf(':');
 			if (portIndex == -1) {
 				this.host = input;
 				this.port = (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
