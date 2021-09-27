@@ -129,8 +129,8 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		/**
-		 * Supports both kebab-case and camelCase as project CLI Options camelCase to be
-		 * deprecated in future releases
+		 * Supports both kebab-case and camelCase as project CLI Options. camelCase to be
+		 * deprecated as part of future releases
 		 */
 		private void projectGenerationOptions() {
 			this.groupId = option(Arrays.asList("groupId", "group-id", "g"),
