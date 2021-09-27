@@ -245,7 +245,7 @@ If you only have one module that combines the two, name it `acme-spring-boot-sta
 If your starter provides configuration keys, use a unique namespace for them.
 In particular, do not include your keys in the namespaces that Spring Boot uses (such as `server`, `management`, `spring`, and so on).
 If you use the same namespace, we may modify these namespaces in the future in ways that break your modules.
-As a rule of thumb, prefix all your keys with a namespace that you own (e.g. `acme`).
+As a rule of thumb, prefix all your keys with a namespace that you own (for example `acme`).
 
 Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
 
@@ -261,7 +261,7 @@ Here are some rules we follow internally to make sure descriptions are consisten
 * Do not start the description by "The" or "A".
 * For `boolean` types, start the description with "Whether" or "Enable".
 * For collection-based types, start the description with "Comma-separated list"
-* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, e.g. "If a duration suffix is not specified, seconds will be used".
+* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, for example "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
 
 Make sure to <<configuration-metadata#configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
@@ -346,5 +346,5 @@ If the library you are auto-configuring typically requires other starters, menti
 Providing a proper set of _default_ dependencies may be hard if the number of optional dependencies is high, as you should avoid including dependencies that are unnecessary for a typical usage of the library.
 In other words, you should not include optional dependencies.
 
-NOTE: Either way, your starter must reference the core Spring Boot starter (`spring-boot-starter`) directly or indirectly (i.e. no need to add it if your starter relies on another starter).
+NOTE: Either way, your starter must reference the core Spring Boot starter (`spring-boot-starter`) directly or indirectly (there is no need to add it if your starter relies on another starter).
 If a project is created with only your custom starter, Spring Boot's core features will be honoured by the presence of the core starter.

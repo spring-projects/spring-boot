@@ -442,11 +442,11 @@ For example, you might declare the following section in `application.properties`
 TIP: You do not need to specify a driver class name, since Spring Boot obtains the driver from R2DBC's Connection Factory discovery.
 
 NOTE: At least the url should be provided.
-Information specified in the URL takes precedence over individual properties, i.e. `name`, `username`, `password` and pooling options.
+Information specified in the URL takes precedence over individual properties, that is `name`, `username`, `password` and pooling options.
 
 TIP: The "`How-to`" section includes a <<howto#howto.data-initialization.using-basic-sql-scripts, section on how to initialize a database>>.
 
-To customize the connections created by a `ConnectionFactory`, i.e., set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
+To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
 
 [source,java,indent=0,subs="verbatim"]

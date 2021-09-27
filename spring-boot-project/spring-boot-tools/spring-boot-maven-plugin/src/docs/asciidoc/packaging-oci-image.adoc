@@ -15,7 +15,7 @@ include::../maven/packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
 
 TIP: While the buildpack runs from an <<packaging,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
-When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
+When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
 
 
@@ -32,7 +32,7 @@ The following table shows the environment variables and their values:
 | Environment variable | Description
 
 | DOCKER_HOST
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | DOCKER_TLS_VERIFY
 | Enable secure HTTPS protocol when set to `1` (optional)
@@ -50,7 +50,7 @@ The following table summarizes the available parameters:
 | Parameter | Description
 
 | `host`
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | `tlsVerify`
 | Enable secure HTTPS protocol when set to `true` (optional)
