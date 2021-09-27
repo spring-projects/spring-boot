@@ -305,7 +305,7 @@ public class IntegrationProperties {
 	public static class Poller {
 
 		/**
-		 * Maximum of messages to poll per polling cycle.
+		 * Maximum number of messages to poll per polling cycle.
 		 */
 		private int maxMessagesPerPoll = Integer.MIN_VALUE; // PollerMetadata.MAX_MESSAGES_UNBOUNDED
 
@@ -315,12 +315,12 @@ public class IntegrationProperties {
 		private Duration receiveTimeout = Duration.ofSeconds(1); // PollerMetadata.DEFAULT_RECEIVE_TIMEOUT
 
 		/**
-		 * Polling delay period. Mutually explusive with 'cron' and 'fixedRate'.
+		 * Polling delay period. Mutually exclusive with 'cron' and 'fixedRate'.
 		 */
 		private Duration fixedDelay;
 
 		/**
-		 * Polling rate period. Mutually explusive with 'fixedDelay' and 'cron'.
+		 * Polling rate period. Mutually exclusive with 'fixedDelay' and 'cron'.
 		 */
 		private Duration fixedRate;
 
