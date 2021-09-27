@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @author vigneshti
+ * @author Vignesh Thangavel Ilangovan
  * @since 1.2.0
  */
 public class InitCommand extends OptionParsingCommand {
