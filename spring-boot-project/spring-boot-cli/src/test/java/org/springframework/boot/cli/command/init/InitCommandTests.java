@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author vigneshti
  */
 @ExtendWith(MockitoExtension.class)
 class InitCommandTests extends AbstractHttpClientMockTests {
