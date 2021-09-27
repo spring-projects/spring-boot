@@ -23,7 +23,7 @@ The following table shows the environment variables and their values:
 | Environment variable | Description
 
 | DOCKER_HOST
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | DOCKER_TLS_VERIFY
 | Enable secure HTTPS protocol when set to `1` (optional)
@@ -41,7 +41,7 @@ The following table summarizes the available properties:
 | Property | Description
 
 | `host`
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | `tlsVerify`
 | Enable secure HTTPS protocol when set to `true` (optional)
