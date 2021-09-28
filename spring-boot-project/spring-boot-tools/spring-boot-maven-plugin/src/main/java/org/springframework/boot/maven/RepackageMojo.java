@@ -222,7 +222,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	private FileTime parseOutputTimestamp() {
-		// Maven ignore a single-character timestamp as it is "useful to override a full
+		// Maven ignores a single-character timestamp as it is "useful to override a full
 		// value during pom inheritance"
 		if (this.outputTimestamp == null || this.outputTimestamp.length() < 2) {
 			return null;
