@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  * equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
- * index(i.e. a {@link Map} key or a {@link Collection} index. Indexes names are not
+ * index(i.e. a {@link Map} key or a {@link Collection} index). Indexes names are not
  * restricted and are considered case-sensitive.
  * <p>
  * Here are some typical examples:

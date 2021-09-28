@@ -43,7 +43,7 @@ class DataSourceScriptDatabaseInitializerTests
 	private final HikariDataSource embeddedDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
 			.url("jdbc:h2:mem:" + UUID.randomUUID()).build();
 
-	private final HikariDataSource standloneDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
+	private final HikariDataSource standaloneDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
 			.url("jdbc:h2:file:" + new BuildOutput(DataSourceScriptDatabaseInitializerTests.class).getRootLocation()
 					.getAbsolutePath() + "/" + UUID.randomUUID())
 			.build();
@@ -51,7 +51,7 @@ class DataSourceScriptDatabaseInitializerTests
 	@AfterEach
 	void closeDataSource() {
 		this.embeddedDataSource.close();
-		this.standloneDataSource.close();
+		this.standaloneDataSource.close();
 	}
 
 	@Test
@@ -70,7 +70,7 @@ class DataSourceScriptDatabaseInitializerTests
 	@Override
 	protected DataSourceScriptDatabaseInitializer createStandaloneDatabaseInitializer(
 			DatabaseInitializationSettings settings) {
-		return new DataSourceScriptDatabaseInitializer(this.standloneDataSource, settings);
+		return new DataSourceScriptDatabaseInitializer(this.standaloneDataSource, settings);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ class DataSourceScriptDatabaseInitializerTests
 
 	@Override
 	protected int numberOfStandaloneRows(String sql) {
-		return numberOfRows(this.standloneDataSource, sql);
+		return numberOfRows(this.standaloneDataSource, sql);
 	}
 
 	private int numberOfRows(DataSource dataSource, String sql) {
