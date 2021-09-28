@@ -176,6 +176,11 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | Whether to publish the generated image to a Docker registry.
 | `false`
 
+| `tags`
+|
+| A list of one or more additional tags to apply to the generated image.
+|
+
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
