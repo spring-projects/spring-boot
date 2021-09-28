@@ -178,7 +178,7 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 
 | `tags`
 |
-| Multiple {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[tag names] to be created for the generated image.
+| A list of one or more additional tags to apply to the generated image.
 |
 
 |===

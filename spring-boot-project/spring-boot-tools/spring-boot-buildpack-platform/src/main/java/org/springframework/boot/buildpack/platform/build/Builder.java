@@ -111,10 +111,9 @@ public class Builder {
 		this.docker.image().load(ephemeralBuilder.getArchive(), UpdateListener.none());
 		try {
 			executeLifecycle(request, ephemeralBuilder);
-			createTags(request.getName(), request.getTags());
+			tagImage(request.getName(), request.getTags());
 			if (request.isPublish()) {
-				pushImage(request.getName());
-				pushTags(request.getTags());
+				pushImages(request.getName(), request.getTags());
 			}
 		}
 		finally {
@@ -153,24 +152,25 @@ public class Builder {
 		}
 	}
 
+	private void tagImage(ImageReference sourceReference, List<ImageReference> tags) throws IOException {
+		for (ImageReference tag : tags) {
+			this.docker.image().tag(sourceReference, tag);
+			this.log.taggedImage(tag);
+		}
+	}
+
+	private void pushImages(ImageReference name, List<ImageReference> tags) throws IOException {
+		pushImage(name);
+		for (ImageReference tag : tags) {
+			pushImage(tag);
+		}
+	}
+
 	private void pushImage(ImageReference reference) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
 		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
 		this.docker.image().push(reference, listener, getPublishAuthHeader());
 		this.log.pushedImage(reference);
-	}
-
-	private void createTags(ImageReference sourceReference, List<ImageReference> tags) throws IOException {
-		for (ImageReference tag : tags) {
-			this.docker.image().tag(sourceReference, tag);
-			this.log.createdTag(tag);
-		}
-	}
-
-	private void pushTags(List<ImageReference> tags) throws IOException {
-		for (ImageReference tag : tags) {
-			pushImage(tag);
-		}
 	}
 
 	private String getBuilderAuthHeader() {

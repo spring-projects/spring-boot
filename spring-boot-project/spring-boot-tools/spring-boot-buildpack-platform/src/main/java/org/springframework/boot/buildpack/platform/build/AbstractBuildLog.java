@@ -91,7 +91,7 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public void createdTag(ImageReference tag) {
+	public void taggedImage(ImageReference tag) {
 		log("Successfully created image tag '" + tag + "'");
 		log();
 	}

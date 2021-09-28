@@ -76,7 +76,7 @@ class PrintStreamBuildLogTests {
 		phase2Consumer.accept(mockLogEvent("spring"));
 		phase2Consumer.accept(mockLogEvent("boot"));
 		log.executedLifecycle(request);
-		log.createdTag(tag);
+		log.taggedImage(tag);
 		String expected = FileCopyUtils.copyToString(new InputStreamReader(
 				getClass().getResourceAsStream("print-stream-build-log.txt"), StandardCharsets.UTF_8));
 		assertThat(out.toString()).isEqualToIgnoringNewLines(expected);

@@ -104,7 +104,7 @@ public interface BuildLog {
 	 * Log that a tag has been created.
 	 * @param tag the tag reference
 	 */
-	void createdTag(ImageReference tag);
+	void taggedImage(ImageReference tag);
 
 	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.

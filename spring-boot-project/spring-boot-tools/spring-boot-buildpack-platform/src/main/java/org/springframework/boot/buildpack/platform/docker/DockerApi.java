@@ -284,7 +284,7 @@ public class DockerApi {
 			Assert.notNull(reference, "Reference must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/images/" + reference, params);
-			http().delete(uri);
+			http().delete(uri).close();
 		}
 
 		/**
@@ -305,7 +305,7 @@ public class DockerApi {
 			Assert.notNull(sourceReference, "SourceReference must not be null");
 			Assert.notNull(targetReference, "TargetReference must not be null");
 			URI uri = buildUrl("/images/" + sourceReference + "/tag", "repo", targetReference.toString());
-			http().post(uri);
+			http().post(uri).close();
 		}
 
 	}
@@ -356,7 +356,7 @@ public class DockerApi {
 		public void start(ContainerReference reference) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			URI uri = buildUrl("/containers/" + reference + "/start");
-			http().post(uri);
+			http().post(uri).close();
 		}
 
 		/**
@@ -404,7 +404,7 @@ public class DockerApi {
 			Assert.notNull(reference, "Reference must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/containers/" + reference, params);
-			http().delete(uri);
+			http().delete(uri).close();
 		}
 
 	}
@@ -427,7 +427,7 @@ public class DockerApi {
 			Assert.notNull(name, "Name must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/volumes/" + name, params);
-			http().delete(uri);
+			http().delete(uri).close();
 		}
 
 	}
