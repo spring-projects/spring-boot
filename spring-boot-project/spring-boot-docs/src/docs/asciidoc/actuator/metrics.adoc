@@ -185,18 +185,6 @@ The URLs of the Metrics API v2 ingest endpoint are:
 	        api-token: "YOUR_TOKEN"
 ----
 
-Depending on your setup, the environment variables `+DT_METRICS_INGEST_URL+` and `+DT_METRICS_INGEST_API_TOKEN+` might be populated accordingly already and can be used via the Spring placeholder notation:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	management:
-	  metrics:
-	    export:
-	      dynatrace:
-	        uri: ${DT_METRICS_INGEST_URL}
-	        api-token: ${DT_METRICS_INGEST_API_TOKEN}
-----
-
 When using the Dynatrace v2 API, the following optional features are available:
 
 * Metric key prefix: Sets a prefix that is prepended to all exported metric keys.
