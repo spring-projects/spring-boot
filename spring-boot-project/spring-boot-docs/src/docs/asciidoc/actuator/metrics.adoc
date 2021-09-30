@@ -170,10 +170,12 @@ The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API toke
 We recommend limiting the scope of the token to this one permission.
 You must ensure that the endpoint URI contains the path (for example, `/api/v2/metrics/ingest`):
 
-The URLs of the Metrics API v2 ingest endpoint are:
+The URL of the Metrics API v2 ingest endpoint is different according to your deployment option:
 
-- `+https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest+` for SaaS and
-- `+https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest+` for Managed Deployments
+* SaaS: `+https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest+`
+* Managed deployments: `+https://{your-domain}/e/{your-environment-id}/api/v2/metrics/ingest+`
+
+The example below configures metrics export using the `example` environment id:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -181,7 +183,7 @@ The URLs of the Metrics API v2 ingest endpoint are:
 	  metrics:
 	    export:
 	      dynatrace:
-	        uri: "https://{your-environment-id}.live.dynatrace.com/api/v2/metrics/ingest"
+	        uri: "https://example.live.dynatrace.com/api/v2/metrics/ingest"
 	        api-token: "YOUR_TOKEN"
 ----
 
@@ -192,8 +194,8 @@ When using the Dynatrace v2 API, the following optional features are available:
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
   If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
 
-In the example below URI and API token are not specified, therefore the local OneAgent endpoint is used.
-It is also possible to explicitly use the `uri` and `api-token` properties as shown in the examples above.
+It is possible to not specify a URI and API token, as shown in the following example.
+In this scenario, the local OneAgent endpoint is used:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
