@@ -997,7 +997,7 @@ bom {
 			]
 		}
 	}
-	library("Kafka", "2.8.1") {
+	library("Kafka", "3.0.0") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect-api",
@@ -1007,6 +1007,7 @@ bom {
 				"connect-runtime",
 				"connect-transforms",
 				"kafka-clients",
+				"kafka-metadata",
 				"kafka-log4j-appender",
 				"kafka-streams",
 				"kafka-streams-scala_2.12",
@@ -1655,7 +1656,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.0-M3") {
+	library("Spring Kafka", "2.8.0-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
