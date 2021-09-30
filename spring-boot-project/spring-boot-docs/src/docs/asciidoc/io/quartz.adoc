@@ -52,5 +52,5 @@ Regular beans can also be injected in a similar manner, as shown in the followin
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/quartz/MySampleJob.java[]
+include::{docs-java}/io/quartz/MySampleJob.java[]
 ----

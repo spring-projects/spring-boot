@@ -21,7 +21,7 @@ include::{docs-java}/howto/jersey/springsecurity/JerseySetStatusOverSendErrorCon
 [[howto.jersey.alongside-another-web-framework]]
 === Use Jersey Alongside Another Web Framework
 To use Jersey alongside another web framework, such as Spring MVC, it should be configured so that it will allow the other framework to handle requests that it cannot handle.
-First, configure Jersey to use a Filter rather than a Servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.
+First, configure Jersey to use a filter rather than a servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.
 Second, configure your `ResourceConfig` to forward requests that would have resulted in a 404, as shown in the following example.
 
 [source,java,indent=0,subs="verbatim"]

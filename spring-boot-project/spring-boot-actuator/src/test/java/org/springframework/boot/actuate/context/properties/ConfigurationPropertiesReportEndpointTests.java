@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
+import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -57,6 +58,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Stephane Nicoll
  * @author HaiTao Zhang
  * @author Chris Bono
+ * @author Madhura Bhave
  */
 @SuppressWarnings("unchecked")
 class ConfigurationPropertiesReportEndpointTests {
@@ -283,6 +285,50 @@ class ConfigurationPropertiesReportEndpointTests {
 					assertThat(somePassword.get("value")).isEqualTo("******");
 					assertThat(somePassword.get("origin")).isEqualTo(
 							"\"sensible.listOfListItems[0][0].some-password\" from property source \"test\"");
+				}));
+	}
+
+	@Test
+	void sanitizeWithCustomSanitizingFunction() {
+		new ApplicationContextRunner().withUserConfiguration(CustomSanitizingEndpointConfig.class,
+				SanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("myTestProperty")).isEqualTo("$$$");
+				}));
+	}
+
+	@Test
+	void sanitizeWithCustomPropertySourceBasedSanitizingFunction() {
+		new ApplicationContextRunner()
+				.withUserConfiguration(CustomSanitizingEndpointConfig.class,
+						PropertySourceBasedSanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
+				.withPropertyValues("test.my-test-property=abcde").run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("myTestProperty")).isEqualTo("$$$");
+				}));
+	}
+
+	@Test
+	void sanitizeListsWithCustomSanitizingFunction() {
+		new ApplicationContextRunner()
+				.withUserConfiguration(CustomSanitizingEndpointConfig.class, SanitizingFunctionConfiguration.class,
+						SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.listItems[0].custom=my-value")
+				.run(assertProperties("sensible", (properties) -> {
+					assertThat(properties.get("listItems")).isInstanceOf(List.class);
+					List<Object> list = (List<Object>) properties.get("listItems");
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					assertThat(item.get("custom")).isEqualTo("$$$");
+				}, (inputs) -> {
+					List<Object> list = (List<Object>) inputs.get("listItems");
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					Map<String, Object> somePassword = (Map<String, Object>) item.get("custom");
+					assertThat(somePassword.get("value")).isEqualTo("$$$");
+					assertThat(somePassword.get("origin"))
+							.isEqualTo("\"sensible.listItems[0].custom\" from property source \"test\"");
 				}));
 	}
 
@@ -778,6 +824,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 			private String somePassword = "secret";
 
+			private String custom;
+
 			public String getSomePassword() {
 				return this.somePassword;
 			}
@@ -786,6 +834,60 @@ class ConfigurationPropertiesReportEndpointTests {
 				this.somePassword = somePassword;
 			}
 
+			public String getCustom() {
+				return this.custom;
+			}
+
+			public void setCustom(String custom) {
+				this.custom = custom;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomSanitizingEndpointConfig {
+
+		@Bean
+		ConfigurationPropertiesReportEndpoint endpoint(Environment environment, SanitizingFunction sanitizingFunction) {
+			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
+					Collections.singletonList(sanitizingFunction));
+			String[] keys = environment.getProperty("test.keys-to-sanitize", String[].class);
+			if (keys != null) {
+				endpoint.setKeysToSanitize(keys);
+			}
+			return endpoint;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SanitizingFunctionConfiguration {
+
+		@Bean
+		SanitizingFunction testSanitizingFunction() {
+			return (data) -> {
+				if (data.getKey().contains("custom") || data.getKey().contains("test")) {
+					return data.withValue("$$$");
+				}
+				return data;
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PropertySourceBasedSanitizingFunctionConfiguration {
+
+		@Bean
+		SanitizingFunction testSanitizingFunction() {
+			return (data) -> {
+				if (data.getPropertySource() != null && data.getPropertySource().getName().startsWith("test")) {
+					return data.withValue("$$$");
+				}
+				return data;
+			};
 		}
 
 	}

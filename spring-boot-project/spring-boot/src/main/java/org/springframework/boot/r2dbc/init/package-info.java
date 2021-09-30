@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for initializaton of an SQL database using an R2DBC
+ * Support for initialization of an SQL database using an R2DBC
  * {@link io.r2dbc.spi.ConnectionFactory ConnectionFactory}.
  */
 package org.springframework.boot.r2dbc.init;

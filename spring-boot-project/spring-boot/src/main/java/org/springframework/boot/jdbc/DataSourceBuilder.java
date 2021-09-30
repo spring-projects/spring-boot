@@ -646,7 +646,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 			add(DataSourceProperty.DRIVER_CLASS_NAME, PoolDataSource::getConnectionFactoryClassName,
 					PoolDataSource::setConnectionFactoryClassName);
 			add(DataSourceProperty.USERNAME, PoolDataSource::getUser, PoolDataSource::setUser);
-			add(DataSourceProperty.PASSWORD, PoolDataSource::getPassword, PoolDataSource::setPassword);
+			add(DataSourceProperty.PASSWORD, null, PoolDataSource::setPassword);
 		}
 
 	}

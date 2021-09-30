@@ -108,7 +108,7 @@ The only difference between using these conditions at the class level and markin
 
 TIP: When declaring a `@Bean` method, provide as much type information as possible in the method's return type.
 For example, if your bean's concrete class implements an interface the bean method's return type should be the concrete class and not the interface.
-Providing as much type information as possible in `@Bean` methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that's available in the method signature.
+Providing as much type information as possible in `@Bean` methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that is available in the method signature.
 
 
 
@@ -190,7 +190,7 @@ include::{docs-java}/features/developingautoconfiguration/testing/MyConditionEva
 
 [[features.developing-auto-configuration.testing.simulating-a-web-context]]
 ==== Simulating a Web Context
-If you need to test an auto-configuration that only operates in a Servlet or Reactive web application context, use the `WebApplicationContextRunner` or `ReactiveWebApplicationContextRunner` respectively.
+If you need to test an auto-configuration that only operates in a servlet or reactive web application context, use the `WebApplicationContextRunner` or `ReactiveWebApplicationContextRunner` respectively.
 
 
 

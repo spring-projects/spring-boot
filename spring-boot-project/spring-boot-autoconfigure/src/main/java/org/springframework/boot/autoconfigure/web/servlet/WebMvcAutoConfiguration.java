@@ -158,6 +158,11 @@ public class WebMvcAutoConfiguration {
 	 */
 	public static final String DEFAULT_SUFFIX = "";
 
+	/**
+	 * Instance of {@link PathPatternParser} shared across MVC and actuator configuration.
+	 */
+	public static final PathPatternParser pathPatternParser = new PathPatternParser();
+
 	private static final String SERVLET_LOCATION = "/";
 
 	@Bean
@@ -246,7 +251,7 @@ public class WebMvcAutoConfiguration {
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			if (this.mvcProperties.getPathmatch()
 					.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER) {
-				configurer.setPatternParser(new PathPatternParser());
+				configurer.setPatternParser(pathPatternParser);
 			}
 			configurer.setUseSuffixPatternMatch(this.mvcProperties.getPathmatch().isUseSuffixPattern());
 			configurer.setUseRegisteredSuffixPatternMatch(

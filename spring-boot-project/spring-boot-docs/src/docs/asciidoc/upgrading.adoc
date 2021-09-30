@@ -13,3 +13,5 @@ include::upgrading/from-1x.adoc[]
 include::upgrading/to-feature.adoc[]
 
 include::upgrading/cli.adoc[]
+
+include::upgrading/whats-next.adoc[]

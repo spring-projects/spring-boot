@@ -55,7 +55,7 @@ import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.util.StringUtils;
 
 /**
- * Package an application into a OCI image using a buildpack.
+ * Package an application into an OCI image using a buildpack.
  *
  * @author Phillip Webb
  * @author Scott Frederick

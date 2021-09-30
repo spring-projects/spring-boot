@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,8 @@ public class IntegrationProperties {
 
 	private final RSocket rsocket = new RSocket();
 
+	private final Poller poller = new Poller();
+
 	public Channel getChannel() {
 		return this.channel;
 	}
@@ -62,6 +65,10 @@ public class IntegrationProperties {
 
 	public RSocket getRsocket() {
 		return this.rsocket;
+	}
+
+	public Poller getPoller() {
+		return this.poller;
 	}
 
 	public static class Channel {
@@ -291,6 +298,90 @@ public class IntegrationProperties {
 				this.messageMappingEnabled = messageMappingEnabled;
 			}
 
+		}
+
+	}
+
+	public static class Poller {
+
+		/**
+		 * Maximum number of messages to poll per polling cycle.
+		 */
+		private int maxMessagesPerPoll = Integer.MIN_VALUE; // PollerMetadata.MAX_MESSAGES_UNBOUNDED
+
+		/**
+		 * How long to wait for messages on poll.
+		 */
+		private Duration receiveTimeout = Duration.ofSeconds(1); // PollerMetadata.DEFAULT_RECEIVE_TIMEOUT
+
+		/**
+		 * Polling delay period. Mutually exclusive with 'cron' and 'fixedRate'.
+		 */
+		private Duration fixedDelay;
+
+		/**
+		 * Polling rate period. Mutually exclusive with 'fixedDelay' and 'cron'.
+		 */
+		private Duration fixedRate;
+
+		/**
+		 * Polling initial delay. Applied for 'fixedDelay' and 'fixedRate'; ignored for
+		 * 'cron'.
+		 */
+		private Duration initialDelay;
+
+		/**
+		 * Cron expression for polling. Mutually explusive with 'fixedDelay' and
+		 * 'fixedRate'.
+		 */
+		private String cron;
+
+		public int getMaxMessagesPerPoll() {
+			return this.maxMessagesPerPoll;
+		}
+
+		public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
+			this.maxMessagesPerPoll = maxMessagesPerPoll;
+		}
+
+		public Duration getReceiveTimeout() {
+			return this.receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Duration receiveTimeout) {
+			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Duration getFixedDelay() {
+			return this.fixedDelay;
+		}
+
+		public void setFixedDelay(Duration fixedDelay) {
+			this.fixedDelay = fixedDelay;
+		}
+
+		public Duration getFixedRate() {
+			return this.fixedRate;
+		}
+
+		public void setFixedRate(Duration fixedRate) {
+			this.fixedRate = fixedRate;
+		}
+
+		public Duration getInitialDelay() {
+			return this.initialDelay;
+		}
+
+		public void setInitialDelay(Duration initialDelay) {
+			this.initialDelay = initialDelay;
+		}
+
+		public String getCron() {
+			return this.cron;
+		}
+
+		public void setCron(String cron) {
+			this.cron = cron;
 		}
 
 	}

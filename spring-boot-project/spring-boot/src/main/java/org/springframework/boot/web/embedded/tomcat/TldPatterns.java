@@ -61,6 +61,7 @@ final class TldPatterns {
 		skipPatterns.add("commons-logging*.jar");
 		skipPatterns.add("commons-math*.jar");
 		skipPatterns.add("commons-pool*.jar");
+		skipPatterns.add("derby-*.jar");
 		skipPatterns.add("dom4j-*.jar");
 		skipPatterns.add("easymock-*.jar");
 		skipPatterns.add("ecj-*.jar");

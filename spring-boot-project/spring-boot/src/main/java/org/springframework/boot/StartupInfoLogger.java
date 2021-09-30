@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,9 +56,9 @@ class StartupInfoLogger {
 		applicationLog.debug(LogMessage.of(this::getRunningMessage));
 	}
 
-	void logStarted(Log applicationLog, StopWatch stopWatch) {
+	void logStarted(Log applicationLog, Duration timeTakeToStartup) {
 		if (applicationLog.isInfoEnabled()) {
-			applicationLog.info(getStartedMessage(stopWatch));
+			applicationLog.info(getStartedMessage(timeTakeToStartup));
 		}
 	}
 
@@ -83,12 +83,12 @@ class StartupInfoLogger {
 		return message;
 	}
 
-	private CharSequence getStartedMessage(StopWatch stopWatch) {
+	private CharSequence getStartedMessage(Duration timeTakeToStartup) {
 		StringBuilder message = new StringBuilder();
 		message.append("Started ");
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(stopWatch.getTotalTimeMillis() / 1000.0);
+		message.append(timeTakeToStartup.toMillis() / 1000.0);
 		message.append(" seconds");
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,8 +94,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	private boolean hasBoundValueObject(String beanName) {
-		return this.registry.containsBeanDefinition(beanName) && this.registry
-				.getBeanDefinition(beanName) instanceof ConfigurationPropertiesValueObjectBeanDefinition;
+		return this.registry.containsBeanDefinition(beanName) && BindMethod.VALUE_OBJECT
+				.equals(this.registry.getBeanDefinition(beanName).getAttribute(BindMethod.class.getName()));
 	}
 
 	/**
@@ -108,9 +108,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class,
-							ConfigurationPropertiesBindingPostProcessor::new)
-					.getBeanDefinition();
+					.rootBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class).getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}

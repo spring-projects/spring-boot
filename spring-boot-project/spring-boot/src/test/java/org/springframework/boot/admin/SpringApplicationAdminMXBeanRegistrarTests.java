@@ -88,10 +88,10 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
-		registrar.onApplicationReadyEvent(
-				new ApplicationReadyEvent(new SpringApplication(), null, mock(ConfigurableApplicationContext.class)));
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+				mock(ConfigurableApplicationContext.class), null));
 		assertThat(isApplicationReady(registrar)).isFalse();
-		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context));
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context, null));
 		assertThat(isApplicationReady(registrar)).isTrue();
 	}
 

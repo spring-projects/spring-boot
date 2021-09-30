@@ -327,6 +327,13 @@
       }
     },
     {
+      "name": "management.metrics.system.diskspace.paths",
+      "type": "java.util.List<java.io.File>",
+      "defaultValue": [
+        "."
+      ]
+    },
+    {
       "name": "management.metrics.export.appoptics.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",

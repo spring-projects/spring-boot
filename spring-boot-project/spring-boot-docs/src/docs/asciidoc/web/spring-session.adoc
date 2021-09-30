@@ -1,14 +1,14 @@
 [[web.spring-session]]
 == Spring Session
 Spring Boot provides {spring-session}[Spring Session] auto-configuration for a wide range of data stores.
-When building a Servlet web application, the following stores can be auto-configured:
+When building a servlet web application, the following stores can be auto-configured:
 
 * JDBC
 * Redis
 * Hazelcast
 * MongoDB
 
-The Servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
+The servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
 
 When building a reactive web application, the following stores can be auto-configured:
 
@@ -42,9 +42,9 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
-If that property is not set with a Servlet web application, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+If that property is not set with a servlet web application, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
 
 
-You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable*WebSession` (Reactive).
+You can take control over Spring Session's configuration using `@Enable*HttpSession` (servlet) or `@Enable*WebSession` (reactive).
 This will cause the auto-configuration to back off.
 Spring Session can then be configured using the annotation's attributes rather than the previously described configuration properties.

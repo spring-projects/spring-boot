@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.time.Duration;
+
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
@@ -37,6 +39,7 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfig
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -56,10 +59,14 @@ import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
 import org.springframework.integration.rsocket.ServerRSocketConnector;
 import org.springframework.integration.rsocket.ServerRSocketMessageHandler;
 import org.springframework.integration.rsocket.outbound.RSocketOutboundGateway;
+import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.util.StringUtils;
 
 /**
@@ -109,6 +116,46 @@ public class IntegrationAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
+
+		@Bean(PollerMetadata.DEFAULT_POLLER)
+		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
+		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties) {
+			IntegrationProperties.Poller poller = integrationProperties.getPoller();
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.integration.poller.cron",
+						StringUtils.hasText(poller.getCron()) ? poller.getCron() : null);
+				entries.put("spring.integration.poller.fixed-delay", poller.getFixedDelay());
+				entries.put("spring.integration.poller.fixed-rate", poller.getFixedRate());
+			});
+			PollerMetadata pollerMetadata = new PollerMetadata();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
+			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
+			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
+			return pollerMetadata;
+		}
+
+		private Trigger asTrigger(IntegrationProperties.Poller poller) {
+			if (StringUtils.hasText(poller.getCron())) {
+				return new CronTrigger(poller.getCron());
+			}
+			if (poller.getFixedDelay() != null) {
+				return createPeriodicTrigger(poller.getFixedDelay(), poller.getInitialDelay(), true);
+			}
+			if (poller.getFixedRate() != null) {
+				return createPeriodicTrigger(poller.getFixedRate(), poller.getInitialDelay(), false);
+			}
+			return null;
+		}
+
+		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
+			PeriodicTrigger trigger = new PeriodicTrigger(period.toMillis());
+			if (initialDelay != null) {
+				trigger.setInitialDelay(initialDelay.toMillis());
+			}
+			trigger.setFixedRate(fixedRate);
+			return trigger;
+		}
 
 	}
 

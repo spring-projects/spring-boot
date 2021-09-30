@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +78,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 /**
@@ -150,6 +150,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
+ * @author Chris Bono
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -284,8 +285,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -301,20 +301,20 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			stopWatch.stop();
+			Duration timeTakeToStartup = Duration.ofNanos(System.nanoTime() - startTime);
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakeToStartup);
 			}
-			listeners.started(context);
+			listeners.started(context, timeTakeToStartup);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, listeners);
 			throw new IllegalStateException(ex);
 		}
-
 		try {
-			listeners.running(context);
+			Duration timeTakenToReady = Duration.ofNanos(System.nanoTime() - startTime);
+			listeners.ready(context, timeTakenToReady);
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);
@@ -1314,7 +1314,7 @@ public class SpringApplication {
 	 * {@link ExitCodeGenerator}. In the case of multiple exit codes the highest value
 	 * will be used (or if all values are negative, the lowest value will be used)
 	 * @param context the context to close if possible
-	 * @param exitCodeGenerators exist code generators
+	 * @param exitCodeGenerators exit code generators
 	 * @return the outcome (0 if successful)
 	 */
 	public static int exit(ApplicationContext context, ExitCodeGenerator... exitCodeGenerators) {

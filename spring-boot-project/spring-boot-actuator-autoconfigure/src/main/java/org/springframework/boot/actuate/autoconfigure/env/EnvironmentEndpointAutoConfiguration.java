@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.env;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,8 +43,9 @@ public class EnvironmentEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties) {
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment);
+	public EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties,
+			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
+		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, sanitizingFunctions);
 		String[] keysToSanitize = properties.getKeysToSanitize();
 		if (keysToSanitize != null) {
 			endpoint.setKeysToSanitize(keysToSanitize);

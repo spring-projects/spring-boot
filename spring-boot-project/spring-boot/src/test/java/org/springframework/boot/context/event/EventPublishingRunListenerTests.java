@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ class EventPublishingRunListenerTests {
 		this.runListener.contextLoaded(context);
 		checkApplicationEvents(ApplicationPreparedEvent.class);
 		context.refresh();
-		this.runListener.started(context);
+		this.runListener.started(context, null);
 		checkApplicationEvents(ApplicationStartedEvent.class, AvailabilityChangeEvent.class);
-		this.runListener.running(context);
+		this.runListener.ready(context, null);
 		checkApplicationEvents(ApplicationReadyEvent.class, AvailabilityChangeEvent.class);
 	}
 

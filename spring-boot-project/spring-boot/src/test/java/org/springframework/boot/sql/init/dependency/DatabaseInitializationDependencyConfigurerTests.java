@@ -81,10 +81,8 @@ class DatabaseInitializationDependencyConfigurerTests {
 	void beanFactoryPostProcessorHasOrderAllowingSubsequentPostProcessorsToFineTuneDependencies() {
 		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
 				MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
-					BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class)
-							.getBeanDefinition();
-					BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class)
-							.getBeanDefinition();
+					BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+					BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 					context.register(DependsOnCaptor.class);
 					context.register(DependencyConfigurerConfiguration.class);
 					context.registerBeanDefinition("alpha", alpha);
@@ -104,8 +102,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 	void whenDetectorsAreCreatedThenTheEnvironmentCanBeInjected() {
 		performDetection(Arrays.asList(ConstructorInjectionDatabaseInitializerDetector.class,
 				ConstructorInjectionDependsOnDatabaseInitializationDetector.class), (context) -> {
-					BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class)
-							.getBeanDefinition();
+					BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 					context.registerBeanDefinition("alpha", alpha);
 					context.register(DependencyConfigurerConfiguration.class);
 					context.refresh();
@@ -117,8 +114,8 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@Test
 	void whenDependenciesAreConfiguredThenBeansThatDependUponDatabaseInitializationDependUponDetectedDatabaseInitializers() {
-		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
 				MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
 					context.registerBeanDefinition("alpha", alpha);
@@ -140,11 +137,11 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@Test
 	void whenDependenciesAreConfiguredDetectedDatabaseInitializersAreInitializedInCorrectOrder() {
-		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		BeanDefinition bravo1 = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		BeanDefinition bravo2 = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		BeanDefinition charlie = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		BeanDefinition delta = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo1 = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo2 = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition charlie = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition delta = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 		performDetection(
 				Arrays.asList(MockDatabaseInitializerDetector.class, OrderedLowestMockDatabaseInitializerDetector.class,
 						OrderedNearLowestMockDatabaseInitializerDetector.class,

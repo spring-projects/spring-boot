@@ -161,8 +161,8 @@ As a result, specific configuration keys (such as `logback.configurationFile` fo
 
 [[features.logging.file-rotation]]
 === File Rotation
-If you are using the Logback, it's possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
-For all other logging system, you'll need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j.xml` file).
+If you are using the Logback, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
+For all other logging system, you will need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j.xml` file).
 
 The following rotation policy properties are supported:
 
@@ -176,7 +176,7 @@ The following rotation policy properties are supported:
 | If log archive cleanup should occur when the application starts.
 
 | configprop:logging.logback.rollingpolicy.max-file-size[]
-| The maximum size of log file before it's archived.
+| The maximum size of log file before it is archived.
 
 | configprop:logging.logback.rollingpolicy.total-size-cap[]
 | The maximum amount of size log archives can take before being deleted.
@@ -212,22 +212,22 @@ The following example shows potential logging settings in `application.propertie
 	    org.hibernate: "error"
 ----
 
-It's also possible to set logging levels using environment variables.
+It is also possible to set logging levels using environment variables.
 For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
 
 NOTE: The above approach will only work for package level logging.
-Since relaxed binding always converts environment variables to lowercase, it's not possible to configure logging for an individual class in this way.
+Since relaxed binding always converts environment variables to lowercase, it is not possible to configure logging for an individual class in this way.
 If you need to configure logging for a class, you can use <<features#features.external-config.application-json, the `SPRING_APPLICATION_JSON`>> variable.
 
 
 
 [[features.logging.log-groups]]
 === Log Groups
-It's often useful to be able to group related loggers together so that they can all be configured at the same time.
-For example, you might commonly change the logging levels for _all_ Tomcat related loggers, but you can't easily remember top level packages.
+It is often useful to be able to group related loggers together so that they can all be configured at the same time.
+For example, you might commonly change the logging levels for _all_ Tomcat related loggers, but you can not easily remember top level packages.
 
 To help with this, Spring Boot allows you to define logging groups in your Spring `Environment`.
-For example, here's how you could define a "`tomcat`" group by adding it to your `application.properties`:
+For example, here is how you could define a "`tomcat`" group by adding it to your `application.properties`:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

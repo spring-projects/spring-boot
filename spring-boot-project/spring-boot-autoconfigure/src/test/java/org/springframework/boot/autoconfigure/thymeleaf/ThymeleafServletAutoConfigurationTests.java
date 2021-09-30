@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.servlet.DispatcherType;
 
-import nz.net.ultraq.thymeleaf.LayoutDialect;
-import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingRespectLayoutTitleStrategy;
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import nz.net.ultraq.thymeleaf.layoutdialect.decorators.strategies.GroupingStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
@@ -303,7 +303,7 @@ class ThymeleafServletAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(LayoutDialectConfiguration.class)
 				.run((context) -> assertThat(
 						ReflectionTestUtils.getField(context.getBean(LayoutDialect.class), "sortingStrategy"))
-								.isInstanceOf(GroupingRespectLayoutTitleStrategy.class));
+								.isInstanceOf(GroupingStrategy.class));
 	}
 
 	@Test
@@ -320,7 +320,7 @@ class ThymeleafServletAutoConfigurationTests {
 
 		@Bean
 		LayoutDialect layoutDialect() {
-			return new LayoutDialect(new GroupingRespectLayoutTitleStrategy());
+			return new LayoutDialect(new GroupingStrategy());
 		}
 
 	}

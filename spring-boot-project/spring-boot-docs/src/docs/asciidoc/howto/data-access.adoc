@@ -32,7 +32,7 @@ The following example shows how to define a data source by setting properties:
 Assuming that `SomeDataSource` has regular JavaBean properties for the URL, the username, and the pool size, these settings are bound automatically before the `DataSource` is made available to other components.
 
 Spring Boot also provides a utility builder class, called `DataSourceBuilder`, that can be used to create one of the standard data sources (if it is on the classpath).
-The builder can detect the one to use based on what's available on the classpath.
+The builder can detect the one to use based on what is available on the classpath.
 It also auto-detects the driver based on the JDBC URL.
 
 The following example shows how to create a data source by using a `DataSourceBuilder`:

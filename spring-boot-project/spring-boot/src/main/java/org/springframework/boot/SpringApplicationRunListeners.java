@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,8 @@ import org.springframework.util.ReflectionUtils;
  * A collection of {@link SpringApplicationRunListener}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Chris Bono
  */
 class SpringApplicationRunListeners {
 
@@ -71,12 +74,12 @@ class SpringApplicationRunListeners {
 		doWithListeners("spring.boot.application.context-loaded", (listener) -> listener.contextLoaded(context));
 	}
 
-	void started(ConfigurableApplicationContext context) {
-		doWithListeners("spring.boot.application.started", (listener) -> listener.started(context));
+	void started(ConfigurableApplicationContext context, Duration timeTaken) {
+		doWithListeners("spring.boot.application.started", (listener) -> listener.started(context, timeTaken));
 	}
 
-	void running(ConfigurableApplicationContext context) {
-		doWithListeners("spring.boot.application.running", (listener) -> listener.running(context));
+	void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+		doWithListeners("spring.boot.application.ready", (listener) -> listener.ready(context, timeTaken));
 	}
 
 	void failed(ConfigurableApplicationContext context, Throwable exception) {

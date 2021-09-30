@@ -52,6 +52,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Rafael Ceccone
  * @since 2.3.0
  */
 public class DockerApi {
@@ -283,7 +284,7 @@ public class DockerApi {
 			Assert.notNull(reference, "Reference must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/images/" + reference, params);
-			http().delete(uri);
+			http().delete(uri).close();
 		}
 
 		/**
@@ -298,6 +299,13 @@ public class DockerApi {
 			try (Response response = http().get(imageUri)) {
 				return Image.of(response.getContent());
 			}
+		}
+
+		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {
+			Assert.notNull(sourceReference, "SourceReference must not be null");
+			Assert.notNull(targetReference, "TargetReference must not be null");
+			URI uri = buildUrl("/images/" + sourceReference + "/tag", "repo", targetReference.toString());
+			http().post(uri).close();
 		}
 
 	}
@@ -348,7 +356,7 @@ public class DockerApi {
 		public void start(ContainerReference reference) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			URI uri = buildUrl("/containers/" + reference + "/start");
-			http().post(uri);
+			http().post(uri).close();
 		}
 
 		/**
@@ -396,7 +404,7 @@ public class DockerApi {
 			Assert.notNull(reference, "Reference must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/containers/" + reference, params);
-			http().delete(uri);
+			http().delete(uri).close();
 		}
 
 	}
@@ -419,7 +427,7 @@ public class DockerApi {
 			Assert.notNull(name, "Name must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/volumes/" + name, params);
-			http().delete(uri);
+			http().delete(uri).close();
 		}
 
 	}
