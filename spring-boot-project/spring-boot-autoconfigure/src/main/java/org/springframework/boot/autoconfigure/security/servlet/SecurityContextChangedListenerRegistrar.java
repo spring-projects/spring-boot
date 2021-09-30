@@ -28,9 +28,11 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 public class SecurityContextChangedListenerRegistrar implements InitializingBean, DisposableBean {
 
 	private final List<SecurityContextChangedListener> listeners;
+
 	private final SecurityContextHolderStrategy originalStrategy;
 
-	public SecurityContextChangedListenerRegistrar(List<SecurityContextChangedListener> securityContextChangedListeners) {
+	public SecurityContextChangedListenerRegistrar(
+			List<SecurityContextChangedListener> securityContextChangedListeners) {
 		this.listeners = securityContextChangedListeners;
 		this.originalStrategy = SecurityContextHolder.getContextHolderStrategy();
 	}
@@ -38,11 +40,7 @@ public class SecurityContextChangedListenerRegistrar implements InitializingBean
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		SecurityContextHolder.setContextHolderStrategy(
-				new ListeningSecurityContextHolderStrategy(
-						this.originalStrategy,
-						this.listeners
-				)
-		);
+				new ListeningSecurityContextHolderStrategy(this.originalStrategy, this.listeners));
 	}
 
 	@Override
