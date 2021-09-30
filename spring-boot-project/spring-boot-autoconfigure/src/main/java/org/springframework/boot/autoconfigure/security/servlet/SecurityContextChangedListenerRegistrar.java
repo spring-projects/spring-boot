@@ -20,26 +20,34 @@ import java.util.List;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
 import org.springframework.security.core.context.SecurityContextChangedListener;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 public class SecurityContextChangedListenerRegistrar implements InitializingBean, DisposableBean {
 
-	private final List<SecurityContextChangedListener> securityContextChangedListeners;
+	private final List<SecurityContextChangedListener> listeners;
+	private final SecurityContextHolderStrategy originalStrategy;
 
-	public SecurityContextChangedListenerRegistrar(
-			List<SecurityContextChangedListener> securityContextChangedListeners) {
-		this.securityContextChangedListeners = securityContextChangedListeners;
+	public SecurityContextChangedListenerRegistrar(List<SecurityContextChangedListener> securityContextChangedListeners) {
+		this.listeners = securityContextChangedListeners;
+		this.originalStrategy = SecurityContextHolder.getContextHolderStrategy();
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.securityContextChangedListeners.forEach(SecurityContextHolder::addListener);
+		SecurityContextHolder.setContextHolderStrategy(
+				new ListeningSecurityContextHolderStrategy(
+						this.originalStrategy,
+						this.listeners
+				)
+		);
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		// this.securityContextChangedListeners.forEach(SecurityContextHolder::removeListener);
+		SecurityContextHolder.setContextHolderStrategy(this.originalStrategy);
 	}
 
 }
