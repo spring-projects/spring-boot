@@ -261,7 +261,7 @@ Here are some rules we follow internally to make sure descriptions are consisten
 * Do not start the description by "The" or "A".
 * For `boolean` types, start the description with "Whether" or "Enable".
 * For collection-based types, start the description with "Comma-separated list"
-* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, for example "If a duration suffix is not specified, seconds will be used".
+* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
 
 Make sure to <<configuration-metadata#configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.

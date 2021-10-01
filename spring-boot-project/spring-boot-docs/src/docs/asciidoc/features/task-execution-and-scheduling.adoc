@@ -27,7 +27,7 @@ Those default settings can be fine-tuned using the `spring.task.execution` names
 This changes the thread pool to use a bounded queue so that when the queue is full (100 tasks), the thread pool increases to maximum 16 threads.
 Shrinking of the pool is more aggressive as threads are reclaimed when they are idle for 10 seconds (rather than 60 seconds by default).
 
-A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated to scheduled task execution (for example `@EnableScheduling`).
+A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated to scheduled task execution (using `@EnableScheduling` for instance).
 The thread pool uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]

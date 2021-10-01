@@ -1048,7 +1048,7 @@ If you expose a `java.time.Duration` property, the following formats in applicat
 
 * A regular `long` representation (using milliseconds as the default unit unless a `@DurationUnit` has been specified)
 * The standard ISO-8601 format {java-api}/java/time/Duration.html#parse-java.lang.CharSequence-[used by `java.time.Duration`]
-* A more readable format where the value and the unit are coupled (for example `10s` means 10 seconds)
+* A more readable format where the value and the unit are coupled (`10s` means 10 seconds)
 
 Consider the following example:
 
@@ -1093,7 +1093,7 @@ The following formats can be used in application properties:
 
 * An regular `int` representation (using days as the default unit unless a `@PeriodUnit` has been specified)
 * The standard ISO-8601 format {java-api}/java/time/Period.html#parse-java.lang.CharSequence-[used by `java.time.Period`]
-* A simpler format where the value and the unit pairs are coupled (for example `1y3d` means 1 year and 3 days)
+* A simpler format where the value and the unit pairs are coupled (`1y3d` means 1 year and 3 days)
 
 The following units are supported with the simple format:
 
@@ -1112,7 +1112,7 @@ Spring Framework has a `DataSize` value type that expresses a size in bytes.
 If you expose a `DataSize` property, the following formats in application properties are available:
 
 * A regular `long` representation (using bytes as the default unit unless a `@DataSizeUnit` has been specified)
-* A more readable format where the value and the unit are coupled (for example `10MB` means 10 megabytes)
+* A more readable format where the value and the unit are coupled (`10MB` means 10 megabytes)
 
 Consider the following example:
 
