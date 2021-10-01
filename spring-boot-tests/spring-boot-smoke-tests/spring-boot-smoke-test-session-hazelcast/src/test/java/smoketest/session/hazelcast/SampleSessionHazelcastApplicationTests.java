@@ -1,6 +1,5 @@
 package smoketest.session.hazelcast;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,15 +24,11 @@ public class SampleSessionHazelcastApplicationTests {
 
 	@Test
 	public void test_sessionsEndPoint() {
-		ResponseEntity<Map<String, Object>> entity = asMapEntity(
-				this.restTemplate.withBasicAuth("user", "password")
-						.getForEntity("/actuator/sessions?username=user", Map.class));
+		ResponseEntity<Map<String, Object>> entity = (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate.withBasicAuth("user", "password")
+				.getForEntity("/actuator/sessions?username=user", Map.class);
 		assertThat(entity).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
-		return (ResponseEntity) entity;
+		assertThat(entity.getBody().get("sessions")).isNotNull();
 	}
 
 }
