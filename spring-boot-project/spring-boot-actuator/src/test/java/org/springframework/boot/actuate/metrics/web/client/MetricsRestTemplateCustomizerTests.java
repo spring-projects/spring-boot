@@ -157,7 +157,7 @@ class MetricsRestTemplateCustomizerTests {
 
 	@Test
 	void whenAutoTimingIsDisabledUriTemplateHandlerDoesNotCaptureUris() {
-		AtomicBoolean enabled = new AtomicBoolean(false);
+		AtomicBoolean enabled = new AtomicBoolean();
 		AutoTimer autoTimer = new AutoTimer() {
 
 			@Override
