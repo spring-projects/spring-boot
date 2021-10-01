@@ -63,8 +63,7 @@ class CouchbaseDataConfiguration {
 			ApplicationContext applicationContext, CouchbaseCustomConversions couchbaseCustomConversions)
 			throws Exception {
 		CouchbaseMappingContext mappingContext = new CouchbaseMappingContext();
-		mappingContext
-				.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class));
+		mappingContext.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class));
 		mappingContext.setSimpleTypeHolder(couchbaseCustomConversions.getSimpleTypeHolder());
 		Class<?> fieldNamingStrategy = properties.getFieldNamingStrategy();
 		if (fieldNamingStrategy != null) {
