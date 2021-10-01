@@ -20,7 +20,6 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.function.Supplier;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,7 +55,7 @@ import org.springframework.security.web.SecurityFilterChain;
 class OAuth2ResourceServerJwtConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(SupplierJwtDecoder.class)
+	@ConditionalOnMissingBean(JwtDecoderConfiguration.class)
 	static class JwtDecoderConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
