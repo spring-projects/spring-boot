@@ -27,6 +27,10 @@ import java.lang.annotation.Target;
  * using constructor arguments rather than by calling setters. Can be added at the type
  * level (if there is an unambiguous constructor) or on the actual constructor to use.
  *
+ * Note : To use constructor binding the class must be enabled using @EnableConfigurationProperties or configuration property scanning.
+ * You cannot use constructor binding with beans that are created by the regular Spring mechanisms
+ * (e.g. @Component beans, beans created via @Bean methods or beans loaded using @Import)
+ *
  * @author Phillip Webb
  * @since 2.2.0
  * @see ConfigurationProperties
