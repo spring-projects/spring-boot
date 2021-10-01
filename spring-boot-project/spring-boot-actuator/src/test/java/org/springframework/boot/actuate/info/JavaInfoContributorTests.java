@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.info.java;
+package org.springframework.boot.actuate.info;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.info.JavaInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,17 +34,8 @@ class JavaInfoContributorTests {
 		JavaInfoContributor javaInfoContributor = new JavaInfoContributor();
 		Info.Builder builder = new Info.Builder();
 		javaInfoContributor.contribute(builder);
-
-		assertThat(builder.build().getDetails().get("java")).isInstanceOf(JavaInfo.class);
-		JavaInfo javaInfo = (JavaInfo) builder.build().getDetails().get("java");
-
-		assertThat(javaInfo.getVendor()).isEqualTo(System.getProperty("java.vendor"));
-		assertThat(javaInfo.getVersion()).isEqualTo(System.getProperty("java.version"));
-		assertThat(javaInfo.getRuntime().getName()).isEqualTo(System.getProperty("java.runtime.name"));
-		assertThat(javaInfo.getRuntime().getVersion()).isEqualTo(System.getProperty("java.runtime.version"));
-		assertThat(javaInfo.getVm().getName()).isEqualTo(System.getProperty("java.vm.name"));
-		assertThat(javaInfo.getVm().getVendor()).isEqualTo(System.getProperty("java.vm.vendor"));
-		assertThat(javaInfo.getVm().getVersion()).isEqualTo(System.getProperty("java.vm.version"));
+		Info info = builder.build();
+		assertThat(info.getDetails().get("java")).isInstanceOf(JavaInfo.class);
 	}
 
 }

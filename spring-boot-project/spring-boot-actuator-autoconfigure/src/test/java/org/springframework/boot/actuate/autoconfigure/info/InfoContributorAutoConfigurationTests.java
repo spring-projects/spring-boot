@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.info;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.BuildInfoContributor;
@@ -27,12 +26,12 @@ import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.actuate.info.java.JavaInfo;
-import org.springframework.boot.actuate.info.java.JavaInfoContributor;
+import org.springframework.boot.actuate.info.JavaInfoContributor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.info.JavaInfo;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,142 +45,119 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class InfoContributorAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@AfterEach
-	void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(InfoContributorAutoConfiguration.class));
 
 	@Test
 	void disableEnvContributor() {
-		load("management.info.env.enabled:false");
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).extractingFromEntries(Map.Entry::getValue).allSatisfy(
-				(infoContributor) -> assertThat(infoContributor).isNotInstanceOf(EnvironmentInfoContributor.class));
+		this.contextRunner.withPropertyValues("management.info.env.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentInfoContributor.class));
 	}
 
 	@Test
 	void disableJavaContributor() {
-		load("management.info.java.enabled:false");
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).extractingFromEntries(Map.Entry::getValue).allSatisfy(
-				(infoContributor) -> assertThat(infoContributor).isNotInstanceOf(JavaInfoContributor.class));
+		this.contextRunner.withPropertyValues("management.info.java.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(JavaInfoContributor.class));
 	}
 
 	@Test
 	void defaultInfoContributorsEnabled() {
-		load();
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).hasSize(2).extractingFromEntries(Map.Entry::getValue)
-				.anySatisfy(
-						(infoContributor) -> assertThat(infoContributor).isInstanceOf(EnvironmentInfoContributor.class))
-				.anySatisfy((infoContributor) -> assertThat(infoContributor).isInstanceOf(JavaInfoContributor.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(EnvironmentInfoContributor.class)
+					.hasSingleBean(JavaInfoContributor.class);
+			assertThat(context.getBeansOfType(InfoContributor.class)).hasSize(2);
+		});
 	}
 
 	@Test
 	void defaultInfoContributorsDisabled() {
-		load("management.info.defaults.enabled:false");
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).hasSize(0);
+		this.contextRunner.withPropertyValues("management.info.defaults.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(InfoContributor.class));
 	}
 
 	@Test
 	void defaultInfoContributorsDisabledWithCustomOne() {
-		load(CustomInfoContributorConfiguration.class, "management.info.defaults.enabled:false");
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean("customInfoContributor")).isSameAs(beans.values().iterator().next());
+		this.contextRunner.withPropertyValues("management.info.defaults.enabled=false")
+				.withUserConfiguration(CustomInfoContributorConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(InfoContributor.class);
+					assertThat(context.getBean(InfoContributor.class))
+							.isSameAs(context.getBean("customInfoContributor"));
+				});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	void gitPropertiesDefaultMode() {
-		load(GitPropertiesConfiguration.class);
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).containsKeys("gitInfoContributor");
-		Map<String, Object> content = invokeContributor(
-				this.context.getBean("gitInfoContributor", InfoContributor.class));
-		Object git = content.get("git");
-		assertThat(git).isInstanceOf(Map.class);
-		Map<String, Object> gitInfo = (Map<String, Object>) git;
-		assertThat(gitInfo).containsOnlyKeys("branch", "commit");
+		this.contextRunner.withUserConfiguration(GitPropertiesConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(GitInfoContributor.class);
+			Map<String, Object> content = invokeContributor(context.getBean(GitInfoContributor.class));
+			Object git = content.get("git");
+			assertThat(git).isInstanceOf(Map.class);
+			Map<String, Object> gitInfo = (Map<String, Object>) git;
+			assertThat(gitInfo).containsOnlyKeys("branch", "commit");
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	void gitPropertiesFullMode() {
-		load(GitPropertiesConfiguration.class, "management.info.git.mode=full");
-		Map<String, Object> content = invokeContributor(
-				this.context.getBean("gitInfoContributor", InfoContributor.class));
-		Object git = content.get("git");
-		assertThat(git).isInstanceOf(Map.class);
-		Map<String, Object> gitInfo = (Map<String, Object>) git;
-		assertThat(gitInfo).containsOnlyKeys("branch", "commit", "foo");
-		assertThat(gitInfo.get("foo")).isEqualTo("bar");
+		this.contextRunner.withPropertyValues("management.info.git.mode=full")
+				.withUserConfiguration(GitPropertiesConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(GitInfoContributor.class);
+					Map<String, Object> content = invokeContributor(context.getBean(GitInfoContributor.class));
+					Object git = content.get("git");
+					assertThat(git).isInstanceOf(Map.class);
+					Map<String, Object> gitInfo = (Map<String, Object>) git;
+					assertThat(gitInfo).containsOnlyKeys("branch", "commit", "foo");
+					assertThat(gitInfo.get("foo")).isEqualTo("bar");
+				});
 	}
 
 	@Test
 	void customGitInfoContributor() {
-		load(CustomGitInfoContributorConfiguration.class);
-		assertThat(this.context.getBean(GitInfoContributor.class))
-				.isSameAs(this.context.getBean("customGitInfoContributor"));
+		this.contextRunner.withUserConfiguration(CustomGitInfoContributorConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(GitInfoContributor.class);
+			assertThat(context.getBean(GitInfoContributor.class)).isSameAs(context.getBean("customGitInfoContributor"));
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	void buildProperties() {
-		load(BuildPropertiesConfiguration.class);
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).containsKeys("buildInfoContributor");
-		Map<String, Object> content = invokeContributor(
-				this.context.getBean("buildInfoContributor", InfoContributor.class));
-		Object build = content.get("build");
-		assertThat(build).isInstanceOf(Map.class);
-		Map<String, Object> buildInfo = (Map<String, Object>) build;
-		assertThat(buildInfo).containsOnlyKeys("group", "artifact", "foo");
-		assertThat(buildInfo.get("foo")).isEqualTo("bar");
+		this.contextRunner.withUserConfiguration(BuildPropertiesConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(BuildInfoContributor.class);
+			Map<String, Object> content = invokeContributor(context.getBean(BuildInfoContributor.class));
+			Object build = content.get("build");
+			assertThat(build).isInstanceOf(Map.class);
+			Map<String, Object> buildInfo = (Map<String, Object>) build;
+			assertThat(buildInfo).containsOnlyKeys("group", "artifact", "foo");
+			assertThat(buildInfo.get("foo")).isEqualTo("bar");
+		});
 	}
 
 	@Test
 	void customBuildInfoContributor() {
-		load(CustomBuildInfoContributorConfiguration.class);
-		assertThat(this.context.getBean(BuildInfoContributor.class))
-				.isSameAs(this.context.getBean("customBuildInfoContributor"));
+		this.contextRunner.withUserConfiguration(CustomBuildInfoContributorConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(BuildInfoContributor.class);
+			assertThat(context.getBean(BuildInfoContributor.class))
+					.isSameAs(context.getBean("customBuildInfoContributor"));
+		});
 	}
 
 	@Test
 	void javaInfoContributor() {
-		load();
-		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
-		assertThat(beans).containsKeys("javaInfoContributor");
-		Map<String, Object> content = invokeContributor(
-				this.context.getBean("javaInfoContributor", InfoContributor.class));
-		Object javaInfo = content.get("java");
-		assertThat(javaInfo).isInstanceOf(JavaInfo.class);
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(JavaInfoContributor.class);
+			Map<String, Object> content = invokeContributor(context.getBean(JavaInfoContributor.class));
+			assertThat(content).containsKey("java");
+			assertThat(content.get("java")).isInstanceOf(JavaInfo.class);
+		});
 	}
 
 	private Map<String, Object> invokeContributor(InfoContributor contributor) {
 		Info.Builder builder = new Info.Builder();
 		contributor.contribute(builder);
 		return builder.build().getDetails();
-	}
-
-	private void load(String... environment) {
-		load(null, environment);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		if (config != null) {
-			context.register(config);
-		}
-		context.register(InfoContributorAutoConfiguration.class);
-		TestPropertyValues.of(environment).applyTo(context);
-		context.refresh();
-		this.context = context;
 	}
 
 	@Configuration(proxyBeanMethods = false)

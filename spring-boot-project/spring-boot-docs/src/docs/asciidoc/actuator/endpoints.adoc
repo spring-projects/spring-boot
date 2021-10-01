@@ -1157,6 +1157,9 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
 | {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
 | Exposes build information if a `META-INF/build-info.properties` file is available.
+
+| {spring-boot-actuator-module-code}/info/JavaInfoContributor.java[`JavaInfoContributor`]
+| Exposes Java runtime information under the `java` key.
 |===
 
 TIP: You can disable them all by setting the configprop:management.info.defaults.enabled[] property.
@@ -1237,6 +1240,12 @@ This happens if a `META-INF/build-info.properties` file is available in the clas
 
 TIP: The Maven and Gradle plugins can both generate that file.
 See "<<howto#howto.build.generate-info,how to generate build information>>" for more details.
+
+
+
+[[actuator.endpoints.info.java-information]]
+==== Java Information
+The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
 
 
 

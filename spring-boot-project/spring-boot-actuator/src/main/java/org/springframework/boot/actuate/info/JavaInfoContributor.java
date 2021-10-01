@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.info.java;
+package org.springframework.boot.actuate.info;
+
+import org.springframework.boot.actuate.info.Info.Builder;
+import org.springframework.boot.info.JavaInfo;
 
 /**
- * A simple DTO that holds information about the JRE (Java Runtime Environment) the
- * application is running in.
+ * An {@link InfoContributor} that exposes {@link JavaInfo}.
  *
  * @author Jonatan Ivanov
  * @since 2.6.0
  */
-public class JreInfo {
+public class JavaInfoContributor implements InfoContributor {
 
-	private final String name;
+	private final JavaInfo javaInfo;
 
-	private final String version;
-
-	public JreInfo() {
-		this.name = System.getProperty("java.runtime.name");
-		this.version = System.getProperty("java.runtime.version");
+	public JavaInfoContributor() {
+		this.javaInfo = new JavaInfo();
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public String getVersion() {
-		return this.version;
+	@Override
+	public void contribute(Builder builder) {
+		builder.withDetail("java", this.javaInfo);
 	}
 
 }
