@@ -1152,14 +1152,15 @@ public class RabbitProperties {
 		}
 
 		private void parseHostAndPort(String input, boolean sslEnabled) {
-			int portIndex = input.lastIndexOf(':');
-			if (portIndex == -1) {
+			int bracketIndex = input.lastIndexOf(']');
+			int colonIndex = input.lastIndexOf(':');
+			if (colonIndex == -1 || colonIndex < bracketIndex) {
 				this.host = input;
 				this.port = (determineSslEnabled(sslEnabled)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 			}
 			else {
-				this.host = input.substring(0, portIndex);
-				this.port = Integer.parseInt(input.substring(portIndex + 1));
+				this.host = input.substring(0, colonIndex);
+				this.port = Integer.parseInt(input.substring(colonIndex + 1));
 			}
 		}
 
