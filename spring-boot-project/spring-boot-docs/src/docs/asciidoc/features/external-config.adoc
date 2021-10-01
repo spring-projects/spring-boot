@@ -386,7 +386,7 @@ To import these properties, you can add the following to your `application.prope
 
 NOTE: Filenames with dot notation are also correctly mapped.
 
-You can then access or inject `myapp.usern`ame` and `myapp.password` properties from the `Environment` in the usual way.
+You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
 TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
 
@@ -398,7 +398,7 @@ For example, given the following volume:
 [indent=0]
 ----
 	etc/
-	  config/
+	  config/ 
 	    dbconfig/
 	      db/
 	        username
