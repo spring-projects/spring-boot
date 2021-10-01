@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * Tests for {@link SampleSessionHazelcastApplication},
- *
+ * @author Susmitha Kandula
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleSessionHazelcastApplicationTests {
