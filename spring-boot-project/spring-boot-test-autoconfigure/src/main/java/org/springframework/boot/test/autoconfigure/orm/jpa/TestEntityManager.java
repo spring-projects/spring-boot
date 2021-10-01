@@ -234,8 +234,7 @@ public class TestEntityManager {
 	 */
 	public final EntityManager getEntityManager() {
 		EntityManager manager = EntityManagerFactoryUtils.getTransactionalEntityManager(this.entityManagerFactory);
-		Assert.state(manager != null,
-				"No transactional EntityManager found. Are your tests annotated with @Transactional?");
+		Assert.state(manager != null, "No transactional EntityManager found, is your test running in a transactional?");
 		return manager;
 	}
 
