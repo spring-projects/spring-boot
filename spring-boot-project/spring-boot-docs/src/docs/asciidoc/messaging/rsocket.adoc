@@ -33,7 +33,7 @@ The required dependencies are provided by the `spring-boot-starter-rsocket`.
 Spring Boot allows exposing RSocket over WebSocket from a WebFlux server, or standing up an independent RSocket server.
 This depends on the type of application and its configuration.
 
-For WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
+For WebFlux application (that is of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
