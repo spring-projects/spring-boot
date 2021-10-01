@@ -20,6 +20,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.function.Supplier;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,6 +40,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -54,7 +56,7 @@ import org.springframework.security.web.SecurityFilterChain;
 class OAuth2ResourceServerJwtConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(JwtDecoder.class)
+	@ConditionalOnMissingBean(SupplierJwtDecoder.class)
 	static class JwtDecoderConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
@@ -91,8 +93,8 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		JwtDecoder jwtDecoderByIssuerUri() {
-			return JwtDecoders.fromIssuerLocation(this.properties.getIssuerUri());
+		SupplierJwtDecoder jwtDecoderByIssuerUri() {
+			return new SupplierJwtDecoder(() -> JwtDecoders.fromIssuerLocation(this.properties.getIssuerUri()));
 		}
 
 	}

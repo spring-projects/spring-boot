@@ -49,6 +49,7 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
@@ -136,11 +137,11 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		setupMockResponse(cleanIssuerPath);
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
 				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
-					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(2);
+		assertThat(this.server.getRequestCount()).isEqualTo(0);
 	}
 
 	@Test
@@ -153,11 +154,11 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		setupMockResponsesWithErrors(cleanIssuerPath, 1);
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
 				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
-					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(3);
+		assertThat(this.server.getRequestCount()).isEqualTo(0);
 	}
 
 	@Test
@@ -170,11 +171,11 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		setupMockResponsesWithErrors(cleanIssuerPath, 2);
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
 				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
-					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(4);
+		assertThat(this.server.getRequestCount()).isEqualTo(0);
 	}
 
 	@Test
