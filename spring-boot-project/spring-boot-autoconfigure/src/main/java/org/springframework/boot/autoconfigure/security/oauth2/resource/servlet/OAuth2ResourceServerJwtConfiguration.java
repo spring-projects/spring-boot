@@ -55,7 +55,7 @@ import org.springframework.security.web.SecurityFilterChain;
 class OAuth2ResourceServerJwtConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(JwtDecoderConfiguration.class)
+	@ConditionalOnMissingBean(JwtDecoder.class)
 	static class JwtDecoderConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;

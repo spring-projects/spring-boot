@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.servlet.Filter;
 
@@ -128,6 +129,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
@@ -139,12 +141,17 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
 					assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
+					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
+					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
+							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(0);
+		assertThat(this.server.getRequestCount()).isEqualTo(2);
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void autoConfigurationShouldConfigureResourceServerUsingOidcRfc8414IssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
@@ -156,12 +163,17 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
 					assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
+					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
+					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
+							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(0);
+		assertThat(this.server.getRequestCount()).isEqualTo(3);
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void autoConfigurationShouldConfigureResourceServerUsingOAuthIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
@@ -169,13 +181,18 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		String issuer = this.server.url(path).toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
 		setupMockResponsesWithErrors(cleanIssuerPath, 2);
+
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
 				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
 					assertThat(context).hasSingleBean(SupplierJwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
+					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
+					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
+							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(0);
+		assertThat(this.server.getRequestCount()).isEqualTo(4);
 	}
 
 	@Test
