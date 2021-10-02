@@ -5840,12 +5840,25 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 [[boot-features-activemq]]
 ==== ActiveMQ Support
 When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can also configure a `ConnectionFactory`.
-If the broker is present, an embedded broker is automatically started and configured (provided no broker URL is specified through configuration).
+If the broker is present, an embedded broker is automatically started and configured (provided no broker URL is specified through configuration and the embedded broker is not disabled in the configuration).
 
 NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect or embed an ActiveMQ instance are provided, as is the Spring infrastructure to integrate with JMS.
 
 ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
-For example, you might declare the following section in `application.properties`:
+
+By default an embedded broker is started, if you don't disable it explicitly and don't set the broker url. The broker
+url is then autoconfigured to use the https://activemq.apache.org/vm-transport-reference.html[VM transport], which starts
+an ActiveMQ broker in the same JVM instance.
+
+You can disable the embedded broker by declaring the following section in `application.properties`:
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  activemq:
+	    in-memory: false
+----
+
+or by setting the broker url explicitly:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
