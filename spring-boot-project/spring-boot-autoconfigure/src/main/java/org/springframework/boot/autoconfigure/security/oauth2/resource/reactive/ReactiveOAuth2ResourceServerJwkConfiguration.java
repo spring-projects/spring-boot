@@ -37,6 +37,7 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
+import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
@@ -91,8 +92,8 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-			return ReactiveJwtDecoders.fromIssuerLocation(this.properties.getIssuerUri());
+		SupplierReactiveJwtDecoder jwtDecoderByIssuerUri() {
+			return new SupplierReactiveJwtDecoder(() -> ReactiveJwtDecoders.fromIssuerLocation(this.properties.getIssuerUri()));
 		}
 
 	}
