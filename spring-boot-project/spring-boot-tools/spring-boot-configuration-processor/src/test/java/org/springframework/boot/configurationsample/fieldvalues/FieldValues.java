@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,15 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 @SuppressWarnings("unused")
 @ConfigurationProperties
 public class FieldValues {
 
 	private static final String STRING_CONST = "c";
+
+	private static final String STRING_CONST_NULL = null;
 
 	private static final boolean BOOLEAN_CONST = true;
 
@@ -51,11 +54,19 @@ public class FieldValues {
 
 	private static final String[] STRING_ARRAY_CONST = new String[] { "OK", "KO" };
 
+	private final String STRING_FINAL = "d";
+
 	private String string = "1";
 
 	private String stringNone;
 
+	private String stringNull = null;
+
 	private String stringConst = STRING_CONST;
+
+	private String stringConstNull = STRING_CONST_NULL;
+
+	private String stringFinal = STRING_FINAL;
 
 	private boolean bool = true;
 
@@ -108,6 +119,8 @@ public class FieldValues {
 	private String[] stringArrayConstElements = new String[] { STRING_CONST };
 
 	private Integer[] integerArray = new Integer[] { 42, 24 };
+
+	private Object[] objectArrayBadEntry = new Object[] { STRING_CONST, mimeType };
 
 	private UnknownElementType[] unknownArray = new UnknownElementType[] { new UnknownElementType() };
 

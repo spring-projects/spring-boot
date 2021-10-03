@@ -45,7 +45,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic.Kind;
 
-import org.springframework.boot.configurationprocessor.fieldvalues.UnresolvableDefaultValue;
+import org.springframework.boot.configurationprocessor.fieldvalues.ValueWrapper;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
@@ -357,16 +357,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void validateDefaultValuesResolved(ConfigurationMetadata metadata) {
-        // TODO do we want this? How do we configure annotation processor w/ 'levers'
-        boolean failOnUnresolvableDefaultValue = true;
         metadata.getItems().forEach((itemMetadata -> {
-            if (itemMetadata.getDefaultValue() instanceof UnresolvableDefaultValue) {
-                String msg = String.format("Could not resolve default value for property '%s' using expression '%s'. Add hint in additional-spring-configuration.metadata.json",
-                        itemMetadata.getName(),
-                        ((UnresolvableDefaultValue) itemMetadata.getDefaultValue()).getExpression());
-                itemMetadata.setDefaultValue(null);
-                log((failOnUnresolvableDefaultValue ? Kind.ERROR : Kind.WARNING), msg);
-            }
+			if (itemMetadata.getDefaultValue() instanceof ValueWrapper) {
+				ValueWrapper defaultValue = (ValueWrapper) itemMetadata.getDefaultValue();
+				if (defaultValue.valueDetermined()) {
+					String msg = String.format("Could not resolve default value for property '%s' using expression '%s'. Add hint in additional-spring-configuration.metadata.json",
+							itemMetadata.getName(),
+							defaultValue.valueInitializerExpression());
+					log(Kind.ERROR, msg);
+				}
+				itemMetadata.setDefaultValue(defaultValue.value());
+			}
+
         }));
     }
 

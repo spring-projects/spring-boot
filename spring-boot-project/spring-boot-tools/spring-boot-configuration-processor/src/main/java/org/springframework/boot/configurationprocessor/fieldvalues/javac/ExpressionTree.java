@@ -48,11 +48,12 @@ class ExpressionTree extends ReflectionWrapper {
 		return findMethod("getKind").invoke(getInstance()).toString();
 	}
 
+	boolean hasLiteralValue() {
+		return this.literalTreeType.isAssignableFrom(getInstance().getClass());
+	}
+
 	Object getLiteralValue() throws Exception {
-		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
-			return this.literalValueMethod.invoke(getInstance());
-		}
-		return null;
+		return hasLiteralValue() ? this.literalValueMethod.invoke(getInstance()) : null;
 	}
 
 	Object getFactoryValue() throws Exception {

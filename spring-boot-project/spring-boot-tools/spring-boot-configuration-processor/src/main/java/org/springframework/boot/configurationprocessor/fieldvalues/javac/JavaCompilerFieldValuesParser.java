@@ -26,8 +26,8 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import org.springframework.boot.configurationprocessor.fieldvalues.UnresolvableDefaultValue;
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
+import org.springframework.boot.configurationprocessor.fieldvalues.ValueWrapper;
 
 /**
  * {@link FieldValuesParser} implementation for the standard Java compiler.
@@ -46,7 +46,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 	}
 
 	@Override
-	public Map<String, Object> getFieldValues(TypeElement element) throws Exception {
+	public Map<String, ValueWrapper> getFieldValues(TypeElement element) throws Exception {
 		Tree tree = this.trees.getTree(element);
 		if (tree != null) {
 			FieldCollector fieldCollector = new FieldCollector();
@@ -147,9 +147,9 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			DATA_SIZE_SUFFIX = Collections.unmodifiableMap(values);
 		}
 
-		private final Map<String, Object> fieldValues = new HashMap<>();
+		private final Map<String, ValueWrapper> fieldValues = new HashMap<>();
 
-		private final Map<String, Object> staticFinals = new HashMap<>();
+		private final Map<String, ValueWrapper> staticFinals = new HashMap<>();
 
 		@Override
 		public void visitVariable(VariableTree variable) throws Exception {
@@ -162,48 +162,65 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			}
 		}
 
-		private Object getValue(VariableTree variable) throws Exception {
+		private ValueWrapper getValue(VariableTree variable) throws Exception {
 			ExpressionTree initializer = variable.getInitializer();
-			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
-			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
 			if (initializer != null) {
-			    Object initializerResolvedValue = getValue(initializer, defaultValue);
-			    if (initializerResolvedValue == null) {
-                    initializerResolvedValue = new UnresolvableDefaultValue(initializer.toString());
-                }
-			    return initializerResolvedValue;
+				return getValue(initializer);
 			}
-			return defaultValue;
+			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
+			if (DEFAULT_TYPE_VALUES.containsKey(wrapperType)) {
+				Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
+				return ValueWrapper.of(defaultValue, null);
+			}
+			return null;
 		}
 
-		private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
-			Object literalValue = expression.getLiteralValue();
-			if (literalValue != null) {
-				return literalValue;
+		private ValueWrapper getValue(ExpressionTree expression) throws Exception {
+			if (expression.hasLiteralValue()) {
+				Object literalValue = expression.getLiteralValue();
+				return ValueWrapper.of(literalValue, expression.toString());
 			}
+
 			Object factoryValue = expression.getFactoryValue();
 			if (factoryValue != null) {
-				return getFactoryValue(expression, factoryValue);
+				Object resolvedValue = getFactoryValue(expression, factoryValue);
+				if (resolvedValue != null) {
+					return ValueWrapper.of(resolvedValue, expression.toString());
+				}
+				return ValueWrapper.unresolvable(expression.toString());
 			}
+
 			List<? extends ExpressionTree> arrayValues = expression.getArrayExpression();
 			if (arrayValues != null) {
 				Object[] result = new Object[arrayValues.size()];
 				for (int i = 0; i < arrayValues.size(); i++) {
-					Object value = getValue(arrayValues.get(i), null);
-					if (value == null) { // One of the elements could not be resolved
-						return defaultValue;
+					ValueWrapper value = getValue(arrayValues.get(i));
+					if (value.valueDetermined()) { // an element could not be resolved
+						return ValueWrapper.unresolvable(arrayValues.get(i).toString());
 					}
 					result[i] = value;
 				}
-				return result;
+				return ValueWrapper.of(result, expression.toString());
 			}
+
 			if (expression.getKind().equals("IDENTIFIER")) {
-				return this.staticFinals.get(expression.toString());
+				String expressionStr = expression.toString();
+				if (staticFinals.containsKey(expressionStr)) {
+					return staticFinals.get(expressionStr);
+				}
+				return ValueWrapper.unresolvable(expressionStr);
 			}
+
 			if (expression.getKind().equals("MEMBER_SELECT")) {
-				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
+				String expressionStr = expression.toString();
+				if (WELL_KNOWN_STATIC_FINALS.containsKey(expressionStr)) {
+					Object resolvedValue = WELL_KNOWN_STATIC_FINALS.get(expressionStr);
+					return ValueWrapper.of(resolvedValue, expressionStr);
+				}
+				return ValueWrapper.unresolvable(expressionStr);
 			}
-			return defaultValue;
+
+			return ValueWrapper.unresolvable(expression.toString());
 		}
 
 		private Object getFactoryValue(ExpressionTree expression, Object factoryValue) {
@@ -219,7 +236,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			if (periodValue != null) {
 				return periodValue;
 			}
-			return factoryValue;
+			return null;
 		}
 
 		private Object getFactoryValue(ExpressionTree expression, Object factoryValue, String prefix,
@@ -234,7 +251,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return null;
 		}
 
-		Map<String, Object> getFieldValues() {
+		Map<String, ValueWrapper> getFieldValues() {
 			return this.fieldValues;
 		}
 

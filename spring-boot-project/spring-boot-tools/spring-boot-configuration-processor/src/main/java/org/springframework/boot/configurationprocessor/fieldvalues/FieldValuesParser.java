@@ -27,9 +27,9 @@ import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCom
  * Parser which can be used to obtain the field values from an {@link TypeElement}.
  *
  * @author Phillip Webb
+ * @author Chris Bono
  * @since 1.1.2
  * @see JavaCompilerFieldValuesParser
- * @see UnresolvableDefaultValue
  */
 @FunctionalInterface
 public interface FieldValuesParser {
@@ -43,8 +43,7 @@ public interface FieldValuesParser {
 	 * Return the field values for the given element.
 	 * @param element the element to inspect
 	 * @return a map of field names to values.
-	 * @throws Exception if the values cannot be extracted
+	 * @throws Exception if extraction fails unexpectedly
 	 */
-	Map<String, Object> getFieldValues(TypeElement element) throws Exception;
-
+	Map<String, ValueWrapper> getFieldValues(TypeElement element) throws Exception;
 }
