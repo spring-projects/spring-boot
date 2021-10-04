@@ -81,17 +81,22 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("charset")).isEqualTo(ValueWrapper.of("US-ASCII", "StandardCharsets.US_ASCII"));
 		assertThat(values.get("charsetConst")).isEqualTo(ValueWrapper.of("UTF-8", "StandardCharsets.UTF_8"));
 		assertThat(values.get("mimeType")).isEqualTo(ValueWrapper.of("text/html", "MimeType.valueOf(\"text/html\")"));
-		assertThat(values.get("mimeTypeConst")).isEqualTo(ValueWrapper.of("text/plain", "MimeType.valueOf(\"text/plain\")"));
+		assertThat(values.get("mimeTypeConst"))
+				.isEqualTo(ValueWrapper.of("text/plain", "MimeType.valueOf(\"text/plain\")"));
 		assertThat(values.get("object")).isEqualTo(ValueWrapper.of(123, "123"));
 		assertThat(values.get("objectNone")).isNull();
 		assertThat(values.get("objectConst")).isEqualTo(ValueWrapper.of("c", "\"c\""));
 		assertThat(values.get("objectInstance")).isEqualTo(ValueWrapper.unresolvable("new StringBuffer()"));
-		assertThat(values.get("stringArray")).isEqualTo(ValueWrapper.of(new String[] {"FOO", "BAR"}, "new String[]{\"FOO\", \"BAR\"}"));
+		assertThat(values.get("stringArray"))
+				.isEqualTo(ValueWrapper.of(new String[] { "FOO", "BAR" }, "new String[]{\"FOO\", \"BAR\"}"));
 		assertThat(values.get("stringArrayNone")).isNull();
 		assertThat(values.get("stringEmptyArray")).isEqualTo(ValueWrapper.of(new String[0], "new String[0]"));
-		assertThat(values.get("stringArrayConst")).isEqualTo(ValueWrapper.of(new String[] { "OK", "KO" }, "new String[]{\"OK\", \"KO\"}"));
-		assertThat(values.get("stringArrayConstElements")).isEqualTo(ValueWrapper.of(new String[] { "c" }, "new String[]{STRING_CONST}"));
-		assertThat(values.get("integerArray")).isEqualTo(ValueWrapper.of(new Integer[] { 42, 24 }, "new Integer[]{42, 24}"));
+		assertThat(values.get("stringArrayConst"))
+				.isEqualTo(ValueWrapper.of(new String[] { "OK", "KO" }, "new String[]{\"OK\", \"KO\"}"));
+		assertThat(values.get("stringArrayConstElements"))
+				.isEqualTo(ValueWrapper.of(new String[] { "c" }, "new String[]{STRING_CONST}"));
+		assertThat(values.get("integerArray"))
+				.isEqualTo(ValueWrapper.of(new Integer[] { 42, 24 }, "new Integer[]{42, 24}"));
 		assertThat(values.get("objectArrayBadEntry")).isEqualTo(ValueWrapper.unresolvable("new StringBuffer()"));
 		assertThat(values.get("unknownArray")).isEqualTo(ValueWrapper.unresolvable("new UnknownElementType()"));
 		assertThat(values.get("durationNone")).isNull();

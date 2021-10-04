@@ -84,11 +84,8 @@ class PropertyDescriptorResolverTests {
 											"HierarchicalPropertiesParent");
 					assertThat(resolver.resolve(type, null)
 							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
-							.map(ItemMetadata::getDefaultValue))
-							.containsExactly(
-									ValueWrapper.of("three", "\"three\""),
-									ValueWrapper.of("two", "\"two\""),
-									ValueWrapper.of("one", "\"one\""));
+							.map(ItemMetadata::getDefaultValue)).containsExactly(ValueWrapper.of("three", "\"three\""),
+									ValueWrapper.of("two", "\"two\""), ValueWrapper.of("one", "\"one\""));
 				});
 	}
 

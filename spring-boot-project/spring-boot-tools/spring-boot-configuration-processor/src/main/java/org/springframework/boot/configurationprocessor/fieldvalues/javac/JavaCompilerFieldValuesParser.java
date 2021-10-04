@@ -195,7 +195,8 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				Object[] result = new Object[arrayValues.size()];
 				for (int i = 0; i < arrayValues.size(); i++) {
 					ValueWrapper valueWrapper = getValue(arrayValues.get(i));
-					if (!valueWrapper.valueDetermined()) { // an element could not be resolved
+					if (!valueWrapper.valueDetermined()) { // an element could not be
+															// resolved
 						return ValueWrapper.unresolvable(arrayValues.get(i).toString());
 					}
 					result[i] = valueWrapper.value();
@@ -205,8 +206,8 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 
 			if (expression.getKind().equals("IDENTIFIER")) {
 				String expressionStr = expression.toString();
-				if (staticFinals.containsKey(expressionStr)) {
-					return staticFinals.get(expressionStr);
+				if (this.staticFinals.containsKey(expressionStr)) {
+					return this.staticFinals.get(expressionStr);
 				}
 				return ValueWrapper.unresolvable(expressionStr);
 			}

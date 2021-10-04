@@ -46,4 +46,5 @@ public interface FieldValuesParser {
 	 * @throws Exception if extraction fails unexpectedly
 	 */
 	Map<String, ValueWrapper> getFieldValues(TypeElement element) throws Exception;
+
 }

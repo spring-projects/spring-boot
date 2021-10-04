@@ -66,7 +66,7 @@ public class FieldValues {
 
 	private String stringConstNull = STRING_CONST_NULL;
 
-	private String stringFinal = STRING_FINAL;
+	private String stringFinal = this.STRING_FINAL;
 
 	private boolean bool = true;
 

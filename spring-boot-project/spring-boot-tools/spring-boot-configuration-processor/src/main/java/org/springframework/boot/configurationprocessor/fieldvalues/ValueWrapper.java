@@ -27,10 +27,12 @@ import javax.lang.model.element.TypeElement;
  * @author Chris Bono
  * @since 2.6
  */
-public class ValueWrapper {
+public final class ValueWrapper {
 
 	private final Object value;
+
 	private final String valueInitializerExpression;
+
 	private final boolean valueDetermined;
 
 	private ValueWrapper(Object value, String valueInitializerExpression, boolean valueDetermined) {
@@ -49,31 +51,30 @@ public class ValueWrapper {
 
 	/**
 	 * Return the wrapped value.
-	 *
 	 * @return the wrapped value or {@code null} if the value was initialized with
-	 * {@code null} or the initializer expression was {@link #valueDetermined() unable to be determined}.
+	 * {@code null} or the initializer expression was {@link #valueDetermined() unable to
+	 * be determined}.
 	 */
 	public Object value() {
-		return value;
+		return this.value;
 	}
 
 	/**
 	 * Return the expression used to initialize the value.
-	 *
-	 * @return the expression used to initialize the value or {@code null} if no initializer
-	 * was used to determine the value
+	 * @return the expression used to initialize the value or {@code null} if no
+	 * initializer was used to determine the value
 	 */
 	public String valueInitializerExpression() {
-		return valueInitializerExpression;
+		return this.valueInitializerExpression;
 	}
 
 	/**
 	 * Return whether or not the value was able to be determined.
-	 *
-	 * @return {@code true} if the value was able to be determined, {@code false} otherwise.
+	 * @return {@code true} if the value was able to be determined, {@code false}
+	 * otherwise.
 	 */
 	public boolean valueDetermined() {
-		return valueDetermined;
+		return this.valueDetermined;
 	}
 
 	@Override
@@ -85,20 +86,19 @@ public class ValueWrapper {
 			return false;
 		}
 		ValueWrapper other = (ValueWrapper) o;
-		return this.valueDetermined == other.valueDetermined &&
-				Objects.deepEquals(this.value, other.value) &&
-				Objects.equals(this.valueInitializerExpression, other.valueInitializerExpression);
+		return this.valueDetermined == other.valueDetermined && Objects.deepEquals(this.value, other.value)
+				&& Objects.equals(this.valueInitializerExpression, other.valueInitializerExpression);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(value, valueInitializerExpression, valueDetermined);
+		return Objects.hash(this.value, this.valueInitializerExpression, this.valueDetermined);
 	}
 
 	@Override
 	public String toString() {
-		return "ValueWrapper{value=" + value
-				+ ", valueInitializerExpression=" + valueInitializerExpression
-				+ ", valueDetermined=" + valueDetermined + "}";
+		return "ValueWrapper{value=" + this.value + ", valueInitializerExpression=" + this.valueInitializerExpression
+				+ ", valueDetermined=" + this.valueDetermined + "}";
 	}
+
 }

@@ -330,7 +330,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
-		    validateDefaultValuesResolved(metadata);
+			validateDefaultValuesResolved(metadata);
 			this.metadataStore.writeMetadata(metadata);
 			return metadata;
 		}
@@ -357,20 +357,20 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void validateDefaultValuesResolved(ConfigurationMetadata metadata) {
-        metadata.getItems().forEach((itemMetadata -> {
+		metadata.getItems().forEach((itemMetadata) -> {
 			if (itemMetadata.getDefaultValue() instanceof ValueWrapper) {
 				ValueWrapper defaultValue = (ValueWrapper) itemMetadata.getDefaultValue();
 				if (!defaultValue.valueDetermined()) {
-					String msg = String.format("Could not resolve default value for property '%s' using expression '%s'. Add hint in additional-spring-configuration.metadata.json",
-							itemMetadata.getName(),
-							defaultValue.valueInitializerExpression());
+					String msg = String.format(
+							"Could not resolve default value for property '%s' using expression '%s'. Add hint in additional-spring-configuration.metadata.json",
+							itemMetadata.getName(), defaultValue.valueInitializerExpression());
 					log(Kind.ERROR, msg);
 				}
 				itemMetadata.setDefaultValue(defaultValue.value());
 			}
 
-        }));
-    }
+		});
+	}
 
 	private String getStackTrace(Exception ex) {
 		StringWriter writer = new StringWriter();

@@ -238,7 +238,8 @@ class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(LombokDefaultValueProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokDefaultValueProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "description");
-			assertItemMetadata(metadataEnv, property).isProperty().hasDefaultValue(ValueWrapper.of("my description", "\"my description\""));
+			assertItemMetadata(metadataEnv, property).isProperty()
+					.hasDefaultValue(ValueWrapper.of("my description", "\"my description\""));
 		});
 	}
 
