@@ -903,6 +903,12 @@ public class KafkaProperties {
 		private Duration idleEventInterval;
 
 		/**
+		 * Time between publishing idle partition consumer events (no data received for
+		 * partition).
+		 */
+		private Duration idlePartitionEventInterval;
+
+		/**
 		 * Time between checks for non-responsive consumers. If a duration suffix is not
 		 * specified, seconds will be used.
 		 */
@@ -1004,6 +1010,14 @@ public class KafkaProperties {
 
 		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Duration getIdlePartitionEventInterval() {
+			return this.idlePartitionEventInterval;
+		}
+
+		public void setIdlePartitionEventInterval(Duration idlePartitionEventInterval) {
+			this.idlePartitionEventInterval = idlePartitionEventInterval;
 		}
 
 		public Duration getMonitorInterval() {
