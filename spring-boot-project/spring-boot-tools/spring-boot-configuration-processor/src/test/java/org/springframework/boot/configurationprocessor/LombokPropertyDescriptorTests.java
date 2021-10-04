@@ -24,6 +24,7 @@ import javax.lang.model.element.VariableElement;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.configurationprocessor.fieldvalues.ValueWrapper;
 import org.springframework.boot.configurationsample.lombok.LombokDefaultValueProperties;
 import org.springframework.boot.configurationsample.lombok.LombokDeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
@@ -237,7 +238,7 @@ class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(LombokDefaultValueProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokDefaultValueProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "description");
-			assertItemMetadata(metadataEnv, property).isProperty().hasDefaultValue("my description");
+			assertItemMetadata(metadataEnv, property).isProperty().hasDefaultValue(ValueWrapper.of("my description", "\"my description\""));
 		});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.lang.model.element.VariableElement;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.configurationprocessor.fieldvalues.ValueWrapper;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
@@ -224,7 +225,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
-			assertItemMetadata(metadataEnv, property).isProperty().hasDefaultValue("boot");
+			assertItemMetadata(metadataEnv, property).isProperty().hasDefaultValue(ValueWrapper.of("boot", "\"boot\""));
 		});
 	}
 

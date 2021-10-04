@@ -31,6 +31,7 @@ import javax.lang.model.element.TypeElement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.configurationprocessor.fieldvalues.ValueWrapper;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
@@ -83,7 +84,11 @@ class PropertyDescriptorResolverTests {
 											"HierarchicalPropertiesParent");
 					assertThat(resolver.resolve(type, null)
 							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
-							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
+							.map(ItemMetadata::getDefaultValue))
+							.containsExactly(
+									ValueWrapper.of("three", "\"three\""),
+									ValueWrapper.of("two", "\"two\""),
+									ValueWrapper.of("one", "\"one\""));
 				});
 	}
 
