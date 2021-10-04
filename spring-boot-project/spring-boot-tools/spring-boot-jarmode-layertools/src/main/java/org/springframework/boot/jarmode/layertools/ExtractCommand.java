@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributeView;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -96,7 +97,13 @@ class ExtractCommand extends Command {
 		try (OutputStream out = new FileOutputStream(file)) {
 			StreamUtils.copy(zip, out);
 		}
-		Files.setAttribute(file.toPath(), "creationTime", entry.getCreationTime());
+		try {
+			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
+					.setTimes(entry.getLastModifiedTime(), entry.getLastAccessTime(), entry.getCreationTime());
+		}
+		catch (IOException ex) {
+			// File system does not support setting time attributes. Continue.
+		}
 	}
 
 	private void mkParentDirs(File file) throws IOException {

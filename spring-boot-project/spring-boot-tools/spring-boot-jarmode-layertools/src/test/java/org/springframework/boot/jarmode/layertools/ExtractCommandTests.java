@@ -20,9 +20,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -46,6 +54,12 @@ import static org.mockito.BDDMockito.given;
  */
 @ExtendWith(MockitoExtension.class)
 class ExtractCommandTests {
+
+	private static final FileTime CREATION_TIME = FileTime.from(Instant.now().minus(3, ChronoUnit.DAYS));
+
+	private static final FileTime LAST_MODIFIED_TIME = FileTime.from(Instant.now().minus(2, ChronoUnit.DAYS));
+
+	private static final FileTime LAST_ACCESS_TIME = FileTime.from(Instant.now().minus(1, ChronoUnit.DAYS));
 
 	@TempDir
 	File temp;
@@ -75,11 +89,30 @@ class ExtractCommandTests {
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("a", "b", "c", "d");
-		assertThat(new File(this.extract, "a/a/a.jar")).exists();
-		assertThat(new File(this.extract, "b/b/b.jar")).exists();
-		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "a/a/a.jar")).exists().satisfies(this::timeAttributes);
+		assertThat(new File(this.extract, "b/b/b.jar")).exists().satisfies(this::timeAttributes);
+		assertThat(new File(this.extract, "c/c/c.jar")).exists().satisfies(this::timeAttributes);
 		assertThat(new File(this.extract, "d")).isDirectory();
 		assertThat(new File(this.extract.getParentFile(), "e.jar")).doesNotExist();
+	}
+
+	private void timeAttributes(File file) {
+		try {
+			BasicFileAttributes basicAttributes = Files
+					.getFileAttributeView(file.toPath(), BasicFileAttributeView.class, new LinkOption[0])
+					.readAttributes();
+			assertThat(basicAttributes.lastModifiedTime().to(TimeUnit.SECONDS))
+					.isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS));
+			assertThat(basicAttributes.creationTime().to(TimeUnit.SECONDS)).satisfiesAnyOf(
+					(creationTime) -> assertThat(creationTime).isEqualTo(CREATION_TIME.to(TimeUnit.SECONDS)),
+					// On macOS (at least) the creation time is the last modified time
+					(creationTime) -> assertThat(creationTime).isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS)));
+			assertThat(basicAttributes.lastAccessTime().to(TimeUnit.SECONDS))
+					.isEqualTo(LAST_ACCESS_TIME.to(TimeUnit.SECONDS));
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Test
@@ -89,9 +122,9 @@ class ExtractCommandTests {
 		this.command.run(Collections.singletonMap(ExtractCommand.DESTINATION_OPTION, out.getAbsolutePath()),
 				Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("out");
-		assertThat(new File(this.extract, "out/a/a/a.jar")).exists();
-		assertThat(new File(this.extract, "out/b/b/b.jar")).exists();
-		assertThat(new File(this.extract, "out/c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "out/a/a/a.jar")).exists().satisfies(this::timeAttributes);
+		assertThat(new File(this.extract, "out/b/b/b.jar")).exists().satisfies(this::timeAttributes);
+		assertThat(new File(this.extract, "out/c/c/c.jar")).exists().satisfies(this::timeAttributes);
 	}
 
 	@Test
@@ -100,8 +133,8 @@ class ExtractCommandTests {
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Arrays.asList("a", "c"));
 		assertThat(this.extract.list()).containsOnly("a", "c");
-		assertThat(new File(this.extract, "a/a/a.jar")).exists();
-		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "a/a/a.jar")).exists().satisfies(this::timeAttributes);
+		assertThat(new File(this.extract, "c/c/c.jar")).exists().satisfies(this::timeAttributes);
 		assertThat(new File(this.extract.getParentFile(), "e.jar")).doesNotExist();
 	}
 
@@ -143,23 +176,31 @@ class ExtractCommandTests {
 	private File createJarFile(String name, Consumer<ZipOutputStream> streamHandler) throws IOException {
 		File file = new File(this.temp, name);
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-			out.putNextEntry(new ZipEntry("a/"));
+			out.putNextEntry(entry("a/"));
 			out.closeEntry();
-			out.putNextEntry(new ZipEntry("a/a.jar"));
+			out.putNextEntry(entry("a/a.jar"));
 			out.closeEntry();
-			out.putNextEntry(new ZipEntry("b/"));
+			out.putNextEntry(entry("b/"));
 			out.closeEntry();
-			out.putNextEntry(new ZipEntry("b/b.jar"));
+			out.putNextEntry(entry("b/b.jar"));
 			out.closeEntry();
-			out.putNextEntry(new ZipEntry("c/"));
+			out.putNextEntry(entry("c/"));
 			out.closeEntry();
-			out.putNextEntry(new ZipEntry("c/c.jar"));
+			out.putNextEntry(entry("c/c.jar"));
 			out.closeEntry();
-			out.putNextEntry(new ZipEntry("d/"));
+			out.putNextEntry(entry("d/"));
 			out.closeEntry();
 			streamHandler.accept(out);
 		}
 		return file;
+	}
+
+	private ZipEntry entry(String path) {
+		ZipEntry entry = new ZipEntry(path);
+		entry.setCreationTime(CREATION_TIME);
+		entry.setLastModifiedTime(LAST_MODIFIED_TIME);
+		entry.setLastAccessTime(LAST_ACCESS_TIME);
+		return entry;
 	}
 
 	private static class TestLayers implements Layers {
