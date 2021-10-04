@@ -194,11 +194,11 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			if (arrayValues != null) {
 				Object[] result = new Object[arrayValues.size()];
 				for (int i = 0; i < arrayValues.size(); i++) {
-					ValueWrapper value = getValue(arrayValues.get(i));
-					if (value.valueDetermined()) { // an element could not be resolved
+					ValueWrapper valueWrapper = getValue(arrayValues.get(i));
+					if (!valueWrapper.valueDetermined()) { // an element could not be resolved
 						return ValueWrapper.unresolvable(arrayValues.get(i).toString());
 					}
-					result[i] = value;
+					result[i] = valueWrapper.value();
 				}
 				return ValueWrapper.of(result, expression.toString());
 			}
@@ -236,7 +236,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			if (periodValue != null) {
 				return periodValue;
 			}
-			return null;
+			return factoryValue;
 		}
 
 		private Object getFactoryValue(ExpressionTree expression, Object factoryValue, String prefix,

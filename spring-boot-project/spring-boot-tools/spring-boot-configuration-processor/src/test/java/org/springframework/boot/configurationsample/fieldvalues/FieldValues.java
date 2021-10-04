@@ -120,7 +120,7 @@ public class FieldValues {
 
 	private Integer[] integerArray = new Integer[] { 42, 24 };
 
-	private Object[] objectArrayBadEntry = new Object[] { STRING_CONST, mimeType };
+	private Object[] objectArrayBadEntry = new Object[] { STRING_CONST, new StringBuffer() };
 
 	private UnknownElementType[] unknownArray = new UnknownElementType[] { new UnknownElementType() };
 
