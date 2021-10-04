@@ -86,7 +86,7 @@ public class ValueWrapper {
 		}
 		ValueWrapper other = (ValueWrapper) o;
 		return this.valueDetermined == other.valueDetermined &&
-				Objects.equals(this.value, other.value) &&
+				Objects.deepEquals(this.value, other.value) &&
 				Objects.equals(this.valueInitializerExpression, other.valueInitializerExpression);
 	}
 

@@ -30,8 +30,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -62,88 +60,62 @@ public abstract class AbstractFieldValuesProcessorTests {
 
 		Map<String, ValueWrapper> values = processor.getValues();
 
-		assertThatValuesHasFieldWithNameValueAndExpression(values,"string", "1", "\"1\"");
-		assertThatValuesHasNoFieldWithName(values, "stringNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values,"stringNull", null, "null");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "stringConst","c", "\"c\"");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "stringConstNull", null, "null");
-		assertThatValuesHasFieldWithNameExpressionAndUndeterminedValue(values, "stringFinal", "STRING_FINAL");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "bool", true, "true");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "boolNone", false, null);
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "boolConst", true, "true");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "boolObject", true, "Boolean.TRUE");
-		assertThatValuesHasNoFieldWithName(values, "boolObjectNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "boolObjectConst",true, "true");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "integer", 1, "1");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "integerNone", 0, null);
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "integerConst", 2, "2");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "integerObject", 3, "3");
-		assertThatValuesHasNoFieldWithName(values, "integerObjectNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "integerObjectConst", 4, "4");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "charset", "US-ASCII", "StandardCharsets.US_ASCII");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "charsetConst", "UTF-8", "StandardCharsets.UTF_8");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "mimeType", "text/html", "MimeType.valueOf(\"text/html\")");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "mimeTypeConst", "text/plain", "MimeType.valueOf(\"text/plain\")");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "object", 123, "123");
-		assertThatValuesHasNoFieldWithName(values, "objectNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "objectConst", "c", "\"c\"");
-		assertThatValuesHasFieldWithNameExpressionAndUndeterminedValue(values, "objectInstance", "new StringBuffer()");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "stringArray", new String[] {"FOO", "BAR"}, "new String[]{\"FOO\", \"BAR\"}");
-		assertThatValuesHasNoFieldWithName(values, "stringArrayNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "stringEmptyArray", new String[0], "new String[0]");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "stringArrayConst", new String[] { "OK", "KO" }, "new String[]{\"OK\", \"KO\"}");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "stringArrayConstElements", new String[] { "c" }, "new String[]{STRING_CONST}");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "integerArray", new Integer[] { 42, 24 }, "new Integer[]{42, 24}");
-		assertThatValuesHasFieldWithNameExpressionAndUndeterminedValue(values, "objectArrayBadEntry", "new StringBuffer()");
-		assertThatValuesHasFieldWithNameExpressionAndUndeterminedValue(values, "unknownArray", "new UnknownElementType()");
-		assertThatValuesHasNoFieldWithName(values, "durationNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationNanos", "5ns", "Duration.ofNanos(5)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationMillis", "10ms", "Duration.ofMillis(10)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationSeconds", "20s", "Duration.ofSeconds(20)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationMinutes", "30m", "Duration.ofMinutes(30)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationHours", "40h", "Duration.ofHours(40)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationDays", "50d", "Duration.ofDays(50)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "durationZero", 0, "Duration.ZERO");
-		assertThatValuesHasNoFieldWithName(values, "dataSizeNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "dataSizeBytes", "5B", "DataSize.ofBytes(5)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "dataSizeKilobytes", "10KB", "DataSize.ofKilobytes(10)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "dataSizeMegabytes", "20MB", "DataSize.ofMegabytes(20)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "dataSizeGigabytes", "30GB", "DataSize.ofGigabytes(30)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "dataSizeTerabytes", "40TB", "DataSize.ofTerabytes(40)");
-		assertThatValuesHasNoFieldWithName(values, "periodNone");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "periodDays", "3d", "Period.ofDays(3)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "periodWeeks", "2w", "Period.ofWeeks(2)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "periodMonths", "10m", "Period.ofMonths(10)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "periodYears", "15y", "Period.ofYears(15)");
-		assertThatValuesHasFieldWithNameValueAndExpression(values, "periodZero", 0, "Period.ZERO");
+		assertThat(values.get("string")).isEqualTo(ValueWrapper.of("1", "\"1\""));
+		assertThat(values.get("stringNone")).isNull();
+		assertThat(values.get("stringNull")).isEqualTo(ValueWrapper.of(null, "null"));
+		assertThat(values.get("stringConst")).isEqualTo(ValueWrapper.of("c", "\"c\""));
+		assertThat(values.get("stringConstNull")).isEqualTo(ValueWrapper.of(null, "null"));
+		assertThat(values.get("stringFinal")).isEqualTo(ValueWrapper.unresolvable("STRING_FINAL"));
+		assertThat(values.get("bool")).isEqualTo(ValueWrapper.of(true, "true"));
+		assertThat(values.get("boolNone")).isEqualTo(ValueWrapper.of(false, null));
+		assertThat(values.get("boolConst")).isEqualTo(ValueWrapper.of(true, "true"));
+		assertThat(values.get("boolObject")).isEqualTo(ValueWrapper.of(true, "Boolean.TRUE"));
+		assertThat(values.get("boolObjectNone")).isNull();
+		assertThat(values.get("boolObjectConst")).isEqualTo(ValueWrapper.of(true, "true"));
+		assertThat(values.get("integer")).isEqualTo(ValueWrapper.of(1, "1"));
+		assertThat(values.get("integerNone")).isEqualTo(ValueWrapper.of(0, null));
+		assertThat(values.get("integerConst")).isEqualTo(ValueWrapper.of(2, "2"));
+		assertThat(values.get("integerObject")).isEqualTo(ValueWrapper.of(3, "3"));
+		assertThat(values.get("integerObjectNone")).isNull();
+		assertThat(values.get("integerObjectConst")).isEqualTo(ValueWrapper.of(4, "4"));
+		assertThat(values.get("charset")).isEqualTo(ValueWrapper.of("US-ASCII", "StandardCharsets.US_ASCII"));
+		assertThat(values.get("charsetConst")).isEqualTo(ValueWrapper.of("UTF-8", "StandardCharsets.UTF_8"));
+		assertThat(values.get("mimeType")).isEqualTo(ValueWrapper.of("text/html", "MimeType.valueOf(\"text/html\")"));
+		assertThat(values.get("mimeTypeConst")).isEqualTo(ValueWrapper.of("text/plain", "MimeType.valueOf(\"text/plain\")"));
+		assertThat(values.get("object")).isEqualTo(ValueWrapper.of(123, "123"));
+		assertThat(values.get("objectNone")).isNull();
+		assertThat(values.get("objectConst")).isEqualTo(ValueWrapper.of("c", "\"c\""));
+		assertThat(values.get("objectInstance")).isEqualTo(ValueWrapper.unresolvable("new StringBuffer()"));
+		assertThat(values.get("stringArray")).isEqualTo(ValueWrapper.of(new String[] {"FOO", "BAR"}, "new String[]{\"FOO\", \"BAR\"}"));
+		assertThat(values.get("stringArrayNone")).isNull();
+		assertThat(values.get("stringEmptyArray")).isEqualTo(ValueWrapper.of(new String[0], "new String[0]"));
+		assertThat(values.get("stringArrayConst")).isEqualTo(ValueWrapper.of(new String[] { "OK", "KO" }, "new String[]{\"OK\", \"KO\"}"));
+		assertThat(values.get("stringArrayConstElements")).isEqualTo(ValueWrapper.of(new String[] { "c" }, "new String[]{STRING_CONST}"));
+		assertThat(values.get("integerArray")).isEqualTo(ValueWrapper.of(new Integer[] { 42, 24 }, "new Integer[]{42, 24}"));
+		assertThat(values.get("objectArrayBadEntry")).isEqualTo(ValueWrapper.unresolvable("new StringBuffer()"));
+		assertThat(values.get("unknownArray")).isEqualTo(ValueWrapper.unresolvable("new UnknownElementType()"));
+		assertThat(values.get("durationNone")).isNull();
+		assertThat(values.get("durationNanos")).isEqualTo(ValueWrapper.of("5ns", "Duration.ofNanos(5)"));
+		assertThat(values.get("durationMillis")).isEqualTo(ValueWrapper.of("10ms", "Duration.ofMillis(10)"));
+		assertThat(values.get("durationSeconds")).isEqualTo(ValueWrapper.of("20s", "Duration.ofSeconds(20)"));
+		assertThat(values.get("durationMinutes")).isEqualTo(ValueWrapper.of("30m", "Duration.ofMinutes(30)"));
+		assertThat(values.get("durationHours")).isEqualTo(ValueWrapper.of("40h", "Duration.ofHours(40)"));
+		assertThat(values.get("durationDays")).isEqualTo(ValueWrapper.of("50d", "Duration.ofDays(50)"));
+		assertThat(values.get("durationZero")).isEqualTo(ValueWrapper.of(0, "Duration.ZERO"));
+		assertThat(values.get("dataSizeNone")).isNull();
+		assertThat(values.get("dataSizeBytes")).isEqualTo(ValueWrapper.of("5B", "DataSize.ofBytes(5)"));
+		assertThat(values.get("dataSizeKilobytes")).isEqualTo(ValueWrapper.of("10KB", "DataSize.ofKilobytes(10)"));
+		assertThat(values.get("dataSizeMegabytes")).isEqualTo(ValueWrapper.of("20MB", "DataSize.ofMegabytes(20)"));
+		assertThat(values.get("dataSizeGigabytes")).isEqualTo(ValueWrapper.of("30GB", "DataSize.ofGigabytes(30)"));
+		assertThat(values.get("dataSizeTerabytes")).isEqualTo(ValueWrapper.of("40TB", "DataSize.ofTerabytes(40)"));
+		assertThat(values.get("periodNone")).isNull();
+		assertThat(values.get("periodDays")).isEqualTo(ValueWrapper.of("3d", "Period.ofDays(3)"));
+		assertThat(values.get("periodWeeks")).isEqualTo(ValueWrapper.of("2w", "Period.ofWeeks(2)"));
+		assertThat(values.get("periodMonths")).isEqualTo(ValueWrapper.of("10m", "Period.ofMonths(10)"));
+		assertThat(values.get("periodYears")).isEqualTo(ValueWrapper.of("15y", "Period.ofYears(15)"));
+		assertThat(values.get("periodZero")).isEqualTo(ValueWrapper.of(0, "Period.ZERO"));
 	}
 
-	private void assertThatValuesHasFieldWithNameValueAndExpression(Map<String, ValueWrapper> values, String fieldName, Object expectedValue, String expectedExpression) {
-		ValueWrapper valueWrapper = values.get(fieldName);
-		assertThat(valueWrapper).isNotNull();
-		assertThat(valueWrapper.valueDetermined()).isTrue();
-		assertThat(valueWrapper.valueInitializerExpression()).isEqualTo(expectedExpression);
-		if (Arrays.isArray(expectedValue)) {
-			Object[] expectedValues = Arrays.asObjectArray(expectedValue);
-			assertThat(valueWrapper.value()).asInstanceOf(InstanceOfAssertFactories.ARRAY).containsExactly(expectedValues);
-		} else {
-			assertThat(valueWrapper.value()).isEqualTo(expectedValue);
-		}
-	}
-
-	private void assertThatValuesHasFieldWithNameExpressionAndUndeterminedValue(Map<String, ValueWrapper> values, String fieldName, String expectedExpression) {
-		ValueWrapper valueWrapper = values.get(fieldName);
-		assertThat(valueWrapper).isNotNull();
-		assertThat(valueWrapper.valueDetermined()).isFalse();
-		assertThat(valueWrapper.value()).isNull();
-		assertThat(valueWrapper.valueInitializerExpression()).isEqualTo(expectedExpression);
-	}
-
-	private void assertThatValuesHasNoFieldWithName(Map<String, ValueWrapper> values, String fieldName) {
-		ValueWrapper valueWrapper = values.get(fieldName);
-		assertThat(valueWrapper).isNull();
-	}
-	
 	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private class TestProcessor extends AbstractProcessor {
