@@ -2174,7 +2174,7 @@ As a result, specific configuration keys (such as `logback.configurationFile` fo
 [[boot-features-logging-file-rotation]]
 === File Rotation
 If you are using the Logback, it's possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
-For all other logging system, you'll need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j.xml` file).
+For all other logging system, you'll need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j2.xml` or `log4j2-spring.xml` file).
 
 The following rotation policy properties are supported:
 
