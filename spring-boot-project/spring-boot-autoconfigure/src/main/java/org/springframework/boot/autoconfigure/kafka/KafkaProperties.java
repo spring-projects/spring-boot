@@ -1042,17 +1042,17 @@ public class KafkaProperties {
 	public static class Ssl {
 
 		/**
-		 * Password of the private key in the key store file.
+		 * Password of the private key in either key store key or key store file.
 		 */
 		private String keyPassword;
 
 		/**
-		 * Certificate chain in the format specified by 'ssl.keystore.type'.
+		 * Certificate chain in PEM format with a list of X.509 certificates.
 		 */
 		private String keyStoreCertificateChain;
 
 		/**
-		 * Private key in the format specified by 'ssl.keystore.type'.
+		 * Private key in PEM format with PKCS#8 keys.
 		 */
 		private String keyStoreKey;
 
@@ -1072,7 +1072,7 @@ public class KafkaProperties {
 		private String keyStoreType;
 
 		/**
-		 * Trusted certificates in the format specified by 'ssl.truststore.type'.
+		 * Trusted certificates in PEM format with X.509 certificates.
 		 */
 		private String trustStoreCertificates;
 
