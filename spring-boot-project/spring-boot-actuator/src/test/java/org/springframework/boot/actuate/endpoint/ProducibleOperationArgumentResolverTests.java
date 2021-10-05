@@ -22,12 +22,16 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.util.MimeType;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Test for {@link ProducibleOperationArgumentResolver}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ProducibleOperationArgumentResolverTests {
 
@@ -41,8 +45,18 @@ class ProducibleOperationArgumentResolverTests {
 	}
 
 	@Test
+	void whenAcceptHeaderIsEmptyAndWithDefaultThenDefaultIsReturned() {
+		assertThat(resolve(acceptHeader(), WithDefault.class)).isEqualTo(WithDefault.TWO);
+	}
+
+	@Test
 	void whenEverythingIsAcceptableThenHighestOrdinalIsReturned() {
 		assertThat(resolve(acceptHeader("*/*"))).isEqualTo(ApiVersion.V3);
+	}
+
+	@Test
+	void whenEverythingIsAcceptableWithDefaultThenDefaultIsReturned() {
+		assertThat(resolve(acceptHeader("*/*"), WithDefault.class)).isEqualTo(WithDefault.TWO);
 	}
 
 	@Test
@@ -68,13 +82,72 @@ class ProducibleOperationArgumentResolverTests {
 		assertThat(resolve(acceptHeader(V2_JSON + "," + V3_JSON))).isEqualTo(ApiVersion.V3);
 	}
 
+	@Test
+	void withMultipleValuesOneOfWhichIsAllReturnsDefault() {
+		assertThat(resolve(acceptHeader("one/one", "*/*"), WithDefault.class)).isEqualTo(WithDefault.TWO);
+	}
+
+	@Test
+	void whenMultipleDefaultsThrowsException() {
+		assertThatIllegalStateException().isThrownBy(() -> resolve(acceptHeader("one/one"), WithMultipleDefaults.class))
+				.withMessageContaining("Multiple default values");
+	}
+
 	private Supplier<List<String>> acceptHeader(String... types) {
 		List<String> value = Arrays.asList(types);
 		return () -> (value.isEmpty() ? null : value);
 	}
 
 	private ApiVersion resolve(Supplier<List<String>> accepts) {
-		return new ProducibleOperationArgumentResolver(accepts).resolve(ApiVersion.class);
+		return resolve(accepts, ApiVersion.class);
+	}
+
+	private <T> T resolve(Supplier<List<String>> accepts, Class<T> type) {
+		return new ProducibleOperationArgumentResolver(accepts).resolve(type);
+	}
+
+	enum WithDefault implements Producible<WithDefault> {
+
+		ONE("one/one"),
+
+		TWO("two/two") {
+
+			@Override
+			public boolean isDefault() {
+				return true;
+			}
+
+		},
+
+		THREE("three/three");
+
+		private final MimeType mimeType;
+
+		WithDefault(String mimeType) {
+			this.mimeType = MimeType.valueOf(mimeType);
+		}
+
+		@Override
+		public MimeType getProducedMimeType() {
+			return this.mimeType;
+		}
+
+	}
+
+	enum WithMultipleDefaults implements Producible<WithMultipleDefaults> {
+
+		ONE, TWO, THREE;
+
+		@Override
+		public boolean isDefault() {
+			return true;
+		}
+
+		@Override
+		public MimeType getProducedMimeType() {
+			return MimeType.valueOf("image/jpeg");
+		}
+
 	}
 
 }
