@@ -30,12 +30,9 @@ task syncMavenRepository(type: Sync) {
 	into "${buildDir}/int-test-maven-repository"
 }
 
-task syncAppSource(type: Sync) {
-	from "spring-boot-launch-script-tests-app"
-	into "${buildDir}/spring-boot-launch-script-tests-app"
-	filter { line ->
-		line.replace("id \"org.springframework.boot\"", "id \"org.springframework.boot\" version \"${project.version}\"")
-	}
+task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-launch-script-tests-app")
+	destinationDirectory = file("${buildDir}/spring-boot-launch-script-tests-app")
 }
 
 task buildApp(type: GradleBuild) {
