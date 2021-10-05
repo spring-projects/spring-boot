@@ -888,6 +888,7 @@ To import these properties, you can add the following to your `application.prope
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
 NOTE: Filenames with dot notation are also correctly mapped.
+For example, in the above example, a file named `myapp.username` in `/etc/config` would result in a `myapp.username` property in the `Environment`.
 
 TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
 
