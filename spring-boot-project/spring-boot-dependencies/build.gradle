@@ -1438,6 +1438,13 @@ bom {
 			]
 		}
 	}
+	library("SmallRye Mutiny", "1.0.0") {
+		group("io.smallrye.reactive") {
+			modules = [
+				"mutiny"
+			]
+		}
+	}
 	library("Spring Boot", "${version}") {
 		group("org.springframework.boot") {
 			modules = [
