@@ -17,6 +17,9 @@
 package org.springframework.boot.autoconfigure.h2;
 
 import java.sql.Connection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -63,16 +66,30 @@ public class H2ConsoleAutoConfiguration {
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet(), urlMapping);
 		configureH2ConsoleSettings(registration, properties.getSettings());
-		dataSource.ifAvailable((available) -> {
-			try (Connection connection = available.getConnection()) {
-				logger.info("H2 console available at '" + path + "'. Database available at '"
-						+ connection.getMetaData().getURL() + "'");
-			}
-			catch (Exception ex) {
-				// Continue
-			}
-		});
+		if (logger.isInfoEnabled()) {
+			logDataSources(dataSource, path);
+		}
+
 		return registration;
+	}
+
+	private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
+		List<String> urls = dataSource.orderedStream()
+				.map((available) -> {
+					String url = null;
+					try (Connection connection = available.getConnection()) {
+						url = connection.getMetaData().getURL();
+					} catch (Exception ex) {
+
+					}
+					return url;
+				}).filter(Objects::nonNull)
+				.collect(Collectors.toList());
+		if (!urls.isEmpty()) {
+			String log = urls.stream().collect(Collectors.joining("', '",
+					"H2 console available at '" + path + "'. Database(s) available at '", "'."));
+			logger.info(log);
+		}
 	}
 
 	private void configureH2ConsoleSettings(ServletRegistrationBean<WebServlet> registration, Settings settings) {
