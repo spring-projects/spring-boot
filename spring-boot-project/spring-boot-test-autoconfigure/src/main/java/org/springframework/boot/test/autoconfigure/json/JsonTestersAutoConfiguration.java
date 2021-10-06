@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
- * @see AutoConfigureJsonTesters
  * @since 1.4.0
+ * @see AutoConfigureJsonTesters
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")

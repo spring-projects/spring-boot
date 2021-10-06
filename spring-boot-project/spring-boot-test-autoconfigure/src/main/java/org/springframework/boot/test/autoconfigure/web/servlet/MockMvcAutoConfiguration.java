@@ -51,8 +51,8 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Brian Clozel
- * @see AutoConfigureWebMvc
  * @since 1.4.0
+ * @see AutoConfigureWebMvc
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
