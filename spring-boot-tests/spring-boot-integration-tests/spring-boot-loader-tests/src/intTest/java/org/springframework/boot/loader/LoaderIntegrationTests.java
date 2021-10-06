@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 class LoaderIntegrationTests {
 
-	private static final DockerImageName JRE = DockerImageName.parse("adoptopenjdk:15-jre-hotspot");
+	private static final DockerImageName JRE = DockerImageName.parse("eclipse-temurin:17.0.1_12-jdk-alpine");
 
 	private static ToStringConsumer output = new ToStringConsumer();
 

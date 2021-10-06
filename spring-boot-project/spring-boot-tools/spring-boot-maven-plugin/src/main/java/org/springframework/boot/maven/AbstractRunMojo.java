@@ -557,7 +557,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			try {
 				Class<?> startClass = Class.forName(this.startClassName, false, classLoader);
 				Method mainMethod = startClass.getMethod("main", String[].class);
-				if (!mainMethod.isAccessible()) {
+				if (!mainMethod.canAccess(null)) {
 					mainMethod.setAccessible(true);
 				}
 				mainMethod.invoke(null, new Object[] { this.args });

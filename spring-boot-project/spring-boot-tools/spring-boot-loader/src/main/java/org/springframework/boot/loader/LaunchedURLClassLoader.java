@@ -139,10 +139,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 			catch (IllegalArgumentException ex) {
 				// Tolerate race condition due to being parallel capable
-				if (getPackage(name) == null) {
+				if (getDefinedPackage(name) == null) {
 					// This should never happen as the IllegalArgumentException indicates
 					// that the package has already been defined and, therefore,
-					// getPackage(name) should not return null.
+					// getDefinedPackage(name) should not return null.
 					throw new AssertionError("Package " + name + " has already been defined but it could not be found");
 				}
 			}
@@ -192,16 +192,17 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot >= 0) {
 			String packageName = className.substring(0, lastDot);
-			if (getPackage(packageName) == null) {
+			if (getDefinedPackage(packageName) == null) {
 				try {
 					definePackage(className, packageName);
 				}
 				catch (IllegalArgumentException ex) {
 					// Tolerate race condition due to being parallel capable
-					if (getPackage(packageName) == null) {
+					if (getDefinedPackage(packageName) == null) {
 						// This should never happen as the IllegalArgumentException
 						// indicates that the package has already been defined and,
-						// therefore, getPackage(name) should not have returned null.
+						// therefore, getDefinedPackage(name) should not have returned
+						// null.
 						throw new AssertionError(
 								"Package " + packageName + " has already been defined but it could not be found");
 					}

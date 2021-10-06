@@ -144,7 +144,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	private MavenExec createGenerateHelpMojoTask(Project project, File helpMojoDir) {
 		MavenExec task = project.getTasks().create("generateHelpMojo", MavenExec.class);
 		task.setProjectDir(helpMojoDir);
-		task.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.0:helpmojo");
+		task.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.1:helpmojo");
 		task.getOutputs().dir(new File(helpMojoDir, "target/generated-sources/plugin"));
 		return task;
 	}
@@ -211,7 +211,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	private MavenExec createGeneratePluginDescriptorTask(Project project, File mavenDir) {
 		MavenExec generatePluginDescriptor = project.getTasks().create("generatePluginDescriptor", MavenExec.class);
-		generatePluginDescriptor.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.0:descriptor");
+		generatePluginDescriptor.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.1:descriptor");
 		generatePluginDescriptor.getOutputs().dir(new File(mavenDir, "target/classes/META-INF/maven"));
 		generatePluginDescriptor.getInputs().dir(new File(mavenDir, "target/classes/org"))
 				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("plugin classes");

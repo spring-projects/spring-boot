@@ -10,8 +10,8 @@ repositories {
 	maven { url "https://repo.spring.io/release" }
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
@@ -22,8 +22,8 @@ dependencies {
 	implementation("org.gradle:test-retry-gradle-plugin:1.1.9")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.5.0")
-	implementation("org.springframework:spring-core:5.2.2.RELEASE")
-	implementation("org.springframework:spring-web:5.2.2.RELEASE")
+	implementation("org.springframework:spring-core:5.3.10")
+	implementation("org.springframework:spring-web:5.3.10")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	testImplementation("org.assertj:assertj-core:3.11.1")
 	testImplementation("org.apache.logging.log4j:log4j-core:2.12.1")
