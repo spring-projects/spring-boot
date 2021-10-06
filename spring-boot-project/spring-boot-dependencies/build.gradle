@@ -1438,6 +1438,13 @@ bom {
 			]
 		}
 	}
+	library("RxJava3", "3.1.1") {
+		group("io.reactivex.rxjava3") {
+			modules = [
+				"rxjava"
+			]
+		}
+	}
 	library("Spring Boot", "${version}") {
 		group("org.springframework.boot") {
 			modules = [
