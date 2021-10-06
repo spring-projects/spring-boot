@@ -26,8 +26,8 @@ import org.gradle.api.tasks.Upload;
  * {@link Action} that is executed in response to the
  * {@link org.gradle.api.plugins.MavenPlugin} being applied.
  *
- * @deprecated since 2.5.0 in favor of using the {@link MavenPublishPlugin}
  * @author Andy Wilkinson
+ * @deprecated since 2.5.0 in favor of using the {@link MavenPublishPlugin}
  */
 @Deprecated
 final class MavenPluginAction implements PluginApplicationAction {
