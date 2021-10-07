@@ -35,6 +35,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
@@ -1185,6 +1186,14 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries)-> {
+				entries.put("spring.kafka.ssl.key-store-key", this.getKeyStoreKey());
+				entries.put("spring.kafka.ssl.key-store-location", this.getKeyStoreLocation());
+			});
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries)-> {
+				entries.put("spring.kafka.ssl.trust-store-certificates", this.getTrustStoreCertificates());
+				entries.put("spring.kafka.ssl.trust-store-location", this.getTrustStoreLocation());
+			});
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
