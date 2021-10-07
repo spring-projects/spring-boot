@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.integration;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
@@ -70,8 +71,10 @@ import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.support.PeriodicTrigger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -408,6 +411,12 @@ class IntegrationAutoConfigurationTests {
 			assertThat(metadata.getMaxMessagesPerPoll()).isEqualTo(PollerMetadata.MAX_MESSAGES_UNBOUNDED);
 			assertThat(metadata.getReceiveTimeout()).isEqualTo(PollerMetadata.DEFAULT_RECEIVE_TIMEOUT);
 			assertThat(metadata.getTrigger()).isNull();
+
+			GenericMessage<String> testMessage = new GenericMessage<>("test");
+			context.getBean("testChannel", QueueChannel.class).send(testMessage);
+			@SuppressWarnings("unchecked")
+			BlockingQueue<Message<?>> sink = context.getBean("sink", BlockingQueue.class);
+			assertThat(sink.poll(10, TimeUnit.SECONDS)).isSameAs(testMessage);
 		});
 	}
 
@@ -445,6 +454,21 @@ class IntegrationAutoConfigurationTests {
 									"spring.integration.poller.fixed-rate");
 						}));
 
+	}
+
+	@Test
+	void whenFixedRatePollerPropertyIsSetThenItIsReflectedAsFixedRatePropetyOfPeriodicTrigger() {
+		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
+				.withPropertyValues("spring.integration.poller.fixed-rate=5000").run((context) -> {
+					assertThat(context).hasSingleBean(PollerMetadata.class);
+					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+					assertThat(metadata.getTrigger())
+							.asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
+							.satisfies((trigger) -> {
+								assertThat(trigger.getPeriod()).isEqualTo(5000L);
+								assertThat(trigger.isFixedRate()).isTrue();
+							});
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
