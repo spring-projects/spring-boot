@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SampleSessionHazelcastApplicationTests {
+class SampleSessionHazelcastApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -52,7 +52,7 @@ public class SampleSessionHazelcastApplicationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void sessionsEndpointShouldReturnUserSession() {
+	void sessionsEndpointShouldReturnUserSession() {
 		URI uri = URI.create("http://localhost:" + this.port + "/");
 		ResponseEntity<String> firstResponse = performRequest(this.restTemplate, uri, null);
 		String cookie = firstResponse.getHeaders().getFirst("Set-Cookie");
