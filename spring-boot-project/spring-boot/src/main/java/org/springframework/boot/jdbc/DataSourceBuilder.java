@@ -646,17 +646,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 			add(DataSourceProperty.DRIVER_CLASS_NAME, PoolDataSource::getConnectionFactoryClassName,
 					PoolDataSource::setConnectionFactoryClassName);
 			add(DataSourceProperty.USERNAME, PoolDataSource::getUser, PoolDataSource::setUser);
-			add(DataSourceProperty.PASSWORD, passwordGetter(), PoolDataSource::setPassword);
-		}
-
-		@SuppressWarnings("deprecation")
-		static Getter<PoolDataSource, String> passwordGetter() {
-			try {
-				return (dataSource) -> dataSource.getPassword();
-			}
-			catch (NoSuchMethodError ex) {
-				return null;
-			}
+			add(DataSourceProperty.PASSWORD, null, PoolDataSource::setPassword);
 		}
 
 	}

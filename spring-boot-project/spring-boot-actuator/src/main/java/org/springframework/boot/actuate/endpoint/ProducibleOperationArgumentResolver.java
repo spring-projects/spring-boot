@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
@@ -29,6 +30,7 @@ import org.springframework.util.MimeTypeUtils;
  * An {@link OperationArgumentResolver} for {@link Producible producible enums}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.5.0
  */
 public class ProducibleOperationArgumentResolver implements OperationArgumentResolver {
@@ -56,35 +58,56 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 
 	private Enum<? extends Producible<?>> resolveProducible(Class<Enum<? extends Producible<?>>> type) {
 		List<String> accepts = this.accepts.get();
-		List<Enum<? extends Producible<?>>> values = Arrays.asList(type.getEnumConstants());
-		Collections.reverse(values);
+		List<Enum<? extends Producible<?>>> values = getValues(type);
 		if (CollectionUtils.isEmpty(accepts)) {
-			return values.get(0);
+			return getDefaultValue(values);
 		}
 		Enum<? extends Producible<?>> result = null;
 		for (String accept : accepts) {
 			for (String mimeType : MimeTypeUtils.tokenize(accept)) {
-				result = mostRecent(result, forType(values, MimeTypeUtils.parseMimeType(mimeType)));
+				result = mostRecent(result, forMimeType(values, mimeType));
 			}
 		}
 		return result;
 	}
 
-	private static Enum<? extends Producible<?>> mostRecent(Enum<? extends Producible<?>> existing,
+	private Enum<? extends Producible<?>> mostRecent(Enum<? extends Producible<?>> existing,
 			Enum<? extends Producible<?>> candidate) {
 		int existingOrdinal = (existing != null) ? existing.ordinal() : -1;
 		int candidateOrdinal = (candidate != null) ? candidate.ordinal() : -1;
 		return (candidateOrdinal > existingOrdinal) ? candidate : existing;
 	}
 
-	private static Enum<? extends Producible<?>> forType(List<Enum<? extends Producible<?>>> candidates,
-			MimeType mimeType) {
-		for (Enum<? extends Producible<?>> candidate : candidates) {
+	private Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values, String mimeType) {
+		if ("*/*".equals(mimeType)) {
+			return getDefaultValue(values);
+		}
+		return forMimeType(values, MimeTypeUtils.parseMimeType(mimeType));
+	}
+
+	private Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values, MimeType mimeType) {
+		for (Enum<? extends Producible<?>> candidate : values) {
 			if (mimeType.isCompatibleWith(((Producible<?>) candidate).getProducedMimeType())) {
 				return candidate;
 			}
 		}
 		return null;
+	}
+
+	private List<Enum<? extends Producible<?>>> getValues(Class<Enum<? extends Producible<?>>> type) {
+		List<Enum<? extends Producible<?>>> values = Arrays.asList(type.getEnumConstants());
+		Collections.reverse(values);
+		Assert.state(values.stream().filter(this::isDefault).count() <= 1,
+				"Multiple default values declared in " + type.getName());
+		return values;
+	}
+
+	private Enum<? extends Producible<?>> getDefaultValue(List<Enum<? extends Producible<?>>> values) {
+		return values.stream().filter(this::isDefault).findFirst().orElseGet(() -> values.get(0));
+	}
+
+	private boolean isDefault(Enum<? extends Producible<?>> value) {
+		return ((Producible<?>) value).isDefault();
 	}
 
 }

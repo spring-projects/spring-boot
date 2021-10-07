@@ -85,8 +85,8 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 
 	/**
 	 * Return a new iterator for the archive entries.
-	 * @see java.lang.Iterable#iterator()
 	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of using
+	 * @see java.lang.Iterable#iterator()
 	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
 	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
 	 */
@@ -97,10 +97,10 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	/**
 	 * Performs the given action for each element of the {@code Iterable} until all
 	 * elements have been processed or the action throws an exception.
-	 * @see Iterable#forEach
 	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of using
-	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
-	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 * @see Iterable#forEach {@link org.springframework.boot.loader.jar.JarFile} to access
+	 * entries and {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing
+	 * nested archives.
 	 */
 	@Deprecated
 	@Override
@@ -113,10 +113,10 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 
 	/**
 	 * Creates a {@link Spliterator} over the elements described by this {@code Iterable}.
-	 * @see Iterable#spliterator
 	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of using
-	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
-	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 * @see Iterable#spliterator {@link org.springframework.boot.loader.jar.JarFile} to
+	 * access entries and {@link #getNestedArchives(EntryFilter, EntryFilter)} for
+	 * accessing nested archives.
 	 */
 	@Deprecated
 	@Override

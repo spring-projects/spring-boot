@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Rafael Ceccone
  */
 @ExtendWith(MavenBuildExtension.class)
 @DisabledIfDockerUnavailable
@@ -289,6 +290,19 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 							.contains("docker.io/library/build-image-multi-module-app:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					removeImage("build-image-multi-module-app", "0.0.1.BUILD-SNAPSHOT");
+				});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithTags(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-tags").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-tags:0.0.1.BUILD-SNAPSHOT")
+							.contains("Successfully built image").contains("docker.io/library/build-image-tags:latest")
+							.contains("Successfully created image tag");
+					removeImage("build-image-tags", "0.0.1.BUILD-SNAPSHOT");
+					removeImage("build-image-tags", "latest");
 				});
 	}
 

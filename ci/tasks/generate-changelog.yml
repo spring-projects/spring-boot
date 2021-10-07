@@ -4,7 +4,7 @@ image_resource:
   type: registry-image
   source:
     repository: springio/github-changelog-generator
-    tag: '0.0.6'
+    tag: '0.0.7'
     registry_mirror:
       host: ((registry-mirror-host))
       username: ((registry-mirror-username))

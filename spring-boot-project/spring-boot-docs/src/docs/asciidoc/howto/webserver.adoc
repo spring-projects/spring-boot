@@ -284,7 +284,7 @@ When you do so, auto-configured customizers are still applied on your custom fac
 
 [[howto.webserver.add-servlet-filter-listener]]
 === Add a Servlet, Filter, or Listener to an Application
-In a servlet stack application, i.e. with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
+In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
 
 * <<howto#howto.webserver.add-servlet-filter-listener.spring-bean>>
 * <<howto#howto.webserver.add-servlet-filter-listener.using-scanning>>

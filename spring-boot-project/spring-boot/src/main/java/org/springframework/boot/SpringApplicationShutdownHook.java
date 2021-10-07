@@ -60,7 +60,7 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	private final ApplicationContextClosedListener contextCloseListener = new ApplicationContextClosedListener();
 
-	private final AtomicBoolean shutdownHookAdded = new AtomicBoolean(false);
+	private final AtomicBoolean shutdownHookAdded = new AtomicBoolean();
 
 	private boolean inProgress;
 

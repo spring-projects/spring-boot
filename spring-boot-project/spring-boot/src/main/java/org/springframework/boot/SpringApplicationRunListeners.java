@@ -79,7 +79,7 @@ class SpringApplicationRunListeners {
 	}
 
 	void ready(ConfigurableApplicationContext context, Duration timeTaken) {
-		doWithListeners("spring.boot.application.running", (listener) -> listener.ready(context, timeTaken));
+		doWithListeners("spring.boot.application.ready", (listener) -> listener.ready(context, timeTaken));
 	}
 
 	void failed(ConfigurableApplicationContext context, Throwable exception) {

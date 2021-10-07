@@ -3,7 +3,7 @@
 Spring Boot supports localized messages so that your application can cater to users of different language preferences.
 By default, Spring Boot looks for the presence of a `messages` resource bundle at the root of the classpath.
 
-NOTE: The auto-configuration applies when the default properties file for the configured resource bundle is available (i.e. `messages.properties` by default).
+NOTE: The auto-configuration applies when the default properties file for the configured resource bundle is available (`messages.properties` by default).
 If your resource bundle contains only language-specific properties files, you are required to add the default.
 If no properties file is found that matches any of the configured base names, there will be no auto-configured `MessageSource`.
 

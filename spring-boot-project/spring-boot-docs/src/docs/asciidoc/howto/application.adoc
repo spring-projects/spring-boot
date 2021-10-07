@@ -106,6 +106,6 @@ See "`<<features#features.spring-application.fluent-builder-api>>`" in the '`Spr
 Not all Spring applications have to be web applications (or web services).
 If you want to execute some code in a `main` method but also bootstrap a Spring application to set up the infrastructure to use, you can use the `SpringApplication` features of Spring Boot.
 A `SpringApplication` changes its `ApplicationContext` class, depending on whether it thinks it needs a web application or not.
-The first thing you can do to help it is to leave server-related dependencies (e.g. servlet API) off the classpath.
+The first thing you can do to help it is to leave server-related dependencies (such as the servlet API) off the classpath.
 If you cannot do that (for example, you run two applications from the same code base) then you can explicitly call `setWebApplicationType(WebApplicationType.NONE)` on your `SpringApplication` instance or set the `applicationContextClass` property (through the Java API or with external properties).
 Application code that you want to run as your business logic can be implemented as a `CommandLineRunner` and dropped into the context as a `@Bean` definition.

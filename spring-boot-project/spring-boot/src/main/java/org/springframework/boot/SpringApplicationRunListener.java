@@ -115,9 +115,9 @@ public interface SpringApplicationRunListener {
 	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
 	 * {@link ApplicationRunner ApplicationRunners} have been called.
 	 * @param context the application context.
+	 * @since 2.0.0
 	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
 	 * {@link #ready(ConfigurableApplicationContext, Duration)}
-	 * @since 2.0.0
 	 */
 	@Deprecated
 	default void running(ConfigurableApplicationContext context) {
