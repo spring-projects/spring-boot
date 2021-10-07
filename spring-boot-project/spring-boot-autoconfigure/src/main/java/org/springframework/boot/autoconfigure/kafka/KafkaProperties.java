@@ -1186,11 +1186,11 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries)-> {
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.key-store-key", this.getKeyStoreKey());
 				entries.put("spring.kafka.ssl.key-store-location", this.getKeyStoreLocation());
 			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries)-> {
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.trust-store-certificates", this.getTrustStoreCertificates());
 				entries.put("spring.kafka.ssl.trust-store-location", this.getTrustStoreLocation());
 			});
