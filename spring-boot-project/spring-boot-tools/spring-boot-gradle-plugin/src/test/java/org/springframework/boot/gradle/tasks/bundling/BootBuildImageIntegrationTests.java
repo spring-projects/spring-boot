@@ -40,7 +40,6 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
-import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.FilePermissions;
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -54,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Rafael Ceccone
  */
 @GradleCompatibility(configurationCache = true)
 @DisabledIfDockerUnavailable
@@ -236,6 +236,21 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	void buildsImageWithTag() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
+		assertThat(result.getOutput()).contains("example.com/myapp:latest");
+		removeImage(projectName);
+		removeImage("example.com/myapp:latest");
+	}
+
+	@TestTemplate
 	void buildsImageWithLaunchScript() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
@@ -298,6 +313,16 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder");
+	}
+
+	@TestTemplate
+	void failsWithInvalidTag() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
+				.containsPattern("example/Invalid-Tag-Name");
 	}
 
 	private void writeMainClass() throws IOException {
@@ -423,7 +448,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	private void removeImage(String name) throws IOException {
-		ImageReference imageReference = ImageReference.of(ImageName.of(name));
+		ImageReference imageReference = ImageReference.of(name);
 		new DockerApi().image().remove(imageReference, false);
 	}
 

@@ -56,6 +56,14 @@ class PrometheusScrapeEndpointIntegrationTests {
 	}
 
 	@WebEndpointTest
+	void scrapePrefersToProduceOpenMetrics100(WebTestClient client) {
+		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
+		MediaType textPlain = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004);
+		client.get().uri("/actuator/prometheus").accept(openMetrics, textPlain).exchange().expectStatus().isOk()
+				.expectHeader().contentType(openMetrics);
+	}
+
+	@WebEndpointTest
 	void scrapeWithIncludedNames(WebTestClient client) {
 		client.get().uri("/actuator/prometheus?includedNames=counter1_total,counter2_total").exchange().expectStatus()
 				.isOk().expectHeader().contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004))

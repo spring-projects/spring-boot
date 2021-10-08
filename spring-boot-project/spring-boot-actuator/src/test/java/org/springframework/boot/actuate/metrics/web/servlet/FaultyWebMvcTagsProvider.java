@@ -31,7 +31,7 @@ import io.micrometer.core.instrument.Tag;
  */
 class FaultyWebMvcTagsProvider extends DefaultWebMvcTagsProvider {
 
-	private final AtomicBoolean fail = new AtomicBoolean(false);
+	private final AtomicBoolean fail = new AtomicBoolean();
 
 	FaultyWebMvcTagsProvider() {
 		super(true);

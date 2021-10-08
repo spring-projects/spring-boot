@@ -24,9 +24,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import io.spring.javaformat.gradle.CheckTask;
-import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import io.spring.javaformat.gradle.tasks.CheckFormat;
+import io.spring.javaformat.gradle.tasks.Format;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -70,8 +70,8 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * <li>A {@code testRuntimeOnly} dependency upon
  * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
  * {@link JavaPlugin} applied
- * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
- * to use UTF-8 encoding
+ * <li>{@link JavaCompile}, {@link Javadoc}, and {@link Format} tasks are configured to
+ * use UTF-8 encoding
  * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}.
  * <li>When building with Java 8, {@link JavaCompile} tasks are also configured to:
  * <ul>
@@ -157,7 +157,7 @@ class JavaConventions {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
 			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
-			project.getTasks().withType(CheckTask.class, (checkFormat) -> test.mustRunAfter(checkFormat));
+			project.getTasks().withType(CheckFormat.class, (checkFormat) -> test.mustRunAfter(checkFormat));
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
@@ -206,10 +206,10 @@ class JavaConventions {
 
 	private void configureSpringJavaFormat(Project project) {
 		project.getPlugins().apply(SpringJavaFormatPlugin.class);
-		project.getTasks().withType(FormatTask.class, (formatTask) -> formatTask.setEncoding("UTF-8"));
+		project.getTasks().withType(Format.class, (Format) -> Format.setEncoding("UTF-8"));
 		project.getPlugins().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
-		checkstyle.setToolVersion("8.29");
+		checkstyle.setToolVersion("8.45.1");
 		checkstyle.getConfigDirectory().set(project.getRootProject().file("src/checkstyle"));
 		String version = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();

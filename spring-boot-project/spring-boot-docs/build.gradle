@@ -25,6 +25,14 @@ javadoc {
 	enabled = false
 }
 
+javadocJar {
+	enabled = false
+}
+
+sourcesJar {
+	enabled = false
+}
+
 plugins.withType(EclipsePlugin) {
 	extensions.getByType(org.gradle.plugins.ide.eclipse.model.EclipseModel).classpath { classpath ->
 		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))

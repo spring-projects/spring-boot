@@ -10,7 +10,7 @@ The plugin includes a run goal which can be used to launch your application from
 Application arguments can be specified using the `arguments` parameter, see <<run.examples.using-application-arguments,using application arguments>> for more details.
 
 By default the application is executed in a forked process and setting properties on the command-line will not affect the application.
-If you need to specify some JVM arguments (i.e. for debugging purposes), you can use the `jvmArguments` parameter, see <<run.examples.debug,Debug the application>> for more details.
+If you need to specify some JVM arguments (that is for debugging purposes), you can use the `jvmArguments` parameter, see <<run.examples.debug,Debug the application>> for more details.
 There is also explicit support for <<run.examples.system-properties,system properties>> and <<run.examples.environment-variables,environment variables>>.
 
 As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run.examples.specify-active-profiles,Specify active profiles>>.
@@ -101,11 +101,11 @@ The following example sets `property1` to `test` and `property2` to 42:
 include::../maven/running/system-properties-pom.xml[tags=system-properties]
 ----
 
-If the value is empty or not defined (i.e. `<my-property/`>), the system property is set with an empty String as the value.
+If the value is empty or not defined (that is `<my-property/`>), the system property is set with an empty String as the value.
 Maven trims values specified in the pom so it is not possible to specify a System property which needs to start or end with a space via this mechanism: consider using `jvmArguments` instead.
 
 Any String typed Maven variable can be passed as system properties.
-Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
+Any attempt to pass any other Maven variable type (for example a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
 
 The `jvmArguments` parameter takes precedence over system properties defined with the mechanism above.
 In the following example, the value for `property1` is `overridden`:
@@ -127,11 +127,11 @@ The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 include::../maven/running/environment-variables-pom.xml[tags=environment-variables]
 ----
 
-If the value is empty or not defined (i.e. `<MY_ENV/`>), the env variable is set with an empty String as the value.
+If the value is empty or not defined (that is `<MY_ENV/`>), the env variable is set with an empty String as the value.
 Maven trims values specified in the pom so it is not possible to specify an env variable which needs to start or end with a space.
 
 Any String typed Maven variable can be passed as system properties.
-Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
+Any attempt to pass any other Maven variable type (for example a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
 
 Environment variables defined this way take precedence over existing values.
 

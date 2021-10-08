@@ -225,8 +225,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	/**
 	 * Return an iterator for the contained entries.
-	 * @see java.lang.Iterable#iterator()
 	 * @since 2.3.0
+	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })

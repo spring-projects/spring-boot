@@ -997,7 +997,7 @@ bom {
 			]
 		}
 	}
-	library("Kafka", "2.8.1") {
+	library("Kafka", "3.0.0") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect-api",
@@ -1007,6 +1007,7 @@ bom {
 				"connect-runtime",
 				"connect-transforms",
 				"kafka-clients",
+				"kafka-metadata",
 				"kafka-log4j-appender",
 				"kafka-streams",
 				"kafka-streams-scala_2.12",
@@ -1211,7 +1212,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.8.0-M3") {
+	library("Micrometer", "1.8.0-SNAPSHOT") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1390,7 +1391,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.11") {
+	library("Reactor Bom", "2020.0.12-SNAPSHOT") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1606,7 +1607,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.0-M3") {
+	library("Spring AMQP", "2.4.0-SNAPSHOT") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1617,7 +1618,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.3") {
+	library("Spring Batch", "4.3.4-SNAPSHOT") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1627,14 +1628,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.1.0-M3") {
+	library("Spring Data Bom", "2021.1.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.10") {
+	library("Spring Framework", "5.3.11-SNAPSHOT") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
@@ -1648,14 +1649,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.5.4") {
+	library("Spring Integration", "5.5.5-SNAPSHOT") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.0-M3") {
+	library("Spring Kafka", "2.8.0-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1693,14 +1694,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.6.0-M3") {
+	library("Spring Security", "5.6.0-SNAPSHOT") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.1.0-M1") {
+	library("Spring Session Bom", "2021.1.0-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
