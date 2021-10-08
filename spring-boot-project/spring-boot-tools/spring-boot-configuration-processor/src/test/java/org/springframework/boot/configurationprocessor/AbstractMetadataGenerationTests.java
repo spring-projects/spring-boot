@@ -55,6 +55,13 @@ public abstract class AbstractMetadataGenerationTests {
 		return processor.getMetadata();
 	}
 
+	protected ConfigurationMetadata compileWithOptions(Iterable<String> options, Class<?>... types) {
+		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
+				this.compiler.getOutputLocation());
+		this.compiler.getTaskWithOptions(options, types).call(processor);
+		return processor.getMetadata();
+	}
+
 	protected ConfigurationMetadata compile(File... sources) {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
 				this.compiler.getOutputLocation());

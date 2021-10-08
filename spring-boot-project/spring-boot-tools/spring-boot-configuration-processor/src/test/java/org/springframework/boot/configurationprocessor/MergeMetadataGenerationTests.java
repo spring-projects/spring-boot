@@ -85,18 +85,19 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void fixingOfFailedCompileWithAdditionalDefaultValue() throws Exception {
 		// Fails w/ undetermined default value
-		assertThatThrownBy(() -> compile(SimpleBadDefaultProperties.class))
-				.isInstanceOf(IllegalStateException.class)
+		assertThatThrownBy(() -> compile(SimpleBadDefaultProperties.class)).isInstanceOf(IllegalStateException.class)
 				.hasMessageContaining("Compilation failed");
 
 		// Add default value to additional metadata
-		ItemMetadata property = ItemMetadata.newProperty("simple.bad.default", "some-list", null, null, null, null, "[ \"a\", \"b\", \"c\" ]", null);
+		ItemMetadata property = ItemMetadata.newProperty("simple.bad.default", "some-list", null, null, null, null,
+				"[ \"a\", \"b\", \"c\" ]", null);
 		writeAdditionalMetadata(property);
 
 		// Succeeds w/ merged default value
 		ConfigurationMetadata metadata = compile(SimpleBadDefaultProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("simple.bad.default.some-list", "java.util.List<java.lang.String>")
-				.withDefaultValue("[ \"a\", \"b\", \"c\" ]"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("simple.bad.default.some-list", "java.util.List<java.lang.String>")
+						.withDefaultValue("[ \"a\", \"b\", \"c\" ]"));
 	}
 
 	@Test

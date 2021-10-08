@@ -67,17 +67,22 @@ public class TestCompiler {
 
 	public TestCompilationTask getTask(Collection<File> sourceFiles) {
 		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager.getJavaFileObjectsFromFiles(sourceFiles);
-		return getTask(javaFileObjects);
+		return getTask(javaFileObjects, null);
 	}
 
 	public TestCompilationTask getTask(Class<?>... types) {
 		Iterable<? extends JavaFileObject> javaFileObjects = getJavaFileObjects(types);
-		return getTask(javaFileObjects);
+		return getTask(javaFileObjects, null);
 	}
 
-	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects) {
+	public TestCompilationTask getTaskWithOptions(Iterable<String> options, Class<?>... types) {
+		Iterable<? extends JavaFileObject> javaFileObjects = getJavaFileObjects(types);
+		return getTask(javaFileObjects, options);
+	}
+
+	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects, Iterable<String> options) {
 		return new TestCompilationTask(
-				this.compiler.getTask(null, this.fileManager, null, null, null, javaFileObjects));
+				this.compiler.getTask(null, this.fileManager, null, options, null, javaFileObjects));
 	}
 
 	public File getOutputLocation() {

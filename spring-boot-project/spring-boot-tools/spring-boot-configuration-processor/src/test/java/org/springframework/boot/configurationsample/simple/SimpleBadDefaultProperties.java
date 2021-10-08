@@ -55,4 +55,5 @@ public class SimpleBadDefaultProperties {
 	public void setSomeList(List<String> someList) {
 		this.someList = someList;
 	}
+
 }

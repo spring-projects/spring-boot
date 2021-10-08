@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -113,10 +115,27 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void simplePropertiesWithUnresolvableDefaults() {
-		assertThatThrownBy(() -> compile(SimpleBadDefaultProperties.class))
-				.isInstanceOf(IllegalStateException.class)
+	void simplePropertiesWithUnresolvableDefaultValueLogsErrorByDefault() {
+		assertThatThrownBy(() -> compile(SimpleBadDefaultProperties.class)).isInstanceOf(IllegalStateException.class)
 				.hasMessageContaining("Compilation failed");
+	}
+
+	@Test
+	void simplePropertiesWithUnresolvableDefaultValueLogsErrorWhenOptionSetToTrue() {
+		List<String> options = Arrays
+				.asList("-Aorg.springframework.boot.configurationprocessor.failOnUndeterminedDefaultValue=true");
+		assertThatThrownBy(() -> compileWithOptions(options, SimpleBadDefaultProperties.class))
+				.isInstanceOf(IllegalStateException.class).hasMessageContaining("Compilation failed");
+	}
+
+	@Test
+	void simplePropertiesWithUnresolvableDefaultsLogsWarnWhenOptionSetToFalse() {
+		List<String> options = Arrays
+				.asList("-Aorg.springframework.boot.configurationprocessor.failOnUndeterminedDefaultValue=false");
+		ConfigurationMetadata metadata = compileWithOptions(options, SimpleBadDefaultProperties.class);
+		assertThat(metadata)
+				.has(Metadata.withProperty("simple.bad.default.some-list", "java.util.List<java.lang.String>")
+						.withDefaultValue(null));
 	}
 
 	@Test

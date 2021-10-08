@@ -73,6 +73,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String ADDITIONAL_METADATA_LOCATIONS_OPTION = "org.springframework.boot.configurationprocessor.additionalMetadataLocations";
 
+	static final String FAIL_ON_UNDETERMINED_DEFAULT_VALUE_OPTION = "org.springframework.boot.configurationprocessor.failOnUndeterminedDefaultValue";
+
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.context.properties.ConfigurationProperties";
 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.context.properties.NestedConfigurationProperty";
@@ -99,8 +101,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
 
-	private static final Set<String> SUPPORTED_OPTIONS = Collections
-			.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
+	private static final Set<String> SUPPORTED_OPTIONS = Collections.unmodifiableSet(new HashSet<>(
+			Arrays.asList(ADDITIONAL_METADATA_LOCATIONS_OPTION, FAIL_ON_UNDETERMINED_DEFAULT_VALUE_OPTION)));
 
 	private MetadataStore metadataStore;
 
@@ -357,6 +359,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void validateDefaultValuesResolved(ConfigurationMetadata metadata) {
+
+		boolean failOnBadDefaultValues = Boolean.valueOf(this.processingEnv.getOptions().getOrDefault(
+				ConfigurationMetadataAnnotationProcessor.FAIL_ON_UNDETERMINED_DEFAULT_VALUE_OPTION, "true"));
+
 		metadata.getItems().forEach((itemMetadata) -> {
 			if (itemMetadata.getDefaultValue() instanceof ValueWrapper) {
 				ValueWrapper defaultValue = (ValueWrapper) itemMetadata.getDefaultValue();
@@ -364,7 +370,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					String msg = String.format(
 							"Could not resolve default value for property '%s' using expression '%s'. Add 'defaultValue' in additional-spring-configuration.metadata.json",
 							itemMetadata.getName(), defaultValue.valueInitializerExpression());
-					log(Kind.ERROR, msg);
+					log(failOnBadDefaultValues ? Kind.ERROR : Kind.WARNING, msg);
 				}
 				itemMetadata.setDefaultValue(defaultValue.value());
 			}
