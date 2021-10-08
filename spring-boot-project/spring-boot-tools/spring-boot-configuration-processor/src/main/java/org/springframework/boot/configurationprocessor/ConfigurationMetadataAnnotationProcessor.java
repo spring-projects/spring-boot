@@ -362,7 +362,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				ValueWrapper defaultValue = (ValueWrapper) itemMetadata.getDefaultValue();
 				if (!defaultValue.valueDetermined()) {
 					String msg = String.format(
-							"Could not resolve default value for property '%s' using expression '%s'. Add hint in additional-spring-configuration.metadata.json",
+							"Could not resolve default value for property '%s' using expression '%s'. Add 'defaultValue' in additional-spring-configuration.metadata.json",
 							itemMetadata.getName(), defaultValue.valueInitializerExpression());
 					log(Kind.ERROR, msg);
 				}

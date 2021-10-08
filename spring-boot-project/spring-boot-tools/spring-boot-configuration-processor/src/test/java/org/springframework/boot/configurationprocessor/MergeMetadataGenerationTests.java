@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,20 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationprocessor.metadata.TestJsonConverter;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
+import org.springframework.boot.configurationsample.simple.SimpleBadDefaultProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.specific.SimpleConflictingProperties;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Metadata generation tests for merging additional metadata.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -77,6 +80,23 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class).fromSource(SimpleProperties.class)
 				.withDescription("A simple flag.").withDeprecation(null, null).withDefaultValue(true));
 		assertThat(metadata.getItems()).hasSize(4);
+	}
+
+	@Test
+	void fixingOfFailedCompileWithAdditionalDefaultValue() throws Exception {
+		// Fails w/ undetermined default value
+		assertThatThrownBy(() -> compile(SimpleBadDefaultProperties.class))
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("Compilation failed");
+
+		// Add default value to additional metadata
+		ItemMetadata property = ItemMetadata.newProperty("simple.bad.default", "some-list", null, null, null, null, "[ \"a\", \"b\", \"c\" ]", null);
+		writeAdditionalMetadata(property);
+
+		// Succeeds w/ merged default value
+		ConfigurationMetadata metadata = compile(SimpleBadDefaultProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("simple.bad.default.some-list", "java.util.List<java.lang.String>")
+				.withDefaultValue("[ \"a\", \"b\", \"c\" ]"));
 	}
 
 	@Test

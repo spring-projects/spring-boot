@@ -39,6 +39,7 @@ import org.springframework.boot.configurationsample.simple.HierarchicalPropertie
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
+import org.springframework.boot.configurationsample.simple.SimpleBadDefaultProperties;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
 import org.springframework.boot.configurationsample.simple.SimplePrefixValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
@@ -65,6 +66,7 @@ import org.springframework.boot.configurationsample.specific.StaticAccessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.
@@ -108,6 +110,13 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.counter"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
+	}
+
+	@Test
+	void simplePropertiesWithUnresolvableDefaults() {
+		assertThatThrownBy(() -> compile(SimpleBadDefaultProperties.class))
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("Compilation failed");
 	}
 
 	@Test
