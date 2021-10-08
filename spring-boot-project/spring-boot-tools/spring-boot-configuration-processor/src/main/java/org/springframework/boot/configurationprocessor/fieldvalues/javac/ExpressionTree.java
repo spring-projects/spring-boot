@@ -36,6 +36,12 @@ class ExpressionTree extends ReflectionWrapper {
 
 	private final Method methodInvocationArgumentsMethod = findMethod(this.methodInvocationTreeType, "getArguments");
 
+	private final Class<?> newClassTreeType = findClass("com.sun.source.tree.NewClassTree");
+
+	private final Method newClassArgumentsMethod = findMethod(this.newClassTreeType, "getArguments");
+
+	private final Method newClassIdentifierMethod = findMethod(this.newClassTreeType, "getIdentifier");
+
 	private final Class<?> newArrayTreeType = findClass("com.sun.source.tree.NewArrayTree");
 
 	private final Method arrayValueMethod = findMethod(this.newArrayTreeType, "getInitializers");
@@ -54,6 +60,16 @@ class ExpressionTree extends ReflectionWrapper {
 
 	Object getLiteralValue() throws Exception {
 		return hasLiteralValue() ? this.literalValueMethod.invoke(getInstance()) : null;
+	}
+
+	Object getIdentifierForNewClassNoArgConstructor() throws Exception {
+		if (this.newClassTreeType.isAssignableFrom(getInstance().getClass())) {
+			List<?> arguments = (List<?>) this.newClassArgumentsMethod.invoke(getInstance());
+			if (arguments.isEmpty()) {
+				return this.newClassIdentifierMethod.invoke(getInstance());
+			}
+		}
+		return null;
 	}
 
 	Object getFactoryValue() throws Exception {

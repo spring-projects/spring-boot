@@ -477,6 +477,11 @@
       "description": "Vendor-specific XA properties."
     },
     {
+      "name": "spring.jta.atomikos.properties.default-max-wait-time-on-shutdown",
+      "type": "java.lang.Long",
+      "defaultValue": 9223372036854775807
+    },
+    {
       "name": "spring.jta.bitronix.connectionfactory.acquire-increment",
       "type": "java.lang.Integer",
       "deprecation": {

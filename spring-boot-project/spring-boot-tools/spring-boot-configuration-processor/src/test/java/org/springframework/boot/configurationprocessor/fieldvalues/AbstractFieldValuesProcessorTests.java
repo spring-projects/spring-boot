@@ -65,7 +65,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("stringNull")).isEqualTo(ValueWrapper.of(null, "null"));
 		assertThat(values.get("stringConst")).isEqualTo(ValueWrapper.of("c", "\"c\""));
 		assertThat(values.get("stringConstNull")).isEqualTo(ValueWrapper.of(null, "null"));
-		assertThat(values.get("stringFinal")).isEqualTo(ValueWrapper.unresolvable("STRING_FINAL"));
+		assertThat(values.get("stringFinal")).isEqualTo(ValueWrapper.unresolvable("this.STRING_FINAL"));
 		assertThat(values.get("bool")).isEqualTo(ValueWrapper.of(true, "true"));
 		assertThat(values.get("boolNone")).isEqualTo(ValueWrapper.of(false, null));
 		assertThat(values.get("boolConst")).isEqualTo(ValueWrapper.of(true, "true"));
@@ -119,6 +119,20 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("periodMonths")).isEqualTo(ValueWrapper.of("10m", "Period.ofMonths(10)"));
 		assertThat(values.get("periodYears")).isEqualTo(ValueWrapper.of("15y", "Period.ofYears(15)"));
 		assertThat(values.get("periodZero")).isEqualTo(ValueWrapper.of(0, "Period.ZERO"));
+		assertThat(values.get("emptyArrayList")).isEqualTo(ValueWrapper.of("[]", "new ArrayList<>()"));
+		assertThat(values.get("emptyArrayListWithArg"))
+				.isEqualTo(ValueWrapper.unresolvable("new ArrayList<>(new HashSet<>())"));
+		assertThat(values.get("emptyFullyQualifiedLinkedListRedundantType"))
+				.isEqualTo(ValueWrapper.of("[]", "new java.util.LinkedList<String>()"));
+		assertThat(values.get("emptyHashSet")).isEqualTo(ValueWrapper.of("[]", "new HashSet<>()"));
+		assertThat(values.get("emptyFullyQualifiedHashSetRedundantType"))
+				.isEqualTo(ValueWrapper.of("[]", "new java.util.HashSet<String>()"));
+		assertThat(values.get("emptyTreeSet")).isEqualTo(ValueWrapper.of("[]", "new TreeSet<>()"));
+		assertThat(values.get("emptyHashMap")).isEqualTo(ValueWrapper.of("{}", "new HashMap<>()"));
+		assertThat(values.get("emptyHashMapWithArg"))
+				.isEqualTo(ValueWrapper.unresolvable("new HashMap<>(new HashMap<>())"));
+		assertThat(values.get("emptyFullyQualifiedTreeMapRedundantType"))
+				.isEqualTo(ValueWrapper.of("{}", "new java.util.TreeMap<String, String>()"));
 	}
 
 	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })

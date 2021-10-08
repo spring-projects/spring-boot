@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
@@ -38,6 +39,10 @@ import org.springframework.boot.configurationprocessor.fieldvalues.ValueWrapper;
  * @since 1.2.0
  */
 public class JavaCompilerFieldValuesParser implements FieldValuesParser {
+
+	private static final Pattern COLLECTION_PATTERN = Pattern.compile("^.*(List|Set)<.*>$");
+
+	private static final Pattern MAP_PATTERN = Pattern.compile("^.*(Map)<.*>$");
 
 	private final Trees trees;
 
@@ -202,6 +207,17 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 					result[i] = valueWrapper.value();
 				}
 				return ValueWrapper.of(result, expression.toString());
+			}
+
+			Object identifierForNewClass = expression.getIdentifierForNewClassNoArgConstructor();
+			if (identifierForNewClass != null) {
+				String classIdentifier = identifierForNewClass.toString();
+				if (COLLECTION_PATTERN.matcher(classIdentifier).matches()) {
+					return ValueWrapper.of("[]", expression.toString());
+				}
+				if (MAP_PATTERN.matcher(classIdentifier).matches()) {
+					return ValueWrapper.of("{}", expression.toString());
+				}
 			}
 
 			if (expression.getKind().equals("IDENTIFIER")) {

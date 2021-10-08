@@ -251,12 +251,24 @@
       }
     },
     {
+      "name": "server.undertow.accesslog.dir",
+      "defaultValue": "logs"
+    },
+    {
       "name": "server.undertow.buffers-per-region",
       "type": "java.lang.Integer",
       "description": "Number of buffer per region.",
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "server.undertow.max-headers",
+      "defaultValue": 200
+    },
+    {
+      "name": "server.undertow.max-parameters",
+      "defaultValue": 1000
     },
     {
       "name": "server.use-forward-headers",
@@ -335,6 +347,14 @@
         "replacement": "spring.artemis.broker-url",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.artemis.embedded.cluster-password",
+      "defaultValue": "UUID.randomUUID().toString()"
+    },
+    {
+      "name": "spring.artemis.embedded.server-id",
+      "defaultValue": 0
     },
     {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
@@ -1089,6 +1109,14 @@
       "defaultValue": "classpath:git.properties"
     },
     {
+      "name": "spring.integration.channel.max-broadcast-subscribers",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "spring.integration.channel.max-unicast-subscribers",
+      "defaultValue": 2147483647
+    },
+    {
       "name": "spring.integration.jdbc.initialize-schema",
       "defaultValue": "embedded"
     },
@@ -1460,8 +1488,18 @@
       }
     },
     {
+      "name": "spring.kafka.bootstrap-servers",
+      "defaultValue": [
+        "localhost:9092"
+      ]
+    },
+    {
       "name": "spring.kafka.consumer.isolation-level",
       "defaultValue": "read-uncommitted"
+    },
+    {
+      "name": "spring.kafka.consumer.key-deserializer",
+      "defaultValue": "org.apache.kafka.common.serialization.StringDeserializer"
     },
     {
       "name": "spring.kafka.consumer.ssl.keystore-location",
@@ -1500,12 +1538,20 @@
       }
     },
     {
+      "name": "spring.kafka.consumer.value-deserializer",
+      "defaultValue": "org.apache.kafka.common.serialization.StringDeserializer"
+    },
+    {
       "name": "spring.kafka.jaas.control-flag",
       "defaultValue": "required"
     },
     {
       "name": "spring.kafka.listener.type",
       "defaultValue": "single"
+    },
+    {
+      "name": "spring.kafka.producer.key-serializer",
+      "defaultValue": "org.apache.kafka.common.serialization.StringSerializer"
     },
     {
       "name": "spring.kafka.producer.ssl.keystore-location",
@@ -1542,6 +1588,10 @@
         "replacement": "spring.kafka.producer.ssl.trust-store-password",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.kafka.producer.value-serializer",
+      "defaultValue": "org.apache.kafka.common.serialization.StringSerializer"
     },
     {
       "name": "spring.kafka.ssl.keystore-location",
@@ -1735,6 +1785,10 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "spring.rabbitmq.stream.port",
+      "defaultValue": 5552
     },
     {
       "name": "spring.rabbitmq.template.queue",
@@ -1968,6 +2022,10 @@
       "defaultValue": -100
     },
     {
+      "name": "spring.security.user.password",
+      "defaultValue": "UUID.randomUUID().toString()"
+    },
+    {
       "name": "spring.session.hazelcast.flush-mode",
       "defaultValue": "on-save"
     },
@@ -2008,6 +2066,10 @@
       ]
     },
     {
+      "name": "spring.session.servlet.filter-order",
+      "defaultValue": -2147483598
+    },
+    {
       "name": "spring.sql.init.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether basic script-based initialization of an SQL database is enabled.",
@@ -2020,6 +2082,13 @@
     {
       "name": "spring.sql.init.mode",
       "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.task.execution.pool.max-size",
+      "defaultValue": 2147483647
+    },    {
+      "name": "spring.task.execution.pool.queue-capacity",
+      "defaultValue": 2147483647
     },
     {
       "name": "spring.web.locale-resolver",

@@ -20,6 +20,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.util.MimeType;
@@ -163,5 +172,26 @@ public class FieldValues {
 	private Period periodYears = Period.ofYears(15);
 
 	private Period periodZero = Period.ZERO;
+
+	private List<String> emptyArrayList = new ArrayList<>();
+
+	private List<String> emptyArrayListWithArg = new ArrayList<>(new HashSet<>());
+
+	@SuppressWarnings("Convert2Diamond")
+	private List<String> emptyFullyQualifiedLinkedListRedundantType = new java.util.LinkedList<String>();
+
+	private Set<String> emptyHashSet = new HashSet<>();
+
+	@SuppressWarnings("Convert2Diamond")
+	private Set<String> emptyFullyQualifiedHashSetRedundantType = new java.util.HashSet<String>();
+
+	private SortedSet<String> emptyTreeSet = new TreeSet<>();
+
+	private Map<String, Integer> emptyHashMap = new HashMap<>();
+
+	private Map<String, Integer> emptyHashMapWithArg = new HashMap<>(new HashMap<>());
+
+	@SuppressWarnings("Convert2Diamond")
+	private SortedMap<String, String> emptyFullyQualifiedTreeMapRedundantType = new java.util.TreeMap<String, String>();
 
 }

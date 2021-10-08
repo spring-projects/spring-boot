@@ -134,6 +134,10 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.diskspace.path",
+      "defaultValue": "."
+    },
+    {
       "name": "management.health.elasticsearch.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Elasticsearch health check.",
@@ -463,6 +467,10 @@
       }
     },
     {
+      "name": "management.metrics.export.newrelic.client-provider-type",
+      "defaultValue": "INSIGHTS_API"
+    },
+    {
       "name": "management.metrics.export.prometheus.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether exporting of metrics to Prometheus is enabled.",
@@ -539,6 +547,10 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "management.metrics.export.wavefront.sender.message-size",
+      "defaultValue": "2147483647B"
     },
     {
       "name": "management.metrics.mongo.command.enabled",
