@@ -25,7 +25,6 @@ dependencies {
 	optional("io.prometheus:simpleclient_pushgateway")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
-	optional("io.reactivex:rxjava-reactive-streams")
 	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("io.undertow:undertow-servlet") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
