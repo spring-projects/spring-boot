@@ -68,6 +68,12 @@ abstract class RedisConnectionConfiguration {
 		if (this.standaloneConfiguration != null) {
 			return this.standaloneConfiguration;
 		}
+
+		RedisStandaloneConfiguration customConfig = maybeGetCustomStandaloneConfig();
+		if (customConfig != null) {
+			return customConfig;
+		}
+
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 		if (StringUtils.hasText(this.properties.getUrl())) {
 			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
@@ -86,10 +92,20 @@ abstract class RedisConnectionConfiguration {
 		return config;
 	}
 
+	RedisStandaloneConfiguration maybeGetCustomStandaloneConfig() {
+		return null;
+	}
+
 	protected final RedisSentinelConfiguration getSentinelConfig() {
 		if (this.sentinelConfiguration != null) {
 			return this.sentinelConfiguration;
 		}
+
+		RedisSentinelConfiguration customConfig = maybeGetCustomSentinelConfig();
+		if (customConfig != null) {
+			return customConfig;
+		}
+
 		RedisProperties.Sentinel sentinelProperties = this.properties.getSentinel();
 		if (sentinelProperties != null) {
 			RedisSentinelConfiguration config = new RedisSentinelConfiguration();
@@ -105,6 +121,10 @@ abstract class RedisConnectionConfiguration {
 			config.setDatabase(this.properties.getDatabase());
 			return config;
 		}
+		return null;
+	}
+
+	RedisSentinelConfiguration maybeGetCustomSentinelConfig() {
 		return null;
 	}
 

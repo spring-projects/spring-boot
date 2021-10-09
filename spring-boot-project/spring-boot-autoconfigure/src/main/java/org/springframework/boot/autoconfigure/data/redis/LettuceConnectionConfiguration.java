@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
@@ -39,7 +41,6 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
-import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -87,11 +88,6 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
-		if (StringUtils.hasText(this.getProperties().getUrl())) {
-			RedisURI redisURI = createRedisUri(getProperties().getUrl());
-			RedisConfiguration redisConfiguration = LettuceConnectionFactory.createRedisConfiguration(redisURI);
-			return new LettuceConnectionFactory(redisConfiguration, clientConfiguration);
-		}
 		if (getSentinelConfig() != null) {
 			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
@@ -99,6 +95,46 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			return new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
 		}
 		return new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+	}
+
+	@Override
+	RedisSentinelConfiguration maybeGetCustomSentinelConfig() {
+		if (!urlConfiguredForSentinelScheme(this.getProperties().getUrl())) {
+			return null;
+		}
+		RedisURI redisURI = createRedisUri(this.getProperties().getUrl());
+		return (RedisSentinelConfiguration) LettuceConnectionFactory.createRedisConfiguration(redisURI);
+	}
+
+	@Override
+	RedisStandaloneConfiguration maybeGetCustomStandaloneConfig() {
+		if (!urlConfiguredForNonStandardStandaloneScheme(this.getProperties().getUrl())) {
+			return null;
+		}
+		RedisURI redisURI = createRedisUri(this.getProperties().getUrl());
+		return (RedisStandaloneConfiguration) LettuceConnectionFactory.createRedisConfiguration(redisURI);
+	}
+
+	private boolean urlConfiguredForSentinelScheme(String url) {
+		String scheme = getUrlScheme(url);
+		return "redis-sentinel".equals(scheme) || "rediss-sentinel".equals(scheme);
+	}
+
+	private boolean urlConfiguredForNonStandardStandaloneScheme(String url) {
+		String scheme = getUrlScheme(url);
+		return !"redis".equals(scheme) && !"rediss".equals(scheme) && !urlConfiguredForSentinelScheme(url);
+	}
+
+	private String getUrlScheme(String url) {
+		if (!StringUtils.hasText(url)) {
+			return null;
+		}
+		try {
+			URI uri = new URI(url);
+			return uri.getScheme();
+		} catch (URISyntaxException ex) {
+			throw new RedisUrlSyntaxException(url, ex);
+		}
 	}
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
