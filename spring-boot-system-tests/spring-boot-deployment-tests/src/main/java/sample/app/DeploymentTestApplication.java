@@ -23,6 +23,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class DeploymentTestApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-
+		System.out.println("Welcome to Java");
 	}
 }
