@@ -69,6 +69,8 @@ public class Image {
 
 	List<String> tags;
 
+	Map<String, String> cacheVolumeNames;
+
 	/**
 	 * The name of the created image.
 	 * @return the image name
@@ -211,6 +213,9 @@ public class Image {
 		request = request.withNetwork(this.network);
 		if (!CollectionUtils.isEmpty(this.tags)) {
 			request = request.withTags(this.tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+		}
+		if (this.cacheVolumeNames != null && !this.cacheVolumeNames.isEmpty()) {
+			request = request.withCacheVolumeNames(this.cacheVolumeNames);
 		}
 		return request;
 	}
