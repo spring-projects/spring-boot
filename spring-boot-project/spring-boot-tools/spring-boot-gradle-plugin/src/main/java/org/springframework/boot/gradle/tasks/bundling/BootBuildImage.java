@@ -60,6 +60,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Rafael Ceccone
  * @author Jeroen Meijer
+ * @author Julian Liebig
  * @since 2.3.0
  */
 public class BootBuildImage extends DefaultTask {
@@ -97,6 +98,8 @@ public class BootBuildImage extends DefaultTask {
 	private String network;
 
 	private final ListProperty<String> tags;
+
+	private Map<String, String> cacheVolumeNames = new HashMap<>();
 
 	private final DockerSpec docker = new DockerSpec();
 
@@ -418,6 +421,41 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the cache volume names that will be used when building the image.
+	 * @return the cache volume names
+	 */
+	@Input
+	@Optional
+	public Map<String, String> getCacheVolumeNames() {
+		return this.cacheVolumeNames;
+	}
+
+	/**
+	 * Sets the cache volume names that will be used when building the image.
+	 * @param cacheVolumeNames the cache volume names
+	 */
+	public void setCacheVolumeNames(Map<String, String> cacheVolumeNames) {
+		this.cacheVolumeNames = cacheVolumeNames;
+	}
+
+	/**
+	 * Add an entry to cache volume names that will be used when building the image.
+	 * @param type the type of the entry
+	 * @param name the name of the entry
+	 */
+	public void cacheVolumeName(String type, String name) {
+		this.cacheVolumeNames.put(type, name);
+	}
+
+	/**
+	 * Adds entries to cache volume names that will be used when building the image.
+	 * @param entries the entries to add to cache volume names
+	 */
+	public void cacheVolumeNames(Map<String, String> entries) {
+		this.cacheVolumeNames.putAll(entries);
+	}
+
+	/**
 	 * Returns the network the build container will connect to.
 	 * @return the network
 	 */
@@ -499,6 +537,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
 		request = customizeTags(request);
+		request = customizeCacheVolumeNames(request);
 		request = request.withNetwork(this.network);
 		return request;
 	}
@@ -572,6 +611,13 @@ public class BootBuildImage extends DefaultTask {
 		List<String> tags = this.tags.getOrNull();
 		if (tags != null && !tags.isEmpty()) {
 			return request.withTags(tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCacheVolumeNames(BuildRequest request) {
+		if (this.cacheVolumeNames != null && !this.cacheVolumeNames.isEmpty()) {
+			request = request.withCacheVolumeNames(this.cacheVolumeNames);
 		}
 		return request;
 	}

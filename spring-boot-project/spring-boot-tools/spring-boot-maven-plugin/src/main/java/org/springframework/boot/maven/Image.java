@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Jeroen Meijer
  * @author Rafael Ceccone
+ * @author Julian Liebig
  * @since 2.3.0
  */
 public class Image {
@@ -68,6 +69,8 @@ public class Image {
 	String network;
 
 	List<String> tags;
+
+	Map<String, String> cacheVolumeNames;
 
 	/**
 	 * The name of the created image.
@@ -211,6 +214,9 @@ public class Image {
 		request = request.withNetwork(this.network);
 		if (!CollectionUtils.isEmpty(this.tags)) {
 			request = request.withTags(this.tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+		}
+		if (this.cacheVolumeNames != null && !this.cacheVolumeNames.isEmpty()) {
+			request = request.withCacheVolumeNames(this.cacheVolumeNames);
 		}
 		return request;
 	}

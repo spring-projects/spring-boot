@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Jeroen Meijer
+ * @author Julian Liebig
  */
 class Lifecycle implements Closeable {
 
@@ -86,8 +87,8 @@ class Lifecycle implements Closeable {
 		this.platformVersion = getPlatformVersion(builder.getBuilderMetadata().getLifecycle());
 		this.layersVolume = createRandomVolumeName("pack-layers-");
 		this.applicationVolume = createRandomVolumeName("pack-app-");
-		this.buildCacheVolume = createCacheVolumeName(request, ".build");
-		this.launchCacheVolume = createCacheVolumeName(request, ".launch");
+		this.buildCacheVolume = createCacheVolumeName(request, "build");
+		this.launchCacheVolume = createCacheVolumeName(request, "launch");
 	}
 
 	protected VolumeName createRandomVolumeName(String prefix) {
@@ -95,7 +96,10 @@ class Lifecycle implements Closeable {
 	}
 
 	private VolumeName createCacheVolumeName(BuildRequest request, String suffix) {
-		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", suffix, 6);
+		if (!request.getCacheVolumeNames().isEmpty() && request.getCacheVolumeNames().containsKey(suffix)) {
+			return VolumeName.of(request.getCacheVolumeNames().get(suffix));
+		}
+		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6);
 	}
 
 	private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {

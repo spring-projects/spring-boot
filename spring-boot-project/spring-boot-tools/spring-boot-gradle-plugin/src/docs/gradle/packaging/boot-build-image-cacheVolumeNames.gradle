@@ -1,0 +1,23 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::cacheVolumeNames[]
+bootBuildImage {
+    cacheVolumeNames = [
+        "build": "example-build-cachevol",
+        "launch": "example-launch-cachevol"
+    ]
+}
+// end::cacheVolumeNames[]
+
+task bootBuildImageCacheVolumeNames {
+	doFirst {
+		bootBuildImage.cacheVolumeNames.each { type, name -> println "$type=$name" }
+	}
+}
