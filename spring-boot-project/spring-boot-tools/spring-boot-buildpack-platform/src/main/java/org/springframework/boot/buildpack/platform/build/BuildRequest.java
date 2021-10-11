@@ -314,7 +314,7 @@ public class BuildRequest {
 	 * @param name the cache volume name
 	 * @return an updated build request
 	 */
-	public BuildRequest withCacheVolumeNames(String type, String name) {
+	public BuildRequest withCacheVolumeName(String type, String name) {
 		Assert.hasText(type, "Type must not be empty");
 		Assert.state((type.equals("build") || type.equals("launch")), "Type must be either 'build' or 'launch'");
 		Assert.hasText(name, "Name must not be empty");
@@ -323,6 +323,21 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, Collections.unmodifiableMap(cacheVolumeNames));
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with additional cache volume names.
+	 * @param entries the additional cache volume names
+	 * @return an updated build request
+	 */
+	public BuildRequest withCacheVolumeNames(Map<String, String> entries) {
+		Assert.notNull(entries, "Entries must not be null");
+		Assert.state(!entries.isEmpty(), "Entries must not be empty");
+		BuildRequest request = null;
+		for (Map.Entry<String, String> entry : entries.entrySet()) {
+			request = withCacheVolumeName(entry.getKey(), entry.getValue());
+		}
+		return request;
 	}
 
 	/**
