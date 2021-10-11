@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Jeroen Meijer
  * @author Rafael Ceccone
+ * @author Julian Liebig
  * @since 2.3.0
  */
 public class Image {

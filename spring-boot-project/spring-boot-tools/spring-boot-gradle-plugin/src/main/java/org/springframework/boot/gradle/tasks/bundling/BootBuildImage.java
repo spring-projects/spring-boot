@@ -60,6 +60,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Rafael Ceccone
  * @author Jeroen Meijer
+ * @author Julian Liebig
  * @since 2.3.0
  */
 public class BootBuildImage extends DefaultTask {

@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Jeroen Meijer
+ * @author Julian Liebig
  */
 class Lifecycle implements Closeable {
 

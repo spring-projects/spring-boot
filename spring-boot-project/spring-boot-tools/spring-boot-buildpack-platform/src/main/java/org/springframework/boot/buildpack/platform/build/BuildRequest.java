@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
  * @author Andrey Shlykov
  * @author Jeroen Meijer
  * @author Rafael Ceccone
+ * @author Julian Liebig
  * @since 2.3.0
  */
 public class BuildRequest {
