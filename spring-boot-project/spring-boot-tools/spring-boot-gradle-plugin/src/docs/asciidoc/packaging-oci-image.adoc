@@ -181,6 +181,11 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | A list of one or more additional tags to apply to the generated image.
 |
 
+| `cacheVolumeNames`
+|
+| Cache volume names that should be used by the builder instead of generating random names.
+|
+
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
