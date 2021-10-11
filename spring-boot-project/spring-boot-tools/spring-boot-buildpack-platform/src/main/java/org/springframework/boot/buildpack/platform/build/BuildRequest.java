@@ -310,7 +310,7 @@ public class BuildRequest {
 
 	/**
 	 * Return a new {@link BuildRequest} with an additional cache volume name.
-	 * @param type  the cache volume type
+	 * @param type the cache volume type
 	 * @param name the cache volume name
 	 * @return an updated build request
 	 */
@@ -320,9 +320,9 @@ public class BuildRequest {
 		Assert.hasText(name, "Name must not be empty");
 		Map<String, String> cacheVolumeNames = new LinkedHashMap<>(this.cacheVolumeNames);
 		cacheVolumeNames.put(type, name);
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
-				this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, Collections.unmodifiableMap(cacheVolumeNames));
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
+				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
+				this.network, this.tags, Collections.unmodifiableMap(cacheVolumeNames));
 	}
 
 	/**
