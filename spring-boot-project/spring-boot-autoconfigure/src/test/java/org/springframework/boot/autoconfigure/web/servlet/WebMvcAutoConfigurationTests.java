@@ -176,10 +176,8 @@ class WebMvcAutoConfigurationTests {
 	void resourceHandlerMapping() {
 		this.contextRunner.run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
-			assertThat(locations.get("/**")).hasSize(5);
-			assertThat(locations.get("/webjars/**")).hasSize(1);
-			assertThat(locations.get("/webjars/**").get(0))
-					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
+			assertThat(locations.get("/**")).hasSize(2);
+			assertThat(locations.get("/webjars/**")).hasSize(0);
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(1);
 			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(0);
 			assertThat(getResourceResolvers(context, "/**")).hasSize(1);
@@ -191,17 +189,17 @@ class WebMvcAutoConfigurationTests {
 	void customResourceHandlerMapping() {
 		this.contextRunner.withPropertyValues("spring.mvc.static-path-pattern:/static/**").run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
-			assertThat(locations.get("/static/**")).hasSize(5);
+			assertThat(locations.get("/static/**")).hasSize(2);
 			assertThat(getResourceResolvers(context, "/static/**")).hasSize(1);
 		});
 	}
 
 	@Test
 	void resourceHandlerMappingOverrideWebjars() {
-		this.contextRunner.withUserConfiguration(WebJars.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(WebJarsResources.class).run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/webjars/**")).hasSize(1);
-			assertThat(locations.get("/webjars/**").get(0)).isEqualTo(new ClassPathResource("/foo/"));
+			assertThat(locations.get("/webjars/**").get(0).getFilename()).isEqualTo("test");
 		});
 	}
 
@@ -210,7 +208,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(AllResources.class).run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/**")).hasSize(1);
-			assertThat(locations.get("/**").get(0)).isEqualTo(new ClassPathResource("/foo/"));
+			assertThat(locations.get("/**").get(0).getFilename()).isEqualTo("test");
 		});
 	}
 
@@ -1081,11 +1079,11 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class WebJars implements WebMvcConfigurer {
+	static class WebJarsResources implements WebMvcConfigurer {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/foo/");
+			registry.addResourceHandler("/webjars/**").addResourceLocations(new ClassPathResource("/test", getClass()));
 		}
 
 	}
@@ -1095,7 +1093,7 @@ class WebMvcAutoConfigurationTests {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/**").addResourceLocations("classpath:/foo/");
+			registry.addResourceHandler("/**").addResourceLocations(new ClassPathResource("/test", getClass()));
 		}
 
 	}
@@ -1503,7 +1501,7 @@ class WebMvcAutoConfigurationTests {
 		}
 
 		@Bean
-		private DispatcherServlet extraDispatcherServlet() throws ServletException {
+		private DispatcherServlet extraDispatcherServlet() {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 			applicationContext.register(ResourceHandlersWithChildAndParentContextChildConfiguration.class);
