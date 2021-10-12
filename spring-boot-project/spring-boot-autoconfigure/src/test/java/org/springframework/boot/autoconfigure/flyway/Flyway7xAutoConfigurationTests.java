@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
-import org.flywaydb.core.api.MigrationVersion;
-import org.flywaydb.core.api.migration.JavaMigration;
+import org.flywaydb.core.api.callback.Callback;
+import org.flywaydb.core.api.callback.Context;
+import org.flywaydb.core.api.callback.Event;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,14 +31,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link FlywayAutoConfiguration} with Flyway 5.x.
+ * Tests for {@link FlywayAutoConfiguration} with Flyway 7.x.
  *
  * @author Andy Wilkinson
  */
-@ClassPathOverrides("org.flywaydb:flyway-core:5.2.4")
-class Flyway5xAutoConfigurationTests {
+@ClassPathOverrides("org.flywaydb:flyway-core:7.15.0")
+class Flyway7xAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
@@ -54,71 +60,39 @@ class Flyway5xAutoConfigurationTests {
 	}
 
 	@Test
-	void flywayJavaMigrationsAreIgnored() {
-		this.contextRunner
-				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayJavaMigrationsConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed());
+	void callbacksAreConfigured() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CallbackConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					Callback callbackOne = context.getBean("callbackOne", Callback.class);
+					Callback callbackTwo = context.getBean("callbackTwo", Callback.class);
+					assertThat(flyway.getConfiguration().getCallbacks()).hasSize(2);
+					assertThat(flyway.getConfiguration().getCallbacks()).containsExactlyInAnyOrder(callbackTwo,
+							callbackOne);
+					verify(callbackOne, atLeastOnce()).handle(any(Event.class), any(Context.class));
+					verify(callbackTwo, atLeastOnce()).handle(any(Event.class), any(Context.class));
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class FlywayJavaMigrationsConfiguration {
+	static class CallbackConfiguration {
 
 		@Bean
-		TestMigration migration1() {
-			return new TestMigration("2", "M1");
+		Callback callbackOne() {
+			return mockCallback();
 		}
 
 		@Bean
-		TestMigration migration2() {
-			return new TestMigration("3", "M2");
+		Callback callbackTwo() {
+			return mockCallback();
 		}
 
-	}
-
-	private static final class TestMigration implements JavaMigration {
-
-		private final MigrationVersion version;
-
-		private final String description;
-
-		private TestMigration(String version, String description) {
-			this.version = MigrationVersion.fromVersion(version);
-			this.description = description;
-		}
-
-		@Override
-		public MigrationVersion getVersion() {
-			return this.version;
-		}
-
-		@Override
-		public String getDescription() {
-			return this.description;
-		}
-
-		@Override
-		public Integer getChecksum() {
-			return 1;
-		}
-
-		@Override
-		public boolean isUndo() {
-			return false;
-		}
-
-		@Override
-		public boolean canExecuteInTransaction() {
-			return true;
-		}
-
-		@Override
-		public void migrate(org.flywaydb.core.api.migration.Context context) {
-
-		}
-
-		@Override
-		public boolean isBaselineMigration() {
-			return false;
+		private Callback mockCallback() {
+			Callback callback = mock(Callback.class);
+			given(callback.supports(any(Event.class), any(Context.class))).willReturn(true);
+			given(callback.getCallbackName()).willReturn("callback");
+			return callback;
 		}
 
 	}

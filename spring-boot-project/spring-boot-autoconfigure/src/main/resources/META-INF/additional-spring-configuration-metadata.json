@@ -873,6 +873,10 @@
       ]
     },
     {
+      "name": "spring.flyway.baseline-migration-prefix",
+      "defaultValue": "B"
+    },
+    {
       "name": "spring.flyway.connect-retries-interval",
       "defaultValue": 120
     },

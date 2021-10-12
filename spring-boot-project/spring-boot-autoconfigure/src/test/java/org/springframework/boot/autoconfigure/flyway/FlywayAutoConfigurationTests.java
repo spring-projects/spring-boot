@@ -499,8 +499,9 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getConfiguration().getConnectRetries()).isEqualTo(5);
-					assertThat(flyway.getConfiguration().isIgnoreMissingMigrations()).isTrue();
-					assertThat(flyway.getConfiguration().isIgnorePendingMigrations()).isTrue();
+					assertThat(flyway.getConfiguration().getBaselineDescription()).isEqualTo("<< Custom baseline >>");
+					assertThat(flyway.getConfiguration().getBaselineVersion())
+							.isEqualTo(MigrationVersion.fromVersion("1"));
 				});
 	}
 
@@ -655,6 +656,13 @@ class FlywayAutoConfigurationTests {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
 					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("customFlyway");
 				});
+	}
+
+	@Test
+	void baselineMigrationPrefixIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.baseline-migration-prefix=BL")
+				.run(validateFlywayTeamsPropertyOnly("baselineMigrationPrefix"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {
@@ -892,13 +900,13 @@ class FlywayAutoConfigurationTests {
 		@Bean
 		@Order(1)
 		FlywayConfigurationCustomizer customizerOne() {
-			return (configuration) -> configuration.connectRetries(5).ignorePendingMigrations(true);
+			return (configuration) -> configuration.connectRetries(5).baselineVersion("1");
 		}
 
 		@Bean
 		@Order(0)
 		FlywayConfigurationCustomizer customizerTwo() {
-			return (configuration) -> configuration.connectRetries(10).ignoreMissingMigrations(true);
+			return (configuration) -> configuration.connectRetries(10).baselineDescription("<< Custom baseline >>");
 		}
 
 	}
@@ -1008,7 +1016,7 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isStateScript() {
+		public boolean isBaselineMigration() {
 			return false;
 		}
 
