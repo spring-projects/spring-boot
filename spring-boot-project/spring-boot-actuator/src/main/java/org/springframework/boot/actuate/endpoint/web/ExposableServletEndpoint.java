@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
 public interface ExposableServletEndpoint extends ExposableEndpoint<Operation>, PathMappedEndpoint {
 
 	/**
-	 * Return details of the servlet that should register.
+	 * Return details of the servlet that should be registered.
 	 * @return the endpoint servlet
 	 */
 	EndpointServlet getEndpointServlet();
