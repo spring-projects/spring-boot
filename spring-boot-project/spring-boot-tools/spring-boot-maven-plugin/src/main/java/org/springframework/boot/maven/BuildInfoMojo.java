@@ -19,6 +19,8 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
@@ -57,53 +59,23 @@ public class BuildInfoMojo extends AbstractMojo {
 	private MavenSession session;
 
 	/**
+	 * The Maven project.
+	 */
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	private MavenProject project;
+
+	/**
 	 * The location of the generated {@code build-info.properties} file.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
 
 	/**
-	 * The value used for the {@code build.group} property. Defaults to
-	 * {@code project.groupId}. To disable the {@code build.group} property entirely, use
-	 * {@code 'off'}.
-	 * @since 2.6.0
-	 */
-	@Parameter(defaultValue = "${project.groupId}")
-	private String group;
-
-	/**
-	 * The value used for the {@code build.artifact} property. Defaults to
-	 * {@code project.artifactId}. To disable the {@code build.artifact} property
-	 * entirely, use {@code 'off'}.
-	 * @since 2.6.0
-	 */
-	@Parameter(defaultValue = "${project.artifactId}")
-	private String artifact;
-
-	/**
-	 * The value used for the {@code build.version} property. Defaults to
-	 * {@code project.version}. To disable the {@code build.version} property entirely,
-	 * use {@code 'off'}.
-	 * @since 2.6.0
-	 */
-	@Parameter(defaultValue = "${project.version}")
-	private String version;
-
-	/**
-	 * The value used for the {@code build.name} property. Defaults to
-	 * {@code project.name}. To disable the {@code build.name} property entirely, use
-	 * {@code 'off'}.
-	 * @since 2.6.0
-	 */
-	@Parameter(defaultValue = "${project.name}")
-	private String name;
-
-	/**
 	 * The value used for the {@code build.time} property in a form suitable for
 	 * {@link Instant#parse(CharSequence)}. Defaults to
 	 * {@code project.build.outputTimestamp} or {@code session.request.startTime} if the
 	 * former is not set. To disable the {@code build.time} property entirely, use
-	 * {@code 'off'}.
+	 * {@code 'off'} or add it to {@code excludeInfoProperties}.
 	 * @since 2.2.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputTimestamp}")
@@ -116,11 +88,19 @@ public class BuildInfoMojo extends AbstractMojo {
 	@Parameter
 	private Map<String, String> additionalProperties;
 
+	/**
+	 * Properties that should be excluded {@code build-info.properties} file. Can be used
+	 * to exclude the standard {@code group}, {@code artifact}, {@code name},
+	 * {@code version} or {@code time} properties as well as items from
+	 * {@code additionalProperties}.
+	 */
+	@Parameter
+	private List<String> excludeInfoProperties;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			ProjectDetails details = new ProjectDetails(getGroup(), getArtifact(), getVersion(), getName(),
-					getBuildTime(), this.additionalProperties);
+			ProjectDetails details = getProjectDetails();
 			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(details);
 			this.buildContext.refresh(this.outputFile);
 		}
@@ -132,32 +112,27 @@ public class BuildInfoMojo extends AbstractMojo {
 		}
 	}
 
-	private String getGroup() {
-		if ("off".equalsIgnoreCase(this.group)) {
-			return null;
-		}
-		return this.group;
+	private ProjectDetails getProjectDetails() {
+		String group = getIfNotExcluded("group", this.project.getGroupId());
+		String artifact = getIfNotExcluded("artifact", this.project.getArtifactId());
+		String version = getIfNotExcluded("version", this.project.getVersion());
+		String name = getIfNotExcluded("name", this.project.getName());
+		Instant time = getIfNotExcluded("time", getBuildTime());
+		Map<String, String> additionalProperties = applyExclusions(this.additionalProperties);
+		return new ProjectDetails(group, artifact, version, name, time, additionalProperties);
 	}
 
-	private String getArtifact() {
-		if ("off".equalsIgnoreCase(this.artifact)) {
-			return null;
-		}
-		return this.artifact;
+	private <T> T getIfNotExcluded(String name, T value) {
+		return (this.excludeInfoProperties == null || !this.excludeInfoProperties.contains(name)) ? value : null;
 	}
 
-	private String getVersion() {
-		if ("off".equalsIgnoreCase(this.version)) {
-			return null;
+	private Map<String, String> applyExclusions(Map<String, String> source) {
+		if (source == null || this.excludeInfoProperties == null) {
+			return source;
 		}
-		return this.version;
-	}
-
-	private String getName() {
-		if ("off".equalsIgnoreCase(this.name)) {
-			return null;
-		}
-		return this.name;
+		Map<String, String> result = new LinkedHashMap<>(source);
+		this.excludeInfoProperties.forEach(result::remove);
+		return result;
 	}
 
 	private Instant getBuildTime() {

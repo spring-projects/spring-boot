@@ -59,10 +59,11 @@ public class BuildInfo extends ConventionTask {
 	@TaskAction
 	public void generateBuildProperties() {
 		try {
+			ProjectDetails details = new ProjectDetails(this.properties.getGroup(), this.properties.getArtifact(),
+					this.properties.getVersion(), this.properties.getName(), this.properties.getTime(),
+					coerceToStringValues(this.properties.getAdditional()));
 			new BuildPropertiesWriter(new File(getDestinationDir(), "build-info.properties"))
-					.writeBuildProperties(new ProjectDetails(this.properties.getGroup(), this.properties.getArtifact(),
-							this.properties.getVersion(), this.properties.getName(), this.properties.getTime(),
-							coerceToStringValues(this.properties.getAdditional())));
+					.writeBuildProperties(details);
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);

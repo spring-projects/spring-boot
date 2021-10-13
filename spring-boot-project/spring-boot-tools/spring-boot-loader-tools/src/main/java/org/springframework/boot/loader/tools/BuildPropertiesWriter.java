@@ -73,18 +73,10 @@ public final class BuildPropertiesWriter {
 
 	protected Properties createBuildInfo(ProjectDetails project) {
 		Properties properties = CollectionFactory.createSortedProperties(true);
-		if (StringUtils.hasText(project.getGroup())) {
-			properties.put("build.group", project.getGroup());
-		}
-		if (StringUtils.hasText(project.getArtifact())) {
-			properties.put("build.artifact", project.getArtifact());
-		}
-		if (StringUtils.hasText(project.getName())) {
-			properties.put("build.name", project.getName());
-		}
-		if (StringUtils.hasText(project.getVersion())) {
-			properties.put("build.version", project.getVersion());
-		}
+		addIfHasValue(properties, "build.group", project.getGroup());
+		addIfHasValue(properties, "build.artifact", project.getArtifact());
+		addIfHasValue(properties, "build.name", project.getName());
+		addIfHasValue(properties, "build.version", project.getVersion());
 		if (project.getTime() != null) {
 			properties.put("build.time", DateTimeFormatter.ISO_INSTANT.format(project.getTime()));
 		}
@@ -92,6 +84,12 @@ public final class BuildPropertiesWriter {
 			project.getAdditionalProperties().forEach((name, value) -> properties.put("build." + name, value));
 		}
 		return properties;
+	}
+
+	private void addIfHasValue(Properties properties, String name, String value) {
+		if (StringUtils.hasText(value)) {
+			properties.put(name, value);
+		}
 	}
 
 	/**

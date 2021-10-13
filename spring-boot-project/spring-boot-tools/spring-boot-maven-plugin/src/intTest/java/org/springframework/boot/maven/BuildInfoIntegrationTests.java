@@ -65,14 +65,6 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	void generatedBuildInfoUsesCustomBuildProperties(MavenBuild mavenBuild) {
-		mavenBuild.project("build-info-custom-build-properties")
-				.execute(buildInfo((buildInfo) -> assertThat(buildInfo).hasBuildGroup("test-group")
-						.hasBuildArtifact("test-artifact").hasBuildName("test-name").hasBuildVersion("test-version")
-						.containsBuildTime()));
-	}
-
-	@TestTemplate
 	void generatedBuildInfoReproducible(MavenBuild mavenBuild) {
 		mavenBuild.project("build-info-reproducible")
 				.execute(buildInfo((buildInfo) -> assertThat(buildInfo)
@@ -99,8 +91,16 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenBuildPropertiesAreEmptyTheyDoNotAppearInGeneratedBuildInfo(MavenBuild mavenBuild) {
-		mavenBuild.project("build-info-disable-build-properties").execute(
+	void whenBuildTimeIsExcludedIfDoesNotAppearInGeneratedBuildInfo(MavenBuild mavenBuild) {
+		mavenBuild.project("build-info-exclude-build-time").execute(buildInfo((buildInfo) -> assertThat(buildInfo)
+				.hasBuildGroup("org.springframework.boot.maven.it").hasBuildArtifact("build-info-exclude-build-time")
+				.hasBuildName("Generate build info with excluded build time").hasBuildVersion("0.0.1.BUILD-SNAPSHOT")
+				.doesNotContainBuildTime()));
+	}
+
+	@TestTemplate
+	void whenBuildPropertiesAreExcludedTheyDoNotAppearInGeneratedBuildInfo(MavenBuild mavenBuild) {
+		mavenBuild.project("build-info-exclude-build-properties").execute(
 				buildInfo((buildInfo) -> assertThat(buildInfo).doesNotContainBuildGroup().doesNotContainBuildArtifact()
 						.doesNotContainBuildName().doesNotContainBuildVersion().containsBuildTime()));
 	}
