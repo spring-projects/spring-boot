@@ -222,8 +222,8 @@ public class FlywayAutoConfiguration {
 					.to(configuration::initSql);
 			map.from(properties.getScriptPlaceholderPrefix())
 					.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
-			map.from(properties.getScriptPlaceholderPrefix())
-					.to((suffix) -> configuration.scriptPlaceholderPrefix(suffix));
+			map.from(properties.getScriptPlaceholderSuffix())
+					.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
 			// Pro properties
 			map.from(properties.getBatch()).to(configuration::batch);
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);

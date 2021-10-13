@@ -665,6 +665,24 @@ class FlywayAutoConfigurationTests {
 				.run(validateFlywayTeamsPropertyOnly("baselineMigrationPrefix"));
 	}
 
+	@Test
+	void scriptPlaceholderPrefixIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.script-placeholder-prefix=SPP")
+				.run((context) -> assertThat(
+						context.getBean(Flyway.class).getConfiguration().getScriptPlaceholderPrefix())
+								.isEqualTo("SPP"));
+	}
+
+	@Test
+	void scriptPlaceholderSuffixIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.script-placeholder-suffix=SPS")
+				.run((context) -> assertThat(
+						context.getBean(Flyway.class).getConfiguration().getScriptPlaceholderSuffix())
+								.isEqualTo("SPS"));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {
 		return (context) -> {
 			assertThat(context).hasFailed();
