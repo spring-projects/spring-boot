@@ -414,9 +414,7 @@ class IntegrationAutoConfigurationTests {
 
 			GenericMessage<String> testMessage = new GenericMessage<>("test");
 			context.getBean("testChannel", QueueChannel.class).send(testMessage);
-			@SuppressWarnings("unchecked")
-			BlockingQueue<Message<?>> sink = context.getBean("sink", BlockingQueue.class);
-			assertThat(sink.poll(10, TimeUnit.SECONDS)).isSameAs(testMessage);
+			assertThat(context.getBean("sink", BlockingQueue.class).poll(10, TimeUnit.SECONDS)).isSameAs(testMessage);
 		});
 	}
 
@@ -457,7 +455,22 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	void whenFixedRatePollerPropertyIsSetThenItIsReflectedAsFixedRatePropetyOfPeriodicTrigger() {
+	void whenFixedDelayPollerPropertyIsSetThenItIsReflectedAsFixedDelayPropertyOfPeriodicTrigger() {
+		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
+				.withPropertyValues("spring.integration.poller.fixed-delay=5000").run((context) -> {
+					assertThat(context).hasSingleBean(PollerMetadata.class);
+					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+					assertThat(metadata.getTrigger())
+							.asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
+							.satisfies((trigger) -> {
+								assertThat(trigger.getPeriod()).isEqualTo(5000L);
+								assertThat(trigger.isFixedRate()).isFalse();
+							});
+				});
+	}
+
+	@Test
+	void whenFixedRatePollerPropertyIsSetThenItIsReflectedAsFixedRatePropertyOfPeriodicTrigger() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
 				.withPropertyValues("spring.integration.poller.fixed-rate=5000").run((context) -> {
 					assertThat(context).hasSingleBean(PollerMetadata.class);
