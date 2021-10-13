@@ -56,7 +56,7 @@ class AutoConfigureMockRestServiceServerWithRootUriIntegrationTests {
 	MeterRegistry meterRegistry;
 
 	@Test
-	void whenRestTemplateAppliesARootUriThenMockServerExpecationsAreStillMatched() {
+	void whenRestTemplateAppliesARootUriThenMockServerExpectationsAreStillMatched() {
 		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test", String.class);
 		assertThat(entity.getBody()).isEqualTo("hello");

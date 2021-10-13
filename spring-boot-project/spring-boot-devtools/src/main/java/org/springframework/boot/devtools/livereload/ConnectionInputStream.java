@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class ConnectionInputStream extends FilterInputStream {
 
 	/**
 	 * Read a single byte from the stream (checking that the end of the stream hasn't been
-	 * reached.
+	 * reached).
 	 * @return the content
 	 * @throws IOException in case of I/O errors
 	 */

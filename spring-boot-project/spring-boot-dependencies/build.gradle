@@ -1391,7 +1391,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.12-SNAPSHOT") {
+	library("Reactor Bom", "2020.0.12") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1642,7 +1642,7 @@ bom {
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.4.0-M3") {
+	library("Spring HATEOAS", "1.4.0-SNAPSHOT") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
