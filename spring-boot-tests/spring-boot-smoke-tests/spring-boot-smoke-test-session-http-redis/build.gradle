@@ -1,0 +1,19 @@
+plugins {
+    id "java"
+    id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Http Session Mongodb smoke test"
+
+dependencies {
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+    implementation("org.springframework.session:spring-session-data-redis")
+
+    testImplementation("it.ozimov:embedded-redis:0.7.3") {
+        exclude group: "org.slf4j", module: "slf4j-simple"
+    }
+    testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}
