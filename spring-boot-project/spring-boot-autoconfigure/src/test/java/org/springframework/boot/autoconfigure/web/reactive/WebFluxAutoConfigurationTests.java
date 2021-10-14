@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ import org.springframework.context.i18n.LocaleContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
@@ -151,12 +150,13 @@ class WebFluxAutoConfigurationTests {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
-			assertThat(staticHandler.getLocations()).hasSize(4);
+			assertThat(staticHandler).extracting("locationValues").asList().hasSize(4);
+			assertThat(staticHandler.getLocations()).hasSize(1);
+			assertThat(staticHandler.getLocations().get(0)).hasToString("class path resource [public/]");
 			assertThat(hm.getUrlMap().get("/webjars/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap().get("/webjars/**");
-			assertThat(webjarsHandler.getLocations()).hasSize(1);
-			assertThat(webjarsHandler.getLocations().get(0))
-					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
+			assertThat(webjarsHandler).extracting("locationValues").asList()
+					.containsExactly("classpath:/META-INF/resources/webjars/");
 		});
 	}
 
@@ -166,7 +166,7 @@ class WebFluxAutoConfigurationTests {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/static/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/static/**");
-			assertThat(staticHandler.getLocations()).hasSize(4);
+			assertThat(staticHandler).extracting("locationValues").asList().hasSize(4);
 		});
 	}
 
