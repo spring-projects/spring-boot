@@ -82,6 +82,9 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.startsWith("org.jboss.spec")) {
 			return true;
 		}
+		if (group.equals("org.apache.geronimo.specs")) {
+			return true;
+		}
 		return false;
 	}
 
