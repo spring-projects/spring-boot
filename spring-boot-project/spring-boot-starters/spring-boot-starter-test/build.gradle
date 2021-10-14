@@ -9,6 +9,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))
 	api("com.jayway.jsonpath:json-path")
+	api("jakarta.xml.bind:jakarta.xml.bind-api")
 	api("org.assertj:assertj-core")
 	api("org.hamcrest:hamcrest")
 	api("org.junit.jupiter:junit-jupiter")
