@@ -69,26 +69,24 @@ public class H2ConsoleAutoConfiguration {
 		if (logger.isInfoEnabled()) {
 			logDataSources(dataSource, path);
 		}
-
 		return registration;
 	}
 
 	private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
-		List<String> urls = dataSource.orderedStream()
-				.map((available) -> {
-					String url = null;
-					try (Connection connection = available.getConnection()) {
-						url = connection.getMetaData().getURL();
-					} catch (Exception ex) {
-
-					}
-					return url;
-				}).filter(Objects::nonNull)
-				.collect(Collectors.toList());
+		List<String> urls = dataSource.orderedStream().map((available) -> {
+			try (Connection connection = available.getConnection()) {
+				return "'" + connection.getMetaData().getURL() + "'";
+			}
+			catch (Exception ex) {
+				return null;
+			}
+		}).filter(Objects::nonNull).collect(Collectors.toList());
 		if (!urls.isEmpty()) {
-			String log = urls.stream().collect(Collectors.joining("', '",
-					"H2 console available at '" + path + "'. Database(s) available at '", "'."));
-			logger.info(log);
+			StringBuilder sb = new StringBuilder("H2 console available at '").append(path).append("'. ");
+			String tmp = (urls.size() > 1) ? "Databases" : "Database";
+			sb.append(tmp).append(" available at ");
+			sb.append(String.join(", ", urls));
+			logger.info(sb.toString());
 		}
 	}
 

@@ -34,7 +34,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -120,18 +120,10 @@ class H2ConsoleAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> {
 					try (Connection connection = context.getBean(DataSource.class).getConnection()) {
-						assertThat(output)
-								.contains("H2 console available at '/h2-console'. Database(s) available at '" + connection.getMetaData().getURL() + "'");
+						assertThat(output).contains("H2 console available at '/h2-console'. Database available at '"
+								+ connection.getMetaData().getURL() + "'");
 					}
 				});
-	}
-
-	@Test
-	@ExtendWith(OutputCaptureExtension.class)
-	void allDataSourceUrlsAreLoggedWhenMultipleAvailable(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(MultiDataSourceConfiguration.class)
-				.withPropertyValues("spring.h2.console.enabled=true").run((context) ->
-						assertThat(output).contains("H2 console available at '/h2-console'. Database(s) available at 'primaryUrl', 'secondaryUrl'"));
 	}
 
 	@Test
@@ -139,11 +131,19 @@ class H2ConsoleAutoConfigurationTests {
 	void noDataSourceIsLoggedWhenNoneAvailable(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(FailingDataSourceConfiguration.class)
 				.withPropertyValues("spring.h2.console.enabled=true")
-				.run((context) -> assertThat(output).isEmpty());
+				.run((context) -> assertThat(output).doesNotContain("H2 console available"));
 	}
 
+	@Test
+	@ExtendWith(OutputCaptureExtension.class)
+	void allDataSourceUrlsAreLoggedWhenMultipleAvailable(CapturedOutput output) {
+		this.contextRunner
+				.withUserConfiguration(FailingDataSourceConfiguration.class, MultiDataSourceConfiguration.class)
+				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> assertThat(output).contains(
+						"H2 console available at '/h2-console'. Databases available at 'someJdbcUrl', 'anotherJdbcUrl'"));
+	}
 
-		@Test
+	@Test
 	void h2ConsoleShouldNotFailIfDatabaseConnectionFails() {
 		this.contextRunner.withUserConfiguration(FailingDataSourceConfiguration.class)
 				.withPropertyValues("spring.h2.console.enabled=true")
@@ -163,20 +163,21 @@ class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class MultiDataSourceConfiguration extends FailingDataSourceConfiguration {
+	static class MultiDataSourceConfiguration {
 
 		@Bean
-		@Primary
-		DataSource primaryDataSource() throws SQLException {
-			return getDataSource("primaryUrl");
-		}
-
-		@Bean
+		@Order(5)
 		DataSource anotherDataSource() throws SQLException {
-			return getDataSource("secondaryUrl");
+			return mockDataSource("anotherJdbcUrl");
 		}
 
-		private DataSource getDataSource(String url) throws SQLException {
+		@Bean
+		@Order(0)
+		DataSource someDataSource() throws SQLException {
+			return mockDataSource("someJdbcUrl");
+		}
+
+		private DataSource mockDataSource(String url) throws SQLException {
 			DataSource dataSource = mock(DataSource.class);
 			given(dataSource.getConnection()).willReturn(mock(Connection.class));
 			given(dataSource.getConnection().getMetaData()).willReturn(mock(DatabaseMetaData.class));
