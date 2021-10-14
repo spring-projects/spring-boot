@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -177,8 +178,10 @@ class WebMvcAutoConfigurationTests {
 	void resourceHandlerMapping() {
 		this.contextRunner.run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
-			assertThat(locations.get("/**")).hasSize(2);
-			assertThat(locations.get("/webjars/**")).hasSize(0);
+			assertThat(locations.get("/**")).hasSize(5);
+			assertThat(locations.get("/webjars/**")).hasSize(1);
+			assertThat(locations.get("/webjars/**").get(0))
+					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(1);
 			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(0);
 			assertThat(getResourceResolvers(context, "/**")).hasSize(1);
@@ -190,17 +193,17 @@ class WebMvcAutoConfigurationTests {
 	void customResourceHandlerMapping() {
 		this.contextRunner.withPropertyValues("spring.mvc.static-path-pattern:/static/**").run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
-			assertThat(locations.get("/static/**")).hasSize(2);
+			assertThat(locations.get("/static/**")).hasSize(5);
 			assertThat(getResourceResolvers(context, "/static/**")).hasSize(1);
 		});
 	}
 
 	@Test
 	void resourceHandlerMappingOverrideWebjars() {
-		this.contextRunner.withUserConfiguration(WebJarsResources.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(WebJars.class).run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/webjars/**")).hasSize(1);
-			assertThat(locations.get("/webjars/**").get(0).getFilename()).isEqualTo("test");
+			assertThat(locations.get("/webjars/**").get(0)).isEqualTo(new ClassPathResource("/foo/"));
 		});
 	}
 
@@ -209,7 +212,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(AllResources.class).run((context) -> {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/**")).hasSize(1);
-			assertThat(locations.get("/**").get(0).getFilename()).isEqualTo("test");
+			assertThat(locations.get("/**").get(0)).isEqualTo(new ClassPathResource("/foo/"));
 		});
 	}
 
@@ -1039,7 +1042,7 @@ class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
 		Object bean = context.getBean("resourceHandlerMapping");
 		if (bean instanceof HandlerMapping) {
-			return getMappingLocations((HandlerMapping) bean);
+			return getMappingLocations(context, (HandlerMapping) bean);
 		}
 		assertThat(bean.toString()).isEqualTo("null");
 		return Collections.emptyMap();
@@ -1058,11 +1061,18 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping) {
+	private Map<String, List<Resource>> getMappingLocations(ApplicationContext context, HandlerMapping mapping) {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		getHandlerMap(mapping).forEach((key, value) -> {
-			Object locations = ReflectionTestUtils.getField(value, "locationsToUse");
-			mappingLocations.put(key, (List<Resource>) locations);
+			List<String> locationValues = (List<String>) ReflectionTestUtils.getField(value, "locationValues");
+			List<Resource> locationResources = (List<Resource>) ReflectionTestUtils.getField(value,
+					"locationResources");
+			List<Resource> resources = new ArrayList<>();
+			for (String locationValue : locationValues) {
+				resources.add(context.getResource(locationValue));
+			}
+			resources.addAll(locationResources);
+			mappingLocations.put(key, resources);
 		});
 		return mappingLocations;
 	}
@@ -1093,11 +1103,11 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class WebJarsResources implements WebMvcConfigurer {
+	static class WebJars implements WebMvcConfigurer {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/webjars/**").addResourceLocations(new ClassPathResource("/test", getClass()));
+			registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/foo/");
 		}
 
 	}
@@ -1107,7 +1117,7 @@ class WebMvcAutoConfigurationTests {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/**").addResourceLocations(new ClassPathResource("/test", getClass()));
+			registry.addResourceHandler("/**").addResourceLocations("classpath:/foo/");
 		}
 
 	}
