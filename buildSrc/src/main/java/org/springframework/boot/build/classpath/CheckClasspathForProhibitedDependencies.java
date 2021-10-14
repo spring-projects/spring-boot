@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,9 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 			return true;
 		}
 		if (group.equals("org.slf4j") && id.getName().equals("jcl-over-slf4j")) {
+			return true;
+		}
+		if (group.startsWith("org.jboss.spec")) {
 			return true;
 		}
 		return false;
