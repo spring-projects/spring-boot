@@ -548,6 +548,13 @@ bom {
 			]
 		}
 	}
+	library("Jakarta Management", "1.1.4") {
+		group("jakarta.management.j2ee") {
+			modules = [
+				"jakarta.management.j2ee-api"
+			]
+		}
+	}
 	library("Jakarta Persistence", "2.2.3") {
 		group("jakarta.persistence") {
 			modules = [
