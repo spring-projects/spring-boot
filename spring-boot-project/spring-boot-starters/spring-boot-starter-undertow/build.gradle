@@ -7,13 +7,15 @@ description = "Starter for using Undertow as the embedded servlet container. An 
 dependencies {
 	api("io.undertow:undertow-core")
 	api("io.undertow:undertow-servlet") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
 	}
 	api("io.undertow:undertow-websockets-jsr") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
+		exclude group: "org.jboss.spec.javax.websocket", module: "jboss-websocket-api_1.1_spec"
 	}
 	api("jakarta.servlet:jakarta.servlet-api")
+	api("jakarta.websocket:jakarta.websocket-api")
 	api("org.glassfish:jakarta.el")
 }
