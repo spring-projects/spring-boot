@@ -309,7 +309,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "7.15.0") {
+	library("Flyway", "8.0.0") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -409,7 +409,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.5.7.Final") {
+	library("Hibernate", "5.6.0.Final") {
 		prohibit("[6.0.0.Alpha2,)") {
 			because "it uses the jakarta.* namespace"
 		}
@@ -536,7 +536,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.12.5") {
+	library("Jackson Bom", "2.13.0") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
@@ -1043,7 +1043,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.4.3") {
+	library("Liquibase", "4.5.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-core"
@@ -1231,7 +1231,7 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "3.12.4") {
+	library("Mockito", "4.0.0") {
 		group("org.mockito") {
 			modules = [
 				"mockito-core",
