@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +51,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -151,12 +154,14 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
+		private final ResourceLoader resourceLoader;
+
 		public WebFluxConfig(org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
 				WebProperties webProperties, WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
 				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
-				ObjectProvider<ViewResolver> viewResolvers) {
+				ObjectProvider<ViewResolver> viewResolvers, ResourceLoader resourceLoader) {
 			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
 					: webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
@@ -165,6 +170,7 @@ public class WebFluxAutoConfiguration {
 			this.codecCustomizers = codecCustomizers;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer.getIfAvailable();
 			this.viewResolvers = viewResolvers;
+			this.resourceLoader = resourceLoader;
 		}
 
 		@Override
@@ -184,17 +190,28 @@ public class WebFluxAutoConfiguration {
 				return;
 			}
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
-						.addResourceLocations("classpath:/META-INF/resources/webjars/");
-				configureResourceCaching(registration);
-				customizeResourceHandlerRegistration(registration);
+				String webjarsLocation = "classpath:/META-INF/resources/webjars/";
+				if (this.resourceLoader.getResource(webjarsLocation).exists()) {
+					ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
+							.addResourceLocations(webjarsLocation);
+					configureResourceCaching(registration);
+					customizeResourceHandlerRegistration(registration);
+				}
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
-						.addResourceLocations(this.resourceProperties.getStaticLocations());
-				configureResourceCaching(registration);
-				customizeResourceHandlerRegistration(registration);
+				List<String> foundLocations = new ArrayList<>();
+				for (String staticLocation : this.resourceProperties.getStaticLocations()) {
+					if (this.resourceLoader.getResource(staticLocation).exists()) {
+						foundLocations.add(staticLocation);
+					}
+				}
+				if (!foundLocations.isEmpty()) {
+					ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
+							.addResourceLocations(foundLocations.toArray(new String[0]));
+					configureResourceCaching(registration);
+					customizeResourceHandlerRegistration(registration);
+				}
 			}
 		}
 
