@@ -316,21 +316,21 @@ public class MetricsProperties {
 		/**
 		 * Specific service-level objective boundaries for meter IDs starting with the
 		 * specified name. The longest match wins. Counters will be published for each
-		 * specified boundary. Values can be specified as a long or as a Duration value
+		 * specified boundary. Values can be specified as a double or as a Duration value
 		 * (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, ServiceLevelObjectiveBoundary[]> slo = new LinkedHashMap<>();
 
 		/**
 		 * Minimum value that meter IDs starting with the specified name are expected to
-		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * observe. The longest match wins. Values can be specified as a double or as a
 		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
 
 		/**
 		 * Maximum value that meter IDs starting with the specified name are expected to
-		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * observe. The longest match wins. Values can be specified as a double or as a
 		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
