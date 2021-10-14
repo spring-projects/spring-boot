@@ -47,6 +47,8 @@ public class IntegrationProperties {
 
 	private final Poller poller = new Poller();
 
+	private final Management management = new Management();
+
 	public Channel getChannel() {
 		return this.channel;
 	}
@@ -69,6 +71,10 @@ public class IntegrationProperties {
 
 	public Poller getPoller() {
 		return this.poller;
+	}
+
+	public Management getManagement() {
+		return this.management;
 	}
 
 	public static class Channel {
@@ -383,6 +389,15 @@ public class IntegrationProperties {
 		public void setCron(String cron) {
 			this.cron = cron;
 		}
+
+	}
+
+	public static class Management {
+
+		/**
+		 * Logging management in the integration components.
+		 */
+		boolean loggingEnabled = true;
 
 	}
 
