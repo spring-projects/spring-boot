@@ -187,9 +187,17 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | One or more additional tags to apply to the generated image.
 |
 
-| `cacheVolumeNames`
+| `caches`
 | Cache volume names that should be used by the builder instead of generating random names.
 |
+
+| `buildCache`
+| A cache containing layers created by buildpacks and used by the image building process.
+| A named volume in the Docker daemon, with a name derived from the image name.
+
+| `launchCache`
+| A cache containing layers created by buildpacks and used by the image launching process.
+| A named volume in the Docker daemon, with a name derived from the image name.
 
 |===
 
@@ -344,10 +352,23 @@ The `publish` option can be specified on the command line as well, as shown in t
 	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
 ----
 
+[[build-image.examples.caches]]
+=== Builder Cache Configuration
 
+The CNB builder caches layers that are used when building and launching an image.
+By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
+If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
+
+The cache volumes can be configured to use alternative names to give more control over cache lifecycle as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/packaging-oci-image/caches-pom.xml[tags=caches]
+----
 
 [[build-image.examples.docker]]
 === Docker Configuration
+
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]

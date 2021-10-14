@@ -87,18 +87,36 @@ class Lifecycle implements Closeable {
 		this.platformVersion = getPlatformVersion(builder.getBuilderMetadata().getLifecycle());
 		this.layersVolume = createRandomVolumeName("pack-layers-");
 		this.applicationVolume = createRandomVolumeName("pack-app-");
-		this.buildCacheVolume = createCacheVolumeName(request, "build");
-		this.launchCacheVolume = createCacheVolumeName(request, "launch");
+		this.buildCacheVolume = getBuildCacheVolumeName(request);
+		this.launchCacheVolume = getLaunchCacheVolumeName(request);
 	}
 
 	protected VolumeName createRandomVolumeName(String prefix) {
 		return VolumeName.random(prefix);
 	}
 
-	private VolumeName createCacheVolumeName(BuildRequest request, String suffix) {
-		if (!request.getCacheVolumeNames().isEmpty() && request.getCacheVolumeNames().containsKey(suffix)) {
-			return VolumeName.of(request.getCacheVolumeNames().get(suffix));
+	private VolumeName getBuildCacheVolumeName(BuildRequest request) {
+		if (request.getBuildCache() != null) {
+			return getVolumeName(request.getBuildCache());
 		}
+		return createCacheVolumeName(request, "build");
+	}
+
+	private VolumeName getLaunchCacheVolumeName(BuildRequest request) {
+		if (request.getLaunchCache() != null) {
+			return getVolumeName(request.getLaunchCache());
+		}
+		return createCacheVolumeName(request, "launch");
+	}
+
+	private VolumeName getVolumeName(Cache cache) {
+		if (cache.getVolume() != null) {
+			return VolumeName.of(cache.getVolume().getName());
+		}
+		return null;
+	}
+
+	private VolumeName createCacheVolumeName(BuildRequest request, String suffix) {
 		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6);
 	}
 

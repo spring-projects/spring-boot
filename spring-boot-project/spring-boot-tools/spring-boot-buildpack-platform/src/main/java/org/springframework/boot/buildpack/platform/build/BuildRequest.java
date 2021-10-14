@@ -75,7 +75,9 @@ public class BuildRequest {
 
 	private final List<ImageReference> tags;
 
-	private final Map<String, String> cacheVolumeNames;
+	private final Cache buildCache;
+
+	private final Cache launchCache;
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "Name must not be null");
@@ -94,13 +96,14 @@ public class BuildRequest {
 		this.bindings = Collections.emptyList();
 		this.network = null;
 		this.tags = Collections.emptyList();
-		this.cacheVolumeNames = Collections.emptyMap();
+		this.buildCache = null;
+		this.launchCache = null;
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
 			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
 			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks,
-			List<Binding> bindings, String network, List<ImageReference> tags, Map<String, String> cacheVolumeNames) {
+			List<Binding> bindings, String network, List<ImageReference> tags, Cache buildCache, Cache launchCache) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
@@ -115,7 +118,8 @@ public class BuildRequest {
 		this.bindings = bindings;
 		this.network = network;
 		this.tags = tags;
-		this.cacheVolumeNames = cacheVolumeNames;
+		this.buildCache = buildCache;
+		this.launchCache = launchCache;
 	}
 
 	/**
@@ -127,7 +131,7 @@ public class BuildRequest {
 		Assert.notNull(builder, "Builder must not be null");
 		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, this.cacheVolumeNames);
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -138,7 +142,7 @@ public class BuildRequest {
 	public BuildRequest withRunImage(ImageReference runImageName) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, runImageName.inTaggedOrDigestForm(),
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, this.cacheVolumeNames);
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -150,7 +154,7 @@ public class BuildRequest {
 		Assert.notNull(creator, "Creator must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -166,7 +170,7 @@ public class BuildRequest {
 		env.put(name, value);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, this.cacheVolumeNames);
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -180,7 +184,8 @@ public class BuildRequest {
 		updatedEnv.putAll(env);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging, this.pullPolicy,
-				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.cacheVolumeNames);
+				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.buildCache,
+				this.launchCache);
 	}
 
 	/**
@@ -191,7 +196,7 @@ public class BuildRequest {
 	public BuildRequest withCleanCache(boolean cleanCache) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -202,7 +207,7 @@ public class BuildRequest {
 	public BuildRequest withVerboseLogging(boolean verboseLogging) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -213,7 +218,7 @@ public class BuildRequest {
 	public BuildRequest withPullPolicy(PullPolicy pullPolicy) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -224,7 +229,7 @@ public class BuildRequest {
 	public BuildRequest withPublish(boolean publish) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -248,7 +253,7 @@ public class BuildRequest {
 		Assert.notNull(buildpacks, "Buildpacks must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks, this.bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -272,7 +277,7 @@ public class BuildRequest {
 		Assert.notNull(bindings, "Bindings must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, bindings,
-				this.network, this.tags, this.cacheVolumeNames);
+				this.network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -284,7 +289,7 @@ public class BuildRequest {
 	public BuildRequest withNetwork(String network) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				network, this.tags, this.cacheVolumeNames);
+				network, this.tags, this.buildCache, this.launchCache);
 	}
 
 	/**
@@ -306,39 +311,31 @@ public class BuildRequest {
 		Assert.notNull(tags, "Tags must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, tags, this.cacheVolumeNames);
+				this.network, tags, this.buildCache, this.launchCache);
 	}
 
 	/**
-	 * Return a new {@link BuildRequest} with an additional cache volume name.
-	 * @param type the cache volume type
-	 * @param name the cache volume name
+	 * Return a new {@link BuildRequest} with an updated build cache.
+	 * @param buildCache the build cache
 	 * @return an updated build request
 	 */
-	public BuildRequest withCacheVolumeName(String type, String name) {
-		Assert.hasText(type, "Type must not be empty");
-		Assert.state((type.equals("build") || type.equals("launch")), "Type must be either 'build' or 'launch'");
-		Assert.hasText(name, "Name must not be empty");
-		Map<String, String> cacheVolumeNames = new LinkedHashMap<>(this.cacheVolumeNames);
-		cacheVolumeNames.put(type, name);
+	public BuildRequest withBuildCache(Cache buildCache) {
+		Assert.notNull(buildCache, "BuildCache must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, Collections.unmodifiableMap(cacheVolumeNames));
+				this.network, this.tags, buildCache, this.launchCache);
 	}
 
 	/**
-	 * Return a new {@link BuildRequest} with additional cache volume names.
-	 * @param entries the additional cache volume names
+	 * Return a new {@link BuildRequest} with an updated launch cache.
+	 * @param launchCache the cache
 	 * @return an updated build request
 	 */
-	public BuildRequest withCacheVolumeNames(Map<String, String> entries) {
-		Assert.notNull(entries, "Entries must not be null");
-		Assert.state(!entries.isEmpty(), "Entries must not be empty");
-		BuildRequest request = null;
-		for (Map.Entry<String, String> entry : entries.entrySet()) {
-			request = withCacheVolumeName(entry.getKey(), entry.getValue());
-		}
-		return request;
+	public BuildRequest withLaunchCache(Cache launchCache) {
+		Assert.notNull(launchCache, "LaunchCache must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
+				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
+				this.network, this.tags, this.buildCache, launchCache);
 	}
 
 	/**
@@ -459,11 +456,19 @@ public class BuildRequest {
 	}
 
 	/**
-	 * Return the custom cache volume names that should be used by the lifecycle.
-	 * @return the cache volume names
+	 * Return the custom build cache that should be used by the lifecycle.
+	 * @return the build cache
 	 */
-	public Map<String, String> getCacheVolumeNames() {
-		return this.cacheVolumeNames;
+	public Cache getBuildCache() {
+		return this.buildCache;
+	}
+
+	/**
+	 * Return the custom launch cache that should be used by the lifecycle.
+	 * @return the launch cache
+	 */
+	public Cache getLaunchCache() {
+		return this.launchCache;
 	}
 
 	/**

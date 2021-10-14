@@ -99,7 +99,9 @@ public class BootBuildImage extends DefaultTask {
 
 	private final ListProperty<String> tags;
 
-	private Map<String, String> cacheVolumeNames = new HashMap<>();
+	private final CacheSpec buildCache = new CacheSpec();
+
+	private final CacheSpec launchCache = new CacheSpec();
 
 	private final DockerSpec docker = new DockerSpec();
 
@@ -421,41 +423,6 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Returns the cache volume names that will be used when building the image.
-	 * @return the cache volume names
-	 */
-	@Input
-	@Optional
-	public Map<String, String> getCacheVolumeNames() {
-		return this.cacheVolumeNames;
-	}
-
-	/**
-	 * Sets the cache volume names that will be used when building the image.
-	 * @param cacheVolumeNames the cache volume names
-	 */
-	public void setCacheVolumeNames(Map<String, String> cacheVolumeNames) {
-		this.cacheVolumeNames = cacheVolumeNames;
-	}
-
-	/**
-	 * Add an entry to cache volume names that will be used when building the image.
-	 * @param type the type of the entry
-	 * @param name the name of the entry
-	 */
-	public void cacheVolumeName(String type, String name) {
-		this.cacheVolumeNames.put(type, name);
-	}
-
-	/**
-	 * Adds entries to cache volume names that will be used when building the image.
-	 * @param entries the entries to add to cache volume names
-	 */
-	public void cacheVolumeNames(Map<String, String> entries) {
-		this.cacheVolumeNames.putAll(entries);
-	}
-
-	/**
 	 * Returns the network the build container will connect to.
 	 * @return the network
 	 */
@@ -472,6 +439,62 @@ public class BootBuildImage extends DefaultTask {
 	@Option(option = "network", description = "Connect detect and build containers to network")
 	public void setNetwork(String network) {
 		this.network = network;
+	}
+
+	/**
+	 * Returns the build cache that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getBuildCache() {
+		return this.buildCache;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the build cache using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void buildCache(Action<CacheSpec> action) {
+		action.execute(this.buildCache);
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the build cache using the given
+	 * {@code closure}.
+	 * @param closure the closure
+	 */
+	public void buildCache(Closure<?> closure) {
+		buildCache(ConfigureUtil.configureUsing(closure));
+	}
+
+	/**
+	 * Returns the launch cache that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getLaunchCache() {
+		return this.launchCache;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the launch cache using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void launchCache(Action<CacheSpec> action) {
+		action.execute(this.launchCache);
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the launch cache using the given
+	 * {@code closure}.
+	 * @param closure the closure
+	 */
+	public void launchCache(Closure<?> closure) {
+		launchCache(ConfigureUtil.configureUsing(closure));
 	}
 
 	/**
@@ -537,7 +560,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
 		request = customizeTags(request);
-		request = customizeCacheVolumeNames(request);
+		request = customizeCaches(request);
 		request = request.withNetwork(this.network);
 		return request;
 	}
@@ -615,9 +638,12 @@ public class BootBuildImage extends DefaultTask {
 		return request;
 	}
 
-	private BuildRequest customizeCacheVolumeNames(BuildRequest request) {
-		if (this.cacheVolumeNames != null && !this.cacheVolumeNames.isEmpty()) {
-			request = request.withCacheVolumeNames(this.cacheVolumeNames);
+	private BuildRequest customizeCaches(BuildRequest request) {
+		if (this.buildCache.asCache() != null) {
+			request = request.withBuildCache(this.buildCache.asCache());
+		}
+		if (this.launchCache.asCache() != null) {
+			request = request.withLaunchCache(this.launchCache.asCache());
 		}
 		return request;
 	}

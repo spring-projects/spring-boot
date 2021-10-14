@@ -70,7 +70,9 @@ public class Image {
 
 	List<String> tags;
 
-	Map<String, String> cacheVolumeNames;
+	CacheInfo buildCache;
+
+	CacheInfo launchCache;
 
 	/**
 	 * The name of the created image.
@@ -215,8 +217,11 @@ public class Image {
 		if (!CollectionUtils.isEmpty(this.tags)) {
 			request = request.withTags(this.tags.stream().map(ImageReference::of).collect(Collectors.toList()));
 		}
-		if (this.cacheVolumeNames != null && !this.cacheVolumeNames.isEmpty()) {
-			request = request.withCacheVolumeNames(this.cacheVolumeNames);
+		if (this.buildCache != null) {
+			request = request.withBuildCache(this.buildCache.asCache());
+		}
+		if (this.launchCache != null) {
+			request = request.withLaunchCache(this.launchCache.asCache());
 		}
 		return request;
 	}
