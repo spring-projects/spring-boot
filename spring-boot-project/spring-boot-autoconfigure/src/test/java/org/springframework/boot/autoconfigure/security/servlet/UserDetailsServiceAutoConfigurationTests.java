@@ -30,11 +30,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.TestingAuthenticationProvider;
-import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -155,6 +151,12 @@ class UserDetailsServiceAutoConfigurationTests {
 				.run(((context) -> assertThat(output).doesNotContain("Using generated security password: ")));
 	}
 
+	@Test
+	void userDetailsServiceShouldNotBePresentWhenAuthenticationManagerResolverBeanIsPresent() {
+		this.contextRunner.withUserConfiguration(TestAuthenticationManagerResolverConfiguration.class)
+				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
+	}
+
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
 		this.contextRunner.withUserConfiguration(configClass)
 				.withPropertyValues("spring.security.user.password=" + providedPassword).run(((context) -> {
@@ -262,6 +264,16 @@ class UserDetailsServiceAutoConfigurationTests {
 							.withUser("user").password("{noop}user").roles("USER");
 				}
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestAuthenticationManagerResolverConfiguration {
+
+		@Bean
+		AuthenticationManagerResolver<?> myAuthenticationManagerResolver() {
+			return mock(AuthenticationManagerResolver.class);
 		}
 
 	}

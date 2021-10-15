@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.core.userdetails.User;
@@ -56,7 +57,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(AuthenticationManager.class)
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(
-		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class },
+		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
+				AuthenticationManagerResolver.class },
 		type = { "org.springframework.security.oauth2.jwt.JwtDecoder",
 				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector" })
 public class UserDetailsServiceAutoConfiguration {
