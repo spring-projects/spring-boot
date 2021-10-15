@@ -91,6 +91,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private volatile boolean closed;
 
+	private volatile JarFileWrapper wrapper;
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -181,6 +183,15 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 			}
 
 		};
+	}
+
+	JarFileWrapper getWrapper() throws IOException {
+		JarFileWrapper wrapper = this.wrapper;
+		if (wrapper == null) {
+			wrapper = new JarFileWrapper(this);
+			this.wrapper = wrapper;
+		}
+		return wrapper;
 	}
 
 	@Override
