@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * Identifies a type as being a REST endpoint that is only exposed over Spring MVC or
  * Spring WebFlux. Mapped methods must be annotated with {@link GetMapping @GetMapping},
- * {@link PostMapping @PostMapping}, {@link DeleteMapping @DeleteMapping}, etc annotations
+ * {@link PostMapping @PostMapping}, {@link DeleteMapping @DeleteMapping}, etc. annotations
  * rather than {@link ReadOperation @ReadOperation},
  * {@link WriteOperation @WriteOperation}, {@link DeleteOperation @DeleteOperation}.
  * <p>
