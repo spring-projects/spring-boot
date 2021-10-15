@@ -38,6 +38,7 @@ import org.gradle.api.artifacts.ExcludeRule;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
@@ -47,6 +48,9 @@ import org.gradle.api.tasks.TaskAction;
  * @author Andy Wilkinson
  */
 public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
+
+	private static final Map<String, String> SPRING_BOOT_DEPENDENCIES_PROJECT = Collections.singletonMap("path",
+			":spring-boot-project:spring-boot-dependencies");
 
 	private final Map<String, Set<String>> exclusionsByDependencyId = new TreeMap<>();
 
@@ -63,27 +67,31 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 			ConfigurationContainer configurations) {
 		this.dependencyHandler = getProject().getDependencies();
 		this.configurations = getProject().getConfigurations();
-		this.platform = this.dependencyHandler.create(this.dependencyHandler.platform(this.dependencyHandler
-				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-dependencies"))));
+		this.platform = this.dependencyHandler.create(
+				this.dependencyHandler.platform(this.dependencyHandler.project(SPRING_BOOT_DEPENDENCIES_PROJECT)));
 		getOutputs().upToDateWhen((task) -> true);
 	}
 
 	public void setClasspath(Configuration classpath) {
 		this.exclusionsByDependencyId.clear();
 		this.dependencyById.clear();
-		classpath.getAllDependencies().all((dependency) -> {
-			if (dependency instanceof ModuleDependency) {
-				String dependencyId = dependency.getGroup() + ":" + dependency.getName();
-				Set<ExcludeRule> excludeRules = ((ModuleDependency) dependency).getExcludeRules();
-				TreeSet<String> exclusions = excludeRules.stream()
-						.map((rule) -> rule.getGroup() + ":" + rule.getModule())
-						.collect(Collectors.toCollection(TreeSet::new));
-				this.exclusionsByDependencyId.put(dependencyId, exclusions);
-				if (!exclusions.isEmpty()) {
-					this.dependencyById.put(dependencyId, getProject().getDependencies().create(dependencyId));
-				}
-			}
-		});
+		classpath.getAllDependencies().all(this::processDependency);
+	}
+
+	private void processDependency(Dependency dependency) {
+		if (dependency instanceof ModuleDependency) {
+			processDependency((ModuleDependency) dependency);
+		}
+	}
+
+	private void processDependency(ModuleDependency dependency) {
+		String dependencyId = getId(dependency);
+		TreeSet<String> exclusions = dependency.getExcludeRules().stream().map(this::getId)
+				.collect(Collectors.toCollection(TreeSet::new));
+		this.exclusionsByDependencyId.put(dependencyId, exclusions);
+		if (!exclusions.isEmpty()) {
+			this.dependencyById.put(dependencyId, getProject().getDependencies().create(dependencyId));
+		}
 	}
 
 	@Input
@@ -94,33 +102,55 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 	@TaskAction
 	public void checkForUnnecessaryExclusions() {
 		Map<String, Set<String>> unnecessaryExclusions = new HashMap<>();
-		for (Entry<String, Set<String>> entry : this.exclusionsByDependencyId.entrySet()) {
-			String dependencyId = entry.getKey();
-			Set<String> exclusions = entry.getValue();
+		this.exclusionsByDependencyId.forEach((dependencyId, exclusions) -> {
 			if (!exclusions.isEmpty()) {
 				Dependency toCheck = this.dependencyById.get(dependencyId);
 				List<String> dependencies = this.configurations.detachedConfiguration(toCheck, this.platform)
-						.getIncoming().getArtifacts().getArtifacts().stream().map((artifact) -> {
-							ModuleComponentIdentifier id = (ModuleComponentIdentifier) artifact.getId()
-									.getComponentIdentifier();
-							return id.getGroup() + ":" + id.getModule();
-						}).collect(Collectors.toList());
+						.getIncoming().getArtifacts().getArtifacts().stream().map(this::getId)
+						.collect(Collectors.toList());
 				exclusions.removeAll(dependencies);
+				removeProfileExclusions(dependencyId, exclusions);
 				if (!exclusions.isEmpty()) {
 					unnecessaryExclusions.put(dependencyId, exclusions);
 				}
 			}
-		}
+		});
 		if (!unnecessaryExclusions.isEmpty()) {
-			StringBuilder message = new StringBuilder("Unnecessary exclusions detected:");
-			for (Entry<String, Set<String>> entry : unnecessaryExclusions.entrySet()) {
-				message.append(String.format("%n    %s", entry.getKey()));
-				for (String exclusion : entry.getValue()) {
-					message.append(String.format("%n       %s", exclusion));
-				}
-			}
-			throw new GradleException(message.toString());
+			throw new GradleException(getExceptionMessage(unnecessaryExclusions));
 		}
+	}
+
+	private void removeProfileExclusions(String dependencyId, Set<String> exclusions) {
+		if ("org.xmlunit:xmlunit-core".equals(dependencyId)) {
+			exclusions.remove("javax.xml.bind:jaxb-api");
+		}
+	}
+
+	private String getExceptionMessage(Map<String, Set<String>> unnecessaryExclusions) {
+		StringBuilder message = new StringBuilder("Unnecessary exclusions detected:");
+		for (Entry<String, Set<String>> entry : unnecessaryExclusions.entrySet()) {
+			message.append(String.format("%n    %s", entry.getKey()));
+			for (String exclusion : entry.getValue()) {
+				message.append(String.format("%n       %s", exclusion));
+			}
+		}
+		return message.toString();
+	}
+
+	private String getId(ResolvedArtifactResult artifact) {
+		return getId((ModuleComponentIdentifier) artifact.getId().getComponentIdentifier());
+	}
+
+	private String getId(ModuleDependency dependency) {
+		return dependency.getGroup() + ":" + dependency.getName();
+	}
+
+	private String getId(ExcludeRule rule) {
+		return rule.getGroup() + ":" + rule.getModule();
+	}
+
+	private String getId(ModuleComponentIdentifier identifier) {
+		return identifier.getGroup() + ":" + identifier.getModule();
 	}
 
 }
