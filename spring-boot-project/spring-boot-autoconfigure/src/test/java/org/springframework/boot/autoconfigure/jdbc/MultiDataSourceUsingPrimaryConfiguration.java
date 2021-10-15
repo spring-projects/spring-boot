@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * Configuration for multiple {@link DataSource} (one being {@code @Primary}.
+ * Configuration for multiple {@link DataSource} (one being {@code @Primary}).
  *
  * @author Phillip Webb
  * @author Kazuki Shimizu
