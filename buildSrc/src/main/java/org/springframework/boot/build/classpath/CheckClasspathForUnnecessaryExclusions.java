@@ -109,6 +109,7 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 						.getIncoming().getArtifacts().getArtifacts().stream().map(this::getId)
 						.collect(Collectors.toList());
 				exclusions.removeAll(dependencies);
+				removeProfileExclusions(dependencyId, exclusions);
 				if (!exclusions.isEmpty()) {
 					unnecessaryExclusions.put(dependencyId, exclusions);
 				}
@@ -116,6 +117,12 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 		});
 		if (!unnecessaryExclusions.isEmpty()) {
 			throw new GradleException(getExceptionMessage(unnecessaryExclusions));
+		}
+	}
+
+	private void removeProfileExclusions(String dependencyId, Set<String> exclusions) {
+		if ("org.xmlunit:xmlunit-core".equals(dependencyId)) {
+			exclusions.remove("javax.xml.bind:jaxb-api");
 		}
 	}
 
