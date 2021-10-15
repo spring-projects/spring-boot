@@ -9,6 +9,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))
 	api("com.jayway.jsonpath:json-path")
+	api("jakarta.xml.bind:jakarta.xml.bind-api")
 	api("org.assertj:assertj-core")
 	api("org.hamcrest:hamcrest")
 	api("org.junit.jupiter:junit-jupiter")
@@ -17,5 +18,7 @@ dependencies {
 	api("org.skyscreamer:jsonassert")
 	api("org.springframework:spring-core")
 	api("org.springframework:spring-test")
-	api("org.xmlunit:xmlunit-core")
+	api("org.xmlunit:xmlunit-core") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 }
