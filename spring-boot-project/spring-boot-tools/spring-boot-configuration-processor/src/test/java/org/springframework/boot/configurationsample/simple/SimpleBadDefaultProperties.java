@@ -41,7 +41,7 @@ public class SimpleBadDefaultProperties {
 	private List<String> someList = new ArrayList<>(Arrays.asList("a", "b", "c"));
 
 	public String getTheName() {
-		return theName;
+		return this.theName;
 	}
 
 	public void setTheName(String theName) {
@@ -49,7 +49,7 @@ public class SimpleBadDefaultProperties {
 	}
 
 	public List<String> getSomeList() {
-		return someList;
+		return this.someList;
 	}
 
 	public void setSomeList(List<String> someList) {
