@@ -40,9 +40,9 @@ import org.springframework.core.env.Environment;
  * take the following constructor parameters:
  * <ul>
  * <li>{@link DeferredLogFactory} - A factory that can be used to create loggers with
- * output deferred until the application has been full prepared (allowing the environment
+ * output deferred until the application has been fully prepared (allowing the environment
  * itself to configure logging levels).</li>
- * <li>{@link Log} - A log with output deferred until the application has been full
+ * <li>{@link Log} - A log with output deferred until the application has been fully
  * prepared (allowing the environment itself to configure logging levels).</li>
  * <li>{@link ConfigurableBootstrapContext} - A bootstrap context that can be used to
  * store objects that may be expensive to create, or need to be shared
