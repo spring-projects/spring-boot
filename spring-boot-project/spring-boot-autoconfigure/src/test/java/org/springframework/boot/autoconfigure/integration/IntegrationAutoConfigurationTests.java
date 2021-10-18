@@ -487,7 +487,7 @@ class IntegrationAutoConfigurationTests {
 
 	@Test
 	void integrationManagementLoggingDisabled() {
-		this.contextRunner.withPropertyValues("spring.integration.management.loggingEnabled=false")
+		this.contextRunner.withPropertyValues("spring.integration.management.defaultLoggingEnabled=false")
 				.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
 						.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(false));
 

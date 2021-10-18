@@ -397,7 +397,15 @@ public class IntegrationProperties {
 		/**
 		 * Logging management in the integration components.
 		 */
-		boolean loggingEnabled = true;
+		boolean defaultLoggingEnabled = true;
+
+		public boolean isDefaultLoggingEnabled() {
+			return this.defaultLoggingEnabled;
+		}
+
+		public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
+			this.defaultLoggingEnabled = defaultLoggingEnabled;
+		}
 
 	}
 

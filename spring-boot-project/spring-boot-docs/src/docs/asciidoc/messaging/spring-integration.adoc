@@ -46,3 +46,6 @@ Spring Boot can also auto-configure an `ClientRSocketConnector` using configurat
 ----
 
 See the {spring-boot-autoconfigure-module-code}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and {spring-boot-autoconfigure-module-code}/integration/IntegrationProperties.java[`IntegrationProperties`] classes for more details.
+
+By default, if a Micrometer `meterRegistry` bean is present, Spring Integration metrics will be managed by Micrometer.
+If you wish to use legacy Spring Integration metrics, add a `DefaultMetricsFactory` bean to the application context.
