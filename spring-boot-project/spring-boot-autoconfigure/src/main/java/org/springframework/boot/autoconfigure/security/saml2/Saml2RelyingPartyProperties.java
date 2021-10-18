@@ -26,7 +26,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 
 /**
- * SAML2 relying party properties.
+ * SAML2 relying on party properties.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
@@ -36,7 +36,7 @@ import org.springframework.security.saml2.provider.service.registration.Saml2Mes
 public class Saml2RelyingPartyProperties {
 
 	/**
-	 * SAML2 relying party registrations.
+	 * SAML2 relying on party registrations.
 	 */
 	private final Map<String, Registration> registration = new LinkedHashMap<>();
 
@@ -45,12 +45,12 @@ public class Saml2RelyingPartyProperties {
 	}
 
 	/**
-	 * Represents a SAML Relying Party.
+	 * Represents a SAML Relying on Party.
 	 */
 	public static class Registration {
 
 		/**
-		 * Relying party's entity ID. The value may contain a number of placeholders. They
+		 * Relying on party's entity ID. The value may contain a number of placeholders. They
 		 * are "baseUrl", "registrationId", "baseScheme", "baseHost", and "basePort".
 		 */
 		private String entityId = "{baseUrl}/saml2/service-provider-metadata/{registrationId}";
@@ -148,7 +148,7 @@ public class Saml2RelyingPartyProperties {
 				private Resource privateKeyLocation;
 
 				/**
-				 * Relying Party X509Certificate shared with the identity provider.
+				 * Relying on Party X509Certificate shared with the identity provider.
 				 */
 				private Resource certificateLocation;
 
@@ -197,7 +197,7 @@ public class Saml2RelyingPartyProperties {
 			private Resource privateKeyLocation;
 
 			/**
-			 * Relying Party X509Certificate shared with the identity provider.
+			 * Relying on Party X509Certificate shared with the identity provider.
 			 */
 			private Resource certificateLocation;
 
