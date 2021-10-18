@@ -23,6 +23,7 @@ import javax.management.MBeanServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
@@ -108,6 +109,11 @@ public class JmxEndpointAutoConfiguration {
 		JmxEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableJmxEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), "*");
+	}
+
+	@Bean
+	static LazyInitializationExcludeFilter eagerlyInitializeJmxEndpointExporter() {
+		return LazyInitializationExcludeFilter.forBeanTypes(JmxEndpointExporter.class);
 	}
 
 }
