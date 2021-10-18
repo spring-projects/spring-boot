@@ -1625,7 +1625,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.4-SNAPSHOT") {
+	library("Spring Batch", "4.3.3") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
