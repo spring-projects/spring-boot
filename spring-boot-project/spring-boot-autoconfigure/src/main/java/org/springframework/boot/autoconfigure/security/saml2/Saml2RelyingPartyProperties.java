@@ -50,8 +50,8 @@ public class Saml2RelyingPartyProperties {
 	public static class Registration {
 
 		/**
-		 * Relying on party's entity ID. The value may contain a number of placeholders. They
-		 * are "baseUrl", "registrationId", "baseScheme", "baseHost", and "basePort".
+		 * Relying on party's entity ID. The value may contain a number of placeholders.
+		 * They are "baseUrl", "registrationId", "baseScheme", "baseHost", and "basePort".
 		 */
 		private String entityId = "{baseUrl}/saml2/service-provider-metadata/{registrationId}";
 
