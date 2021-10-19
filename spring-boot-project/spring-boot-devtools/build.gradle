@@ -32,6 +32,8 @@ dependencies {
 
 	intTestRuntimeOnly("org.springframework:spring-web")
 
+	optional("io.projectreactor:reactor-core")
+	optional("io.r2dbc:r2dbc-spi")
 	optional("javax.servlet:javax.servlet-api")
 	optional("org.apache.derby:derby")
 	optional("org.hibernate:hibernate-core")
@@ -72,6 +74,7 @@ dependencies {
 
 	testRuntimeOnly("org.aspectj:aspectjweaver")
 	testRuntimeOnly("org.yaml:snakeyaml")
+	testRuntimeOnly("io.r2dbc:r2dbc-h2")
 }
 
 task syncIntTestDependencies(type: Sync) {
