@@ -51,4 +51,5 @@
 	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="StringSequence" checks="SpringMethodVisibility" message="isEmpty"/>
 	<suppress files="ValidatorPropertiesWithDefaultValues\.java" checks="SpringMethodVisibility" />
+	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 </suppressions>
