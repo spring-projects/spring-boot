@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration.DevToolsConnectionFactoryCondition;
@@ -49,6 +50,7 @@ import org.springframework.core.type.MethodMetadata;
  * @since 2.5.6
  */
 @AutoConfigureAfter(R2dbcAutoConfiguration.class)
+@ConditionalOnClass(ConnectionFactory.class)
 @Conditional({ OnEnabledDevToolsCondition.class, DevToolsConnectionFactoryCondition.class })
 @Configuration(proxyBeanMethods = false)
 public class DevToolsR2dbcAutoConfiguration {
