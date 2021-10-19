@@ -49,10 +49,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 public class SampleSessionMongoApplicationTests {
 
-	private static final String USERNAME = "user";
-
-	private static final String PASSWORD = "password";
-
 	@Autowired
 	private TestRestTemplate restTemplate;
 
@@ -68,7 +64,7 @@ public class SampleSessionMongoApplicationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSessions() {
-		createSession();
+		createSession(URI.create("/"));
 		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -76,18 +72,21 @@ public class SampleSessionMongoApplicationTests {
 		assertThat(sessions.size()).isEqualTo(1);
 	}
 
-	private void createSession() {
-		URI uri = URI.create("/");
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBasicAuth(USERNAME, PASSWORD);
-		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
+	private void createSession(URI uri) {
+		RequestEntity<Object> request = getRequestEntity(uri);
 		this.restTemplate.exchange(request, String.class);
+	}
+
+	private RequestEntity<Object> getRequestEntity(URI uri) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBasicAuth("user", "password");
+		return new RequestEntity<>(headers, HttpMethod.GET, uri);
 	}
 
 	@SuppressWarnings("unchecked")
 	private ResponseEntity<Map<String, Object>> getSessions() {
-		return (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate
-				.withBasicAuth(USERNAME, PASSWORD).getForEntity("/actuator/sessions?username=" + USERNAME, Map.class);
+		RequestEntity<Object> request = getRequestEntity(URI.create("/actuator/sessions?username=user"));
+		return (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate.exchange(request, Map.class);
 	}
 
 }

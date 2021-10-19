@@ -14,76 +14,91 @@
  * limitations under the License.
  */
 
-package smoketest.session.redis;
+package smoketest.session;
 
 import java.net.URI;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SampleSessionRedisApplication}.
+ * Tests for {@link SampleSessionJdbcApplication}.
  *
- * @author Angel L. Villalain
+ * @author Andy Wilkinson
+ * @author Vedran Pavic
+ * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers(disabledWithoutDocker = true)
-public class SampleSessionRedisApplicationTests {
-
-	@Container
-	static RedisContainer redis = new RedisContainer();
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = "server.servlet.session.timeout:2")
+class SampleSessionJdbcApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@DynamicPropertySource
-	static void applicationProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.host", redis::getHost);
-		registry.add("spring.redis.port", redis::getFirstMappedPort);
+	private static final URI ROOT_URI = URI.create("/");
+
+	@Test
+	void sessionExpiry() throws Exception {
+		ResponseEntity<String> firstResponse = performRequest(ROOT_URI, null);
+		String sessionId1 = firstResponse.getBody();
+		String cookie = firstResponse.getHeaders().getFirst("Set-Cookie");
+		String sessionId2 = performRequest(ROOT_URI, cookie).getBody();
+		assertThat(sessionId1).isEqualTo(sessionId2);
+		Thread.sleep(2100);
+		String loginPage = performRequest(ROOT_URI, cookie).getBody();
+		assertThat(loginPage).containsIgnoringCase("login");
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void sessionsEndpointShouldReturnUserSessions() {
-		createSession(URI.create("/"));
-		ResponseEntity<Map<String, Object>> response = this.getSessions();
+	void sessionsEndpointShouldReturnUserSession() {
+		performRequest(ROOT_URI, null);
+		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
 		assertThat(sessions.size()).isEqualTo(1);
 	}
 
-	private void createSession(URI uri) {
-		RequestEntity<Object> request = getRequestEntity(uri);
-		this.restTemplate.exchange(request, String.class);
+	private ResponseEntity<String> performRequest(URI uri, String cookie) {
+		HttpHeaders headers = getHeaders(cookie);
+		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
+		return this.restTemplate.exchange(request, String.class);
 	}
 
-	private RequestEntity<Object> getRequestEntity(URI uri) {
+	private HttpHeaders getHeaders(String cookie) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setBasicAuth("user", "password");
-		return new RequestEntity<>(headers, HttpMethod.GET, uri);
+		if (cookie != null) {
+			headers.set("Cookie", cookie);
+		}
+		else {
+			headers.set("Authorization", getBasicAuth());
+		}
+		return headers;
+	}
+
+	private String getBasicAuth() {
+		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
 	@SuppressWarnings("unchecked")
 	private ResponseEntity<Map<String, Object>> getSessions() {
-		RequestEntity<Object> request = getRequestEntity(URI.create("/actuator/sessions?username=user"));
+		HttpHeaders headers = getHeaders(null);
+		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET,
+				URI.create("/actuator/sessions?username=user"));
 		return (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate.exchange(request, Map.class);
 	}
 

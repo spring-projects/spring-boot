@@ -20,10 +20,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SampleSessionApplication {
+public class SampleSessionJdbcApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleSessionApplication.class);
+		SpringApplication.run(SampleSessionJdbcApplication.class);
 	}
 
 }
