@@ -1121,6 +1121,10 @@
       "defaultValue": "embedded"
     },
     {
+      "name": "spring.integration.poller.max-messages-per-poll",
+      "defaultValue": "-2147483648"
+    },
+    {
       "name": "spring.jackson.constructor-detector",
       "defaultValue": "default"
     },
