@@ -204,15 +204,13 @@ public class WebMvcAutoConfiguration {
 
 		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private final ResourceLoader resourceLoader;
-
 		private ServletContext servletContext;
 
 		public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
-				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations, ResourceLoader resourceLoader) {
+				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
 			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
@@ -220,7 +218,6 @@ public class WebMvcAutoConfiguration {
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
 			this.dispatcherServletPath = dispatcherServletPath;
 			this.servletRegistrations = servletRegistrations;
-			this.resourceLoader = resourceLoader;
 			this.mvcProperties.checkConfiguration();
 		}
 
@@ -337,11 +334,7 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			Resource webjarsLocationResource = this.resourceLoader
-					.getResource("classpath:/META-INF/resources/webjars/");
-			if (webjarsLocationResource.exists()) {
-				addResourceHandler(registry, "/webjars/**", webjarsLocationResource);
-			}
+			addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
 			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
 				registration.addResourceLocations(this.resourceProperties.getStaticLocations());
 				if (this.servletContext != null) {
@@ -351,7 +344,7 @@ public class WebMvcAutoConfiguration {
 			});
 		}
 
-		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, Resource... locations) {
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
 			addResourceHandler(registry, pattern, (registration) -> registration.addResourceLocations(locations));
 		}
 
