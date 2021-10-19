@@ -1145,24 +1145,41 @@ Spring Boot includes a number of auto-configured `InfoContributor` beans, and yo
 ==== Auto-configured InfoContributors
 When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
-[cols="1,4"]
+[cols="1,4,8,4"]
 |===
-| Name | Description
+| ID | Name | Description | Prequisites
 
-| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
-| Exposes any key from the `Environment` under the `info` key.
-
-| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
-| Exposes git information if a `git.properties` file is available.
-
+| `build`
 | {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
-| Exposes build information if a `META-INF/build-info.properties` file is available.
+| Exposes build information.
+| A `META-INF/build-info.properties` resource.
 
+| `env`
+| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
+| Exposes any property from the `Environment` whose name starts with `info.`.
+| None.
+
+| `git`
+| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
+| Exposes git information.
+| A `git.properties` resource.
+
+| `java`
 | {spring-boot-actuator-module-code}/info/JavaInfoContributor.java[`JavaInfoContributor`]
-| Exposes Java runtime information under the `java` key.
+| Exposes Java runtime information.
+| None.
+
 |===
 
-TIP: You can disable them all by setting the configprop:management.info.defaults.enabled[] property.
+Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
+Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
+
+With no prequisites to indicate that it should be enabled, the `java` contributor is disabled by default.
+You can enable it by setting the configprop:management.info.java.enabled[] property to `true`.
+
+The `env`, `git`, and `build` info contributors are enabled by default.
+Each can be disabled by setting its `management.info.<id>.enabled` property to `false`.
+Alternatively, to disable every contributor that is usually enabled by default, set the configprop:management.info.defaults.enabled[] property to `false`.
 
 
 
