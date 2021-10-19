@@ -395,9 +395,12 @@ public class IntegrationProperties {
 	public static class Management {
 
 		/**
-		 * Logging management in the integration components.
+		 * Whether Spring Integration components should perform logging in the main
+		 * message flow. When disabled, such logging will be skipped without checking the
+		 * logging level. When enabled, such logging is controlled as normal by the
+		 * logging system's log level configuration.
 		 */
-		boolean defaultLoggingEnabled = true;
+		private boolean defaultLoggingEnabled = true;
 
 		public boolean isDefaultLoggingEnabled() {
 			return this.defaultLoggingEnabled;
