@@ -178,6 +178,11 @@ public class R2dbcProperties {
 		 */
 		private ValidationDepth validationDepth = ValidationDepth.LOCAL;
 
+		/**
+		 * Whether pooling is enabled. Requires r2dbc-pool.
+		 */
+		private boolean enabled = true;
+
 		public Duration getMaxIdleTime() {
 			return this.maxIdleTime;
 		}
@@ -240,6 +245,14 @@ public class R2dbcProperties {
 
 		public void setValidationDepth(ValidationDepth validationDepth) {
 			this.validationDepth = validationDepth;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}
