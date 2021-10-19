@@ -157,10 +157,9 @@ class WebFluxAutoConfigurationTests {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
-			assertThat(staticHandler).extracting("locationValues").asList().hasSize(2);
-			assertThat(staticHandler.getLocations()).hasSize(2);
-			assertThat(staticHandler.getLocations().get(0)).hasToString("class path resource [META-INF/resources/]");
-			assertThat(staticHandler.getLocations().get(1)).hasToString("class path resource [public/]");
+			assertThat(staticHandler).extracting("locationValues").asList().hasSize(4);
+			assertThat(staticHandler.getLocations()).hasSize(1);
+			assertThat(staticHandler.getLocations().get(0)).hasToString("class path resource [public/]");
 			assertThat(hm.getUrlMap().get("/webjars/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap().get("/webjars/**");
 			assertThat(webjarsHandler).extracting("locationValues").asList()
@@ -174,7 +173,7 @@ class WebFluxAutoConfigurationTests {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/static/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/static/**");
-			assertThat(staticHandler).extracting("locationValues").asList().hasSize(2);
+			assertThat(staticHandler).extracting("locationValues").asList().hasSize(4);
 		});
 	}
 
