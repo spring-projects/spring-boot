@@ -57,4 +57,5 @@
 	<suppress files="DeprecatedElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DeprecatedElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DeprecatedReactiveElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
+	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 </suppressions>
