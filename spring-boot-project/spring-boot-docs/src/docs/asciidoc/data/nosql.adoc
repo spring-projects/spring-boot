@@ -41,15 +41,14 @@ The following listing shows an example of such a bean:
 include::{docs-java}/data/nosql/redis/connecting/MyBean.java[]
 ----
 
-You can set the configprop:spring.data.redis.url[] property to change the URL and configure
+You can set the configprop:spring.redis.url[] property to change the URL and configure
 additional settings as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring:
-	  data:
-	    redis:
-	      url: "redis://user:secret@redis.example.com:6379"
+    spring:
+      redis:
+        url: "redis://user:secret@redis.example.com:6379"
 ----
 
 Alternatively, you can specify connection details using discrete properties. For example, you might
@@ -58,12 +57,11 @@ declare the following settings in your `application.yml`:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
-	  data:
-	    redis:
-	      host: "redis.example.com"
-	      port: 6379
-	      username: "user"
-	      password: "secret"
+	  redis:
+	    host: "redis.example.com"
+	    port: 6379
+	    username: "user"
+	    password: "secret"
 ----
 When using both the URL and the discrete properties, any values that are set in the URL will take precedence over the values set in the properties.
 
