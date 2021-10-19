@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 /**
  * Identifies a type as being an endpoint that is only exposed over Spring MVC or Spring
  * WebFlux. Mapped methods must be annotated with {@link GetMapping @GetMapping},
- * {@link PostMapping @PostMapping}, {@link DeleteMapping @DeleteMapping}, etc. annotations
- * rather than {@link ReadOperation @ReadOperation},
+ * {@link PostMapping @PostMapping}, {@link DeleteMapping @DeleteMapping}, etc.
+ * annotations rather than {@link ReadOperation @ReadOperation},
  * {@link WriteOperation @WriteOperation}, {@link DeleteOperation @DeleteOperation}.
  * <p>
  * This annotation can be used when deeper Spring integration is required, but at the
