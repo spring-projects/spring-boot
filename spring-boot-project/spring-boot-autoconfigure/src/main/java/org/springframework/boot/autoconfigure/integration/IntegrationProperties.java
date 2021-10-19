@@ -47,6 +47,8 @@ public class IntegrationProperties {
 
 	private final Poller poller = new Poller();
 
+	private final Management management = new Management();
+
 	public Channel getChannel() {
 		return this.channel;
 	}
@@ -69,6 +71,10 @@ public class IntegrationProperties {
 
 	public Poller getPoller() {
 		return this.poller;
+	}
+
+	public Management getManagement() {
+		return this.management;
 	}
 
 	public static class Channel {
@@ -382,6 +388,26 @@ public class IntegrationProperties {
 
 		public void setCron(String cron) {
 			this.cron = cron;
+		}
+
+	}
+
+	public static class Management {
+
+		/**
+		 * Whether Spring Integration components should perform logging in the main
+		 * message flow. When disabled, such logging will be skipped without checking the
+		 * logging level. When enabled, such logging is controlled as normal by the
+		 * logging system's log level configuration.
+		 */
+		private boolean defaultLoggingEnabled = true;
+
+		public boolean isDefaultLoggingEnabled() {
+			return this.defaultLoggingEnabled;
+		}
+
+		public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
+			this.defaultLoggingEnabled = defaultLoggingEnabled;
 		}
 
 	}
