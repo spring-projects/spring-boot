@@ -1599,7 +1599,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.6.11-SNAPSHOT") {
+	library("Spring Kafka", "2.6.11") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
