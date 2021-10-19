@@ -11,8 +11,9 @@ dependencies {
     implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb"))
     implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
     implementation("org.springframework.session:spring-session-data-mongodb")
-
-    runtimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
-
+    testImplementation("org.testcontainers:mongodb")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
     testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

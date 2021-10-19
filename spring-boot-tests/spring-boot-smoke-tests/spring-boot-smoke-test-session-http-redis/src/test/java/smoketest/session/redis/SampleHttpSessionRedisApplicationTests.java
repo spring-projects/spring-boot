@@ -21,34 +21,44 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "spring.security.user.name=" + SampleHttpSessionRedisApplicationTests.USERNAME,
-				"spring.security.user.password=" + SampleHttpSessionRedisApplicationTests.PASSWORD,
-				"spring.redis.host=localhost", "spring.redis.port=6379" },
-		classes = TestRedisConfiguration.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers(disabledWithoutDocker = true)
 public class SampleHttpSessionRedisApplicationTests {
 
 	static final String USERNAME = "user";
 	static final String PASSWORD = "password";
+	static final String ROOT = "/";
+
+	@Container
+	static RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private TestRestTemplate template;
 
-	@LocalServerPort
-	private int port;
+	@DynamicPropertySource
+	static void applicationProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.security.user.name", () -> USERNAME);
+		registry.add("spring.security.user.password", () -> PASSWORD);
+		registry.add("spring.redis.host", redis::getHost);
+		registry.add("spring.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Test
 	@SuppressWarnings("unchecked")
@@ -62,7 +72,7 @@ public class SampleHttpSessionRedisApplicationTests {
 	}
 
 	private void createSession() {
-		URI uri = URI.create("http://localhost:" + this.port + "/");
+		URI uri = URI.create(ROOT);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBasicAuth(USERNAME, PASSWORD);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
