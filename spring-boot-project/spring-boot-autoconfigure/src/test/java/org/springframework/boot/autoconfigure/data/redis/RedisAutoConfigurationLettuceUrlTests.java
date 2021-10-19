@@ -39,7 +39,6 @@ class RedisAutoConfigurationLettuceUrlTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
 
-
 	private String getUserName(LettuceConnectionFactory factory) {
 		return ReflectionTestUtils.invokeMethod(factory, "getRedisUsername");
 	}
@@ -49,60 +48,65 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withMinimalFields() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis://host1:6379").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(6379);
-				assertThat(getUserName(cf)).isNullOrEmpty();
-				assertThat(cf.getPassword()).isNullOrEmpty();
-				assertThat(cf.isUseSsl()).isFalse();
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis://host1:6379").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(6379);
+						assertThat(getUserName(cf)).isNullOrEmpty();
+						assertThat(cf.getPassword()).isNullOrEmpty();
+						assertThat(cf.isUseSsl()).isFalse();
+					});
 		}
 
 		@Test
 		void withAllFields() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis://user:password@host1:33").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(33);
-				assertThat(getUserName(cf)).isEqualTo("user");
-				assertThat(cf.getPassword()).isEqualTo("password");
-				assertThat(cf.isUseSsl()).isFalse();
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis://user:password@host1:33").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(33);
+						assertThat(getUserName(cf)).isEqualTo("user");
+						assertThat(cf.getPassword()).isEqualTo("password");
+						assertThat(cf.isUseSsl()).isFalse();
+					});
 		}
 
 		@Test
 		void withSsl() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=rediss://user:password@host1:33").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(33);
-				assertThat(getUserName(cf)).isEqualTo("user");
-				assertThat(cf.getPassword()).isEqualTo("password");
-				assertThat(cf.isUseSsl()).isTrue();
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=rediss://user:password@host1:33").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(33);
+						assertThat(getUserName(cf)).isEqualTo("user");
+						assertThat(cf.getPassword()).isEqualTo("password");
+						assertThat(cf.isUseSsl()).isTrue();
+					});
 		}
 
 		@Test
 		void withoutUsernameWithPasswordContainingColon() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis://:pass:word@host1:33").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(33);
-				assertThat(getUserName(cf)).isNullOrEmpty();
-				assertThat(cf.getPassword()).isEqualTo("pass:word");
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis://:pass:word@host1:33").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(33);
+						assertThat(getUserName(cf)).isNullOrEmpty();
+						assertThat(cf.getPassword()).isEqualTo("pass:word");
+					});
 		}
 
 		@Test
 		void withUsernameWithPasswordStartsWithColonAndContainsColon() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis://user::pass:word@host1:33").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(33);
-				assertThat(getUserName(cf)).isEqualTo("user");
-				assertThat(cf.getPassword()).isEqualTo(":pass:word");
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis://user::pass:word@host1:33").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(33);
+						assertThat(getUserName(cf)).isEqualTo("user");
+						assertThat(cf.getPassword()).isEqualTo(":pass:word");
+					});
 		}
 
 	}
@@ -112,29 +116,31 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withAltSsl() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis+ssl://user:password@host1:33/7").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(33);
-				assertThat(getUserName(cf)).isEqualTo("user");
-				assertThat(cf.getPassword()).isEqualTo("password");
-				assertThat(cf.getDatabase()).isEqualTo(7);
-				assertThat(cf.isUseSsl()).isTrue();
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis+ssl://user:password@host1:33/7").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(33);
+						assertThat(getUserName(cf)).isEqualTo("user");
+						assertThat(cf.getPassword()).isEqualTo("password");
+						assertThat(cf.getDatabase()).isEqualTo(7);
+						assertThat(cf.isUseSsl()).isTrue();
+					});
 		}
 
 		@Test
 		void withAltTls() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis+tls://user:password@host1:33/7").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getHostName()).isEqualTo("host1");
-				assertThat(cf.getPort()).isEqualTo(33);
-				assertThat(getUserName(cf)).isEqualTo("user");
-				assertThat(cf.getPassword()).isEqualTo("password");
-				assertThat(cf.getDatabase()).isEqualTo(7);
-				assertThat(cf.isUseSsl()).isTrue();
-				assertThat(cf.isStartTls()).isTrue();
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis+tls://user:password@host1:33/7").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getHostName()).isEqualTo("host1");
+						assertThat(cf.getPort()).isEqualTo(33);
+						assertThat(getUserName(cf)).isEqualTo("user");
+						assertThat(cf.getPassword()).isEqualTo("password");
+						assertThat(cf.getDatabase()).isEqualTo(7);
+						assertThat(cf.isUseSsl()).isTrue();
+						assertThat(cf.isStartTls()).isTrue();
+					});
 		}
 
 		@Test
@@ -156,9 +162,11 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withClientOptionPropsSetOnUrlOverridesAndRespectsPropsSetInConfig() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis+ssl://host1?timeout=47s&clientName=zuser",
-					"spring.redis.timeout=1200", "spring.redis.connect-timeout=2400",
-					"spring.redis.lettuce.shutdown-timeout=3600").run((context) -> {
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis+ssl://host1?timeout=47s&clientName=zuser",
+							"spring.redis.timeout=1200", "spring.redis.connect-timeout=2400",
+							"spring.redis.lettuce.shutdown-timeout=3600")
+					.run((context) -> {
 						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 						assertThat(cf.getClientName()).isEqualTo("zuser");
 						assertThat(cf.getTimeout()).isEqualTo(47000);
@@ -170,14 +178,15 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withoutClientOptionPropsSetOnUrlUsesDefaultCientOptions() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis+ssl://host1").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(cf.getClientName()).isNullOrEmpty();
-				assertThat(cf.getTimeout()).isEqualTo(60000);
-				assertThat(cf.getShutdownTimeout()).isEqualTo(100);
-				assertThat(cf.getClientConfiguration().getClientOptions().get().getSocketOptions().getConnectTimeout()
-						.toMillis()).isEqualTo(10000);
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis+ssl://host1").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(cf.getClientName()).isNullOrEmpty();
+						assertThat(cf.getTimeout()).isEqualTo(60000);
+						assertThat(cf.getShutdownTimeout()).isEqualTo(100);
+						assertThat(cf.getClientConfiguration().getClientOptions().get().getSocketOptions()
+								.getConnectTimeout().toMillis()).isEqualTo(10000);
+					});
 		}
 
 	}
@@ -187,7 +196,8 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withMinimalFields() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis-sentinel://127.0.0.1?sentinelMasterId=5150")
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis-sentinel://127.0.0.1?sentinelMasterId=5150")
 					.run((context) -> {
 						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 						assertThat(getUserName(cf)).isNullOrEmpty();
@@ -225,7 +235,8 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withSsl() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=rediss-sentinel://127.0.0.1?sentinelMasterId=5150")
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=rediss-sentinel://127.0.0.1?sentinelMasterId=5150")
 					.run((context) -> {
 						LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
 						assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
@@ -259,19 +270,21 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withMinimalFields() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis-socket:///mysocket").run((context) -> {
-				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-				assertThat(getUserName(cf)).isNullOrEmpty();
-				assertThat(cf.getPassword()).isNullOrEmpty();
-				assertThat(cf.getDatabase()).isEqualTo(0);
-				assertThat(cf.getSocketConfiguration()).extracting(RedisSocketConfiguration::getSocket)
-						.isEqualTo("/mysocket");
-			});
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis-socket:///mysocket").run((context) -> {
+						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+						assertThat(getUserName(cf)).isNullOrEmpty();
+						assertThat(cf.getPassword()).isNullOrEmpty();
+						assertThat(cf.getDatabase()).isEqualTo(0);
+						assertThat(cf.getSocketConfiguration()).extracting(RedisSocketConfiguration::getSocket)
+								.isEqualTo("/mysocket");
+					});
 		}
 
 		@Test
 		void withAllFields() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis-socket://user:password@/mysocket?database=7")
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis-socket://user:password@/mysocket?database=7")
 					.run((context) -> {
 						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 						assertThat(getUserName(cf)).isEqualTo("user");
@@ -284,7 +297,8 @@ class RedisAutoConfigurationLettuceUrlTests {
 
 		@Test
 		void withAltScheme() {
-			RedisAutoConfigurationLettuceUrlTests.this.contextRunner.withPropertyValues("spring.redis.url=redis+socket://user:password@/mysocket?database=7")
+			RedisAutoConfigurationLettuceUrlTests.this.contextRunner
+					.withPropertyValues("spring.redis.url=redis+socket://user:password@/mysocket?database=7")
 					.run((context) -> {
 						LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 						assertThat(getUserName(cf)).isEqualTo("user");

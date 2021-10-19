@@ -49,7 +49,7 @@ additional settings as shown in the following example:
 	spring:
 	  data:
 	    redis:
-	      url: "redis://user:secret@redis.example.com:6399
+	      url: "redis://user:secret@redis.example.com:6379"
 ----
 
 Alternatively, you can specify connection details using discrete properties. For example, you might
@@ -61,7 +61,7 @@ declare the following settings in your `application.yml`:
 	  data:
 	    redis:
 	      host: "redis.example.com"
-	      port: 6399
+	      port: 6379
 	      username: "user"
 	      password: "secret"
 ----

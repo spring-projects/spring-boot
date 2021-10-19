@@ -136,18 +136,20 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private boolean urlConfiguredForSentinelScheme(String url) {
 		String scheme = getUrlScheme(url);
-		return scheme != null
-				&& RedisURI.URI_SCHEME_REDIS_SENTINEL.equals(scheme) || RedisURI.URI_SCHEME_REDIS_SENTINEL_SECURE.equals(scheme);
+		return scheme != null && RedisURI.URI_SCHEME_REDIS_SENTINEL.equals(scheme)
+				|| RedisURI.URI_SCHEME_REDIS_SENTINEL_SECURE.equals(scheme);
 	}
 
 	private boolean urlConfiguredForSocketScheme(String url) {
 		String scheme = getUrlScheme(url);
-		return scheme != null && (RedisURI.URI_SCHEME_REDIS_SOCKET.equals(scheme) || RedisURI.URI_SCHEME_REDIS_SOCKET_ALT.equals(scheme));
+		return scheme != null && (RedisURI.URI_SCHEME_REDIS_SOCKET.equals(scheme)
+				|| RedisURI.URI_SCHEME_REDIS_SOCKET_ALT.equals(scheme));
 	}
 
 	private boolean urlConfiguredForNonStandardStandaloneScheme(String url) {
 		String scheme = getUrlScheme(url);
-		return scheme != null && !RedisURI.URI_SCHEME_REDIS.equals(scheme) && !RedisURI.URI_SCHEME_REDIS_SECURE.equals(scheme);
+		return scheme != null && !RedisURI.URI_SCHEME_REDIS.equals(scheme)
+				&& !RedisURI.URI_SCHEME_REDIS_SECURE.equals(scheme);
 	}
 
 	private String getUrlScheme(String url) {
