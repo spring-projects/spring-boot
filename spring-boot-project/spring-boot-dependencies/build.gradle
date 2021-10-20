@@ -1656,7 +1656,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.5.5-SNAPSHOT") {
+	library("Spring Integration", "5.5.5") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
