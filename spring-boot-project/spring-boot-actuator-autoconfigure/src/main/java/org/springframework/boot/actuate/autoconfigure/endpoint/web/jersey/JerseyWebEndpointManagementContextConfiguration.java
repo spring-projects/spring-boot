@@ -89,6 +89,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar jerseyDifferentPortAdditionalHealthEndpointPathsResourcesRegistrar(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
