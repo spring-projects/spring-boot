@@ -45,6 +45,7 @@ publishing.publications.withType(MavenPublication) {
 							delegate.exclude('**/application*.yml')
 							delegate.exclude('**/application*.yaml')
 							delegate.exclude('**/application*.properties')
+							delegate.exclude('META-INF/additional-spring-configuration-metadata.json')
 						}
 					}
 				}
