@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -50,8 +50,9 @@ class RedisReactiveSessionConfiguration {
 
 		@Autowired
 		void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
-				WebFluxProperties webFluxProperties) {
-			Duration timeout = sessionProperties.determineTimeout(() -> webFluxProperties.getSession().getTimeout());
+				ServerProperties serverProperties) {
+			Duration timeout = sessionProperties
+					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout());
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}

@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoCo
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -81,8 +82,8 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 	}
 
 	@Test
-	void defaultConfigWithCustomWebFluxTimeout() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "spring.webflux.session.timeout=1m")
+	void defaultConfigWithCustomSessionTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "server.reactive.session.timeout=1m")
 				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
@@ -105,17 +106,16 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
-				.withUserConfiguration(Config.class)
+		AutoConfigurations autoConfigurations = AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+				MongoReactiveDataAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class);
+		this.contextRunner.withConfiguration(autoConfigurations).withUserConfiguration(Config.class)
 				.withPropertyValues("spring.session.store-type=mongodb",
-						"spring.webflux.session.cookie.name:JSESSIONID",
-						"spring.webflux.session.cookie.domain:.example.com",
-						"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
-						"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
-						"spring.webflux.session.cookie.same-site:strict")
+						"server.reactive.session.cookie.name:JSESSIONID",
+						"server.reactive.session.cookie.domain:.example.com",
+						"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
+						"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
+						"server.reactive.session.cookie.same-site:strict")
 				.run(assertExchangeWithSession((exchange) -> {
 					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 					assertThat(cookies).isNotEmpty();

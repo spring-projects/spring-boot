@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,15 +36,13 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Cookie;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.SameSite;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
@@ -57,10 +54,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
@@ -83,7 +78,6 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
-import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
 import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionIdResolver;
@@ -108,7 +102,8 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class })
+		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class,
+		WebSessionIdResolverAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -240,19 +235,22 @@ public class WebFluxAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(WebProperties.class)
+	@EnableConfigurationProperties({ WebProperties.class, ServerProperties.class })
 	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
 		private final WebProperties webProperties;
 
+		private final ServerProperties serverProperties;
+
 		private final WebFluxRegistrations webFluxRegistrations;
 
 		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
-				ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
+				ServerProperties serverProperties, ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
 			this.webFluxProperties = webFluxProperties;
 			this.webProperties = webProperties;
+			this.serverProperties = serverProperties;
 			this.webFluxRegistrations = webFluxRegistrations.getIfUnique();
 		}
 
@@ -313,52 +311,10 @@ public class WebFluxAutoConfiguration {
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
 		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
-			Duration timeout = this.webFluxProperties.getSession().getTimeout();
+			Duration timeout = this.serverProperties.getReactive().getSession().getTimeout();
 			webSessionManager.setSessionStore(new MaxIdleTimeInMemoryWebSessionStore(timeout));
-			webSessionManager.setSessionIdResolver(webSessionIdResolver.getIfAvailable(cookieWebSessionIdResolver()));
+			webSessionIdResolver.ifAvailable(webSessionManager::setSessionIdResolver);
 			return webSessionManager;
-		}
-
-		private Supplier<WebSessionIdResolver> cookieWebSessionIdResolver() {
-			return () -> {
-				CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
-				String cookieName = this.webFluxProperties.getSession().getCookie().getName();
-				if (StringUtils.hasText(cookieName)) {
-					resolver.setCookieName(cookieName);
-				}
-				resolver.addCookieInitializer(this::initializeCookie);
-				return resolver;
-			};
-		}
-
-		private void initializeCookie(ResponseCookieBuilder builder) {
-			Cookie cookie = this.webFluxProperties.getSession().getCookie();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(cookie::getDomain).to(builder::domain);
-			map.from(cookie::getPath).to(builder::path);
-			map.from(cookie::getHttpOnly).to(builder::httpOnly);
-			map.from(cookie::getSecure).to(builder::secure);
-			map.from(cookie::getMaxAge).to(builder::maxAge);
-			map.from(cookie::getSameSite).as(SameSite::attribute).to(builder::sameSite);
-		}
-
-		static final class MaxIdleTimeInMemoryWebSessionStore extends InMemoryWebSessionStore {
-
-			private final Duration timeout;
-
-			private MaxIdleTimeInMemoryWebSessionStore(Duration timeout) {
-				this.timeout = timeout;
-			}
-
-			@Override
-			public Mono<WebSession> createWebSession() {
-				return super.createWebSession().doOnSuccess(this::setMaxIdleTime);
-			}
-
-			private void setMaxIdleTime(WebSession session) {
-				session.setMaxIdleTime(this.timeout);
-			}
-
 		}
 
 	}
@@ -371,6 +327,25 @@ public class WebFluxAutoConfiguration {
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
 				WebProperties webProperties) {
 			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());
+		}
+
+	}
+
+	static final class MaxIdleTimeInMemoryWebSessionStore extends InMemoryWebSessionStore {
+
+		private final Duration timeout;
+
+		private MaxIdleTimeInMemoryWebSessionStore(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+		@Override
+		public Mono<WebSession> createWebSession() {
+			return super.createWebSession().doOnSuccess(this::setMaxIdleTime);
+		}
+
+		private void setMaxIdleTime(WebSession session) {
+			session.setMaxIdleTime(this.timeout);
 		}
 
 	}

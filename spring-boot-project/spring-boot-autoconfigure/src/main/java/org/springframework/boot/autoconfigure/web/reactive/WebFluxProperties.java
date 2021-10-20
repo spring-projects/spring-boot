@@ -16,11 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -71,6 +68,7 @@ public class WebFluxProperties {
 		return this.format;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "server.reactive.session")
 	public Session getSession() {
 		return this.session;
 	}
@@ -126,120 +124,39 @@ public class WebFluxProperties {
 
 	}
 
+	/**
+	 * Session properties.
+	 *
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@code server.reactive.session}.
+	 */
+	@Deprecated
 	public static class Session {
-
-		/**
-		 * Session timeout. If a duration suffix is not specified, seconds will be used.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration timeout = Duration.ofMinutes(30);
 
 		private final Cookie cookie = new Cookie();
 
-		public Duration getTimeout() {
-			return this.timeout;
-		}
-
-		public void setTimeout(Duration timeout) {
-			this.timeout = timeout;
-		}
-
+		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie")
 		public Cookie getCookie() {
 			return this.cookie;
 		}
 
 	}
 
+	/**
+	 * Session cookie properties.
+	 *
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link org.springframework.boot.web.server.Cookie}.
+	 */
+	@Deprecated
 	public static class Cookie {
-
-		/**
-		 * Name attribute value for session Cookies.
-		 */
-		private String name;
-
-		/**
-		 * Domain attribute value for session Cookies.
-		 */
-		private String domain;
-
-		/**
-		 * Path attribute value for session Cookies.
-		 */
-		private String path;
-
-		/**
-		 * HttpOnly attribute value for session Cookies.
-		 */
-		private Boolean httpOnly;
-
-		/**
-		 * Secure attribute value for session Cookies.
-		 */
-		private Boolean secure;
-
-		/**
-		 * Maximum age of the session cookie. If a duration suffix is not specified,
-		 * seconds will be used. A positive value indicates when the cookie expires
-		 * relative to the current time. A value of 0 means the cookie should expire
-		 * immediately. A negative value means no "Max-Age" attribute in which case the
-		 * cookie is removed when the browser is closed.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration maxAge;
 
 		/**
 		 * SameSite attribute value for session Cookies.
 		 */
 		private SameSite sameSite;
 
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getDomain() {
-			return this.domain;
-		}
-
-		public void setDomain(String domain) {
-			this.domain = domain;
-		}
-
-		public String getPath() {
-			return this.path;
-		}
-
-		public void setPath(String path) {
-			this.path = path;
-		}
-
-		public Boolean getHttpOnly() {
-			return this.httpOnly;
-		}
-
-		public void setHttpOnly(Boolean httpOnly) {
-			this.httpOnly = httpOnly;
-		}
-
-		public Boolean getSecure() {
-			return this.secure;
-		}
-
-		public void setSecure(Boolean secure) {
-			this.secure = secure;
-		}
-
-		public Duration getMaxAge() {
-			return this.maxAge;
-		}
-
-		public void setMaxAge(Duration maxAge) {
-			this.maxAge = maxAge;
-		}
-
+		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie.same-site")
 		public SameSite getSameSite() {
 			return this.sameSite;
 		}
@@ -250,6 +167,12 @@ public class WebFluxProperties {
 
 	}
 
+	/**
+	 * SameSite values.
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link org.springframework.boot.web.server.Cookie.SameSite}.
+	 */
+	@Deprecated
 	public enum SameSite {
 
 		/**
