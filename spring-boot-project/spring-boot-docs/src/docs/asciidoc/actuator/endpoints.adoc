@@ -1174,10 +1174,10 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prequisites to indicate that it should be enabled, the `java` contributor is disabled by default.
-You can enable it by setting the configprop:management.info.java.enabled[] property to `true`.
+With no prequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
+You can enable them by setting the configprop:management.info.env.enabled[] or configprop:management.info.java.enabled[] properties to `true`.
 
-The `env`, `git`, and `build` info contributors are enabled by default.
+The `build` and `git` info contributors are enabled by default.
 Each can be disabled by setting its `management.info.<id>.enabled` property to `false`.
 Alternatively, to disable every contributor that is usually enabled by default, set the configprop:management.info.defaults.enabled[] property to `false`.
 
@@ -1185,7 +1185,7 @@ Alternatively, to disable every contributor that is usually enabled by default, 
 
 [[actuator.endpoints.info.custom-application-information]]
 ==== Custom Application Information
-You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
+When the `env` contributor is enabled, you can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
 All `Environment` properties under the `info` key are automatically exposed.
 For example, you could add the following settings to your `application.properties` file:
 

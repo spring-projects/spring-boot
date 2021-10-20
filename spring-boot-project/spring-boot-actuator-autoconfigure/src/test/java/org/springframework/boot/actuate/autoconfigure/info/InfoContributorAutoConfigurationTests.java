@@ -49,22 +49,28 @@ class InfoContributorAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(InfoContributorAutoConfiguration.class));
 
 	@Test
-	void disableEnvContributor() {
-		this.contextRunner.withPropertyValues("management.info.env.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentInfoContributor.class));
+	void envContributor() {
+		this.contextRunner.withPropertyValues("management.info.env.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(EnvironmentInfoContributor.class));
 	}
 
 	@Test
 	void defaultInfoContributorsEnabled() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(EnvironmentInfoContributor.class);
-			assertThat(context.getBeansOfType(InfoContributor.class)).hasSize(1);
-		});
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfoContributor.class));
 	}
 
 	@Test
-	void defaultInfoContributorsDisabled() {
-		this.contextRunner.withPropertyValues("management.info.defaults.enabled=false")
+	void defaultInfoContributorsEnabledWithPrerequisitesInPlace() {
+		this.contextRunner.withUserConfiguration(GitPropertiesConfiguration.class, BuildPropertiesConfiguration.class)
+				.run((context) -> assertThat(context.getBeansOfType(InfoContributor.class)).hasSize(2)
+						.satisfies((contributors) -> assertThat(contributors.values())
+								.hasOnlyElementsOfTypes(BuildInfoContributor.class, GitInfoContributor.class)));
+	}
+
+	@Test
+	void defaultInfoContributorsDisabledWithPrerequisitesInPlace() {
+		this.contextRunner.withUserConfiguration(GitPropertiesConfiguration.class, BuildPropertiesConfiguration.class)
+				.withPropertyValues("management.info.defaults.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InfoContributor.class));
 	}
 

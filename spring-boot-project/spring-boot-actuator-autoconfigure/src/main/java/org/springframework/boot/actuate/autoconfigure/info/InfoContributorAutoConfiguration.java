@@ -55,7 +55,7 @@ public class InfoContributorAutoConfiguration {
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	@Bean
-	@ConditionalOnEnabledInfoContributor("env")
+	@ConditionalOnEnabledInfoContributor(value = "env", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
 		return new EnvironmentInfoContributor(environment);
