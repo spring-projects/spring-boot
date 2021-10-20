@@ -35,6 +35,7 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
  * Mongo-backed reactive session configuration.
  *
  * @author Andy Wilkinson
+ * @author Weix Sun
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveMongoOperations.class, ReactiveMongoSessionRepository.class })

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -56,6 +56,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
@@ -65,6 +66,7 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionIdResolver;
 
@@ -106,7 +108,7 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
-			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer.setCookieMaxAge((int) maxAge.getSeconds()));
+			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
 		}
@@ -138,27 +140,34 @@ public class SessionAutoConfiguration {
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		private static final String WEB_SESSION_ID_RESOLVER_BEAN_NAME = "webSessionIdResolver";
+		private final WebFluxProperties webFluxProperties;
+
+		ReactiveSessionConfiguration(WebFluxProperties webFluxProperties) {
+			this.webFluxProperties = webFluxProperties;
+		}
 
 		@Bean
-		@ConditionalOnMissingClass(WEB_SESSION_ID_RESOLVER_BEAN_NAME)
-		WebSessionIdResolver webSessionIdResolver(WebFluxProperties webFluxProperties) {
-			final WebFluxProperties.Cookie cookie = webFluxProperties.getSession().getCookie();
+		@ConditionalOnMissingBean
+		WebSessionIdResolver webSessionIdResolver() {
+			WebFluxProperties.Cookie cookieProperties = this.webFluxProperties.getSession().getCookie();
 			CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
-			webSessionIdResolver.setCookieName(cookie.getName());
-			webSessionIdResolver.setCookieMaxAge(cookie.getMaxAge());
-			webSessionIdResolver.addCookieInitializer((cookieBuilder) -> applyOtherProperties(cookie, cookieBuilder));
+			String cookieName = cookieProperties.getName();
+			if (StringUtils.hasText(cookieName)) {
+				webSessionIdResolver.setCookieName(cookieName);
+			}
+			webSessionIdResolver.addCookieInitializer(this::initializeCookie);
 			return webSessionIdResolver;
 		}
 
-		private void applyOtherProperties(WebFluxProperties.Cookie cookie,
-				org.springframework.http.ResponseCookie.ResponseCookieBuilder cookieBuilder) {
+		private void initializeCookie(ResponseCookieBuilder builder) {
+			WebFluxProperties.Cookie cookie = this.webFluxProperties.getSession().getCookie();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(cookie::getDomain).to(cookieBuilder::domain);
-			map.from(cookie::getPath).to(cookieBuilder::path);
-			map.from(cookie::getHttpOnly).to(cookieBuilder::httpOnly);
-			map.from(cookie::getSecure).to(cookieBuilder::secure);
-			map.from(cookie::getSameSite).as(SameSite::attribute).to(cookieBuilder::sameSite);
+			map.from(cookie::getDomain).to(builder::domain);
+			map.from(cookie::getPath).to(builder::path);
+			map.from(cookie::getHttpOnly).to(builder::httpOnly);
+			map.from(cookie::getSecure).to(builder::secure);
+			map.from(cookie::getMaxAge).to(builder::maxAge);
+			map.from(cookie::getSameSite).as(SameSite::attribute).to(builder::sameSite);
 		}
 
 		@Configuration(proxyBeanMethods = false)

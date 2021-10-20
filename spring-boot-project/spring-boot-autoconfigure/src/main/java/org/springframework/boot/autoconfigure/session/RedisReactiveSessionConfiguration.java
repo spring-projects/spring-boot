@@ -35,6 +35,7 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
  * Redis-backed reactive session configuration.
  *
  * @author Andy Wilkinson
+ * @author Weix Sun
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisSessionRepository.class })

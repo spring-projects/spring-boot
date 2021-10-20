@@ -136,10 +136,6 @@ public class WebFluxProperties {
 
 		private final Cookie cookie = new Cookie();
 
-		public Cookie getCookie() {
-			return this.cookie;
-		}
-
 		public Duration getTimeout() {
 			return this.timeout;
 		}
@@ -148,16 +144,18 @@ public class WebFluxProperties {
 			this.timeout = timeout;
 		}
 
+		public Cookie getCookie() {
+			return this.cookie;
+		}
+
 	}
 
 	public static class Cookie {
 
-		private static final String COOKIE_NAME = "SESSION";
-
 		/**
 		 * Name attribute value for session Cookies.
 		 */
-		private String name = COOKIE_NAME;
+		private String name;
 
 		/**
 		 * Domain attribute value for session Cookies.
@@ -170,19 +168,9 @@ public class WebFluxProperties {
 		private String path;
 
 		/**
-		 * Maximum age of the session cookie. If a duration suffix is not specified,
-		 * seconds will be used. A positive value indicates when the cookie expires
-		 * relative to the current time. A value of 0 means the cookie should expire
-		 * immediately. A negative value means no "Max-Age" attribute in which case the
-		 * cookie is removed when the browser is closed.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration maxAge = Duration.ofSeconds(-1);
-
-		/**
 		 * HttpOnly attribute value for session Cookies.
 		 */
-		private Boolean httpOnly = true;
+		private Boolean httpOnly;
 
 		/**
 		 * Secure attribute value for session Cookies.
@@ -190,14 +178,20 @@ public class WebFluxProperties {
 		private Boolean secure;
 
 		/**
-		 * SameSite attribute value for session Cookies.
+		 * Maximum age of the session cookie. If a duration suffix is not specified,
+		 * seconds will be used. A positive value indicates when the cookie expires
+		 * relative to the current time. A value of 0 means the cookie should expire
+		 * immediately. A negative value means no "Max-Age" attribute in which case the
+		 * cookie is removed when the browser is closed.
 		 */
-		private SameSite sameSite = SameSite.LAX;
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration maxAge;
 
 		/**
-		 * Return the session cookie name.
-		 * @return the session cookie name
+		 * SameSite attribute value for session Cookies.
 		 */
+		private SameSite sameSite;
+
 		public String getName() {
 			return this.name;
 		}
@@ -206,10 +200,6 @@ public class WebFluxProperties {
 			this.name = name;
 		}
 
-		/**
-		 * Return the domain for the session cookie.
-		 * @return the session cookie domain
-		 */
 		public String getDomain() {
 			return this.domain;
 		}
@@ -218,10 +208,6 @@ public class WebFluxProperties {
 			this.domain = domain;
 		}
 
-		/**
-		 * Return the path of the session cookie.
-		 * @return the session cookie path
-		 */
 		public String getPath() {
 			return this.path;
 		}
@@ -230,22 +216,6 @@ public class WebFluxProperties {
 			this.path = path;
 		}
 
-		/**
-		 * Return the maximum age of the session cookie.
-		 * @return the maximum age of the session cookie
-		 */
-		public Duration getMaxAge() {
-			return this.maxAge;
-		}
-
-		public void setMaxAge(Duration maxAge) {
-			this.maxAge = maxAge;
-		}
-
-		/**
-		 * Return whether to use "HttpOnly" cookies for session cookies.
-		 * @return {@code true} to use "HttpOnly" cookies for session cookies.
-		 */
 		public Boolean getHttpOnly() {
 			return this.httpOnly;
 		}
@@ -254,17 +224,20 @@ public class WebFluxProperties {
 			this.httpOnly = httpOnly;
 		}
 
-		/**
-		 * Return whether to always mark the session cookie as secure.
-		 * @return {@code true} to mark the session cookie as secure even if the request
-		 * that initiated the corresponding session is using plain HTTP
-		 */
 		public Boolean getSecure() {
 			return this.secure;
 		}
 
 		public void setSecure(Boolean secure) {
 			this.secure = secure;
+		}
+
+		public Duration getMaxAge() {
+			return this.maxAge;
+		}
+
+		public void setMaxAge(Duration maxAge) {
+			this.maxAge = maxAge;
 		}
 
 		public SameSite getSameSite() {
