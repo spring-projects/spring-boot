@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -60,6 +61,14 @@ public class ElasticMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ElasticConfig elasticConfig() {
+		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			entries.put("api-key-credentials", this.properties.getApiKeyCredentials());
+			entries.put("user-name", this.properties.getUserName());
+		});
+		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			entries.put("api-key-credentials", this.properties.getApiKeyCredentials());
+			entries.put("password", this.properties.getPassword());
+		});
 		return new ElasticPropertiesConfigAdapter(this.properties);
 	}
 

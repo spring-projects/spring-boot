@@ -60,14 +60,12 @@ public class ElasticProperties extends StepRegistryProperties {
 	private boolean autoCreateIndex = true;
 
 	/**
-	 * Login user of the Elastic server. If API key is configured, it will be used for
-	 * authentication instead of username/password.
+	 * Login user of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
 	private String userName;
 
 	/**
-	 * Login password of the Elastic server. If API key is configured, it will be used for
-	 * authentication instead of username/password.
+	 * Login password of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
 	private String password;
 
@@ -77,8 +75,7 @@ public class ElasticProperties extends StepRegistryProperties {
 	private String pipeline;
 
 	/**
-	 * Base64-encoded credentials string. If configured, it will be used for
-	 * authentication instead of username/password.
+	 * Base64-encoded credentials string. Mutually exclusive with user-name and password.
 	 */
 	private String apiKeyCredentials;
 
