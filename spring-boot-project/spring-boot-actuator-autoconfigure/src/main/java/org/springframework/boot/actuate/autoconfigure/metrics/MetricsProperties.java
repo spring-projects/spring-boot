@@ -43,7 +43,7 @@ public class MetricsProperties {
 
 	/**
 	 * Whether meter IDs starting with the specified name should be enabled. The longest
-	 * match wins, the key `all` can also be used to configure all meters.
+	 * match wins, the key {@code "all"} can also be used to configure all meters.
 	 */
 	private final Map<String, Boolean> enable = new LinkedHashMap<>();
 
@@ -262,15 +262,15 @@ public class MetricsProperties {
 		 * Whether meter IDs starting with the specified name should publish percentile
 		 * histograms. For monitoring systems that support aggregable percentile
 		 * calculation based on a histogram, this can be set to true. For other systems,
-		 * this has no effect. The longest match wins, the key `all` can also be used to
-		 * configure all meters.
+		 * this has no effect. The longest match wins, the key {@code "all"} can also be
+		 * used to configure all meters.
 		 */
 		private final Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
 
 		/**
 		 * Specific computed non-aggregable percentiles to ship to the backend for meter
-		 * IDs starting-with the specified name. The longest match wins, the key `all` can
-		 * also be used to configure all meters.
+		 * IDs starting-with the specified name. The longest match wins, the key
+		 * {@code "all"} can also be used to configure all meters.
 		 */
 		private final Map<String, double[]> percentiles = new LinkedHashMap<>();
 

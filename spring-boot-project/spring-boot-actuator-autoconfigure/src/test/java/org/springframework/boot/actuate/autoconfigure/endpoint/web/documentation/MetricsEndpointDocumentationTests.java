@@ -70,7 +70,7 @@ class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 						"id:Compressed Class Space"))
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric-with-tags", requestParameters(parameterWithName("tag")
-						.description("A tag to use for drill-down in the form `name:value`."))));
+						.description("A tag to use for drill-down in the form 'name:value'."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

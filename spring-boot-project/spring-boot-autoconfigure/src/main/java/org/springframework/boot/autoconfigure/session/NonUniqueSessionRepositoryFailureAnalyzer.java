@@ -37,7 +37,7 @@ class NonUniqueSessionRepositoryFailureAnalyzer extends AbstractFailureAnalyzer<
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider any of the following:%n"));
 		action.append(
-				String.format("    - Define the `spring.session.store-type` property to the store you want to use%n"));
+				String.format("    - Define the 'spring.session.store-type' property to the store you want to use%n"));
 		action.append(String.format("    - Review your classpath and remove the unwanted store implementation(s)%n"));
 		return new FailureAnalysis(message.toString(), action.toString(), cause);
 	}

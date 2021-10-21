@@ -33,7 +33,7 @@ class GettingStartedDocumentationTests {
 
 	GradleBuild gradleBuild;
 
-	// NOTE: We can't run any `apply-plugin` tests because during a release the
+	// NOTE: We can't run any 'apply-plugin' tests because during a release the
 	// jar won't be there
 
 	@TestTemplate
