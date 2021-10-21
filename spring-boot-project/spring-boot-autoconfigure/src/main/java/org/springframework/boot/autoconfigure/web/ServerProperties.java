@@ -985,7 +985,7 @@ public class ServerProperties {
 
 			/**
 			 * Name of the HTTP header from which the remote IP is extracted. For
-			 * instance, `X-FORWARDED-FOR`.
+			 * instance, {@code "X-FORWARDED-FOR"}.
 			 */
 			private String remoteIpHeader;
 

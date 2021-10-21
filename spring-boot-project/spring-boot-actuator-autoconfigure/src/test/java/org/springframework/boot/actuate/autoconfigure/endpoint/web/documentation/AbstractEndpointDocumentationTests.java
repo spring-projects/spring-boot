@@ -61,7 +61,7 @@ public abstract class AbstractEndpointDocumentationTests {
 
 	protected static String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
-				.map((constant) -> "`" + constant.name() + "`").collect(Collectors.toList()), ", ");
+				.map((constant) -> "'" + constant.name() + "'").collect(Collectors.toList()), ", ");
 	}
 
 	protected OperationPreprocessor limit(String... keys) {
