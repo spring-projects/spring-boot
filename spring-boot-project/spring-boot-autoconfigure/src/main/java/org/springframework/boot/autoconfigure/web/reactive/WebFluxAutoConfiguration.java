@@ -17,10 +17,10 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
@@ -72,12 +73,13 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.WebSession;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
-import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
+import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionManager;
 
@@ -92,6 +94,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
  * @author Chris Bono
+ * @author Weix Sun
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -99,7 +102,8 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class })
+		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class,
+		WebSessionIdResolverAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -231,19 +235,22 @@ public class WebFluxAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(WebProperties.class)
+	@EnableConfigurationProperties({ WebProperties.class, ServerProperties.class })
 	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
 		private final WebProperties webProperties;
 
+		private final ServerProperties serverProperties;
+
 		private final WebFluxRegistrations webFluxRegistrations;
 
 		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
-				ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
+				ServerProperties serverProperties, ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
 			this.webFluxProperties = webFluxProperties;
 			this.webProperties = webProperties;
+			this.serverProperties = serverProperties;
 			this.webFluxRegistrations = webFluxRegistrations.getIfUnique();
 		}
 
@@ -304,17 +311,10 @@ public class WebFluxAutoConfiguration {
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
 		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
-			webSessionManager.setSessionIdResolver(webSessionIdResolver.getIfAvailable(cookieWebSessionIdResolver()));
+			Duration timeout = this.serverProperties.getReactive().getSession().getTimeout();
+			webSessionManager.setSessionStore(new MaxIdleTimeInMemoryWebSessionStore(timeout));
+			webSessionIdResolver.ifAvailable(webSessionManager::setSessionIdResolver);
 			return webSessionManager;
-		}
-
-		private Supplier<WebSessionIdResolver> cookieWebSessionIdResolver() {
-			return () -> {
-				CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
-				webSessionIdResolver.addCookieInitializer((cookie) -> cookie
-						.sameSite(this.webFluxProperties.getSession().getCookie().getSameSite().attribute()));
-				return webSessionIdResolver;
-			};
 		}
 
 	}
@@ -327,6 +327,25 @@ public class WebFluxAutoConfiguration {
 		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
 				WebProperties webProperties) {
 			return new ResourceChainResourceHandlerRegistrationCustomizer(webProperties.getResources());
+		}
+
+	}
+
+	static final class MaxIdleTimeInMemoryWebSessionStore extends InMemoryWebSessionStore {
+
+		private final Duration timeout;
+
+		private MaxIdleTimeInMemoryWebSessionStore(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+		@Override
+		public Mono<WebSession> createWebSession() {
+			return super.createWebSession().doOnSuccess(this::setMaxIdleTime);
+		}
+
+		private void setMaxIdleTime(WebSession session) {
+			session.setMaxIdleTime(this.timeout);
 		}
 
 	}

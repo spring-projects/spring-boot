@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -67,6 +68,7 @@ public class WebFluxProperties {
 		return this.format;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "server.reactive.session")
 	public Session getSession() {
 		return this.session;
 	}
@@ -122,23 +124,39 @@ public class WebFluxProperties {
 
 	}
 
+	/**
+	 * Session properties.
+	 *
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@code server.reactive.session}.
+	 */
+	@Deprecated
 	public static class Session {
 
 		private final Cookie cookie = new Cookie();
 
+		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie")
 		public Cookie getCookie() {
 			return this.cookie;
 		}
 
 	}
 
+	/**
+	 * Session cookie properties.
+	 *
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link org.springframework.boot.web.server.Cookie}.
+	 */
+	@Deprecated
 	public static class Cookie {
 
 		/**
 		 * SameSite attribute value for session Cookies.
 		 */
-		private SameSite sameSite = SameSite.LAX;
+		private SameSite sameSite;
 
+		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie.same-site")
 		public SameSite getSameSite() {
 			return this.sameSite;
 		}
@@ -149,6 +167,12 @@ public class WebFluxProperties {
 
 	}
 
+	/**
+	 * SameSite values.
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link org.springframework.boot.web.server.Cookie.SameSite}.
+	 */
+	@Deprecated
 	public enum SameSite {
 
 		/**

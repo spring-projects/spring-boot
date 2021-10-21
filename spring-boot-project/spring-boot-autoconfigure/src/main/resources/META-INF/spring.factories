@@ -141,6 +141,7 @@ org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration,\
