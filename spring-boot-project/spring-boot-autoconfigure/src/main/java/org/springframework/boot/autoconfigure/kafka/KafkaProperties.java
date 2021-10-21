@@ -1186,14 +1186,7 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
-				entries.put("spring.kafka.ssl.key-store-key", this.getKeyStoreKey());
-				entries.put("spring.kafka.ssl.key-store-location", this.getKeyStoreLocation());
-			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
-				entries.put("spring.kafka.ssl.trust-store-certificates", this.getTrustStoreCertificates());
-				entries.put("spring.kafka.ssl.trust-store-location", this.getTrustStoreLocation());
-			});
+			validate();
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
@@ -1211,6 +1204,17 @@ public class KafkaProperties {
 			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
 			map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
 			return properties;
+		}
+
+		private void validate() {
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.kafka.ssl.key-store-key", this.getKeyStoreKey());
+				entries.put("spring.kafka.ssl.key-store-location", this.getKeyStoreLocation());
+			});
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+				entries.put("spring.kafka.ssl.trust-store-certificates", this.getTrustStoreCertificates());
+				entries.put("spring.kafka.ssl.trust-store-location", this.getTrustStoreLocation());
+			});
 		}
 
 		private String resourceToPath(Resource resource) {
