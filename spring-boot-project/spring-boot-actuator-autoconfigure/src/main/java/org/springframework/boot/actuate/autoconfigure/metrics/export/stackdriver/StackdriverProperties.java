@@ -48,10 +48,9 @@ public class StackdriverProperties extends StepRegistryProperties {
 	private Map<String, String> resourceLabels;
 
 	/**
-	 * Whether to use semantically correct metric types. When this is false, counter
-	 * metrics are published as the GAUGE MetricKind. When this is true, counter metrics
-	 * are published as the CUMULATIVE MetricKind. This is false by default for the sake
-	 * of backwards compatibility.
+	 * Whether to use semantically correct metric types. When false, counter metrics are
+	 * published as the GAUGE MetricKind. When true, counter metrics are published as the
+	 * CUMULATIVE MetricKind.
 	 */
 	private boolean useSemanticMetricTypes = false;
 
