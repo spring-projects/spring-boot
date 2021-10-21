@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -55,7 +56,8 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
+			.withConfiguration(
+					AutoConfigurations.of(SessionAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class));
 
 	@Test
 	void defaultConfig() {
@@ -87,7 +89,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 
 	@Test
 	void defaultConfigWithCustomWebFluxTimeout() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=redis", "spring.webflux.session.timeout=1m")
+		this.contextRunner.withPropertyValues("spring.session.store-type=redis", "server.reactive.session.timeout=1m")
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
 				.run((context) -> {
@@ -115,11 +117,11 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 				.withUserConfiguration(Config.class)
 				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort(), "spring.session.store-type=redis",
-						"spring.webflux.session.cookie.name:JSESSIONID",
-						"spring.webflux.session.cookie.domain:.example.com",
-						"spring.webflux.session.cookie.path:/example", "spring.webflux.session.cookie.max-age:60",
-						"spring.webflux.session.cookie.http-only:false", "spring.webflux.session.cookie.secure:false",
-						"spring.webflux.session.cookie.same-site:strict")
+						"server.reactive.session.cookie.name:JSESSIONID",
+						"server.reactive.session.cookie.domain:.example.com",
+						"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
+						"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
+						"server.reactive.session.cookie.same-site:strict")
 				.run(assertExchangeWithSession((exchange) -> {
 					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 					assertThat(cookies).isNotEmpty();
