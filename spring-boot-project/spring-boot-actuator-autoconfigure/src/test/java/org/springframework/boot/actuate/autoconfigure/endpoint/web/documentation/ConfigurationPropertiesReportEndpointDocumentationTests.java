@@ -46,7 +46,7 @@ class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEnd
 						preprocessResponse(limit("contexts", getApplicationContext().getId(), "beans")),
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id."),
 								fieldWithPath("contexts.*.beans.*")
-										.description("`@ConfigurationProperties` beans keyed by bean name."),
+										.description("@ConfigurationProperties beans keyed by bean name."),
 								fieldWithPath("contexts.*.beans.*.prefix")
 										.description("Prefix applied to the names of the bean's properties."),
 								subsectionWithPath("contexts.*.beans.*.properties")
