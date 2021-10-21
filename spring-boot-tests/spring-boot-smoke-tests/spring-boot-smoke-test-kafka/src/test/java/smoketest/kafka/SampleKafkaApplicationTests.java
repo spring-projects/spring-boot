@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +38,7 @@ import static org.hamcrest.Matchers.not;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
+@DisabledOnOs(OS.WINDOWS)
 @SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka(topics = "testTopic")
 class SampleKafkaApplicationTests {
