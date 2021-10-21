@@ -588,6 +588,39 @@ TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`
 
 
 
+[[web.servlet.embedded-container.customizing.samesite]]
+===== SameSite Cookies
+The `SameSite` cookie attribute can be used by web browsers to control if and how cookies are submitted in cross-site requests.
+The attribute is particularly relevant for modern web browsers which have started to change the default value that is used when the attribute is missing.
+
+If you want to change the `SameSite` attribute of your session cookie, you can use the configprop:server.servlet.session.cookie.same-site[] property.
+This property is supported by auto-configured Tomcat, Jetty and Undertow servers.
+It is also used to configure Spring Session servlet based `SessionRepository` beans.
+
+For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to you `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  servlet:
+	    session:
+	      cookie:
+	        same-site: "none"
+----
+
+If you want to change the `SameSite` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
+The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `SameSite` value, or `null`.
+
+There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
+For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/web/servlet/embeddedcontainer/customizing/samesite/MySameSiteConfiguration.java[]
+----
+
+
+
 [[web.servlet.embedded-container.customizing.programmatic]]
 ===== Programmatic Customization
 If you need to programmatically configure your embedded servlet container, you can register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
