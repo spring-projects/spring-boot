@@ -290,7 +290,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
-		deleteVolumes("build-cache-volume", "launch-cache-volume");
+		deleteVolumes("cache-" + projectName + ".build", "cache-" + projectName + ".launch");
 	}
 
 	@TestTemplate

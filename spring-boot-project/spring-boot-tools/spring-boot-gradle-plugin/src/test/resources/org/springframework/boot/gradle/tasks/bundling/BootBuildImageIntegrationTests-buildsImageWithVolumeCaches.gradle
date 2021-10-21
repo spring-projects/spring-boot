@@ -10,12 +10,12 @@ bootBuildImage {
 	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1"
 	buildCache {
 		volume {
-			name = "build-cache-volume"
+			name = "cache-${rootProject.name}.build"
 		}
 	}
 	launchCache {
 		volume {
-			name = "launch-cache-volume"
+			name = "cache-${rootProject.name}.launch"
 		}
 	}
 }

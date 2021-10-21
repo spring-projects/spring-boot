@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -310,13 +311,15 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithVolumeCaches(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
 		mavenBuild.project("build-image-caches").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+				.systemProperty("test-build-id", testBuildId).execute((project) -> {
 					assertThat(buildLog(project)).contains("Building image")
 							.contains("docker.io/library/build-image-caches:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					removeImage("build-image-caches", "0.0.1.BUILD-SNAPSHOT");
-					deleteVolumes("build-cache-volume", "launch-cache-volume");
+					deleteVolumes("cache-" + testBuildId + ".build", "cache-" + testBuildId + ".launch");
 				});
 	}
 
@@ -392,6 +395,11 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 		for (String name : names) {
 			volumeApi.delete(VolumeName.of(name), false);
 		}
+	}
+
+	private String randomString() {
+		IntStream chars = new Random().ints('a', 'z' + 1).limit(10);
+		return chars.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 	}
 
 }

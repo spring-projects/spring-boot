@@ -26,12 +26,12 @@
 								<builder>projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1</builder>
 								<buildCache>
 									<volume>
-										<name>build-cache-volume</name>
+										<name>cache-${test-build-id}.build</name>
 									</volume>
 								</buildCache>
 								<launchCache>
 									<volume>
-										<name>launch-cache-volume</name>
+										<name>cache-${test-build-id}.launch</name>
 									</volume>
 								</launchCache>
 							</image>
