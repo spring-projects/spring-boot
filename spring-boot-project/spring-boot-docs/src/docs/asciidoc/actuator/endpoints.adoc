@@ -368,7 +368,7 @@ This means that the actuator endpoints that require a `POST` (shutdown and logge
 
 NOTE: We recommend disabling CSRF protection completely only if you are creating a service that is used by non-browser clients.
 
-You can find additional information about CSRF protection in the {spring-security-docs}#csrf[Spring Security Reference Guide].
+You can find additional information about CSRF protection in the {spring-security-docs}/features/exploits/csrf.html[Spring Security Reference Guide].
 
 
 

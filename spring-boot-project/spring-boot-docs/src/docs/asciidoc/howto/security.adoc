@@ -15,7 +15,7 @@ If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` or a `Sec
 [[howto.security.change-user-details-service-and-add-user-accounts]]
 === Change the UserDetailsService and Add User Accounts
 If you provide a `@Bean` of type `AuthenticationManager`, `AuthenticationProvider`, or `UserDetailsService`, the default `@Bean` for `InMemoryUserDetailsManager` is not created.
-This means you have the full feature set of Spring Security available (such as {spring-security-docs}#servlet-authentication[various authentication options]).
+This means you have the full feature set of Spring Security available (such as {spring-security-docs}/servlet/authentication/index.html[various authentication options]).
 
 The easiest way to add user accounts is to provide your own `UserDetailsService` bean.
 
