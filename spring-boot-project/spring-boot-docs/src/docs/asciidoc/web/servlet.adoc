@@ -12,7 +12,7 @@ The following code shows a typical `@RestController` that serves JSON data:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/MyRestController.java[]
+include::{docs-java}/web/servlet/springmvc/MyRestController.java[]
 ----
 
 Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
@@ -62,7 +62,7 @@ If you need to add or customize converters, you can use Spring Boot's `HttpMessa
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/messageconverters/MyHttpMessageConvertersConfiguration.java[]
+include::{docs-java}/web/servlet/springmvc/messageconverters/MyHttpMessageConvertersConfiguration.java[]
 ----
 
 Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
@@ -80,7 +80,7 @@ You can also use it on classes that contain serializers/deserializers as inner c
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/json/MyJsonComponent.java[]
+include::{docs-java}/web/servlet/springmvc/json/MyJsonComponent.java[]
 ----
 
 All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
@@ -93,7 +93,7 @@ The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDese
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/json/object/MyJsonComponent.java[]
+include::{docs-java}/web/servlet/springmvc/json/object/MyJsonComponent.java[]
 ----
 
 
@@ -342,7 +342,7 @@ You can also define a class annotated with `@ControllerAdvice` to customize the 
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/MyControllerAdvice.java[]
+include::{docs-java}/web/servlet/springmvc/errorhandling/MyControllerAdvice.java[]
 ----
 
 In the preceding example, if `YourException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
@@ -352,7 +352,7 @@ Applications can ensure that such exceptions are recorded with the request metri
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/MyController.java[]
+include::{docs-java}/web/servlet/springmvc/errorhandling/MyController.java[]
 ----
 
 
@@ -397,7 +397,7 @@ For more complex mappings, you can also add beans that implement the `ErrorViewR
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpages/MyErrorViewResolver.java[]
+include::{docs-java}/web/servlet/springmvc/errorhandling/errorpages/MyErrorViewResolver.java[]
 ----
 
 You can also use regular Spring MVC features such as {spring-framework-docs}/web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}/web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
@@ -412,14 +412,14 @@ This abstraction works directly with the underlying embedded servlet container a
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/MyErrorPagesConfiguration.java[]
+include::{docs-java}/web/servlet/springmvc/errorhandling/errorpageswithoutspringmvc/MyErrorPagesConfiguration.java[]
 ----
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/MyFilterConfiguration.java[]
+include::{docs-java}/web/servlet/springmvc/errorhandling/errorpageswithoutspringmvc/MyFilterConfiguration.java[]
 ----
 
 Note that the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type.
@@ -451,7 +451,7 @@ Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method COR
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/cors/MyCorsConfiguration.java[]
+include::{docs-java}/web/servlet/springmvc/cors/MyCorsConfiguration.java[]
 ----
 
 
@@ -467,7 +467,7 @@ To get started with Jersey, include the `spring-boot-starter-jersey` as a depend
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/jersey/MyJerseyConfig.java[]
+include::{docs-java}/web/servlet/jersey/MyJerseyConfig.java[]
 ----
 
 WARNING: Jersey's support for scanning executable archives is rather limited.
@@ -480,7 +480,7 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/jersey/MyEndpoint.java[]
+include::{docs-java}/web/servlet/jersey/MyEndpoint.java[]
 ----
 
 Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
@@ -596,7 +596,7 @@ The following example shows programmatically setting the port:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/MyWebServerFactoryCustomizer.java[]
+include::{docs-java}/web/servlet/embeddedcontainer/customizing/programmatic/MyWebServerFactoryCustomizer.java[]
 ----
 
 `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
@@ -604,7 +604,7 @@ The following example shows how to customize `TomcatServletWebServerFactory` tha
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/MyTomcatWebServerFactoryCustomizer.java[]
+include::{docs-java}/web/servlet/embeddedcontainer/customizing/programmatic/MyTomcatWebServerFactoryCustomizer.java[]
 ----
 
 
