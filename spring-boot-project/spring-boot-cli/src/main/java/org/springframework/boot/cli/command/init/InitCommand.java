@@ -20,7 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -72,6 +75,21 @@ public class InitCommand extends OptionParsingCommand {
 	 */
 	static class InitOptionHandler extends OptionHandler {
 
+		/**
+		 * Mapping from camelCase options advertised by the service to our kebab-case
+		 * options.
+		 */
+		private static final Map<String, String> CAMEL_CASE_OPTIONS;
+		static {
+			Map<String, String> options = new HashMap<>();
+			options.put("--groupId", "--group-id");
+			options.put("--artifactId", "--artifact-id");
+			options.put("--packageName", "--package-name");
+			options.put("--javaVersion", "--java-version");
+			options.put("--bootVersion", "--boot-version");
+			CAMEL_CASE_OPTIONS = Collections.unmodifiableMap(options);
+		}
+
 		private final ServiceCapabilitiesReportGenerator serviceCapabilitiesReport;
 
 		private final ProjectGenerator projectGenerator;
@@ -113,9 +131,9 @@ public class InitCommand extends OptionParsingCommand {
 		private OptionSpec<Void> force;
 
 		InitOptionHandler(InitializrService initializrService) {
+			super(InitOptionHandler::processArgument);
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
 			this.projectGenerator = new ProjectGenerator(initializrService);
-
 		}
 
 		@Override
@@ -129,20 +147,16 @@ public class InitCommand extends OptionParsingCommand {
 			otherOptions();
 		}
 
-		/**
-		 * Supports both kebab-case and camelCase as project CLI Options. camelCase to be
-		 * deprecated as part of future releases
-		 */
 		private void projectGenerationOptions() {
-			this.groupId = option(Arrays.asList("groupId", "group-id", "g"),
-					"Project coordinates (for example 'org.test')").withRequiredArg();
-			this.artifactId = option(Arrays.asList("artifactId", "artifact-id", "a"),
+			this.groupId = option(Arrays.asList("group-id", "g"), "Project coordinates (for example 'org.test')")
+					.withRequiredArg();
+			this.artifactId = option(Arrays.asList("artifact-id", "a"),
 					"Project coordinates; infer archive name (for example 'test')").withRequiredArg();
 			this.version = option(Arrays.asList("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')")
 					.withRequiredArg();
 			this.name = option(Arrays.asList("name", "n"), "Project name; infer application name").withRequiredArg();
 			this.description = option("description", "Project description").withRequiredArg();
-			this.packageName = option(Arrays.asList("packageName", "package-name"), "Package name").withRequiredArg();
+			this.packageName = option(Arrays.asList("package-name"), "Package name").withRequiredArg();
 			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service (--list) for more details")
@@ -153,11 +167,11 @@ public class InitCommand extends OptionParsingCommand {
 					.defaultsTo("maven");
 			this.format = option("format", "Format of the generated content (for example 'build' for a build file, "
 					+ "'project' for a project archive)").withRequiredArg().defaultsTo("project");
-			this.javaVersion = option(Arrays.asList("javaVersion", "java-version", "j"),
-					"Language level (for example '1.8')").withRequiredArg();
+			this.javaVersion = option(Arrays.asList("java-version", "j"), "Language level (for example '1.8')")
+					.withRequiredArg();
 			this.language = option(Arrays.asList("language", "l"), "Programming language  (for example 'java')")
 					.withRequiredArg();
-			this.bootVersion = option(Arrays.asList("bootVersion", "boot-version", "b"),
+			this.bootVersion = option(Arrays.asList("boot-version", "b"),
 					"Spring Boot version (for example '1.2.0.RELEASE')").withRequiredArg();
 			this.dependencies = option(Arrays.asList("dependencies", "d"),
 					"Comma-separated list of dependency identifiers to include in the generated project")
@@ -252,6 +266,16 @@ public class InitCommand extends OptionParsingCommand {
 				request.setOutput(output);
 			}
 			return request;
+		}
+
+		private static String processArgument(String argument) {
+			for (Map.Entry<String, String> entry : CAMEL_CASE_OPTIONS.entrySet()) {
+				String name = entry.getKey();
+				if (argument.startsWith(name + " ") || argument.startsWith(name + "=")) {
+					return entry.getValue() + argument.substring(name.length());
+				}
+			}
+			return argument;
 		}
 
 	}
