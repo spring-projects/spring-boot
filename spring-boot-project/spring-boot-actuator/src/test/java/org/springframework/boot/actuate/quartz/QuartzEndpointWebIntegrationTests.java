@@ -106,7 +106,7 @@ class QuartzEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void quartzTriggersOrJobsAreAllowed(WebTestClient client) {
-		client.get().uri("/actuator/quartz/something-elese").exchange().expectStatus().isBadRequest();
+		client.get().uri("/actuator/quartz/something-else").exchange().expectStatus().isBadRequest();
 	}
 
 	@WebEndpointTest

@@ -337,7 +337,7 @@ public class IntegrationProperties {
 		private Duration initialDelay;
 
 		/**
-		 * Cron expression for polling. Mutually explusive with 'fixedDelay' and
+		 * Cron expression for polling. Mutually exclusive with 'fixedDelay' and
 		 * 'fixedRate'.
 		 */
 		private String cron;
