@@ -28,6 +28,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
  * {@link DatabaseInitializationMode}
  */
+@Deprecated
 public enum DataSourceInitializationMode {
 
 	/**

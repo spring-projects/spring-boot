@@ -36,8 +36,9 @@ See also the section on "`<<web#web.servlet.spring-mvc.error-handling, Error Han
 
 [[howto.actuator.sanitize-sensitive-values]]
 === Sanitize Sensitive Values
-Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (i.e. their values are replaced by `+******+`). Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
-Additionally, any key that holds the word `credentials` (configured as a regular expression, i.e. `+*credentials.*+`) as part of the key is also entirely sanitized.
+Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (that is their values are replaced by `+******+`).
+Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
+Additionally, any key that holds the word `credentials` (configured as a regular expression, that is `+*credentials.*+`) as part of the key is also entirely sanitized.
 
 Furthermore, Spring Boot sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
 
@@ -62,7 +63,7 @@ Alternatively, additional patterns can be configured using configprop:management
 Spring Boot health indicators return a `Status` type to indicate the overall system health.
 If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics via Micrometer.
 By default, the status codes "`UP`", "`DOWN`", "`OUT_OF_SERVICE`" and "`UNKNOWN`" are used by Spring Boot.
-To export these, you'll need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
+To export these, you will need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
 
 The following example shows one way to write such an exporter:
 

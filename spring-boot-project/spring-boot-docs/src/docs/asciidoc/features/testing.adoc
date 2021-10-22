@@ -73,8 +73,8 @@ Spring Boot provides a `@SpringBootTest` annotation, which can be used as an alt
 The annotation works by <<features#features.testing.spring-boot-applications.detecting-configuration,creating the `ApplicationContext` used in your tests through `SpringApplication`>>.
 In addition to `@SpringBootTest` a number of other annotations are also provided for <<features#features.testing.spring-boot-applications.autoconfigured-tests,testing more specific slices>> of an application.
 
-TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there's no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@...Test` annotations are already annotated with it.
+TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
+If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@...Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server.
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how your tests run:
@@ -100,7 +100,7 @@ NOTE: `@SpringBootTest` with `webEnvironment = WebEnvironment.RANDOM_PORT` will 
 [[features.testing.spring-boot-applications.detecting-web-app-type]]
 ==== Detecting Web Application Type
 If Spring MVC is available, a regular MVC-based application context is configured.
-If you have only Spring WebFlux, we'll detect that and configure a WebFlux-based application context instead.
+If you have only Spring WebFlux, we will detect that and configure a WebFlux-based application context instead.
 
 If both are present, Spring MVC takes precedence.
 If you want to test a reactive web application in this scenario, you must set the configprop:spring.main.web-application-type[] property:
@@ -218,7 +218,7 @@ include::{docs-java}/features/testing/springbootapplications/withrunningserver/M
 TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
 
 This setup requires `spring-webflux` on the classpath.
-If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate` facility:
+If you can not or will not add webflux, Spring Boot also provides a `TestRestTemplate` facility:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -285,7 +285,7 @@ The following example replaces an existing `RemoteService` bean with a mock impl
 include::{docs-java}/features/testing/springbootapplications/mockingbeans/bean/MyTests.java[]
 ----
 
-NOTE: `@MockBean` cannot be used to mock the behavior of a bean that's exercised during application context refresh.
+NOTE: `@MockBean` cannot be used to mock the behavior of a bean that is exercised during application context refresh.
 By the time the test is executed, the application context refresh has completed and it is too late to configure the mocked behavior.
 We recommend using a `@Bean` method to create and configure the mock in this situation.
 
@@ -368,7 +368,7 @@ include::{docs-java}/features/testing/springbootapplications/jsontests/MyJsonAss
 [[features.testing.spring-boot-applications.spring-mvc-tests]]
 ==== Auto-configured Spring MVC Tests
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest` annotation.
-`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
+`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, `WebMvcRegistrations`, and `HandlerMethodArgumentResolver`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -391,7 +391,7 @@ include::{docs-java}/features/testing/springbootapplications/springmvctests/MyCo
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
-If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
+If you use HtmlUnit and Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
 [source,java,indent=0,subs="verbatim"]
@@ -490,7 +490,10 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 ----
 
 Data JPA tests may also inject a {spring-boot-test-autoconfigure-module-code}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
-If you want to use `TestEntityManager` outside of `@DataJpaTest` instances, you can also use the `@AutoConfigureTestEntityManager` annotation.
+
+TIP: `TestEntityManager` can also be auto-configured to any of your Spring-based test class by adding `@AutoConfigureTestEntityManager`.
+When doing so, make sure that your test is running in a transaction, for instance by adding  `@Transactional` on your test class or method.
+
 A `JdbcTemplate` is also available if you need that.
 The following example shows the `@DataJpaTest` annotation in use:
 

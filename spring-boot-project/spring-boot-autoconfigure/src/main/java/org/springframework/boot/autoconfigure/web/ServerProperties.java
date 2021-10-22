@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
@@ -116,6 +117,8 @@ public class ServerProperties {
 
 	private final Servlet servlet = new Servlet();
 
+	private final Reactive reactive = new Reactive();
+
 	private final Tomcat tomcat = new Tomcat();
 
 	private final Jetty jetty = new Jetty();
@@ -188,6 +191,10 @@ public class ServerProperties {
 		return this.servlet;
 	}
 
+	public Reactive getReactive() {
+		return this.reactive;
+	}
+
 	public Tomcat getTomcat() {
 		return this.tomcat;
 	}
@@ -213,7 +220,7 @@ public class ServerProperties {
 	}
 
 	/**
-	 * Servlet properties.
+	 * Servlet server properties.
 	 */
 	public static class Servlet {
 
@@ -292,6 +299,44 @@ public class ServerProperties {
 
 		public Session getSession() {
 			return this.session;
+		}
+
+	}
+
+	/**
+	 * Reactive server properties.
+	 */
+	public static class Reactive {
+
+		private final Session session = new Session();
+
+		public Session getSession() {
+			return this.session;
+		}
+
+		public static class Session {
+
+			/**
+			 * Session timeout. If a duration suffix is not specified, seconds will be
+			 * used.
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private Duration timeout = Duration.ofMinutes(30);
+
+			private final Cookie cookie = new Cookie();
+
+			public Duration getTimeout() {
+				return this.timeout;
+			}
+
+			public void setTimeout(Duration timeout) {
+				this.timeout = timeout;
+			}
+
+			public Cookie getCookie() {
+				return this.cookie;
+			}
+
 		}
 
 	}
@@ -940,7 +985,7 @@ public class ServerProperties {
 
 			/**
 			 * Name of the HTTP header from which the remote IP is extracted. For
-			 * instance, `X-FORWARDED-FOR`.
+			 * instance, {@code "X-FORWARDED-FOR"}.
 			 */
 			private String remoteIpHeader;
 

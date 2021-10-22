@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package org.springframework.boot;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.system.ApplicationPid;
-import org.springframework.util.StopWatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -55,11 +55,9 @@ class StartupInfoLoggerTests {
 
 	@Test
 	void startedFormat() {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
 		given(this.log.isInfoEnabled()).willReturn(true);
-		stopWatch.stop();
-		new StartupInfoLogger(getClass()).logStarted(this.log, stopWatch);
+		Duration timeTakeToStartup = Duration.ofMillis(10);
+		new StartupInfoLogger(getClass()).logStarted(this.log, timeTakeToStartup);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
 		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()

@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
@@ -155,7 +156,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private ObjectMapper getObjectMapper() {
 		if (this.objectMapper == null) {
-			this.objectMapper = new ObjectMapper();
+			JsonMapper.Builder builder = JsonMapper.builder();
+			configureJsonMapper(builder);
+			this.objectMapper = builder.build();
 			configureObjectMapper(this.objectMapper);
 		}
 		return this.objectMapper;
@@ -166,32 +169,47 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
 	 * structure.
 	 * @param mapper the object mapper
+	 * @deprecated since 2.6 for removal in 2.8 in favor of
+	 * {@link #configureJsonMapper(com.fasterxml.jackson.databind.json.JsonMapper.Builder)}
 	 */
+	@Deprecated
 	protected void configureObjectMapper(ObjectMapper mapper) {
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-		mapper.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
-		mapper.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
-		mapper.setSerializationInclusion(Include.NON_NULL);
-		applyConfigurationPropertiesFilter(mapper);
-		applySerializationModifier(mapper);
-		mapper.registerModule(new JavaTimeModule());
+
 	}
 
-	private void applyConfigurationPropertiesFilter(ObjectMapper mapper) {
-		mapper.setAnnotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
-		mapper.setFilterProvider(
+	/**
+	 * Configure Jackson's {@link JsonMapper} to be used to serialize the
+	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
+	 * structure.
+	 * @param builder the json mapper builder
+	 * @since 2.6.0
+	 */
+	protected void configureJsonMapper(JsonMapper.Builder builder) {
+		builder.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		builder.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		builder.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
+		JsonMapper.builder();
+		builder.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
+		builder.serializationInclusion(Include.NON_NULL);
+		applyConfigurationPropertiesFilter(builder);
+		applySerializationModifier(builder);
+		builder.addModule(new JavaTimeModule());
+	}
+
+	private void applyConfigurationPropertiesFilter(JsonMapper.Builder builder) {
+		builder.annotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
+		builder.filterProvider(
 				new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
 	}
 
 	/**
 	 * Ensure only bindable and non-cyclic bean properties are reported.
-	 * @param mapper the object mapper
+	 * @param builder the JsonMapper builder
 	 */
-	private void applySerializationModifier(ObjectMapper mapper) {
+	private void applySerializationModifier(JsonMapper.Builder builder) {
 		SerializerFactory factory = BeanSerializerFactory.instance
 				.withSerializerModifier(new GenericSerializerModifier());
-		mapper.setSerializerFactory(factory);
+		builder.serializerFactory(factory);
 	}
 
 	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context,
@@ -502,7 +520,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
-			// that its a nested class used solely for binding to config props, so it
+			// that it is a nested class used solely for binding to config props, so it
 			// should be kosher. Lists and Maps are also auto-detected by default since
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.

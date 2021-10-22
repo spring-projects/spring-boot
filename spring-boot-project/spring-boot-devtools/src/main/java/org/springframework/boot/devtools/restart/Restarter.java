@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,7 +276,7 @@ public class Restarter {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
-		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader, urls, updatedFiles, this.logger);
+		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader, urls, updatedFiles);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName + " with URLs " + Arrays.asList(urls));
 		}

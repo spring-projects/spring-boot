@@ -5,6 +5,7 @@ Spring Integration provides abstractions over messaging and also other transport
 If Spring Integration is available on your classpath, it is initialized through the `@EnableIntegration` annotation.
 
 Spring Integration polling logic relies <<features#features.task-execution-and-scheduling,on the auto-configured `TaskScheduler`>>.
+The default `PollerMetadata` (poll unbounded number of messages every second) can be customized with `spring.integration.poller.*` configuration properties.
 
 Spring Boot also configures some features that are triggered by the presence of additional Spring Integration modules.
 If `spring-integration-jmx` is also on the classpath, message processing statistics are published over JMX.
@@ -45,6 +46,3 @@ Spring Boot can also auto-configure an `ClientRSocketConnector` using configurat
 ----
 
 See the {spring-boot-autoconfigure-module-code}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and {spring-boot-autoconfigure-module-code}/integration/IntegrationProperties.java[`IntegrationProperties`] classes for more details.
-
-By default, if a Micrometer `meterRegistry` bean is present, Spring Integration metrics will be managed by Micrometer.
-If you wish to use legacy Spring Integration metrics, add a `DefaultMetricsFactory` bean to the application context.

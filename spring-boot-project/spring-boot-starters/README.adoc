@@ -148,6 +148,9 @@ do as they were designed before this was clarified.
 | JSF integration for various libraries
 | https://github.com/joinfaces/joinfaces
 
+| https://kogito.kie.org/[Kogito]
+| https://github.com/kiegroup/kogito-runtimes/tree/main/springboot/starters
+
 | https://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 

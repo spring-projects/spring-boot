@@ -12,7 +12,7 @@ Properties are considered in the following order (with values from lower items o
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
-. Config data (such as `application.properties` files)
+. Config data (such as `application.properties` files).
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
 . OS environment variables.
 . Java System properties (`System.getProperties()`).
@@ -56,7 +56,7 @@ See the "<<actuator#actuator.endpoints, Production ready features>>" section for
 [[features.external-config.command-line-args]]
 === Accessing Command Line Properties
 By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
-As mentioned previously, command line properties always take precedence over file based property sources.
+As mentioned previously, command line properties always take precedence over file-based property sources.
 
 If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
 
@@ -134,7 +134,7 @@ The following example shows how to specify two distinct files:
 		optional:classpath:/override.properties
 ----
 
-TIP: Use the prefix `optional:` if the <<features#features.external-config.files.optional-prefix,locations are optional>> and you don't mind if they don't exist.
+TIP: Use the prefix `optional:` if the <<features#features.external-config.files.optional-prefix,locations are optional>> and you do not mind if they do not exist.
 
 WARNING: `spring.config.name`, `spring.config.location`, and `spring.config.additional-location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
@@ -186,7 +186,7 @@ NOTE: If your application runs in a servlet container or application server, the
 ==== Optional Locations
 By default, when a specified config data location does not exist, Spring Boot will throw a `ConfigDataLocationNotFoundException` and your application will not start.
 
-If you want to specify a location, but you don't mind if it doesn't always exist, you can use the `optional:` prefix.
+If you want to specify a location, but you do not mind if it does not always exist, you can use the `optional:` prefix.
 You can use this prefix with the `spring.config.location` and `spring.config.additional-location` properties, as well as with <<features#features.external-config.files.importing, `spring.config.import`>> declarations.
 
 For example, a `spring.config.import` value of `optional:file:./myconfig.properties` allows your application to start, even if the `myconfig.properties` file is missing.
@@ -261,7 +261,7 @@ The `Environment` has a set of default profiles (by default, `[default]`) that a
 In other words, if no profiles are explicitly activated, then properties from `application-default` are considered.
 
 NOTE: Properties files are only ever loaded once.
-If you've already directly <<features#features.external-config.files.importing,imported>> a profile specific property files then it won't be imported a second time.
+If you have already directly <<features#features.external-config.files.importing,imported>> a profile specific property files then it will not be imported a second time.
 
 
 
@@ -286,7 +286,7 @@ Values from the imported `dev.properties` will take precedence over the file tha
 In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
 
 An import will only be imported once no matter how many times it is declared.
-The order an import is defined inside a single document within the properties/yaml file doesn't matter.
+The order an import is defined inside a single document within the properties/yaml file does not matter.
 For instance, the two examples below produce the same result:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
@@ -320,7 +320,7 @@ The example above would import both `my.properties` as well as any `my-<profile>
 Spring Boot includes pluggable API that allows various different location addresses to be supported.
 By default you can import Java Properties, YAML and "`<<features#features.external-config.files.configtree, configuration trees>>`".
 
-Third-party jars can offer support for additional technologies (there's no requirement for files to be local).
+Third-party jars can offer support for additional technologies (there is no requirement for files to be local).
 For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
 
 If you want to support your own locations, see the `ConfigDataLocationResolver` and `ConfigDataLoader` classes in the `org.springframework.boot.context.config` package.
@@ -349,7 +349,7 @@ You can import it from your `application.properties` using the following:
 [[features.external-config.files.configtree]]
 ==== Using Configuration Trees
 When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
-It's not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
+It is not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
 
 As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
 For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
@@ -385,6 +385,9 @@ To import these properties, you can add the following to your `application.prope
 ----
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
+
+NOTE: Filenames with dot notation are also correctly mapped.
+For example, in the above example, a file named `myapp.username` in `/etc/config` would result in a `myapp.username` property in the `Environment`.
 
 TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
 
@@ -495,7 +498,7 @@ WARNING: Multi-document property files cannot be loaded by using the `@PropertyS
 
 [[features.external-config.files.activation-properties]]
 ==== Activation Properties
-It's sometimes useful to only activate a given get of properties when certain conditions are met.
+It is sometimes useful to only activate a given get of properties when certain conditions are met.
 For example, you might have properties that are only relevant when a specific profile is active.
 
 You can conditionally activate a properties document using `spring.config.activate.*`.
@@ -668,11 +671,11 @@ The preceding POJO defines the following properties:
 * `my.service.enabled`, with a value of `false` by default.
 * `my.service.remote-address`, with a type that can be coerced from `String`.
 * `my.service.security.username`, with a nested "security" object whose name is determined by the name of the property.
-  In particular, the return type is not used at all there and could have been `SecurityProperties`.
+  In particular, the type is not used at all there and could have been `SecurityProperties`.
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables, etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
@@ -722,7 +725,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
-You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)
+You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
@@ -903,7 +906,7 @@ For example, consider binding the following properties to a `Map<String,String>`
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
 
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
-The slash has been removed from `key3` because it wasn't surrounded by square brackets.
+The slash has been removed from `key3` because it was not surrounded by square brackets.
 
 You may also occasionally need to use the bracket notation if your `key` contains a `.` and you are binding to non-scalar value.
 For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` whereas `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`.
@@ -1048,7 +1051,7 @@ If you expose a `java.time.Duration` property, the following formats in applicat
 
 * A regular `long` representation (using milliseconds as the default unit unless a `@DurationUnit` has been specified)
 * The standard ISO-8601 format {java-api}/java/time/Duration.html#parse-java.lang.CharSequence-[used by `java.time.Duration`]
-* A more readable format where the value and the unit are coupled (e.g. `10s` means 10 seconds)
+* A more readable format where the value and the unit are coupled (`10s` means 10 seconds)
 
 Consider the following example:
 
@@ -1081,7 +1084,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 ----
 
 
-TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DurationUnit`) if it isn't milliseconds.
+TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DurationUnit`) if it is not milliseconds.
 Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
@@ -1093,7 +1096,7 @@ The following formats can be used in application properties:
 
 * An regular `int` representation (using days as the default unit unless a `@PeriodUnit` has been specified)
 * The standard ISO-8601 format {java-api}/java/time/Period.html#parse-java.lang.CharSequence-[used by `java.time.Period`]
-* A simpler format where the value and the unit pairs are coupled (e.g. `1y3d` means 1 year and 3 days)
+* A simpler format where the value and the unit pairs are coupled (`1y3d` means 1 year and 3 days)
 
 The following units are supported with the simple format:
 
@@ -1112,7 +1115,7 @@ Spring Framework has a `DataSize` value type that expresses a size in bytes.
 If you expose a `DataSize` property, the following formats in application properties are available:
 
 * A regular `long` representation (using bytes as the default unit unless a `@DataSizeUnit` has been specified)
-* A more readable format where the value and the unit are coupled (e.g. `10MB` means 10 megabytes)
+* A more readable format where the value and the unit are coupled (`10MB` means 10 megabytes)
 
 Consider the following example:
 
@@ -1142,7 +1145,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/constructorbinding/MyProperties.java[]
 ----
 
-TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
+TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it is not bytes.
 Doing so gives a transparent upgrade path while supporting a much richer format.
 
 

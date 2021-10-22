@@ -42,7 +42,7 @@ import org.springframework.util.MultiValueMap;
  * layer.
  * <p>
  * Index files are designed to be compatible with YAML and may be read into a list of
- * `Map&lt;String, List&lt;String&gt;&gt;` instances.
+ * {@code Map<String, List<String>>} instances.
  *
  * @author Madhura Bhave
  * @author Andy Wilkinson

@@ -37,8 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@SpringBootTest(properties = "spring.main.web-application-type=reactive", classes = {
-		WebTestClientSpringBootTestIntegrationTests.TestConfiguration.class, ExampleWebFluxApplication.class })
+@SpringBootTest(properties = "spring.main.web-application-type=reactive",
+		classes = { WebTestClientSpringBootTestIntegrationTests.TestConfiguration.class,
+				ExampleWebFluxApplication.class })
 @AutoConfigureWebTestClient
 class WebTestClientSpringBootTestIntegrationTests {
 

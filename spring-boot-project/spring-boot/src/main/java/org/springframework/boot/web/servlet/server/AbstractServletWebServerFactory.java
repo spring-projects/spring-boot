@@ -80,6 +80,8 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	private Map<String, String> initParameters = Collections.emptyMap();
 
+	private List<CookieSameSiteSupplier> cookieSameSiteSuppliers = new ArrayList<>();
+
 	private final DocumentRoot documentRoot = new DocumentRoot(this.logger);
 
 	private final StaticResourceJars staticResourceJars = new StaticResourceJars();
@@ -240,6 +242,22 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	public Map<String, String> getInitParameters() {
 		return this.initParameters;
+	}
+
+	@Override
+	public void setCookieSameSiteSuppliers(List<? extends CookieSameSiteSupplier> cookieSameSiteSuppliers) {
+		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
+		this.cookieSameSiteSuppliers = new ArrayList<>(cookieSameSiteSuppliers);
+	}
+
+	@Override
+	public void addCookieSameSiteSuppliers(CookieSameSiteSupplier... cookieSameSiteSuppliers) {
+		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
+		this.cookieSameSiteSuppliers.addAll(Arrays.asList(cookieSameSiteSuppliers));
+	}
+
+	public List<CookieSameSiteSupplier> getCookieSameSiteSuppliers() {
+		return this.cookieSameSiteSuppliers;
 	}
 
 	/**

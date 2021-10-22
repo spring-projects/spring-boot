@@ -62,7 +62,7 @@ Open your favorite text editor and add the following:
 		<!-- Additional lines to be added here... -->
 
 ifeval::["{spring-boot-artifactory-repo}" != "release"]
-		<!-- (you don't need this if you are using a .RELEASE version) -->
+		<!-- (you do not need this if you are using a .RELEASE version) -->
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>

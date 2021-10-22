@@ -37,7 +37,7 @@ public class MailProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * SMTP server host. For instance, `smtp.example.com`.
+	 * SMTP server host. For instance, {@code "smtp.example.com"}.
 	 */
 	private String host;
 

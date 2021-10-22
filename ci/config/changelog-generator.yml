@@ -4,7 +4,7 @@ changelog:
     - title: ":star: New Features"
       labels:
         - "type: enhancement"
-    - title: ":beetle: Bug Fixes"
+    - title: ":lady_beetle: Bug Fixes"
       labels:
         - "type: bug"
         - "type: regression"

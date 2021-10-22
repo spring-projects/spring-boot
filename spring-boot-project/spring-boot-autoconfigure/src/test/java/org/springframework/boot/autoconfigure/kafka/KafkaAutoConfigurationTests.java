@@ -58,6 +58,7 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchErrorHandler;
+import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
@@ -543,6 +544,17 @@ class KafkaAutoConfigurationTests {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					assertThat(factory).hasFieldOrPropertyWithValue("errorHandler", null);
+				});
+	}
+
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomCommonErrorHandler() {
+		this.contextRunner.withBean("errorHandler", CommonErrorHandler.class, () -> mock(CommonErrorHandler.class))
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(factory).hasFieldOrPropertyWithValue("commonErrorHandler",
+							context.getBean("errorHandler"));
 				});
 	}
 

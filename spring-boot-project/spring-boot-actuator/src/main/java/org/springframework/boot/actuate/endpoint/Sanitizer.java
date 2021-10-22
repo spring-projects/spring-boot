@@ -48,8 +48,9 @@ public class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
-	private static final Set<String> DEFAULT_KEYS_TO_SANITIZE = new LinkedHashSet<>(Arrays.asList("password", "secret",
-			"key", "token", ".*credentials.*", "vcap_services", "sun.java.command"));
+	private static final Set<String> DEFAULT_KEYS_TO_SANITIZE = new LinkedHashSet<>(
+			Arrays.asList("password", "secret", "key", "token", ".*credentials.*", "vcap_services",
+					"^vcap\\.services.*$", "sun.java.command", "^spring[._]application[._]json$"));
 
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
 			Arrays.asList("uri", "uris", "url", "urls", "address", "addresses"));
@@ -65,18 +66,38 @@ public class Sanitizer {
 		DEFAULT_KEYS_TO_SANITIZE.addAll(URI_USERINFO_KEYS);
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with a default set of keys to sanitize.
+	 */
 	public Sanitizer() {
 		this(DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with specific keys to sanitize.
+	 * @param keysToSanitize the keys to sanitize
+	 */
 	public Sanitizer(String... keysToSanitize) {
 		this(Collections.emptyList(), keysToSanitize);
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with a default set of keys to sanitize and
+	 * additional sanitizing functions.
+	 * @param sanitizingFunctions the sanitizing functions to apply
+	 * @since 2.6.0
+	 */
 	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions) {
 		this(sanitizingFunctions, DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
 	}
 
+	/**
+	 * Create a new {@link Sanitizer} instance with specific keys to sanitize and
+	 * additional sanitizing functions.
+	 * @param sanitizingFunctions the sanitizing functions to apply
+	 * @param keysToSanitize the keys to sanitize
+	 * @since 2.6.0
+	 */
 	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions, String... keysToSanitize) {
 		sanitizingFunctions.forEach(this.sanitizingFunctions::add);
 		this.sanitizingFunctions.add(getDefaultSanitizingFunction());

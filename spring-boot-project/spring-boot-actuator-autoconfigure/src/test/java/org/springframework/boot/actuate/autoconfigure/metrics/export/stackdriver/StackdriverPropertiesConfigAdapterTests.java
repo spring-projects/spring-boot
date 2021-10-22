@@ -55,4 +55,11 @@ class StackdriverPropertiesConfigAdapterTests {
 				.containsExactlyInAnyOrderEntriesOf(labels);
 	}
 
+	@Test
+	void whenPropertiesUseSemanticMetricTypesIsSetAdapterResourceTypeReturnsIt() {
+		StackdriverProperties properties = new StackdriverProperties();
+		properties.setUseSemanticMetricTypes(true);
+		assertThat(new StackdriverPropertiesConfigAdapter(properties).useSemanticMetricTypes()).isTrue();
+	}
+
 }

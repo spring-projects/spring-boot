@@ -20,7 +20,7 @@ import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.util.StringUtils;
 
 /**
- * An reference expanded from the original {@link ConfigDataLocation} that can ultimately
+ * A reference expanded from the original {@link ConfigDataLocation} that can ultimately
  * be resolved to one or more {@link StandardConfigDataResource resources}.
  *
  * @author Phillip Webb

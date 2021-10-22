@@ -199,6 +199,11 @@
       "defaultValue": 7
     },
     {
+      "name": "logging.log4j2.config.override",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Overriding configuration files used to create a composite configuration."
+    },
+    {
       "name": "spring.application.index",
       "type": "java.lang.Integer",
       "description": "Application index.",

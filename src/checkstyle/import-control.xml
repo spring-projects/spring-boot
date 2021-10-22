@@ -64,6 +64,7 @@
 
 	<!-- Logging -->
 	<subpackage name="logging">
+		<allow pkg="org.springframework.boot.context.properties.bind" />
 		<disallow pkg="org.springframework.context" />
 		<disallow pkg="org.springframework.boot.context" />
 	</subpackage>

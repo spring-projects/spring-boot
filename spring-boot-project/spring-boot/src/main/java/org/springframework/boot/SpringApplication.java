@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +78,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 /**
@@ -150,6 +150,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
+ * @author Chris Bono
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -228,7 +229,7 @@ public class SpringApplication {
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
-	 * documentation for details. The instance can be customized before calling
+	 * documentation for details). The instance can be customized before calling
 	 * {@link #run(String...)}.
 	 * @param primarySources the primary bean sources
 	 * @see #run(Class, String[])
@@ -242,7 +243,7 @@ public class SpringApplication {
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
-	 * documentation for details. The instance can be customized before calling
+	 * documentation for details). The instance can be customized before calling
 	 * {@link #run(String...)}.
 	 * @param resourceLoader the resource loader to use
 	 * @param primarySources the primary bean sources
@@ -284,8 +285,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -301,20 +301,20 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			stopWatch.stop();
+			Duration timeTakeToStartup = Duration.ofNanos(System.nanoTime() - startTime);
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakeToStartup);
 			}
-			listeners.started(context);
+			listeners.started(context, timeTakeToStartup);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, listeners);
 			throw new IllegalStateException(ex);
 		}
-
 		try {
-			listeners.running(context);
+			Duration timeTakenToReady = Duration.ofNanos(System.nanoTime() - startTime);
+			listeners.ready(context, timeTakenToReady);
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);
@@ -675,7 +675,7 @@ public class SpringApplication {
 
 	/**
 	 * Either the ClassLoader that will be used in the ApplicationContext (if
-	 * {@link #setResourceLoader(ResourceLoader) resourceLoader} is set, or the context
+	 * {@link #setResourceLoader(ResourceLoader) resourceLoader} is set), or the context
 	 * class loader (if not null), or the loader of the Spring {@link ClassUtils} class.
 	 * @return a ClassLoader (never null)
 	 */

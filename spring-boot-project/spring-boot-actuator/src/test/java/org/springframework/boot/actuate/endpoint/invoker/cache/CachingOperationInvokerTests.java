@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -99,6 +100,31 @@ class CachingOperationInvokerTests {
 		Object cachedResponse = ((Flux<?>) invoker.invoke(context)).blockLast();
 		assertThat(FluxOperationInvoker.invocations).hasValue(1);
 		assertThat(response).isSameAs(cachedResponse);
+	}
+
+	@Test // gh-28313
+	void cacheWhenEachPrincipalIsUniqueDoesNotConsumeTooMuchMemory() throws Exception {
+		MonoOperationInvoker target = new MonoOperationInvoker();
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 50L);
+		int count = 1000;
+		for (int i = 0; i < count; i++) {
+			invokeWithUniquePrincipal(invoker);
+		}
+		long expired = System.currentTimeMillis() + 50;
+		while (System.currentTimeMillis() < expired) {
+			Thread.sleep(10);
+		}
+		invokeWithUniquePrincipal(invoker);
+		assertThat(invoker).extracting("cachedResponses").asInstanceOf(InstanceOfAssertFactories.MAP)
+				.hasSizeLessThan(count);
+	}
+
+	private void invokeWithUniquePrincipal(CachingOperationInvoker invoker) {
+		SecurityContext securityContext = mock(SecurityContext.class);
+		Principal principal = mock(Principal.class);
+		given(securityContext.getPrincipal()).willReturn(principal);
+		InvocationContext context = new InvocationContext(securityContext, Collections.emptyMap());
+		((Mono<?>) invoker.invoke(context)).block();
 	}
 
 	private void assertCacheIsUsed(Map<String, Object> parameters) {

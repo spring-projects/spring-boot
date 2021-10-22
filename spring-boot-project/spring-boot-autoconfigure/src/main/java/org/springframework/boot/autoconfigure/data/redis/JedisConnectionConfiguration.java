@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
@@ -49,9 +50,10 @@ import org.springframework.util.StringUtils;
 class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	JedisConnectionConfiguration(RedisProperties properties,
+			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
-		super(properties, sentinelConfiguration, clusterConfiguration);
+		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration);
 	}
 
 	@Bean

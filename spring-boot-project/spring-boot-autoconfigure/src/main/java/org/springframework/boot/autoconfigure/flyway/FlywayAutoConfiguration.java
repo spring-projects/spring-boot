@@ -180,6 +180,9 @@ public class FlywayAutoConfiguration {
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
+			// No method reference for compatibility with Flyway < 7.15
+			map.from(properties.getConnectRetriesInterval())
+					.to((interval) -> configuration.connectRetriesInterval((int) interval.getSeconds()));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getLockRetryCount())
 					.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
@@ -207,10 +210,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isCleanDisabled()).to(configuration::cleanDisabled);
 			map.from(properties.isCleanOnValidationError()).to(configuration::cleanOnValidationError);
 			map.from(properties.isGroup()).to(configuration::group);
-			map.from(properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
-			map.from(properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
-			map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
-			map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
+			configureIgnoredMigrations(configuration, properties, map);
 			map.from(properties.isMixed()).to(configuration::mixed);
 			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
@@ -220,6 +220,10 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
 					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
 					.to(configuration::initSql);
+			map.from(properties.getScriptPlaceholderPrefix())
+					.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
+			map.from(properties.getScriptPlaceholderSuffix())
+					.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
 			// Pro properties
 			map.from(properties.getBatch()).to(configuration::batch);
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
@@ -255,6 +259,18 @@ public class FlywayAutoConfiguration {
 			// No method reference for compatibility with Flyway version < 7.9
 			map.from(properties.getDetectEncoding())
 					.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
+			// No method reference for compatibility with Flyway version < 8.0
+			map.from(properties.getBaselineMigrationPrefix())
+					.to((baselineMigrationPrefix) -> configuration.baselineMigrationPrefix(baselineMigrationPrefix));
+		}
+
+		@SuppressWarnings("deprecation")
+		private void configureIgnoredMigrations(FluentConfiguration configuration, FlywayProperties properties,
+				PropertyMapper map) {
+			map.from(properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
+			map.from(properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
+			map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
+			map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
 		}
 
 		private void configureFailOnMissingLocations(FluentConfiguration configuration,

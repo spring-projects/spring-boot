@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.boot.buildpack.platform.system.Environment;
 public interface HttpTransport {
 
 	/**
-	 * Perform a HTTP GET operation.
+	 * Perform an HTTP GET operation.
 	 * @param uri the destination URI (excluding any host/port)
 	 * @return the operation response
 	 * @throws IOException on IO error
@@ -45,7 +45,7 @@ public interface HttpTransport {
 	Response get(URI uri) throws IOException;
 
 	/**
-	 * Perform a HTTP POST operation.
+	 * Perform an HTTP POST operation.
 	 * @param uri the destination URI (excluding any host/port)
 	 * @return the operation response
 	 * @throws IOException on IO error
@@ -53,7 +53,7 @@ public interface HttpTransport {
 	Response post(URI uri) throws IOException;
 
 	/**
-	 * Perform a HTTP POST operation.
+	 * Perform an HTTP POST operation.
 	 * @param uri the destination URI (excluding any host/port)
 	 * @param registryAuth registry authentication credentials
 	 * @return the operation response
@@ -62,7 +62,7 @@ public interface HttpTransport {
 	Response post(URI uri, String registryAuth) throws IOException;
 
 	/**
-	 * Perform a HTTP POST operation.
+	 * Perform an HTTP POST operation.
 	 * @param uri the destination URI (excluding any host/port)
 	 * @param contentType the content type to write
 	 * @param writer a content writer
@@ -72,7 +72,7 @@ public interface HttpTransport {
 	Response post(URI uri, String contentType, IOConsumer<OutputStream> writer) throws IOException;
 
 	/**
-	 * Perform a HTTP PUT operation.
+	 * Perform an HTTP PUT operation.
 	 * @param uri the destination URI (excluding any host/port)
 	 * @param contentType the content type to write
 	 * @param writer a content writer
@@ -82,7 +82,7 @@ public interface HttpTransport {
 	Response put(URI uri, String contentType, IOConsumer<OutputStream> writer) throws IOException;
 
 	/**
-	 * Perform a HTTP DELETE operation.
+	 * Perform an HTTP DELETE operation.
 	 * @param uri the destination URI (excluding any host/port)
 	 * @return the operation response
 	 * @throws IOException on IO error

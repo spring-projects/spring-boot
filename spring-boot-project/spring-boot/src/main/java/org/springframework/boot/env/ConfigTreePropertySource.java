@@ -165,7 +165,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 	}
 
 	/**
-	 * A single property file that was found when when the source was created.
+	 * A single property file that was found when the source was created.
 	 */
 	private static final class PropertyFile {
 

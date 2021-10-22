@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import io.micrometer.elastic.ElasticMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,6 +89,24 @@ class ElasticMetricsExportAutoConfigurationTests {
 			context.close();
 			assertThat(registry.isClosed()).isTrue();
 		});
+	}
+
+	@Test
+	void apiKeyCredentialsIsMutuallyExclusiveWithUserName() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.elastic.api-key-credentials:secret",
+						"management.metrics.export.elastic.user-name:alice")
+				.run((context) -> assertThat(context).hasFailed().getFailure().getRootCause()
+						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
+	}
+
+	@Test
+	void apiKeyCredentialsIsMutuallyExclusiveWithPassword() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.elastic.api-key-credentials:secret",
+						"management.metrics.export.elastic.password:secret")
+				.run((context) -> assertThat(context).hasFailed().getFailure().getRootCause()
+						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -25,6 +25,14 @@ javadoc {
 	enabled = false
 }
 
+javadocJar {
+	enabled = false
+}
+
+sourcesJar {
+	enabled = false
+}
+
 plugins.withType(EclipsePlugin) {
 	extensions.getByType(org.gradle.plugins.ide.eclipse.model.EclipseModel).classpath { classpath ->
 		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))
@@ -220,9 +228,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
+		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
+		securityVersion = securityVersion.substring(0, securityVersion.lastIndexOf("."))
 		attributes	"embedded-mongo-version": versionConstraints["de.flapdoodle.embed:de.flapdoodle.embed.mongo"],
 					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
+					"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
 					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
 					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
 					"spring-boot-version": project.version,
@@ -238,7 +249,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
-					"spring-security-version": versionConstraints["org.springframework.security:spring-security-core"],
+					"spring-security-version": securityVersion,
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]
 	}
 }

@@ -4,7 +4,7 @@ One of the biggest advantages of packaging your application as a jar and using a
 The sample applies to debugging Spring Boot applications.
 You do not need any special IDE plugins or extensions.
 
-NOTE: This section only covers jar based packaging.
+NOTE: This section only covers jar-based packaging.
 If you choose to package your application as a war file, you should refer to your server and IDE documentation.
 
 

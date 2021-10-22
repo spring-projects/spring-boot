@@ -86,7 +86,7 @@
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/
 :spring-restdocs: https://spring.io/projects/spring-restdocs
 :spring-security: https://spring.io/projects/spring-security
-:spring-security-docs: https://docs.spring.io/spring-security/site/docs/{spring-security-version}/reference/html5/
+:spring-security-docs: https://docs.spring.io/spring-security/{spring-security-version}
 :spring-security-oauth2: https://spring.io/projects/spring-security-oauth
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-session: https://spring.io/projects/spring-session
@@ -101,6 +101,7 @@
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/
+:lettuce-docs: https://lettuce.io/core/{lettuce-version}/reference/index.html
 :micrometer-docs: https://micrometer.io/docs
 :micrometer-concepts-docs: {micrometer-docs}/concepts
 :micrometer-registry-docs: {micrometer-docs}/registry

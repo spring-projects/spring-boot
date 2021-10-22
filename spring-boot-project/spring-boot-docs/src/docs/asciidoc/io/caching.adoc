@@ -11,7 +11,7 @@ In a nutshell, to add caching to an operation of your service add the relevant a
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/MyMathService.java[]
+include::{docs-java}/io/caching/MyMathService.java[]
 ----
 
 This example demonstrates the use of caching on a potentially costly operation.
@@ -22,7 +22,7 @@ Otherwise, the method is invoked, and the cache is updated before returning the 
 CAUTION: You can also use the standard JSR-107 (JCache) annotations (such as `@CacheResult`) transparently.
 However, we strongly advise you to not mix and match the Spring Cache and JCache annotations.
 
-If you do not add any specific cache library, Spring Boot auto-configures a <<caching#io.caching.provider.simple,simple provider>> that uses concurrent maps in memory.
+If you do not add any specific cache library, Spring Boot auto-configures a <<io#io.caching.provider.simple,simple provider>> that uses concurrent maps in memory.
 When a cache is required (such as `piDecimals` in the preceding example), this provider creates it for you.
 The simple provider is not really recommended for production usage, but it is great for getting started and making sure that you understand the features.
 When you have made up your mind about the cache provider to use, please make sure to read its documentation to figure out how to configure the caches that your application uses.
@@ -39,18 +39,18 @@ The cache abstraction does not provide an actual store and relies on abstraction
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
-. <<io.caching.provider.generic,Generic>>
-. <<io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
-. <<io.caching.provider.ehcache2,EhCache 2.x>>
-. <<io.caching.provider.hazelcast,Hazelcast>>
-. <<io.caching.provider.infinispan,Infinispan>>
-. <<io.caching.provider.couchbase,Couchbase>>
-. <<io.caching.provider.redis,Redis>>
-. <<io.caching.provider.caffeine,Caffeine>>
-. <<io.caching.provider.simple,Simple>>
+. <<io#io.caching.provider.generic,Generic>>
+. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
+. <<io#io.caching.provider.ehcache2,EhCache 2.x>>
+. <<io#io.caching.provider.hazelcast,Hazelcast>>
+. <<io#io.caching.provider.infinispan,Infinispan>>
+. <<io#io.caching.provider.couchbase,Couchbase>>
+. <<io#io.caching.provider.redis,Redis>>
+. <<io#io.caching.provider.caffeine,Caffeine>>
+. <<io#io.caching.provider.simple,Simple>>
 
 TIP: It is also possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
-Use this property if you need to <<io.caching.provider.none,disable caching altogether>> in certain environments (such as tests).
+Use this property if you need to <<io#io.caching.provider.none,disable caching altogether>> in certain environments (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
@@ -61,7 +61,7 @@ The following example sets a flag to say that `null` values should be passed dow
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/provider/MyCacheManagerConfiguration.java[]
+include::{docs-java}/io/caching/provider/MyCacheManagerConfiguration.java[]
 ----
 
 NOTE: In the preceding example, an auto-configured `ConcurrentMapCacheManager` is expected.
@@ -98,7 +98,7 @@ Even if the JSR-107 standard does not enforce a standardized way to define the l
 
 NOTE: When a cache library offers both a native implementation and JSR-107 support, Spring Boot prefers the JSR-107 support, so that the same features are available if you switch to a different JSR-107 implementation.
 
-TIP: Spring Boot has <<features#features.hazelcast,general support for Hazelcast>>.
+TIP: Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a single `HazelcastInstance` is available, it is automatically reused for the `CacheManager` as well, unless the configprop:spring.cache.jcache.config[] property is specified.
 
 There are two ways to customize the underlying `javax.cache.cacheManager`:
@@ -130,7 +130,7 @@ An alternate configuration file can be provided as well, as shown in the followi
 
 [[io.caching.provider.hazelcast]]
 ==== Hazelcast
-Spring Boot has <<features#features.hazelcast,general support for Hazelcast>>.
+Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
 
 
@@ -177,7 +177,7 @@ The following example shows a customizer that configures a specific entry expira
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
+include::{docs-java}/io/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
 ----
 
 
@@ -208,7 +208,7 @@ The following example shows a customizer that configures a specific time to live
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/caching/provider/redis/MyRedisCacheManagerConfiguration.java[]
+include::{docs-java}/io/caching/provider/redis/MyRedisCacheManagerConfiguration.java[]
 ----
 
 

@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Jeroen Meijer
+ * @author Rafael Ceccone
  */
 class BuildRequestTests {
 
@@ -204,6 +205,55 @@ class BuildRequestTests {
 	void withNetworkUpdatesNetwork() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar")).withNetwork("test");
 		assertThat(request.getNetwork()).isEqualTo("test");
+	}
+
+	@Test
+	void withTagsAddsTags() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withTags = request.withTags(ImageReference.of("docker.io/library/my-app:latest"),
+				ImageReference.of("example.com/custom/my-app:0.0.1"),
+				ImageReference.of("example.com/custom/my-app:latest"));
+		assertThat(request.getTags()).isEmpty();
+		assertThat(withTags.getTags()).containsExactly(ImageReference.of("docker.io/library/my-app:latest"),
+				ImageReference.of("example.com/custom/my-app:0.0.1"),
+				ImageReference.of("example.com/custom/my-app:latest"));
+	}
+
+	@Test
+	void withTagsWhenTagsIsNullThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withTags((List<ImageReference>) null))
+				.withMessage("Tags must not be null");
+	}
+
+	@Test
+	void withBuildVolumeCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withBuildCache(Cache.volume("build-volume"));
+		assertThat(request.getBuildCache()).isNull();
+		assertThat(withCache.getBuildCache()).isEqualTo(Cache.volume("build-volume"));
+	}
+
+	@Test
+	void withBuildVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildCache(null))
+				.withMessage("BuildCache must not be null");
+	}
+
+	@Test
+	void withLaunchVolumeCacheAddsCache() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCache = request.withLaunchCache(Cache.volume("launch-volume"));
+		assertThat(request.getLaunchCache()).isNull();
+		assertThat(withCache.getLaunchCache()).isEqualTo(Cache.volume("launch-volume"));
+	}
+
+	@Test
+	void withLaunchVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withLaunchCache(null))
+				.withMessage("LaunchCache must not be null");
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

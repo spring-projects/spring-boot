@@ -108,9 +108,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.rootBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class,
-							ConfigurationPropertiesBindingPostProcessor::new)
-					.getBeanDefinition();
+					.rootBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class).getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}

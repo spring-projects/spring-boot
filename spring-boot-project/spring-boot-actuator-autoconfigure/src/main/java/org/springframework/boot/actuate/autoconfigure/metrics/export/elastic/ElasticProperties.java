@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,12 @@ public class ElasticProperties extends StepRegistryProperties {
 	private boolean autoCreateIndex = true;
 
 	/**
-	 * Login user of the Elastic server.
+	 * Login user of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
 	private String userName;
 
 	/**
-	 * Login password of the Elastic server.
+	 * Login password of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
 	private String password;
 
@@ -73,6 +73,11 @@ public class ElasticProperties extends StepRegistryProperties {
 	 * Ingest pipeline name. By default, events are not pre-processed.
 	 */
 	private String pipeline;
+
+	/**
+	 * Base64-encoded credentials string. Mutually exclusive with user-name and password.
+	 */
+	private String apiKeyCredentials;
 
 	public String getHost() {
 		return this.host;
@@ -144,6 +149,14 @@ public class ElasticProperties extends StepRegistryProperties {
 
 	public void setPipeline(String pipeline) {
 		this.pipeline = pipeline;
+	}
+
+	public String getApiKeyCredentials() {
+		return this.apiKeyCredentials;
+	}
+
+	public void setApiKeyCredentials(String apiKeyCredentials) {
+		this.apiKeyCredentials = apiKeyCredentials;
 	}
 
 }

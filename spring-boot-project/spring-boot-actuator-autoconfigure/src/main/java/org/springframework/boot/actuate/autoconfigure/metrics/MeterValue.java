@@ -86,11 +86,11 @@ public final class MeterValue {
 	 * @return a {@link MeterValue} instance
 	 */
 	public static MeterValue valueOf(String value) {
-		Double number = safeParseDouble(value);
-		if (number != null) {
-			return new MeterValue(number);
+		Duration duration = safeParseDuration(value);
+		if (duration != null) {
+			return new MeterValue(duration);
 		}
-		return new MeterValue(DurationStyle.detectAndParse(value));
+		return new MeterValue(Double.valueOf(value));
 	}
 
 	/**
@@ -103,11 +103,11 @@ public final class MeterValue {
 		return new MeterValue(value);
 	}
 
-	private static Double safeParseDouble(String value) {
+	private static Duration safeParseDuration(String value) {
 		try {
-			return Double.valueOf(value);
+			return DurationStyle.detectAndParse(value);
 		}
-		catch (NumberFormatException ex) {
+		catch (IllegalArgumentException ex) {
 			return null;
 		}
 	}

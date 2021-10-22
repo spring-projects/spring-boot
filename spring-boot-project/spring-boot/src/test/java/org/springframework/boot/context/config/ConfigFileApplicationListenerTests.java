@@ -251,7 +251,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void randomValue() {
-		// dont need
+		// don't need
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("random.value");
 		assertThat(property).isNotNull();

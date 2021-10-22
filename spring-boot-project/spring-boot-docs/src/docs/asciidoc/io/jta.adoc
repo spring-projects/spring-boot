@@ -43,7 +43,7 @@ You can inject into your bean without needing to use any `@Qualifier`:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/jta/mixingxaandnonxaconnections/primary/MyBean.java[tag=*]
+include::{docs-java}/io/jta/mixingxaandnonxaconnections/primary/MyBean.java[tag=*]
 ----
 
 In some situations, you might want to process certain JMS messages by using a non-XA `ConnectionFactory`.
@@ -53,14 +53,14 @@ If you want to use a non-XA `ConnectionFactory`, you can the `nonXaJmsConnection
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/jta/mixingxaandnonxaconnections/nonxa/MyBean.java[tag=*]
+include::{docs-java}/io/jta/mixingxaandnonxaconnections/nonxa/MyBean.java[tag=*]
 ----
 
 For consistency, the `jmsConnectionFactory` bean is also provided by using the bean alias `xaJmsConnectionFactory`:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/jta/mixingxaandnonxaconnections/xa/MyBean.java[tag=*]
+include::{docs-java}/io/jta/mixingxaandnonxaconnections/xa/MyBean.java[tag=*]
 ----
 
 

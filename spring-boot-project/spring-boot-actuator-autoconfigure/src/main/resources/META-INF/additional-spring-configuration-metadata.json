@@ -274,6 +274,12 @@
       "defaultValue": "simple"
     },
     {
+      "name": "management.info.java.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Java info.",
+      "defaultValue": false
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",
@@ -325,6 +331,13 @@
         "level": "error",
         "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics."
       }
+    },
+    {
+      "name": "management.metrics.system.diskspace.paths",
+      "type": "java.util.List<java.io.File>",
+      "defaultValue": [
+        "."
+      ]
     },
     {
       "name": "management.metrics.export.appoptics.num-threads",

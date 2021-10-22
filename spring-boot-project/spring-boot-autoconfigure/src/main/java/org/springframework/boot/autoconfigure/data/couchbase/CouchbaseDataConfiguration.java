@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Persistent;
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
@@ -64,8 +63,7 @@ class CouchbaseDataConfiguration {
 			ApplicationContext applicationContext, CouchbaseCustomConversions couchbaseCustomConversions)
 			throws Exception {
 		CouchbaseMappingContext mappingContext = new CouchbaseMappingContext();
-		mappingContext
-				.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class, Persistent.class));
+		mappingContext.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class));
 		mappingContext.setSimpleTypeHolder(couchbaseCustomConversions.getSimpleTypeHolder());
 		Class<?> fieldNamingStrategy = properties.getFieldNamingStrategy();
 		if (fieldNamingStrategy != null) {

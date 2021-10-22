@@ -196,10 +196,11 @@ class JacksonAutoConfigurationTests {
 				.run((context) -> {
 					ObjectMapper mapper = context.getBean(ObjectMapper.class);
 					assertThat(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.enabledByDefault()).isFalse();
-					assertThat(mapper.getSerializationConfig()
-							.hasMapperFeatures(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask())).isTrue();
-					assertThat(mapper.getDeserializationConfig()
-							.hasMapperFeatures(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask())).isTrue();
+
+					assertThat(mapper.getSerializationConfig().isEnabled(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS))
+							.isTrue();
+					assertThat(mapper.getDeserializationConfig().isEnabled(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS))
+							.isTrue();
 				});
 	}
 
@@ -208,10 +209,8 @@ class JacksonAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.jackson.mapper.use_annotations:false").run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
 			assertThat(MapperFeature.USE_ANNOTATIONS.enabledByDefault()).isTrue();
-			assertThat(mapper.getDeserializationConfig().hasMapperFeatures(MapperFeature.USE_ANNOTATIONS.getMask()))
-					.isFalse();
-			assertThat(mapper.getSerializationConfig().hasMapperFeatures(MapperFeature.USE_ANNOTATIONS.getMask()))
-					.isFalse();
+			assertThat(mapper.getDeserializationConfig().isEnabled(MapperFeature.USE_ANNOTATIONS)).isFalse();
+			assertThat(mapper.getSerializationConfig().isEnabled(MapperFeature.USE_ANNOTATIONS)).isFalse();
 		});
 	}
 

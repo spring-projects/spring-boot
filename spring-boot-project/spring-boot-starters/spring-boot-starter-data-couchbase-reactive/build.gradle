@@ -8,7 +8,5 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("io.projectreactor:reactor-core")
 	api("io.reactivex:rxjava-reactive-streams")
-	api("org.springframework.data:spring-data-couchbase") {
-		exclude group: "com.couchbase.client", module: "encryption"
-	}
+	api("org.springframework.data:spring-data-couchbase")
 }

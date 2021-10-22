@@ -34,9 +34,9 @@ import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
  * Provides access to entries from a {@link JarFile}. In order to reduce memory
- * consumption entry details are stored using int arrays. The {@code hashCodes} array
- * stores the hash code of the entry name, the {@code centralDirectoryOffsets} provides
- * the offset to the central directory record and {@code positions} provides the original
+ * consumption entry details are stored using arrays. The {@code hashCodes} array stores
+ * the hash code of the entry name, the {@code centralDirectoryOffsets} provides the
+ * offset to the central directory record and {@code positions} provides the original
  * order position of the entry. The arrays are stored in hashCode order so that a binary
  * search can be used to find a name.
  * <p>
@@ -120,7 +120,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
-		this.centralDirectoryOffsets = Offsets.of(endRecord);
+		this.centralDirectoryOffsets = Offsets.from(endRecord);
 		this.positions = new int[maxSize];
 	}
 
@@ -185,12 +185,6 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		swap(this.hashCodes, i, j);
 		this.centralDirectoryOffsets.swap(i, j);
 		swap(this.positions, i, j);
-	}
-
-	private static void swap(int[] array, int i, int j) {
-		int temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
 	}
 
 	@Override
@@ -388,6 +382,18 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return -1;
 	}
 
+	private static void swap(int[] array, int i, int j) {
+		int temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	private static void swap(long[] array, int i, int j) {
+		long temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
 	/**
 	 * Iterator for contained entries.
 	 */
@@ -421,6 +427,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	}
 
+	/**
+	 * Interface to manage offsets to central directory records. Regular zip files are
+	 * backed by an {@code int[]} based implementation, Zip64 files are backed by a
+	 * {@code long[]} and will consume more memory.
+	 */
 	private interface Offsets {
 
 		void set(int index, long value);
@@ -429,13 +440,16 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 		void swap(int i, int j);
 
-		static Offsets of(CentralDirectoryEndRecord endRecord) {
-			return endRecord.isZip64() ? new Zip64Offsets(endRecord.getNumberOfRecords())
-					: new ZipOffsets(endRecord.getNumberOfRecords());
+		static Offsets from(CentralDirectoryEndRecord endRecord) {
+			int size = endRecord.getNumberOfRecords();
+			return endRecord.isZip64() ? new Zip64Offsets(size) : new ZipOffsets(size);
 		}
 
 	}
 
+	/**
+	 * {@link Offsets} implementation for regular zip files.
+	 */
 	private static final class ZipOffsets implements Offsets {
 
 		private final int[] offsets;
@@ -461,6 +475,9 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	}
 
+	/**
+	 * {@link Offsets} implementation for zip64 files.
+	 */
 	private static final class Zip64Offsets implements Offsets {
 
 		private final long[] offsets;
@@ -471,9 +488,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 		@Override
 		public void swap(int i, int j) {
-			long temp = this.offsets[i];
-			this.offsets[i] = this.offsets[j];
-			this.offsets[j] = temp;
+			JarFileEntries.swap(this.offsets, i, j);
 		}
 
 		@Override

@@ -23,7 +23,7 @@ The following table shows the environment variables and their values:
 | Environment variable | Description
 
 | DOCKER_HOST
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | DOCKER_TLS_VERIFY
 | Enable secure HTTPS protocol when set to `1` (optional)
@@ -41,7 +41,7 @@ The following table summarizes the available properties:
 | Property | Description
 
 | `host`
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | `tlsVerify`
 | Enable secure HTTPS protocol when set to `true` (optional)
@@ -175,6 +175,21 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | `--publishImage`
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
+| `tags`
+|
+| A list of one or more additional tags to apply to the generated image.
+|
+
+| `buildCache`
+|
+| A cache containing layers created by buildpacks and used by the image building process.
+| A named volume in the Docker daemon, with a name derived from the image name.
+
+| `launchCache`
+|
+| A cache containing layers created by buildpacks and used by the image launching process.
+| A named volume in the Docker daemon, with a name derived from the image name.
 
 |===
 
@@ -374,10 +389,30 @@ The publish option can be specified on the command line as well, as shown in thi
 	$ gradle bootBuildImage --imageName=docker.example.com/library/my-app:v1 --publishImage
 ----
 
+[[build-image.examples.caches]]
+=== Builder Cache Configuration
 
+The CNB builder caches layers that are used when building and launching an image.
+By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
+If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
+
+The cache volumes can be configured to use alternative names to give more control over cache lifecycle as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-caches.gradle[tags=caches]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-caches.gradle.kts[tags=caches]
+----
 
 [[build-image.examples.docker]]
 === Docker Configuration
+
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` properties as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -392,7 +427,7 @@ include::../gradle/packaging/boot-build-image-docker-host.gradle[tags=docker-hos
 include::../gradle/packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
 ----
 
-If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.buiderRegistry` properties as shown in the following example:
+If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` properties as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

@@ -187,7 +187,7 @@ class ApplicationPidFileWriterTests {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
-		return new ApplicationReadyEvent(new SpringApplication(), new String[] {}, context);
+		return new ApplicationReadyEvent(new SpringApplication(), new String[] {}, context, null);
 	}
 
 	private ConfigurableEnvironment createEnvironment(String propName, String propValue) {

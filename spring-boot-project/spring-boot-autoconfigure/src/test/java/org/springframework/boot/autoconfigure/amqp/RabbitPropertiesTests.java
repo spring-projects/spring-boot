@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -238,6 +238,20 @@ class RabbitPropertiesTests {
 		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 		assertThat(this.properties.getAddresses())
 				.isEqualTo("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+	}
+
+	@Test
+	void ipv6Address() {
+		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234");
+		assertThat(this.properties.determineHost()).isEqualTo("[aaaa:bbbb:cccc::d]");
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
+	}
+
+	@Test
+	void ipv6AddressDefaultPort() {
+		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]");
+		assertThat(this.properties.determineHost()).isEqualTo("[aaaa:bbbb:cccc::d]");
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}
 
 	@Test

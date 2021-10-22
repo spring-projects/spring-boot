@@ -238,7 +238,7 @@ The `server.{asterisk}` namespace is quite useful here, and it includes namespac
 See the list of <<application-properties#application-properties>>.
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
-However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+However, if a configuration key does not exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
 You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (servlet or reactive).
 
 The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):
@@ -251,7 +251,7 @@ include::{docs-java}/howto/webserver/configure/MyTomcatWebServerCustomizer.java[
 NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
 Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
 
-Once you've got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
+Once you have got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
 
 In addition Spring Boot provides:
 
@@ -284,7 +284,7 @@ When you do so, auto-configured customizers are still applied on your custom fac
 
 [[howto.webserver.add-servlet-filter-listener]]
 === Add a Servlet, Filter, or Listener to an Application
-In a servlet stack application, i.e. with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
+In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
 
 * <<howto#howto.webserver.add-servlet-filter-listener.spring-bean>>
 * <<howto#howto.webserver.add-servlet-filter-listener.using-scanning>>

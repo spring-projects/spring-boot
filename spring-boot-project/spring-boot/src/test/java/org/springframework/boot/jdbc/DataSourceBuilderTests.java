@@ -30,6 +30,7 @@ import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.internal.OpaqueString;
 import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
@@ -294,6 +295,16 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
+	void buildWhenDerivedFromOracleUcpWithPasswordNotSetThrowsException() throws Exception {
+		PoolDataSource dataSource = new PoolDataSourceImpl();
+		dataSource.setUser("test");
+		dataSource.setPassword("secret");
+		dataSource.setURL("example.com");
+		assertThatExceptionOfType(UnsupportedDataSourcePropertyException.class)
+				.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).url("example.org").build());
+	}
+
+	@Test
 	void buildWhenDerivedFromOracleDataSourceWithPasswordSetReturnsDataSource() throws Exception {
 		oracle.jdbc.datasource.impl.OracleDataSource dataSource = new oracle.jdbc.datasource.impl.OracleDataSource();
 		dataSource.setUser("test");
@@ -304,6 +315,20 @@ class DataSourceBuilderTests {
 				.username("test2").password("secret2").build();
 		assertThat(built.getUser()).isEqualTo("test2");
 		assertThat(built).extracting("password").extracting((opaque) -> ((OpaqueString) opaque).get())
+				.isEqualTo("secret2");
+		assertThat(built.getURL()).isEqualTo("example.com");
+	}
+
+	@Test
+	void buildWhenDerivedFromOracleUcpWithPasswordSetReturnsDataSource() throws SQLException {
+		PoolDataSource dataSource = new PoolDataSourceImpl();
+		dataSource.setUser("test");
+		dataSource.setPassword("secret");
+		dataSource.setURL("example.com");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
+		PoolDataSource built = (PoolDataSource) builder.username("test2").password("secret2").build();
+		assertThat(built.getUser()).isEqualTo("test2");
+		assertThat(built).extracting("password").extracting((opaque) -> ((oracle.ucp.util.OpaqueString) opaque).get())
 				.isEqualTo("secret2");
 		assertThat(built.getURL()).isEqualTo("example.com");
 	}

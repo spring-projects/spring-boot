@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
@@ -43,6 +44,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  * @since 2.2.1
  */
 public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebMvcTest> {
@@ -60,6 +62,7 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 		includes.add(ControllerAdvice.class);
 		includes.add(JsonComponent.class);
 		includes.add(WebMvcConfigurer.class);
+		includes.add(WebMvcRegistrations.class);
 		includes.add(javax.servlet.Filter.class);
 		includes.add(FilterRegistrationBean.class);
 		includes.add(DelegatingFilterProxyRegistrationBean.class);

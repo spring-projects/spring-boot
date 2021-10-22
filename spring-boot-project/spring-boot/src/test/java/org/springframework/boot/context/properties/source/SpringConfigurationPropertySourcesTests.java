@@ -163,7 +163,7 @@ class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test // gh-21659
-	void shouldAdaptRandomePropertySource() {
+	void shouldAdaptRandomPropertySource() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addFirst(new RandomValuePropertySource());
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();

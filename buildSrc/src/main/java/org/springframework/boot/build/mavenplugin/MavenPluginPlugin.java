@@ -110,18 +110,19 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		project.getDependencies()
 				.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
 		Copy task = project.getTasks().create("populateIntTestMavenRepository", Copy.class);
-		task.setDestinationDir(project.getBuildDir());
-		task.into("int-test-maven-repository",
-				(copy) -> copyIntTestMavenRepositoryFiles(project, copy, runtimeClasspathMavenRepository));
+		task.setDestinationDir(new File(project.getBuildDir(), "int-test-maven-repository"));
+		task.with(copyIntTestMavenRepositoryFiles(project, runtimeClasspathMavenRepository));
 		task.dependsOn(project.getTasks().getByName(MavenRepositoryPlugin.PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME));
 		project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME).dependsOn(task);
 	}
 
-	private void copyIntTestMavenRepositoryFiles(Project project, CopySpec copy,
+	private CopySpec copyIntTestMavenRepositoryFiles(Project project,
 			RuntimeClasspathMavenRepository runtimeClasspathMavenRepository) {
-		copy.from(project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME));
-		copy.from(new File(project.getBuildDir(), "maven-repository"));
-		copy.from(runtimeClasspathMavenRepository);
+		CopySpec copySpec = project.copySpec();
+		copySpec.from(project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME));
+		copySpec.from(new File(project.getBuildDir(), "maven-repository"));
+		copySpec.from(runtimeClasspathMavenRepository);
+		return copySpec;
 	}
 
 	private void addDocumentPluginGoalsTask(Project project, MavenExec generatePluginDescriptorTask) {
@@ -169,7 +170,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		FormatHelpMojoSourceTask copyFormattedHelpMojoSourceTask = createCopyFormattedHelpMojoSourceTask(project,
 				generateHelpMojoTask, generatedHelpMojoDir);
 		project.getTasks().getByName(mainSourceSet.getCompileJavaTaskName()).dependsOn(copyFormattedHelpMojoSourceTask);
-		mainSourceSet.java((javaSources) -> javaSources.srcDir(generatedHelpMojoDir));
+		mainSourceSet.java((javaSources) -> javaSources.srcDir(copyFormattedHelpMojoSourceTask));
 		Copy pluginDescriptorInputs = createCopyPluginDescriptorInputs(project, pluginDescriptorDir, mainSourceSet);
 		pluginDescriptorInputs.dependsOn(mainSourceSet.getClassesTaskName());
 		MavenExec task = createGeneratePluginDescriptorTask(project, pluginDescriptorDir);

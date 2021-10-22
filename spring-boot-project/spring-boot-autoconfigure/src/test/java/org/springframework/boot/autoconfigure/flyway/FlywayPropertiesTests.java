@@ -44,21 +44,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class FlywayPropertiesTests {
 
+	@SuppressWarnings("deprecation")
 	@Test
 	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();
-		assertThat(configuration.getFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
+		assertThat(configuration.isFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
 				.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
+		// Can't assert connect retries interval as it is new in Flyway 7.15
+		// Asserting hard-coded value in the metadata instead
+		assertThat(configuration.getConnectRetriesInterval()).isEqualTo(120);
 		// Can't assert lock retry count default as it is new in Flyway 7.1
 		// Asserting hard-coded value in the metadata instead
 		assertThat(configuration.getLockRetryCount()).isEqualTo(50);
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
 		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
-		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.getCreateSchemas());
+		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.isCreateSchemas());
 		assertThat(properties.getTable()).isEqualTo(configuration.getTable());
 		assertThat(properties.getBaselineDescription()).isEqualTo(configuration.getBaselineDescription());
 		assertThat(MigrationVersion.fromVersion(properties.getBaselineVersion()))
@@ -93,6 +97,8 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isValidateOnMigrate()).isEqualTo(properties.isValidateOnMigrate());
 		assertThat(properties.getDetectEncoding()).isNull();
+		assertThat(configuration.getScriptPlaceholderPrefix()).isEqualTo("FP__");
+		assertThat(configuration.getScriptPlaceholderSuffix()).isEqualTo("__");
 	}
 
 	@Test
@@ -108,7 +114,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "apiExtensions");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "apiExtensions", "loggers",
+				"driver");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

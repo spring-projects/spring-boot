@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.flyway;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for Flyway database migrations.
@@ -72,6 +75,13 @@ public class FlywayProperties {
 	 * Maximum number of retries when attempting to connect to the database.
 	 */
 	private int connectRetries;
+
+	/**
+	 * Maximum time between retries when attempting to connect to the database. If a
+	 * duration suffix is not specified, seconds will be used.
+	 */
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration connectRetriesInterval;
 
 	/**
 	 * Maximum number of retries when trying to obtain a lock.
@@ -217,21 +227,25 @@ public class FlywayProperties {
 	/**
 	 * Whether to ignore missing migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignoreMissingMigrations;
 
 	/**
 	 * Whether to ignore ignored migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignoreIgnoredMigrations;
 
 	/**
 	 * Whether to ignore pending migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignorePendingMigrations;
 
 	/**
 	 * Whether to ignore future migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignoreFutureMigrations = true;
 
 	/**
@@ -361,9 +375,19 @@ public class FlywayProperties {
 	private Boolean detectEncoding;
 
 	/**
-	 * Filename prefix of state scripts. Requires Flyway Teams.
+	 * Filename prefix for baseline migrations. Requires Flyway Teams.
 	 */
-	private String stateScriptPrefix;
+	private String baselineMigrationPrefix;
+
+	/**
+	 * Prefix of placeholders in migration scripts.
+	 */
+	private String scriptPlaceholderPrefix;
+
+	/**
+	 * Suffix of placeholders in migration scripts.
+	 */
+	private String scriptPlaceholderSuffix;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -415,6 +439,14 @@ public class FlywayProperties {
 
 	public void setConnectRetries(int connectRetries) {
 		this.connectRetries = connectRetries;
+	}
+
+	public Duration getConnectRetriesInterval() {
+		return this.connectRetriesInterval;
+	}
+
+	public void setConnectRetriesInterval(Duration connectRetriesInterval) {
+		this.connectRetriesInterval = connectRetriesInterval;
 	}
 
 	public Integer getLockRetryCount() {
@@ -644,34 +676,46 @@ public class FlywayProperties {
 		this.group = group;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnoreMissingMigrations() {
 		return this.ignoreMissingMigrations;
 	}
 
+	@Deprecated
 	public void setIgnoreMissingMigrations(boolean ignoreMissingMigrations) {
 		this.ignoreMissingMigrations = ignoreMissingMigrations;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnoreIgnoredMigrations() {
 		return this.ignoreIgnoredMigrations;
 	}
 
+	@Deprecated
 	public void setIgnoreIgnoredMigrations(boolean ignoreIgnoredMigrations) {
 		this.ignoreIgnoredMigrations = ignoreIgnoredMigrations;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnorePendingMigrations() {
 		return this.ignorePendingMigrations;
 	}
 
+	@Deprecated
 	public void setIgnorePendingMigrations(boolean ignorePendingMigrations) {
 		this.ignorePendingMigrations = ignorePendingMigrations;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnoreFutureMigrations() {
 		return this.ignoreFutureMigrations;
 	}
 
+	@Deprecated
 	public void setIgnoreFutureMigrations(boolean ignoreFutureMigrations) {
 		this.ignoreFutureMigrations = ignoreFutureMigrations;
 	}
@@ -860,12 +904,28 @@ public class FlywayProperties {
 		this.detectEncoding = detectEncoding;
 	}
 
-	public String getStateScriptPrefix() {
-		return this.stateScriptPrefix;
+	public String getBaselineMigrationPrefix() {
+		return this.baselineMigrationPrefix;
 	}
 
-	public void setStateScriptPrefix(String stateScriptPrefix) {
-		this.stateScriptPrefix = stateScriptPrefix;
+	public void setBaselineMigrationPrefix(String baselineMigrationPrefix) {
+		this.baselineMigrationPrefix = baselineMigrationPrefix;
+	}
+
+	public String getScriptPlaceholderPrefix() {
+		return this.scriptPlaceholderPrefix;
+	}
+
+	public void setScriptPlaceholderPrefix(String scriptPlaceholderPrefix) {
+		this.scriptPlaceholderPrefix = scriptPlaceholderPrefix;
+	}
+
+	public String getScriptPlaceholderSuffix() {
+		return this.scriptPlaceholderSuffix;
+	}
+
+	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
+		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
 	}
 
 }

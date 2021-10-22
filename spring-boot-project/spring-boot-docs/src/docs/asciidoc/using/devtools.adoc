@@ -57,7 +57,7 @@ Because you need more information about web requests while developing Spring MVC
 This will give you information about the incoming request, which handler is processing it, the response outcome, etc.
 If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
 
-NOTE: If you don't want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
+NOTE: If you do not want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
 
 TIP: For a complete list of the properties that are applied by the devtools, see {spring-boot-devtools-module-code}/env/DevToolsPropertyDefaultsPostProcessor.java[DevToolsPropertyDefaultsPostProcessor].
 
@@ -95,7 +95,9 @@ NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationC
 If your application provides one already, it is going to be wrapped.
 Direct override of the `getResource` method on the `ApplicationContext` is not supported.
 
-[[using-spring-boot-restart-vs-reload]]
+CAUTION: Automatic restart is not supported when using AspectJ weaving.
+
+[[using.devtools.restart.restart-vs-reload]]
 .Restart vs Reload
 ****
 The restart technology provided by Spring Boot works by using two classloaders.
@@ -212,7 +214,7 @@ For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring
 
 [[using.devtools.restart.customizing-the-classload]]
 ==== Customizing the Restart Classloader
-As described earlier in the <<using-spring-boot-restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
+As described earlier in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
 For most applications, this approach works well.
 However, it can sometimes cause classloading issues.
 
@@ -274,7 +276,7 @@ You can configure global devtools settings by adding any of the following files 
 . `spring-boot-devtools.yaml`
 . `spring-boot-devtools.yml`
 
-Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
+Any properties added to these files apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a <<using#using.devtools.restart.triggerfile, trigger file>>, you would add the following property to your `spring-boot-devtools` file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]

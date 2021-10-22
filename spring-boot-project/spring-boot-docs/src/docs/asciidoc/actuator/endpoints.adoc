@@ -368,7 +368,7 @@ This means that the actuator endpoints that require a `POST` (shutdown and logge
 
 NOTE: We recommend disabling CSRF protection completely only if you are creating a service that is used by non-browser clients.
 
-You can find additional information about CSRF protection in the {spring-security-docs}#csrf[Spring Security Reference Guide].
+You can find additional information about CSRF protection in the {spring-security-docs}/features/exploits/csrf.html[Spring Security Reference Guide].
 
 
 
@@ -1145,27 +1145,47 @@ Spring Boot includes a number of auto-configured `InfoContributor` beans, and yo
 ==== Auto-configured InfoContributors
 When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
-[cols="1,4"]
+[cols="1,4,8,4"]
 |===
-| Name | Description
+| ID | Name | Description | Prequisites
 
-| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
-| Exposes any key from the `Environment` under the `info` key.
-
-| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
-| Exposes git information if a `git.properties` file is available.
-
+| `build`
 | {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
-| Exposes build information if a `META-INF/build-info.properties` file is available.
+| Exposes build information.
+| A `META-INF/build-info.properties` resource.
+
+| `env`
+| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
+| Exposes any property from the `Environment` whose name starts with `info.`.
+| None.
+
+| `git`
+| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
+| Exposes git information.
+| A `git.properties` resource.
+
+| `java`
+| {spring-boot-actuator-module-code}/info/JavaInfoContributor.java[`JavaInfoContributor`]
+| Exposes Java runtime information.
+| None.
+
 |===
 
-TIP: You can disable them all by setting the configprop:management.info.defaults.enabled[] property.
+Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
+Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
+
+With no prequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
+You can enable them by setting the configprop:management.info.env.enabled[] or configprop:management.info.java.enabled[] properties to `true`.
+
+The `build` and `git` info contributors are enabled by default.
+Each can be disabled by setting its `management.info.<id>.enabled` property to `false`.
+Alternatively, to disable every contributor that is usually enabled by default, set the configprop:management.info.defaults.enabled[] property to `false`.
 
 
 
 [[actuator.endpoints.info.custom-application-information]]
 ==== Custom Application Information
-You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
+When the `env` contributor is enabled, you can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
 All `Environment` properties under the `info` key are automatically exposed.
 For example, you could add the following settings to your `application.properties` file:
 
@@ -1237,6 +1257,12 @@ This happens if a `META-INF/build-info.properties` file is available in the clas
 
 TIP: The Maven and Gradle plugins can both generate that file.
 See "<<howto#howto.build.generate-info,how to generate build information>>" for more details.
+
+
+
+[[actuator.endpoints.info.java-information]]
+==== Java Information
+The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
 
 
 

@@ -58,7 +58,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Rafael Ceccone
  * @author Jeroen Meijer
+ * @author Julian Liebig
  * @since 2.3.0
  */
 public class BootBuildImage extends DefaultTask {
@@ -95,6 +97,12 @@ public class BootBuildImage extends DefaultTask {
 
 	private String network;
 
+	private final ListProperty<String> tags;
+
+	private final CacheSpec buildCache = new CacheSpec();
+
+	private final CacheSpec launchCache = new CacheSpec();
+
 	private final DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
@@ -106,6 +114,7 @@ public class BootBuildImage extends DefaultTask {
 		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
 		this.buildpacks = getProject().getObjects().listProperty(String.class);
 		this.bindings = getProject().getObjects().listProperty(String.class);
+		this.tags = getProject().getObjects().listProperty(String.class);
 	}
 
 	/**
@@ -148,7 +157,7 @@ public class BootBuildImage extends DefaultTask {
 	@Input
 	@Optional
 	public String getImageName() {
-		return this.imageName;
+		return determineImageReference().toString();
 	}
 
 	/**
@@ -380,6 +389,40 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the tags that will be created for the built image.
+	 * @return the tags
+	 */
+	@Input
+	@Optional
+	public List<String> getTags() {
+		return this.tags.getOrNull();
+	}
+
+	/**
+	 * Sets the tags that will be created for the built image.
+	 * @param tags the tags
+	 */
+	public void setTags(List<String> tags) {
+		this.tags.set(tags);
+	}
+
+	/**
+	 * Add an entry to the tags that will be created for the built image.
+	 * @param tag the tag
+	 */
+	public void tag(String tag) {
+		this.tags.add(tag);
+	}
+
+	/**
+	 * Add entries to the tags that will be created for the built image.
+	 * @param tags the tags
+	 */
+	public void tags(List<String> tags) {
+		this.tags.addAll(tags);
+	}
+
+	/**
 	 * Returns the network the build container will connect to.
 	 * @return the network
 	 */
@@ -396,6 +439,62 @@ public class BootBuildImage extends DefaultTask {
 	@Option(option = "network", description = "Connect detect and build containers to network")
 	public void setNetwork(String network) {
 		this.network = network;
+	}
+
+	/**
+	 * Returns the build cache that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getBuildCache() {
+		return this.buildCache;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the build cache using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void buildCache(Action<CacheSpec> action) {
+		action.execute(this.buildCache);
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the build cache using the given
+	 * {@code closure}.
+	 * @param closure the closure
+	 */
+	public void buildCache(Closure<?> closure) {
+		buildCache(ConfigureUtil.configureUsing(closure));
+	}
+
+	/**
+	 * Returns the launch cache that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getLaunchCache() {
+		return this.launchCache;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the launch cache using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void launchCache(Action<CacheSpec> action) {
+		action.execute(this.launchCache);
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the launch cache using the given
+	 * {@code closure}.
+	 * @param closure the closure
+	 */
+	public void launchCache(Closure<?> closure) {
+		launchCache(ConfigureUtil.configureUsing(closure));
 	}
 
 	/**
@@ -460,6 +559,8 @@ public class BootBuildImage extends DefaultTask {
 		request = customizePublish(request);
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
+		request = customizeTags(request);
+		request = customizeCaches(request);
 		request = request.withNetwork(this.network);
 		return request;
 	}
@@ -525,6 +626,24 @@ public class BootBuildImage extends DefaultTask {
 		List<String> bindings = this.bindings.getOrNull();
 		if (bindings != null && !bindings.isEmpty()) {
 			return request.withBindings(bindings.stream().map(Binding::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeTags(BuildRequest request) {
+		List<String> tags = this.tags.getOrNull();
+		if (tags != null && !tags.isEmpty()) {
+			return request.withTags(tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCaches(BuildRequest request) {
+		if (this.buildCache.asCache() != null) {
+			request = request.withBuildCache(this.buildCache.asCache());
+		}
+		if (this.launchCache.asCache() != null) {
+			request = request.withLaunchCache(this.launchCache.asCache());
 		}
 		return request;
 	}

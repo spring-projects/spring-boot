@@ -15,7 +15,7 @@ include::../maven/packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
 
 TIP: While the buildpack runs from an <<packaging,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
-When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
+When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
 
 
@@ -32,7 +32,7 @@ The following table shows the environment variables and their values:
 | Environment variable | Description
 
 | DOCKER_HOST
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | DOCKER_TLS_VERIFY
 | Enable secure HTTPS protocol when set to `1` (optional)
@@ -50,7 +50,7 @@ The following table summarizes the available parameters:
 | Parameter | Description
 
 | `host`
-| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
 
 | `tlsVerify`
 | Enable secure HTTPS protocol when set to `true` (optional)
@@ -182,6 +182,22 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 (`spring-boot.build-image.publish`)
 | Whether to publish the generated image to a Docker registry.
 | `false`
+
+| `tags`
+| One or more additional tags to apply to the generated image.
+|
+
+| `caches`
+| Cache volume names that should be used by the builder instead of generating random names.
+|
+
+| `buildCache`
+| A cache containing layers created by buildpacks and used by the image building process.
+| A named volume in the Docker daemon, with a name derived from the image name.
+
+| `launchCache`
+| A cache containing layers created by buildpacks and used by the image launching process.
+| A named volume in the Docker daemon, with a name derived from the image name.
 
 |===
 
@@ -336,10 +352,23 @@ The `publish` option can be specified on the command line as well, as shown in t
 	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
 ----
 
+[[build-image.examples.caches]]
+=== Builder Cache Configuration
 
+The CNB builder caches layers that are used when building and launching an image.
+By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
+If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
+
+The cache volumes can be configured to use alternative names to give more control over cache lifecycle as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/packaging-oci-image/caches-pom.xml[tags=caches]
+----
 
 [[build-image.examples.docker]]
 === Docker Configuration
+
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
