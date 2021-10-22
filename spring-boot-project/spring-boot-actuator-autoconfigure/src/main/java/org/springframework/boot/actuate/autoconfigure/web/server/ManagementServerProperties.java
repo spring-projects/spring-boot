@@ -51,8 +51,8 @@ public class ManagementServerProperties {
 	private InetAddress address;
 
 	/**
-	 * Management endpoint base path (for instance, {@code '/management'}). Requires a
-	 * custom management.server.port.
+	 * Management endpoint base path (for instance, '/management'). Requires a custom
+	 * management.server.port.
 	 */
 	private String basePath = "";
 
@@ -128,8 +128,8 @@ public class ManagementServerProperties {
 	public static class Servlet {
 
 		/**
-		 * Management endpoint context-path (for instance, {@code '/management'}).
-		 * Requires a custom management.server.port.
+		 * Management endpoint context-path (for instance, '/management'). Requires a
+		 * custom management.server.port.
 		 */
 		private String contextPath = "";
 
