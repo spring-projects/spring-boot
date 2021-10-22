@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.redis;
 
+import io.lettuce.core.RedisClient;
 import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder;
 import io.lettuce.core.metrics.MicrometerOptions;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -30,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderC
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 /**
  * Auto-configuration for Lettuce metrics.
@@ -41,7 +41,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(RedisAutoConfiguration.class)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
-@ConditionalOnClass(LettuceConnectionFactory.class)
+@ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class LettuceMetricsAutoConfiguration {
 
