@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(RedisAutoConfiguration.class)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
-@ConditionalOnClass(RedisClient.class)
+@ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class LettuceMetricsAutoConfiguration {
 
