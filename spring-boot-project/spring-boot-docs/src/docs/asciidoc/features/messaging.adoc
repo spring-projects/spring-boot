@@ -20,14 +20,26 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 [[features.messaging.jms.activemq]]
 ==== ActiveMQ Support
 When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can also configure a `ConnectionFactory`.
-If the broker is present, an embedded broker is automatically started and configured (provided no broker URL is specified through configuration).
+If the broker is present, an embedded broker is automatically started and configured (provided no broker URL is specified through configuration and the embedded broker is not disabled in the configuration).
 
 NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect or embed an ActiveMQ instance are provided, as is the Spring infrastructure to integrate with JMS.
 
 ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
-For example, you might declare the following section in `application.properties`:
+
+By default, ActiveMQ is auto-configured to use the https://activemq.apache.org/vm-transport-reference.html[VM transport], which starts a broker embedded in the same JVM instance.
+
+You can disable the embedded broker by configuring the configprop:spring.activemq.in-memory[] property, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  activemq:
+	    in-memory: false
+----
+
+The embedded broker will also be disabled if you configure the broker URL, as shown in the following example:
+
+[source,yaml,indent=0,configprops,configblocks]
 ----
 	spring:
 	  activemq:
@@ -35,6 +47,8 @@ For example, you might declare the following section in `application.properties`
 	    user: "admin"
 	    password: "secret"
 ----
+
+If you want to take full control over the embedded broker, refer to https://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html[the ActiveMQ documentation] for further information.
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
