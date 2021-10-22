@@ -26,8 +26,8 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * {@link WebSecurityConfigurerAdapter} configuration for Spring Security's relying on
- * party SAML support.
+ * {@link WebSecurityConfigurerAdapter} configuration for Spring Security's relying party
+ * SAML support.
  *
  * @author Madhura Bhave
  */

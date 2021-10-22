@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link Configuration @Configuration} used to map {@link Saml2RelyingPartyProperties} to
- * relying on party registrations in a {@link RelyingPartyRegistrationRepository}.
+ * relying party registrations in a {@link RelyingPartyRegistrationRepository}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
