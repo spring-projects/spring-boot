@@ -117,7 +117,7 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 														.optional().type(JsonFieldType.NUMBER),
 												fieldWithPath("threads.[].lockOwnerId")
 														.description("ID of the thread that owns the object on which "
-																+ "the thread is blocked. '-1' if the "
+																+ "the thread is blocked. `-1` if the "
 																+ "thread is not blocked."),
 												fieldWithPath("threads.[].lockOwnerName")
 														.description("Name of the thread that owns the "
