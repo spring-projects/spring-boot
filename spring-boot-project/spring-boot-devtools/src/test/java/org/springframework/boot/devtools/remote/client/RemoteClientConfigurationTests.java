@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.springframework.boot.devtools.remote.client;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,6 @@ import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
-import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration.LiveReloadConfiguration;
 import org.springframework.boot.devtools.remote.server.Dispatcher;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
@@ -107,11 +107,8 @@ class RemoteClientConfigurationTests {
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.clientContext.publishEvent(event);
-		LiveReloadConfiguration configuration = this.clientContext.getBean(LiveReloadConfiguration.class);
-		configuration.getExecutor().shutdown();
-		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
 		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
-		verify(server).triggerReload();
+		Awaitility.await().atMost(Duration.ofMinutes(1)).untilAsserted(() -> verify(server).triggerReload());
 	}
 
 	@Test
