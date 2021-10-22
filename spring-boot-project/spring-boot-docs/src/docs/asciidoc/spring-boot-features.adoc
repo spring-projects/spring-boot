@@ -5846,11 +5846,10 @@ NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to c
 
 ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
 
-By default an embedded broker is started, if you don't disable it explicitly and don't set the broker url. The broker
-url is then autoconfigured to use the https://activemq.apache.org/vm-transport-reference.html[VM transport], which starts
-an ActiveMQ broker in the same JVM instance.
+By default, ActiveMQ is auto-configured to use the https://activemq.apache.org/vm-transport-reference.html[VM transport], which starts a broker embedded in the same JVM instance.
 
-You can disable the embedded broker by declaring the following section in `application.properties`:
+You can disable the embedded broker by configuring the configprop:spring.activemq.in-memory[] property, as shown in the following example:
+
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
@@ -5858,7 +5857,7 @@ You can disable the embedded broker by declaring the following section in `appli
 	    in-memory: false
 ----
 
-or by setting the broker url explicitly:
+The embedded broker will also be disabled if you configure the broker URL, as shown in the following example:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
@@ -5868,6 +5867,8 @@ or by setting the broker url explicitly:
 	    user: "admin"
 	    password: "secret"
 ----
+
+If you want to take full control over the embedded broker, refer to https://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html[the ActiveMQ documentation] for further information.
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
