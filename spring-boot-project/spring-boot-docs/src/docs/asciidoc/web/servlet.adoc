@@ -597,7 +597,7 @@ If you want to change the `SameSite` attribute of your session cookie, you can u
 This property is supported by auto-configured Tomcat, Jetty and Undertow servers.
 It is also used to configure Spring Session servlet based `SessionRepository` beans.
 
-For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to you `application.properties` or `application.yaml` file:
+For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
