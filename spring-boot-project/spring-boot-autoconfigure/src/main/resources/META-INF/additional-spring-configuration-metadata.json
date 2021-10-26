@@ -159,34 +159,6 @@
       }
     },
     {
-      "name": "server.servlet.session.cookie.comment",
-      "description": "Comment for the session cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.domain",
-      "description": "Domain for the session cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.http-only",
-      "description": "Whether to use \"HttpOnly\" cookies for session cookies."
-    },
-    {
-      "name": "server.servlet.session.cookie.max-age",
-      "description": "Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used."
-    },
-    {
-      "name": "server.servlet.session.cookie.name",
-      "description": "Session cookie name."
-    },
-    {
-      "name": "server.servlet.session.cookie.path",
-      "description": "Path of the session cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.secure",
-      "description": "Whether to always mark the session cookie as secure."
-    },
-    {
       "name": "server.servlet.session.persistent",
       "description": "Whether to persist session data between restarts.",
       "defaultValue": false
@@ -1689,11 +1661,6 @@
       "defaultValue": "quartzScheduler"
     },
     {
-      "name": "spring.r2dbc.pool.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether pooling is enabled. Enabled automatically if \"r2dbc-pool\" is on the classpath."
-    },
-    {
       "name": "spring.r2dbc.pool.validation-depth",
       "defaultValue": "local"
     },
@@ -2033,8 +2000,8 @@
       "defaultValue": false
     },
     {
-      "name": "spring.webflux.session.cookie.same-site",
-      "defaultValue": "lax"
+      "name": "spring.webflux.session.timeout",
+      "defaultValue": "30m"
     },
     {
       "name": "spring.webservices.wsdl-locations",

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;
@@ -49,11 +50,29 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  */
 public class OptionHandler {
 
+	private final Function<String, String> argumentProcessor;
+
 	private OptionParser parser;
 
 	private String help;
 
 	private Collection<OptionHelp> optionHelp;
+
+	/**
+	 * Create a new {@link OptionHandler} instance.
+	 */
+	public OptionHandler() {
+		this(Function.identity());
+	}
+
+	/**
+	 * Create a new {@link OptionHandler} instance with an argument processor.
+	 * @param argumentProcessor strategy that can be used to manipulate arguments before
+	 * they are used.
+	 */
+	public OptionHandler(Function<String, String> argumentProcessor) {
+		this.argumentProcessor = argumentProcessor;
+	}
 
 	public OptionSpecBuilder option(String name, String description) {
 		return getParser().accepts(name, description);
@@ -80,6 +99,7 @@ public class OptionHandler {
 			if ("-cp".equals(argsToUse[i])) {
 				argsToUse[i] = "--cp";
 			}
+			argsToUse[i] = this.argumentProcessor.apply(argsToUse[i]);
 		}
 		OptionSet options = getParser().parse(argsToUse);
 		return run(options);

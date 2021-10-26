@@ -19,10 +19,14 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.StringUtils;
@@ -33,7 +37,17 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
+class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException>
+		implements BeanFactoryAware {
+
+	private AbstractAutowireCapableBeanFactory beanFactory;
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
+			this.beanFactory = (AbstractAutowireCapableBeanFactory) beanFactory;
+		}
+	}
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanCurrentlyInCreationException cause) {
@@ -41,12 +55,18 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		if (dependencyCycle == null) {
 			return null;
 		}
-		return new FailureAnalysis(buildMessage(dependencyCycle),
-				"Relying upon circular references is discouraged and they are prohibited by default. "
-						+ "Update your application to remove the dependency cycle between beans. "
-						+ "As a last resort, it may be possible to break the cycle automatically by setting "
-						+ "spring.main.allow-circular-references to true if you have not already done so.",
-				cause);
+		return new FailureAnalysis(buildMessage(dependencyCycle), action(), cause);
+	}
+
+	private String action() {
+		if (this.beanFactory != null && this.beanFactory.isAllowCircularReferences()) {
+			return "Despite circular references being allowed, the dependency cycle between beans could not be "
+					+ "broken. Update your application to remove the dependency cycle.";
+		}
+		return "Relying upon circular references is discouraged and they are prohibited by default. "
+				+ "Update your application to remove the dependency cycle between beans. "
+				+ "As a last resort, it may be possible to break the cycle automatically by setting "
+				+ "spring.main.allow-circular-references to true.";
 	}
 
 	private DependencyCycle findCycle(Throwable rootFailure) {

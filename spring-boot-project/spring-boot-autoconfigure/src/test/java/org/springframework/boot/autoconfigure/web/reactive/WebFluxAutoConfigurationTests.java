@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -39,6 +40,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -56,6 +58,7 @@ import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -109,7 +112,8 @@ class WebFluxAutoConfigurationTests {
 	private static final MockReactiveWebServerFactory mockReactiveWebServerFactory = new MockReactiveWebServerFactory();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(WebFluxAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class))
 			.withUserConfiguration(Config.class);
 
 	@Test
@@ -568,10 +572,47 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void customSameSiteConfigurationShouldBeApplied() {
+	void customSessionTimeoutConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("server.reactive.session.timeout:123")
+				.run((assertSessionTimeoutWithWebSession((webSession) -> {
+					webSession.start();
+					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
+				})));
+	}
+
+	@Test
+	void sameSiteAttributesAreExclusive() {
+		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict",
+				"server.reactive.session.cookie.same-site:strict").run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
+				});
+	}
+
+	@Test
+	void deprecatedCustomSameSiteConfigurationShouldBeApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run(
 				assertExchangeWithSession((exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION"))
 						.isNotEmpty().allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
+	}
+
+	@Test
+	void customSessionCookieConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("server.reactive.session.cookie.name:JSESSIONID",
+				"server.reactive.session.cookie.domain:.example.com", "server.reactive.session.cookie.path:/example",
+				"server.reactive.session.cookie.max-age:60", "server.reactive.session.cookie.http-only:false",
+				"server.reactive.session.cookie.secure:false", "server.reactive.session.cookie.same-site:strict")
+				.run(assertExchangeWithSession((exchange) -> {
+					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+					assertThat(cookies).isNotEmpty();
+					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				}));
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
@@ -584,6 +625,17 @@ class WebFluxAutoConfigurationTests {
 			webSession.start();
 			webExchange.getResponse().setComplete().block();
 			exchange.accept(webExchange);
+		};
+	}
+
+	private ContextConsumer<ReactiveWebApplicationContext> assertSessionTimeoutWithWebSession(
+			Consumer<WebSession> session) {
+		return (context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
+			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+			WebSession webSession = webSessionManager.getSession(webExchange).block();
+			session.accept(webSession);
 		};
 	}
 

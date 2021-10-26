@@ -922,12 +922,12 @@ public class RabbitProperties {
 		private Boolean mandatory;
 
 		/**
-		 * Timeout for `receive()` operations.
+		 * Timeout for receive() operations.
 		 */
 		private Duration receiveTimeout;
 
 		/**
-		 * Timeout for `sendAndReceive()` operations.
+		 * Timeout for sendAndReceive() operations.
 		 */
 		private Duration replyTimeout;
 

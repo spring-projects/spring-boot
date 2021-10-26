@@ -49,29 +49,28 @@ class InfoContributorAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(InfoContributorAutoConfiguration.class));
 
 	@Test
-	void disableEnvContributor() {
-		this.contextRunner.withPropertyValues("management.info.env.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentInfoContributor.class));
-	}
-
-	@Test
-	void disableJavaContributor() {
-		this.contextRunner.withPropertyValues("management.info.java.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(JavaInfoContributor.class));
+	void envContributor() {
+		this.contextRunner.withPropertyValues("management.info.env.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(EnvironmentInfoContributor.class));
 	}
 
 	@Test
 	void defaultInfoContributorsEnabled() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(EnvironmentInfoContributor.class)
-					.hasSingleBean(JavaInfoContributor.class);
-			assertThat(context.getBeansOfType(InfoContributor.class)).hasSize(2);
-		});
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfoContributor.class));
 	}
 
 	@Test
-	void defaultInfoContributorsDisabled() {
-		this.contextRunner.withPropertyValues("management.info.defaults.enabled=false")
+	void defaultInfoContributorsEnabledWithPrerequisitesInPlace() {
+		this.contextRunner.withUserConfiguration(GitPropertiesConfiguration.class, BuildPropertiesConfiguration.class)
+				.run((context) -> assertThat(context.getBeansOfType(InfoContributor.class)).hasSize(2)
+						.satisfies((contributors) -> assertThat(contributors.values())
+								.hasOnlyElementsOfTypes(BuildInfoContributor.class, GitInfoContributor.class)));
+	}
+
+	@Test
+	void defaultInfoContributorsDisabledWithPrerequisitesInPlace() {
+		this.contextRunner.withUserConfiguration(GitPropertiesConfiguration.class, BuildPropertiesConfiguration.class)
+				.withPropertyValues("management.info.defaults.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InfoContributor.class));
 	}
 
@@ -146,7 +145,7 @@ class InfoContributorAutoConfigurationTests {
 
 	@Test
 	void javaInfoContributor() {
-		this.contextRunner.run((context) -> {
+		this.contextRunner.withPropertyValues("management.info.java.enabled=true").run((context) -> {
 			assertThat(context).hasSingleBean(JavaInfoContributor.class);
 			Map<String, Object> content = invokeContributor(context.getBean(JavaInfoContributor.class));
 			assertThat(content).containsKey("java");

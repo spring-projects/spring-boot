@@ -209,7 +209,8 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		@EnableIntegrationManagement
+		@EnableIntegrationManagement(
+				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}

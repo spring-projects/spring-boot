@@ -54,6 +54,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
 import org.springframework.integration.context.IntegrationContextUtils;
@@ -482,6 +483,20 @@ class IntegrationAutoConfigurationTests {
 								assertThat(trigger.isFixedRate()).isTrue();
 							});
 				});
+	}
+
+	@Test
+	void integrationManagementLoggingIsEnabledByDefault() {
+		this.contextRunner.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
+				.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(true));
+	}
+
+	@Test
+	void integrationManagementLoggingCanBeDisabled() {
+		this.contextRunner.withPropertyValues("spring.integration.management.defaultLoggingEnabled=false")
+				.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
+						.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(false));
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

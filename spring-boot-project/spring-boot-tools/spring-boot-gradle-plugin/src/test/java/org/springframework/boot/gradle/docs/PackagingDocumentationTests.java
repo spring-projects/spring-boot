@@ -316,6 +316,14 @@ class PackagingDocumentationTests {
 				.contains("urn:cnb:builder:paketo-buildpacks/java");
 	}
 
+	@TestTemplate
+	void bootBuildImageWithCaches() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-caches")
+				.build("bootBuildImageCaches");
+		assertThat(result.getOutput()).containsPattern("buildCache=cache-gradle-[\\d]+.build")
+				.containsPattern("launchCache=cache-gradle-[\\d]+.launch");
+	}
+
 	protected void jarFile(File file) throws IOException {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));

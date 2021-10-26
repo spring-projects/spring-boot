@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -196,6 +197,14 @@ class ConditionalOnAvailableEndpointTests {
 				.run((context) -> assertThat(context).hasSingleBean(DashedEndpoint.class));
 	}
 
+	@Test
+	void outcomeWhenEndpointNotExposedOnSpecifiedTechnology() {
+		this.contextRunner.withUserConfiguration(ExposureEndpointConfiguration.class)
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=test",
+						"management.endpoints.web.exposure.exclude=test")
+				.run((context) -> assertThat(context).doesNotHaveBean("unexposed"));
+	}
+
 	@Endpoint(id = "health")
 	static class HealthEndpoint {
 
@@ -310,6 +319,17 @@ class ConditionalOnAvailableEndpointTests {
 		@ConditionalOnAvailableEndpoint
 		DashedEndpoint dashedEndpoint() {
 			return new DashedEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExposureEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposure = EndpointExposure.WEB)
+		String unexposed() {
+			return "unexposed";
 		}
 
 	}

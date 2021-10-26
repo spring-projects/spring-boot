@@ -49,7 +49,7 @@ public class ManagementServerProperties {
 	private InetAddress address;
 
 	/**
-	 * Management endpoint base path (for instance, `/management`). Requires a custom
+	 * Management endpoint base path (for instance, '/management'). Requires a custom
 	 * management.server.port.
 	 */
 	private String basePath = "";

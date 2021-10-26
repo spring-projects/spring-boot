@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,7 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SampleSessionHazelcastApplication},
+ * Tests for {@link SampleSessionHazelcastApplication}.
  *
  * @author Susmitha Kandula
  * @author Madhura Bhave
@@ -47,28 +46,24 @@ class SampleSessionHazelcastApplicationTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@LocalServerPort
-	private int port;
-
 	@Test
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSession() {
-		URI uri = URI.create("http://localhost:" + this.port + "/");
-		ResponseEntity<String> firstResponse = performRequest(this.restTemplate, uri, null);
+		URI uri = URI.create("/");
+		ResponseEntity<String> firstResponse = performRequest(uri, null);
 		String cookie = firstResponse.getHeaders().getFirst("Set-Cookie");
-		performRequest(this.restTemplate, uri, cookie).getBody();
-		ResponseEntity<Map<String, Object>> entity = (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate
-				.withBasicAuth("user", "password").getForEntity("/actuator/sessions?username=user", Map.class);
+		performRequest(uri, cookie).getBody();
+		ResponseEntity<Map<String, Object>> entity = getSessions();
 		assertThat(entity).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) entity.getBody().get("sessions");
 		assertThat(sessions.size()).isEqualTo(1);
 	}
 
-	private ResponseEntity<String> performRequest(TestRestTemplate restTemplate, URI uri, String cookie) {
+	private ResponseEntity<String> performRequest(URI uri, String cookie) {
 		HttpHeaders headers = getHeaders(cookie);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
-		return restTemplate.exchange(request, String.class);
+		return this.restTemplate.exchange(request, String.class);
 	}
 
 	private HttpHeaders getHeaders(String cookie) {
@@ -84,6 +79,14 @@ class SampleSessionHazelcastApplicationTests {
 
 	private String getBasicAuth() {
 		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
+	}
+
+	@SuppressWarnings("unchecked")
+	private ResponseEntity<Map<String, Object>> getSessions() {
+		HttpHeaders headers = getHeaders(null);
+		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET,
+				URI.create("/actuator/sessions?username=user"));
+		return (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate.exchange(request, Map.class);
 	}
 
 }

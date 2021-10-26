@@ -30,8 +30,7 @@ By default, the generated build information is derived from the project:
 | Property | Default value
 
 | `build.artifact`
-| The base name of the `bootJar` or `bootWar` task, or `unspecified` if no such task
-  exists
+| The base name of the `bootJar` or `bootWar` task
 
 | `build.group`
 | The group of the project
@@ -60,6 +59,8 @@ include::../gradle/integrating-with-actuator/build-info-custom-values.gradle[tag
 ----
 include::../gradle/integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
 ----
+
+NOTE: To omit any of the default properties from the generated build information, set its value to `null`.
 
 The default value for `build.time` is the instant at which the project is being built.
 A side-effect of this is that the task will never be up-to-date.

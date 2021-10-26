@@ -70,7 +70,7 @@ bom {
 			]
 		}
 	}
-	library("Artemis", "2.18.0") {
+	library("Artemis", "2.19.0") {
 		group("org.apache.activemq") {
 			modules = [
 				"artemis-amqp-protocol",
@@ -141,7 +141,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.11.18") {
+	library("Byte Buddy", "1.11.21") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -218,7 +218,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.2.1") {
+	library("Couchbase Client", "3.2.2") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -250,7 +250,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.2.3") {
+	library("Dropwizard Metrics", "4.2.4") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -264,7 +264,7 @@ bom {
 			]
 		}
 	}
-	library("Ehcache3", "3.9.6") {
+	library("Ehcache3", "3.9.7") {
 		group("org.ehcache") {
 			modules = [
 				"ehcache",
@@ -273,7 +273,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.14.1") {
+	library("Elasticsearch", "7.15.1") {
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
@@ -309,7 +309,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "8.0.0") {
+	library("Flyway", "8.0.2") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -463,7 +463,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "2.53.0") {
+	library("HtmlUnit", "2.54.0") {
 		group("net.sourceforge.htmlunit") {
 			modules = [
 				"htmlunit" {
@@ -513,7 +513,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore5", "5.1.1") {
+	library("HttpCore5", "5.1.2") {
 		group("org.apache.httpcomponents.core5") {
 			modules = [
 				"httpcore5",
@@ -605,6 +605,13 @@ bom {
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
+			]
+		}
+	}
+	library("Jakarta Management", "1.1.4") {
+		group("jakarta.management.j2ee") {
+			modules = [
+				"jakarta.management.j2ee-api"
 			]
 		}
 	}
@@ -822,7 +829,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "4.0.3.java8") {
+	library("Jaybird", "4.0.4.java8") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird",
@@ -888,7 +895,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "9.4.43.v20210629") {
+	library("Jetty", "9.4.44.v20210927") {
 		prohibit("[10.0.0-alpha0,)") {
 			because "it requires Java 11"
 		}
@@ -1072,7 +1079,7 @@ bom {
 			]
 		}
 	}
-	library("Lombok", "1.18.20") {
+	library("Lombok", "1.18.22") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
@@ -1212,7 +1219,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.8.0-SNAPSHOT") {
+	library("Micrometer", "1.8.0-RC1") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1240,7 +1247,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.3.2") {
+	library("MongoDB", "4.4.0-beta1") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
@@ -1258,7 +1265,7 @@ bom {
 			]
 		}
 	}
-	library("MySQL", "8.0.26") {
+	library("MySQL", "8.0.27") {
 		group("mysql") {
 			modules = [
 				"mysql-connector-java" {
@@ -1281,14 +1288,14 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.68.Final") {
+	library("Netty", "4.1.69.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.43.Final") {
+	library("Netty tcNative", "2.0.44.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
@@ -1331,7 +1338,7 @@ bom {
 			]
 		}
 	}
-	library("Postgresql", "42.2.23") {
+	library("Postgresql", "42.3.0") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -1363,7 +1370,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Bom", "Arabba-SR10") {
+	library("R2DBC Bom", "Arabba-SR11") {
 		group("io.r2dbc") {
 			imports = [
 					"r2dbc-bom"
@@ -1541,14 +1548,14 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "2.53.0") {
+	library("Selenium HtmlUnit", "2.54.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
 			]
 		}
 	}
-	library("SendGrid", "4.7.5") {
+	library("SendGrid", "4.7.6") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
@@ -1607,7 +1614,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.0-SNAPSHOT") {
+	library("Spring AMQP", "2.4.0-RC1") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1618,7 +1625,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.4-SNAPSHOT") {
+	library("Spring Batch", "4.3.3") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1628,35 +1635,35 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.1.0-SNAPSHOT") {
+	library("Spring Data Bom", "2021.1.0-RC1") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.11-SNAPSHOT") {
+	library("Spring Framework", "5.3.12") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.4.0-SNAPSHOT") {
+	library("Spring HATEOAS", "1.4.0-RC1") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
 			]
 		}
 	}
-	library("Spring Integration", "5.5.5-SNAPSHOT") {
+	library("Spring Integration", "5.5.5") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.0-SNAPSHOT") {
+	library("Spring Kafka", "2.8.0-RC1") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1694,14 +1701,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.6.0-SNAPSHOT") {
+	library("Spring Security", "5.6.0-RC1") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.1.0-SNAPSHOT") {
+	library("Spring Session Bom", "2021.1.0-RC1") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
@@ -1799,7 +1806,7 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.2.10.Final") {
+	library("Undertow", "2.2.12.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
@@ -1836,7 +1843,7 @@ bom {
 			]
 		}
 	}
-	library("XmlUnit2", "2.8.2") {
+	library("XmlUnit2", "2.8.3") {
 		group("org.xmlunit") {
 			modules = [
 				"xmlunit-assertj",
