@@ -902,7 +902,8 @@ public class KafkaProperties {
 		private Duration idleEventInterval;
 
 		/**
-		 * Time between publishing idle partition consumer events (no data received for partition).
+		 * Time between publishing idle partition consumer events (no data received for
+		 * partition).
 		 */
 		private Duration idlePartitionEventInterval;
 
