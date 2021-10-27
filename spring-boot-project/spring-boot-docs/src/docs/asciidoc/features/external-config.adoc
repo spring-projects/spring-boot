@@ -675,7 +675,7 @@ The preceding POJO defines the following properties:
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables, etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
@@ -712,7 +712,7 @@ This means that the binder will expect to find a constructor with the parameters
 If you are using Java 16 or later, constructor binding can be used with records.
 In this case, unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
-Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
+Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound through their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
 By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
@@ -725,7 +725,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
-You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)
+You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created through `@Bean` methods or beans loaded using `@Import`)
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
@@ -761,7 +761,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/ena
 
 [NOTE]
 ====
-When the `@ConfigurationProperties` bean is registered using configuration property scanning or via `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
+When the `@ConfigurationProperties` bean is registered using configuration property scanning or through `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
 The bean name in the example above is `com.example.app-com.example.app.SomeProperties`.
@@ -1215,4 +1215,4 @@ Doing so will provide you with structured, type-safe object that you can inject 
 
 `SpEL` expressions from  <<features#features.external-config.files,application property files>> are not processed at time of parsing these files and populating the environment.
 However, it is possible to write a `SpEL` expression in `@Value`.
-If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed via `@Value`.
+If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed through `@Value`.

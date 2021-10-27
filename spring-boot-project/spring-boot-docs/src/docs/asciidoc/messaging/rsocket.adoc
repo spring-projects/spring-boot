@@ -1,7 +1,7 @@
 [[messaging.rsocket]]
 == RSocket
 https://rsocket.io[RSocket] is a binary protocol for use on byte stream transports.
-It enables symmetric interaction models via async message passing over a single connection.
+It enables symmetric interaction models through async message passing over a single connection.
 
 
 The `spring-messaging` module of the Spring Framework provides support for RSocket requesters and responders, both on the client and on the server side.

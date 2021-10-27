@@ -438,11 +438,11 @@ include::{docs-java}/features/testing/springbootapplications/springwebfluxtests/
 
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a mocked web application only works with WebFlux at the moment.
 
-NOTE: `@WebFluxTest` cannot detect routes registered via the functional web framework.
-For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself via `@Import` or using `@SpringBootTest`.
+NOTE: `@WebFluxTest` cannot detect routes registered through the functional web framework.
+For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
 
-NOTE: `@WebFluxTest` cannot detect custom security configuration registered via a `@Bean` of type `SecurityWebFilterChain`.
-To include that in your test, you will need to import the configuration that registers the bean via `@Import` or use `@SpringBootTest`.
+NOTE: `@WebFluxTest` cannot detect custom security configuration registered through a `@Bean` of type `SecurityWebFilterChain`.
+To include that in your test, you will need to import the configuration that registers the bean by using `@Import` or by using `@SpringBootTest`.
 
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.
 
@@ -966,7 +966,7 @@ include::{docs-java}/features/testing/utilities/outputcapture/MyOutputCaptureTes
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
 In either case, the template is fault tolerant.
 This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
-Instead, such errors can be detected via the returned `ResponseEntity` and its status code.
+Instead, such errors can be detected through the returned `ResponseEntity` and its status code.
 
 TIP: Spring Framework 5.0 provides a new `WebTestClient` that works for <<features#features.testing.spring-boot-applications.spring-webflux-tests, WebFlux integration tests>> and both <<features#features.testing.spring-boot-applications.with-running-server, WebFlux and MVC end-to-end testing>>.
 It provides a fluent API for assertions, unlike `TestRestTemplate`.

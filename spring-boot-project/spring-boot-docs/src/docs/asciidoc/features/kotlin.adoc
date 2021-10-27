@@ -6,14 +6,14 @@ Spring Boot provides Kotlin support by leveraging the support in other Spring pr
 See the {spring-framework-docs}/languages.html#kotlin[Spring Framework Kotlin support documentation] for more information.
 
 The easiest way to start with Spring Boot and Kotlin is to follow https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial].
-You can create new Kotlin projects via https://start.spring.io/#!language=kotlin[start.spring.io].
+You can create new Kotlin projects by using https://start.spring.io/#!language=kotlin[start.spring.io].
 Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Slack] or ask a question with the `spring` and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow] if you need support.
 
 
 
 [[features.kotlin.requirements]]
 === Requirements
-Spring Boot requires at least Kotlin 1.3.x and manages a suitable Kotlin version via dependency management.
+Spring Boot requires at least Kotlin 1.3.x and manages a suitable Kotlin version through dependency management.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
 The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
 
@@ -34,7 +34,7 @@ It deals with `null` values at compile time rather than deferring the problem to
 This helps to eliminate a common source of bugs without paying the cost of wrappers like `Optional`.
 Kotlin also allows using functional constructs with nullable values as described in this https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
-Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API via tooling-friendly annotations.
+Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.
 By default, types from Java APIs used in Kotlin are recognized as {kotlin-docs}java-interop.html#null-safety-and-platform-types[platform types] for which null-checks are relaxed.
 {kotlin-docs}java-interop.html#jsr-305-support[Kotlin's support for JSR 305 annotations] combined with nullability annotations provide null-safety for the related Spring API in Kotlin.
 
@@ -96,11 +96,11 @@ Among other things, the extensions make it possible to take advantage of Kotlin 
 === Dependency management
 In order to avoid mixing different versions of Kotlin dependencies on the classpath, Spring Boot imports the Kotlin BOM.
 
-With Maven, the Kotlin version can be customized via the `kotlin.version` property and plugin management is provided for `kotlin-maven-plugin`.
+With Maven, the Kotlin version can be customized by setting the `kotlin.version` property and plugin management is provided for `kotlin-maven-plugin`.
 With Gradle, the Spring Boot plugin automatically aligns the `kotlin.version` with the version of the Kotlin plugin.
 
 Spring Boot also manages the version of Coroutines dependencies by importing the Kotlin Coroutines BOM.
-The version can be customized via the `kotlin-coroutines.version` property.
+The version can be customized by setting the `kotlin-coroutines.version` property.
 
 TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided by default if one bootstraps a Kotlin project with at least one reactive dependency on https://start.spring.io/#!language=kotlin[start.spring.io].
 
