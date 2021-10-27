@@ -209,7 +209,7 @@ The same properties are applicable for both servlet and reactive applications.
 
 Alternatively, you can define your own `JwtDecoder` bean for servlet applications or a `ReactiveJwtDecoder` for reactive applications.
 
-In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens via introspection:
+In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens through introspection:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

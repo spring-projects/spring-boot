@@ -122,7 +122,7 @@ Because this shutdown processing happens in parallel (and due to the nature of d
 
 You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
-The preStop handler can be configured via the PodSpec in the pod's configuration file as follows:
+The preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
 
 [source,yml,indent=0,subs="verbatim"]
 ----

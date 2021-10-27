@@ -425,7 +425,7 @@ You can also create your own `org.jooq.Configuration` `@Bean` if you want to tak
 === Using R2DBC
 The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.
 R2DBC's `io.r2dbc.spi.Connection` provides a standard method of working with non-blocking database connections.
-Connections are provided via a `ConnectionFactory`, similar to a `DataSource` with jdbc.
+Connections are provided by using a `ConnectionFactory`, similar to a `DataSource` with jdbc.
 
 `ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
 For example, you might declare the following section in `application.properties`:

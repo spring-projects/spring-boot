@@ -44,7 +44,7 @@ To enable overwriting existing job definitions set the configprop:spring.quartz.
 Quartz Scheduler configuration can be customized using `spring.quartz` properties and `SchedulerFactoryBeanCustomizer` beans, which allow programmatic `SchedulerFactoryBean` customization.
 Advanced Quartz configuration properties can be customized using `spring.quartz.properties.*`.
 
-NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz offers a way to configure the scheduler via `spring.quartz.properties`.
+NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz offers a way to configure the scheduler through `spring.quartz.properties`.
 If you need to customize the task executor, consider implementing `SchedulerFactoryBeanCustomizer`.
 
 Jobs can define setters to inject data map properties.

@@ -8,7 +8,7 @@ Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked w
 include::{docs-java}/features/profiles/ProductionConfiguration.java[]
 ----
 
-NOTE: If `@ConfigurationProperties` beans are registered via `@EnableConfigurationProperties` instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration` class that has the `@EnableConfigurationProperties` annotation.
+NOTE: If `@ConfigurationProperties` beans are registered through `@EnableConfigurationProperties` instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration` class that has the `@EnableConfigurationProperties` annotation.
 In the case where `@ConfigurationProperties` are scanned, `@Profile` can be specified on the `@ConfigurationProperties` class itself.
 
 You can use a configprop:spring.profiles.active[] `Environment` property to specify which profiles are active.
