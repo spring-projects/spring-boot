@@ -1,4 +1,11 @@
-* text=auto eol=lf
+* text eol=lf
 
-*.bat text eol=crlf
-*.jar binary
+*.groovy        text diff=java
+*.java          text diff=java
+*.kt            text diff=java
+
+*.bat           text eol=crlf
+
+*.gif           binary
+*.jar           binary
+*.jpg           binary
