@@ -65,7 +65,7 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 		Enum<? extends Producible<?>> result = null;
 		for (String accept : accepts) {
 			for (String mimeType : MimeTypeUtils.tokenize(accept)) {
-				result = mostRecent(result, forMimeType(values, mimeType));
+				result = mostRecent(result, forMimeType(values, MimeTypeUtils.parseMimeType(mimeType)));
 			}
 		}
 		return result;
@@ -78,14 +78,10 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 		return (candidateOrdinal > existingOrdinal) ? candidate : existing;
 	}
 
-	private Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values, String mimeType) {
-		if ("*/*".equals(mimeType)) {
+	private Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values, MimeType mimeType) {
+		if (mimeType.isWildcardType() && mimeType.isWildcardSubtype()) {
 			return getDefaultValue(values);
 		}
-		return forMimeType(values, MimeTypeUtils.parseMimeType(mimeType));
-	}
-
-	private Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values, MimeType mimeType) {
 		for (Enum<? extends Producible<?>> candidate : values) {
 			if (mimeType.isCompatibleWith(((Producible<?>) candidate).getProducedMimeType())) {
 				return candidate;
