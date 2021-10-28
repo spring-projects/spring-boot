@@ -441,7 +441,7 @@ TIP: This setup is only supported by WebFlux applications as using `WebTestClien
 NOTE: `@WebFluxTest` cannot detect routes registered through the functional web framework.
 For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
 
-NOTE: `@WebFluxTest` cannot detect custom security configuration registered through a `@Bean` of type `SecurityWebFilterChain`.
+NOTE: `@WebFluxTest` cannot detect custom security configuration registered as a `@Bean` of type `SecurityWebFilterChain`.
 To include that in your test, you will need to import the configuration that registers the bean by using `@Import` or by using `@SpringBootTest`.
 
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.

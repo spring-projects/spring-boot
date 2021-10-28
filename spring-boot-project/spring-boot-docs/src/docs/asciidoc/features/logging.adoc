@@ -11,7 +11,7 @@ TIP: There are a lot of logging frameworks available for Java.
 Do not worry if the above list seems confusing.
 Generally, you do not need to change your logging dependencies and the Spring Boot defaults work just fine.
 
-TIP: When you deploy your application to a servlet container or application server, logging performed through the Java Util Logging API is not routed into your application's logs.
+TIP: When you deploy your application to a servlet container or application server, logging performed with the Java Util Logging API is not routed into your application's logs.
 This prevents logging performed by the container or other applications that have been deployed to it from appearing in your application's logs.
 
 
