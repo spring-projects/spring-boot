@@ -2197,7 +2197,7 @@ The following rotation policy properties are supported:
 | The maximum amount of size log archives can take before being deleted.
 
 | configprop:logging.logback.rollingpolicy.max-history[]
-| The number of days to keep log archives (defaults to 7)
+| The maximum number of archive log files to keep (defaults to 7).
 |===
 
 
