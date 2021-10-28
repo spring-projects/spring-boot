@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -100,6 +101,14 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
 		};
+	}
+
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=configprops")
+				.run((context) -> assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class)
+						.doesNotHaveBean(ConfigurationPropertiesReportEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

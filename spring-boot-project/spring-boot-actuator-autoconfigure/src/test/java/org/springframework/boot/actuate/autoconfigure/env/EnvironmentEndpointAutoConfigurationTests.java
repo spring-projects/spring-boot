@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor;
+import org.springframework.boot.actuate.env.EnvironmentEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -107,6 +108,14 @@ class EnvironmentEndpointAutoConfigurationTests {
 	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
 		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
 				.get();
+	}
+
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=env")
+				.run((context) -> assertThat(context).hasSingleBean(EnvironmentEndpoint.class)
+						.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
