@@ -434,11 +434,7 @@ You can also change the interval at which metrics are sent to New Relic:
 	        step: "30s"
 ----
 
-<<<<<<< HEAD
 By default, metrics are published through REST calls, but you can also use the Java Agent API if you have it on the classpath:
-=======
-By default, metrics are published through REST calls but it is also possible to use the Java Agent API if you have it on the classpath:
->>>>>>> Replace "via" with English words
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
