@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -36,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Johannes Edmeier
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(CacheManager.class)
@@ -53,6 +54,7 @@ public class CachesEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(CachesEndpoint.class)
+	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
 	public CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint cachesEndpoint) {
 		return new CachesEndpointWebExtension(cachesEndpoint);
 	}

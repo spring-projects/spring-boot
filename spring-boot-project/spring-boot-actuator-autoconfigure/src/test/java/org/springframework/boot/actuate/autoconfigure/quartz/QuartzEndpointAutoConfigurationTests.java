@@ -20,7 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.quartz.Scheduler;
 
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
+import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,6 +72,15 @@ class QuartzEndpointAutoConfigurationTests {
 	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
 		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class).hasBean("customEndpoint"));
+	}
+
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
+				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.DEBUG))
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=quartz")
+				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class)
+						.doesNotHaveBean(QuartzEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

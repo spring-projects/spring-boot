@@ -19,7 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint;
+import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
 
@@ -62,6 +65,15 @@ class CachesEndpointAutoConfigurationTests {
 				.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withBean(CacheManager.class, () -> mock(CacheManager.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
+	}
+
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
+				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.DEBUG))
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=caches")
+				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class)
+						.doesNotHaveBean(CachesEndpointWebExtension.class));
 	}
 
 }

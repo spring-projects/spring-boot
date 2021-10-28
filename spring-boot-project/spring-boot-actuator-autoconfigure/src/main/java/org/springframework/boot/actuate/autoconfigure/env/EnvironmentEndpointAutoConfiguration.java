@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.env;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpointWebExtension;
@@ -34,7 +35,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnAvailableEndpoint(endpoint = EnvironmentEndpoint.class)
@@ -60,6 +61,7 @@ public class EnvironmentEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
+	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
 	public EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint environmentEndpoint) {
 		return new EnvironmentEndpointWebExtension(environmentEndpoint);
 	}

@@ -22,10 +22,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -33,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpointAutoConfiguration}.
@@ -100,6 +104,17 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
 		};
+	}
+
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner
+				.withBean(ConfigurationPropertiesReportEndpoint.class,
+						() -> mock(ConfigurationPropertiesReportEndpoint.class))
+				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.DEBUG))
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=configprops")
+				.run((context) -> assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class)
+						.doesNotHaveBean(ConfigurationPropertiesReportEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
