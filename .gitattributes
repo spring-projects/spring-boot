@@ -1,0 +1,11 @@
+* text eol=lf
+
+*.groovy        text diff=java
+*.java          text diff=java
+*.kt            text diff=java
+
+*.bat           text eol=crlf
+
+*.gif           binary
+*.jar           binary
+*.jpg           binary
