@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
@@ -43,9 +42,9 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 
 	private final File exploded;
 
-	BootRunApplicationLauncher(Application application, BuildOutput buildOutput) {
-		super(application, buildOutput);
-		this.exploded = new File(buildOutput.getRootLocation(), "run");
+	BootRunApplicationLauncher(Application application, File outputLocation) {
+		super(application, outputLocation);
+		this.exploded = new File(outputLocation, "run");
 	}
 
 	@Override

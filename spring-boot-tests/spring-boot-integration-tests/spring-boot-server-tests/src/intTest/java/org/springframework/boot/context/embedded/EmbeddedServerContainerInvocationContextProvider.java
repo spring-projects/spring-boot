@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -26,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.apache.http.impl.client.HttpClients;
@@ -109,7 +111,8 @@ class EmbeddedServerContainerInvocationContextProvider
 		if (this.launcherCache.containsKey(cacheKey)) {
 			return this.launcherCache.get(cacheKey);
 		}
-		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application, buildOutput);
+		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application,
+				new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID()));
 		this.launcherCache.put(cacheKey, launcher);
 		return launcher;
 	}
