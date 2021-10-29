@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
@@ -63,7 +64,7 @@ public class ValidationAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
 			@Lazy Validator validator, ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
 		FilteredMethodValidationPostProcessor processor = new FilteredMethodValidationPostProcessor(

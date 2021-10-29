@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -58,9 +57,8 @@ import static org.mockito.Mockito.mock;
  */
 class ValidationAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner(
-			AnnotationConfigApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
 
 	@Test
 	void validationAutoConfigurationShouldConfigureDefaultValidator() {
@@ -222,6 +220,20 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomValidatorConfiguration.class)
 				.run((context) -> assertThat(context.getBean(TestBeanPostProcessor.class).postProcessed)
 						.contains("someService"));
+	}
+
+	@Test
+	void validationIsEnabledInChildContext() {
+		this.contextRunner.run((parent) -> new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
+				.withUserConfiguration(SampleService.class).withParent(parent).run((context) -> {
+					assertThat(context.getBeansOfType(Validator.class)).hasSize(0);
+					assertThat(parent.getBeansOfType(Validator.class)).hasSize(1);
+					SampleService service = context.getBean(SampleService.class);
+					service.doSomething("Valid");
+					assertThatExceptionOfType(ConstraintViolationException.class)
+							.isThrownBy(() -> service.doSomething("KO"));
+				}));
 	}
 
 	private boolean isPrimaryBean(AssertableApplicationContext context, String beanName) {
