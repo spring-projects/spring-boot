@@ -136,10 +136,18 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void customAutoIndexCreation() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.autoIndexCreation:false").run((context) -> {
+	void defaultAutoIndexCreation() {
+		this.contextRunner.run((context) -> {
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
 			assertThat(mappingContext.isAutoIndexCreation()).isFalse();
+		});
+	}
+
+	@Test
+	void customAutoIndexCreation() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.autoIndexCreation:true").run((context) -> {
+			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+			assertThat(mappingContext.isAutoIndexCreation()).isTrue();
 		});
 	}
 
