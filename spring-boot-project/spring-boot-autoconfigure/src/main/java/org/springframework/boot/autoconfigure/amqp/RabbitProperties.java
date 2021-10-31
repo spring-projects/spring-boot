@@ -900,7 +900,7 @@ public class RabbitProperties {
 		 * Whether the container will support listeners that consume native stream
 		 * messages instead of Spring AMQP messages.
 		 */
-		boolean nativeListener;
+		private boolean nativeListener;
 
 		public boolean isNativeListener() {
 			return this.nativeListener;
