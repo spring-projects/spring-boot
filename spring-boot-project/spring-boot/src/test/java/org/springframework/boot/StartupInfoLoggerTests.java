@@ -56,8 +56,8 @@ class StartupInfoLoggerTests {
 	@Test
 	void startedFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
-		Duration timeTakeToStartup = Duration.ofMillis(10);
-		new StartupInfoLogger(getClass()).logStarted(this.log, timeTakeToStartup);
+		Duration timeTakenToStartup = Duration.ofMillis(10);
+		new StartupInfoLogger(getClass()).logStarted(this.log, timeTakenToStartup);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
 		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()
