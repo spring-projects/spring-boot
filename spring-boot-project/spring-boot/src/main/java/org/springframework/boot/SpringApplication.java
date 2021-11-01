@@ -301,11 +301,11 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			Duration timeTakeToStartup = Duration.ofNanos(System.nanoTime() - startTime);
+			Duration timeTakenToStartup = Duration.ofNanos(System.nanoTime() - startTime);
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakeToStartup);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakenToStartup);
 			}
-			listeners.started(context, timeTakeToStartup);
+			listeners.started(context, timeTakenToStartup);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
