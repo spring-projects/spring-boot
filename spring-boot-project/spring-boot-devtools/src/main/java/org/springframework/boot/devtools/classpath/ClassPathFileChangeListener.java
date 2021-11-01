@@ -18,6 +18,9 @@ package org.springframework.boot.devtools.classpath;
 
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileChangeListener;
@@ -34,6 +37,8 @@ import org.springframework.util.Assert;
  * @see ClassPathFileSystemWatcher
  */
 class ClassPathFileChangeListener implements FileChangeListener {
+
+	private static final Log logger = LogFactory.getLog(ClassPathFileChangeListener.class);
 
 	private final ApplicationEventPublisher eventPublisher;
 
@@ -60,6 +65,9 @@ class ClassPathFileChangeListener implements FileChangeListener {
 	@Override
 	public void onChange(Set<ChangedFiles> changeSet) {
 		boolean restart = isRestartRequired(changeSet);
+		if (restart && logger.isDebugEnabled()) {
+			logger.debug("Restarting dev tools due to changes in the following files: " + changeSet);
+		}
 		publishEvent(new ClassPathChangedEvent(this, changeSet, restart));
 	}
 
