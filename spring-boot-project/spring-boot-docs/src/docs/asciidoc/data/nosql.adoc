@@ -292,14 +292,14 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 ----
 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
-===== Connecting to Elasticsearch using RestHighLevelClient
-If you have `elasticsearch-rest-high-level-client` on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean.
-In addition to the properties described previously, to fine-tune the `RestHighLevelClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
+===== Connecting to Elasticsearch using RestClient
+If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
+In addition to the properties described previously, to fine-tune the `RestClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
 To take full control over its registration, define a `RestClientBuilder` bean.
 
-TIP: If your application needs access to a "Low Level" `RestClient`, you can get it by calling `client.getLowLevelClient()` on the auto-configured `RestHighLevelClient`.
+NOTE: If you have `elasticsearch-rest-high-level-client` on the classpath a `RestHighLevelClient` bean will be exposed as well
 
-Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestHighLevelClient` bean.
+Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestClient` bean.
 You can further tune how `Sniffer` is configured, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
