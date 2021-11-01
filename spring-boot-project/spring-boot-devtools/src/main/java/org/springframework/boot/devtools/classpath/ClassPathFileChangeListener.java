@@ -65,7 +65,7 @@ class ClassPathFileChangeListener implements FileChangeListener {
 	@Override
 	public void onChange(Set<ChangedFiles> changeSet) {
 		boolean restart = isRestartRequired(changeSet);
-		if (logger.isDebugEnabled()) {
+		if (restart && logger.isDebugEnabled()) {
 			logger.debug("Restarting dev tools due to changes in the following files: " + changeSet);
 		}
 		publishEvent(new ClassPathChangedEvent(this, changeSet, restart));
