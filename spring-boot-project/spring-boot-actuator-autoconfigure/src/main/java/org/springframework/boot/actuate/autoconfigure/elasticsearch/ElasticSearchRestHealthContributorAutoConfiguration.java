@@ -44,13 +44,12 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
 @ConditionalOnBean(org.elasticsearch.client.RestHighLevelClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
-public class ElasticSearchRestHealthContributorAutoConfiguration extends
-		CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, org.elasticsearch.client.RestHighLevelClient> {
+public class ElasticSearchRestHealthContributorAutoConfiguration
+		extends CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
-	public HealthContributor elasticsearchHealthContributor(
-			Map<String, org.elasticsearch.client.RestHighLevelClient> clients) {
+	public HealthContributor elasticsearchHealthContributor(Map<String, RestClient> clients) {
 		return createContributor(clients);
 	}
 

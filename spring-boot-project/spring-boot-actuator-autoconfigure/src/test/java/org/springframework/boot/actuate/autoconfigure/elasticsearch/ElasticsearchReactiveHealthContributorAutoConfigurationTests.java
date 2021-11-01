@@ -50,6 +50,7 @@ class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(ElasticSearchRestHealthContributorAutoConfiguration.class))
