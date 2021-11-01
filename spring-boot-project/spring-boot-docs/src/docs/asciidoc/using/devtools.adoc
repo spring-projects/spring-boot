@@ -54,7 +54,7 @@ For example, Thymeleaf offers the configprop:spring.thymeleaf.cache[] property.
 Rather than needing to set these properties manually, the `spring-boot-devtools` module automatically applies sensible development-time configuration.
 
 Because you need more information about web requests while developing Spring MVC and Spring WebFlux applications, developer tools suggests you to enable `DEBUG` logging for the `web` logging group.
-This will give you information about the incoming request, which handler is processing it, the response outcome, etc.
+This will give you information about the incoming request, which handler is processing it, the response outcome, and other details.
 If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
 
 NOTE: If you do not want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
