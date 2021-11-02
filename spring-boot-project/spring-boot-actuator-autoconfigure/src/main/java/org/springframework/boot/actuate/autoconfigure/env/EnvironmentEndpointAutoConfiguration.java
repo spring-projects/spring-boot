@@ -35,7 +35,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 2.6.0
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnAvailableEndpoint(endpoint = EnvironmentEndpoint.class)

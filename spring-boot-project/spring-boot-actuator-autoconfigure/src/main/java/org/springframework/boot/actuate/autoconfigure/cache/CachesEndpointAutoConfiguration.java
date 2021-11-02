@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Johannes Edmeier
  * @author Stephane Nicoll
- * @since 2.6.0
+ * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(CacheManager.class)

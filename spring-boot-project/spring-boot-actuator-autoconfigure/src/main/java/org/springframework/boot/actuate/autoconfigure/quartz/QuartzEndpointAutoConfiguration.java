@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @since 2.6.0
+ * @since 2.5.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Scheduler.class)

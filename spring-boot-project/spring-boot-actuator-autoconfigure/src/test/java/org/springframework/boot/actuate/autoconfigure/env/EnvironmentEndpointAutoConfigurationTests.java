@@ -27,8 +27,6 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDe
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -114,7 +112,7 @@ class EnvironmentEndpointAutoConfigurationTests {
 
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
-		this.contextRunner.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.DEBUG))
+		this.contextRunner
 				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=env")
 				.run((context) -> assertThat(context).hasSingleBean(EnvironmentEndpoint.class)
 						.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
