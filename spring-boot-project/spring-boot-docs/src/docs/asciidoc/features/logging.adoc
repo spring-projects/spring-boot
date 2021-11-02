@@ -11,7 +11,7 @@ TIP: There are a lot of logging frameworks available for Java.
 Do not worry if the above list seems confusing.
 Generally, you do not need to change your logging dependencies and the Spring Boot defaults work just fine.
 
-TIP: When you deploy your application to a servlet container or application server, logging performed via the Java Util Logging API is not routed into your application's logs.
+TIP: When you deploy your application to a servlet container or application server, logging performed with the Java Util Logging API is not routed into your application's logs.
 This prevents logging performed by the container or other applications that have been deployed to it from appearing in your application's logs.
 
 
@@ -182,7 +182,7 @@ The following rotation policy properties are supported:
 | The maximum amount of size log archives can take before being deleted.
 
 | configprop:logging.logback.rollingpolicy.max-history[]
-| The number of days to keep log archives (defaults to 7)
+| The maximum number of archive log files to keep (defaults to 7).
 |===
 
 
@@ -288,7 +288,7 @@ The value should be the fully qualified class name of a `LoggingSystem` implemen
 You can also disable Spring Boot's logging configuration entirely by using a value of `none`.
 
 NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is not possible to control logging from `@PropertySources` in Spring `@Configuration` files.
-The only way to change the logging system or disable it entirely is via System properties.
+The only way to change the logging system or disable it entirely is through System properties.
 
 Depending on your logging system, the following files are loaded:
 
