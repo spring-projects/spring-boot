@@ -280,7 +280,7 @@ Spring Boot now provides a configuration property to choose and opt in the new s
 	      matching-strategy: "path-pattern-parser"
 ----
 
-For more details on why you should consider this new implementation, please check out the
+For more details on why you should consider this new implementation, see the
 https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[dedicated blog post].
 
 NOTE: `PathPatternParser` is an optimized implementation but restricts usage of
@@ -666,5 +666,3 @@ JSPs are not supported when using an executable jar.
 
 * Creating a custom `error.jsp` page does not override the default view for <<web#web.servlet.spring-mvc.error-handling,error handling>>.
   <<web#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
-
-
