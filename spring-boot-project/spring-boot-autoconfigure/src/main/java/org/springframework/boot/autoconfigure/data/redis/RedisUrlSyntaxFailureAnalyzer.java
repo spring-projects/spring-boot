@@ -46,7 +46,7 @@ class RedisUrlSyntaxFailureAnalyzer extends AbstractFailureAnalyzer<RedisUrlSynt
 			}
 			if (!"redis".equals(uri.getScheme()) && !"rediss".equals(uri.getScheme())) {
 				return new FailureAnalysis(getUnsupportedSchemeDescription(cause.getUrl(), uri.getScheme()),
-						"Use the scheme 'redis://` for insecure or `rediss://` for secure Redis standalone configuration.",
+						"Use the scheme 'redis://' for insecure or 'rediss://' for secure Redis standalone configuration.",
 						cause);
 			}
 		}

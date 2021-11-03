@@ -79,6 +79,18 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 				.run(withWebTestClient(this::testResponse, "local.server.port"));
 	}
 
+	@Test
+	void groupsAreNotConfiguredWhenHealthEndpointIsNotExposed() {
+		this.runner
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.web.exposure.exclude=health",
+						"management.server.port=0", "management.endpoint.health.group.live.include=diskSpace",
+						"management.endpoint.health.group.live.additional-path=server:healthz",
+						"management.endpoint.health.group.live.show-components=always")
+				.withInitializer(new ConditionEvaluationReportLoggingListener())
+				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
+						.exchange().expectStatus().isNotFound(), "local.server.port"));
+	}
+
 	private void testResponse(WebTestClient client) {
 		client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectBody()
 				.jsonPath("status").isEqualTo("UP").jsonPath("components.diskSpace").exists();

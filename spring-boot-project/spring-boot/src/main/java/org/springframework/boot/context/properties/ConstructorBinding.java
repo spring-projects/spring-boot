@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,14 @@ import java.lang.annotation.Target;
  * Annotation that can be used to indicate that configuration properties should be bound
  * using constructor arguments rather than by calling setters. Can be added at the type
  * level (if there is an unambiguous constructor) or on the actual constructor to use.
+ * <p>
+ * Note: To use constructor binding the class must be enabled using
+ * {@link EnableConfigurationProperties @EnableConfigurationProperties} or configuration
+ * property scanning. Constructor binding cannot be used with beans that are created by
+ * the regular Spring mechanisms (e.g.
+ * {@link org.springframework.stereotype.Component @Component} beans, beans created via
+ * {@link org.springframework.context.annotation.Bean @Bean} methods or beans loaded using
+ * {@link org.springframework.context.annotation.Import @Import}).
  *
  * @author Phillip Webb
  * @since 2.2.0

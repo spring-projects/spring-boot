@@ -284,7 +284,7 @@ When you do so, auto-configured customizers are still applied on your custom fac
 
 [[howto.webserver.add-servlet-filter-listener]]
 === Add a Servlet, Filter, or Listener to an Application
-In a servlet stack application, i.e. with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
+In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
 
 * <<howto#howto.webserver.add-servlet-filter-listener.spring-bean>>
 * <<howto#howto.webserver.add-servlet-filter-listener.using-scanning>>
@@ -469,7 +469,7 @@ include::{docs-java}/howto/webserver/usetomcatlegacycookieprocessor/MyLegacyCook
 === Enable Tomcat's MBean Registry
 Embedded Tomcat's MBean registry is disabled by default.
 This minimizes Tomcat's memory footprint.
-If you want to use Tomcat's MBeans, for example so that they can be used to expose metrics via Micrometer, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
+If you want to use Tomcat's MBeans, for example so that they can be used by Micrometer to expose metrics, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

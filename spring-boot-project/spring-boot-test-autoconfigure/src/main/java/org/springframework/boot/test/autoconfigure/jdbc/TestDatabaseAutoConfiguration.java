@@ -72,12 +72,12 @@ public class TestDatabaseAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY",
 			matchIfMissing = true)
-	public static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor() {
+	static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor() {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor();
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class EmbeddedDataSourceBeanFactoryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+	static class EmbeddedDataSourceBeanFactoryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 		private static final Log logger = LogFactory.getLog(EmbeddedDataSourceBeanFactoryPostProcessor.class);
 
@@ -133,8 +133,7 @@ public class TestDatabaseAutoConfiguration {
 
 	}
 
-	private static class EmbeddedDataSourceFactoryBean
-			implements FactoryBean<DataSource>, EnvironmentAware, InitializingBean {
+	static class EmbeddedDataSourceFactoryBean implements FactoryBean<DataSource>, EnvironmentAware, InitializingBean {
 
 		private EmbeddedDataSourceFactory factory;
 
@@ -167,7 +166,7 @@ public class TestDatabaseAutoConfiguration {
 
 	}
 
-	private static class EmbeddedDataSourceFactory {
+	static class EmbeddedDataSourceFactory {
 
 		private final Environment environment;
 

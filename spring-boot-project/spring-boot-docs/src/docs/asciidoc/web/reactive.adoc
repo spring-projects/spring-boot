@@ -12,19 +12,19 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyRestController.java[]
+include::{docs-java}/web/reactive/webflux/MyRestController.java[]
 ----
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyRoutingConfiguration.java[]
+include::{docs-java}/web/reactive/webflux/MyRoutingConfiguration.java[]
 ----
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyUserHandler.java[]
+include::{docs-java}/web/reactive/webflux/MyUserHandler.java[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -43,12 +43,12 @@ You can still enforce your choice by setting the chosen application type to `Spr
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyRoutingConfiguration.java[]
+include::{docs-java}/web/reactive/webflux/MyRoutingConfiguration.java[]
 ----
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyUserHandler.java[]
+include::{docs-java}/web/reactive/webflux/MyUserHandler.java[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -90,7 +90,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/httpcodecs/MyCodecsConfiguration.java[]
+include::{docs-java}/web/reactive/webflux/httpcodecs/MyCodecsConfiguration.java[]
 ----
 
 You can also leverage <<web#web.servlet.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
@@ -164,7 +164,7 @@ Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provid
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyErrorWebExceptionHandler.java[]
+include::{docs-java}/web/reactive/webflux/errorhandling/MyErrorWebExceptionHandler.java[]
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
@@ -174,7 +174,7 @@ Applications can ensure that such exceptions are recorded with the request metri
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyExceptionHandlingController.java[]
+include::{docs-java}/web/reactive/webflux/errorhandling/MyExceptionHandlingController.java[]
 ----
 
 

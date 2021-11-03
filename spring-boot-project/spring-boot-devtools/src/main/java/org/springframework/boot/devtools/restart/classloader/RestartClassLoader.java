@@ -42,8 +42,6 @@ import org.springframework.util.Assert;
  */
 public class RestartClassLoader extends URLClassLoader implements SmartClassLoader {
 
-	private final Log logger;
-
 	private final ClassLoaderFileRepository updatedFiles;
 
 	/**
@@ -73,14 +71,16 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 * URLs were created.
 	 * @param urls the urls managed by the classloader
 	 * @param logger the logger used for messages
+	 * @deprecated since 2.4.11 for removal in 2.7.0 in favor of
+	 * {@link #RestartClassLoader(ClassLoader, URL[], ClassLoaderFileRepository)}
 	 */
+	@Deprecated
 	public RestartClassLoader(ClassLoader parent, URL[] urls, ClassLoaderFileRepository updatedFiles, Log logger) {
 		super(urls, parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
 		Assert.notNull(logger, "Logger must not be null");
 		this.updatedFiles = updatedFiles;
-		this.logger = logger;
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created RestartClassLoader " + toString());
 		}
@@ -185,14 +185,6 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		catch (MalformedURLException ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Finalized classloader " + toString());
-		}
-		super.finalize();
 	}
 
 	@Override

@@ -140,10 +140,10 @@ public class IntegrationAutoConfiguration {
 				return new CronTrigger(poller.getCron());
 			}
 			if (poller.getFixedDelay() != null) {
-				return createPeriodicTrigger(poller.getFixedDelay(), poller.getInitialDelay(), true);
+				return createPeriodicTrigger(poller.getFixedDelay(), poller.getInitialDelay(), false);
 			}
 			if (poller.getFixedRate() != null) {
-				return createPeriodicTrigger(poller.getFixedRate(), poller.getInitialDelay(), false);
+				return createPeriodicTrigger(poller.getFixedRate(), poller.getInitialDelay(), true);
 			}
 			return null;
 		}
@@ -209,7 +209,8 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		@EnableIntegrationManagement
+		@EnableIntegrationManagement(
+				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}

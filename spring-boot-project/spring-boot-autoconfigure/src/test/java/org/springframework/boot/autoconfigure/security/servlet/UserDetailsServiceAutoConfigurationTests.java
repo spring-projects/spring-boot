@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
@@ -81,6 +82,12 @@ class UserDetailsServiceAutoConfigurationTests {
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(manager.authenticate(token)).isNotNull();
 		});
+	}
+
+	@Test
+	void defaultUserNotCreatedIfAuthenticationManagerResolverBeanPresent(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestAuthenticationManagerResolverConfiguration.class)
+				.run((context) -> assertThat(output).doesNotContain("Using generated security password: "));
 	}
 
 	@Test
@@ -262,6 +269,16 @@ class UserDetailsServiceAutoConfigurationTests {
 							.withUser("user").password("{noop}user").roles("USER");
 				}
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestAuthenticationManagerResolverConfiguration {
+
+		@Bean
+		AuthenticationManagerResolver<?> authenticationManagerResolver() {
+			return mock(AuthenticationManagerResolver.class);
 		}
 
 	}

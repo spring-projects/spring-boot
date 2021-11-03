@@ -228,6 +228,8 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
+		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
+		securityVersion = securityVersion.substring(0, securityVersion.lastIndexOf("."))
 		attributes	"embedded-mongo-version": versionConstraints["de.flapdoodle.embed:de.flapdoodle.embed.mongo"],
 					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
@@ -247,7 +249,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
-					"spring-security-version": versionConstraints["org.springframework.security:spring-security-core"],
+					"spring-security-version": securityVersion,
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]
 	}
 }

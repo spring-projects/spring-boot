@@ -682,7 +682,7 @@ public class TestRestTemplate {
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables, if any.
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestEntity the entity (headers and/or body) to write to the request, may
 	 * be {@code null}
 	 * @param responseType the type of the return value
@@ -703,7 +703,7 @@ public class TestRestTemplate {
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables, if any.
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestEntity the entity (headers and/or body) to write to the request, may
 	 * be {@code null}
 	 * @param responseType the type of the return value
@@ -722,7 +722,7 @@ public class TestRestTemplate {
 	 * Execute the HTTP method to the given URI template, writing the given request entity
 	 * to the request, and returns the response as {@link ResponseEntity}.
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestEntity the entity (headers and/or body) to write to the request, may
 	 * be {@code null}
 	 * @param responseType the type of the return value
@@ -745,7 +745,7 @@ public class TestRestTemplate {
 	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestEntity the entity (headers and/or body) to write to the request, may
 	 * be {@code null}
 	 * @param responseType the type of the return value
@@ -770,7 +770,7 @@ public class TestRestTemplate {
 	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestEntity the entity (headers and/or body) to write to the request, may
 	 * be {@code null}
 	 * @param responseType the type of the return value
@@ -795,7 +795,7 @@ public class TestRestTemplate {
 	 * ResponseEntity&lt;List&lt;MyBean&gt;&gt; response = template.exchange(&quot;https://example.com&quot;,HttpMethod.GET, null, myBean);
 	 * </pre>
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestEntity the entity (headers and/or body) to write to the request, may
 	 * be {@code null}
 	 * @param responseType the type of the return value
@@ -854,7 +854,7 @@ public class TestRestTemplate {
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables, if any.
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestCallback object that prepares the request
 	 * @param responseExtractor object that extracts the return value from the response
 	 * @param urlVariables the variables to expand in the template
@@ -875,7 +875,7 @@ public class TestRestTemplate {
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables map.
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestCallback object that prepares the request
 	 * @param responseExtractor object that extracts the return value from the response
 	 * @param urlVariables the variables to expand in the template
@@ -894,7 +894,7 @@ public class TestRestTemplate {
 	 * Execute the HTTP method to the given URL, preparing the request with the
 	 * {@link RequestCallback}, and reading the response with a {@link ResponseExtractor}.
 	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
+	 * @param method the HTTP method (GET, POST, etc.)
 	 * @param requestCallback object that prepares the request
 	 * @param responseExtractor object that extracts the return value from the response
 	 * @param <T> the type of the return value

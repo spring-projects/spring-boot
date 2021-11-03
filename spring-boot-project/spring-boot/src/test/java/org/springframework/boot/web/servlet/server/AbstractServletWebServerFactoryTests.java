@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -73,6 +74,7 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.SessionCookieConfig;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -105,6 +107,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InOrder;
 
 import org.springframework.boot.system.ApplicationHome;
@@ -114,6 +118,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.Http2;
@@ -808,6 +813,57 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(sessionCookieConfig.isHttpOnly()).isTrue();
 		assertThat(sessionCookieConfig.isSecure()).isTrue();
 		assertThat(sessionCookieConfig.getMaxAge()).isEqualTo(60);
+	}
+
+	@ParameterizedTest
+	@EnumSource(SameSite.class)
+	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookies(SameSite sameSite) throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setSameSite(sameSite);
+		factory.addInitializers(new ServletRegistrationBean<>(new CookieServlet(false), "/"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		ClientHttpResponse clientResponse = getClientResponse(getLocalUrl("/"));
+		List<String> setCookieHeaders = clientResponse.getHeaders().get("Set-Cookie");
+		assertThat(setCookieHeaders).satisfiesExactlyInAnyOrder(
+				(header) -> assertThat(header).contains("JSESSIONID").contains("SameSite=" + sameSite.attributeValue()),
+				(header) -> assertThat(header).contains("test=test").doesNotContain("SameSite"));
+	}
+
+	@ParameterizedTest
+	@EnumSource(SameSite.class)
+	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookiesWhenUsingCustomName(SameSite sameSite)
+			throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setName("THESESSION");
+		factory.getSession().getCookie().setSameSite(sameSite);
+		factory.addInitializers(new ServletRegistrationBean<>(new CookieServlet(false), "/"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		ClientHttpResponse clientResponse = getClientResponse(getLocalUrl("/"));
+		List<String> setCookieHeaders = clientResponse.getHeaders().get("Set-Cookie");
+		assertThat(setCookieHeaders).satisfiesExactlyInAnyOrder(
+				(header) -> assertThat(header).contains("THESESSION").contains("SameSite=" + sameSite.attributeValue()),
+				(header) -> assertThat(header).contains("test=test").doesNotContain("SameSite"));
+	}
+
+	@Test
+	void cookieSameSiteSuppliers() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.addCookieSameSiteSuppliers(CookieSameSiteSupplier.ofLax().whenHasName("relaxed"));
+		factory.addCookieSameSiteSuppliers(CookieSameSiteSupplier.ofNone().whenHasName("empty"));
+		factory.addCookieSameSiteSuppliers(CookieSameSiteSupplier.ofStrict().whenHasName("controlled"));
+		factory.addInitializers(new ServletRegistrationBean<>(new CookieServlet(true), "/"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		ClientHttpResponse clientResponse = getClientResponse(getLocalUrl("/"));
+		List<String> setCookieHeaders = clientResponse.getHeaders().get("Set-Cookie");
+		assertThat(setCookieHeaders).satisfiesExactlyInAnyOrder(
+				(header) -> assertThat(header).contains("JSESSIONID").doesNotContain("SameSite"),
+				(header) -> assertThat(header).contains("test=test").doesNotContain("SameSite"),
+				(header) -> assertThat(header).contains("relaxed=test").contains("SameSite=Lax"),
+				(header) -> assertThat(header).contains("empty=test").contains("SameSite=None"),
+				(header) -> assertThat(header).contains("controlled=test").contains("SameSite=Strict"));
 	}
 
 	@Test
@@ -1606,6 +1662,27 @@ public abstract class AbstractServletWebServerFactoryTests {
 			synchronized (this.monitor) {
 				this.block = false;
 				this.monitor.notifyAll();
+			}
+		}
+
+	}
+
+	static final class CookieServlet extends HttpServlet {
+
+		private final boolean addSupplierTestCookies;
+
+		CookieServlet(boolean addSupplierTestCookies) {
+			this.addSupplierTestCookies = addSupplierTestCookies;
+		}
+
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			req.getSession(true);
+			resp.addCookie(new Cookie("test", "test"));
+			if (this.addSupplierTestCookies) {
+				resp.addCookie(new Cookie("relaxed", "test"));
+				resp.addCookie(new Cookie("empty", "test"));
+				resp.addCookie(new Cookie("controlled", "test"));
 			}
 		}
 

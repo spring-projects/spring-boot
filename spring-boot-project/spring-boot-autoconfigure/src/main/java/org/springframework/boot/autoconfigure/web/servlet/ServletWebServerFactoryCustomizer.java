@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,13 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.WebListenerRegistrar;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.core.Ordered;
+import org.springframework.util.CollectionUtils;
 
 /**
- * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to servlet web
- * servers.
+ * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} and
+ * {@link WebListenerRegistrar WebListenerRegistrars} to servlet web servers.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
@@ -41,7 +43,9 @@ public class ServletWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	private final Iterable<WebListenerRegistrar> webListenerRegistrars;
+	private final List<WebListenerRegistrar> webListenerRegistrars;
+
+	private final List<CookieSameSiteSupplier> cookieSameSiteSuppliers;
 
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this(serverProperties, Collections.emptyList());
@@ -49,8 +53,14 @@ public class ServletWebServerFactoryCustomizer
 
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			List<WebListenerRegistrar> webListenerRegistrars) {
+		this(serverProperties, webListenerRegistrars, null);
+	}
+
+	ServletWebServerFactoryCustomizer(ServerProperties serverProperties,
+			List<WebListenerRegistrar> webListenerRegistrars, List<CookieSameSiteSupplier> cookieSameSiteSuppliers) {
 		this.serverProperties = serverProperties;
 		this.webListenerRegistrars = webListenerRegistrars;
+		this.cookieSameSiteSuppliers = cookieSameSiteSuppliers;
 	}
 
 	@Override
@@ -76,6 +86,9 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
 		for (WebListenerRegistrar registrar : this.webListenerRegistrars) {
 			registrar.register(factory);
+		}
+		if (!CollectionUtils.isEmpty(this.cookieSameSiteSuppliers)) {
+			factory.setCookieSameSiteSuppliers(this.cookieSameSiteSuppliers);
 		}
 	}
 

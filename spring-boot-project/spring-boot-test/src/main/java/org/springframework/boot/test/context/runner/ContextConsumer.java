@@ -23,9 +23,9 @@ import org.springframework.util.Assert;
  * Callback interface used to process an {@link ApplicationContext} with the ability to
  * throw a (checked) exception.
  *
+ * @param <C> the application context type
  * @author Stephane Nicoll
  * @author Andy Wilkinson
- * @param <C> the application context type
  * @since 2.0.0
  * @see AbstractApplicationContextRunner
  */

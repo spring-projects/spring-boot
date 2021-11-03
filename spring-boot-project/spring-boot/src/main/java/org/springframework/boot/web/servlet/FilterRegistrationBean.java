@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * The {@link #setFilter(Filter) Filter} must be specified before calling
  * {@link #onStartup(ServletContext)}. Registrations can be associated with
  * {@link #setUrlPatterns URL patterns} and/or servlets (either by {@link #setServletNames
- * name} or via a {@link #setServletRegistrationBeans ServletRegistrationBean}s. When no
+ * name} or via a {@link #setServletRegistrationBeans ServletRegistrationBean}s). When no
  * URL pattern or servlets are specified the filter will be associated to '/*'. The filter
  * name will be deduced if not specified.
  *

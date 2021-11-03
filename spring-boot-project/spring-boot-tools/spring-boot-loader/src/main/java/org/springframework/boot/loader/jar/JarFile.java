@@ -91,6 +91,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private volatile boolean closed;
 
+	private volatile JarFileWrapper wrapper;
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -183,6 +185,15 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		};
 	}
 
+	JarFileWrapper getWrapper() throws IOException {
+		JarFileWrapper wrapper = this.wrapper;
+		if (wrapper == null) {
+			wrapper = new JarFileWrapper(this);
+			this.wrapper = wrapper;
+		}
+		return wrapper;
+	}
+
 	@Override
 	Permission getPermission() {
 		return new FilePermission(this.rootFile.getFile().getPath(), READ_ACTION);
@@ -225,8 +236,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	/**
 	 * Return an iterator for the contained entries.
-	 * @see java.lang.Iterable#iterator()
 	 * @since 2.3.0
+	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })

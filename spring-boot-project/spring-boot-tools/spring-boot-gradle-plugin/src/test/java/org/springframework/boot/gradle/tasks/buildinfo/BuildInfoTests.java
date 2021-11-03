@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BuildInfo}.
  *
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 @ClassPathExclusions("kotlin-daemon-client-*")
 class BuildInfoTests {
@@ -49,8 +50,8 @@ class BuildInfoTests {
 	void basicExecution() {
 		Properties properties = buildInfoProperties(createTask(createProject("test")));
 		assertThat(properties).containsKey("build.time");
-		assertThat(properties).containsEntry("build.artifact", "unspecified");
-		assertThat(properties).containsEntry("build.group", "");
+		assertThat(properties).doesNotContainKey("build.artifact");
+		assertThat(properties).doesNotContainKey("build.group");
 		assertThat(properties).containsEntry("build.name", "test");
 		assertThat(properties).containsEntry("build.version", "unspecified");
 	}
@@ -60,6 +61,20 @@ class BuildInfoTests {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setArtifact("custom");
 		assertThat(buildInfoProperties(task)).containsEntry("build.artifact", "custom");
+	}
+
+	@Test
+	void artifactCanBeRemovedFromPropertiesUsingNull() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setArtifact(null);
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.artifact");
+	}
+
+	@Test
+	void artifactCanBeRemovedFromPropertiesUsingEmptyString() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setArtifact("");
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.artifact");
 	}
 
 	@Test
@@ -77,10 +92,38 @@ class BuildInfoTests {
 	}
 
 	@Test
+	void groupCanBeRemovedFromPropertiesUsingNull() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setGroup(null);
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.group");
+	}
+
+	@Test
+	void groupCanBeRemovedFromPropertiesUsingEmptyString() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setGroup("");
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.group");
+	}
+
+	@Test
 	void customNameIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setName("Example");
 		assertThat(buildInfoProperties(task)).containsEntry("build.name", "Example");
+	}
+
+	@Test
+	void nameCanBeRemovedFromPropertiesUsingNull() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setName(null);
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.name");
+	}
+
+	@Test
+	void nameCanBeRemovedFromPropertiesUsingEmptyString() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setName("");
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.name");
 	}
 
 	@Test
@@ -95,6 +138,20 @@ class BuildInfoTests {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setVersion("2.3.4");
 		assertThat(buildInfoProperties(task)).containsEntry("build.version", "2.3.4");
+	}
+
+	@Test
+	void versionCanBeRemovedFromPropertiesUsingNull() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setVersion(null);
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.version");
+	}
+
+	@Test
+	void versionCanBeRemovedFromPropertiesUsingEmptyString() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setVersion("");
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.version");
 	}
 
 	@Test

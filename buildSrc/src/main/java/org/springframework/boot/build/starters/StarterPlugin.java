@@ -34,6 +34,7 @@ import org.springframework.boot.build.ConventionsPlugin;
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForConflicts;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
+import org.springframework.boot.build.classpath.CheckClasspathForUnnecessaryExclusions;
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,6 +63,7 @@ public class StarterPlugin implements Plugin<Project> {
 				(artifact) -> artifact.builtBy(starterMetadata));
 		createClasspathConflictsCheck(runtimeClasspath, project);
 		createProhibitedDependenciesCheck(runtimeClasspath, project);
+		createUnnecessaryExclusionsCheck(runtimeClasspath, project);
 		configureJarManifest(project);
 	}
 
@@ -79,6 +81,14 @@ public class StarterPlugin implements Plugin<Project> {
 				CheckClasspathForProhibitedDependencies.class);
 		checkClasspathForProhibitedDependencies.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
+	}
+
+	private void createUnnecessaryExclusionsCheck(Configuration classpath, Project project) {
+		CheckClasspathForUnnecessaryExclusions checkClasspathForUnnecessaryExclusions = project.getTasks().create(
+				"check" + StringUtils.capitalize(classpath.getName() + "ForUnnecessaryExclusions"),
+				CheckClasspathForUnnecessaryExclusions.class);
+		checkClasspathForUnnecessaryExclusions.setClasspath(classpath);
+		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForUnnecessaryExclusions);
 	}
 
 	private void configureJarManifest(Project project) {

@@ -28,11 +28,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
+import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.boot.maven.CacheInfo.VolumeCacheInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -165,6 +167,22 @@ class ImageTests {
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
+	}
+
+	@Test
+	void getBuildRequestWhenHasBuildVolumeCacheUsesCache() {
+		Image image = new Image();
+		image.buildCache = new CacheInfo(new VolumeCacheInfo("build-cache-vol"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuildCache()).isEqualTo(Cache.volume("build-cache-vol"));
+	}
+
+	@Test
+	void getBuildRequestWhenHasLaunchVolumeCacheUsesCache() {
+		Image image = new Image();
+		image.launchCache = new CacheInfo(new VolumeCacheInfo("launch-cache-vol"));
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getLaunchCache()).isEqualTo(Cache.volume("launch-cache-vol"));
 	}
 
 	private Artifact createArtifact() {

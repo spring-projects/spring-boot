@@ -242,7 +242,14 @@ class RabbitPropertiesTests {
 
 	@Test
 	void ipv6Address() {
-		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]:5672");
+		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234");
+		assertThat(this.properties.determineHost()).isEqualTo("[aaaa:bbbb:cccc::d]");
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
+	}
+
+	@Test
+	void ipv6AddressDefaultPort() {
+		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]");
 		assertThat(this.properties.determineHost()).isEqualTo("[aaaa:bbbb:cccc::d]");
 		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}

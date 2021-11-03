@@ -33,9 +33,9 @@ import org.springframework.data.elasticsearch.repository.config.EnableReactiveEl
  * @author Brian Clozel
  * @author Artur Konczak
  * @author Mohsin Husen
+ * @since 1.1.0
  * @see EnableElasticsearchRepositories
  * @see EnableReactiveElasticsearchRepositories
- * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ElasticsearchRestTemplate.class })

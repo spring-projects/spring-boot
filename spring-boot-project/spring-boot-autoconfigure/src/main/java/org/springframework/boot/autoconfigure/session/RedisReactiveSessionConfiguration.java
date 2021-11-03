@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
  * Redis-backed reactive session configuration.
  *
  * @author Andy Wilkinson
+ * @author Weix Sun
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisSessionRepository.class })
@@ -47,8 +49,10 @@ class RedisReactiveSessionConfiguration {
 	static class SpringBootRedisWebSessionConfiguration extends RedisWebSessionConfiguration {
 
 		@Autowired
-		void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties) {
-			Duration timeout = sessionProperties.getTimeout();
+		void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+				ServerProperties serverProperties) {
+			Duration timeout = sessionProperties
+					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout());
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}

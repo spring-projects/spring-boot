@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class SourceOptions {
 	 * specify non-existent sources, but the default paths are allowed not to exist (the
 	 * paths are tested before use). If default paths are provided and the option set
 	 * contains no source file arguments it is not an error even if none of the default
-	 * paths exist).
+	 * paths exist.
 	 * @param optionSet the source option set
 	 * @param classLoader an optional classloader used to try and load files that are not
 	 * found in the local filesystem

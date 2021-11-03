@@ -156,7 +156,7 @@
     {
       "name": "logging.file.max-history",
       "type": "java.lang.Integer",
-      "description": "Maximum number of days archive log files are kept. Only supported with the default logback setup.",
+      "description": "Maximum number of archive log files to keep. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 7,
       "deprecation": {
@@ -194,9 +194,14 @@
     {
       "name": "logging.logback.rollingpolicy.max-history",
       "type": "java.lang.Integer",
-      "description": "Maximum number of days archive log files are kept.",
+      "description": "Maximum number of archive log files to keep.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 7
+    },
+    {
+      "name": "logging.log4j2.config.override",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Overriding configuration files used to create a composite configuration."
     },
     {
       "name": "spring.application.index",

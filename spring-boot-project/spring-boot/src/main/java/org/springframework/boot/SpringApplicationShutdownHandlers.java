@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Interface that can be used to add or remove code that should run when the JVM is
- * shutdown. Shutdown handers are similar to JVM {@link Runtime#addShutdownHook(Thread)
+ * shutdown. Shutdown handlers are similar to JVM {@link Runtime#addShutdownHook(Thread)
  * shutdown hooks} except that they run sequentially rather than concurrently.
  * <p>
  * Shutdown handlers are guaranteed to be called only after registered

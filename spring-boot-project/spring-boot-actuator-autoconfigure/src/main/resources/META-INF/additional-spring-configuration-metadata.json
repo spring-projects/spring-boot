@@ -274,6 +274,12 @@
       "defaultValue": "simple"
     },
     {
+      "name": "management.info.java.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Java info.",
+      "defaultValue": false
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",
