@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link FilteredClassLoader}.
@@ -108,6 +109,15 @@ class FilteredClassLoaderTests {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader((resourceName) -> false)) {
 			final InputStream loaded = classLoader.getResourceAsStream(TEST_RESOURCE.getPath());
 			assertThat(loaded).isNotNull();
+		}
+	}
+
+	@Test
+	void publicDefineClassWhenFilteredThrowsException() throws Exception {
+		Class<FilteredClassLoaderTests> hiddenClass = FilteredClassLoaderTests.class;
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClass)) {
+			assertThatIllegalArgumentException()
+					.isThrownBy(() -> classLoader.publicDefineClass(hiddenClass.getName(), new byte[] {}, null));
 		}
 	}
 
