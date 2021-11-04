@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
@@ -35,6 +36,13 @@ import static org.mockito.Mockito.mock;
  * @author Jonatan Ivanov
  */
 class SecurityContextChangedListenerRegistrarTest {
+
+	private final SecurityContextHolderStrategy strategy = SecurityContextHolder.getContextHolderStrategy();
+
+	@AfterEach
+	void tearDown() {
+		SecurityContextHolder.setContextHolderStrategy(this.strategy);
+	}
 
 	@Test
 	void whenASecurityContextChangedListenersIsProvidedThenAListeningSecurityContextHolderStrategyShouldBeRegistered() {

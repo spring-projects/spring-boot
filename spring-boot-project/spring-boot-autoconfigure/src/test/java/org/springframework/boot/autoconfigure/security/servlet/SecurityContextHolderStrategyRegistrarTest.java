@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +31,13 @@ import static org.mockito.Mockito.mock;
  * @author Jonatan Ivanov
  */
 class SecurityContextHolderStrategyRegistrarTest {
+
+	private final SecurityContextHolderStrategy strategy = SecurityContextHolder.getContextHolderStrategy();
+
+	@AfterEach
+	void tearDown() {
+		SecurityContextHolder.setContextHolderStrategy(this.strategy);
+	}
 
 	@Test
 	void whenSecurityContextHolderStrategyIsPresentItShouldBeRegistered() {
