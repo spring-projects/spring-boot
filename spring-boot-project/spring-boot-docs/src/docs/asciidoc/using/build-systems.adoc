@@ -24,7 +24,7 @@ We **highly** recommend that you not specify its version.
 
 [[using.build-systems.maven]]
 === Maven
-To learn about using Spring Boot with Maven, please refer to the documentation for Spring Boot's Maven plugin:
+To learn about using Spring Boot with Maven, see the documentation for Spring Boot's Maven plugin:
 
 * Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
 * {spring-boot-maven-plugin-api}[API]
@@ -33,7 +33,7 @@ To learn about using Spring Boot with Maven, please refer to the documentation f
 
 [[using.build-systems.gradle]]
 === Gradle
-To learn about using Spring Boot with Gradle, please refer to the documentation for Spring Boot's Gradle plugin:
+To learn about using Spring Boot with Gradle, see the documentation for Spring Boot's Gradle plugin:
 
 * Reference ({spring-boot-gradle-plugin-docs}[HTML] and {spring-boot-gradle-plugin-pdfdocs}[PDF])
 * {spring-boot-gradle-plugin-api}[API]

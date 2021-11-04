@@ -17,7 +17,7 @@ include::{docs-java}/howto/testing/withspringsecurity/MySecurityTests.java[]
 
 Spring Security provides comprehensive integration with Spring MVC Test and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
 
-For additional details on Spring Security's testing support, refer to Spring Security's {spring-security-docs}/servlet/test/index.html[reference documentation].
+For additional details on Spring Security's testing support, see Spring Security's {spring-security-docs}/servlet/test/index.html[reference documentation].
 
 
 
