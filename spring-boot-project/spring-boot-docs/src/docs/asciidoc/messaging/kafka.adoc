@@ -85,7 +85,7 @@ You can customize this behavior using the configprop:spring.kafka.streams.auto-s
 === Additional Kafka Properties
 The properties supported by auto configuration are shown in <<application-properties#application-properties>>.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
-Refer to the Apache Kafka documentation for details.
+See the Apache Kafka documentation for details.
 
 The first few of these properties apply to all components (producers, consumers, admins, and streams) but can be specified at the component level if you wish to use different values.
 Apache Kafka designates properties with an importance of HIGH, MEDIUM, or LOW.

@@ -91,7 +91,7 @@ In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.D
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
 These are the standard options that work regardless of <<features#data.sql.datasource.connection-pool, the actual implementation>>.
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
-Refer to the documentation of the connection pool implementation you are using for more details.
+See the documentation of the connection pool implementation you are using for more details.
 
 For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
@@ -311,7 +311,7 @@ Spring Boot will auto-configure Spring Data's JDBC repositories when the necessa
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
 If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or a `JdbcConfiguration` subclass to your application.
 
-TIP: For complete details of Spring Data JDBC, please refer to the {spring-data-jdbc-docs}[reference documentation].
+TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[reference documentation].
 
 
 

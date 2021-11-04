@@ -280,7 +280,7 @@ include::{docs-java}/howto/dataaccess/configurehibernatesecondlevelcaching/MyHib
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
 It is also possible to use separate `CacheManager` instances.
-For details, refer to {hibernate-docs}#caching-provider-jcache[the Hibernate user guide].
+For details, see {hibernate-docs}#caching-provider-jcache[the Hibernate user guide].
 
 
 
@@ -400,6 +400,6 @@ include::{docs-java}/howto/dataaccess/configureacomponentthatisusedbyjpa/Elastic
 [[howto.data-access.configure-jooq-with-multiple-datasources]]
 === Configure jOOQ with Two DataSources
 If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
-Refer to {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
+See {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
 
 TIP: In particular, `JooqExceptionTranslator` and `SpringTransactionProvider` can be reused to provide similar features to what the auto-configuration does with a single `DataSource`.

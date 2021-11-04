@@ -214,7 +214,7 @@ Which will result in the following:
 ----
 
 Your application should now be up and running on Heroku.
-For more details, refer to https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[Deploying Spring Boot Applications to Heroku].
+For more details, see https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[Deploying Spring Boot Applications to Heroku].
 
 
 
