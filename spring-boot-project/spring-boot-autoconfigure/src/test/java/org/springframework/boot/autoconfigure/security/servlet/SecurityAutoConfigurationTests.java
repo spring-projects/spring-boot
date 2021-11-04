@@ -50,6 +50,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextChangedEvent;
+import org.springframework.security.core.context.SecurityContextChangedListener;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -63,6 +69,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rob Winch
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Jonatan Ivanov
  */
 class SecurityAutoConfigurationTests {
 
@@ -224,6 +231,36 @@ class SecurityAutoConfigurationTests {
 				.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
 	}
 
+	@Test
+	void whenASecurityContextHolderStrategyIsPresentThenItShouldBeRegistered() {
+		this.contextRunner.withUserConfiguration(SecurityContextHolderStrategyIsPresentConfiguration.class)
+				.run((context) -> assertThat(SecurityContextHolder.getContextHolderStrategy())
+						.isInstanceOf(TestSecurityContextHolderStrategy.class));
+	}
+
+	@Test
+	void whenASecurityContextChangedListenerIsPresentThenItShouldBeRegistered() {
+		this.contextRunner.withUserConfiguration(SecurityContextChangedListenerIsPresentConfiguration.class)
+				.run((context) -> assertThat(SecurityContextHolder.getContextHolderStrategy())
+						.isInstanceOf(ListeningSecurityContextHolderStrategy.class));
+	}
+
+	@Test
+	void whenSecurityContextHolderStrategyAndSecurityContextChangedListenerArePresentThenTheStrategyShouldBeRegistered() {
+		this.contextRunner
+				.withUserConfiguration(SecurityContextHolderStrategyIsPresentConfiguration.class,
+						SecurityContextChangedListenerIsPresentConfiguration.class)
+				.run((context) -> assertThat(SecurityContextHolder.getContextHolderStrategy())
+						.isInstanceOf(TestSecurityContextHolderStrategy.class));
+	}
+
+	@Test
+	void whenNeitherSecurityContextHolderStrategyNorSecurityContextChangedListenerArePresentThenNothingShouldBeRegistered() {
+		this.contextRunner.run((context) -> assertThat(SecurityContextHolder.getContextHolderStrategy())
+				.isNotInstanceOf(TestSecurityContextHolderStrategy.class)
+				.isNotInstanceOf(ListeningSecurityContextHolderStrategy.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class EntityConfiguration {
@@ -312,6 +349,56 @@ class SecurityAutoConfigurationTests {
 	}
 
 	static class TargetType {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SecurityContextHolderStrategyIsPresentConfiguration {
+
+		@Bean
+		SecurityContextHolderStrategy securityContextHolderStrategy() {
+			return new TestSecurityContextHolderStrategy();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SecurityContextChangedListenerIsPresentConfiguration {
+
+		@Bean
+		SecurityContextChangedListener securityContextChangedListener() {
+			return new TestSecurityContextChangedListener();
+		}
+
+	}
+
+	static class TestSecurityContextHolderStrategy implements SecurityContextHolderStrategy {
+
+		@Override
+		public void clearContext() {
+		}
+
+		@Override
+		public SecurityContext getContext() {
+			return null;
+		}
+
+		@Override
+		public void setContext(SecurityContext context) {
+		}
+
+		@Override
+		public SecurityContext createEmptyContext() {
+			return null;
+		}
+
+	}
+
+	static class TestSecurityContextChangedListener implements SecurityContextChangedListener {
+
+		@Override
+		public void securityContextChanged(SecurityContextChangedEvent event) {
+		}
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityDataConfiguration;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.core.context.SecurityContextChangedListener;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
@@ -38,6 +40,7 @@ import org.springframework.security.core.context.SecurityContextChangedListener;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Jonatan Ivanov
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -54,9 +57,17 @@ public class SecurityAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnBean(SecurityContextHolderStrategy.class)
+	public SecurityContextHolderStrategyRegistrar securityContextHolderStrategyRegistrar(
+			SecurityContextHolderStrategy strategy) {
+		return new SecurityContextHolderStrategyRegistrar(strategy);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(SecurityContextHolderStrategy.class)
 	public SecurityContextChangedListenerRegistrar securityContextChangedListenerRegistrar(
-			List<SecurityContextChangedListener> securityContextChangedListeners) {
-		return new SecurityContextChangedListenerRegistrar(securityContextChangedListeners);
+			List<SecurityContextChangedListener> listeners) {
+		return new SecurityContextChangedListenerRegistrar(listeners);
 	}
 
 }

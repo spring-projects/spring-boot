@@ -16,27 +16,30 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.List;
-
-import org.springframework.lang.NonNull;
-import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
-import org.springframework.security.core.context.SecurityContextChangedListener;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 /**
- * Registrar for registering {@link SecurityContextChangedListener} instances.
+ * Registrar for registering {@link SecurityContextHolderStrategy} instances.
  *
  * @author Jonatan Ivanov
  * @since 2.6.0
  */
-public class SecurityContextChangedListenerRegistrar {
+public class SecurityContextHolderStrategyRegistrar implements DisposableBean {
 
-	public SecurityContextChangedListenerRegistrar(
-			@NonNull List<SecurityContextChangedListener> securityContextChangedListeners) {
-		if (!securityContextChangedListeners.isEmpty()) {
-			SecurityContextHolder.setContextHolderStrategy(new ListeningSecurityContextHolderStrategy(
-					SecurityContextHolder.getContextHolderStrategy(), securityContextChangedListeners));
+	private static final SecurityContextHolderStrategy ORIGINAL = SecurityContextHolder.getContextHolderStrategy();
+
+	public SecurityContextHolderStrategyRegistrar(@Nullable SecurityContextHolderStrategy strategy) {
+		if (strategy != null) {
+			SecurityContextHolder.setContextHolderStrategy(strategy);
 		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		SecurityContextHolder.setContextHolderStrategy(ORIGINAL);
 	}
 
 }
