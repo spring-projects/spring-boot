@@ -204,9 +204,11 @@ public class EmbeddedMongoAutoConfiguration {
 		RuntimeConfig embeddedMongoRuntimeConfig(
 				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
-			ProcessOutput processOutput = new ProcessOutput(Processors.logTo(logger, Slf4jLevel.INFO),
-					Processors.logTo(logger, Slf4jLevel.ERROR),
-					Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
+			ProcessOutput processOutput = ProcessOutput.builder()
+					.output(Processors.logTo(logger, Slf4jLevel.INFO))
+					.error(Processors.logTo(logger, Slf4jLevel.ERROR))
+					.commands(Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)))
+					.build();
 			return Defaults.runtimeConfigFor(Command.MongoD, logger).processOutput(processOutput)
 					.artifactStore(getArtifactStore(logger, downloadConfigBuilderCustomizers.orderedStream()))
 					.isDaemonProcess(false).build();
