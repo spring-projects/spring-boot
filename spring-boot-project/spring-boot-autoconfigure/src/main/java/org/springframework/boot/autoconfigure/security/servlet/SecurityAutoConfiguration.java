@@ -31,7 +31,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.core.context.ListeningSecurityContextHolderStrategy;
 import org.springframework.security.core.context.SecurityContextChangedListener;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 /**
@@ -57,17 +59,18 @@ public class SecurityAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(SecurityContextChangedListener.class)
+	public SecurityContextHolderStrategy securityContextHolderStrategy(List<SecurityContextChangedListener> listeners) {
+		return new ListeningSecurityContextHolderStrategy(SecurityContextHolder.getContextHolderStrategy(), listeners);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(SecurityContextHolderStrategy.class)
 	public SecurityContextHolderStrategyRegistrar securityContextHolderStrategyRegistrar(
 			SecurityContextHolderStrategy strategy) {
 		return new SecurityContextHolderStrategyRegistrar(strategy);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(SecurityContextHolderStrategy.class)
-	public SecurityContextChangedListenerRegistrar securityContextChangedListenerRegistrar(
-			List<SecurityContextChangedListener> listeners) {
-		return new SecurityContextChangedListenerRegistrar(listeners);
 	}
 
 }
