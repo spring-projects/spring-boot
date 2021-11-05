@@ -98,11 +98,7 @@ class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	void customFeatures() {
-		EnumSet<Feature> features = EnumSet.of(Feature.TEXT_SEARCH, Feature.SYNC_DELAY, Feature.ONLY_WITH_SSL,
-				Feature.NO_HTTP_INTERFACE_ARG);
-		if (isWindows()) {
-			features.add(Feature.ONLY_WINDOWS_2008_SERVER);
-		}
+		EnumSet<Feature> features = EnumSet.of(Feature.TEXT_SEARCH, Feature.SYNC_DELAY, Feature.NO_HTTP_INTERFACE_ARG);
 		loadWithValidVersion("spring.mongodb.embedded.features="
 				+ features.stream().map(Feature::name).collect(Collectors.joining(", ")));
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
@@ -240,10 +236,6 @@ class EmbeddedMongoAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
-	}
-
-	private boolean isWindows() {
-		return File.separatorChar == '\\';
 	}
 
 	private int getPort(MongoClient client) {
