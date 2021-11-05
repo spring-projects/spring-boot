@@ -106,13 +106,6 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void testBadEncoding() {
-		// Bad encoding just means the messages are ignored
-		this.contextRunner.withPropertyValues("spring.messages.encoding:rubbish")
-				.run((context) -> assertThat(context.getMessage("foo", null, "blah", Locale.UK)).isEqualTo("blah"));
-	}
-
-	@Test
 	@Disabled("Expected to fail per gh-1075")
 	void testMessageSourceFromPropertySourceAnnotation() {
 		this.contextRunner.withUserConfiguration(Config.class).run(
