@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.function.Predicate;
 
+import org.springframework.core.SmartClassLoader;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -37,7 +39,7 @@ import org.springframework.core.io.ClassPathResource;
  * @author Roy Jacobs
  * @since 2.0.0
  */
-public class FilteredClassLoader extends URLClassLoader {
+public class FilteredClassLoader extends URLClassLoader implements SmartClassLoader {
 
 	private final Collection<Predicate<String>> classesFilters;
 
@@ -127,6 +129,16 @@ public class FilteredClassLoader extends URLClassLoader {
 			}
 		}
 		return super.getResourceAsStream(name);
+	}
+
+	@Override
+	public Class<?> publicDefineClass(String name, byte[] b, ProtectionDomain protectionDomain) {
+		for (Predicate<String> filter : this.classesFilters) {
+			if (filter.test(name)) {
+				throw new IllegalArgumentException(String.format("Defining class with name %s is not supported", name));
+			}
+		}
+		return defineClass(name, b, 0, b.length, protectionDomain);
 	}
 
 	/**
