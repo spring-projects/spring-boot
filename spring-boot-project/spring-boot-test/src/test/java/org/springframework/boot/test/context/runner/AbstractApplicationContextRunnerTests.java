@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
