@@ -105,31 +105,37 @@ class ImportsContextCustomizerTests {
 	}
 
 	@Metadata(d2 = "foo")
+	@Import(TestImportSelector.class)
 	static class FirstKotlinAnnotatedTestClass {
 
 	}
 
 	@Metadata(d2 = "bar")
+	@Import(TestImportSelector.class)
 	static class SecondKotlinAnnotatedTestClass {
 
 	}
 
 	@SpecMetadata(filename = "foo", line = 10)
+	@Import(TestImportSelector.class)
 	static class FirstSpockFrameworkAnnotatedTestClass {
 
 	}
 
 	@SpecMetadata(filename = "bar", line = 10)
+	@Import(TestImportSelector.class)
 	static class SecondSpockFrameworkAnnotatedTestClass {
 
 	}
 
 	@Stepwise
+	@Import(TestImportSelector.class)
 	static class FirstSpockLangAnnotatedTestClass {
 
 	}
 
 	@Issue("1234")
+	@Import(TestImportSelector.class)
 	static class SecondSpockLangAnnotatedTestClass {
 
 	}
