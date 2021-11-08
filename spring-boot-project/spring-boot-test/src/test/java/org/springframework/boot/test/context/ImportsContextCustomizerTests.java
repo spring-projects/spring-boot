@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import kotlin.Metadata;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.spockframework.runtime.model.SpecMetadata;
 import spock.lang.Issue;
@@ -70,6 +72,12 @@ class ImportsContextCustomizerTests {
 	void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
 				.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForTestClassesWithDifferentJunitAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstJunitAnnotatedTestClass.class))
+				.isEqualTo(new ImportsContextCustomizer(SecondJunitAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -123,6 +131,18 @@ class ImportsContextCustomizerTests {
 
 	@Issue("1234")
 	static class SecondSpockLangAnnotatedTestClass {
+
+	}
+
+	@Nested
+	@Import(TestImportSelector.class)
+	static class FirstJunitAnnotatedTestClass {
+
+	}
+
+	@Tag("test")
+	@Import(TestImportSelector.class)
+	static class SecondJunitAnnotatedTestClass {
 
 	}
 
