@@ -171,7 +171,7 @@ Spring Data can create implementations of `@Repository` interfaces of various fl
 Spring Boot handles all of that for you, as long as those `@Repositories` are included in the same package (or a sub-package) of your `@EnableAutoConfiguration` class.
 
 For many applications, all you need is to put the right Spring Data dependencies on your classpath.
-There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, and other starters.
+There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, and various other starters for supported technologies.
 To get started, create some repository interfaces to handle your `@Entity` objects.
 
 Spring Boot tries to guess the location of your `@Repository` definitions, based on the `@EnableAutoConfiguration` it finds.

@@ -233,7 +233,8 @@ As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any ad
 
 [[howto.webserver.configure]]
 === Configure the Web Server
-Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` (or `application.yml`, or environment, or other settings). See "`<<howto#howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
+Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` or `application.yml` file.
+See "`<<howto#howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
 See the list of <<application-properties#application-properties>>.
 
