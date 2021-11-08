@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,6 +222,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			filters.add(new JavaLangAnnotationFilter());
 			filters.add(new KotlinAnnotationFilter());
 			filters.add(new SpockAnnotationFilter());
+			filters.add(new JunitAnnotationFilter());
 			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
 		}
 
@@ -380,6 +381,18 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		public boolean isIgnored(Annotation annotation) {
 			return annotation.annotationType().getName().startsWith("org.spockframework.")
 					|| annotation.annotationType().getName().startsWith("spock.");
+		}
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for JUnit annotations.
+	 */
+	private static final class JunitAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("org.junit.");
 		}
 
 	}
