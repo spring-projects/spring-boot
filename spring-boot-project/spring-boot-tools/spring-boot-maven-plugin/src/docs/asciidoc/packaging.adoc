@@ -187,7 +187,7 @@ The blocks are evaluated in the order that they are defined, from top to bottom.
 Any content not claimed by an earlier block remains available for subsequent blocks to consider.
 
 The `<into>` block claims content using nested `<include>` and `<exclude>` elements.
-The `<application>` section uses Ant-style patch matching for include/exclude expressions.
+The `<application>` section uses Ant-style path matching for include/exclude expressions.
 The `<dependencies>` section uses `group:artifact[:version]` patterns.
 It also provides `<includeModuleDependencies />` and `<excludeModuleDependencies />` elements that can be used to include or exclude local module dependencies.
 
