@@ -223,6 +223,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			filters.add(new JavaLangAnnotationFilter());
 			filters.add(new KotlinAnnotationFilter());
 			filters.add(new SpockAnnotationFilter());
+			filters.add(new JunitAnnotationFilter());
 			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
 		}
 
@@ -381,6 +382,18 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		public boolean isIgnored(Annotation annotation) {
 			return annotation.annotationType().getName().startsWith("org.spockframework.")
 					|| annotation.annotationType().getName().startsWith("spock.");
+		}
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for JUnit annotations.
+	 */
+	private static final class JunitAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("org.junit.");
 		}
 
 	}
