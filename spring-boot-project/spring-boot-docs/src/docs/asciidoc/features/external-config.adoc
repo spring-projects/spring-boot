@@ -725,7 +725,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
-You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
+You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
