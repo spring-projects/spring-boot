@@ -128,7 +128,7 @@ include::../gradle/managing-dependencies/configure-bom-with-plugins.gradle.kts[t
 
 [[managing-dependencies.dependency-management-plugin.learning-more]]
 === Learning More
-To learn more about the capabilities of the dependency management plugin, please se its {dependency-management-plugin-documentation}[documentation].
+To learn more about the capabilities of the dependency management plugin, please see its {dependency-management-plugin-documentation}[documentation].
 
 
 
