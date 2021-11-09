@@ -241,14 +241,17 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty)
 					.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
 			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getKerberosConfigFile())
+					.to((configFile) -> configuration.kerberosConfigFile(configFile));
+			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getOracleKerberosCacheFile())
 					.to((cacheFile) -> configuration.oracleKerberosCacheFile(cacheFile));
 			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getOracleKerberosConfigFile())
-					.to((configFile) -> configuration.oracleKerberosConfigFile(configFile));
-			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getOutputQueryResults())
 					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getSqlServerKerberosLoginFile()).to((sqlServerKerberosLoginFile) -> configuration
+					.sqlServerKerberosLoginFile(sqlServerKerberosLoginFile));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getSkipExecutingMigrations())
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
