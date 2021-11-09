@@ -515,7 +515,7 @@ When using an embedded servlet container, you can register servlets, filters, an
 [[web.servlet.embedded-container.servlets-filters-listeners.beans]]
 ===== Registering Servlets, Filters, and Listeners as Spring Beans
 Any `Servlet`, `Filter`, or servlet `*Listener` instance that is a Spring bean is registered with the embedded container.
-This can be particularly convenient if you want to refer to a value from your `application.properties` during configuration.
+This can be particularly convenient if you want to see a value from your `application.properties` during configuration.
 
 By default, if the context contains only a single Servlet, it is mapped to `/`.
 In the case of multiple servlet beans, the bean name is used as a path prefix.

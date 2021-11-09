@@ -80,7 +80,7 @@ The Javadoc on fields is used to populate the `description` attribute. For insta
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
 The annotation processor applies a number of heuristics to extract the default value from the source model.
-Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
+Default values have to be provided statically. In particular, do not see a constant defined in another class.
 Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
 
 For cases where the default value could not be detected, <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,manual metadata>> should be provided.
@@ -135,7 +135,7 @@ Spring Boot's configuration file handling is quite flexible, and it is often the
 You may also need to tune some attributes of an existing key.
 To support such cases and let you provide custom "hints", the annotation processor automatically merges items from `META-INF/additional-spring-configuration-metadata.json` into the main metadata file.
 
-If you refer to a property that has been detected automatically, the description, default value, and deprecation information are overridden, if specified.
+If you see a property that has been detected automatically, the description, default value, and deprecation information are overridden, if specified.
 If the manual property declaration is not identified in the current module, it is added as a new property.
 
 The format of the `additional-spring-configuration-metadata.json` file is exactly the same as the regular `spring-configuration-metadata.json`.

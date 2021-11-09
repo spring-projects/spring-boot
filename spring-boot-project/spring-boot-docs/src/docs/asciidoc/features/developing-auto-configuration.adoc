@@ -69,7 +69,7 @@ These annotations include:
 [[features.developing-auto-configuration.condition-annotations.class-conditions]]
 ==== Class Conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let `@Configuration` classes be included based on the presence or absence of specific classes.
-Due to the fact that annotation metadata is parsed by using https://asm.ow2.io/[ASM], you can use the `value` attribute to refer to the real class, even though that class might not actually appear on the running application classpath.
+Due to the fact that annotation metadata is parsed by using https://asm.ow2.io/[ASM], you can use the `value` attribute to see the real class, even though that class might not actually appear on the running application classpath.
 You can also use the `name` attribute if you prefer to specify the class name by using a `String` value.
 
 This mechanism does not apply the same way to `@Bean` methods where typically the return type is the target of the condition: before the condition on the method applies, the JVM will have loaded the class and potentially processed method references which will fail if the class is not present.

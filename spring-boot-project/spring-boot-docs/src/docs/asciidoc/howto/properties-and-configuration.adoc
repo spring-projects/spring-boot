@@ -14,7 +14,7 @@ This is possible in both Maven and Gradle.
 [[howto.properties-and-configuration.expand-properties.maven]]
 ==== Automatic Property Expansion Using Maven
 You can automatically expand properties from the Maven project by using resource filtering.
-If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
+If you use the `spring-boot-starter-parent`, you can then see your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----
@@ -76,7 +76,7 @@ You can automatically expand properties from the Gradle project by configuring t
 	}
 ----
 
-You can then refer to your Gradle project's properties by using placeholders, as shown in the following example:
+You can then see your Gradle project's properties by using placeholders, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----

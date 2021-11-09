@@ -122,7 +122,7 @@ For example, to look for `myproject.properties` and `myproject.yaml` files you c
 	$ java -jar myproject.jar --spring.config.name=myproject
 ----
 
-You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
+You can also see an explicit location by using the configprop:spring.config.location[] environment property.
 This properties accepts a comma-separated list of one or more locations to check.
 
 The following example shows how to specify two distinct files:
@@ -1205,7 +1205,7 @@ The following table summarizes the features that are supported by `@Configuratio
 |===
 
 [[features.external-config.typesafe-configuration-properties.vs-value-annotation.note]]
-NOTE: If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
+NOTE: If you do want to use `@Value`, we recommend that you see property names using their canonical form (kebab-case using only lowercase letters).
 This will allow Spring Boot to use the same logic as it does when relaxed binding `@ConfigurationProperties`.
 For example, `@Value("{demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
 If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.

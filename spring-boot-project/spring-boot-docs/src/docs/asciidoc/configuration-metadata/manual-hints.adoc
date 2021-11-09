@@ -14,7 +14,7 @@ In the <<configuration-metadata#configuration-metadata.format,initial example sh
 Each value may have a description as well.
 
 If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
-The special `.keys` and `.values` suffixes must refer to the keys and the values, respectively.
+The special `.keys` and `.values` suffixes must see the keys and the values, respectively.
 
 Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
 
@@ -195,7 +195,7 @@ The following types can be used:
 * `java.nio.charset.Charset`: Supports auto-completion of charset/encoding values (such as `UTF-8`)
 * `java.util.Locale`: auto-completion of locales (such as `en_US`)
 * `org.springframework.util.MimeType`: Supports auto-completion of content type values (such as `text/plain`)
-* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource abstraction to refer to a file on the filesystem or on the classpath (such as `classpath:/sample.properties`)
+* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource abstraction to see a file on the filesystem or on the classpath (such as `classpath:/sample.properties`)
 
 TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE about it.
 

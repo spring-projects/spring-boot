@@ -299,7 +299,7 @@ This allows Mockito to mock and spy on `final` methods.
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 
-TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
+TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that see parameters by name, your application must be compiled with `-parameters`.
 This ensures that the parameter names are available to the caching infrastructure once the bean has been spied upon.
 
 TIP: When you are using `@SpyBean` to spy on a bean that is proxied by Spring, you may need to remove Spring's proxy in some situations, for example when setting expectations using `given` or `when`.
