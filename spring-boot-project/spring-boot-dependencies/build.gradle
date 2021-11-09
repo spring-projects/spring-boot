@@ -124,7 +124,7 @@ bom {
 			]
 		}
 	}
-	library("Awaitility", "4.1.0") {
+	library("Awaitility", "4.1.1") {
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
