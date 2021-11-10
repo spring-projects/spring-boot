@@ -41,6 +41,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link TaskExecutorMetricsAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class TaskExecutorMetricsAutoConfigurationTests {
 
@@ -53,8 +54,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement()
-							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("application"));
+					assertThat(meters).singleElement().satisfies(
+							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("applicationTaskExecutor"));
 				});
 	}
 
@@ -64,8 +65,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				.withBean("customName", ThreadPoolTaskExecutor.class, ThreadPoolTaskExecutor::new).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).map((meter) -> meter.getId().getTag("name")).containsExactlyInAnyOrder("first",
-							"customName");
+					assertThat(meters).map((meter) -> meter.getId().getTag("name"))
+							.containsExactlyInAnyOrder("firstTaskExecutor", "customName");
 				});
 	}
 
@@ -77,8 +78,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				.withBean("customName", ThreadPoolTaskExecutor.class, () -> unavailableTaskExecutor).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement()
-							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("first"));
+					assertThat(meters).singleElement().satisfies(
+							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("firstTaskExecutor"));
 				});
 	}
 
@@ -87,8 +88,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.metrics.enable.executor=false")
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("executor.completed").tags("name", "application").functionCounter())
-							.isNull();
+					assertThat(registry.find("executor.completed").tags("name", "applicationTaskExecutor")
+							.functionCounter()).isNull();
 				});
 	}
 
@@ -99,7 +100,7 @@ class TaskExecutorMetricsAutoConfigurationTests {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
 					assertThat(meters).singleElement()
-							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("application"));
+							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("taskScheduler"));
 				});
 	}
 
@@ -109,8 +110,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				.withBean("customName", ThreadPoolTaskScheduler.class, ThreadPoolTaskScheduler::new).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).map((meter) -> meter.getId().getTag("name")).containsExactlyInAnyOrder("first",
-							"customName");
+					assertThat(meters).map((meter) -> meter.getId().getTag("name"))
+							.containsExactlyInAnyOrder("firstTaskScheduler", "customName");
 				});
 	}
 
@@ -122,8 +123,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				.withBean("customName", ThreadPoolTaskScheduler.class, () -> unavailableTaskExecutor).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement()
-							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("first"));
+					assertThat(meters).singleElement().satisfies(
+							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("firstTaskScheduler"));
 				});
 	}
 
@@ -133,7 +134,7 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
 				.withUserConfiguration(SchedulingTestConfiguration.class).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("executor.completed").tags("name", "application").functionCounter())
+					assertThat(registry.find("executor.completed").tags("name", "taskScheduler").functionCounter())
 							.isNull();
 				});
 	}
