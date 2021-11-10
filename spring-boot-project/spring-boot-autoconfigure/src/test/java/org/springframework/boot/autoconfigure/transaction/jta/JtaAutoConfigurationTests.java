@@ -21,12 +21,18 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.TemporaryQueue;
 import javax.jms.XAConnection;
 import javax.jms.XAConnectionFactory;
 import javax.jms.XASession;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
@@ -38,7 +44,19 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.osjava.sj.loader.JndiLoader;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -53,6 +71,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.transaction.jta.UserTransactionAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -80,6 +99,31 @@ class JtaAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+
+	}
+
+	@ParameterizedTest
+	@ExtendWith(JndiExtension.class)
+	@MethodSource("transactionManagerJndiEntries")
+	void transactionManagerFromJndi(JndiEntry jndiEntry, InitialContext initialContext) throws NamingException {
+		jndiEntry.register(initialContext);
+		this.context = new AnnotationConfigApplicationContext(JtaAutoConfiguration.class);
+		JtaTransactionManager transactionManager = this.context.getBean(JtaTransactionManager.class);
+		if (jndiEntry.value instanceof UserTransaction) {
+			assertThat(transactionManager.getUserTransaction()).isEqualTo(jndiEntry.value);
+			assertThat(transactionManager.getTransactionManager()).isNull();
+		}
+		else {
+			assertThat(transactionManager.getUserTransaction()).isInstanceOf(UserTransactionAdapter.class);
+			assertThat(transactionManager.getTransactionManager()).isEqualTo(jndiEntry.value);
+		}
+	}
+
+	static List<Arguments> transactionManagerJndiEntries() {
+		return Arrays.asList(Arguments.of(new JndiEntry("java:comp/UserTransaction", UserTransaction.class)),
+				Arguments.of(new JndiEntry("java:appserver/TransactionManager", TransactionManager.class)),
+				Arguments.of(new JndiEntry("java:pm/TransactionManager", TransactionManager.class)),
+				Arguments.of(new JndiEntry("java:/TransactionManager", TransactionManager.class)));
 	}
 
 	@Test
@@ -288,6 +332,81 @@ class JtaAutoConfigurationTests {
 		DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
+		}
+
+	}
+
+	private static final class JndiEntry {
+
+		private final String name;
+
+		private final Class<?> type;
+
+		private final Object value;
+
+		private JndiEntry(String name, Class<?> type) {
+			this.name = name;
+			this.type = type;
+			this.value = mock(type);
+		}
+
+		private void register(InitialContext initialContext) throws NamingException {
+			String[] components = this.name.split("/");
+			String subcontextName = components[0];
+			String entryName = components[1];
+			Context javaComp = initialContext.createSubcontext(subcontextName);
+			JndiLoader loader = new JndiLoader(initialContext.getEnvironment());
+			Properties properties = new Properties();
+			properties.setProperty(entryName + "/type", this.type.getName());
+			properties.put(entryName + "/valueToConvert", this.value);
+			loader.load(properties, javaComp);
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
+
+	}
+
+	private static final class JndiExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
+
+		@Override
+		public void beforeEach(ExtensionContext context) throws Exception {
+			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
+			context.getStore(namespace).getOrComputeIfAbsent(InitialContext.class, (k) -> createInitialContext(),
+					InitialContext.class);
+		}
+
+		private InitialContext createInitialContext() {
+			try {
+				return new InitialContext();
+			}
+			catch (Exception ex) {
+				throw new RuntimeException();
+			}
+		}
+
+		@Override
+		public void afterEach(ExtensionContext context) throws Exception {
+			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
+			InitialContext initialContext = context.getStore(namespace).remove(InitialContext.class,
+					InitialContext.class);
+			initialContext.removeFromEnvironment("org.osjava.sj.jndi.ignoreClose");
+			initialContext.close();
+		}
+
+		@Override
+		public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+				throws ParameterResolutionException {
+			return InitialContext.class.isAssignableFrom(parameterContext.getParameter().getType());
+		}
+
+		@Override
+		public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+				throws ParameterResolutionException {
+			Namespace namespace = Namespace.create(getClass(), extensionContext.getUniqueId());
+			return extensionContext.getStore(namespace).get(InitialContext.class);
 		}
 
 	}
