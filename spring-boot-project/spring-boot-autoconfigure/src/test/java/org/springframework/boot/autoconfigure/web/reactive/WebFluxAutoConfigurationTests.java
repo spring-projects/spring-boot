@@ -50,6 +50,7 @@ import org.springframework.context.i18n.LocaleContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
@@ -150,13 +151,12 @@ class WebFluxAutoConfigurationTests {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
-			assertThat(staticHandler).extracting("locationValues").asList().hasSize(4);
-			assertThat(staticHandler.getLocations()).hasSize(1);
-			assertThat(staticHandler.getLocations().get(0)).hasToString("class path resource [public/]");
+			assertThat(staticHandler.getLocations()).hasSize(4);
 			assertThat(hm.getUrlMap().get("/webjars/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap().get("/webjars/**");
-			assertThat(webjarsHandler).extracting("locationValues").asList()
-					.containsExactly("classpath:/META-INF/resources/webjars/");
+			assertThat(webjarsHandler.getLocations()).hasSize(1);
+			assertThat(webjarsHandler.getLocations().get(0))
+					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
 		});
 	}
 
