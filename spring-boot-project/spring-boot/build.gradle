@@ -22,9 +22,6 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.atomikos:transactions-jdbc")
-	optional("com.atomikos:transactions-jms")
-	optional("com.atomikos:transactions-jta")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.h2database:h2")
 	optional("com.google.code.gson:gson")

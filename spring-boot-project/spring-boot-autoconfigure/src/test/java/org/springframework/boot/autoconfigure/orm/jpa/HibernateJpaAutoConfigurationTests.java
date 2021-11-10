@@ -75,6 +75,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -214,7 +215,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void jtaDefaultPlatform() {
-		contextRunner().withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
+		contextRunner().withUserConfiguration(JtaTransactionManagerConfiguration.class)
 				.run(assertJtaPlatform(SpringJtaPlatform.class));
 	}
 
@@ -298,7 +299,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void providerDisablesAutoCommitIsNotConfiguredWithJta() {
-		contextRunner().withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
+		contextRunner().withUserConfiguration(JtaTransactionManagerConfiguration.class)
 				.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
 						"spring.datasource.hikari.auto-commit:false")
 				.run((context) -> {
@@ -674,6 +675,19 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	public static class TestH2Dialect extends H2Dialect {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JtaTransactionManagerConfiguration {
+
+		@Bean
+		JtaTransactionManager jtaTransactionManager() {
+			JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();
+			jtaTransactionManager.setUserTransaction(mock(UserTransaction.class));
+			jtaTransactionManager.setTransactionManager(mock(TransactionManager.class));
+			return jtaTransactionManager;
+		}
 
 	}
 

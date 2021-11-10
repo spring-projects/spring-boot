@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class, ActiveMQAutoConfiguration.class,
 		ArtemisAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
-@Import({ JndiJtaConfiguration.class, AtomikosJtaConfiguration.class })
+@Import(JndiJtaConfiguration.class)
 public class JtaAutoConfiguration {
 
 }

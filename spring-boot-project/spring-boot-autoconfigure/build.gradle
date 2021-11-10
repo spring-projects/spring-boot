@@ -12,8 +12,6 @@ description = "Spring Boot AutoConfigure"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.atomikos:transactions-jdbc")
-	optional("com.atomikos:transactions-jta")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -94,6 +92,7 @@ dependencies {
 	optional("org.aspectj:aspectjweaver")
 	optional("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
 	}
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
 	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {	
