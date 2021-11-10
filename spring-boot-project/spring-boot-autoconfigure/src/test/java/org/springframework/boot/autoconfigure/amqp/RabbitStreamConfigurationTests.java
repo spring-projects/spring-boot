@@ -26,6 +26,7 @@ import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
+import org.springframework.rabbit.stream.producer.ProducerCustomizer;
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
+import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,6 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Gary Russell
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 class RabbitStreamConfigurationTests {
 
@@ -149,6 +155,66 @@ class RabbitStreamConfigurationTests {
 		verify(builder).password("confidential");
 	}
 
+	@Test
+	void testDefaultRabbitStreamTemplateConfiguration() {
+		this.contextRunner
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
+					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					assertThat(streamName).isEqualTo("stream-test");
+				});
+	}
+
+	@Test
+	void testDefaultRabbitStreamTemplateConfigurationWithoutStreamName() {
+		this.contextRunner.withPropertyValues("spring.rabbitmq.listener.type:stream")
+				.run((context) -> assertThat(context).doesNotHaveBean(RabbitStreamTemplate.class));
+	}
+
+	@Test
+	void testRabbitStreamTemplateConfigurationWithCustomMessageConverter() {
+		this.contextRunner.withUserConfiguration(RabbitAutoConfigurationTests.MessageConvertersConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
+					MessageConverter messageConverter = (MessageConverter) ReflectionTestUtils.getField(streamTemplate,
+							"messageConverter");
+					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
+					assertThat(messageConverter).isSameAs(context.getBean(MessageConverter.class));
+					assertThat(streamName).isEqualTo("stream-test");
+				});
+	}
+
+	@Test
+	void testRabbitStreamTemplateConfigurationWithCustomStreamMessageConverter() {
+		this.contextRunner.withUserConfiguration(StreamMessageConverterConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
+					StreamMessageConverter messageConverter = (StreamMessageConverter) ReflectionTestUtils
+							.getField(streamTemplate, "streamConverter");
+					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
+					assertThat(messageConverter).isSameAs(context.getBean(StreamMessageConverter.class));
+					assertThat(streamName).isEqualTo("stream-test");
+				});
+	}
+
+	@Test
+	void testRabbitStreamTemplateConfigurationWithCustomProducerCustomizer() {
+		this.contextRunner.withUserConfiguration(ProducerCustomizerConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
+					ProducerCustomizer producerCustomizer = (ProducerCustomizer) ReflectionTestUtils
+							.getField(streamTemplate, "producerCustomizer");
+					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
+					assertThat(producerCustomizer).isSameAs(context.getBean(ProducerCustomizer.class));
+					assertThat(streamName).isEqualTo("stream-test");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -192,6 +258,26 @@ class RabbitStreamConfigurationTests {
 		@SuppressWarnings("unchecked")
 		RabbitListenerContainerFactory<MessageListenerContainer> rabbitListenerContainerFactory() {
 			return this.listenerContainerFactory;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class StreamMessageConverterConfiguration {
+
+		@Bean
+		StreamMessageConverter myStreamMessageConverter() {
+			return mock(StreamMessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ProducerCustomizerConfiguration {
+
+		@Bean
+		ProducerCustomizer myProducerCustomizer() {
+			return mock(ProducerCustomizer.class);
 		}
 
 	}
