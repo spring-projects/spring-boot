@@ -73,7 +73,9 @@ dependencies {
 	optional("org.aspectj:aspectjweaver")
 	optional("org.eclipse.jetty:jetty-webapp")
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
-	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl")
+	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {
+		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
+	}
 	optional("org.ehcache:ehcache")
 	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer")
@@ -153,6 +155,7 @@ dependencies {
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("commons-fileupload:commons-fileupload")
 	testImplementation("com.atomikos:transactions-jms")
+	testImplementation("com.github.h-thurow:simple-jndi")
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
