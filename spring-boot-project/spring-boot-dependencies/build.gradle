@@ -14,45 +14,6 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("ActiveMQ", "5.16.3") {
-		group("org.apache.activemq") {
-			modules = [
-				"activemq-amqp",
-				"activemq-blueprint",
-				"activemq-broker",
-				"activemq-camel",
-				"activemq-client",
-				"activemq-console" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"activemq-http",
-				"activemq-jaas",
-				"activemq-jdbc-store",
-				"activemq-jms-pool",
-				"activemq-kahadb-store",
-				"activemq-karaf",
-				"activemq-leveldb-store" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"activemq-log4j-appender",
-				"activemq-mqtt",
-				"activemq-openwire-generator",
-				"activemq-openwire-legacy",
-				"activemq-osgi",
-				"activemq-partition",
-				"activemq-pool",
-				"activemq-ra",
-				"activemq-run",
-				"activemq-runtime-config",
-				"activemq-shiro",
-				"activemq-spring" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"activemq-stomp",
-				"activemq-web"
-			]
-		}
-	}
 	library("ANTLR2", "2.7.7") {
 		prohibit("20030911") {
 			because "it is old version that used a different versioning scheme"
