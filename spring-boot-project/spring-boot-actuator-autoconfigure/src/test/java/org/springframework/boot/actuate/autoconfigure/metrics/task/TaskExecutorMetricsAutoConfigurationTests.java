@@ -21,6 +21,7 @@ import java.util.concurrent.Executor;
 
 import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.search.MeterNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -34,6 +35,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -56,6 +58,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
 					assertThat(meters).singleElement().satisfies(
 							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("applicationTaskExecutor"));
+					assertThatExceptionOfType(MeterNotFoundException.class)
+							.isThrownBy(() -> registry.get("executor").timer());
 				});
 	}
 
@@ -101,6 +105,8 @@ class TaskExecutorMetricsAutoConfigurationTests {
 					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
 					assertThat(meters).singleElement()
 							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("taskScheduler"));
+					assertThatExceptionOfType(MeterNotFoundException.class)
+							.isThrownBy(() -> registry.get("executor").timer());
 				});
 	}
 

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.task;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -66,7 +67,7 @@ public class TaskExecutorMetricsAutoConfiguration {
 
 	private void monitor(MeterRegistry registry, ThreadPoolExecutor threadPoolExecutor, String name) {
 		if (threadPoolExecutor != null) {
-			ExecutorServiceMetrics.monitor(registry, threadPoolExecutor, name);
+			new ExecutorServiceMetrics(threadPoolExecutor, name, Collections.emptyList()).bindTo(registry);
 		}
 	}
 
