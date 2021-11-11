@@ -377,11 +377,22 @@ public class SpringApplication {
 				"Environment prefix cannot be set via properties.");
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
-			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
-					deduceEnvironmentClass());
+			environment = convertEnvironment(environment);
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
+	}
+
+	/**
+	 * Convert the given {@link ConfigurableEnvironment environment} to an application
+	 * environment that doesn't attempt to resolve profile properties directly.
+	 * @param environment the environment to convert
+	 * @return the converted environment
+	 * @since 2.5.7
+	 */
+	public StandardEnvironment convertEnvironment(ConfigurableEnvironment environment) {
+		return new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
+				deduceEnvironmentClass());
 	}
 
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
