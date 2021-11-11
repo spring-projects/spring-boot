@@ -39,7 +39,6 @@ dependencies {
 	}
 	optional("javax.cache:cache-api")
 	optional("jakarta.jms:jakarta.jms-api")
-	optional("net.sf.ehcache:ehcache")
 	optional("org.apache.solr:solr-solrj") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}

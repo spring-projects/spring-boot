@@ -860,7 +860,6 @@ Additional, cache-specific metrics are also available.
 The following cache libraries are supported:
 
 * Caffeine
-* EhCache 2
 * Hazelcast
 * Any compliant JCache (JSR-107) implementation
 * Redis

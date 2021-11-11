@@ -257,13 +257,6 @@ bom {
 			]
 		}
 	}
-	library("Ehcache", "2.10.9.2") {
-		group("net.sf.ehcache") {
-			modules = [
-				"ehcache"
-			]
-		}
-	}
 	library("Ehcache3", "3.9.7") {
 		group("org.ehcache") {
 			modules = [

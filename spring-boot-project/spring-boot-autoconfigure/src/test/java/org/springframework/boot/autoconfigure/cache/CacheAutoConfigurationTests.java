@@ -32,7 +32,6 @@ import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
-import net.sf.ehcache.Status;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
@@ -833,20 +832,6 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 				cacheManager.createCache("custom1", config);
 				cacheManager.destroyCache("bar");
 			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableCaching
-	static class EhCacheCustomCacheManager {
-
-		@Bean
-		net.sf.ehcache.CacheManager customEhCacheCacheManager() {
-			net.sf.ehcache.CacheManager cacheManager = mock(net.sf.ehcache.CacheManager.class);
-			given(cacheManager.getStatus()).willReturn(Status.STATUS_ALIVE);
-			given(cacheManager.getCacheNames()).willReturn(new String[0]);
-			return cacheManager;
 		}
 
 	}

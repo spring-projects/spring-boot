@@ -16,9 +16,6 @@ def caches = [
 		"javax.cache:cache-api",
 		"org.ehcache:ehcache"
 	],
-	"ehcache2": [
-		"net.sf.ehcache:ehcache"
-	],
 	"hazelcast": [
 		"com.hazelcast:hazelcast",
 		"com.hazelcast:hazelcast-spring"

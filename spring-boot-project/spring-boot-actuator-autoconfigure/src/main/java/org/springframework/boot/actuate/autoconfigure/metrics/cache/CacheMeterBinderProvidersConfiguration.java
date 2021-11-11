@@ -19,17 +19,14 @@ package org.springframework.boot.actuate.autoconfigure.metrics.cache;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.spring.cache.HazelcastCache;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import net.sf.ehcache.Ehcache;
 
 import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.CaffeineCacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.EhCache2CacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.JCacheCacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.RedisCacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.caffeine.CaffeineCache;
-import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,17 +48,6 @@ class CacheMeterBinderProvidersConfiguration {
 		@Bean
 		CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
 			return new CaffeineCacheMeterBinderProvider();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class })
-	static class EhCache2CacheMeterBinderProviderConfiguration {
-
-		@Bean
-		EhCache2CacheMeterBinderProvider ehCache2CacheMeterBinderProvider() {
-			return new EhCache2CacheMeterBinderProvider();
 		}
 
 	}
