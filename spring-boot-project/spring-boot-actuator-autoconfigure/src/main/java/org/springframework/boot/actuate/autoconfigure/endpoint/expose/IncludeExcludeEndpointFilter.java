@@ -106,6 +106,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
 	 * {@link #IncludeExcludeEndpointFilter(Class, Environment, String, String[])}
 	 */
+	@Deprecated
 	public IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
 			DefaultIncludes defaultIncludes) {
 		this(endpointType, include, exclude, DefaultIncludes.patterns(defaultIncludes));
