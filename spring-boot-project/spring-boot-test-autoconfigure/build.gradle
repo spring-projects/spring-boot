@@ -86,12 +86,12 @@ dependencies {
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("org.apache.commons:commons-pool2")
-	testImplementation("org.apache.johnzon:johnzon-jsonb")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-el")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.aspectj:aspectjweaver")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.eclipse:yasson")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.jooq:jooq") {

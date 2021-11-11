@@ -47,7 +47,7 @@ dependencies {
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.codehaus.groovy:groovy")
 	testImplementation("org.codehaus.groovy:groovy-xml")
-	testImplementation("org.apache.johnzon:johnzon-jsonb")
+	testImplementation("org.eclipse:yasson")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.slf4j:slf4j-api")
