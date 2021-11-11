@@ -133,6 +133,13 @@ bom {
 			]
 		}
 	}
+	library("Simple JNDI", "0.23.0") {
+		group("com.github.h-thurow") {
+			modules = [
+				"simple-jndi"
+			]
+		}
+	}
 	library("Sisu", "2.6.0") {
 		group("org.sonatype.sisu") {
 			modules = [
