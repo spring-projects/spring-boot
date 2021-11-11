@@ -315,28 +315,6 @@ TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[r
 
 
 
-[[data.sql.h2-web-console]]
-=== Using H2's Web Console
-The https://www.h2database.com[H2 database] provides a https://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that Spring Boot can auto-configure for you.
-The console is auto-configured when the following conditions are met:
-
-* You are developing a servlet-based web application.
-* `com.h2database:h2` is on the classpath.
-* You are using <<using#using.devtools,Spring Boot's developer tools>>.
-
-TIP: If you are not using Spring Boot's developer tools but would still like to make use of H2's console, you can configure the configprop:spring.h2.console.enabled[] property with a value of `true`.
-
-NOTE: The H2 console is only intended for use during development, so you should take care to ensure that `spring.h2.console.enabled` is not set to `true` in production.
-
-
-
-[[data.sql.h2-web-console.custom-path]]
-==== Changing the H2 Console's Path
-By default, the console is available at `/h2-console`.
-You can customize the console's path by using the configprop:spring.h2.console.path[] property.
-
-
-
 [[data.sql.jooq]]
 === Using jOOQ
 jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
