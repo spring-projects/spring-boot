@@ -878,22 +878,6 @@ bom {
 			]
 		}
 	}
-	library("Johnzon", "1.2.15") {
-		group("org.apache.johnzon") {
-			modules = [
-				"johnzon-core",
-				"johnzon-jaxrs",
-				"johnzon-jsonb",
-				"johnzon-jsonb-extras",
-				"johnzon-jsonschema",
-				"johnzon-mapper",
-				"johnzon-websocket"
-			]
-			plugins = [
-				"johnzon-maven-plugin"
-			]
-		}
-	}
 	library("Jolokia", "1.7.1") {
 		group("org.jolokia") {
 			modules = [
