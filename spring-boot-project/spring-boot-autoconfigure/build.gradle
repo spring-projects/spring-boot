@@ -67,13 +67,11 @@ dependencies {
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.codehaus.groovy:groovy-templates")
 	optional("com.github.ben-manes.caffeine:caffeine")
-	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
 	optional("com.sendgrid:sendgrid-java") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("com.unboundid:unboundid-ldapsdk")
 	optional("com.zaxxer:HikariCP")
-	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
@@ -185,10 +183,6 @@ dependencies {
 	optional("org.springframework.amqp:spring-rabbit-stream")
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.ws:spring-ws-core")
-	optional("org.thymeleaf:thymeleaf")
-	optional("org.thymeleaf:thymeleaf-spring5")
-	optional("org.thymeleaf.extras:thymeleaf-extras-java8time")
-	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

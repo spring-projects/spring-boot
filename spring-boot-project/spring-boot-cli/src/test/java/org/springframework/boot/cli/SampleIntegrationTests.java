@@ -88,15 +88,6 @@ class SampleIntegrationTests {
 	}
 
 	@Test
-	void uiSample() throws Exception {
-		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
-		String result = this.cli.getHttpOutput();
-		assertThat(result).contains("Hello World");
-		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
-		assertThat(result).contains("container");
-	}
-
-	@Test
 	void actuatorSample() throws Exception {
 		this.cli.run("actuator.groovy");
 		assertThat(this.cli.getHttpOutput()).isEqualTo("{\"message\":\"Hello World!\"}");

@@ -1386,7 +1386,6 @@ bom {
 				"spring-boot-starter-rsocket",
 				"spring-boot-starter-security",
 				"spring-boot-starter-test",
-				"spring-boot-starter-thymeleaf",
 				"spring-boot-starter-tomcat",
 				"spring-boot-starter-undertow",
 				"spring-boot-starter-validation",
@@ -1618,42 +1617,6 @@ bom {
 		group("com.sun.mail") {
 			modules = [
 				"jakarta.mail"
-			]
-		}
-	}
-	library("Thymeleaf", "3.0.12.RELEASE") {
-		group("org.thymeleaf") {
-			modules = [
-				"thymeleaf",
-				"thymeleaf-spring5"
-			]
-		}
-	}
-	library("Thymeleaf Extras Data Attribute", "2.0.1") {
-		group("com.github.mxab.thymeleaf.extras") {
-			modules = [
-				"thymeleaf-extras-data-attribute"
-			]
-		}
-	}
-	library("Thymeleaf Extras Java8Time", "3.0.4.RELEASE") {
-		group("org.thymeleaf.extras") {
-			modules = [
-				"thymeleaf-extras-java8time"
-			]
-		}
-	}
-	library("Thymeleaf Extras SpringSecurity", "3.0.4.RELEASE") {
-		group("org.thymeleaf.extras") {
-			modules = [
-				"thymeleaf-extras-springsecurity5"
-			]
-		}
-	}
-	library("Thymeleaf Layout Dialect", "3.0.0") {
-		group("nz.net.ultraq.thymeleaf") {
-			modules = [
-				"thymeleaf-layout-dialect"
 			]
 		}
 	}

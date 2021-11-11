@@ -206,7 +206,6 @@ task aggregatedJavadoc(type: Javadoc) {
 				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
 				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
 				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
-				"https://www.thymeleaf.org/apidocs/thymeleaf/${versionConstraints["org.thymeleaf:thymeleaf"]}/"
 			] as String[]
 		}
 	}

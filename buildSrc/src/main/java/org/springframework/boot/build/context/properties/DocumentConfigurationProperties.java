@@ -189,7 +189,6 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.freemarker");
 		prefix.accept("spring.groovy");
 		prefix.accept("spring.mustache");
-		prefix.accept("spring.thymeleaf");
 		prefix.accept("spring.groovy.template.configuration", "See GroovyMarkupConfigurer");
 	}
 
