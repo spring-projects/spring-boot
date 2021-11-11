@@ -1,7 +1,7 @@
 [[features.external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
-You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+You can use a variety of external configuration sources, include Java properties, files, YAML files, environment variables, and command-line arguments.
 
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<features#features.external-config.typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
@@ -122,7 +122,7 @@ For example, to look for `myproject.properties` and `myproject.yaml` files you c
 	$ java -jar myproject.jar --spring.config.name=myproject
 ----
 
-You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
+You can also see an explicit location by using the configprop:spring.config.location[] environment property.
 This properties accepts a comma-separated list of one or more locations to check.
 
 The following example shows how to specify two distinct files:
