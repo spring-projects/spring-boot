@@ -43,7 +43,6 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 . <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
 . <<io#io.caching.provider.hazelcast,Hazelcast>>
 . <<io#io.caching.provider.infinispan,Infinispan>>
-. <<io#io.caching.provider.couchbase,Couchbase>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>
 . <<io#io.caching.provider.simple,Simple>>
@@ -137,31 +136,6 @@ If a custom `ConfigurationBuilder` bean is defined, it is used to customize the 
 NOTE: The support of Infinispan in Spring Boot is restricted to the embedded mode and is quite basic.
 If you want more options, you should use the official Infinispan Spring Boot starter instead.
 See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentation] for more details.
-
-
-
-[[io.caching.provider.couchbase]]
-==== Couchbase
-If Spring Data Couchbase is available and Couchbase is <<data#data.nosql.couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
-It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
-For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  cache:
-	    cache-names: "cache1,cache2"
-        couchbase:
-          expiration: "10m"
-----
-
-If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
-The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
-----
 
 
 

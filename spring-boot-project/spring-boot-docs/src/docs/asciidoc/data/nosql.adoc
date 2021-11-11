@@ -8,7 +8,6 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-redis}[Redis]
 * {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
 * {spring-data-cassandra}[Cassandra]
-* {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
 
 Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Solr, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
@@ -456,9 +455,7 @@ TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.
 [[data.nosql.couchbase]]
 === Couchbase
 https://www.couchbase.com/[Couchbase] is an open-source, distributed, multi-model NoSQL document-oriented database that is optimized for interactive applications.
-Spring Boot offers auto-configuration for Couchbase and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
-There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-couchbase-reactive` "`Starters`" for collecting the dependencies in a convenient way.
-
+Spring Boot offers auto-configuration for Couchbase.
 
 
 [[data.nosql.couchbase.connecting]]
@@ -493,45 +490,6 @@ For instance, the following configuration changes the timeout to use to open a n
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
 To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans can be used.
-
-
-
-[[data.nosql.couchbase.repositories]]
-==== Spring Data Couchbase Repositories
-Spring Data includes repository support for Couchbase.
-For complete details of Spring Data Couchbase, see the {spring-data-couchbase-docs}[reference documentation].
-
-You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  data:
-	    couchbase:
-	      bucket-name: "my-bucket"
-----
-
-The following examples shows how to inject a `CouchbaseTemplate` bean:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/couchbase/repositories/MyBean.java[]
-----
-
-There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
-
-* A `CouchbaseMappingContext` `@Bean` with a name of `couchbaseMappingContext`.
-* A `CustomConversions` `@Bean` with a name of `couchbaseCustomConversions`.
-* A `CouchbaseTemplate` `@Bean` with a name of `couchbaseTemplate`.
-
-To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
-For instance, you can customize the converters to use, as follows:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/couchbase/repositories/MyCouchbaseConfiguration.java[]
-----
 
 
 

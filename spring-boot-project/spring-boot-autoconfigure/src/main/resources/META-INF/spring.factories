@@ -39,10 +39,6 @@ org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfigura
 org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.cassandra.CassandraRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRepositoriesAutoConfiguration,\
