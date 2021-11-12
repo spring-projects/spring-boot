@@ -352,6 +352,13 @@ bom {
 			]
 		}
 	}
+	library("Glassfish JSTL", "1.2.6") {
+		group("org.glassfish.web") {
+			modules = [
+				"jakarta.servlet.jsp.jstl"
+			]
+		}
+	}
 	library("Groovy", "2.5.15") {
 		group("org.codehaus.groovy") {
 			imports = [
