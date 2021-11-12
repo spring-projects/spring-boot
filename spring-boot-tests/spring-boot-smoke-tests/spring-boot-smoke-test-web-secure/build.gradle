@@ -12,5 +12,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation("org.apache.httpcomponents:httpclient")
+	testImplementation("org.apache.httpcomponents:httpclient") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 }

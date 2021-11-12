@@ -31,13 +31,16 @@ dependencies {
 	implementation("org.apache.maven:maven-model")
 	implementation("org.apache.maven:maven-resolver-provider") {
 		exclude group: "com.google.guava", module: "guava"
+		exclude group: "javax.inject", module: "javax.inject"
 	}
 	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
 	implementation("org.apache.maven.resolver:maven-resolver-transport-file")
 	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
-	implementation("org.apache.maven:maven-settings-builder")
+	implementation("org.apache.maven:maven-settings-builder") {
+		exclude group: "javax.inject", module: "javax.inject"
+	}
 	implementation("org.codehaus.groovy:groovy")
 	implementation("org.slf4j:slf4j-simple")
 	implementation("org.sonatype.plexus:plexus-sec-dispatcher")

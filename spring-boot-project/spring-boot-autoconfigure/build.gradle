@@ -36,29 +36,47 @@ dependencies {
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
 	}
 	optional("io.undertow:undertow-websockets-jsr") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
+		exclude group: "org.jboss.spec.javax.websocket", module: "jboss-websocket-api_1.1_spec"
 	}
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.mail:jakarta.mail-api")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
+	optional("jakarta.transaction:jakarta.transaction-api")
 	optional("jakarta.validation:jakarta.validation-api")
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
 	optional("net.sf.ehcache:ehcache")
-	optional("org.apache.activemq:activemq-broker")
-	optional("org.apache.activemq:artemis-jms-client")
-	optional("org.apache.activemq:artemis-jms-server")
-	optional("org.apache.commons:commons-dbcp2")
+	optional("org.apache.activemq:activemq-broker") {
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-j2ee-management_1.1_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
+	}
+	optional("org.apache.activemq:artemis-jms-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
+	}
+	optional("org.apache.activemq:artemis-jms-server") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
+	}
+	optional("org.apache.commons:commons-dbcp2") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.kafka:kafka-streams")
-	optional("org.apache.solr:solr-solrj")
+	optional("org.apache.solr:solr-solrj") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat.embed:tomcat-embed-websocket")
@@ -66,20 +84,34 @@ dependencies {
 	optional("org.codehaus.groovy:groovy-templates")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
-	optional("com.sendgrid:sendgrid-java")
+	optional("com.sendgrid:sendgrid-java") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("com.unboundid:unboundid-ldapsdk")
 	optional("com.zaxxer:HikariCP")
 	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.eclipse.jetty:jetty-webapp")
+	optional("org.eclipse.jetty:jetty-webapp") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
-	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
+	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {	
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude group: "javax.websocket", module: "javax.websocket-api"
+		exclude group: "javax.websocket", module: "javax.websocket-client-api"
+		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
 	}
 	optional("org.ehcache:ehcache")
-	optional("org.elasticsearch.client:elasticsearch-rest-client")
-	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer")
-	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client")
+	optional("org.elasticsearch.client:elasticsearch-rest-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.freemarker:freemarker")
 	optional("org.glassfish.jersey.core:jersey-server")
@@ -87,16 +119,36 @@ dependencies {
 	optional("org.glassfish.jersey.containers:jersey-container-servlet")
 	optional("org.glassfish.jersey.ext:jersey-spring5")
 	optional("org.glassfish.jersey.media:jersey-media-json-jackson")
-	optional("org.hibernate:hibernate-core")
-	optional("org.hibernate:hibernate-jcache")
+	optional("org.hibernate:hibernate-core") {
+		exclude group: "javax.activation", module: "javax.activation-api"
+		exclude group: "javax.persistence", module: "javax.persistence-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+	}
+	optional("org.hibernate:hibernate-jcache") {
+		exclude group: "javax.activation", module: "javax.activation-api"
+		exclude group: "javax.persistence", module: "javax.persistence-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+	}
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.infinispan:infinispan-component-annotations")
-	optional("org.infinispan:infinispan-jcache")
-	optional("org.infinispan:infinispan-spring5-embedded")
+	optional("org.infinispan:infinispan-jcache") {
+		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+	}
+	optional("org.infinispan:infinispan-spring5-embedded")  {
+		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+	}
 	optional("org.influxdb:influxdb-java")
-	optional("org.jooq:jooq")
-	optional("org.liquibase:liquibase-core")
-	optional("org.messaginghub:pooled-jms")
+	optional("org.jooq:jooq") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+	optional("org.liquibase:liquibase-core") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+	optional("org.messaginghub:pooled-jms") {
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+	}
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.quartz-scheduler:quartz")
@@ -116,7 +168,9 @@ dependencies {
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-rest-webmvc")
-	optional("org.springframework.data:spring-data-cassandra")
+	optional("org.springframework.data:spring-data-cassandra") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "org.elasticsearch.client", module: "transport"
 	}
@@ -129,7 +183,9 @@ dependencies {
 	optional("org.springframework.hateoas:spring-hateoas")
 	optional("org.springframework.security:spring-security-acl")
 	optional("org.springframework.security:spring-security-config")
-	optional("org.springframework.security:spring-security-data")
+	optional("org.springframework.security:spring-security-data") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	optional("org.springframework.security:spring-security-oauth2-client")
 	optional("org.springframework.security:spring-security-oauth2-jose")
 	optional("org.springframework.security:spring-security-oauth2-resource-server")
@@ -139,7 +195,9 @@ dependencies {
 	optional("org.springframework.session:spring-session-core")
 	optional("org.springframework.session:spring-session-data-mongodb")
 	optional("org.springframework.session:spring-session-data-redis")
-	optional("org.springframework.session:spring-session-hazelcast")
+	optional("org.springframework.session:spring-session-hazelcast") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	} 
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.kafka:spring-kafka")
@@ -187,5 +245,6 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.yaml:snakeyaml")
 
+	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
 }
