@@ -22,7 +22,9 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
-	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
