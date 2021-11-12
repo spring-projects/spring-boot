@@ -105,6 +105,12 @@ class ConventionsPluginTests {
 			out.println("version = '1.2.3'");
 			out.println("sourceCompatibility = '1.8'");
 			out.println("description 'Test'");
+			out.println("repositories {");
+			out.println("    mavenCentral()");
+			out.println("}");
+			out.println("dependencies {");
+			out.println("    implementation(platform(\"org.junit:junit-bom:5.6.0\"))");
+			out.println("}");
 		}
 		runGradle("build");
 		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-sources.jar");
@@ -134,6 +140,12 @@ class ConventionsPluginTests {
 			out.println("version = '1.2.3'");
 			out.println("sourceCompatibility = '1.8'");
 			out.println("description 'Test'");
+			out.println("repositories {");
+			out.println("    mavenCentral()");
+			out.println("}");
+			out.println("dependencies {");
+			out.println("    implementation(platform(\"org.junit:junit-bom:5.6.0\"))");
+			out.println("}");
 		}
 		runGradle("build");
 		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-javadoc.jar");

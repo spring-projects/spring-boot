@@ -11,7 +11,9 @@ dependencies {
 	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	api("net.java.dev.jna:jna-platform")
 	api("org.apache.commons:commons-compress:1.19")
-	api("org.apache.httpcomponents:httpclient")
+	api("org.apache.httpcomponents:httpclient") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	api("org.springframework:spring-core")
 	
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

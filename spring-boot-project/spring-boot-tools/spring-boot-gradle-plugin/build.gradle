@@ -27,7 +27,9 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
-	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
+	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")

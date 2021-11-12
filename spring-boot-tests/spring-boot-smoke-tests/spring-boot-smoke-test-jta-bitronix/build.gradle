@@ -17,7 +17,10 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.apache.activemq:artemis-jms-server") {
+		exclude group: "commons-logging", module: "commons-logging"
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
 	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))

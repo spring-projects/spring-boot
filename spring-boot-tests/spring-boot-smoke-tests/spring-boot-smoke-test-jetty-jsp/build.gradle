@@ -21,9 +21,10 @@ dependencies {
 
 	providedRuntime("org.eclipse.jetty:apache-jsp") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
+		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
 
-	runtimeOnly("javax.servlet:jstl")
+	runtimeOnly("org.glassfish.web:jakarta.servlet.jsp.jstl")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))

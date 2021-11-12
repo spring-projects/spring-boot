@@ -48,9 +48,11 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.testretry.TestRetryPlugin;
 import org.gradle.testretry.TestRetryTaskExtension;
 
+import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 import org.springframework.boot.build.toolchain.ToolchainPlugin;
+import org.springframework.util.StringUtils;
 
 /**
  * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
@@ -112,6 +114,7 @@ class JavaConventions {
 			configureJarManifestConventions(project);
 			configureDependencyManagement(project);
 			configureToolchain(project);
+			configureProhibitedDependencyChecks(project);
 		});
 	}
 
@@ -237,6 +240,28 @@ class JavaConventions {
 
 	private void configureToolchain(Project project) {
 		project.getPlugins().apply(ToolchainPlugin.class);
+	}
+
+	private void configureProhibitedDependencyChecks(Project project) {
+		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+		sourceSets.all((sourceSet) -> createProhibitedDependenciesChecks(project,
+				sourceSet.getCompileClasspathConfigurationName(), sourceSet.getRuntimeClasspathConfigurationName()));
+	}
+
+	private void createProhibitedDependenciesChecks(Project project, String... configurationNames) {
+		ConfigurationContainer configurations = project.getConfigurations();
+		for (String configurationName : configurationNames) {
+			Configuration configuration = configurations.getByName(configurationName);
+			createProhibitedDependenciesCheck(configuration, project);
+		}
+	}
+
+	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
+		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks().create(
+				"check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+				CheckClasspathForProhibitedDependencies.class);
+		checkClasspathForProhibitedDependencies.setClasspath(classpath);
+		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}
 
 }
