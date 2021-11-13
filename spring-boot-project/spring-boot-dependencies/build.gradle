@@ -1288,7 +1288,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "4.3.5") {
+	library("Neo4j Java Driver", "4.3.6") {
 		group("org.neo4j.driver") {
 			modules = [
 				"neo4j-java-driver"
