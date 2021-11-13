@@ -1,5 +1,6 @@
 plugins {
 	id "java-library"
+	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.annotation-processor"
@@ -8,10 +9,14 @@ plugins {
 description = "Spring Boot AutoConfigure Annotation Processor"
 
 dependencies {
+	implementation("com.google.devtools.ksp:symbol-processing-api:1.5.31-1.0.1")
+
+	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.springframework:spring-core")
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.5")
 }
