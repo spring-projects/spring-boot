@@ -475,11 +475,11 @@ For example, the following file has two logical documents:
 	    name: "MyApp"
 	---
 	spring:
-	  application:
-	    name: "MyCloudApp"
 	  config:
 	    activate:
 	      on-cloud-platform: kubernetes
+	  application:
+	    name: "MyCloudApp"
 ----
 
 For `application.properties` files a special `#---` comment is used to mark the document splits:
