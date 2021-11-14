@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(
 		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class },
 		type = { "org.springframework.security.oauth2.jwt.JwtDecoder",
-				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector" })
+				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
+				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository" })
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
@@ -68,8 +69,6 @@ public class UserDetailsServiceAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@ConditionalOnMissingBean(
-			type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
 	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
