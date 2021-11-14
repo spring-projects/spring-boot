@@ -784,13 +784,13 @@ This style of configuration works particularly well with the `SpringApplication`
 [source,yaml,indent=0,subs="verbatim"]
 ----
 	my:
-		service:
-			remote-address: 192.168.1.1
-			security:
-				username: admin
-				roles:
-				  - USER
-				  - ADMIN
+	  service:
+	    remote-address: "192.168.1.1"
+	    security:
+	      username: "admin"
+	      roles:
+	      - USER
+	      - ADMIN
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
