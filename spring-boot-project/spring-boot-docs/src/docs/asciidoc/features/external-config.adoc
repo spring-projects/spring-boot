@@ -470,10 +470,16 @@ For example, the following file has two logical documents:
 
 [source,yaml,indent=0,subs="verbatim"]
 ----
-	spring.application.name: MyApp
+	spring:
+	  application:
+	    name: "MyApp"
 	---
-	spring.config.activate.on-cloud-platform: kubernetes
-	spring.application.name: MyCloudApp
+	spring:
+	  application:
+	    name: "MyCloudApp"
+	  config:
+	    activate:
+	      on-cloud-platform: kubernetes
 ----
 
 For `application.properties` files a special `#---` comment is used to mark the document splits:
