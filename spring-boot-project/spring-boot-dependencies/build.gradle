@@ -821,16 +821,6 @@ bom {
 			]
 		}
 	}
-	library("Jersey", "2.35") {
-		prohibit("[3.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
-		group("org.glassfish.jersey") {
-			imports = [
-				"jersey-bom"
-			]
-		}
-	}
 	library("Jetty EL", "9.0.52") {
 		prohibit("[10.0.0-M1,)") {
 			because "it requires Java 11"
@@ -1437,7 +1427,6 @@ bom {
 				"spring-boot-starter-hateoas",
 				"spring-boot-starter-integration",
 				"spring-boot-starter-jdbc",
-				"spring-boot-starter-jersey",
 				"spring-boot-starter-jetty",
 				"spring-boot-starter-jooq",
 				"spring-boot-starter-json",

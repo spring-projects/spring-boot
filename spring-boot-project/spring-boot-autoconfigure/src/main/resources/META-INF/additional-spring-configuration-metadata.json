@@ -1061,10 +1061,6 @@
       }
     },
     {
-      "name": "spring.jersey.type",
-      "defaultValue": "servlet"
-    },
-    {
       "name": "spring.jmx.default-domain",
       "type": "java.lang.String",
       "description": "JMX domain name."

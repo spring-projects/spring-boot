@@ -50,8 +50,6 @@ dependencies {
 	}
 	optional("org.elasticsearch:elasticsearch")
 	optional("org.flywaydb:flyway-core")
-	optional("org.glassfish.jersey.core:jersey-server")
-	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.liquibase:liquibase-core") {
@@ -91,7 +89,6 @@ dependencies {
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
@@ -105,6 +102,5 @@ dependencies {
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
-	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }

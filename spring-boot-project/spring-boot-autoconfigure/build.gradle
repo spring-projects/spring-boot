@@ -110,11 +110,6 @@ dependencies {
 	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.freemarker:freemarker")
-	optional("org.glassfish.jersey.core:jersey-server")
-	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
-	optional("org.glassfish.jersey.containers:jersey-container-servlet")
-	optional("org.glassfish.jersey.ext:jersey-spring5")
-	optional("org.glassfish.jersey.media:jersey-media-json-jackson")
 	optional("org.hibernate:hibernate-core") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

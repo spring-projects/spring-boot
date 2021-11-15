@@ -177,7 +177,6 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.hateoas");
 		prefix.accept("spring.http");
 		prefix.accept("spring.servlet");
-		prefix.accept("spring.jersey");
 		prefix.accept("spring.mvc");
 		prefix.accept("spring.netty");
 		prefix.accept("spring.resources");

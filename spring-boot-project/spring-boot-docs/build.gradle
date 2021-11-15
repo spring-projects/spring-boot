@@ -80,6 +80,7 @@ dependencies {
 	implementation("jakarta.jms:jakarta.jms-api")
 	implementation("jakarta.persistence:jakarta.persistence-api")
 	implementation("jakarta.servlet:jakarta.servlet-api")
+	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -94,8 +95,7 @@ dependencies {
 	}
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
-	implementation("org.glassfish.jersey.core:jersey-server")
-	implementation("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	implementation("org.codehaus.groovy:groovy")
 	implementation("org.hibernate:hibernate-jcache") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

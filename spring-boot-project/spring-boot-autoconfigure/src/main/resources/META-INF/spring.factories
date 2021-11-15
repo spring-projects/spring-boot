@@ -84,7 +84,6 @@ org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration,\
-org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration,\
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
 org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration,\
 org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration,\
