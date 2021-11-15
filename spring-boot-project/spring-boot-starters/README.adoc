@@ -101,7 +101,7 @@ do as they were designed before this was clarified.
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
 | https://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
-| https://github.com/graphql-java/graphql-spring-boot
+| https://github.com/graphql-java-kickstart/graphql-spring-boot
 
 | https://javaee.github.io/grizzly/[Grizzly]
 | https://github.com/dabla/grizzly-spring-boot-starter
