@@ -112,7 +112,8 @@ class ElasticsearchRestClientConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(RestHighLevelClient.class)
+	@ConditionalOnClass(RestHighLevelClient.class)
+	@ConditionalOnMissingBean({ RestHighLevelClient.class, RestClient.class })
 	static class RestHighLevelClientConfiguration {
 
 		@Bean

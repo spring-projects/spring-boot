@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestClientBuilder;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientBuilderConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientSnifferConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestHighLevelClientConfiguration;
@@ -38,8 +36,7 @@ import org.springframework.context.annotation.Import;
  */
 @SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(RestHighLevelClient.class)
-@ConditionalOnMissingBean(RestClient.class)
+@ConditionalOnClass(RestClientBuilder.class)
 @EnableConfigurationProperties({ ElasticsearchProperties.class, ElasticsearchRestClientProperties.class,
 		DeprecatedElasticsearchRestClientProperties.class })
 @Import({ RestClientBuilderConfiguration.class, RestHighLevelClientConfiguration.class,
