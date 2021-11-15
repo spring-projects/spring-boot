@@ -17,7 +17,6 @@
 package org.springframework.boot.testsupport.gradle.testkit;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.JavaVersion;
