@@ -109,7 +109,6 @@ dependencies {
 	}
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
-	optional("org.jolokia:jolokia-core")
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}

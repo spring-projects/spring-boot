@@ -16,11 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.function.Supplier;
 
-import org.jolokia.http.AgentServlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -159,7 +164,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 		@Override
 		public EndpointServlet get() {
-			return new EndpointServlet(AgentServlet.class);
+			return new EndpointServlet(ExampleServlet.class);
 		}
 
 	}
@@ -183,6 +188,14 @@ abstract class AbstractEndpointRequestIntegrationTests {
 				}
 
 			};
+		}
+
+	}
+
+	static class ExampleServlet extends HttpServlet {
+
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		}
 
 	}

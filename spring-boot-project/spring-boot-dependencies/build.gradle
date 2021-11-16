@@ -842,13 +842,6 @@ bom {
 			]
 		}
 	}
-	library("Jolokia", "1.7.1") {
-		group("org.jolokia") {
-			modules = [
-				"jolokia-core"
-			]
-		}
-	}
 	library("jOOQ", "3.14.15") {
 		prohibit("[3.15.0,)") {
 			because "it requires Java 11"
