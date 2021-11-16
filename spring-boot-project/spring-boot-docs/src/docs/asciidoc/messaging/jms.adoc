@@ -7,59 +7,6 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 
 
 
-[[messaging.jms.artemis]]
-=== ActiveMQ Artemis Support
-Spring Boot can auto-configure a `ConnectionFactory` when it detects that https://activemq.apache.org/components/artemis/[ActiveMQ Artemis] is available on the classpath.
-If the broker is present, an embedded broker is automatically started and configured (unless the mode property has been explicitly set).
-The supported modes are `embedded` (to make explicit that an embedded broker is required and that an error should occur if the broker is not available on the classpath) and `native` (to connect to a broker using the `netty` transport protocol).
-When the latter is configured, Spring Boot configures a `ConnectionFactory` that connects to a broker running on the local machine with the default settings.
-
-NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing ActiveMQ Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS.
-Adding `org.apache.activemq:artemis-jms-server` to your application lets you use embedded mode.
-
-ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
-For example, you might declare the following section in `application.properties`:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  artemis:
-	    mode: native
-	    broker-url: "tcp://192.168.1.210:9876"
-	    user: "admin"
-	    password: "secret"
-----
-
-When embedding the broker, you can choose if you want to enable persistence and list the destinations that should be made available.
-These can be specified as a comma-separated list to create them with the default options, or you can define bean(s) of type `org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration` or `org.apache.activemq.artemis.jms.server.config.TopicConfiguration`, for advanced queue and topic configurations, respectively.
-
-By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  jms:
-	    cache:
-	      session-cache-size: 5
-----
-
-If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  artemis:
-	    pool:
-	      enabled: true
-	      max-connections: 50
-----
-
-See {spring-boot-autoconfigure-module-code}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
-
-No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the Artemis configuration or the names provided through configuration.
-
-
-
 [[messaging.jms.jndi]]
 === Using a JNDI ConnectionFactory
 If you are running your application in an application server, Spring Boot tries to locate a JMS `ConnectionFactory` by using JNDI.

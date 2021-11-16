@@ -52,17 +52,6 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
-	optional("org.apache.activemq:artemis-jms-client") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-	}
-	optional("org.apache.activemq:artemis-jms-server") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
-	}
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -91,7 +80,7 @@ dependencies {
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
 	}
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
-	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {	
+	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 		exclude group: "javax.websocket", module: "javax.websocket-api"
@@ -193,7 +182,7 @@ dependencies {
 	optional("org.springframework.session:spring-session-data-redis")
 	optional("org.springframework.session:spring-session-hazelcast") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
-	} 
+	}
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.amqp:spring-rabbit-stream")
