@@ -853,25 +853,6 @@ Each metric is tagged by the name of the pool (you can control it with `spring.d
 
 
 
-[[actuator.metrics.supported.hibernate]]
-==== Hibernate Metrics
-If `org.hibernate:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled are instrumented with a metric named `hibernate`.
-
-Metrics are also tagged by the name of the `EntityManagerFactory`, which is derived from the bean name.
-
-To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
-You can enable that on the auto-configured `EntityManagerFactory`:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  jpa:
-	    properties:
-	      "[hibernate.generate_statistics]": true
-----
-
-
-
 [[actuator.metrics.supported.spring-data-repository]]
 ==== Spring Data Repository Metrics
 Auto-configuration enables the instrumentation of all Spring Data `Repository` method invocations.
