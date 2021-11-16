@@ -785,9 +785,9 @@ This style of configuration works particularly well with the `SpringApplication`
 ----
 	my:
 	  service:
-	    remote-address: "192.168.1.1"
+	    remote-address: 192.168.1.1
 	    security:
-	      username: "admin"
+	      username: admin
 	      roles:
 	      - USER
 	      - ADMIN
