@@ -46,10 +46,4 @@ class SecurityContextHolderStrategyRegistrarTest {
 		assertThat(SecurityContextHolder.getContextHolderStrategy()).isSameAs(strategy);
 	}
 
-	@Test
-	void whenNoSecurityContextHolderStrategyIsPresentItShouldNotFail() {
-		new SecurityContextHolderStrategyRegistrar(null);
-		assertThat(SecurityContextHolder.getContextHolderStrategy()).isNotNull();
-	}
-
 }

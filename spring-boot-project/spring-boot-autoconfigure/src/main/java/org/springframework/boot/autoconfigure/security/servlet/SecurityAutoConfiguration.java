@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -61,7 +63,9 @@ public class SecurityAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(SecurityContextChangedListener.class)
-	public SecurityContextHolderStrategy securityContextHolderStrategy(List<SecurityContextChangedListener> listeners) {
+	public SecurityContextHolderStrategy securityContextHolderStrategy(
+			ObjectProvider<SecurityContextChangedListener> listenerProvider) {
+		List<SecurityContextChangedListener> listeners = listenerProvider.orderedStream().collect(Collectors.toList());
 		return new ListeningSecurityContextHolderStrategy(SecurityContextHolder.getContextHolderStrategy(), listeners);
 	}
 

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
@@ -25,16 +24,14 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
  * Registrar for registering {@link SecurityContextHolderStrategy} instances.
  *
  * @author Jonatan Ivanov
- * @since 2.6.0
+ * @since 2.7.0
  */
 public class SecurityContextHolderStrategyRegistrar implements DisposableBean {
 
 	private static final SecurityContextHolderStrategy ORIGINAL = SecurityContextHolder.getContextHolderStrategy();
 
-	public SecurityContextHolderStrategyRegistrar(@Nullable SecurityContextHolderStrategy strategy) {
-		if (strategy != null) {
-			SecurityContextHolder.setContextHolderStrategy(strategy);
-		}
+	public SecurityContextHolderStrategyRegistrar(SecurityContextHolderStrategy strategy) {
+		SecurityContextHolder.setContextHolderStrategy(strategy);
 	}
 
 	@Override
