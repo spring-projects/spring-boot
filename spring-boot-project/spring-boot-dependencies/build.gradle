@@ -1239,16 +1239,6 @@ bom {
 			]
 		}
 	}
-	library("Pooled JMS", "1.2.2") {
-		prohibit("[2.0.0,)") {
-			because "it requires Java 11"
-		}
-		group("org.messaginghub") {
-			modules = [
-				"pooled-jms"
-			]
-		}
-	}
 	library("Postgresql", "42.3.1") {
 		group("org.postgresql") {
 			modules = [

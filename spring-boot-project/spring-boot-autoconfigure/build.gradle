@@ -126,9 +126,6 @@ dependencies {
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
-	optional("org.messaginghub:pooled-jms") {
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-	}
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.quartz-scheduler:quartz")
