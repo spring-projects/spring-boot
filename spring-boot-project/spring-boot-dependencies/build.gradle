@@ -9,7 +9,7 @@ description = "Spring Boot Dependencies"
 bom {
 	effectiveBomArtifact()
 	upgrade {
-		policy = "any"
+		policy = "same-minor-version"
 		gitHub {
 			issueLabels = ["type: dependency-upgrade"]
 		}
@@ -63,7 +63,7 @@ bom {
 			]
 		}
 	}
-	library("AppEngine SDK", "1.9.91") {
+	library("AppEngine SDK", "1.9.92") {
 		group("com.google.appengine") {
 			modules = [
 				"appengine-api-1.0-sdk"
@@ -124,7 +124,7 @@ bom {
 			]
 		}
 	}
-	library("Awaitility", "4.1.0") {
+	library("Awaitility", "4.1.1") {
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
@@ -141,7 +141,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.11.21") {
+	library("Byte Buddy", "1.11.22") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -218,7 +218,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.2.2") {
+	library("Couchbase Client", "3.2.3") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -273,7 +273,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.15.1") {
+	library("Elasticsearch", "7.15.2") {
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
@@ -309,7 +309,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "8.0.2") {
+	library("Flyway", "8.0.4") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -363,6 +363,13 @@ bom {
 			]
 		}
 	}
+	library("Glassfish JSTL", "1.2.6") {
+		group("org.glassfish.web") {
+			modules = [
+				"jakarta.servlet.jsp.jstl"
+			]
+		}
+	}
 	library("Groovy", "3.0.9") {
 		group("org.codehaus.groovy") {
 			imports = [
@@ -370,7 +377,7 @@ bom {
 			]
 		}
 	}
-	library("Gson", "2.8.8") {
+	library("Gson", "2.8.9") {
 		group("com.google.code.gson") {
 			modules = [
 				"gson"
@@ -409,7 +416,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.6.0.Final") {
+	library("Hibernate", "5.6.1.Final") {
 		prohibit("[6.0.0.Alpha2,)") {
 			because "it uses the jakarta.* namespace"
 		}
@@ -495,7 +502,7 @@ bom {
 			]
 		}
 	}
-	library("HttpClient5", "5.1") {
+	library("HttpClient5", "5.1.1") {
 		group("org.apache.httpcomponents.client5") {
 			modules = [
 				"httpclient5",
@@ -915,7 +922,7 @@ bom {
 			]
 		}
 	}
-	library("Johnzon", "1.2.14") {
+	library("Johnzon", "1.2.15") {
 		group("org.apache.johnzon") {
 			modules = [
 				"johnzon-core",
@@ -1070,7 +1077,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.2.6") {
+	library("Logback", "1.2.7") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -1219,7 +1226,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.8.0-RC1") {
+	library("Micrometer", "1.8.0") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1247,7 +1254,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.4.0-beta1") {
+	library("MongoDB", "4.4.0") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
@@ -1281,21 +1288,21 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "4.3.4") {
+	library("Neo4j Java Driver", "4.3.6") {
 		group("org.neo4j.driver") {
 			modules = [
 				"neo4j-java-driver"
 			]
 		}
 	}
-	library("Netty", "4.1.69.Final") {
+	library("Netty", "4.1.70.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.44.Final") {
+	library("Netty tcNative", "2.0.45.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
@@ -1338,7 +1345,7 @@ bom {
 			]
 		}
 	}
-	library("Postgresql", "42.3.0") {
+	library("Postgresql", "42.3.1") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -1398,7 +1405,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.12") {
+	library("Reactor Bom", "2020.0.13") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1614,7 +1621,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.0-RC1") {
+	library("Spring AMQP", "2.4.0") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1625,7 +1632,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.3") {
+	library("Spring Batch", "4.3.4-SNAPSHOT") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1635,35 +1642,35 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.1.0-RC1") {
+	library("Spring Data Bom", "2021.1.0") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.12") {
+	library("Spring Framework", "5.3.13") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.4.0-RC1") {
+	library("Spring HATEOAS", "1.4.0") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
 			]
 		}
 	}
-	library("Spring Integration", "5.5.5") {
+	library("Spring Integration", "5.5.6-SNAPSHOT") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.0-RC1") {
+	library("Spring Kafka", "2.8.0") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1701,14 +1708,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.6.0-RC1") {
+	library("Spring Security", "5.6.0") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.1.0-RC1") {
+	library("Spring Session Bom", "2021.1.0-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"

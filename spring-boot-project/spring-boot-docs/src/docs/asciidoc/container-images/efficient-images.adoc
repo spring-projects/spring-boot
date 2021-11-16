@@ -72,5 +72,5 @@ Application code is more likely to change between builds so it is isolated in a 
 
 Spring Boot also supports layering for war files with the help of a `layers.idx`.
 
-For Maven, refer to the {spring-boot-maven-plugin-docs}#repackage-layers[packaging layered jar or war section] for more details on adding a layer index to the archive.
-For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-archives[packaging layered jar or war section] of the Gradle plugin documentation.
+For Maven, see the {spring-boot-maven-plugin-docs}#repackage-layers[packaging layered jar or war section] for more details on adding a layer index to the archive.
+For Gradle, see the {spring-boot-gradle-plugin-docs}#packaging-layered-archives[packaging layered jar or war section] of the Gradle plugin documentation.

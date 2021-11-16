@@ -18,7 +18,7 @@ By default, the auto-configuration will try to configure the following (in order
 . JSON codecs with Jackson
 
 The `spring-boot-starter-rsocket` starter provides both dependencies.
-Check out the <<features#features.json.jackson,Jackson support section>> to know more about customization possibilities.
+See the <<features#features.json.jackson,Jackson support section>> to know more about customization possibilities.
 
 Developers can customize the `RSocketStrategies` component by creating beans that implement the `RSocketStrategiesCustomizer` interface.
 Note that their `@Order` is important, as it determines the order of codecs.

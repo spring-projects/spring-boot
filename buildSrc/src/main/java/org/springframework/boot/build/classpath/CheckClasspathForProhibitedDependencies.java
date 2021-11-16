@@ -70,6 +70,12 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.equals("javax.batch")) {
 			return false;
 		}
+		if (group.equals("javax.cache")) {
+			return false;
+		}
+		if (group.equals("javax.money")) {
+			return false;
+		}
 		if (group.startsWith("javax")) {
 			return true;
 		}

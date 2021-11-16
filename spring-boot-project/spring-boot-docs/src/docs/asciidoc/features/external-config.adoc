@@ -470,10 +470,16 @@ For example, the following file has two logical documents:
 
 [source,yaml,indent=0,subs="verbatim"]
 ----
-	spring.application.name: MyApp
+	spring:
+	  application:
+	    name: MyApp
 	---
-	spring.config.activate.on-cloud-platform: kubernetes
-	spring.application.name: MyCloudApp
+	spring:
+	  application:
+	    name: MyCloudApp
+	  config:
+	    activate:
+	      on-cloud-platform: kubernetes
 ----
 
 For `application.properties` files a special `#---` comment is used to mark the document splits:
@@ -482,8 +488,8 @@ For `application.properties` files a special `#---` comment is used to mark the 
 ----
 	spring.application.name=MyApp
 	#---
-	spring.config.activate.on-cloud-platform=kubernetes
 	spring.application.name=MyCloudApp
+	spring.config.activate.on-cloud-platform=kubernetes
 ----
 
 NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
@@ -675,7 +681,7 @@ The preceding POJO defines the following properties:
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
@@ -725,7 +731,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
-You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
+You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
@@ -780,13 +786,13 @@ This style of configuration works particularly well with the `SpringApplication`
 [source,yaml,indent=0,subs="verbatim"]
 ----
 	my:
-		service:
-			remote-address: 192.168.1.1
-			security:
-				username: admin
-				roles:
-				  - USER
-				  - ADMIN
+	  service:
+	    remote-address: 192.168.1.1
+	    security:
+	      username: admin
+	      roles:
+	      - USER
+	      - ADMIN
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:

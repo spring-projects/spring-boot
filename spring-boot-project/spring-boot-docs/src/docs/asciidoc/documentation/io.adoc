@@ -1,6 +1,6 @@
 [[documentation.io]]
 == IO
-If your application needs IO capabilities, check out this section:
+If your application needs IO capabilities, see one or more of the following sections:
 
 * *Caching:* <<io#io.caching, Caching support EhCache, Hazelcast, Infinispan and more>>
 * *Quartz:* <<io#io.quartz, Quartz Scheduling>>

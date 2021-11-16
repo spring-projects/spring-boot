@@ -41,6 +41,13 @@ bom {
 			]
 		}
 	}
+	library("Jakarta Inject", "1.0.5") {
+		group("jakarta.inject") {
+			modules = [
+				"jakarta.inject-api"
+			]
+		}
+	}
 	library("JLine", "2.11") {
 		prohibit("[2.12,)") {
 			because "it contains breaking changes"
@@ -130,6 +137,13 @@ bom {
 		group("org.sonatype.plexus") {
 			modules = [
 				"plexus-sec-dispatcher"
+			]
+		}
+	}
+	library("Simple JNDI", "0.23.0") {
+		group("com.github.h-thurow") {
+			modules = [
+				"simple-jndi"
 			]
 		}
 	}

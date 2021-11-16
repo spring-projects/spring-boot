@@ -38,7 +38,7 @@ The embedded broker will also be disabled if you configure the broker URL, as sh
 	    password: "secret"
 ----
 
-If you want to take full control over the embedded broker, refer to https://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html[the ActiveMQ documentation] for further information.
+If you want to take full control over the embedded broker, see https://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html[the ActiveMQ documentation] for further information.
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 

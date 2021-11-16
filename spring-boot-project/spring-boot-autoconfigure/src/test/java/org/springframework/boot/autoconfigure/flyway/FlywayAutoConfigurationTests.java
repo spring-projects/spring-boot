@@ -603,6 +603,21 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void kerberosConfigFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.kerberos-config-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("kerberosConfigFile"));
+	}
+
+	@Test
+	@Deprecated
+	void oracleKerberosConfigFileIsCorrectlyMappedToReplacementProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("kerberosConfigFile"));
+	}
+
+	@Test
 	void oracleKerberosCacheFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
@@ -610,17 +625,17 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void oracleKerberosConfigFileIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config")
-				.run(validateFlywayTeamsPropertyOnly("oracle.kerberosConfigFile"));
-	}
-
-	@Test
 	void outputQueryResultsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.output-query-results=false")
 				.run(validateFlywayTeamsPropertyOnly("outputQueryResults"));
+	}
+
+	@Test
+	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("sqlServer.kerberosLoginFile"));
 	}
 
 	@Test

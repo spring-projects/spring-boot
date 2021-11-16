@@ -171,7 +171,7 @@ Spring Data can create implementations of `@Repository` interfaces of various fl
 Spring Boot handles all of that for you, as long as those `@Repositories` are included in the same package (or a sub-package) of your `@EnableAutoConfiguration` class.
 
 For many applications, all you need is to put the right Spring Data dependencies on your classpath.
-There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, etc.
+There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, and various other starters for supported technologies.
 To get started, create some repository interfaces to handle your `@Entity` objects.
 
 Spring Boot tries to guess the location of your `@Repository` definitions, based on the `@EnableAutoConfiguration` it finds.
@@ -280,7 +280,7 @@ include::{docs-java}/howto/dataaccess/configurehibernatesecondlevelcaching/MyHib
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
 It is also possible to use separate `CacheManager` instances.
-For details, refer to {hibernate-docs}#caching-provider-jcache[the Hibernate user guide].
+For details, see {hibernate-docs}#caching-provider-jcache[the Hibernate user guide].
 
 
 
@@ -400,6 +400,6 @@ include::{docs-java}/howto/dataaccess/configureacomponentthatisusedbyjpa/Elastic
 [[howto.data-access.configure-jooq-with-multiple-datasources]]
 === Configure jOOQ with Two DataSources
 If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
-Refer to {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
+See {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
 
 TIP: In particular, `JooqExceptionTranslator` and `SpringTransactionProvider` can be reused to provide similar features to what the auto-configuration does with a single `DataSource`.

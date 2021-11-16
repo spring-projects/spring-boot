@@ -114,8 +114,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "apiExtensions", "loggers",
-				"driver");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

@@ -1,6 +1,6 @@
 [[documentation.messaging]]
 == Messaging
-If your application uses any messaging protocol, check out this section:
+If your application uses any messaging protocol, see one or more of the following sections:
 
 * *JMS:* <<messaging#messaging.jms, Auto-configuration for ActiveMQ and Artemis, Sending and Receiving messages through JMS>>
 * *AMQP:* <<messaging#messaging.amqp, Auto-configuration for RabbitMQ>>

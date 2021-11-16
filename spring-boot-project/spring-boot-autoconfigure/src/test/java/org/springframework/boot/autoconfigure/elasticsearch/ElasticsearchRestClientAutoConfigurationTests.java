@@ -55,6 +55,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Brian Clozel
  * @author Vedran Pavic
  * @author Evgeniy Cheban
+ * @author Filip Hrisafov
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 
@@ -64,14 +65,22 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureShouldOnlyCreateHighLevelRestClient() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class)
-				.hasSingleBean(RestHighLevelClient.class));
+				.hasSingleBean(RestClientBuilder.class).hasSingleBean(RestHighLevelClient.class));
+	}
+
+	@Test
+	void configureWithoutRestHighLevelClientShouldOnlyCreateRestClientBuilder() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(RestHighLevelClient.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class)
+						.doesNotHaveBean(RestHighLevelClient.class).hasSingleBean(RestClientBuilder.class));
 	}
 
 	@Test
 	void configureWhenCustomRestClientShouldBackOff() {
-		this.contextRunner.withBean("customRestClient", RestClient.class, () -> mock(RestClient.class))
+		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(RestHighLevelClient.class)
-						.hasSingleBean(RestClient.class).hasBean("customRestClient"));
+						.hasSingleBean(RestClientBuilder.class).hasSingleBean(RestClient.class)
+						.hasBean("customRestClient"));
 	}
 
 	@Test
@@ -300,6 +309,16 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		@Bean
 		RestHighLevelClient customRestHighLevelClient1(RestClientBuilder builder) {
 			return new RestHighLevelClient(builder);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomRestClientConfiguration {
+
+		@Bean
+		RestClient customRestClient(RestClientBuilder builder) {
+			return builder.build();
 		}
 
 	}
