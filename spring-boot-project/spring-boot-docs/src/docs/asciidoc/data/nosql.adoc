@@ -431,7 +431,7 @@ For more advanced driver customizations, you can register an arbitrary number of
 The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
 ====
 
-NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
+NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
 
 The following code listing shows how to inject a Cassandra bean:
 
