@@ -42,7 +42,7 @@ include::{docs-java}/howto/springmvc/writexmlrestservice/MyThing.java[]
 ----
 
 JAXB is only available out of the box with Java 8.
-If you're using a more recent Java generation, add the following dependency to your project:
+If you use a more recent Java generation, add the following dependency to your project:
 
 [source,xml,indent=0,subs="verbatim"]
 ----

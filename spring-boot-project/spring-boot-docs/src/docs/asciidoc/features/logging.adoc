@@ -357,7 +357,7 @@ To help with the customization, some other properties are transferred from the S
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
 |===
 
-If you're using Logback, the following properties are also transferred:
+If you use Logback, the following properties are also transferred:
 
 |===
 | Spring Environment | System Property | Comments

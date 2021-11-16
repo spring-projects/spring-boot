@@ -1,6 +1,6 @@
 [[documentation.web]]
 == Web
-If you're developing Spring Boot web applications, take a look at the following content:
+If you develop Spring Boot web applications, take a look at the following content:
 
 * *Servlet Web Applications:* <<web#web.servlet, Spring MVC, Jersey, Embedded Servlet Containers>>
 * *Reactive Web Applications:* <<web#web.reactive, Spring Webflux, Embedded Servlet Containers>>
