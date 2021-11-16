@@ -472,11 +472,11 @@ For example, the following file has two logical documents:
 ----
 	spring:
 	  application:
-	    name: "MyApp"
+	    name: MyApp
 	---
 	spring:
 	  application:
-	    name: "MyCloudApp"
+	    name: MyCloudApp
 	  config:
 	    activate:
 	      on-cloud-platform: kubernetes
@@ -488,8 +488,8 @@ For `application.properties` files a special `#---` comment is used to mark the 
 ----
 	spring.application.name=MyApp
 	#---
-	spring.config.activate.on-cloud-platform=kubernetes
 	spring.application.name=MyCloudApp
+	spring.config.activate.on-cloud-platform=kubernetes
 ----
 
 NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
