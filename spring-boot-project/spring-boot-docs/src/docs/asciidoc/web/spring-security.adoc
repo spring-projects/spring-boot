@@ -289,3 +289,11 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
                   entity-id: "remote-idp-entity-id2"
                   sso-url: "https://remoteidp2.sso.url"
 ----
+
+[[web.security.context-changed-listener]]
+=== Listening on Security Context Changed Events
+
+To make Spring Security more observable, you can listen for when the `SecurityContext` changes using a `SecurityContextChangedListener`.
+Spring Boot provides auto-configuration for this functionality (via `SecurityAutoConfiguration`): if you create a `SecurityContextChangedListener` bean, it will be automatically registered to Spring Security's `SecurityContextHolder`.
+
+NOTE: If you register your own `SecurityContextHolderStrategy`, you need to register your listeners on your own.
