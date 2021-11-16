@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,8 @@ class CachesEndpointAutoConfigurationTests {
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
-				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=caches")
+				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+						"management.endpoints.jmx.exposure.include=caches")
 				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class)
 						.doesNotHaveBean(CachesEndpointWebExtension.class));
 	}

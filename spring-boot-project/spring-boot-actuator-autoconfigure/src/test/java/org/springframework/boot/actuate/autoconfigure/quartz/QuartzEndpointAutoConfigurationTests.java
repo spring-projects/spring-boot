@@ -75,7 +75,8 @@ class QuartzEndpointAutoConfigurationTests {
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=quartz")
+				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+						"management.endpoints.jmx.exposure.include=quartz")
 				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class)
 						.doesNotHaveBean(QuartzEndpointWebExtension.class));
 	}

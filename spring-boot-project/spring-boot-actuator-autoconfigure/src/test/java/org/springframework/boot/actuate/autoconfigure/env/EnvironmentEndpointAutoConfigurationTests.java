@@ -94,6 +94,15 @@ class EnvironmentEndpointAutoConfigurationTests {
 				.run(validateSystemProperties("******", "******"));
 	}
 
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+						"management.endpoints.jmx.exposure.include=env")
+				.run((context) -> assertThat(context).hasSingleBean(EnvironmentEndpoint.class)
+						.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
@@ -108,14 +117,6 @@ class EnvironmentEndpointAutoConfigurationTests {
 	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
 		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
 				.get();
-	}
-
-	@Test
-	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
-		this.contextRunner
-				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=env")
-				.run((context) -> assertThat(context).hasSingleBean(EnvironmentEndpoint.class)
-						.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

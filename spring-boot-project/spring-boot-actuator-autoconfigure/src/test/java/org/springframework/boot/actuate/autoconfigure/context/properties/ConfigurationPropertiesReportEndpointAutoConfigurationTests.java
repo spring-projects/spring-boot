@@ -106,7 +106,8 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner
-				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=configprops")
+				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+						"management.endpoints.jmx.exposure.include=configprops")
 				.run((context) -> assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class)
 						.doesNotHaveBean(ConfigurationPropertiesReportEndpointWebExtension.class));
 	}
