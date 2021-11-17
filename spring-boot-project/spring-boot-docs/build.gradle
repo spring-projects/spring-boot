@@ -141,11 +141,6 @@ dependencies {
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
-	implementation("org.springframework.restdocs:spring-restdocs-restassured") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "activation"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	implementation("org.springframework.security:spring-security-config")
 	implementation("org.springframework.security:spring-security-oauth2-client")

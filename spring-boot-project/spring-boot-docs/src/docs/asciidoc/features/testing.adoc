@@ -701,7 +701,7 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredrestc
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 ==== Auto-configured Spring REST Docs Tests
-You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
+You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC or WebTestClient.
 It removes the need for the JUnit extension in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you are using Gradle).
@@ -760,25 +760,6 @@ The following example shows such a `WebTestClientBuilderCustomizer` being define
 [source,java,indent=0]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyWebTestClientBuilderCustomizerConfiguration.java[]
-----
-
-
-
-[[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
-===== Auto-configured Spring REST Docs Tests with REST Assured
-`@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST Docs, available to your tests.
-You can inject it by using `@Autowired` and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyUserDocumentationTests.java[]
-----
-
-If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyRestDocsConfiguration.java[]
 ----
 
 
