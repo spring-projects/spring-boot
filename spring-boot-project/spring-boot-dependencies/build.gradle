@@ -1715,7 +1715,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.1.0-SNAPSHOT") {
+	library("Spring Session Bom", "2021.1.0") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
