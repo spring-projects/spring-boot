@@ -48,7 +48,6 @@ dependencies {
 	optional("io.dropwizard.metrics:metrics-jmx")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-jersey2")
 	optional("io.micrometer:micrometer-registry-appoptics")
 	optional("io.micrometer:micrometer-registry-atlas") {
 		exclude group: "javax.inject", module: "javax.inject"
