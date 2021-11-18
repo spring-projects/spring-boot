@@ -427,6 +427,7 @@ bom {
 				"hibernate-ehcache",
 				"hibernate-entitymanager",
 				"hibernate-envers",
+				"hibernate-gradle-plugin",
 				"hibernate-hikaricp",
 				"hibernate-java8",
 				"hibernate-jcache",
