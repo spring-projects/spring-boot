@@ -4,7 +4,7 @@ image_resource:
   type: registry-image
   source:
     repository: concourse/oci-build-task
-    tag: 0.9.0
+    tag: 0.9.1
     registry_mirror:
       host: ((registry-mirror-host))
       username: ((registry-mirror-username))
