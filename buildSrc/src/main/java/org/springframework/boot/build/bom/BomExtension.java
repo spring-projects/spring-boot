@@ -301,20 +301,26 @@ public class BomExtension {
 				if (args instanceof Object[] && ((Object[]) args).length == 1) {
 					Object arg = ((Object[]) args)[0];
 					if (arg instanceof Closure) {
-						ExclusionHandler exclusionHandler = new ExclusionHandler();
-						ConfigureUtil.configure((Closure<?>) arg, exclusionHandler);
-						return new Module(name, exclusionHandler.exclusions);
+						ModuleHandler moduleHandler = new ModuleHandler();
+						ConfigureUtil.configure((Closure<?>) arg, moduleHandler);
+						return new Module(name, moduleHandler.type, moduleHandler.exclusions);
 					}
 				}
-				throw new InvalidUserDataException("Invalid exclusion configuration for module '" + name + "'");
+				throw new InvalidUserDataException("Invalid configuration for module '" + name + "'");
 			}
 
-			public class ExclusionHandler {
+			public class ModuleHandler {
 
 				private final List<Exclusion> exclusions = new ArrayList<>();
 
+				private String type;
+
 				public void exclude(Map<String, String> exclusion) {
 					this.exclusions.add(new Exclusion(exclusion.get("group"), exclusion.get("module")));
+				}
+
+				public void setType(String type) {
+					this.type = type;
 				}
 
 			}

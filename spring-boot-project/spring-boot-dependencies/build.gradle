@@ -290,7 +290,9 @@ bom {
 		}
 		group("org.elasticsearch.distribution.integ-test-zip") {
 			modules = [
-				"elasticsearch"
+				"elasticsearch" {
+					type = 'zip'
+				}
 			]
 		}
 		group("org.elasticsearch.plugin") {
