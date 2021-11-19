@@ -546,7 +546,7 @@ Spring Boot does not provide any built in support for encrypting property values
 The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
 See <<howto#howto.application.customize-the-environment-or-application-context>> for details.
 
-If you're looking for a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
+If you need a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
 
 
 

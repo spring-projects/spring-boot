@@ -34,6 +34,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.filter.ErrorPageSecurityFilter;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -81,6 +82,7 @@ class FilterOrderingIntegrationTests {
 		assertThat(iterator.next()).isInstanceOf(Filter.class);
 		assertThat(iterator.next()).isInstanceOf(Filter.class);
 		assertThat(iterator.next()).isInstanceOf(OrderedRequestContextFilter.class);
+		assertThat(iterator.next()).isInstanceOf(ErrorPageSecurityFilter.class);
 		assertThat(iterator.next()).isInstanceOf(FilterChainProxy.class);
 	}
 

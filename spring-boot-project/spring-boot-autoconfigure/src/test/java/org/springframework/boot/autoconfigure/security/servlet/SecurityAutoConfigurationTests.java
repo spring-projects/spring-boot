@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
@@ -36,11 +37,14 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.ErrorPageSecurityFilter;
 import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
@@ -59,6 +63,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -259,6 +264,18 @@ class SecurityAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(SecurityContextHolder.getContextHolderStrategy())
 				.isNotInstanceOf(TestSecurityContextHolderStrategy.class)
 				.isNotInstanceOf(ListeningSecurityContextHolderStrategy.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	void filterRegistrationBeanForErrorPageSecurityInterceptor() {
+		this.contextRunner.withInitializer((context) -> context.setServletContext(new MockServletContext()))
+				.run(((context) -> {
+					FilterRegistrationBean<?> bean = context.getBean(FilterRegistrationBean.class);
+					assertThat(bean.getFilter()).isInstanceOf(ErrorPageSecurityFilter.class);
+					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(bean, "dispatcherTypes");
+					assertThat(dispatcherTypes).containsExactly(DispatcherType.ERROR);
+				}));
 	}
 
 	@Configuration(proxyBeanMethods = false)

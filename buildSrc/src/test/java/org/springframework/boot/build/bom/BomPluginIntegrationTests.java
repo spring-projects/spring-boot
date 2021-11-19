@@ -171,6 +171,36 @@ class BomPluginIntegrationTests {
 	}
 
 	@Test
+	void moduleTypesAreIncludedInDependencyManagementOfGeneratedPom() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'org.springframework.boot.bom'");
+			out.println("}");
+			out.println("bom {");
+			out.println("    library('Elasticsearch', '7.15.2') {");
+			out.println("        group('org.elasticsearch.distribution.integ-test-zip') {");
+			out.println("            modules = [");
+			out.println("                'elasticsearch' {");
+			out.println("                    type = 'zip'");
+			out.println("                }");
+			out.println("            ]");
+			out.println("        }");
+			out.println("    }");
+			out.println("}");
+		}
+		generatePom((pom) -> {
+			assertThat(pom).textAtPath("//properties/elasticsearch.version").isEqualTo("7.15.2");
+			NodeAssert dependency = pom.nodeAtPath("//dependencyManagement/dependencies/dependency");
+			assertThat(dependency).textAtPath("groupId").isEqualTo("org.elasticsearch.distribution.integ-test-zip");
+			assertThat(dependency).textAtPath("artifactId").isEqualTo("elasticsearch");
+			assertThat(dependency).textAtPath("version").isEqualTo("${elasticsearch.version}");
+			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
+			assertThat(dependency).textAtPath("type").isEqualTo("zip");
+			assertThat(dependency).nodeAtPath("exclusions").isNull();
+		});
+	}
+
+	@Test
 	void libraryNamedSpringBootHasNoVersionProperty() throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");

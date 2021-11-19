@@ -769,7 +769,7 @@ Applications can opt in and record exceptions by <<web#web.reactive.webflux.erro
 
 [[actuator.metrics.supported.jersey]]
 ==== Jersey Server Metrics
-Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation whenever Micrometer's `micrometer-jersey2` module is on the classpath.
+Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation.
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 

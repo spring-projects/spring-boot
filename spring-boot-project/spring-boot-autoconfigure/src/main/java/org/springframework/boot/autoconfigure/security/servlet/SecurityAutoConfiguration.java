@@ -51,7 +51,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
-		SecurityDataConfiguration.class })
+		SecurityDataConfiguration.class, ErrorPageSecurityFilterConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean

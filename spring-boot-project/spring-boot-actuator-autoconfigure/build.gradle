@@ -48,7 +48,6 @@ dependencies {
 	optional("io.dropwizard.metrics:metrics-jmx")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-jersey2")
 	optional("io.micrometer:micrometer-registry-appoptics")
 	optional("io.micrometer:micrometer-registry-atlas") {
 		exclude group: "javax.inject", module: "javax.inject"
@@ -215,7 +214,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		attributes "spring-integration-docs": integrationDocs
 	}
 	dependsOn test
-	inputs.dir("${buildDir}/generated-snippets")
+	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }
 
 asciidoctor {

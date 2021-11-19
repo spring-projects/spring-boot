@@ -257,7 +257,9 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
-		securityVersion = securityVersion.substring(0, securityVersion.lastIndexOf("."))
+		if (securityVersion.endsWith("-SNAPSHOT")) {
+			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
+		}
 		attributes	"embedded-mongo-version": versionConstraints["de.flapdoodle.embed:de.flapdoodle.embed.mongo"],
 					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],

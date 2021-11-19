@@ -53,7 +53,6 @@ class ManagementPathSampleActuatorApplicationTests {
 	void testHomeIsSecure() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		assertThat(entity.getBody().get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
