@@ -16,7 +16,6 @@
 
 package org.springframework.boot.build;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,21 +23,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
-import org.gradle.api.Action;
-import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.file.FileTree;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -184,10 +178,7 @@ class JavaConventions {
 	}
 
 	private void configureJavadocConventions(Project project) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> {
-			javadoc.getOptions().source("1.8").encoding("UTF-8");
-			javadoc.doFirst(new VerifyPackageInfo());
-		});
+		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 	}
 
 	private void configureJavaConventions(Project project) {
@@ -271,24 +262,6 @@ class JavaConventions {
 				CheckClasspathForProhibitedDependencies.class);
 		checkClasspathForProhibitedDependencies.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
-	}
-
-	private static final class VerifyPackageInfo implements Action<Task> {
-
-		@Override
-		public void execute(Task javadoc) {
-			FileTree source = ((Javadoc) javadoc).getSource();
-			Stream<File> dirs = source.getFiles().stream().map((file) -> file.getParentFile()).distinct();
-			Set<File> missingPackageInfo = dirs.map((file) -> new File(file, "package-info.java"))
-					.filter((packageInfo) -> !packageInfo.isFile()).collect(Collectors.toSet());
-			if (!missingPackageInfo.isEmpty()) {
-				StringBuilder message = new StringBuilder(
-						"A package-info.java file was missing from the following directories:\n");
-				missingPackageInfo.forEach((packageInfo) -> message.append("\t" + packageInfo.getParentFile() + "\n"));
-				throw new GradleException(message.toString());
-			}
-		}
-
 	}
 
 }
