@@ -88,10 +88,6 @@ anchors:
   gradle-publish-params: &gradle-publish-params
     GRADLE_PUBLISH_KEY: ((gradle-publish-key))
     GRADLE_PUBLISH_SECRET: ((gradle-publish-secret))
-  registry-mirror-vars: &registry-mirror-vars
-    registry-mirror-host: ((registry-mirror-host))
-    registry-mirror-username: ((registry-mirror-username))
-    registry-mirror-password: ((registry-mirror-password))
 resource_types:
 - name: artifactory-resource
   type: registry-image
@@ -255,7 +251,6 @@ jobs:
         image: ci-image
       vars:
         ci-image-name: ci-image
-        <<: *registry-mirror-vars
     - task: build-ci-image-jdk11
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
@@ -263,7 +258,6 @@ jobs:
         image: ci-image-jdk11
       vars:
         ci-image-name: ci-image-jdk11
-        <<: *registry-mirror-vars
     - task: build-ci-image-jdk17
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
@@ -271,7 +265,6 @@ jobs:
         image: ci-image-jdk17
       vars:
         ci-image-name: ci-image-jdk17
-        <<: *registry-mirror-vars
   - in_parallel:
     - put: ci-image
       params:
@@ -566,8 +559,6 @@ jobs:
       RELEASE_TYPE: M
       GITHUB_USERNAME: ((github-username))
       GITHUB_TOKEN: ((github-ci-release-token))
-    vars:
-      <<: *registry-mirror-vars
   - put: github-pre-release
     params:
       name: generated-changelog/tag
@@ -597,8 +588,6 @@ jobs:
       RELEASE_TYPE: RC
       GITHUB_USERNAME: ((github-username))
       GITHUB_TOKEN: ((github-ci-release-token))
-    vars:
-      <<: *registry-mirror-vars
   - put: github-pre-release
     params:
       name: generated-changelog/tag
@@ -658,8 +647,6 @@ jobs:
       RELEASE_TYPE: RELEASE
       GITHUB_USERNAME: ((github-username))
       GITHUB_TOKEN: ((github-ci-release-token))
-    vars:
-      <<: *registry-mirror-vars
   - put: github-release
     params:
       name: generated-changelog/tag

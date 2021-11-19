@@ -5,10 +5,6 @@ image_resource:
   source:
     repository: springio/github-changelog-generator
     tag: '0.0.7'
-    registry_mirror:
-      host: ((registry-mirror-host))
-      username: ((registry-mirror-username))
-      password: ((registry-mirror-password))
 inputs:
 - name: git-repo
 - name: artifactory-repo
