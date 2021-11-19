@@ -215,7 +215,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		attributes "spring-integration-docs": integrationDocs
 	}
 	dependsOn test
-	inputs.dir("${buildDir}/generated-snippets")
+	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE)
 }
 
 asciidoctor {
