@@ -24,6 +24,7 @@ import java.util.Map;
 import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -45,15 +46,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class BootBuildImageTests {
 
-	@TempDir
-	File temp;
-
 	Project project;
 
-	private final BootBuildImage buildImage;
+	private BootBuildImage buildImage;
 
-	BootBuildImageTests() {
-		File projectDir = new File(this.temp, "project");
+	@BeforeEach
+	void setUp(@TempDir File temp) {
+		File projectDir = new File(temp, "project");
 		projectDir.mkdirs();
 		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName("build-image-test").build();
 		this.project.setDescription("Test project for BootBuildImage");
