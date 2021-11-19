@@ -39,6 +39,7 @@ anchors:
     file: git-repo/ci/tasks/build-project.yml
     params:
       BRANCH: ((branch))
+      DOCKER_HUB_MIRROR: ((docker-hub-mirror))
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
   run-system-tests-task-params: &run-system-tests-task-params
