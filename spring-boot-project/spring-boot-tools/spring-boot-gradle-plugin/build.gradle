@@ -64,7 +64,7 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
 	doFirst {
 		attributes "dependency-management-plugin-version": dependencyVersions.versionConstraints["io.spring.gradle:dependency-management-plugin"]
 	}
