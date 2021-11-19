@@ -201,7 +201,7 @@ NOTE: By default, a key prefix is added so that, if two separate caches use the 
 We strongly recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 
 TIP: You can take full control of the default configuration by adding a `RedisCacheConfiguration` `@Bean` of your own.
-This can be useful if you need to customizing the default serialization strategy.
+This can be useful if you need to customize the default serialization strategy.
 
 If you need more control over the configuration, consider registering a `RedisCacheManagerBuilderCustomizer` bean.
 The following example shows a customizer that configures a specific time to live for `cache1` and `cache2`:
