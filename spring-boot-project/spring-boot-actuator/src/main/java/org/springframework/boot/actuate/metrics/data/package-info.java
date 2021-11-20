@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Spring Data {@code Repository} metrics.
+ * Actuator support for Spring Data Repository metrics.
  */
 package org.springframework.boot.actuate.metrics.data;
