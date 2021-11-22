@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
  * Auto-configuration for Lettuce metrics.
  *
  * @author Antonin Arquey
+ * @author Yanming Zhou
  * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -48,8 +49,7 @@ public class LettuceMetricsAutoConfiguration {
 	@Bean
 	public ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry) {
 		MicrometerOptions options = MicrometerOptions.builder().histogram(true).build();
-		return (client) -> client.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options))
-				.build();
+		return (client) -> client.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options));
 	}
 
 }
