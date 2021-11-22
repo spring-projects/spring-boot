@@ -23,11 +23,15 @@ import org.junit.jupiter.api.Test;
 import org.thymeleaf.dialect.IDialect;
 import reactor.core.publisher.Mono;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -58,6 +62,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleSecurityConfiguration.class)).isFalse();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 		assertThat(excludes(filter, ExampleModule.class)).isFalse();
 		assertThat(excludes(filter, ExampleDialect.class)).isFalse();
@@ -175,6 +180,16 @@ class WebFluxTypeExcludeFilterTests {
 
 	@Repository
 	static class ExampleRepository {
+
+	}
+
+	@Configuration
+	static class ExampleSecurityConfiguration {
+
+		@Bean
+		SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
+			return http.build();
+		}
 
 	}
 

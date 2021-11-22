@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -24,8 +25,15 @@ import java.util.Set;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.MethodMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -44,8 +52,10 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
+	private static final String SECURITY_WEB_FILTER_CHAIN = "org.springframework.security.web.server.SecurityWebFilterChain";
+
 	private static final String[] OPTIONAL_INCLUDES = { "com.fasterxml.jackson.databind.Module",
-			"org.thymeleaf.dialect.IDialect" };
+			"org.thymeleaf.dialect.IDialect", SECURITY_WEB_FILTER_CHAIN };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
@@ -58,6 +68,7 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 		includes.add(GenericConverter.class);
 		includes.add(WebExceptionHandler.class);
 		includes.add(WebFilter.class);
+		includes.add(SecurityWebFilterChain.class);
 		for (String optionalInclude : OPTIONAL_INCLUDES) {
 			try {
 				includes.add(ClassUtils.forName(optionalInclude, null));
@@ -90,6 +101,30 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}
 		return DEFAULT_INCLUDES;
+	}
+
+	@Override
+	protected boolean include(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		return super.include(metadataReader, metadataReaderFactory)
+				|| (isUseDefaultFilters() && securityConfiguration(metadataReader));
+	}
+
+	private boolean securityConfiguration(MetadataReader metadataReader) {
+		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+
+		if (!annotationMetadata.isAnnotated(Configuration.class.getName())) {
+			return false;
+		}
+
+		Set<MethodMetadata> beanMethods = annotationMetadata.getAnnotatedMethods(Bean.class.getName());
+
+		for (MethodMetadata beanMethod : beanMethods) {
+			if (beanMethod.getReturnTypeName().equals(SECURITY_WEB_FILTER_CHAIN)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
