@@ -242,6 +242,18 @@ class SecurityAutoConfigurationTests {
 				}));
 	}
 
+	@Test
+	void filterForErrorPageSecurityInterceptorWhenWebInvocationPrivilegeEvaluatorNotPresent() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security.config"))
+				.run((context) -> assertThat(context).doesNotHaveBean("errorPageSecurityFilter"));
+	}
+
+	@Test
+	void filterForErrorPageSecurityInterceptorConditionalOnClass() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security.web"))
+				.run((context) -> assertThat(context).doesNotHaveBean("errorPageSecurityFilter"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class EntityConfiguration {

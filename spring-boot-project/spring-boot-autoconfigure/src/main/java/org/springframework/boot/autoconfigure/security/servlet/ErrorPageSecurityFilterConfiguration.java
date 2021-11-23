@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.ErrorPageSecurityFilter;
@@ -35,6 +36,7 @@ import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(WebInvocationPrivilegeEvaluator.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 class ErrorPageSecurityFilterConfiguration {
 
