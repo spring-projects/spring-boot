@@ -19,10 +19,12 @@ package org.springframework.boot.web.servlet.filter;
 import java.io.IOException;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpFilter;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,14 +35,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 
 /**
- * {@link HttpFilter} that intercepts error dispatches to ensure authorized access to the
+ * {@link Filter} that intercepts error dispatches to ensure authorized access to the
  * error page.
  *
  * @author Madhura Bhave
  * @author Andy Wilkinson
  * @since 2.6.0
  */
-public class ErrorPageSecurityFilter extends HttpFilter {
+public class ErrorPageSecurityFilter implements Filter {
 
 	private static final WebInvocationPrivilegeEvaluator ALWAYS = new AlwaysAllowWebInvocationPrivilegeEvaluator();
 
@@ -53,16 +55,24 @@ public class ErrorPageSecurityFilter extends HttpFilter {
 	}
 
 	@Override
-	public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (DispatcherType.ERROR.equals(request.getDispatcherType())) {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			if (!getPrivilegeEvaluator().isAllowed(request.getRequestURI(), authentication)) {
-				sendError(request, response);
-				return;
-			}
+		doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+	}
+
+	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		if (DispatcherType.ERROR.equals(request.getDispatcherType()) && !isAllowed(request)) {
+			sendError(request, response);
+			return;
 		}
 		chain.doFilter(request, response);
+	}
+
+	private boolean isAllowed(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return getPrivilegeEvaluator().isAllowed(uri, authentication);
 	}
 
 	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {
