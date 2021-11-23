@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.servlet.filter;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 
@@ -58,6 +59,7 @@ class ErrorPageSecurityFilterTests {
 
 	@BeforeEach
 	void setup() {
+		this.request.setDispatcherType(DispatcherType.ERROR);
 		given(this.context.getBean(WebInvocationPrivilegeEvaluator.class)).willReturn(this.privilegeEvaluator);
 		this.securityFilter = new ErrorPageSecurityFilter(this.context);
 	}
@@ -92,6 +94,15 @@ class ErrorPageSecurityFilterTests {
 		willThrow(NoSuchBeanDefinitionException.class).given(context).getBean(WebInvocationPrivilegeEvaluator.class);
 		ErrorPageSecurityFilter securityFilter = new ErrorPageSecurityFilter(context);
 		securityFilter.doFilter(this.request, this.response, this.filterChain);
+		verify(this.filterChain).doFilter(this.request, this.response);
+	}
+
+	@Test
+	void ignorePrivilegeEvaluationForNonErrorDispatchType() throws Exception {
+		this.request.setDispatcherType(DispatcherType.REQUEST);
+		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(false);
+		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
+		verifyNoInteractions(this.privilegeEvaluator);
 		verify(this.filterChain).doFilter(this.request, this.response);
 	}
 
