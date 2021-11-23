@@ -76,9 +76,7 @@ dependencies {
 	testImplementation("org.springframework:spring-websocket")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("org.thymeleaf:thymeleaf")
-	testImplementation("org.thymeleaf:thymeleaf-spring5")
-	testImplementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+	testImplementation("org.freemarker:freemarker")
 
 	testRuntimeOnly("org.aspectj:aspectjweaver")
 	testRuntimeOnly("org.yaml:snakeyaml")

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package smoketest.devtools;
+package smoketest.web.thymeleaf;
 
-import javax.annotation.PostConstruct;
+public interface MessageRepository {
 
-import org.springframework.stereotype.Controller;
+	Iterable<Message> findAll();
 
-@Controller
-public class MyController {
+	Message save(Message message);
 
-	@PostConstruct
-	public void slowRestart() throws InterruptedException {
-		Thread.sleep(5000);
-	}
+	Message findMessage(Long id);
+
+	void deleteMessage(Long id);
 
 }
