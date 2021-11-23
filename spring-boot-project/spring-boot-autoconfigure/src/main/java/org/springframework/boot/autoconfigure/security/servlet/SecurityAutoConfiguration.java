@@ -40,8 +40,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 @AutoConfiguration
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
-@Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
-		SecurityDataConfiguration.class, ErrorPageSecurityFilterConfiguration.class })
+@Import({ SpringBootWebSecurityConfiguration.class, SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean

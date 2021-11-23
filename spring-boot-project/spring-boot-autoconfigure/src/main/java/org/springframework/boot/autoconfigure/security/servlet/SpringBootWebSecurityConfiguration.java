@@ -16,38 +16,94 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.filter.ErrorPageSecurityFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 
 /**
- * The default configuration for web security. It relies on Spring Security's
- * content-negotiation strategy to determine what sort of authentication to use. If the
- * user specifies their own
- * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
- * or {@link SecurityFilterChain} bean, this will back-off completely and the users should
- * specify all the bits that they want to configure as part of the custom security
- * configuration.
+ * {@link Configuration @Configuration} class securing servlet applications.
  *
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnDefaultWebSecurity
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @SuppressWarnings("deprecation")
 class SpringBootWebSecurityConfiguration {
 
-	@Bean
-	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
-		return http.build();
+	/**
+	 * The default configuration for web security. It relies on Spring Security's
+	 * content-negotiation strategy to determine what sort of authentication to use. If
+	 * the user specifies their own {@link WebSecurityConfigurerAdapter} or
+	 * {@link SecurityFilterChain} bean, this will back-off completely and the users
+	 * should specify all the bits that they want to configure as part of the custom
+	 * security configuration.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnDefaultWebSecurity
+	static class SecurityFilterChainConfiguration {
+
+		@Bean
+		@Order(SecurityProperties.BASIC_AUTH_ORDER)
+		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+			http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
+			return http.build();
+		}
+
+	}
+
+	/**
+	 * Configures the {@link ErrorPageSecurityFilter}.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(WebInvocationPrivilegeEvaluator.class)
+	@ConditionalOnBean(WebInvocationPrivilegeEvaluator.class)
+	static class ErrorPageSecurityFilterConfiguration {
+
+		@Bean
+		FilterRegistrationBean<ErrorPageSecurityFilter> errorPageSecurityFilter(ApplicationContext context) {
+			FilterRegistrationBean<ErrorPageSecurityFilter> registration = new FilterRegistrationBean<>(
+					new ErrorPageSecurityFilter(context));
+			registration.setDispatcherTypes(EnumSet.of(DispatcherType.ERROR));
+			return registration;
+		}
+
+	}
+
+	/**
+	 * Adds the{@link EnableWebSecurity @EnableWebSecurity} annotation if Spring Security
+	 * is on the classpath. This will make sure that the annotation is present with
+	 * default security auto-configuration and also if the user adds custom security and
+	 * forgets to add the annotation. If {@link EnableWebSecurity @EnableWebSecurity} has
+	 * already been added or if a bean with name
+	 * {@value BeanIds#SPRING_SECURITY_FILTER_CHAIN} has been configured by the user, this
+	 * will back-off.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN)
+	@ConditionalOnClass(EnableWebSecurity.class)
+	@EnableWebSecurity
+	static class WebSecurityEnablerConfiguration {
+
 	}
 
 }
