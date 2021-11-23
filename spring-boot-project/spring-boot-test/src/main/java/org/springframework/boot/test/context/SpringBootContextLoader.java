@@ -27,6 +27,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
@@ -133,6 +134,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
 			boolean applicationEnvironment) {
+		if (ObjectUtils.isEmpty(profiles)) {
+			return;
+		}
 		if (!applicationEnvironment) {
 			environment.setActiveProfiles(profiles);
 		}
@@ -140,7 +144,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		for (int i = 0; i < profiles.length; i++) {
 			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
 		}
-		TestPropertyValues.of(pairs).applyTo(environment);
+		TestPropertyValues.of(pairs).applyTo(environment, Type.MAP, "active-test-profiles");
 	}
 
 	/**
