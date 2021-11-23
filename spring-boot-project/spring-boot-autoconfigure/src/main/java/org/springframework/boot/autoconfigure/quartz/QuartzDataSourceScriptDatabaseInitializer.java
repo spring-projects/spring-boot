@@ -69,7 +69,7 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql_innodb");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.SQLSERVER, "sqlServer");
 		settings.setSchemaLocations(platformResolver.resolveAll(dataSource, properties.getJdbc().getSchema()));
