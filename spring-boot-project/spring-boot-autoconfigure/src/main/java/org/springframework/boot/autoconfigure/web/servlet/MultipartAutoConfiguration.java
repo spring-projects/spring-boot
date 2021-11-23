@@ -30,7 +30,6 @@ import org.springframework.boot.web.servlet.context.ServletWebServerApplicationC
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -63,7 +62,7 @@ public class MultipartAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ MultipartConfigElement.class, CommonsMultipartResolver.class })
+	@ConditionalOnMissingBean(MultipartConfigElement.class)
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}

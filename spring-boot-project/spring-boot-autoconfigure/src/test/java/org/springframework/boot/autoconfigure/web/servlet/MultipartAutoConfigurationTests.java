@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -186,15 +185,6 @@ class MultipartAutoConfigurationTests {
 		MultipartResolver multipartResolver = this.context.getBean(MultipartResolver.class);
 		assertThat(multipartResolver).isNotInstanceOf(StandardServletMultipartResolver.class);
 		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(1);
-	}
-
-	@Test
-	void containerWithCommonsMultipartResolver() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ContainerWithCommonsMultipartResolver.class, BaseConfiguration.class);
-		MultipartResolver multipartResolver = this.context.getBean(MultipartResolver.class);
-		assertThat(multipartResolver).isInstanceOf(CommonsMultipartResolver.class);
-		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(0);
 	}
 
 	@Test
@@ -402,16 +392,6 @@ class MultipartAutoConfigurationTests {
 		@Bean
 		MultipartResolver multipartResolver() {
 			return mock(MultipartResolver.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ContainerWithCommonsMultipartResolver {
-
-		@Bean
-		CommonsMultipartResolver multipartResolver() {
-			return mock(CommonsMultipartResolver.class);
 		}
 
 	}
