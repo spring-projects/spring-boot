@@ -21,8 +21,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -38,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Madhura Bhave
  */
 class SpringBootContextLoaderTests {
 
@@ -82,10 +85,9 @@ class SpringBootContextLoaderTests {
 		assertKey(config, "anotherKey", "another=Value");
 	}
 
-	@Test
+	@Test // gh-4384
 	@Disabled
 	void environmentPropertiesNewLineInValue() {
-		// gh-4384
 		Map<String, Object> config = getMergedContextConfigurationProperties(NewLineInValue.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "variables", "foo=FOO\n bar=BAR");
@@ -104,6 +106,26 @@ class SpringBootContextLoaderTests {
 	@Test
 	void activeProfileWithComma() {
 		assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2");
+	}
+
+	@Test
+	// gh-28776
+	void testPropertyValuesShouldTakePrecedenceWhenInlinedPropertiesPresent() {
+		TestContext context = new ExposedTestContextManager(SimpleConfig.class).getExposedTestContext();
+		StandardEnvironment environment = (StandardEnvironment) context.getApplicationContext().getEnvironment();
+		TestPropertyValues.of("key=thisValue").applyTo(environment);
+		assertThat(environment.getProperty("key")).isEqualTo("thisValue");
+		assertThat(environment.getPropertySources().get("active-test-profiles")).isNull();
+	}
+
+	@Test
+	void testPropertyValuesShouldTakePrecedenceWhenInlinedPropertiesPresentAndProfilesActive() {
+		TestContext context = new ExposedTestContextManager(ActiveProfileWithInlinedProperties.class)
+				.getExposedTestContext();
+		StandardEnvironment environment = (StandardEnvironment) context.getApplicationContext().getEnvironment();
+		TestPropertyValues.of("key=thisValue").applyTo(environment);
+		assertThat(environment.getProperty("key")).isEqualTo("thisValue");
+		assertThat(environment.getPropertySources().get("active-test-profiles")).isNotNull();
 	}
 
 	private String[] getActiveProfiles(Class<?> testClass) {
@@ -177,6 +199,13 @@ class SpringBootContextLoaderTests {
 	@ActiveProfiles({ "profile1,2" })
 	@ContextConfiguration(classes = Config.class)
 	static class ActiveProfileWithComma {
+
+	}
+
+	@SpringBootTest({ "key=myValue" })
+	@ActiveProfiles({ "profile1,2" })
+	@ContextConfiguration(classes = Config.class)
+	static class ActiveProfileWithInlinedProperties {
 
 	}
 
