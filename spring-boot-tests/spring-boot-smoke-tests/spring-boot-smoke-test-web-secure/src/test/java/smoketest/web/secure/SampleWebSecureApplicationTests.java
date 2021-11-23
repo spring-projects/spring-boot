@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.web.secure.jdbc;
+package smoketest.web.secure;
 
 import java.util.Collections;
 
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class SampleWebSecureJdbcApplicationTests {
+class SampleWebSecureApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -55,8 +55,8 @@ class SampleWebSecureJdbcApplicationTests {
 	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/home", HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/login");
 	}
@@ -78,7 +78,7 @@ class SampleWebSecureJdbcApplicationTests {
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
-		form.set("password", "user");
+		form.set("password", "password");
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
 				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);

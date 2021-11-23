@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package smoketest.security.method;
 
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Basic integration tests for demo application.
  *
  * @author Dave Syer
+ * @author Scott Frederick
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleMethodSecurityApplicationTests {
@@ -56,35 +55,32 @@ class SampleMethodSecurityApplicationTests {
 	@Test
 	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("<title>Login");
 	}
 
 	@Test
 	void testLogin() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "admin");
 		form.set("password", "admin");
-		getCsrf(form, headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
 				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString()).isEqualTo("http://localhost:" + this.port + "/");
+		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
 	}
 
 	@Test
 	void testDenied() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "user");
-		getCsrf(form, headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
 				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
@@ -99,7 +95,7 @@ class SampleMethodSecurityApplicationTests {
 	@Test
 	void testManagementProtected() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -116,16 +112,6 @@ class SampleMethodSecurityApplicationTests {
 		finally {
 			this.restTemplate.getRestTemplate().getInterceptors().remove(basicAuthInterceptor);
 		}
-	}
-
-	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
-		ResponseEntity<String> page = this.restTemplate.getForEntity("/login", String.class);
-		String cookie = page.getHeaders().getFirst("Set-Cookie");
-		headers.set("Cookie", cookie);
-		String body = page.getBody();
-		Matcher matcher = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*").matcher(body);
-		matcher.find();
-		form.set("_csrf", matcher.group(1));
 	}
 
 }
