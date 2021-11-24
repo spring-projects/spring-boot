@@ -22,14 +22,21 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.QueueConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.EntryProcessor;
+import com.hazelcast.map.IMap;
+import com.hazelcast.spring.context.SpringAware;
+import com.hazelcast.spring.context.SpringManagedContext;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -164,6 +171,55 @@ class HazelcastAutoConfigurationServerTests {
 		});
 	}
 
+	@Test
+	void defaultConfigFile_injectManagedContext() {
+		this.contextRunner.run((context) -> {
+			HazelcastInstance hz = context.getBean(HazelcastInstance.class);
+			IMap<Integer, Integer> map = hz.getMap("myMap");
+			boolean contextInjected = map.executeOnKey(42, new SpringAwareEntryProcessor<>());
+			assertThat(contextInjected).isEqualTo(true);
+		});
+	}
+
+	@Test
+	void defaultConfigFile_injectManagedContext_SpringHazelcastModuleNotAvailable() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader(SpringManagedContext.class))
+				.run((context) -> {
+					HazelcastInstance hz = context.getBean(HazelcastInstance.class);
+					IMap<Integer, Integer> map = hz.getMap("myMap");
+					boolean contextInjected = map.executeOnKey(42, new SpringAwareEntryProcessor<>());
+					assertThat(contextInjected).isEqualTo(false);
+				});
+	}
+
+	@Test
+	void explicitConfigFile_injectManagedContext() {
+		this.contextRunner
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
+				.run((context) -> {
+					HazelcastInstance hz = context.getBean(HazelcastInstance.class);
+					IMap<Integer, Integer> map = hz.getMap("myMap");
+					boolean contextInjected = map.executeOnKey(42, new SpringAwareEntryProcessor<>());
+					assertThat(contextInjected).isEqualTo(true);
+				});
+	}
+
+	@Test
+	void explicitConfigFile_injectManagedContext_SpringHazelcastModuleNotAvailable() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader(SpringManagedContext.class))
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
+				.run((context) -> {
+					HazelcastInstance hz = context.getBean(HazelcastInstance.class);
+					IMap<Integer, Integer> map = hz.getMap("myMap");
+					boolean contextInjected = map.executeOnKey(42, new SpringAwareEntryProcessor<>());
+					assertThat(contextInjected).isEqualTo(false);
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfigWithName {
 
@@ -172,6 +228,17 @@ class HazelcastAutoConfigurationServerTests {
 			return new Config("my-test-instance");
 		}
 
+	}
+
+	@SpringAware
+	static class SpringAwareEntryProcessor<K, V> implements EntryProcessor<K, V, Boolean> {
+		@Autowired
+		private ApplicationContext context;
+
+		@Override
+		public Boolean process(Map.Entry<K, V> entry) {
+			return context != null;
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
