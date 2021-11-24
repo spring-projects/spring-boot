@@ -25,8 +25,11 @@ import com.hazelcast.config.YamlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
+import com.hazelcast.spring.context.SpringManagedContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -60,10 +63,12 @@ class HazelcastServerConfiguration {
 	static class HazelcastServerConfigFileConfiguration {
 
 		@Bean
-		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader)
+		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader,
+											ConfigurationCustomizer customizer)
 				throws IOException {
 			Resource configLocation = properties.resolveConfigLocation();
 			Config config = (configLocation != null) ? loadConfig(configLocation) : Config.load();
+			config = customizer.customize(config);
 			config.setClassLoader(resourceLoader.getClassLoader());
 			return getHazelcastInstance(config);
 		}
@@ -93,12 +98,41 @@ class HazelcastServerConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(Config.class)
 	static class HazelcastServerConfigConfiguration {
-
 		@Bean
 		HazelcastInstance hazelcastInstance(Config config) {
 			return getHazelcastInstance(config);
 		}
 
+	}
+
+	private interface ConfigurationCustomizer {
+		ConfigurationCustomizer EMPTY_CUSTOMIZER = c -> c;
+		Config customize(Config configuration);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HazelcastConfigCustomizerConfiguration {
+		private final ApplicationContext applicationContext;
+
+		public HazelcastConfigCustomizerConfiguration(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "com.hazelcast.spring.context.SpringManagedContext")
+		public ConfigurationCustomizer springManagedContextConfigurationCustomizer() {
+			return configuration -> {
+				SpringManagedContext springManagedContext = new SpringManagedContext(applicationContext);
+				configuration.setManagedContext(springManagedContext);
+				return configuration;
+			};
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(ConfigurationCustomizer.class)
+		public ConfigurationCustomizer emptyConfigCustomizer() {
+			return ConfigurationCustomizer.EMPTY_CUSTOMIZER;
+		}
 	}
 
 	/**
