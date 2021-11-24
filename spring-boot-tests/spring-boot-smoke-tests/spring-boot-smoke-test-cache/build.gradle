@@ -9,10 +9,6 @@ def caches = [
 	"caffeine": [
 		"com.github.ben-manes.caffeine:caffeine"
 	],
-	"ehcache": [
-		"javax.cache:cache-api",
-		"org.ehcache:ehcache"
-	],
 	"hazelcast": [
 		"com.hazelcast:hazelcast",
 		"com.hazelcast:hazelcast-spring"

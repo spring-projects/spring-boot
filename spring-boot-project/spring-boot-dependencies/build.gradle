@@ -192,15 +192,6 @@ bom {
 			]
 		}
 	}
-	library("Ehcache3", "3.9.7") {
-		group("org.ehcache") {
-			modules = [
-				"ehcache",
-				"ehcache-clustered",
-				"ehcache-transactions"
-			]
-		}
-	}
 	library("Elasticsearch", "7.15.2") {
 		group("org.elasticsearch") {
 			modules = [

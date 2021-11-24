@@ -40,7 +40,7 @@ The cache abstraction does not provide an actual store and relies on abstraction
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
 . <<io#io.caching.provider.generic,Generic>>
-. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, and others)
+. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (Hazelcast and others)
 . <<io#io.caching.provider.hazelcast,Hazelcast>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>

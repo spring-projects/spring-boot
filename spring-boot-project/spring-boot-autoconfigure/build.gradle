@@ -85,7 +85,6 @@ dependencies {
 		exclude group: "javax.websocket", module: "javax.websocket-client-api"
 		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
 	}
-	optional("org.ehcache:ehcache")
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
