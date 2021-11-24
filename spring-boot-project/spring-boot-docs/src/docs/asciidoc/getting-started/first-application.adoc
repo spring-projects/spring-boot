@@ -137,9 +137,15 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 To finish our application, we need to create a single Java file.
 By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/gettingstarted/firstapplication/code/MyApplication.java[]
+----
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/gettingstarted/firstapplication/code/MyApplication.kt[]
 ----
 
 Although there is not much code here, quite a lot is going on.

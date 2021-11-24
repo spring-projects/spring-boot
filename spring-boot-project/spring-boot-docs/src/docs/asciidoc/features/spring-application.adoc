@@ -3,9 +3,15 @@
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/springapplication/MyApplication.java[]
+----
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/springapplication/MyApplication.kt[]
 ----
 
 When your application starts, you should see something similar to the following output:
@@ -165,9 +171,15 @@ This will initialize the `application.*` banner variables before building the cl
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/springapplication/customizingspringapplication/MyApplication.java[]
+----
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/springapplication/customizingspringapplication/MyApplication.kt[]
 ----
 
 NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
@@ -186,10 +198,15 @@ If you need to build an `ApplicationContext` hierarchy (multiple contexts with a
 
 The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/springapplication/fluentbuilderapi/MyApplication.java[tag=*]
 ----
+.Kotlin
+include::{docs-kotlin}/features/springapplication/fluentbuilderapi/MyApplication.kt[tag=*]
+----
+
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
 For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.

@@ -25,9 +25,15 @@ Doing so enables debug logs for a selection of core loggers and logs a condition
 === Disabling Specific Auto-configuration Classes
 If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of `@SpringBootApplication` to disable them, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/using/autoconfiguration/disablingspecific/MyApplication.java[]
+----
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/using/autoconfiguration/disablingspecific/MyApplication.kt[]
 ----
 
 If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.

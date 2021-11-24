@@ -164,12 +164,16 @@ In most cases, you can set this property in your `application.properties` (doing
 
 If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the configprop:spring.devtools.restart.enabled[] `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/devtools/restart/disable/MyApplication.java[]
 ----
-
-
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/devtools/restart/disable/MyApplication.kt[]
+----
 
 [[using.devtools.restart.triggerfile]]
 ==== Using a Trigger File

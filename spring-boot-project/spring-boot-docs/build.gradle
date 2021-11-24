@@ -4,6 +4,7 @@ plugins {
 	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id 'org.jetbrains.kotlin.jvm'
 }
 
 description = "Spring Boot Docs"
@@ -173,6 +174,7 @@ dependencies {
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
 	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
@@ -324,6 +326,9 @@ syncDocumentationSourceForAsciidoctor {
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/resources") {
 		into "main/resources"
 	}
@@ -348,6 +353,9 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/resources") {
 		into "main/resources"
 	}
@@ -371,6 +379,9 @@ syncDocumentationSourceForAsciidoctorPdf {
 	}
 	from("src/main/groovy") {
 		into "main/groovy"
+	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
 	}
 	from("src/main/resources") {
 		into "main/resources"
@@ -425,5 +436,18 @@ publishing {
 		maven(MavenPublication) {
 			artifact zip
 		}
+	}
+}
+repositories {
+	mavenCentral()
+}
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
+	}
+}
+compileTestKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
 	}
 }

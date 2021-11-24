@@ -8,16 +8,28 @@ All of your application components (`@Component`, `@Service`, `@Repository`, `@C
 
 The following example shows a `@Service` Bean that uses constructor injection to obtain a required `RiskAssessor` bean:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/using/springbeansanddependencyinjection/singleconstructor/MyAccountService.java[]
+----
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/using/springbeansanddependencyinjection/singleconstructor/MyAccountService.kt[]
 ----
 
 If a bean has more than one constructor, you will need to mark the one you want Spring to use with `@Autowired`:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/using/springbeansanddependencyinjection/multipleconstructors/MyAccountService.java[]
+----
+.Kotlin
+[source,java,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/using/springbeansanddependencyinjection/multipleconstructors/MyAccountService.kt[]
 ----
 
 TIP: Notice how using constructor injection lets the `riskAssessor` field be marked as `final`, indicating that it cannot be subsequently changed.
