@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.hazelcast.spring.cache.HazelcastCacheManager;
-import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -79,49 +78,42 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<CacheManager> allCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<ConcurrentMapCacheManager> simpleCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<ConcurrentMapCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<RedisCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
-
-			};
-		}
-
-		@Bean
-		CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}

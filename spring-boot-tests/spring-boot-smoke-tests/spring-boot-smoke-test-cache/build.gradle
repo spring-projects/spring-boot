@@ -17,10 +17,6 @@ def caches = [
 		"com.hazelcast:hazelcast",
 		"com.hazelcast:hazelcast-spring"
 	],
-	"infinispan": [
-		"org.infinispan:infinispan-jcache",
-		"org.infinispan:infinispan-spring5-embedded"
-	],
 	"redis": [
 		project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis")
 	]

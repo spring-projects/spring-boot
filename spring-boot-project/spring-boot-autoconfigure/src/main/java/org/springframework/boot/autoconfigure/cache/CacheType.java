@@ -42,11 +42,6 @@ public enum CacheType {
 	HAZELCAST,
 
 	/**
-	 * Infinispan backed caching.
-	 */
-	INFINISPAN,
-
-	/**
 	 * Redis backed caching.
 	 */
 	REDIS,

@@ -459,13 +459,6 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "12.1.7.Final") {
-		group("org.infinispan") {
-			imports = [
-				"infinispan-bom"
-			]
-		}
-	}
 	library("InfluxDB Java", "2.22") {
 		group("org.influxdb") {
 			modules = [
