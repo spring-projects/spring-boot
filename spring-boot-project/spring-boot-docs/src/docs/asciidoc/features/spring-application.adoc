@@ -9,7 +9,7 @@ In many situations, you can delegate to the static `SpringApplication.run` metho
 include::{docs-java}/features/springapplication/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/MyApplication.kt[]
 ----
@@ -177,7 +177,7 @@ For example, to turn off the banner, you could write:
 include::{docs-java}/features/springapplication/customizingspringapplication/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/customizingspringapplication/MyApplication.kt[]
 ----
@@ -204,7 +204,7 @@ The `SpringApplicationBuilder` lets you chain together multiple method calls and
 include::{docs-java}/features/springapplication/fluentbuilderapi/MyApplication.java[tag=*]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/fluentbuilderapi/MyApplication.kt[tag=*]
 ----
@@ -264,7 +264,7 @@ For example, we can export the "Readiness" state of the application to a file so
 include::{docs-java}/features/springapplication/applicationavailability/managing/MyReadinessStateExporter.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/applicationavailability/managing/MyReadinessStateExporter.kt[]
 ----
@@ -277,7 +277,7 @@ We can also update the state of the application, when the application breaks and
 include::{docs-java}/features/springapplication/applicationavailability/managing/MyLocalCacheVerifier.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/applicationavailability/managing/MyLocalCacheVerifier.kt[]
 ----
@@ -368,7 +368,7 @@ The `ApplicationArguments` interface provides access to both the raw `String[]` 
 include::{docs-java}/features/springapplication/applicationarguments/MyBean.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/applicationarguments/MyBean.kt[]
 ----
@@ -395,7 +395,7 @@ The following example shows a `CommandLineRunner` with a `run` method:
 include::{docs-java}/features/springapplication/commandlinerunner/MyCommandLineRunner.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/commandlinerunner/MyCommandLineRunner.kt[]
 ----
@@ -418,7 +418,7 @@ This exit code can then be passed to `System.exit()` to return it as a status co
 include::{docs-java}/features/springapplication/applicationexit/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/applicationexit/MyApplication.kt[]
 ----
@@ -455,7 +455,7 @@ For example, to use the `BufferingApplicationStartup`, you could write:
 include::{docs-java}/features/springapplication/startuptracking/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/springapplication/startuptracking/MyApplication.kt[]
 ----

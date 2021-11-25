@@ -143,7 +143,7 @@ By default, Maven compiles sources from `src/main/java`, so you need to create t
 include::{docs-java}/gettingstarted/firstapplication/code/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/gettingstarted/firstapplication/code/MyApplication.kt[]
 ----

@@ -31,7 +31,7 @@ If you find that specific auto-configuration classes that you do not want are be
 include::{docs-java}/using/autoconfiguration/disablingspecific/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/using/autoconfiguration/disablingspecific/MyApplication.kt[]
 ----

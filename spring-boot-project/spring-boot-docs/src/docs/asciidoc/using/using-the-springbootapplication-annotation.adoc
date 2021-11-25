@@ -14,7 +14,7 @@ An alternative to Spring's standard `@Configuration` that aids <<features#featur
 include::{docs-java}/using/usingthespringbootapplicationannotation/springapplication/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/using/usingthespringbootapplicationannotation/springapplication/MyApplication.kt[]
 ----
@@ -32,7 +32,7 @@ For instance, you may not want to use component scan or configuration properties
 include::{docs-java}/using/usingthespringbootapplicationannotation/individualannotations/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/using/usingthespringbootapplicationannotation/individualannotations/MyApplication.kt[]
 ----

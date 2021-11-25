@@ -170,7 +170,7 @@ If you need to _completely_ disable restart support (for example, because it doe
 include::{docs-java}/devtools/restart/disable/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/devtools/restart/disable/MyApplication.kt[]
 ----

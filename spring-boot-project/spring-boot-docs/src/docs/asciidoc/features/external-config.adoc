@@ -679,7 +679,7 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/javabeanbinding/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/javabeanbinding/MyProperties.kt[]
 ----
@@ -726,7 +726,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/MyProperties.kt[]
 ----
@@ -748,7 +748,7 @@ If you wish you return a non-null instance of `Security` even when no properties
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/MyProperties.java[tag=*]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/MyProperties.kt[]
 ----
@@ -779,7 +779,7 @@ This can be done on any `@Configuration` class, as shown in the following exampl
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/enablingannotatedtypes/MyConfiguration.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/enablingannotatedtypes/MyConfiguration.kt[]
 ----
@@ -795,7 +795,7 @@ If you want to define specific packages to scan, you can do so as shown in the f
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/enablingannotatedtypes/MyApplication.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/enablingannotatedtypes/MyApplication.kt[]
 ----
@@ -861,7 +861,7 @@ To configure a bean from the `Environment` properties, add `@ConfigurationProper
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/thirdpartyconfiguration/ThirdPartyConfiguration.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/thirdpartyconfiguration/ThirdPartyConfiguration.kt[]
 ----
@@ -883,7 +883,7 @@ As an example, consider the following `@ConfigurationProperties` class:
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/relaxedbinding/MyPersonProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/relaxedbinding/MyPersonProperties.kt[]
 ----
@@ -1008,7 +1008,7 @@ The following example exposes a list of `MyPojo` objects from `MyProperties`:
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/list/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/list/MyProperties.kt[]
 ----
@@ -1069,7 +1069,7 @@ The following example exposes a `Map<String, MyPojo>` from `MyProperties`:
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/map/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/map/MyProperties.kt[]
 ----
@@ -1132,7 +1132,7 @@ Consider the following example:
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/javabeanbinding/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/javabeanbinding/MyProperties.kt[]
 ----
@@ -1161,7 +1161,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/constructorbinding/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/constructorbinding/MyProperties.kt[]
 ----
@@ -1208,7 +1208,7 @@ Consider the following example:
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/javabeanbinding/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/javabeanbinding/MyProperties.kt[]
 ----
@@ -1235,7 +1235,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/constructorbinding/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/constructorbinding/MyProperties.kt[]
 ----
@@ -1257,7 +1257,7 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/validate/MyProperties.kt[]
 ----
@@ -1273,7 +1273,7 @@ The following example builds on the preceding `MyProperties` example:
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/nested/MyProperties.java[]
 ----
 .Kotlin
-[source,java,indent=0,subs="verbatim",role="secondary"]
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
 ----
 include::{docs-kotlin}/features/externalconfig/typesafeconfigurationproperties/validate/nested/MyProperties.kt[]
 ----
