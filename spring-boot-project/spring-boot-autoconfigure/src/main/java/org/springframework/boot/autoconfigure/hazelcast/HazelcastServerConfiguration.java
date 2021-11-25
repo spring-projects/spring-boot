@@ -105,6 +105,7 @@ class HazelcastServerConfiguration {
 
 	}
 
+	@FunctionalInterface
 	private interface ConfigurationCustomizer {
 		ConfigurationCustomizer EMPTY_CUSTOMIZER = c -> c;
 		Config customize(Config configuration);
