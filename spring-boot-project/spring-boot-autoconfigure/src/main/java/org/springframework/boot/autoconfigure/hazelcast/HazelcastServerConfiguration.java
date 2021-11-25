@@ -26,6 +26,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
 import com.hazelcast.spring.context.SpringManagedContext;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -64,11 +65,13 @@ class HazelcastServerConfiguration {
 
 		@Bean
 		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader,
-											ConfigurationCustomizer customizer)
+											ObjectProvider<ConfigurationCustomizer> customizerProvider)
 				throws IOException {
 			Resource configLocation = properties.resolveConfigLocation();
 			Config config = (configLocation != null) ? loadConfig(configLocation) : Config.load();
-			config = customizer.customize(config);
+			customizerProvider.ifAvailable(c -> {
+				c.customize(config);
+			});
 			config.setClassLoader(resourceLoader.getClassLoader());
 			return getHazelcastInstance(config);
 		}
@@ -107,11 +110,11 @@ class HazelcastServerConfiguration {
 
 	@FunctionalInterface
 	private interface ConfigurationCustomizer {
-		ConfigurationCustomizer EMPTY_CUSTOMIZER = c -> c;
-		Config customize(Config configuration);
+		void customize(Config configuration);
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "com.hazelcast.spring.context.SpringManagedContext")
 	static class HazelcastConfigCustomizerConfiguration {
 		private final ApplicationContext applicationContext;
 
@@ -120,19 +123,11 @@ class HazelcastServerConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnClass(name = "com.hazelcast.spring.context.SpringManagedContext")
 		public ConfigurationCustomizer springManagedContextConfigurationCustomizer() {
 			return configuration -> {
 				SpringManagedContext springManagedContext = new SpringManagedContext(applicationContext);
 				configuration.setManagedContext(springManagedContext);
-				return configuration;
 			};
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(ConfigurationCustomizer.class)
-		public ConfigurationCustomizer emptyConfigCustomizer() {
-			return ConfigurationCustomizer.EMPTY_CUSTOMIZER;
 		}
 	}
 
