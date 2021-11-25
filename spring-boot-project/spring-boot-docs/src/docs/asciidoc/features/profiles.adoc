@@ -3,9 +3,15 @@
 Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
 Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked with `@Profile` to limit when it is loaded, as shown in the following example:
 
-[source,java,indent=0]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/profiles/ProductionConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/profiles/ProductionConfiguration.kt[]
 ----
 
 NOTE: If `@ConfigurationProperties` beans are registered through `@EnableConfigurationProperties` instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration` class that has the `@EnableConfigurationProperties` annotation.
