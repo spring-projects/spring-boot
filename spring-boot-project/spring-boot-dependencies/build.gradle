@@ -826,22 +826,6 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.14.15") {
-		prohibit("[3.15.0,)") {
-			because "it requires Java 11"
-		}
-		group("org.jooq") {
-			modules = [
-				"jooq",
-				"jooq-codegen",
-				"jooq-kotlin",
-				"jooq-meta"
-			]
-			plugins = [
-				"jooq-codegen-maven"
-			]
-		}
-	}
 	library("Json Path", "2.6.0") {
 		group("com.jayway.jsonpath") {
 			modules = [

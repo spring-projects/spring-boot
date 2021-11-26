@@ -84,9 +84,6 @@ dependencies {
 	testImplementation("org.eclipse:yasson")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
-	testImplementation("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")

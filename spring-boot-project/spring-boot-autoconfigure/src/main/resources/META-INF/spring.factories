@@ -83,7 +83,6 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConf
 org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration,\
-org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
 org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration,\
 org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration,\
 org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration,\
@@ -155,7 +154,6 @@ org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinition
 org.springframework.boot.autoconfigure.flyway.FlywayMigrationScriptMissingFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
-org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.MissingR2dbcPoolDependencyFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.MultipleConnectionPoolConfigurationsFailureAnalzyer,\

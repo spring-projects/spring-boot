@@ -394,12 +394,3 @@ For example, if you use Hibernate Search with Elasticsearch as its index manager
 ----
 include::{docs-java}/howto/dataaccess/configureacomponentthatisusedbyjpa/ElasticsearchEntityManagerFactoryDependsOnPostProcessor.java[]
 ----
-
-
-
-[[howto.data-access.configure-jooq-with-multiple-datasources]]
-=== Configure jOOQ with Two DataSources
-If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
-See {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
-
-TIP: In particular, `JooqExceptionTranslator` and `SpringTransactionProvider` can be reused to provide similar features to what the auto-configuration does with a single `DataSource`.
