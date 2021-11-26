@@ -32,6 +32,7 @@ import com.github.dockerjava.api.model.ContainerConfig;
 import org.assertj.core.api.Condition;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
@@ -60,6 +61,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PaketoBuilderTests {
 
 	GradleBuild gradleBuild;
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.gradleBuild.scriptProperty("systemTestMavenRepository",
+				new File("build/system-test-maven-repository").getAbsoluteFile().toURI().toASCIIString());
+	}
 
 	@Test
 	void executableJarApp() throws Exception {
