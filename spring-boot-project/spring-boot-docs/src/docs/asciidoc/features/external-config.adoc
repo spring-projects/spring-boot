@@ -354,7 +354,7 @@ It is not uncommon to use environment variables for such purposes, but this can 
 As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
 For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
 
-There are two common volume mount patterns that can be use:
+There are two common volume mount patterns that can be used:
 
 . A single file contains a complete set of properties (usually written as YAML).
 . Multiple files are written to a directory tree, with the filename becoming the '`key`' and the contents becoming the '`value`'.
@@ -504,7 +504,7 @@ WARNING: Multi-document property files cannot be loaded by using the `@PropertyS
 
 [[features.external-config.files.activation-properties]]
 ==== Activation Properties
-It is sometimes useful to only activate a given get of properties when certain conditions are met.
+It is sometimes useful to only activate a given set of properties when certain conditions are met.
 For example, you might have properties that are only relevant when a specific profile is active.
 
 You can conditionally activate a properties document using `spring.config.activate.*`.
