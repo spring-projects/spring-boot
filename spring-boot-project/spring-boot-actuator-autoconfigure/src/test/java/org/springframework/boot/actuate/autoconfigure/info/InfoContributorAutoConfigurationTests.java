@@ -76,12 +76,10 @@ class InfoContributorAutoConfigurationTests {
 
 	@Test
 	void defaultInfoContributorsDisabledWithCustomOne() {
-		this.contextRunner.withPropertyValues("management.info.defaults.enabled=false")
-				.withUserConfiguration(CustomInfoContributorConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(InfoContributor.class);
-					assertThat(context.getBean(InfoContributor.class))
-							.isSameAs(context.getBean("customInfoContributor"));
-				});
+		this.contextRunner.withUserConfiguration(CustomInfoContributorConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(InfoContributor.class);
+			assertThat(context.getBean(InfoContributor.class)).isSameAs(context.getBean("customInfoContributor"));
+		});
 	}
 
 	@SuppressWarnings("unchecked")
