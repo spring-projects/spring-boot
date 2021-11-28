@@ -69,7 +69,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	}
 
 	/**
-	 * Return the default outcome that should be used if not property is set. By default
+	 * Return the default outcome that should be used if property is not set. By default
 	 * this method will use the {@code <prefix>.defaults.enabled} property, matching if it
 	 * is {@code true} or if it is not configured.
 	 * @param context the condition context
