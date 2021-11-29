@@ -1147,7 +1147,7 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
 [cols="1,4,8,4"]
 |===
-| ID | Name | Description | Prequisites
+| ID | Name | Description | Prerequisites
 
 | `build`
 | {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
@@ -1174,7 +1174,7 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
+With no prerequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
 You can enable them by setting the configprop:management.info.env.enabled[] or configprop:management.info.java.enabled[] properties to `true`.
 
 The `build` and `git` info contributors are enabled by default.

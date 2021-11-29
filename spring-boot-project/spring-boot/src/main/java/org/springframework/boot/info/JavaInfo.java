@@ -81,7 +81,7 @@ public class JavaInfo {
 	}
 
 	/**
-	 * Information about the Java Virtual Machine) the application is running in.
+	 * Information about the Java Virtual Machine the application is running in.
 	 */
 	public static class JavaVirtualMachineInfo {
 
