@@ -32,7 +32,7 @@ class PatternParseFailureAnalyzer extends AbstractFailureAnalyzer<PatternParseEx
 	protected FailureAnalysis analyze(Throwable rootFailure, PatternParseException cause) {
 		return new FailureAnalysis("Invalid mapping pattern detected: " + cause.toDetailedString(),
 				"Fix this pattern in your application or switch to the legacy parser implementation with "
-						+ "'spring.mvc.pathpattern.matching-strategy=ant_path_matcher'.",
+						+ "'spring.mvc.pathmatch.matching-strategy=ant_path_matcher'.",
 				cause);
 	}
 
