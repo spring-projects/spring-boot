@@ -11,7 +11,7 @@ The pipeline can be deployed using the following command:
 
 [source]
 ----
-$ fly -t spring-boot set-pipeline -p spring-boot-2.6.x -c ci/pipeline.yml -l ci/parameters.yml
+$ fly -t spring-boot set-pipeline -p spring-boot-2.7.x -c ci/pipeline.yml -l ci/parameters.yml
 ----
 
 NOTE: This assumes that you have credhub integration configured with the appropriate

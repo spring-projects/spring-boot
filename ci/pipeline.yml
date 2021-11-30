@@ -683,7 +683,7 @@ jobs:
         <<: *sdkman-task-params
         RELEASE_TYPE: RELEASE
         BRANCH: ((branch))
-        LATEST_GA: true
+        LATEST_GA: false
 - name: update-homebrew-tap
   serial: true
   plan:
@@ -699,7 +699,7 @@ jobs:
       image: ci-image
       file: git-repo/ci/tasks/update-homebrew-tap.yml
       params:
-        LATEST_GA: true
+        LATEST_GA: false
     - put: homebrew-tap-repo
       params:
         repository: updated-homebrew-tap-repo
