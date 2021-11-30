@@ -58,7 +58,7 @@ class MetricsWebClientCustomizerTests {
 		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(1));
 		this.customizer.customize(this.clientBuilder);
 		this.clientBuilder.filters(
-				(filters) -> assertThat(filters).hasSize(1).first().isInstanceOf(MetricsWebClientFilterFunction.class));
+				(filters) -> assertThat(filters).singleElement().isInstanceOf(MetricsWebClientFilterFunction.class));
 	}
 
 }

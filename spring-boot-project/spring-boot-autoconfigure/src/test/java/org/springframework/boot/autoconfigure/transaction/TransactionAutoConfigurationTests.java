@@ -131,7 +131,7 @@ class TransactionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SeveralPlatformTransactionManagersConfiguration.class)
 				.run((context) -> {
 					TransactionManagerCustomizers customizers = context.getBean(TransactionManagerCustomizers.class);
-					assertThat(customizers).extracting("customizers").asList().hasSize(1).first()
+					assertThat(customizers).extracting("customizers").asList().singleElement()
 							.isInstanceOf(TransactionProperties.class);
 				});
 	}
