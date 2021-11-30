@@ -32,6 +32,7 @@ import org.springframework.util.StreamUtils;
  * {@link EntryWriter} that always provides size information.
  *
  * @author Phillip Webb
+ * @author Tharik Lourenco
  */
 final class SizeCalculatingEntryWriter implements EntryWriter {
 
@@ -43,14 +44,12 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 	private SizeCalculatingEntryWriter(EntryWriter entryWriter) throws IOException {
 		SizeCalculatingOutputStream outputStream = new SizeCalculatingOutputStream();
-		try {
-			entryWriter.write(outputStream);
-		}
-		finally {
-			outputStream.close();
-		}
+		entryWriter.write(outputStream);
 		this.content = outputStream.getContent();
 		this.size = outputStream.getSize();
+		if (this.content instanceof File) {
+			outputStream.deleteTempFile();
+		}
 	}
 
 	@Override
@@ -127,7 +126,6 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 		private void initializeTempFile() throws IOException {
 			if (this.tempFile == null) {
 				this.tempFile = File.createTempFile("springboot-", "-entrycontent");
-				this.tempFile.deleteOnExit();
 			}
 		}
 
@@ -143,6 +141,11 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 		int getSize() {
 			return this.size;
+		}
+
+		private void deleteTempFile() {
+			this.tempFile.delete();
+
 		}
 
 	}
