@@ -161,8 +161,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
 			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 					.containsExactly("http://localhost:9200");
-			assertThat(client).extracting("client")
-					.extracting("credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+			assertThat(client)
+					.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
 					.satisfies((credentialsProvider) -> {
 						Credentials credentials = credentialsProvider.getCredentials(new AuthScope("localhost", 9200));
 						assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
@@ -177,8 +177,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
 			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 					.containsExactly("http://localhost:9200");
-			assertThat(client).extracting("client")
-					.extracting("credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+			assertThat(client)
+					.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
 					.satisfies((credentialsProvider) -> {
 						Credentials credentials = credentialsProvider.getCredentials(new AuthScope("localhost", 9200));
 						assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
@@ -194,8 +194,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 					RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
 					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 							.containsExactly("http://localhost:9200", "http://localhost:9201");
-					assertThat(client).extracting("client")
-							.extracting("credentialsProvider",
+					assertThat(client)
+							.extracting("client.credentialsProvider",
 									InstanceOfAssertFactories.type(CredentialsProvider.class))
 							.satisfies((credentialsProvider) -> {
 								Credentials uriCredentials = credentialsProvider

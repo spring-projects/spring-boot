@@ -74,8 +74,7 @@ class SendGridAutoConfigurationTests {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY", "spring.sendgrid.proxy.host:localhost",
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("client").extracting("httpClient").extracting("routePlanner")
-				.isInstanceOf(DefaultProxyRoutePlanner.class);
+		assertThat(sendGrid).extracting("client.httpClient.routePlanner").isInstanceOf(DefaultProxyRoutePlanner.class);
 	}
 
 	private void loadContext(String... environment) {

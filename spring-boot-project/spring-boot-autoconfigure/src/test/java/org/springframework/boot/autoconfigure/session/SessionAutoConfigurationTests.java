@@ -160,7 +160,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 				.withPropertyValues("server.port=0").run((context) -> {
 					SessionRepositoryFilter<?> filter = context.getBean(SessionRepositoryFilter.class);
-					assertThat(filter).extracting("httpSessionIdResolver").extracting("cookieSerializer")
+					assertThat(filter).extracting("httpSessionIdResolver.cookieSerializer")
 							.isSameAs(context.getBean(DefaultCookieSerializer.class));
 				});
 	}
