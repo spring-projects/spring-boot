@@ -47,18 +47,6 @@ bom {
 			]
 		}
 	}
-	library("Atomikos", "4.0.6") {
-		prohibit("[5,)") {
-			because "our support is deprecated"
-		}
-		group("com.atomikos") {
-			modules = [
-				"transactions-jdbc",
-				"transactions-jms",
-				"transactions-jta"
-			]
-		}
-	}
 	library("Awaitility", "4.1.1") {
 		group("org.awaitility") {
 			modules = [
