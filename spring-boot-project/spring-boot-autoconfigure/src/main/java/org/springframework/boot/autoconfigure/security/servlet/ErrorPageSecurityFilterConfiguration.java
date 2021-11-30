@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.EnumSet;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

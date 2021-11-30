@@ -23,13 +23,7 @@ dependencies {
 	optional("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	optional("org.hibernate:hibernate-core") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "javax.activation-api"
-		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
-	}
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit-driver") {
 		exclude group: "commons-logging", module: "commons-logging"

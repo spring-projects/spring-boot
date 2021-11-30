@@ -497,7 +497,7 @@ If you need to register a `Filter` that interacts with other beans, consider usi
 
 [[web.servlet.embedded-container.context-initializer]]
 ==== Servlet Context Initialization
-Embedded servlet containers do not directly execute the servlet 3.0+ `javax.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
+Embedded servlet containers do not directly execute the `jakarta.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
 This is an intentional design decision intended to reduce the risk that third party libraries designed to run inside a war may break Spring Boot applications.
 
 If you need to perform servlet context initialization in a Spring Boot application, you should register a bean that implements the `org.springframework.boot.web.servlet.ServletContextInitializer` interface.

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.util.Assert;
 

@@ -12,7 +12,7 @@ dependencies {
 	if (JavaVersion.current().java9Compatible) {
 		implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 	}
-	implementation("org.hibernate:hibernate-core") {
+	implementation("org.hibernate:hibernate-core-jakarta") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"

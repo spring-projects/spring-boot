@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.data.nosql.elasticsearch.connectingusingspringdata;
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.backend.elasticsearch7.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 
 @Component

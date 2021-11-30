@@ -345,13 +345,13 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 
 	private String formatError(Throwable ex, ServerRequest request) {
 		String reason = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-		return "Resolved [" + reason + "] for HTTP " + request.methodName() + " " + request.path();
+		return "Resolved [" + reason + "] for HTTP " + request.method() + " " + request.path();
 	}
 
 	private String formatRequest(ServerRequest request) {
 		String rawQuery = request.uri().getRawQuery();
 		String query = StringUtils.hasText(rawQuery) ? "?" + rawQuery : "";
-		return "HTTP " + request.methodName() + " \"" + request.path() + query + "\"";
+		return "HTTP " + request.method() + " \"" + request.path() + query + "\"";
 	}
 
 	private Mono<? extends Void> write(ServerWebExchange exchange, ServerResponse response) {

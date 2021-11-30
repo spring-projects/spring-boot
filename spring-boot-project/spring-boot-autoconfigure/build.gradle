@@ -34,14 +34,11 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet") {
+	optional("io.undertow:undertow-servlet-jakartaee9") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
 	}
-	optional("io.undertow:undertow-websockets-jsr") {
+	optional("io.undertow:undertow-websockets-jsr-jakartaee9") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
-		exclude group: "org.jboss.spec.javax.websocket", module: "jboss-websocket-api_1.1_spec"
 	}
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.mail:jakarta.mail-api")
@@ -78,12 +75,11 @@ dependencies {
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
 	}
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
-	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl") {
-		exclude group: "javax.annotation", module: "javax.annotation-api"
-		exclude group: "javax.servlet", module: "javax.servlet-api"
-		exclude group: "javax.websocket", module: "javax.websocket-api"
-		exclude group: "javax.websocket", module: "javax.websocket-client-api"
-		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
+	optional("org.eclipse.jetty.websocket:websocket-jakarta-server") {
+		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
+	}
+	optional("org.eclipse.jetty.websocket:websocket-jetty-server") {
+		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
 	}
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -96,17 +92,9 @@ dependencies {
 	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.freemarker:freemarker")
-	optional("org.hibernate:hibernate-core") {
-		exclude group: "javax.activation", module: "javax.activation-api"
-		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
-	}
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.hibernate:hibernate-jcache") {
-		exclude group: "javax.activation", module: "javax.activation-api"
-		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+		exclude group: "org.hibernate", module: "hibernate-core"
 	}
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
@@ -164,21 +152,24 @@ dependencies {
 	optional("org.springframework.session:spring-session-core")
 	optional("org.springframework.session:spring-session-data-mongodb")
 	optional("org.springframework.session:spring-session-data-redis")
-	optional("org.springframework.session:spring-session-hazelcast") {
-		exclude group: "javax.annotation", module: "javax.annotation-api"
-	}
+	optional("org.springframework.session:spring-session-hazelcast")
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.amqp:spring-rabbit-stream")
 	optional("org.springframework.kafka:spring-kafka")
-	optional("org.springframework.ws:spring-ws-core")
+	optional("org.springframework.ws:spring-ws-core") {
+		exclude group: "com.sun.mail", module: "jakarta.mail"
+		exclude group: "jakarta.platform", module: "jakarta.jakartaee-api"
+		exclude group: "org.eclipse.jetty", module: "jetty-server"
+		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
+		exclude group: "jakarta.mail", module: "jakarta.mail-api"
+	}
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("commons-fileupload:commons-fileupload")
-	testImplementation("com.atomikos:transactions-jms")
 	testImplementation("com.github.h-thurow:simple-jndi")
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")

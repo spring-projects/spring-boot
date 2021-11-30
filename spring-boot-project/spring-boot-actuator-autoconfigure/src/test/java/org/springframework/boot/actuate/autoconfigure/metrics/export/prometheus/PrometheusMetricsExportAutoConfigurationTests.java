@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
-import java.util.function.Consumer;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.DefaultHttpConnectionFactory;
 import io.prometheus.client.exporter.HttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
+import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration.BasicAuthHttpConnectionFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
@@ -193,8 +192,11 @@ class PrometheusMetricsExportAutoConfigurationTests {
 						"management.metrics.export.prometheus.pushgateway.username=admin",
 						"management.metrics.export.prometheus.pushgateway.password=secret")
 				.withUserConfiguration(BaseConfiguration.class)
-				.run(hasHttpConnectionFactory((httpConnectionFactory) -> assertThat(httpConnectionFactory)
-						.isInstanceOf(BasicAuthHttpConnectionFactory.class)));
+				.run(hasHttpConnectionFactory((httpConnectionFactory) -> {
+					assertThat(httpConnectionFactory).isInstanceOf(BasicAuthHttpConnectionFactory.class);
+					assertThat(((BasicAuthHttpConnectionFactory) httpConnectionFactory).getAuthorizationHeader())
+							.isEqualTo("Basic YWRtaW46c2VjcmV0");
+				}));
 	}
 
 	private void hasGatewayURL(AssertableApplicationContext context, String url) {
@@ -202,7 +204,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	private ContextConsumer<AssertableApplicationContext> hasHttpConnectionFactory(
-			Consumer<HttpConnectionFactory> httpConnectionFactory) {
+			ThrowingConsumer<HttpConnectionFactory> httpConnectionFactory) {
 		return (context) -> {
 			PushGateway pushGateway = getPushGateway(context);
 			httpConnectionFactory

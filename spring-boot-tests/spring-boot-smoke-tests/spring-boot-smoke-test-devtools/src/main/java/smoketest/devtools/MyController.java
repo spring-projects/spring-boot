@@ -16,7 +16,7 @@
 
 package smoketest.devtools;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Controller;
 

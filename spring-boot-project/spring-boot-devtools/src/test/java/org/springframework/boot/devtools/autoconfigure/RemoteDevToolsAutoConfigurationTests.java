@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.autoconfigure;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

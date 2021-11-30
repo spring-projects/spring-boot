@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package smoketest.jetty.jsp;
 
+import org.eclipse.jetty.server.AllowedResourceAliasChecker;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +60,7 @@ class SampleWebJspApplicationTests {
 		JettyServerCustomizer jettyServerCustomizer() {
 			return (server) -> {
 				ContextHandler handler = (ContextHandler) server.getHandler();
-				handler.addAliasCheck(new ContextHandler.ApproveAliases());
+				handler.addAliasCheck(new AllowedResourceAliasChecker(handler));
 			};
 		}
 

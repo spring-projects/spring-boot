@@ -2008,7 +2008,7 @@
         {
           "name": "class-reference",
           "parameters": {
-            "target": "javax.servlet.http.HttpServlet"
+            "target": "jakarta.servlet.http.HttpServlet"
           }
         }
       ]

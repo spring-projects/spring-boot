@@ -61,24 +61,25 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
-import javax.servlet.AsyncContext;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.GenericServlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.GenericServlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.HttpResponse;
@@ -878,7 +879,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
 		this.webServer = factory.getWebServer(contextReference::set);
 		assertThat(contextReference.get().getEffectiveSessionTrackingModes())
-				.isEqualTo(EnumSet.of(javax.servlet.SessionTrackingMode.SSL));
+				.isEqualTo(EnumSet.of(jakarta.servlet.SessionTrackingMode.SSL));
 	}
 
 	@Test
@@ -1077,8 +1078,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
 		factory.getWebServer(contextReference::set).start();
 		ServletContext servletContext = contextReference.get();
-		assertThat(servletContext.getEffectiveSessionTrackingModes())
-				.isEqualTo(EnumSet.of(javax.servlet.SessionTrackingMode.COOKIE, javax.servlet.SessionTrackingMode.URL));
+		assertThat(servletContext.getEffectiveSessionTrackingModes()).isEqualTo(
+				EnumSet.of(jakarta.servlet.SessionTrackingMode.COOKIE, jakarta.servlet.SessionTrackingMode.URL));
 		assertThat(servletContext.getSessionCookieConfig().getName()).isEqualTo("testname");
 		assertThat(servletContext.getSessionCookieConfig().getDomain()).isEqualTo("testdomain");
 		assertThat(servletContext.getSessionCookieConfig().getPath()).isEqualTo("/testpath");

@@ -25,6 +25,7 @@ import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -51,6 +52,13 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Override
 	protected JettyReactiveWebServerFactory getFactory() {
 		return new JettyReactiveWebServerFactory(0);
+	}
+
+	@Test
+	@Override
+	@Disabled("Jetty 11 does not support User-Agent-based compression")
+	protected void noCompressionForUserAgent() {
+
 	}
 
 	@Test

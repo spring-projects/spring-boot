@@ -45,7 +45,7 @@ public enum WebApplicationType {
 	 */
 	REACTIVE;
 
-	private static final String[] SERVLET_INDICATOR_CLASSES = { "javax.servlet.Servlet",
+	private static final String[] SERVLET_INDICATOR_CLASSES = { "jakarta.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
 	private static final String WEBMVC_INDICATOR_CLASS = "org.springframework.web.servlet.DispatcherServlet";

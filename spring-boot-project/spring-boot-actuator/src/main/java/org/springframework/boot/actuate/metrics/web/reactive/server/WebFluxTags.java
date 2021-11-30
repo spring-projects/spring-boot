@@ -70,7 +70,7 @@ public final class WebFluxTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(ServerWebExchange exchange) {
-		return Tag.of("method", exchange.getRequest().getMethodValue());
+		return Tag.of("method", exchange.getRequest().getMethod().name());
 	}
 
 	/**

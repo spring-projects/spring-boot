@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import java.security.interfaces.RSAPublicKey;
 import java.util.EnumSet;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;

@@ -18,9 +18,9 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.io.IOException;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.ExceptionListener;
-import javax.jms.Session;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.Session;
 
 import org.junit.jupiter.api.Test;
 

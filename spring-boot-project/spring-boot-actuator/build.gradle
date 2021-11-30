@@ -31,12 +31,8 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.reactivex:rxjava-reactive-streams")
-	optional("org.elasticsearch.client:elasticsearch-rest-client") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
-	optional("io.undertow:undertow-servlet") {
+	optional("io.undertow:undertow-servlet-jakartaee9") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
 	}
 	optional("javax.cache:cache-api")
 	optional("jakarta.jms:jakarta.jms-api")
@@ -49,6 +45,12 @@ dependencies {
 		exclude(group: "javax.servlet", module: "javax.servlet-api")
 	}
 	optional("org.elasticsearch:elasticsearch")
+	optional("org.elasticsearch.client:elasticsearch-rest-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
+	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -48,14 +49,13 @@ class ServerWebExchangeTraceableRequestTests {
 		this.exchange = mock(ServerWebExchange.class);
 		this.request = mock(ServerHttpRequest.class);
 		given(this.exchange.getRequest()).willReturn(this.request);
+		given(this.request.getMethod()).willReturn(HttpMethod.GET);
 	}
 
 	@Test
 	void getMethod() {
-		String method = "POST";
-		given(this.request.getMethodValue()).willReturn(method);
 		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(this.exchange);
-		assertThat(traceableRequest.getMethod()).isSameAs(method);
+		assertThat(traceableRequest.getMethod()).isEqualTo("GET");
 	}
 
 	@Test

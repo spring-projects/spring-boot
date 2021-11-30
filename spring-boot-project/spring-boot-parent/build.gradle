@@ -41,7 +41,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Inject", "1.0.5") {
+	library("Jakarta Inject", "2.0.1") {
 		group("jakarta.inject") {
 			modules = [
 				"jakarta.inject-api"

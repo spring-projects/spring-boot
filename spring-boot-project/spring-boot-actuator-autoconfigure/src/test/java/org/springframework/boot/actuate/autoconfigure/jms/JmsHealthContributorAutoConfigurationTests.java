@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.jms;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 import org.junit.jupiter.api.Test;
 

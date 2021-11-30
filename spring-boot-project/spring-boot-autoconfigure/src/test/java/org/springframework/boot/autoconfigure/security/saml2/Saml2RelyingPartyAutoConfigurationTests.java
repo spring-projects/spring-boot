@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security.saml2;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

@@ -82,7 +82,7 @@ import org.springframework.util.StringUtils;
  */
 public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstrapper {
 
-	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
+	private static final String[] WEB_ENVIRONMENT_CLASSES = { "jakarta.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."

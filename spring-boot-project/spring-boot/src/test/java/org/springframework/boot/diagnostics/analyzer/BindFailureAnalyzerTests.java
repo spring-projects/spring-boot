@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import org.junit.jupiter.api.Test;
 

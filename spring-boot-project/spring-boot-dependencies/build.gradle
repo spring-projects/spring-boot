@@ -245,20 +245,14 @@ bom {
 			]
 		}
 	}
-	library("Glassfish EL", "3.0.4") {
-		prohibit("[4.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Glassfish EL", "4.0.2") {
 		group("org.glassfish") {
 			modules = [
 				"jakarta.el"
 			]
 		}
 	}
-	library("Glassfish JAXB", "2.3.5") {
-		prohibit("[3.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Glassfish JAXB", "3.0.2") {
 		group("org.glassfish.jaxb") {
 			modules = [
 				"codemodel",
@@ -272,7 +266,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JSTL", "1.2.6") {
+	library("Glassfish JSTL", "2.0.0") {
 		group("org.glassfish.web") {
 			modules = [
 				"jakarta.servlet.jsp.jstl"
@@ -309,7 +303,7 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast", "4.2.2") {
+	library("Hazelcast", "5.0") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
@@ -326,32 +320,26 @@ bom {
 		}
 	}
 	library("Hibernate", "5.6.1.Final") {
-		prohibit("[6.0.0.Alpha2,)") {
-			because "it uses the jakarta.* namespace"
-		}
 		group("org.hibernate") {
 			modules = [
 				"hibernate-c3p0",
-				"hibernate-core",
+				"hibernate-core-jakarta",
 				"hibernate-ehcache",
 				"hibernate-entitymanager",
-				"hibernate-envers",
+				"hibernate-envers-jakarta",
 				"hibernate-hikaricp",
 				"hibernate-java8",
 				"hibernate-jcache",
-				"hibernate-jpamodelgen",
+				"hibernate-jpamodelgen-jakarta",
 				"hibernate-micrometer",
 				"hibernate-proxool",
 				"hibernate-spatial",
-				"hibernate-testing",
+				"hibernate-testing-jakarta",
 				"hibernate-vibur"
 			]
 		}
 	}
-	library("Hibernate Validator", "6.2.0.Final") {
-		prohibit("[7.0.0.Alpha1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Hibernate Validator", "7.0.1.Final") {
 		group("org.hibernate.validator") {
 			modules = [
 				"hibernate-validator",
@@ -452,10 +440,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Activation", "1.2.2") {
-		prohibit("[2.0.0-rc1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Activation", "2.0.1") {
 		group("com.sun.activation") {
 			modules = [
 				"jakarta.activation"
@@ -467,50 +452,35 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Annotation", "1.3.5") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Annotation", "2.0.0") {
 		group("jakarta.annotation") {
 			modules = [
 				"jakarta.annotation-api"
 			]
 		}
 	}
-	library("Jakarta JMS", "2.0.3") {
-		prohibit("[3.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta JMS", "3.0.0") {
 		group("jakarta.jms") {
 			modules = [
 				"jakarta.jms-api"
 			]
 		}
 	}
-	library("Jakarta Json", "1.1.6") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Json", "2.0.1") {
 		group("jakarta.json") {
 			modules = [
 				"jakarta.json-api"
 			]
 		}
 	}
-	library("Jakarta Json Bind", "1.0.2") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Json Bind", "2.0.0") {
 		group("jakarta.json.bind") {
 			modules = [
 				"jakarta.json.bind-api"
 			]
 		}
 	}
-	library("Jakarta Mail", "1.6.7") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Mail", "2.0.1") {
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
@@ -524,100 +494,70 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Persistence", "2.2.3") {
-		prohibit("[3.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Persistence", "3.0.0") {
 		group("jakarta.persistence") {
 			modules = [
 				"jakarta.persistence-api"
 			]
 		}
 	}
-	library("Jakarta Servlet", "4.0.4") {
-		prohibit("[5.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Servlet", "5.0.0") {
 		group("jakarta.servlet") {
 			modules = [
 				"jakarta.servlet-api"
 			]
 		}
 	}
-	library("Jakarta Servlet JSP JSTL", "1.2.7") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Servlet JSP JSTL", "2.0.0") {
 		group("jakarta.servlet.jsp.jstl") {
 			modules = [
 				"jakarta.servlet.jsp.jstl-api"
 			]
 		}
 	}
-	library("Jakarta Transaction", "1.3.3") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Transaction", "2.0.0") {
 		group("jakarta.transaction") {
 			modules = [
 				"jakarta.transaction-api"
 			]
 		}
 	}
-	library("Jakarta Validation", "2.0.2") {
-		prohibit("[3.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta Validation", "3.0.1") {
 		group("jakarta.validation") {
 			modules = [
 				"jakarta.validation-api"
 			]
 		}
 	}
-	library("Jakarta WebSocket", "1.1.2") {
-		prohibit("[2.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta WebSocket", "2.0.0") {
 		group("jakarta.websocket") {
 			modules = [
 				"jakarta.websocket-api"
 			]
 		}
 	}
-	library("Jakarta WS RS", "2.1.6") {
-		prohibit("[3.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta WS RS", "3.0.0") {
 		group("jakarta.ws.rs") {
 			modules = [
 				"jakarta.ws.rs-api"
 			]
 		}
 	}
-	library("Jakarta XML Bind", "2.3.3") {
-		prohibit("[3.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta XML Bind", "3.0.1") {
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
 			]
 		}
 	}
-	library("Jakarta XML SOAP", "1.4.2") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta XML SOAP", "2.0.1") {
 		group("jakarta.xml.soap") {
 			modules = [
 					"jakarta.xml.soap-api"
 			]
 		}
 	}
-	library("Jakarta XML WS", "2.3.3") {
-		prohibit("[3.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jakarta XML WS", "3.0.1") {
 		group("jakarta.xml.ws") {
 			modules = [
 				"jakarta.xml.ws-api"
@@ -633,20 +573,6 @@ bom {
 			]
 		}
 	}
-	library("Javax Activation", "1.2.0") {
-		group("javax.activation") {
-			modules = [
-				"javax.activation-api"
-			]
-		}
-	}
-	library("Javax Annotation", "1.3.2") {
-		group("javax.annotation") {
-			modules = [
-				"javax.annotation-api"
-			]
-		}
-	}
 	library("Javax Cache", "1.1.1") {
 		group("javax.cache") {
 			modules = [
@@ -654,80 +580,10 @@ bom {
 			]
 		}
 	}
-	library("Javax JAXB", "2.3.1") {
-		group("javax.xml.bind") {
-			modules = [
-				"jaxb-api"
-			]
-		}
-	}
-	library("Javax JAXWS", "2.3.1") {
-		group("javax.xml.ws") {
-			modules = [
-				"jaxws-api"
-			]
-		}
-	}
-	library("Javax JMS", "2.0.1") {
-		group("javax.jms") {
-			modules = [
-				"javax.jms-api"
-			]
-		}
-	}
-	library("Javax Json", "1.1.4") {
-		group("javax.json") {
-			modules = [
-				"javax.json-api"
-			]
-		}
-	}
-	library("Javax JsonB", "1.0") {
-		group("javax.json.bind") {
-			modules = [
-				"javax.json.bind-api"
-			]
-		}
-	}
-	library("Javax Mail", "1.6.2") {
-		group("javax.mail") {
-			modules = [
-				"javax.mail-api"
-			]
-		}
-	}
 	library("Javax Money", "1.1") {
 		group("javax.money") {
 			modules = [
 				"money-api"
-			]
-		}
-	}
-	library("Javax Persistence", "2.2") {
-		group("javax.persistence") {
-			modules = [
-				"javax.persistence-api"
-			]
-		}
-	}
-	library("Javax Transaction", "1.3") {
-		group("javax.transaction") {
-			modules = [
-				"javax.transaction-api"
-			]
-		}
-	}
-	library("Javax Validation", "2.0.1.Final") {
-		group("javax.validation") {
-			modules = [
-				"validation-api"
-			]
-		}
-	}
-	library("Javax WebSocket", "1.1") {
-		group("javax.websocket") {
-			modules = [
-				"javax.websocket-api"
 			]
 		}
 	}
@@ -767,40 +623,21 @@ bom {
 			]
 		}
 	}
-	library("Jetty EL", "9.0.52") {
-		prohibit("[10.0.0-M1,)") {
-			because "it requires Java 11"
-		}
+	library("Jetty EL", "10.0.7") {
 		group("org.mortbay.jasper") {
 			modules = [
 				"apache-el"
 			]
 		}
 	}
-	library("Jetty JSP", "2.2.0.v201112011158") {
-		group("org.eclipse.jetty.orbit") {
-			modules = [
-				"javax.servlet.jsp"
-			]
-		}
-	}
-	library("Jetty Reactive HTTPClient", "1.1.10") {
-		prohibit("[2,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jetty Reactive HTTPClient", "3.0.4") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
 			]
 		}
 	}
-	library("Jetty", "9.4.44.v20210927") {
-		prohibit("[10.0.0-alpha0,)") {
-			because "it requires Java 11"
-		}
-		prohibit("[11.0.0-alpha0,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Jetty", "11.0.7") {
 		group("org.eclipse.jetty") {
 			imports = [
 				"jetty-bom"
@@ -1355,10 +1192,7 @@ bom {
 			]
 		}
 	}
-	library("SAAJ Impl", "1.5.3") {
-		prohibit("[2.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("SAAJ Impl", "2.0.1") {
 		group("com.sun.xml.messaging.saaj") {
 			modules = [
 				"saaj-impl"
@@ -1447,7 +1281,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.0") {
+	library("Spring AMQP", "3.0.0-SNAPSHOT") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1468,35 +1302,35 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.1.0") {
+	library("Spring Data Bom", "2022.1.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.13") {
+	library("Spring Framework", "6.0.0-SNAPSHOT") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.4.0") {
+	library("Spring HATEOAS", "2.0.0-SNAPSHOT") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
 			]
 		}
 	}
-	library("Spring Integration", "5.5.6") {
+	library("Spring Integration", "6.0.0-SNAPSHOT") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.0") {
+	library("Spring Kafka", "3.0.0-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1516,7 +1350,7 @@ bom {
 			]
 		}
 	}
-	library("Spring RESTDocs", "2.0.5.RELEASE") {
+	library("Spring RESTDocs", "3.0.0-SNAPSHOT") {
 		group("org.springframework.restdocs") {
 			modules = [
 				"spring-restdocs-asciidoctor",
@@ -1534,21 +1368,25 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.6.0") {
+	library("Spring Security", "6.0.0-SNAPSHOT") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.1.0") {
+	library("Spring Session", "3.0.0-SNAPSHOT") {
 		group("org.springframework.session") {
-			imports = [
-				"spring-session-bom"
+			modules = [
+				"spring-session-core",
+				"spring-session-data-mongodb",
+				"spring-session-data-redis",
+				"spring-session-hazelcast",
+				"spring-session-jdbc"
 			]
 		}
 	}
-	library("Spring WS", "3.1.1") {
+	library("Spring WS", "4.0.0-SNAPSHOT") {
 		group("org.springframework.ws") {
 			modules = [
 				"spring-ws-core",
@@ -1566,10 +1404,7 @@ bom {
 			]
 		}
 	}
-	library("Sun Mail", "1.6.7") {
-		prohibit("[2.0.0-RC1,)") {
-			because "it uses the jakarta.* namespace"
-		}
+	library("Sun Mail", "2.0.1") {
 		group("com.sun.mail") {
 			modules = [
 				"jakarta.mail"
@@ -1577,9 +1412,6 @@ bom {
 		}
 	}
 	library("Tomcat", "${tomcatVersion}") {
-		prohibit("[10.0.0-M1,)") {
-			because "it uses the jakarta.* namespace"
-		}
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
@@ -1607,8 +1439,8 @@ bom {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
-				"undertow-servlet",
-				"undertow-websockets-jsr"
+				"undertow-servlet-jakartaee9",
+				"undertow-websockets-jsr-jakartaee9"
 			]
 		}
 	}
@@ -1651,7 +1483,7 @@ bom {
 			]
 		}
 	}
-	library("Yasson", "1.0.9") {
+	library("Yasson", "2.0.2") {
 		group("org.eclipse") {
 			modules = [
 				"yasson"

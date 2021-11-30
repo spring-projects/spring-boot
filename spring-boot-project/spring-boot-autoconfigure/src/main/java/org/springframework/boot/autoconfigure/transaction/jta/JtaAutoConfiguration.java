@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Import;
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(javax.transaction.Transaction.class)
+@ConditionalOnClass(jakarta.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @Import(JndiJtaConfiguration.class)

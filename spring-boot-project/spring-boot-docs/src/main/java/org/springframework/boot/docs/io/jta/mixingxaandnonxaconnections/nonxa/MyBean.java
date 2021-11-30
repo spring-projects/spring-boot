@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.jta.mixingxaandnonxaconnections.nonxa;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 

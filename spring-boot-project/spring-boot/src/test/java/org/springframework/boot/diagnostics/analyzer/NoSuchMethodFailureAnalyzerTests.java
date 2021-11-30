@@ -18,9 +18,6 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -28,9 +25,9 @@ import org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer
 import org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer.NoSuchMethodDescriptor;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
+import org.springframework.util.MimeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link NoSuchMethodFailureAnalyzer}.
@@ -39,70 +36,38 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Scott Frederick
  */
-@ClassPathOverrides({ "javax.servlet:servlet-api:2.5",
+@ClassPathOverrides({ "org.springframework:spring-core:5.3.12",
 		"org.springframework.data:spring-data-relational:1.1.7.RELEASE" })
 class NoSuchMethodFailureAnalyzerTests {
 
 	@Test
-	void parseJava8ErrorMessage() {
+	void parseHotspotErrorMessage() {
 		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
-				"javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
+				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
 		assertThat(descriptor).isNotNull();
-		assertThat(descriptor.getErrorMessage())
-				.isEqualTo("javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
-		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
+		assertThat(descriptor.getErrorMessage()).isEqualTo(
+				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
+		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
 		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
 		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
 		assertThat(typeHierarchy).hasSize(1);
-		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("servlet-api-2.5.jar");
+		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
 	}
 
 	@Test
-	void parseJavaOpenJ9ErrorMessage() {
-		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
-				"javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic; (loaded from file...");
-		assertThat(descriptor).isNotNull();
-		assertThat(descriptor.getErrorMessage())
-				.isEqualTo("javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
-		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
-		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
-		assertThat(typeHierarchy).hasSize(1);
-		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("servlet-api-2.5.jar");
-	}
-
-	@Test
-	void parseJavaImprovedHotspotErrorMessage() {
-		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
-				"'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
-						+ "java.lang.String, javax.servlet.Servlet)'");
-		assertThat(descriptor).isNotNull();
-		assertThat(descriptor.getErrorMessage())
-				.isEqualTo("'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
-						+ "java.lang.String, javax.servlet.Servlet)'");
-		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
-		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
-		assertThat(typeHierarchy).hasSize(1);
-		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("servlet-api-2.5.jar");
-	}
-
-	@Test
-	void whenAMethodOnAnInterfaceIsMissingThenNoSuchMethodErrorIsAnalyzed() {
-		Throwable failure = createFailure();
+	void whenAMethodOnAClassIsMissingThenNoSuchMethodErrorIsAnalyzed() {
+		Throwable failure = createFailureForMissingMethod();
 		assertThat(failure).isNotNull();
+		failure.printStackTrace();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
-				.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailure(").contains("addServlet(")
+				.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailureForMissingMethod(")
+				.contains("isMoreSpecific(")
 				.contains("calling method's class, " + NoSuchMethodFailureAnalyzerTests.class.getName() + ",")
-				.contains("called method's class, javax.servlet.ServletContext,");
+				.contains("called method's class, org.springframework.util.MimeType,");
 		assertThat(analysis.getAction()).contains(NoSuchMethodFailureAnalyzerTests.class.getName())
-				.contains("javax.servlet.ServletContext");
+				.contains("org.springframework.util.MimeType");
 	}
 
 	@Test
@@ -121,11 +86,11 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(analysis.getAction()).contains("org.springframework.data.r2dbc.mapping.R2dbcMappingContext");
 	}
 
-	private Throwable createFailure() {
+	private Throwable createFailureForMissingMethod() {
 		try {
-			ServletContext servletContext = mock(ServletContext.class);
-			servletContext.addServlet("example", new HttpServlet() {
-			});
+			System.out.println(MimeType.class.getProtectionDomain().getCodeSource().getLocation());
+			MimeType mimeType = new MimeType("application", "json");
+			System.out.println(mimeType.isMoreSpecific(null));
 			return null;
 		}
 		catch (Throwable ex) {
