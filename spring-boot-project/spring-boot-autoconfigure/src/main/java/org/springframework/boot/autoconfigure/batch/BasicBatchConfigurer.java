@@ -139,7 +139,7 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	 * @return the isolation level or {@code null} to use the default
 	 */
 	protected String determineIsolationLevel() {
-		return null;
+		return this.properties.getJdbc().getIsolationLevelForCreate();
 	}
 
 	protected PlatformTransactionManager createTransactionManager() {

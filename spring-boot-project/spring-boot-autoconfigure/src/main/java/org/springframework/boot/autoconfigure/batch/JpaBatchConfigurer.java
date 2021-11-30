@@ -38,6 +38,8 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 
 	private final EntityManagerFactory entityManagerFactory;
 
+	private final String isolationLevelForCreate;
+
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
@@ -50,12 +52,18 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 			TransactionManagerCustomizers transactionManagerCustomizers, EntityManagerFactory entityManagerFactory) {
 		super(properties, dataSource, transactionManagerCustomizers);
 		this.entityManagerFactory = entityManagerFactory;
+		this.isolationLevelForCreate = properties.getJdbc().getIsolationLevelForCreate();
 	}
 
 	@Override
 	protected String determineIsolationLevel() {
-		logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
-		return "ISOLATION_DEFAULT";
+		if (this.isolationLevelForCreate == null) {
+			logger.warn(
+					"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs. Define spring.batch.jdbc.isolation-level-for-create property to force a custom isolation level.");
+			return "ISOLATION_DEFAULT";
+		}
+
+		return this.isolationLevelForCreate;
 	}
 
 	@Override

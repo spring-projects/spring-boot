@@ -27,6 +27,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 
 /**
  * Tests for {@link BatchAutoConfiguration} when JPA is not on the classpath.
@@ -59,18 +61,24 @@ class BatchAutoConfigurationWithoutJpaTests {
 					assertThat(context).hasSingleBean(PlatformTransactionManager.class);
 					assertThat(context.getBean(PlatformTransactionManager.class).toString())
 							.contains("DataSourceTransactionManager");
-					assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
-							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+					assertThat(context.getBean(BatchProperties.class).getJdbc())
+							.returns("classpath:org/springframework/batch/core/schema-@@platform@@.sql",
+									from(Jdbc::getSchema))
+							.returns(DatabaseInitializationMode.EMBEDDED, from(Jdbc::getInitializeSchema))
+							.returns(null, from(Jdbc::getIsolationLevelForCreate));
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 					assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters()))
 							.isNull();
+
+					assertThat(context.getBean(JobRepository.class)).satisfies(
+							JobRepositoryTestingSupport.isolationLevelRequirements("ISOLATION_SERIALIZABLE"));
 				});
 	}
 
 	@Test
-	void jdbcWithCustomPrefix() {
+	void jdbcWithCustomSettings() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
