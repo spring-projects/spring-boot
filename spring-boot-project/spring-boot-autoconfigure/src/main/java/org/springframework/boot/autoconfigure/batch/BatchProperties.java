@@ -133,7 +133,7 @@ public class BatchProperties {
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 		/**
-		 * Transaction Isolation level for creating new jobs in meta-data tables.
+		 * Transaction isolation level for creating new jobs in meta-data tables.
 		 */
 		private String isolationLevelForCreate;
 
