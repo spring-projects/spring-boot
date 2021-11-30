@@ -160,7 +160,7 @@ It includes many annotations that can automatically configure a slice of your ap
 
 === spring-boot-loader
 Spring Boot Loader provides the secret sauce that allows you to build a single jar file that can be launched using `java -jar`.
-Generally, you will not need to use `spring-boot-loader` directly but work with the link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin.
+Generally, you will not need to use `spring-boot-loader` directly but work with the link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin instead.
 
 
 
