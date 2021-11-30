@@ -19,7 +19,7 @@ dependencies {
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
-	implementation("org.gradle:test-retry-gradle-plugin:1.1.9")
+	implementation("org.gradle:test-retry-gradle-plugin:1.3.1")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.5.0")
 	implementation("org.springframework:spring-core:5.3.10")
