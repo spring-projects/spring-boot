@@ -54,8 +54,12 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 
 	@Override
 	protected String determineIsolationLevel() {
-		logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
-		return "ISOLATION_DEFAULT";
+		if (properties.getJdbc().getIsolationLevelForCreate() == null) {
+			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs. Define spring.batch.jdbc.isolation-level-for-create property to force a custom isolation level.");
+			return "ISOLATION_DEFAULT";
+		}
+
+		return properties.getJdbc().getIsolationLevelForCreate();
 	}
 
 	@Override

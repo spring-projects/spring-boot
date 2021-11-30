@@ -223,6 +223,8 @@ class BatchAutoConfigurationTests {
 					// level)
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("job", new JobParameters()))
 							.isNull();
+					assertThat(context.getBean(JobRepository.class))
+							.satisfies(JobRepositoryTestingSupport.isolationLevelRequirements("ISOLATION_DEFAULT"));
 				});
 	}
 
@@ -261,6 +263,16 @@ class BatchAutoConfigurationTests {
 			JobRepository jobRepository = context.getBean(JobRepository.class);
 			assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
 		};
+	}
+
+	@Test
+	void testCustomIsolationLevelForCreate() {
+		this.contextRunner
+				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+						HibernateJpaAutoConfiguration.class)
+				.withPropertyValues("spring.batch.jdbc.isolation-level-for-create:ISOLATION_READ_COMMITTED")
+				.run((context) -> assertThat(context.getBean(JobRepository.class))
+						.satisfies(JobRepositoryTestingSupport.isolationLevelRequirements("ISOLATION_READ_COMMITTED")));
 	}
 
 	@Test

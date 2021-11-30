@@ -132,6 +132,11 @@ public class BatchProperties {
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
+		/**
+		 * Transaction Isolation level for creating new jobs in meta-data tables.
+		 */
+		private String isolationLevelForCreate;
+
 		public String getSchema() {
 			return this.schema;
 		}
@@ -154,6 +159,14 @@ public class BatchProperties {
 
 		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
+		}
+
+		public String getIsolationLevelForCreate() {
+			return this.isolationLevelForCreate;
+		}
+
+		public void setIsolationLevelForCreate(String isolationLevelForCreate) {
+			this.isolationLevelForCreate = isolationLevelForCreate;
 		}
 
 	}

@@ -42,13 +42,13 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 
-	private final BatchProperties properties;
+	protected final BatchProperties properties;
 
-	private final DataSource dataSource;
+	protected final DataSource dataSource;
 
 	private PlatformTransactionManager transactionManager;
 
-	private final TransactionManagerCustomizers transactionManagerCustomizers;
+	protected final TransactionManagerCustomizers transactionManagerCustomizers;
 
 	private JobRepository jobRepository;
 
@@ -139,7 +139,7 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	 * @return the isolation level or {@code null} to use the default
 	 */
 	protected String determineIsolationLevel() {
-		return null;
+		return this.properties.getJdbc().getIsolationLevelForCreate();
 	}
 
 	protected PlatformTransactionManager createTransactionManager() {
