@@ -16,14 +16,19 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
+import org.aopalliance.aop.Advice;
 import org.assertj.core.api.InstanceOfAssertFactories;
 
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.test.util.AopTestUtils;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,18 +40,39 @@ final class JobRepositoryTestingSupport {
 	}
 
 	static Consumer<JobRepository> isolationLevelRequirements(String isolationLevel) {
-		return (jobRepository) -> {
-			// Target object of jobRepository is itself an AOP proxy with two advisors,
-			// the second one is advising transaction attributes
-			Object targetProxy = AopTestUtils.getTargetObject(jobRepository);
-			assertThat(targetProxy).isInstanceOf(Advised.class);
-			Advisor[] advisors = ((Advised) targetProxy).getAdvisors();
-			assertThat(advisors.length).isEqualTo(2);
-			assertThat(advisors[1].getAdvice()).extracting("transactionAttributeSource")
-					.extracting(Object::toString, as(InstanceOfAssertFactories.STRING))
-					.contains("create*=PROPAGATION_REQUIRES_NEW," + isolationLevel)
-					.contains("getLastJobExecution*=PROPAGATION_REQUIRES_NEW," + isolationLevel);
-		};
+		return (jobRepository) ->
+				// jobRepository is proxied twice, the inner proxy has the transaction advice.
+				// This logic does not assume anything about proxy hierarchy, but it does about
+				// the advice itself.
+				assertThat(getTransactionAdvices(jobRepository))
+						.anySatisfy((advice) -> assertThat(advice).extracting("transactionAttributeSource")
+								.extracting(Object::toString, as(InstanceOfAssertFactories.STRING))
+								.contains("create*=PROPAGATION_REQUIRES_NEW," + isolationLevel)
+								.contains("getLastJobExecution*=PROPAGATION_REQUIRES_NEW," + isolationLevel));
+	}
+
+	private static Stream<Advice> getTransactionAdvices(Object candidate) {
+		Builder<Advice> builder = Stream.builder();
+		getTransactionAdvices(candidate, builder);
+		return builder.build();
+	}
+
+	private static void getTransactionAdvices(Object candidate, Builder<Advice> builder) {
+		try {
+			if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised) {
+				Arrays.stream(((Advised) candidate).getAdvisors())
+						.map(Advisor::getAdvice)
+						.filter(TransactionAspectSupport.class::isInstance)
+						.forEach(builder::add);
+				Object target = ((Advised) candidate).getTargetSource().getTarget();
+				if (target != null) {
+					getTransactionAdvices(target, builder);
+				}
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to unwrap proxied object", ex);
+		}
 	}
 
 }
