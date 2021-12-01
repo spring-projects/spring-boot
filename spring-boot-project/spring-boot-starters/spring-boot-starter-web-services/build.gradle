@@ -9,7 +9,5 @@ dependencies {
 	api("com.sun.xml.messaging.saaj:saaj-impl")
 	api("jakarta.xml.ws:jakarta.xml.ws-api")
 	api("org.springframework:spring-oxm")
-	api("org.springframework.ws:spring-ws-core") {
-		exclude group: "jakarta.servlet", module: "jakarta.servlet-api"
-	}
+	api("org.springframework.ws:spring-ws-core")
 }
