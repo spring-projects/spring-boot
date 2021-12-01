@@ -36,12 +36,12 @@ settings.gradle.projectsLoaded {
 				value('Toolchain version', toolchainVersion)
 				tag("JDK-$toolchainVersion")
 			}
-
-			settings.gradle.rootProject.getBuildDir().mkdirs()
-			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "build scan not generated"
-
+			def buildDir = settings.gradle.rootProject.getBuildDir()
+			buildDir.mkdirs()
+			new File(buildDir, "build-scan-uri.txt").text = "build scan not generated"
 			buildScanPublished { scan ->
-				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
+				buildDir.mkdirs()
+				new File(buildDir, "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
 			}
 		}
 	}
