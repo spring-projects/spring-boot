@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ final class ApiVersions {
 	/**
 	 * The platform API versions supported by this release.
 	 */
-	static final ApiVersions SUPPORTED_PLATFORMS = new ApiVersions(ApiVersion.of(0, 3), ApiVersion.of(0, 4));
+	static final ApiVersions SUPPORTED_PLATFORMS = new ApiVersions(ApiVersion.of(0, 3), ApiVersion.of(0, 4),
+			ApiVersion.of(0, 5), ApiVersion.of(0, 6), ApiVersion.of(0, 7), ApiVersion.of(0, 8));
 
 	private final ApiVersion[] apiVersions;
 

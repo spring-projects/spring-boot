@@ -181,7 +181,7 @@ class Lifecycle implements Closeable {
 	}
 
 	private boolean requiresProcessTypeDefault() {
-		return this.platformVersion.supports(ApiVersion.of(0, 4));
+		return this.platformVersion.supportsAny(ApiVersion.of(0, 4), ApiVersion.of(0, 5));
 	}
 
 	private void run(Phase phase) throws IOException {

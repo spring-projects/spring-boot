@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ final class ApiVersion {
 	 * the same version number. A 1.x or higher release matches when the versions have the
 	 * same major version and a minor that is equal or greater.
 	 * @param other the version to check against
-	 * @return if the specified API is supported
+	 * @return if the specified API version is supported
 	 * @see #assertSupports(ApiVersion)
 	 */
 	boolean supports(ApiVersion other) {
@@ -84,6 +84,21 @@ final class ApiVersion {
 			return false;
 		}
 		return this.minor >= other.minor;
+	}
+
+	/**
+	 * Returns if this API version supports any of the given versions.
+	 * @param others the versions to check against
+	 * @return if any of the specified API versions are supported
+	 * @see #supports(ApiVersion)
+	 */
+	boolean supportsAny(ApiVersion... others) {
+		for (ApiVersion other : others) {
+			if (supports(other)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
