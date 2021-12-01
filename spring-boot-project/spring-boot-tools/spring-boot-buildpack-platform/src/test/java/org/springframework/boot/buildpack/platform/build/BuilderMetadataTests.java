@@ -92,7 +92,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		assertThat(metadata.getStack().getRunImage().getMirrors()).isEmpty();
 		assertThat(metadata.getLifecycle().getVersion()).isEqualTo("0.7.2");
 		assertThat(metadata.getLifecycle().getApi().getBuildpack()).isEqualTo("0.2");
-		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.4");
+		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.8");
 		assertThat(metadata.getLifecycle().getApis().getBuildpack()).isNull();
 		assertThat(metadata.getLifecycle().getApis().getPlatform()).isNull();
 	}
@@ -102,9 +102,10 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		BuilderMetadata metadata = BuilderMetadata.fromJson(getContentAsString("builder-metadata-supported-apis.json"));
 		assertThat(metadata.getLifecycle().getVersion()).isEqualTo("0.7.2");
 		assertThat(metadata.getLifecycle().getApi().getBuildpack()).isEqualTo("0.2");
-		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.4");
+		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.8");
 		assertThat(metadata.getLifecycle().getApis().getBuildpack()).containsExactly("0.1", "0.2", "0.3");
-		assertThat(metadata.getLifecycle().getApis().getPlatform()).containsExactly("0.3", "0.4");
+		assertThat(metadata.getLifecycle().getApis().getPlatform()).containsExactly("0.3", "0.4", "0.5", "0.6", "0.7",
+				"0.8");
 	}
 
 	@Test

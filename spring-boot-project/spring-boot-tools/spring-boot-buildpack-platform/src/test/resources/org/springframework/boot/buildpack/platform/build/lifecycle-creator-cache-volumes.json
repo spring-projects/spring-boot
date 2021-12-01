@@ -16,11 +16,10 @@
     "-launch-cache",
     "/launch-cache",
     "-daemon",
-    "-process-type=web",
     "docker.io/library/my-application:latest"
   ],
   "Env": [
-    "CNB_PLATFORM_API=0.4"
+    "CNB_PLATFORM_API=0.8"
   ],
   "Labels": {
     "author": "spring-boot"
