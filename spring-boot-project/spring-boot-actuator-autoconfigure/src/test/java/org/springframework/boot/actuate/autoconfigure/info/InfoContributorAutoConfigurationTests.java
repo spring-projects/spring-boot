@@ -27,10 +27,12 @@ import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
+import org.springframework.boot.actuate.info.SpringInfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.info.JavaInfo;
+import org.springframework.boot.info.SpringInfo;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -148,6 +150,23 @@ class InfoContributorAutoConfigurationTests {
 			Map<String, Object> content = invokeContributor(context.getBean(JavaInfoContributor.class));
 			assertThat(content).containsKey("java");
 			assertThat(content.get("java")).isInstanceOf(JavaInfo.class);
+		});
+	}
+
+	@Test
+	void springInfoContributor() {
+		this.contextRunner.withPropertyValues("management.info.spring.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(SpringInfoContributor.class);
+			Map<String, Object> content = invokeContributor(context.getBean(SpringInfoContributor.class));
+			assertThat(content).containsKey("spring");
+			assertThat(content.get("spring")).isInstanceOf(SpringInfo.class);
+		});
+	}
+
+	@Test
+	void springInfoContributorDisabled() {
+		this.contextRunner.withPropertyValues("management.info.spring.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(SpringInfoContributor.class);
 		});
 	}
 

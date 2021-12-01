@@ -1165,6 +1165,11 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 | Exposes Java runtime information.
 | None.
 
+| `spring`
+| {spring-boot-actuator-module-code}/info/SpringInfoContributor.java[`SpringInfoContributor`]
+| Exposes Spring Boot runtime information.
+| None.
+
 |===
 
 Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
