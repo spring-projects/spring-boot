@@ -34,6 +34,7 @@ import org.gradle.api.artifacts.ComponentMetadataContext;
 import org.gradle.api.artifacts.ComponentMetadataRule;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.VariantMetadata;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.attributes.DocsType;
@@ -98,15 +99,15 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private void addPopulateIntTestMavenRepositoryTask(Project project) {
-		RuntimeClasspathMavenRepository runtimeClasspathMavenRepository = project.getTasks()
-				.create("runtimeClasspathMavenRepository", RuntimeClasspathMavenRepository.class);
-		runtimeClasspathMavenRepository.getOutputDirectory()
-				.set(new File(project.getBuildDir(), "runtime-classpath-repository"));
 		Configuration runtimeClasspathWithMetadata = project.getConfigurations().create("runtimeClasspathWithMetadata");
 		runtimeClasspathWithMetadata
 				.extendsFrom(project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
 		runtimeClasspathWithMetadata.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
 				project.getObjects().named(DocsType.class, "maven-repository")));
+		RuntimeClasspathMavenRepository runtimeClasspathMavenRepository = project.getTasks()
+				.create("runtimeClasspathMavenRepository", RuntimeClasspathMavenRepository.class);
+		runtimeClasspathMavenRepository.getOutputDirectory()
+				.set(new File(project.getBuildDir(), "runtime-classpath-repository"));
 		project.getDependencies()
 				.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
 		Copy task = project.getTasks().create("populateIntTestMavenRepository", Copy.class);
@@ -293,13 +294,18 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		@Override
 		public void execute(ComponentMetadataContext context) {
-			context.getDetails().maybeAddVariant("compileWithMetadata", "compile", (variant) -> {
-				variant.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
-						this.objects.named(DocsType.class, "maven-repository")));
-				variant.withFiles((files) -> {
-					ModuleVersionIdentifier id = context.getDetails().getId();
-					files.addFile(id.getName() + "-" + id.getVersion() + ".pom");
-				});
+			context.getDetails().maybeAddVariant("compileWithMetadata", "compile",
+					(variant) -> configureVariant(context, variant));
+			context.getDetails().maybeAddVariant("runtimeElementsWithMetadata", "runtimeElements",
+					(variant) -> configureVariant(context, variant));
+		}
+
+		private void configureVariant(ComponentMetadataContext context, VariantMetadata variant) {
+			variant.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
+					this.objects.named(DocsType.class, "maven-repository")));
+			variant.withFiles((files) -> {
+				ModuleVersionIdentifier id = context.getDetails().getId();
+				files.addFile(id.getName() + "-" + id.getVersion() + ".pom");
 			});
 		}
 
@@ -312,8 +318,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		private final DirectoryProperty outputDirectory;
 
 		public RuntimeClasspathMavenRepository() {
-			this.runtimeClasspath = getProject().getConfigurations()
-					.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+			this.runtimeClasspath = getProject().getConfigurations().getByName("runtimeClasspathWithMetadata");
 			this.outputDirectory = getProject().getObjects().directoryProperty();
 		}
 
@@ -333,9 +338,11 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				if (result.getId().getComponentIdentifier() instanceof ModuleComponentIdentifier) {
 					ModuleComponentIdentifier identifier = (ModuleComponentIdentifier) result.getId()
 							.getComponentIdentifier();
+					String fileName = result.getFile().getName()
+							.replace(identifier.getVersion() + "-" + identifier.getVersion(), identifier.getVersion());
 					File repositoryLocation = this.outputDirectory.dir(identifier.getGroup().replace('.', '/') + "/"
-							+ identifier.getModule() + "/" + identifier.getVersion() + "/" + result.getFile().getName())
-							.get().getAsFile();
+							+ identifier.getModule() + "/" + identifier.getVersion() + "/" + fileName).get()
+							.getAsFile();
 					repositoryLocation.getParentFile().mkdirs();
 					try {
 						Files.copy(result.getFile().toPath(), repositoryLocation.toPath(),
