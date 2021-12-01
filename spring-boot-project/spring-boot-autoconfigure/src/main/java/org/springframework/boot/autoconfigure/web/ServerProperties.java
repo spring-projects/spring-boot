@@ -68,6 +68,7 @@ import org.springframework.util.unit.DataSize;
  * @author Victor Mandujano
  * @author Chris Bono
  * @author Parviz Rozikov
+ * @author Leo Li
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -1351,6 +1352,11 @@ public class ServerProperties {
 		 */
 		private Duration idleTimeout;
 
+		/**
+		 * Maximum number of requests that can be made per connection.
+		 */
+		private int maxKeepAliveRequests = -1;
+
 		public Duration getConnectionTimeout() {
 			return this.connectionTimeout;
 		}
@@ -1405,6 +1411,14 @@ public class ServerProperties {
 
 		public void setIdleTimeout(Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
+		}
+
+		public int getMaxKeepAliveRequests() {
+			return this.maxKeepAliveRequests;
+		}
+
+		public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
+			this.maxKeepAliveRequests = maxKeepAliveRequests;
 		}
 
 	}

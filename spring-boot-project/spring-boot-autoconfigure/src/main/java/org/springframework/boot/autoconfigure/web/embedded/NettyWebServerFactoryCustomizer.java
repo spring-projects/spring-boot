@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @author Chentao Qu
  * @author Artsiom Yudovin
+ * @author Leo Li
  * @since 2.1.0
  */
 public class NettyWebServerFactoryCustomizer
@@ -62,6 +63,8 @@ public class NettyWebServerFactoryCustomizer
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(nettyProperties::getIdleTimeout).whenNonNull()
 				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+		propertyMapper.from(nettyProperties::getMaxKeepAliveRequests).whenNonNull()
+				.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
 		customizeRequestDecoder(factory, propertyMapper);
 	}
 
@@ -102,6 +105,10 @@ public class NettyWebServerFactoryCustomizer
 
 	private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
 		factory.addServerCustomizers((httpServer) -> httpServer.idleTimeout(idleTimeout));
+	}
+
+	private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
+		factory.addServerCustomizers((httpServer) -> httpServer.maxKeepAliveRequests(maxKeepAliveRequests));
 	}
 
 }

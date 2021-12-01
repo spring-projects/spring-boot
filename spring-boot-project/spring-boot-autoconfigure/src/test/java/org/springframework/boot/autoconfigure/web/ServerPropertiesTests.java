@@ -84,6 +84,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rafiullah Hamedy
  * @author Chris Bono
  * @author Parviz Rozikov
+ * @author Leo Li
  */
 class ServerPropertiesTests {
 
@@ -337,6 +338,17 @@ class ServerPropertiesTests {
 	void testCustomizeNettyIdleTimeout() {
 		bind("server.netty.idle-timeout", "10s");
 		assertThat(this.properties.getNetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
+	}
+
+	@Test
+	void testCustomizeNettyMaxKeepAliveRequests() {
+		bind("server.netty.max-keep-alive-requests", "100");
+		assertThat(this.properties.getNetty().getMaxKeepAliveRequests()).isEqualTo(100);
+	}
+
+	@Test
+	void testCustomizeNettyMaxKeepAliveRequestsDefault() {
+		assertThat(this.properties.getNetty().getMaxKeepAliveRequests()).isEqualTo(-1);
 	}
 
 	@Test
