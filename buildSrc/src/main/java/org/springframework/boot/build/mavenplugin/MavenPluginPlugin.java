@@ -38,6 +38,7 @@ import org.gradle.api.artifacts.VariantMetadata;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.attributes.DocsType;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
@@ -296,13 +297,16 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		public void execute(ComponentMetadataContext context) {
 			context.getDetails().maybeAddVariant("compileWithMetadata", "compile",
 					(variant) -> configureVariant(context, variant));
-			context.getDetails().maybeAddVariant("runtimeElementsWithMetadata", "runtimeElements",
+			context.getDetails().maybeAddVariant("apiElementsWithMetadata", "apiElements",
 					(variant) -> configureVariant(context, variant));
 		}
 
 		private void configureVariant(ComponentMetadataContext context, VariantMetadata variant) {
-			variant.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
-					this.objects.named(DocsType.class, "maven-repository")));
+			variant.attributes((attributes) -> {
+				attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
+						this.objects.named(DocsType.class, "maven-repository"));
+				attributes.attribute(Usage.USAGE_ATTRIBUTE, this.objects.named(Usage.class, "maven-repository"));
+			});
 			variant.withFiles((files) -> {
 				ModuleVersionIdentifier id = context.getDetails().getId();
 				files.addFile(id.getName() + "-" + id.getVersion() + ".pom");
