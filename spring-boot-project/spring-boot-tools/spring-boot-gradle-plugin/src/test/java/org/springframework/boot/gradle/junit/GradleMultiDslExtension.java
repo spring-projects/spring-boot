@@ -63,7 +63,7 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 			GradleBuild gradleBuild = new GradleBuild(this.dsl);
 			JavaVersion javaVersion = JavaVersion.current();
 			if (javaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
-				gradleBuild.gradleVersion("7.3");
+				gradleBuild.gradleVersion("7.3.1");
 			}
 			else if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
 				gradleBuild.gradleVersion("7.0.2");

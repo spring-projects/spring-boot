@@ -48,13 +48,13 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 	static {
 		JavaVersion javaVersion = JavaVersion.current();
 		if (javaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
-			GRADLE_VERSIONS = Arrays.asList("7.2", "7.3");
+			GRADLE_VERSIONS = Arrays.asList("7.2", "7.3.1");
 		}
 		else if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
-			GRADLE_VERSIONS = Arrays.asList("7.0.2", "7.1.1", "7.2", "7.3");
+			GRADLE_VERSIONS = Arrays.asList("7.0.2", "7.1.1", "7.2", "7.3.1");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("6.8.3", "current", "7.0.2", "7.1.1", "7.2", "7.3");
+			GRADLE_VERSIONS = Arrays.asList("6.8.3", "current", "7.0.2", "7.1.1", "7.2", "7.3.1");
 		}
 	}
 
