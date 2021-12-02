@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for Mustache.
  *
  * @author Dave Syer
+ * @author Leo Li
  * @since 1.2.2
  */
 @ConfigurationProperties(prefix = "spring.mustache")
@@ -41,6 +45,8 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	 * Suffix to apply to template names.
 	 */
 	private String suffix = DEFAULT_SUFFIX;
+
+	private final Reactive reactive = new Reactive();
 
 	public MustacheProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
@@ -64,6 +70,27 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	@Override
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
+	}
+
+	public Reactive getReactive() {
+		return this.reactive;
+	}
+
+	public static class Reactive {
+
+		/**
+		 * Media types supported by the view technology.
+		 */
+		private List<MediaType> mediaTypes;
+
+		public List<MediaType> getMediaTypes() {
+			return this.mediaTypes;
+		}
+
+		public void setMediaTypes(List<MediaType> mediaTypes) {
+			this.mediaTypes = mediaTypes;
+		}
+
 	}
 
 }
