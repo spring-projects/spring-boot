@@ -211,6 +211,16 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void repackagedWarDoesNotContainClasspathIndex(MavenBuild mavenBuild) {
+		mavenBuild.project("war").execute((project) -> {
+			File repackaged = new File(project, "target/war-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(repackaged))
+					.manifest((manifest) -> manifest.doesNotHaveAttribute("Spring-Boot-Classpath-Index"));
+			assertThat(jar(repackaged)).doesNotHaveEntryWithName("BOOT-INF/classpath.idx");
+		});
+	}
+
+	@TestTemplate
 	void whenEntryIsExcludedItShouldNotBePresentInTheRepackagedWar(MavenBuild mavenBuild) {
 		mavenBuild.project("war-exclude-entry").execute((project) -> {
 			File war = new File(project, "target/war-exclude-entry-0.0.1.BUILD-SNAPSHOT.war");
