@@ -76,9 +76,15 @@ This mechanism does not apply the same way to `@Bean` methods where typically th
 
 To handle this scenario, a separate `@Configuration` class can be used to isolate the condition, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/conditionannotations/classconditions/MyAutoConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/conditionannotations/classconditions/MyAutoConfiguration.kt[]
 ----
 
 TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a meta-annotation to compose your own composed annotations, you must use `name` as referring to the class in such a case is not handled.
@@ -93,9 +99,15 @@ The `search` attribute lets you limit the `ApplicationContext` hierarchy that sh
 
 When placed on a `@Bean` method, the target type defaults to the return type of the method, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/conditionannotations/beanconditions/MyAutoConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/conditionannotations/beanconditions/MyAutoConfiguration.kt[]
 ----
 
 In the preceding example, the `someService` bean is going to be created if no bean of type `SomeService` is already contained in the `ApplicationContext`.
@@ -154,9 +166,15 @@ Concretely, each test should create a well defined `ApplicationContext` that rep
 `ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
 The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=runner]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.kt[tag=runner]
 ----
 
 TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
@@ -165,27 +183,44 @@ Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
 Invoking `run` provides a callback context that can be used with `AssertJ`.
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-user-config]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.kt[tag=test-user-config]
 ----
 
 It is also possible to easily customize the `Environment`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-env]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.kt[tag=test-env]
 ----
 
 The runner can also be used to display the `ConditionEvaluationReport`.
 The report can be printed at `INFO` or `DEBUG` level.
 The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/testing/MyConditionEvaluationReportingTests.java[]
 ----
-
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/testing/MyConditionEvaluationReportingTests.kt[]
+----
 
 
 [[features.developing-auto-configuration.testing.simulating-a-web-context]]
@@ -200,11 +235,16 @@ It is also possible to test what happens when a particular class and/or package 
 Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
 In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-classloader]
 ----
-
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.kt[tag=test-classloader]
+----
 
 
 [[features.developing-auto-configuration.custom-starter]]
@@ -249,9 +289,15 @@ As a rule of thumb, prefix all your keys with a namespace that you own (for exam
 
 Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/features/developingautoconfiguration/customstarter/configurationkeys/AcmeProperties.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/features/developingautoconfiguration/customstarter/configurationkeys/AcmeProperties.kt[]
 ----
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
