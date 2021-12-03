@@ -10,21 +10,39 @@ Unlike Spring MVC, it does not require the servlet API, is fully asynchronous an
 Spring WebFlux comes in two flavors: functional and annotation-based.
 The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/MyRestController.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/MyRestController.kt[]
 ----
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/MyRoutingConfiguration.java[]
 ----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/MyRoutingConfiguration.kt[]
+----
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/MyUserHandler.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/MyUserHandler.kt[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -41,14 +59,26 @@ You can still enforce your choice by setting the chosen application type to `Spr
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/MyRoutingConfiguration.java[]
 ----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/MyRoutingConfiguration.kt[]
+----
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/MyUserHandler.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/MyUserHandler.kt[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -88,9 +118,15 @@ For example, `+spring.jackson.*+` configuration keys are applied to the Jackson 
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/httpcodecs/MyCodecsConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/httpcodecs/MyCodecsConfiguration.kt[]
 ----
 
 You can also leverage <<web#web.servlet.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
@@ -162,9 +198,15 @@ For that, you can add a bean of type `ErrorAttributes`.
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/errorhandling/MyErrorWebExceptionHandler.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/errorhandling/MyErrorWebExceptionHandler.kt[]
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
@@ -172,11 +214,16 @@ For a more complete picture, you can also subclass `DefaultErrorWebExceptionHand
 In some cases, errors handled at the controller or handler function level are not recorded by the <<actuator#actuator.metrics.supported.spring-webflux, metrics infrastructure>>.
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/web/reactive/webflux/errorhandling/MyExceptionHandlingController.java[]
 ----
-
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/web/reactive/webflux/errorhandling/MyExceptionHandlingController.kt[]
+----
 
 
 [[web.reactive.webflux.error-handling.error-pages]]
