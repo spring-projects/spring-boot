@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * Base class for archive (jar or war) related Maven plugin integration tests.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 abstract class AbstractArchiveIntegrationTests {
 
@@ -198,6 +199,11 @@ abstract class AbstractArchiveIntegrationTests {
 
 			ManifestAssert hasAttribute(String name, String value) {
 				assertThat(this.actual.getMainAttributes().getValue(name)).isEqualTo(value);
+				return this;
+			}
+
+			ManifestAssert doesNotHaveAttribute(String name) {
+				assertThat(this.actual.getMainAttributes().getValue(name)).isNull();
 				return this;
 			}
 

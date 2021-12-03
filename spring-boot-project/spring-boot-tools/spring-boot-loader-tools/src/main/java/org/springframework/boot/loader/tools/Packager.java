@@ -510,15 +510,15 @@ public abstract class Packager {
 					writtenPaths.add(path);
 				}
 			}
-			if (getLayout() instanceof RepackagingLayout) {
-				writeClasspathIndex(writtenPaths, (RepackagingLayout) getLayout(), writer);
-			}
+			writeClasspathIndexIfNecessary(writtenPaths, getLayout(), writer);
 		}
 
-		private void writeClasspathIndex(List<String> paths, RepackagingLayout layout, AbstractJarWriter writer)
+		private void writeClasspathIndexIfNecessary(List<String> paths, Layout layout, AbstractJarWriter writer)
 				throws IOException {
-			List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").collect(Collectors.toList());
-			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
+			if (layout.getClasspathIndexFileLocation() != null) {
+				List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").collect(Collectors.toList());
+				writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
+			}
 		}
 
 		private class PackagedLibrariesUnpackHandler implements UnpackHandler {
