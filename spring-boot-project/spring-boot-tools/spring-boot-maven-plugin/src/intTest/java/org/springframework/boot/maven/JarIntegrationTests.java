@@ -366,6 +366,16 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void repackagedJarContainsClasspathIndex(MavenBuild mavenBuild) {
+		mavenBuild.project("jar").execute((project) -> {
+			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).manifest(
+					(manifest) -> manifest.hasAttribute("Spring-Boot-Classpath-Index", "BOOT-INF/classpath.idx"));
+			assertThat(jar(repackaged)).hasEntryWithName("BOOT-INF/classpath.idx");
+		});
+	}
+
+	@TestTemplate
 	void whenJarIsRepackagedWithOutputTimestampConfiguredThenJarIsReproducible(MavenBuild mavenBuild)
 			throws InterruptedException {
 		String firstHash = buildJarWithOutputTimestamp(mavenBuild);
