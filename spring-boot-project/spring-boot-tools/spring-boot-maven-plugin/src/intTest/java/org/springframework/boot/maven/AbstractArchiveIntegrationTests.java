@@ -213,6 +213,11 @@ abstract class AbstractArchiveIntegrationTests {
 				return this;
 			}
 
+			ManifestAssert doesNotHaveAttribute(String name) {
+				assertThat(this.actual.getMainAttributes().getValue(name)).isNull();
+				return this;
+			}
+
 		}
 
 	}
