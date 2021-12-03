@@ -19,6 +19,6 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 import javax.xml.bind.annotation.XmlRootElement
 
 @XmlRootElement(name = "request")
-internal class Request {
+class Request {
 
 }

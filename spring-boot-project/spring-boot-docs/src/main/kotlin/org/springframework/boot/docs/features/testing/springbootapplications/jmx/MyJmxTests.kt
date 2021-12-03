@@ -24,18 +24,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import javax.management.MBeanServer
-import javax.management.MalformedObjectNameException
-import kotlin.Throws
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(properties = ["spring.jmx.enabled=true"])
 @DirtiesContext
-internal open class MyJmxTests {
-	@Autowired
-	private val mBeanServer: MBeanServer? = null
+class MyJmxTests(@Autowired val mBeanServer: MBeanServer) {
 
 	@Test
-	@Throws(MalformedObjectNameException::class)
 	fun exampleTest() {
 		Assertions.assertThat(mBeanServer!!.domains).contains("java.lang")
 		// ...

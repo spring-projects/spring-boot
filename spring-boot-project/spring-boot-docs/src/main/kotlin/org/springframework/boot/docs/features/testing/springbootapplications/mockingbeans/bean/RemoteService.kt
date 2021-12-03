@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.mockingbeans.bean
 
-internal class RemoteService {
+class RemoteService {
 	val value: Any?
 		get() = null
 }

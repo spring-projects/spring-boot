@@ -24,11 +24,8 @@ import org.springframework.boot.test.json.JacksonTester
 import kotlin.Throws
 
 @JsonTest
-internal class MyJsonTests {
-	@Autowired
-	private val json: JacksonTester<VehicleDetails>? = null
+class MyJsonTests(@Autowired val json: JacksonTester<VehicleDetails>) {
 	@Test
-	@Throws(Exception::class)
 	fun serialize() {
 		val details = VehicleDetails("Honda", "Civic")
 		// Assert against a `.json` file in the same package as the test
@@ -39,7 +36,6 @@ internal class MyJsonTests {
 	}
 
 	@Test
-	@Throws(Exception::class)
 	fun deserialize() {
 		val content = "{\"make\":\"Ford\",\"model\":\"Focus\"}"
 		Assertions.assertThat(

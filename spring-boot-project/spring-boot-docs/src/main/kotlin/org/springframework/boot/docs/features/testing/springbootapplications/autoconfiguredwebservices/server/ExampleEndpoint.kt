@@ -21,13 +21,11 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload
 import org.springframework.xml.transform.StringSource
 import javax.xml.transform.Source
-import kotlin.Throws
 
 @Endpoint
 class ExampleEndpoint {
 	@PayloadRoot(localPart = "ExampleRequest")
 	@ResponsePayload
-	@Throws(Exception::class)
 	fun handleRequest(): Source {
 		return StringSource("<ExampleResponse>42</ExampleResponse>")
 	}

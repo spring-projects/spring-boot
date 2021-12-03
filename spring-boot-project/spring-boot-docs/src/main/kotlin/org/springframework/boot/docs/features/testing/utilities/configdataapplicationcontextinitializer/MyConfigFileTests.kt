@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [Config::class], initializers = [ConfigDataApplicationContextInitializer::class])
-internal class MyConfigFileTests {
+class MyConfigFileTests {
 
 	// ...
 

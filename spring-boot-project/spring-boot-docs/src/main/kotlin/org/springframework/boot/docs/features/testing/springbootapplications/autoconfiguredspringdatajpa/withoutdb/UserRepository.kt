@@ -16,6 +16,6 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatajpa.withoutdb
 
-internal interface UserRepository {
+interface UserRepository {
 	fun findByUsername(username: String?): User?
 }

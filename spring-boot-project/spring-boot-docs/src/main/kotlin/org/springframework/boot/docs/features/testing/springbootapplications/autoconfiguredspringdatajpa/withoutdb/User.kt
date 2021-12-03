@@ -16,4 +16,4 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatajpa.withoutdb
 
-internal class User(val username: String, val employeeNumber: String)
+class User(val username: String, val employeeNumber: String)

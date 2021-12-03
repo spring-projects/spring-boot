@@ -26,7 +26,7 @@ import org.springframework.test.context.TestExecutionListeners
 	MockitoTestExecutionListener::class,
 	ResetMocksTestExecutionListener::class
 )
-internal class MyTests {
+class MyTests {
 
 	// ...
 

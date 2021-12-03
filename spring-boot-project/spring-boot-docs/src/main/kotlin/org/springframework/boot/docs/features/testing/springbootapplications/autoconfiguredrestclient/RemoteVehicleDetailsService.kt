@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredrestclient
 
-internal class RemoteVehicleDetailsService {
+class RemoteVehicleDetailsService {
 	fun callRestService(): String {
 		return "hello"
 	}

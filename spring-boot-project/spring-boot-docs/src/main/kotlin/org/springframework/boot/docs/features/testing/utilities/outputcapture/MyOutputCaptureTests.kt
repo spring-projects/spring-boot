@@ -23,7 +23,7 @@ import org.springframework.boot.test.system.CapturedOutput
 import org.springframework.boot.test.system.OutputCaptureExtension
 
 @ExtendWith(OutputCaptureExtension::class)
-internal open class MyOutputCaptureTests {
+class MyOutputCaptureTests {
 	@Test
 	fun testName(output: CapturedOutput?) {
 		println("Hello World!")

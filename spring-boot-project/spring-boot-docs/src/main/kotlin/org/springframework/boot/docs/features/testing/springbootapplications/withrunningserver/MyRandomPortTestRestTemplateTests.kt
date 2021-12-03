@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.boot.test.web.client.TestRestTemplate
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-internal class MyRandomPortTestRestTemplateTests {
+class MyRandomPortTestRestTemplateTests {
 	@Test
 	fun exampleTest(@Autowired restTemplate: TestRestTemplate) {
 		val body = restTemplate.getForObject("/", String::class.java)

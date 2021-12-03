@@ -20,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest
 
 @DataNeo4jTest
-internal class MyDataNeo4jTests {
-	@Autowired
-	private val repository: SomeRepository? = null
+class MyDataNeo4jTests(@Autowired val repository: SomeRepository) {
 
 	// ...
 

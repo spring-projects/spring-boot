@@ -29,7 +29,7 @@ import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs
-internal class MyUserDocumentationTests {
+class MyUserDocumentationTests {
 	@Test
 	fun listUsers(@Autowired documentationSpec: RequestSpecification?, @LocalServerPort port: Int) {
 		// @formatter:off

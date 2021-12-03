@@ -27,12 +27,10 @@ import org.springframework.xml.transform.StringSource
 import java.util.function.Function
 
 @WebServiceClientTest(SomeWebService::class)
-internal class MyWebServiceClientTests {
-	@Autowired
-	private val server: MockWebServiceServer? = null
+class MyWebServiceClientTests(
+	@Autowired val server: MockWebServiceServer,
+	@Autowired val someWebService: SomeWebService) {
 
-	@Autowired
-	private val someWebService: SomeWebService? = null
 	@Test
 	fun mockServerCall() {
 		// @formatter:off

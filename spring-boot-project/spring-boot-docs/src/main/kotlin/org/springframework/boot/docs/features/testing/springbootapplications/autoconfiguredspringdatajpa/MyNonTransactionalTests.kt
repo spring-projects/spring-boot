@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @DataJpaTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-internal class MyNonTransactionalTests {
+class MyNonTransactionalTests {
 
 	// ...
 

@@ -23,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-internal class MyRandomPortWebTestClientTests {
+class MyRandomPortWebTestClientTests {
 	@Test
 	fun exampleTest(@Autowired webClient: WebTestClient) {
 		// @formatter:off

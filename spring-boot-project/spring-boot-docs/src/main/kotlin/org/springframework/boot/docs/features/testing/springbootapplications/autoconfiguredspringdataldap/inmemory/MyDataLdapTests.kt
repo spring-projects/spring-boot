@@ -21,9 +21,7 @@ import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest
 import org.springframework.ldap.core.LdapTemplate
 
 @DataLdapTest
-class MyDataLdapTests {
-	@Autowired
-	private val ldapTemplate: LdapTemplate? = null
+class MyDataLdapTests(@Autowired val ldapTemplate: LdapTemplate) {
 
 	// ...
 

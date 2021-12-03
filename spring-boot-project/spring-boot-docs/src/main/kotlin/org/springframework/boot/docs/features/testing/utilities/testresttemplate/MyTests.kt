@@ -19,12 +19,10 @@ package org.springframework.boot.docs.features.testing.utilities.testresttemplat
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.TestRestTemplate
-import kotlin.Throws
 
-internal class MyTests {
+class MyTests {
 	private val template = TestRestTemplate()
 	@Test
-	@Throws(Exception::class)
 	fun testRequest() {
 		val headers = template.getForEntity(
 			"https://myhost.example.com/example",

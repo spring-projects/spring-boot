@@ -20,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest
 
 @DataRedisTest
-class MyDataRedisTests {
-	@Autowired
-	private val repository: SomeRepository? = null
+class MyDataRedisTests(@Autowired val repository: SomeRepository) {
 
 	// ...
 

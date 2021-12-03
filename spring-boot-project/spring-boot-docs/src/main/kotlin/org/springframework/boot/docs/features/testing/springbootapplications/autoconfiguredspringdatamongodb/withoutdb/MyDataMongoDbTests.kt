@@ -21,9 +21,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
 import org.springframework.data.mongodb.core.MongoTemplate
 
 @DataMongoTest
-internal class MyDataMongoDbTests {
-	@Autowired
-	private val mongoTemplate: MongoTemplate? = null
+class MyDataMongoDbTests(@Autowired val mongoTemplate: MongoTemplate) {
 
 	// ...
 

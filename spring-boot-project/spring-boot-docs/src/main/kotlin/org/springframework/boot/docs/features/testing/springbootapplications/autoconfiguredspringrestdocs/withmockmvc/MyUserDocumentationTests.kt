@@ -25,15 +25,11 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import kotlin.Throws
 
 @WebMvcTest(UserController::class)
 @AutoConfigureRestDocs
-internal class MyUserDocumentationTests {
-	@Autowired
-	private val mvc: MockMvc? = null
+class MyUserDocumentationTests(@Autowired val mvc: MockMvc) {
 	@Test
-	@Throws(Exception::class)
 	fun listUsers() {
 		// @formatter:off
 		mvc!!.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.TEXT_PLAIN))

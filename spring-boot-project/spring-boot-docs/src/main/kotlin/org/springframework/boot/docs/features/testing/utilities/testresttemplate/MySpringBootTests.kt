@@ -28,9 +28,7 @@ import org.springframework.context.annotation.Bean
 import java.time.Duration
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-internal open class MySpringBootTests {
-	@Autowired
-	private val template: TestRestTemplate? = null
+class MySpringBootTests(@Autowired val template: TestRestTemplate) {
 	@Test
 	fun testRequest() {
 		val headers = template!!.getForEntity(

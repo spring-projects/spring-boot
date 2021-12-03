@@ -24,12 +24,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootTest
-internal class MyTests {
-	@Autowired
-	private val reverser: Reverser? = null
+class MyTests(
+	@Autowired val reverser: Reverser,
+	@MockBean val remoteService: RemoteService) {
 
-	@MockBean
-	private val remoteService: RemoteService? = null
 	@Test
 	fun exampleTest() {
 		BDDMockito.given(remoteService!!.value).willReturn("spring")

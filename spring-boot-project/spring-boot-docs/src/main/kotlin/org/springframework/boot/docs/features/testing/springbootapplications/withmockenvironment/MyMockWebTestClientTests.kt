@@ -24,7 +24,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @SpringBootTest
 @AutoConfigureWebTestClient
-internal class MyMockWebTestClientTests {
+class MyMockWebTestClientTests {
 	@Test
 	fun exampleTest(@Autowired webClient: WebTestClient) {
 		// @formatter:off

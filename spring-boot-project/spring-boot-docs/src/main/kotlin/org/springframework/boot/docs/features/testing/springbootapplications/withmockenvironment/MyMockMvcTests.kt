@@ -24,13 +24,11 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import kotlin.Throws
 
 @SpringBootTest
 @AutoConfigureMockMvc
-internal class MyMockMvcTests {
+class MyMockMvcTests {
 	@Test
-	@Throws(Exception::class)
 	fun testWithMockMvc(@Autowired mvc: MockMvc) {
 		mvc.perform(MockMvcRequestBuilders.get("/")).andExpect(MockMvcResultMatchers.status().isOk)
 			.andExpect(MockMvcResultMatchers.content().string("Hello World"))

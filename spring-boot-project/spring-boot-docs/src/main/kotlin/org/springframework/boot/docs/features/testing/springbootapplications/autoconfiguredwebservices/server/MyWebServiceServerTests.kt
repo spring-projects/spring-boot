@@ -25,9 +25,8 @@ import org.springframework.ws.test.server.ResponseMatchers
 import org.springframework.xml.transform.StringSource
 
 @WebServiceServerTest(ExampleEndpoint::class)
-internal class MyWebServiceServerTests {
-	@Autowired
-	private val client: MockWebServiceClient? = null
+class MyWebServiceServerTests(@Autowired val client: MockWebServiceClient) {
+
 	@Test
 	fun mockServerCall() {
 		// @formatter:off

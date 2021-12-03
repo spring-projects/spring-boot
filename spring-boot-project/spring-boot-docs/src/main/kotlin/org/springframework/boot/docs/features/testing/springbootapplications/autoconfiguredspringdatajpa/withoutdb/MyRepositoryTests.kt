@@ -21,17 +21,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import kotlin.Throws
 
 @DataJpaTest
-internal class MyRepositoryTests {
-	@Autowired
-	private val entityManager: TestEntityManager? = null
+class MyRepositoryTests(
+	@Autowired val entityManager: TestEntityManager,
+	@Autowired val repository: UserRepository) {
 
-	@Autowired
-	private val repository: UserRepository? = null
 	@Test
-	@Throws(Exception::class)
 	fun testExample() {
 		entityManager!!.persist(User("sboot", "1234"))
 		val user = repository!!.findByUsername("sboot")

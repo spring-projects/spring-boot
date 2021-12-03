@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.springmvctests
 
-internal class UserVehicleService {
+class UserVehicleService {
 	fun getVehicleDetails(name: String?): VehicleDetails? {
 		return null
 	}

@@ -23,17 +23,13 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
-import kotlin.Throws
 
 @WebFluxTest(UserVehicleController::class)
-internal class MyControllerTests {
-	@Autowired
-	private val webClient: WebTestClient? = null
+class MyControllerTests(
+	@Autowired val webClient: WebTestClient,
+	@MockBean val userVehicleService: UserVehicleService) {
 
-	@MockBean
-	private val userVehicleService: UserVehicleService? = null
 	@Test
-	@Throws(Exception::class)
 	fun testExample() {
 		// @formatter:off
 		BDDMockito.given(

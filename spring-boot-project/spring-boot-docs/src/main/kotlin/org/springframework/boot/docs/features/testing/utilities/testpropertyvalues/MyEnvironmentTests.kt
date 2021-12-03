@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.mock.env.MockEnvironment
 
-internal class MyEnvironmentTests {
+class MyEnvironmentTests {
 	@Test
 	fun testPropertySources() {
 		val environment = MockEnvironment()

@@ -24,17 +24,13 @@ import org.mockito.BDDMockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import kotlin.Throws
 
 @WebMvcTest(UserVehicleController::class)
-internal class MyHtmlUnitTests {
-	@Autowired
-	private val webClient: WebClient? = null
+class MyHtmlUnitTests(
+	@Autowired val webClient: WebClient,
+	@MockBean val userVehicleService: UserVehicleService) {
 
-	@MockBean
-	private val userVehicleService: UserVehicleService? = null
 	@Test
-	@Throws(Exception::class)
 	fun testExample() {
 		BDDMockito.given(
 			userVehicleService!!.getVehicleDetails("sboot")

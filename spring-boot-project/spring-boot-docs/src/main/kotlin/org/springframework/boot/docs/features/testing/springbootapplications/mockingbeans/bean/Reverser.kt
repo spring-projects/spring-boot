@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.mockingbeans.bean
 
-internal class Reverser {
+class Reverser {
 	val reverseValue: String?
 		get() = null
 }

@@ -25,9 +25,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest
 @AutoConfigureRestDocs
-internal class MyUsersDocumentationTests {
-	@Autowired
-	private val webTestClient: WebTestClient? = null
+class MyUsersDocumentationTests(@Autowired val webTestClient: WebTestClient) {
 	@Test
 	fun listUsers() {
 		// @formatter:off

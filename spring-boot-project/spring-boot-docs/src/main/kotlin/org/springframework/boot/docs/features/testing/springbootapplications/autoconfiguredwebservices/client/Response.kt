@@ -22,6 +22,6 @@ import javax.xml.bind.annotation.XmlRootElement
 
 @XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
-internal class Response {
+class Response {
 	val status = 0
 }

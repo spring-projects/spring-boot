@@ -20,7 +20,4 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest
 
 @DataCassandraTest
-internal class MyDataCassandraTests {
-	@Autowired
-	private val repository: SomeRepository? = null
-}
+class MyDataCassandraTests(@Autowired val repository: SomeRepository)

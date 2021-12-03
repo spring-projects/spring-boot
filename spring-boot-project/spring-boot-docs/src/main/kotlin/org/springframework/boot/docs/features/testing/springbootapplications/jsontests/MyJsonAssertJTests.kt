@@ -25,13 +25,10 @@ import org.springframework.boot.test.json.JacksonTester
 import kotlin.Throws
 
 @JsonTest
-internal class MyJsonAssertJTests {
-	@Autowired
-	private val json: JacksonTester<SomeObject>? = null
+class MyJsonAssertJTests(@Autowired val json: JacksonTester<SomeObject>) {
 
 	// tag::code[]
 	@Test
-	@Throws(Exception::class)
 	fun someTest() {
 		val value = SomeObject(0.152f)
 		Assertions.assertThat(json!!.write(value)).extractingJsonPathNumberValue("@.test.numberValue")

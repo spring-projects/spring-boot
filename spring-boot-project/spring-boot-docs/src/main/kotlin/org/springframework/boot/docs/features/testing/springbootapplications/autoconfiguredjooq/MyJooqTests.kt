@@ -21,7 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest
 
 @JooqTest
-class MyJooqTests {
-	@Autowired
-	private val dslContext: DSLContext? = null // ...
+class MyJooqTests(@Autowired val dslContext: DSLContext) {
+
+	// ...
+
 }

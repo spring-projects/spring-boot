@@ -24,23 +24,17 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.test.web.client.match.MockRestRequestMatchers
 import org.springframework.test.web.client.response.MockRestResponseCreators
-import kotlin.Throws
 
 @RestClientTest(RemoteVehicleDetailsService::class)
-internal class MyRestClientTests {
-	@Autowired
-	private val service: RemoteVehicleDetailsService? = null
+class MyRestClientTests(
+	@Autowired val service: RemoteVehicleDetailsService,
+	@Autowired val server: MockRestServiceServer) {
 
-	@Autowired
-	private val server: MockRestServiceServer? = null
-
-	@get:Throws(Exception::class)
-	@get:Test
-	val vehicleDetailsWhenResultIsSuccessShouldReturnDetails: Unit
-		get() {
-			server!!.expect(MockRestRequestMatchers.requestTo("/greet/details"))
-				.andRespond(MockRestResponseCreators.withSuccess("hello", MediaType.TEXT_PLAIN))
-			val greeting = service!!.callRestService()
-			Assertions.assertThat(greeting).isEqualTo("hello")
-		}
+	@Test
+	fun getVehicleDetailsWhenResultIsSuccessShouldReturnDetails(): Unit {
+		server!!.expect(MockRestRequestMatchers.requestTo("/greet/details"))
+			.andRespond(MockRestResponseCreators.withSuccess("hello", MediaType.TEXT_PLAIN))
+		val greeting = service!!.callRestService()
+		Assertions.assertThat(greeting).isEqualTo("hello")
+	}
 }

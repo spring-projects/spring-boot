@@ -22,6 +22,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest
 
 @JdbcTest
 @ImportAutoConfiguration(IntegrationAutoConfiguration::class)
-internal class MyJdbcTests {
+class MyJdbcTests {
 
 }
