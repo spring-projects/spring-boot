@@ -26,6 +26,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
@@ -36,6 +39,8 @@ import org.springframework.format.Printer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -44,6 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Tests for {@link ApplicationConversionService}.
  *
  * @author Phillip Webb
+ * @author Shixiong Guo(viviel)
  */
 class ApplicationConversionServiceTests {
 
@@ -91,6 +97,48 @@ class ApplicationConversionServiceTests {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleParser.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
 			verify(this.registry).addParser(context.getBean(ExampleParser.class));
+			verifyNoMoreInteractions(this.registry);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void addBeansWhenHasFactoryMethodConverterBeanAddConverter() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				FactoryMethodConverter.class)) {
+			Converter<String, Integer> converter = (Converter<String, Integer>) context.getBean("converter");
+			willThrow(IllegalArgumentException.class).given(this.registry).addConverter(converter);
+			ApplicationConversionService.addBeans(this.registry, context);
+			verify(this.registry).addConverter(converter);
+			verify(this.registry).addConverter(any(GenericConverter.class));
+			verifyNoMoreInteractions(this.registry);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void addBeansWhenHasFactoryMethodPrinterBeanAddPrinter() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				FactoryMethodPrinter.class)) {
+			Printer<Integer> printer = (Printer<Integer>) context.getBean("printer");
+			willThrow(IllegalArgumentException.class).given(this.registry).addPrinter(printer);
+			ApplicationConversionService.addBeans(this.registry, context);
+			verify(this.registry).addPrinter(printer);
+			verify(this.registry).addConverter(any(GenericConverter.class));
+			verifyNoMoreInteractions(this.registry);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void addBeansWhenHasFactoryMethodParserBeanAddParser() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				FactoryMethodParser.class)) {
+			Parser<Integer> parser = (Parser<Integer>) context.getBean("parser");
+			willThrow(IllegalArgumentException.class).given(this.registry).addParser(parser);
+			ApplicationConversionService.addBeans(this.registry, context);
+			verify(this.registry).addParser(parser);
+			verify(this.registry).addConverter(any(GenericConverter.class));
 			verifyNoMoreInteractions(this.registry);
 		}
 	}
@@ -188,6 +236,46 @@ class ApplicationConversionServiceTests {
 		@Override
 		public String print(Integer object, Locale locale) {
 			return null;
+		}
+
+	}
+
+	@Configuration
+	static class FactoryMethodConverter {
+
+		@Bean
+		Converter<String, Integer> converter() {
+			return Integer::valueOf;
+		}
+
+	}
+
+	@Configuration
+	static class FactoryMethodPrinter {
+
+		@Bean
+		Printer<Integer> printer() {
+			return (object, locale) -> object.toString();
+		}
+
+		@Bean
+		ConversionService conversionService() {
+			return mock(ConversionService.class);
+		}
+
+	}
+
+	@Configuration
+	static class FactoryMethodParser {
+
+		@Bean
+		Parser<Integer> parser() {
+			return (text, locale) -> Integer.valueOf(text);
+		}
+
+		@Bean
+		ConversionService conversionService() {
+			return mock(ConversionService.class);
 		}
 
 	}

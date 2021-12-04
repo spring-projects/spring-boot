@@ -17,12 +17,23 @@
 package org.springframework.boot.convert;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.ConditionalConverter;
+import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -37,6 +48,7 @@ import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 /**
@@ -49,6 +61,7 @@ import org.springframework.util.StringValueResolver;
  * against registry instance.
  *
  * @author Phillip Webb
+ * @author Shixiong Guo(viviel)
  * @since 2.0.0
  */
 public class ApplicationConversionService extends FormattingConversionService {
@@ -272,28 +285,313 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * @since 2.2.0
 	 */
 	public static void addBeans(FormatterRegistry registry, ListableBeanFactory beanFactory) {
-		Set<Object> beans = new LinkedHashSet<>();
-		beans.addAll(beanFactory.getBeansOfType(GenericConverter.class).values());
-		beans.addAll(beanFactory.getBeansOfType(Converter.class).values());
-		beans.addAll(beanFactory.getBeansOfType(Printer.class).values());
-		beans.addAll(beanFactory.getBeansOfType(Parser.class).values());
-		for (Object bean : beans) {
-			if (bean instanceof GenericConverter) {
-				registry.addConverter((GenericConverter) bean);
+		Set<Map.Entry<String, ?>> entries = new LinkedHashSet<>();
+		entries.addAll(beanFactory.getBeansOfType(GenericConverter.class).entrySet());
+		entries.addAll(beanFactory.getBeansOfType(Converter.class).entrySet());
+		entries.addAll(beanFactory.getBeansOfType(Printer.class).entrySet());
+		entries.addAll(beanFactory.getBeansOfType(Parser.class).entrySet());
+		for (Map.Entry<String, ?> e : entries) {
+			String beanName = e.getKey();
+			Object bean = e.getValue();
+			try {
+				doAddBean(registry, bean);
 			}
-			else if (bean instanceof Converter) {
-				registry.addConverter((Converter<?, ?>) bean);
-			}
-			else if (bean instanceof Formatter) {
-				registry.addFormatter((Formatter<?>) bean);
-			}
-			else if (bean instanceof Printer) {
-				registry.addPrinter((Printer<?>) bean);
-			}
-			else if (bean instanceof Parser) {
-				registry.addParser((Parser<?>) bean);
+			catch (IllegalArgumentException ex) {
+				if (!tryAddFactoryMethodBean(registry, beanFactory, beanName, bean)) {
+					throw ex;
+				}
 			}
 		}
+	}
+
+	private static void doAddBean(FormatterRegistry registry, Object bean) {
+		if (bean instanceof GenericConverter) {
+			registry.addConverter((GenericConverter) bean);
+		}
+		else if (bean instanceof Converter) {
+			registry.addConverter((Converter<?, ?>) bean);
+		}
+		else if (bean instanceof Formatter) {
+			registry.addFormatter((Formatter<?>) bean);
+		}
+		else if (bean instanceof Printer) {
+			registry.addPrinter((Printer<?>) bean);
+		}
+		else if (bean instanceof Parser) {
+			registry.addParser((Parser<?>) bean);
+		}
+	}
+
+	private static boolean tryAddFactoryMethodBean(FormatterRegistry registry, ListableBeanFactory beanFactory,
+			String beanName, Object bean) {
+		ConfigurableListableBeanFactory clbf = getConfigurableListableBeanFactory(beanFactory);
+		if (clbf == null) {
+			return false;
+		}
+		if (!isFactoryMethod(clbf, beanName)) {
+			return false;
+		}
+		if (bean instanceof Converter) {
+			return addConverter(registry, clbf, beanName, (Converter<?, ?>) bean);
+		}
+		else if (bean instanceof Printer) {
+			return addPrinter(registry, clbf, beanName, (Printer<?>) bean);
+		}
+		else if (bean instanceof Parser) {
+			return addParser(registry, clbf, beanName, (Parser<?>) bean);
+		}
+		return false;
+	}
+
+	private static ConfigurableListableBeanFactory getConfigurableListableBeanFactory(ListableBeanFactory beanFactory) {
+		ListableBeanFactory bf = beanFactory;
+		if (bf instanceof ConfigurableApplicationContext) {
+			bf = ((ConfigurableApplicationContext) bf).getBeanFactory();
+		}
+		if (bf instanceof ConfigurableListableBeanFactory) {
+			return (ConfigurableListableBeanFactory) bf;
+		}
+		return null;
+	}
+
+	private static boolean isFactoryMethod(ConfigurableListableBeanFactory clbf, String beanName) {
+		BeanDefinition bd = clbf.getMergedBeanDefinition(beanName);
+		return bd.getFactoryMethodName() != null;
+	}
+
+	private static boolean addConverter(FormatterRegistry registry, ConfigurableListableBeanFactory beanFactory,
+			String beanName, Converter<?, ?> converter) {
+		ConverterAdapter adapter = getConverterAdapter(beanFactory, beanName, converter);
+		if (adapter == null) {
+			return false;
+		}
+		registry.addConverter(adapter);
+		return true;
+	}
+
+	private static ConverterAdapter getConverterAdapter(ConfigurableListableBeanFactory beanFactory, String beanName,
+			Converter<?, ?> converter) {
+		ResolvableType[] types = getResolvableType(beanFactory, beanName);
+		if (types.length < 2) {
+			return null;
+		}
+		return new ConverterAdapter(converter, types[0], types[1]);
+	}
+
+	private static ResolvableType[] getResolvableType(ConfigurableListableBeanFactory beanFactory, String beanName) {
+		BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
+		ResolvableType resolvableType = beanDefinition.getResolvableType();
+		return resolvableType.getGenerics();
+	}
+
+	private static boolean addPrinter(FormatterRegistry registry, ConfigurableListableBeanFactory beanFactory,
+			String beanName, Printer<?> printer) {
+		PrinterAdapter adapter = getPrinterAdapter(beanFactory, beanName, printer);
+		if (adapter == null) {
+			return false;
+		}
+		registry.addConverter(adapter);
+		return true;
+	}
+
+	private static PrinterAdapter getPrinterAdapter(ConfigurableListableBeanFactory beanFactory, String beanName,
+			Printer<?> printer) {
+		ResolvableType[] types = getResolvableType(beanFactory, beanName);
+		if (types.length < 1) {
+			return null;
+		}
+		ConversionService conversionService = beanFactory.getBean(ConversionService.class);
+		return new PrinterAdapter(types[0].resolve(), printer, conversionService);
+	}
+
+	private static boolean addParser(FormatterRegistry registry, ConfigurableListableBeanFactory beanFactory,
+			String beanName, Parser<?> parser) {
+		ParserAdapter adapter = getParserAdapter(beanFactory, beanName, parser);
+		if (adapter == null) {
+			return false;
+		}
+		registry.addConverter(adapter);
+		return true;
+	}
+
+	private static ParserAdapter getParserAdapter(ConfigurableListableBeanFactory beanFactory, String beanName,
+			Parser<?> parser) {
+		ResolvableType[] types = getResolvableType(beanFactory, beanName);
+		if (types.length < 1) {
+			return null;
+		}
+		ConversionService conversionService = beanFactory.getBean(ConversionService.class);
+		return new ParserAdapter(types[0].resolve(), parser, conversionService);
+	}
+
+	/**
+	 * Adapts a {@link Converter} to a {@link GenericConverter}.
+	 * <p>
+	 * Reference from
+	 * {@link org.springframework.core.convert.support.GenericConversionService.ConverterAdapter}
+	 */
+	@SuppressWarnings("unchecked")
+	private static final class ConverterAdapter implements ConditionalGenericConverter {
+
+		private final Converter<Object, Object> converter;
+
+		private final ConvertiblePair typeInfo;
+
+		private final ResolvableType targetType;
+
+		ConverterAdapter(Converter<?, ?> converter, ResolvableType sourceType, ResolvableType targetType) {
+			this.converter = (Converter<Object, Object>) converter;
+			this.typeInfo = new ConvertiblePair(sourceType.toClass(), targetType.toClass());
+			this.targetType = targetType;
+		}
+
+		@Override
+		public Set<ConvertiblePair> getConvertibleTypes() {
+			return Collections.singleton(this.typeInfo);
+		}
+
+		@Override
+		public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+			// Check raw type first...
+			if (this.typeInfo.getTargetType() != targetType.getObjectType()) {
+				return false;
+			}
+			// Full check for complex generic type match required?
+			ResolvableType rt = targetType.getResolvableType();
+			if (!(rt.getType() instanceof Class) && !rt.isAssignableFrom(this.targetType)
+					&& !this.targetType.hasUnresolvableGenerics()) {
+				return false;
+			}
+			return !(this.converter instanceof ConditionalConverter)
+					|| ((ConditionalConverter) this.converter).matches(sourceType, targetType);
+		}
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+			if (source == null) {
+				return convertNullSource(sourceType, targetType);
+			}
+			return this.converter.convert(source);
+		}
+
+		@Override
+		public String toString() {
+			return (this.typeInfo + " : " + this.converter);
+		}
+
+		/**
+		 * Template method to convert a {@code null} source.
+		 * <p>
+		 * The default implementation returns {@code null} or the Java 8
+		 * {@link java.util.Optional#empty()} instance if the target type is
+		 * {@code java.util.Optional}. Subclasses may override this to return custom
+		 * {@code null} objects for specific target types.
+		 * @param sourceType the source type to convert from
+		 * @param targetType the target type to convert to
+		 * @return the converted null object
+		 */
+		private Object convertNullSource(TypeDescriptor sourceType, TypeDescriptor targetType) {
+			if (targetType.getObjectType() == Optional.class) {
+				return Optional.empty();
+			}
+			return null;
+		}
+
+	}
+
+	private static class PrinterAdapter implements GenericConverter {
+
+		private final Class<?> fieldType;
+
+		private final TypeDescriptor printerObjectType;
+
+		@SuppressWarnings("rawtypes")
+		private final Printer printer;
+
+		private final ConversionService conversionService;
+
+		PrinterAdapter(Class<?> fieldType, Printer<?> printer, ConversionService conversionService) {
+			this.fieldType = fieldType;
+			this.printerObjectType = TypeDescriptor.valueOf(resolvePrinterObjectType(printer));
+			this.printer = printer;
+			this.conversionService = conversionService;
+		}
+
+		@Override
+		public Set<ConvertiblePair> getConvertibleTypes() {
+			return Collections.singleton(new ConvertiblePair(this.fieldType, String.class));
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+			if (!sourceType.isAssignableTo(this.printerObjectType)) {
+				source = this.conversionService.convert(source, sourceType, this.printerObjectType);
+			}
+			if (source == null) {
+				return "";
+			}
+			return this.printer.print(source, LocaleContextHolder.getLocale());
+		}
+
+		private Class<?> resolvePrinterObjectType(Printer<?> printer) {
+			return GenericTypeResolver.resolveTypeArgument(printer.getClass(), Printer.class);
+		}
+
+		@Override
+		public String toString() {
+			return (this.fieldType.getName() + " -> " + String.class.getName() + " : " + this.printer);
+		}
+
+	}
+
+	private static class ParserAdapter implements GenericConverter {
+
+		private final Class<?> fieldType;
+
+		private final Parser<?> parser;
+
+		private final ConversionService conversionService;
+
+		ParserAdapter(Class<?> fieldType, Parser<?> parser, ConversionService conversionService) {
+			this.fieldType = fieldType;
+			this.parser = parser;
+			this.conversionService = conversionService;
+		}
+
+		@Override
+		public Set<ConvertiblePair> getConvertibleTypes() {
+			return Collections.singleton(new ConvertiblePair(String.class, this.fieldType));
+		}
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+			String text = (String) source;
+			if (!StringUtils.hasText(text)) {
+				return null;
+			}
+			Object result;
+			try {
+				result = this.parser.parse(text, LocaleContextHolder.getLocale());
+			}
+			catch (IllegalArgumentException ex) {
+				throw ex;
+			}
+			catch (Throwable ex) {
+				throw new IllegalArgumentException("Parse attempt failed for value [" + text + "]", ex);
+			}
+			TypeDescriptor resultType = TypeDescriptor.valueOf(result.getClass());
+			if (!resultType.isAssignableTo(targetType)) {
+				result = this.conversionService.convert(result, resultType, targetType);
+			}
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return (String.class.getName() + " -> " + this.fieldType.getName() + ": " + this.parser);
+		}
+
 	}
 
 }
