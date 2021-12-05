@@ -21,6 +21,7 @@ import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
+import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -84,6 +85,13 @@ public class InfoContributorAutoConfiguration {
 	@Order(DEFAULT_ORDER)
 	public JavaInfoContributor javaInfoContributor() {
 		return new JavaInfoContributor();
+	}
+
+	@Bean
+	@ConditionalOnEnabledInfoContributor(value = "os", fallback = InfoContributorFallback.DISABLE)
+	@Order(DEFAULT_ORDER)
+	public OsInfoContributor osInfoContributor() {
+		return new OsInfoContributor();
 	}
 
 }
