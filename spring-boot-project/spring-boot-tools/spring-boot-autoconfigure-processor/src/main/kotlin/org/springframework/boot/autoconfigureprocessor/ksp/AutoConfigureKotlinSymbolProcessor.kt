@@ -22,12 +22,11 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
+import org.springframework.boot.autoconfigureprocessor.BaseAnnotationProcessor.writeProperties
 import org.springframework.boot.autoconfigureprocessor.ksp.visitor.AnnotationInfo
 import org.springframework.boot.autoconfigureprocessor.ksp.visitor.NamedValuesExtractorVisitor
 import org.springframework.boot.autoconfigureprocessor.ksp.visitor.OnBeanConditionValueExtractor
 import org.springframework.boot.autoconfigureprocessor.ksp.visitor.OnClassConditionValueExtractorVisitor
-import java.io.OutputStreamWriter
-import java.nio.charset.StandardCharsets
 
 internal const val PROPERTIES_FILE_NAME = "META-INF/spring-autoconfigure-metadata"
 internal const val PROPERTIES_FILE_EXT = "properties"
@@ -87,23 +86,16 @@ class AutoConfigureKotlinSymbolProcessor(
 			}
 		}
 
-		if (properties.isNotEmpty()) {
-			environment.codeGenerator.createNewFile(
-					ALL_FILES,
-					"",
-					PROPERTIES_FILE_NAME,
-					PROPERTIES_FILE_EXT
-			).use {
-				OutputStreamWriter(it, StandardCharsets.UTF_8).use { writer ->
-					for ((key, value) in properties.entries) {
-						writer.append(key)
-						writer.append("=")
-						writer.append(value)
-						writer.append(System.lineSeparator())
-					}
-				}
-			}
-		}
+
+		writeProperties(
+				properties,
+				environment.codeGenerator.createNewFile(
+						ALL_FILES,
+						"",
+						PROPERTIES_FILE_NAME,
+						PROPERTIES_FILE_EXT
+				)
+		)
 
 		return emptyList()
 	}

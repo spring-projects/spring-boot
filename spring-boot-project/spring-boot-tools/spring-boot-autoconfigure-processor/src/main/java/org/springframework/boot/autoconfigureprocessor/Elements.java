@@ -26,12 +26,12 @@ import javax.lang.model.type.TypeMirror;
  *
  * @author Phillip Webb
  */
-final class Elements {
+public final class Elements {
 
 	private Elements() {
 	}
 
-	static String getQualifiedName(Element element) {
+	public static String getQualifiedName(Element element) {
 		if (element != null) {
 			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 			if (enclosingElement != null) {

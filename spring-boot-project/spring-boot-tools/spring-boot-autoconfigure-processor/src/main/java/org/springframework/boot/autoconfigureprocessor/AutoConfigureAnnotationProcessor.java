@@ -16,21 +16,10 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Stream;
+import org.springframework.boot.autoconfigureprocessor.extractor.NamedValuesExtractor;
+import org.springframework.boot.autoconfigureprocessor.extractor.OnBeanConditionValueExtractor;
+import org.springframework.boot.autoconfigureprocessor.extractor.OnClassConditionValueExtractor;
+import org.springframework.boot.autoconfigureprocessor.extractor.ValueExtractor;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -38,12 +27,13 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+import java.util.*;
+
+import static org.springframework.boot.autoconfigureprocessor.BaseAnnotationProcessor.writeProperties;
 
 /**
  * Annotation processor to store certain annotations from auto-configuration classes in a
@@ -54,7 +44,7 @@ import javax.tools.StandardLocation;
  * @author Moritz Halbritter
  * @since 1.5.0
  */
-@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+@SupportedAnnotationTypes({"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
@@ -117,9 +107,14 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 		if (roundEnv.processingOver()) {
 			try {
-				writeProperties();
-			}
-			catch (Exception ex) {
+				Filer filer = this.processingEnv.getFiler();
+				FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
+
+				writeProperties(
+						this.properties,
+						file.openOutputStream()
+				);
+			} catch (Exception ex) {
 				throw new IllegalStateException("Failed to write metadata", ex);
 			}
 		}
@@ -146,8 +141,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				generator.applyToProperties(this.properties, qualifiedName, values);
 				this.properties.put(qualifiedName, "");
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IllegalStateException("Error processing configuration meta-data on " + element, ex);
 		}
 	}
@@ -171,118 +165,12 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return extractor.getValues(annotation);
 	}
 
-	private void writeProperties() throws IOException {
-		if (!this.properties.isEmpty()) {
-			Filer filer = this.processingEnv.getFiler();
-			FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
-			try (Writer writer = new OutputStreamWriter(file.openOutputStream(), StandardCharsets.UTF_8)) {
-				for (Map.Entry<String, String> entry : this.properties.entrySet()) {
-					writer.append(entry.getKey());
-					writer.append("=");
-					writer.append(entry.getValue());
-					writer.append(System.lineSeparator());
-				}
-			}
-		}
+
+	static ValueExtractor allFrom(String... names) {
+		return new NamedValuesExtractor(names);
 	}
 
-	@FunctionalInterface
-	interface ValueExtractor {
 
-		List<Object> getValues(AnnotationMirror annotation);
-
-		static ValueExtractor allFrom(String... names) {
-			return new NamedValuesExtractor(names);
-		}
-
-	}
-
-	private abstract static class AbstractValueExtractor implements ValueExtractor {
-
-		@SuppressWarnings("unchecked")
-		protected Stream<Object> extractValues(AnnotationValue annotationValue) {
-			if (annotationValue == null) {
-				return Stream.empty();
-			}
-			Object value = annotationValue.getValue();
-			if (value instanceof List) {
-				return ((List<AnnotationValue>) value).stream()
-						.map((annotation) -> extractValue(annotation.getValue()));
-			}
-			return Stream.of(extractValue(value));
-		}
-
-		private Object extractValue(Object value) {
-			if (value instanceof DeclaredType declaredType) {
-				return Elements.getQualifiedName(declaredType.asElement());
-			}
-			return value;
-		}
-
-	}
-
-	private static class NamedValuesExtractor extends AbstractValueExtractor {
-
-		private final Set<String> names;
-
-		NamedValuesExtractor(String... names) {
-			this.names = new HashSet<>(Arrays.asList(names));
-		}
-
-		@Override
-		public List<Object> getValues(AnnotationMirror annotation) {
-			List<Object> result = new ArrayList<>();
-			annotation.getElementValues().forEach((key, value) -> {
-				if (this.names.contains(key.getSimpleName().toString())) {
-					extractValues(value).forEach(result::add);
-				}
-			});
-			return result;
-		}
-
-	}
-
-	static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
-
-		@Override
-		public List<Object> getValues(AnnotationMirror annotation) {
-			Map<String, AnnotationValue> attributes = new LinkedHashMap<>();
-			annotation.getElementValues()
-					.forEach((key, value) -> attributes.put(key.getSimpleName().toString(), value));
-			if (attributes.containsKey("name")) {
-				return Collections.emptyList();
-			}
-			List<Object> result = new ArrayList<>();
-			extractValues(attributes.get("value")).forEach(result::add);
-			extractValues(attributes.get("type")).forEach(result::add);
-			return result;
-		}
-
-	}
-
-	static class OnClassConditionValueExtractor extends NamedValuesExtractor {
-
-		OnClassConditionValueExtractor() {
-			super("value", "name");
-		}
-
-		@Override
-		public List<Object> getValues(AnnotationMirror annotation) {
-			List<Object> values = super.getValues(annotation);
-			values.sort(this::compare);
-			return values;
-		}
-
-		private int compare(Object o1, Object o2) {
-			return Comparator.comparing(this::isSpringClass).thenComparing(String.CASE_INSENSITIVE_ORDER)
-					.compare(o1.toString(), o2.toString());
-		}
-
-		private boolean isSpringClass(String type) {
-			return type.startsWith("org.springframework");
-		}
-
-	}
 
 	static final class PropertyGenerator {
 
