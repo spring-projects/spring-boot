@@ -280,6 +280,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.info.os.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable OS info.",
+      "defaultValue": false
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",
