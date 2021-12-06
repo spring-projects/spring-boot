@@ -306,7 +306,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
-		String logConfig = StringUtils.trimWhitespace(environment.getProperty(CONFIG_PROPERTY));
+		String logConfig = environment.getProperty(CONFIG_PROPERTY);
+		if (StringUtils.hasLength(logConfig)) {
+			logConfig = logConfig.strip();
+		}
 		try {
 			LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
 			if (ignoreLogConfig(logConfig)) {

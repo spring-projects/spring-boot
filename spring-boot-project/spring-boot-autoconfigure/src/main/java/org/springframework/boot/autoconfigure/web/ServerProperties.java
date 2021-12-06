@@ -262,7 +262,10 @@ public class ServerProperties {
 		}
 
 		private String cleanContextPath(String contextPath) {
-			String candidate = StringUtils.trimWhitespace(contextPath);
+			String candidate = null;
+			if (StringUtils.hasLength(contextPath)) {
+				candidate = contextPath.strip();
+			}
 			if (StringUtils.hasText(candidate) && candidate.endsWith("/")) {
 				return candidate.substring(0, candidate.length() - 1);
 			}
