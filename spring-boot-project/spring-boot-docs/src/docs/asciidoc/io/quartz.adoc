@@ -50,7 +50,13 @@ If you need to customize the task executor, consider implementing `SchedulerFact
 Jobs can define setters to inject data map properties.
 Regular beans can also be injected in a similar manner, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/io/quartz/MySampleJob.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/io/quartz/MySampleJob.kt[]
 ----
