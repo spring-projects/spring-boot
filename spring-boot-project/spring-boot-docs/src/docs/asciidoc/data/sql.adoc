@@ -158,9 +158,15 @@ For example, the following section in `application.properties` shows how you can
 === Using JdbcTemplate
 Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can `@Autowire` them directly into your own beans, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/jdbctemplate/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/jdbctemplate/MyBean.kt[]
 ----
 
 You can customize some properties of the template by using the `spring.jdbc.template.*` properties, as shown in the following example:
@@ -202,9 +208,15 @@ By default, all packages below your main configuration class (the one annotated 
 Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
 A typical entity class resembles the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/jpaandspringdata/entityclasses/City.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/jpaandspringdata/entityclasses/City.kt[]
 ----
 
 TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
@@ -225,10 +237,17 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/jpaandspringdata/repositories/CityRepository.java[]
 ----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/jpaandspringdata/repositories/CityRepository.kt[]
+----
+
 
 Spring Data JPA repositories support three different modes of bootstrapping: default, deferred, and lazy.
 To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.repositories.bootstrap-mode[] property to `deferred` or `lazy` respectively.
@@ -253,10 +272,17 @@ If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are a
 
 To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as show in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/jpaandspringdata/repositories/CountryRepository.java[]
 ----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/jpaandspringdata/repositories/CountryRepository.kt[]
+----
+
 
 NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers reference documentation].
 
@@ -387,20 +413,31 @@ The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` in
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
 To use the `DSLContext`, you can inject it, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=!method]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/jooq/dslcontext/MyBean.kt[tag=!method]
 ----
 
 TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`.
 
 You can then use the `DSLContext` to construct your queries, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=method]
 ----
-
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/jooq/dslcontext/MyBean.kt[tag=method]
+----
 
 
 [[data.sql.jooq.sqldialect]]
@@ -449,16 +486,28 @@ TIP: The "`How-to`" section includes a <<howto#howto.data-initialization.using-b
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/r2dbc/MyR2dbcConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/r2dbc/MyR2dbcConfiguration.kt[]
 ----
 
 The following examples show how to set some PostgreSQL connection options:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/r2dbc/MyPostgresR2dbcConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/r2dbc/MyPostgresR2dbcConfiguration.kt[]
 ----
 
 When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
@@ -493,11 +542,16 @@ If you want to make sure that each context has a separate embedded database, you
 ==== Using DatabaseClient
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/r2dbc/usingdatabaseclient/MyBean.java[]
 ----
-
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/r2dbc/usingdatabaseclient/MyBean.kt[]
+----
 
 
 [[data.sql.r2dbc.repositories]]
@@ -513,9 +567,15 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/data/sql/r2dbc/repositories/CityRepository.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/data/sql/r2dbc/repositories/CityRepository.kt[]
 ----
 
 TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].
