@@ -6,9 +6,15 @@ Target classes with such annotated methods need to be annotated with the `@Valid
 
 For instance, the following service triggers the validation of the first argument, making sure its size is between 8 and 10:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/io/validation/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/io/validation/MyBean.kt[]
 ----
 
 The application's `MessageSource` is used when resolving `+{parameters}+` in constraint messages.
