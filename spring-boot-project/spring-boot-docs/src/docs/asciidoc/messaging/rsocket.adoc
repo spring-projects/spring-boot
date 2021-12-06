@@ -80,7 +80,13 @@ This is done on purpose since this builder is stateful and you should not create
 
 The following code shows a typical example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/rsocket/requester/MyService.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/rsocket/requester/MyService.kt[]
 ----
