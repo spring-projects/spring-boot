@@ -25,15 +25,27 @@ It does, however, auto-configure a `WebServiceTemplateBuilder`, which can be use
 
 The following code shows a typical example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/io/webservices/template/MyService.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/io/webservices/template/MyService.kt[]
 ----
 
 By default, `WebServiceTemplateBuilder` detects a suitable HTTP-based `WebServiceMessageSender` using the available HTTP client libraries on the classpath.
 You can also customize read and connection timeouts as follows:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/io/webservices/template/MyWebServiceTemplateConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/io/webservices/template/MyWebServiceTemplateConfiguration.kt[]
 ----
