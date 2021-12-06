@@ -49,9 +49,15 @@ TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-
 === Sending a Message
 Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/amqp/sending/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/amqp/sending/MyBean.kt[]
 ----
 
 NOTE: {spring-amqp-api}/rabbit/core/RabbitMessagingTemplate.html[`RabbitMessagingTemplate`] can be injected in a similar manner.
@@ -104,9 +110,15 @@ If a `MessageConverter` or a `MessageRecoverer` bean is defined, it is automatic
 
 The following sample component creates a listener endpoint on the `someQueue` queue:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/amqp/receiving/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/amqp/receiving/MyBean.kt[]
 ----
 
 TIP: See {spring-amqp-api}/rabbit/annotation/EnableRabbit.html[the Javadoc of `@EnableRabbit`] for more details.
@@ -118,16 +130,28 @@ Those two beans are exposed by the auto-configuration.
 
 For instance, the following configuration class exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/amqp/receiving/custom/MyRabbitConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/amqp/receiving/custom/MyRabbitConfiguration.kt[]
 ----
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/amqp/receiving/custom/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/amqp/receiving/custom/MyBean.kt[]
 ----
 
 You can enable retries to handle situations where your listener throws an exception.

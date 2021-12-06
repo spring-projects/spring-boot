@@ -25,9 +25,15 @@ See {spring-boot-autoconfigure-module-code}/kafka/KafkaProperties.java[`KafkaPro
 === Sending a Message
 Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in your own beans, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/kafka/sending/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/kafka/sending/MyBean.kt[]
 ----
 
 NOTE: If the property configprop:spring.kafka.producer.transaction-id-prefix[] is defined, a `KafkaTransactionManager` is automatically configured.
@@ -42,9 +48,15 @@ If no `KafkaListenerContainerFactory` has been defined, a default one is automat
 
 The following component creates a listener endpoint on the `someTopic` topic:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/kafka/receiving/MyBean.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/kafka/receiving/MyBean.kt[]
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
@@ -71,9 +83,15 @@ See also <<features#messaging.kafka.additional-properties>> for more information
 
 To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/kafka/streams/MyKafkaStreamsConfiguration.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/kafka/streams/MyKafkaStreamsConfiguration.kt[]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -156,16 +174,28 @@ There are several ways to do that:
 
 * Provide a system property to map embedded broker addresses into configprop:spring.kafka.bootstrap-servers[] in the test class:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/kafka/embedded/property/MyTest.java[tag=*]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/kafka/embedded/property/MyTest.kt[tag=*]
 ----
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/messaging/kafka/embedded/annotation/MyTest.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/messaging/kafka/embedded/annotation/MyTest.kt[]
 ----
 
 * Use a placeholder in configuration properties:
