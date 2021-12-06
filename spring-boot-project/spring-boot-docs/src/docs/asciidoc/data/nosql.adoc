@@ -308,8 +308,8 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 	  elasticsearch:
 	    restclient:
 	      sniffer:
-	        interval: 10m
-	        delay-after-failure: 30s
+	        interval: "10m"
+	        delay-after-failure: "30s"
 ----
 
 
@@ -327,7 +327,7 @@ In addition to the properties described previously, the `spring.elasticsearch.we
 	spring:
 	  elasticsearch:
 	    webclient:
-	      max-in-memory-size: 1MB
+	      max-in-memory-size: "1MB"
 ----
 
 If the `spring.elasticsearch.*` and `spring.elasticsearch.webclient.*` configuration properties are not enough and you'd like to fully control the client configuration, you can register a custom `ClientConfiguration` bean.
@@ -604,8 +604,8 @@ In yaml files, you can use the yaml list notation. In properties files, you must
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring.ldap.embedded.base-dn:
-	  - dc=spring,dc=io
-	  - dc=pivotal,dc=io
+	  - "dc=spring,dc=io"
+	  - "dc=pivotal,dc=io"
 ----
 ====
 
