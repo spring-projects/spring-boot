@@ -54,14 +54,15 @@ final class ImageBuildpack implements Buildpack {
 	private final ExportedLayers exportedLayers;
 
 	private ImageBuildpack(BuildpackResolverContext context, ImageReference imageReference) {
+		ImageReference reference = imageReference.inTaggedOrDigestForm();
 		try {
-			Image image = context.fetchImage(imageReference, ImageType.BUILDPACK);
+			Image image = context.fetchImage(reference, ImageType.BUILDPACK);
 			BuildpackMetadata buildpackMetadata = BuildpackMetadata.fromImage(image);
 			this.coordinates = BuildpackCoordinates.fromBuildpackMetadata(buildpackMetadata);
-			this.exportedLayers = new ExportedLayers(context, imageReference);
+			this.exportedLayers = new ExportedLayers(context, reference);
 		}
 		catch (IOException | DockerEngineException ex) {
-			throw new IllegalArgumentException("Error pulling buildpack image '" + imageReference + "'", ex);
+			throw new IllegalArgumentException("Error pulling buildpack image '" + reference + "'", ex);
 		}
 	}
 
