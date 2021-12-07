@@ -900,7 +900,7 @@ public class RabbitProperties {
 		 * Whether the container will support listeners that consume native stream
 		 * messages instead of Spring AMQP messages.
 		 */
-		boolean nativeListener;
+		private boolean nativeListener;
 
 		public boolean isNativeListener() {
 			return this.nativeListener;
@@ -922,12 +922,12 @@ public class RabbitProperties {
 		private Boolean mandatory;
 
 		/**
-		 * Timeout for {@code receive()} operations.
+		 * Timeout for receive() operations.
 		 */
 		private Duration receiveTimeout;
 
 		/**
-		 * Timeout for {@code sendAndReceive()} operations.
+		 * Timeout for sendAndReceive() operations.
 		 */
 		private Duration replyTimeout;
 

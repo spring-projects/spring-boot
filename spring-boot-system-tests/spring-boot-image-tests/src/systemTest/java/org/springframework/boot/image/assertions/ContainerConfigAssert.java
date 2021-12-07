@@ -24,9 +24,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
@@ -89,16 +87,6 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 
 		public ListAssert<Object> buildpacks() {
 			return this.actual.extractingJsonPathArrayValue("$.buildpacks[*].id");
-		}
-
-		public ListAssert<Object> bomDependencies() {
-			return this.actual
-					.extractingJsonPathArrayValue("$.bom[?(@.name=='dependencies')].metadata.dependencies[*].name");
-		}
-
-		public AbstractStringAssert<?> bomJavaVersion(String javaType) {
-			return this.actual.extractingJsonPathArrayValue("$.bom[?(@.name=='%s')].metadata.version", javaType)
-					.singleElement(Assertions.as(InstanceOfAssertFactories.STRING));
 		}
 
 		public AbstractObjectAssert<?, Object> processOfType(String type) {

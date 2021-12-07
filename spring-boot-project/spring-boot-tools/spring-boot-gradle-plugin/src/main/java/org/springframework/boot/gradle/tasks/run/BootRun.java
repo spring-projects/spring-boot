@@ -27,6 +27,7 @@ import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.jvm.toolchain.JavaLauncher;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * Custom {@link JavaExec} task for running a Spring Boot application.
@@ -34,6 +35,7 @@ import org.gradle.jvm.toolchain.JavaLauncher;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@DisableCachingByDefault(because = "Application should always run")
 public class BootRun extends JavaExec {
 
 	private boolean optimizedLaunch = true;

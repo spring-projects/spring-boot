@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2021-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
-import groovy.lang.Closure;
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
-import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.build.Cache;
 
@@ -34,7 +34,9 @@ public class CacheSpec {
 
 	private Cache cache = null;
 
-	CacheSpec() {
+	@Inject
+	public CacheSpec() {
+
 	}
 
 	public Cache asCache() {
@@ -52,17 +54,6 @@ public class CacheSpec {
 		VolumeCacheSpec spec = new VolumeCacheSpec();
 		action.execute(spec);
 		this.cache = Cache.volume(spec.getName());
-	}
-
-	/**
-	 * Configures a volume cache using the given {@code closure}.
-	 * @param closure the closure
-	 */
-	public void volume(Closure<?> closure) {
-		if (this.cache != null) {
-			throw new GradleException("Each image building cache can be configured only once");
-		}
-		volume(ConfigureUtil.configureUsing(closure));
 	}
 
 	/**

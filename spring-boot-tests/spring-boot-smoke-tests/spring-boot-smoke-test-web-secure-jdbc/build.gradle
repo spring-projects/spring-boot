@@ -8,11 +8,12 @@ description = "Spring Boot web secure JDBC smoke test"
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
 	runtimeOnly("com.h2database:h2")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation("org.apache.httpcomponents:httpclient")
+	testImplementation("org.apache.httpcomponents:httpclient") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 }

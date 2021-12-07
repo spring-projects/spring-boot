@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configureacomponentthatisusedbyjpa;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.stereotype.Component;

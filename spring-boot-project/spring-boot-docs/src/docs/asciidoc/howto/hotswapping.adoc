@@ -30,13 +30,6 @@ If you use the `spring-boot-devtools` module, these properties are <<using#using
 
 
 
-[[howto.hotswapping.reload-templates.thymeleaf]]
-==== Thymeleaf Templates
-If you use Thymeleaf, set `spring.thymeleaf.cache` to `false`.
-See {spring-boot-autoconfigure-module-code}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`] for other Thymeleaf customization options.
-
-
-
 [[howto.hotswapping.reload-templates.freemarker]]
 ==== FreeMarker Templates
 If you use FreeMarker, set `spring.freemarker.cache` to `false`.

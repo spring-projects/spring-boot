@@ -63,7 +63,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			}).hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
-					.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-4")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-5")
 					.hasEntryWithName("BOOT-INF/classes/org/test/SampleApplication.class")
 					.hasEntryWithName("org/springframework/boot/loader/JarLauncher.class");
 			assertThat(buildLog(project)).contains("Replacing main artifact with repackaged archive")
@@ -362,6 +362,16 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 								"BOOT-INF/lib/jar-classifier-0.0.1-bravo.jar")
 						.doesNotContain("BOOT-INF/lib/jar-classifier-0.0.1-alpha.jar");
 			}
+		});
+	}
+
+	@TestTemplate
+	void repackagedJarContainsClasspathIndex(MavenBuild mavenBuild) {
+		mavenBuild.project("jar").execute((project) -> {
+			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).manifest(
+					(manifest) -> manifest.hasAttribute("Spring-Boot-Classpath-Index", "BOOT-INF/classpath.idx"));
+			assertThat(jar(repackaged)).hasEntryWithName("BOOT-INF/classpath.idx");
 		});
 	}
 

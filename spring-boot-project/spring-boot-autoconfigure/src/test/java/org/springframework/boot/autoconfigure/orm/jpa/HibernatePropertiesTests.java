@@ -136,10 +136,10 @@ class HibernatePropertiesTests {
 	void defaultDdlAutoIsNotInvokedAndDdlAutoIsNotSetIfJpaDbActionPropertyIsSet() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create")
+						"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=drop-and-create")
 				.run(assertHibernateProperties((hibernateProperties) -> {
 					assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
-					assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_DATABASE_ACTION,
+					assertThat(hibernateProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
 							"drop-and-create");
 					verify(this.ddlAutoSupplier, never()).get();
 				}));

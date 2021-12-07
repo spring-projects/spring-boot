@@ -34,6 +34,7 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -44,6 +45,7 @@ import org.gradle.api.tasks.bundling.Jar;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@DisableCachingByDefault(because = "Not worth caching")
 public class BootJar extends Jar implements BootArchive {
 
 	private static final String LAUNCHER = "org.springframework.boot.loader.JarLauncher";
@@ -64,9 +66,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private final Property<String> mainClass;
 
-	private FileCollection classpath;
+	private final LayeredSpec layered;
 
-	private LayeredSpec layered = new LayeredSpec();
+	private FileCollection classpath;
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -76,6 +78,7 @@ public class BootJar extends Jar implements BootArchive {
 		Project project = getProject();
 		this.bootInfSpec = project.copySpec().into("BOOT-INF");
 		this.mainClass = project.getObjects().property(String.class);
+		this.layered = project.getObjects().newInstance(LayeredSpec.class);
 		configureBootInfSpec(this.bootInfSpec);
 		getMainSpec().with(this.bootInfSpec);
 		project.getConfigurations().all((configuration) -> {

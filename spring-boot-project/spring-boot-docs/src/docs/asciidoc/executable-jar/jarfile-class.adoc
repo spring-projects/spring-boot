@@ -25,7 +25,7 @@ We do not need to unpack the archive, and we do not need to read all entry data 
 
 
 
-[[executable-jar.jarfile-class.compatibilty]]
+[[executable-jar.jarfile-class.compatibility]]
 === Compatibility with the Standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.

@@ -45,7 +45,7 @@ More details on getting started with Spring Boot and Maven can be found in the {
 
 [[getting-started.installing.java.gradle]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 6.8, 6.9, and 7.x.
+Spring Boot is compatible with Gradle 7.x (7.3 or later).
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -97,7 +97,7 @@ Get SDKMAN! from https://sdkman.io and install Spring Boot by using the followin
 ----
 	$ sdk install springboot
 	$ spring --version
-	Spring Boot v{spring-boot-version}
+	Spring CLI v{spring-boot-version}
 ----
 
 If you develop features for the CLI and want access to the version you built, use the following commands:

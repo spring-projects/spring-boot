@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.jta.mixingxaandnonxaconnections.primary;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 public class MyBean {
 

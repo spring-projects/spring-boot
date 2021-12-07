@@ -187,19 +187,34 @@ public class Library {
 
 		private final String name;
 
+		private final String type;
+
 		private final List<Exclusion> exclusions;
 
 		public Module(String name) {
 			this(name, Collections.emptyList());
 		}
 
+		public Module(String name, String type) {
+			this(name, type, Collections.emptyList());
+		}
+
 		public Module(String name, List<Exclusion> exclusions) {
+			this(name, null, exclusions);
+		}
+
+		public Module(String name, String type, List<Exclusion> exclusions) {
 			this.name = name;
+			this.type = type;
 			this.exclusions = exclusions;
 		}
 
 		public String getName() {
 			return this.name;
+		}
+
+		public String getType() {
+			return this.type;
 		}
 
 		public List<Exclusion> getExclusions() {

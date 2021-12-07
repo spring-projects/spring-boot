@@ -256,7 +256,7 @@ class BeanDefinitionLoader {
 			String path = ((ClassPathResource) resource).getPath();
 			if (path.indexOf('.') == -1) {
 				try {
-					return Package.getPackage(path) == null;
+					return getClass().getClassLoader().getDefinedPackage(path) == null;
 				}
 				catch (Exception ex) {
 					// Ignore
@@ -267,7 +267,7 @@ class BeanDefinitionLoader {
 	}
 
 	private Package findPackage(CharSequence source) {
-		Package pkg = Package.getPackage(source.toString());
+		Package pkg = getClass().getClassLoader().getDefinedPackage(source.toString());
 		if (pkg != null) {
 			return pkg;
 		}
@@ -285,7 +285,7 @@ class BeanDefinitionLoader {
 		catch (Exception ex) {
 			// swallow exception and continue
 		}
-		return Package.getPackage(source.toString());
+		return getClass().getClassLoader().getDefinedPackage(source.toString());
 	}
 
 	/**

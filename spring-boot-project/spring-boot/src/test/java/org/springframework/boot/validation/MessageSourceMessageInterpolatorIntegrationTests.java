@@ -22,9 +22,9 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -130,8 +130,8 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 	private static Validator buildValidator() {
 		Locale locale = LocaleContextHolder.getLocale();
 		StaticMessageSource messageSource = new StaticMessageSource();
-		messageSource.addMessage("blank", locale, "{null} or {javax.validation.constraints.NotBlank.message}");
-		messageSource.addMessage("null", locale, "{javax.validation.constraints.NotNull.message}");
+		messageSource.addMessage("blank", locale, "{null} or {jakarta.validation.constraints.NotBlank.message}");
+		messageSource.addMessage("null", locale, "{jakarta.validation.constraints.NotNull.message}");
 		messageSource.addMessage("recursion", locale, "{middle}");
 		messageSource.addMessage("middle", locale, "{recursion}");
 		MessageInterpolatorFactory messageInterpolatorFactory = new MessageInterpolatorFactory(messageSource);

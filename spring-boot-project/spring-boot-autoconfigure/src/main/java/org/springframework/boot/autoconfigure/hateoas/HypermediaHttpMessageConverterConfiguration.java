@@ -63,8 +63,7 @@ public class HypermediaHttpMessageConverterConfiguration {
 	 * {@code Jackson2ModuleRegisteringBeanPostProcessor} has registered the converter and
 	 * it is unordered.
 	 */
-	private static class HalMessageConverterSupportedMediaTypesCustomizer
-			implements BeanFactoryAware, InitializingBean {
+	static class HalMessageConverterSupportedMediaTypesCustomizer implements BeanFactoryAware, InitializingBean {
 
 		private volatile BeanFactory beanFactory;
 

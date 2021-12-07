@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.Driver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -108,7 +109,7 @@ class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldReuseExistingNeo4jClient() {
-		this.contextRunner.withBean("myCustomClient", Neo4jClient.class, () -> mock(Neo4jClient.class))
+		this.contextRunner.withUserConfiguration(Neo4jClientConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(Neo4jClient.class).hasBean("myCustomClient"));
 	}
 
@@ -173,6 +174,16 @@ class Neo4jDataAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(TestPersistent.class)
 	static class EntityScanConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class Neo4jClientConfig {
+
+		@Bean
+		Neo4jClient myCustomClient(Driver driver) {
+			return Neo4jClient.create(driver);
+		}
 
 	}
 

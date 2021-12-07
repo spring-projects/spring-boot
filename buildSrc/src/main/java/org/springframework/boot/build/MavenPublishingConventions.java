@@ -22,7 +22,6 @@ import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.component.ConfigurationVariantDetails;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.VariantVersionMappingStrategy;
@@ -115,9 +114,8 @@ class MavenPublishingConventions {
 	 */
 	private void addMavenOptionalFeature(Project project) {
 		JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
-		JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
 		extension.registerFeature("mavenOptional",
-				(feature) -> feature.usingSourceSet(convention.getSourceSets().getByName("main")));
+				(feature) -> feature.usingSourceSet(extension.getSourceSets().getByName("main")));
 		AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.getComponents()
 				.findByName("java");
 		javaComponent.addVariantsFromConfiguration(

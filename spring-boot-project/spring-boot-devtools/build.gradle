@@ -24,7 +24,9 @@ dependencies {
 	intTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	intTestImplementation("org.apache.httpcomponents:httpclient")
+	intTestImplementation("org.apache.httpcomponents:httpclient") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.awaitility:awaitility")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
@@ -34,9 +36,9 @@ dependencies {
 
 	optional("io.projectreactor:reactor-core")
 	optional("io.r2dbc:r2dbc-spi")
-	optional("javax.servlet:javax.servlet-api")
+	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.apache.derby:derby")
-	optional("org.hibernate:hibernate-core")
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-web")
@@ -56,7 +58,7 @@ dependencies {
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.eclipse.jetty.websocket:websocket-client")
+	testImplementation("org.eclipse.jetty.websocket:websocket-jakarta-client")
 	testImplementation("org.hamcrest:hamcrest-library")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
@@ -68,9 +70,7 @@ dependencies {
 	testImplementation("org.springframework:spring-websocket")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("org.thymeleaf:thymeleaf")
-	testImplementation("org.thymeleaf:thymeleaf-spring5")
-	testImplementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+	testImplementation("org.freemarker:freemarker")
 
 	testRuntimeOnly("org.aspectj:aspectjweaver")
 	testRuntimeOnly("org.yaml:snakeyaml")

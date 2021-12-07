@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -97,7 +97,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	 * wrapping it if necessary.
 	 * <p>
 	 * If the specified {@link Validator} is not {@code null}, it is wrapped. If not, a
-	 * {@link javax.validation.Validator} is retrieved from the context and wrapped.
+	 * {@link jakarta.validation.Validator} is retrieved from the context and wrapped.
 	 * Otherwise, a new default validator is created.
 	 * @param applicationContext the application context
 	 * @param validator an existing validator to use or {@code null}
@@ -120,7 +120,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 
 	private static Validator getExisting(ApplicationContext applicationContext) {
 		try {
-			javax.validation.Validator validator = applicationContext.getBean(javax.validation.Validator.class);
+			jakarta.validation.Validator validator = applicationContext.getBean(jakarta.validation.Validator.class);
 			if (validator instanceof Validator) {
 				return (Validator) validator;
 			}
@@ -144,11 +144,11 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	}
 
 	private static Validator wrap(Validator validator, boolean existingBean) {
-		if (validator instanceof javax.validation.Validator) {
+		if (validator instanceof jakarta.validation.Validator) {
 			if (validator instanceof SpringValidatorAdapter) {
 				return new ValidatorAdapter((SpringValidatorAdapter) validator, existingBean);
 			}
-			return new ValidatorAdapter(new SpringValidatorAdapter((javax.validation.Validator) validator),
+			return new ValidatorAdapter(new SpringValidatorAdapter((jakarta.validation.Validator) validator),
 					existingBean);
 		}
 		return validator;

@@ -43,7 +43,7 @@ public class ReactiveMultipartProperties {
 	 * Maximum amount of memory allowed per headers section of each part. Set to -1 to
 	 * enforce no limits.
 	 */
-	private DataSize maxHeadersSize = DataSize.ofKilobytes(8);
+	private DataSize maxHeadersSize = DataSize.ofKilobytes(10);
 
 	/**
 	 * Maximum amount of disk space allowed per part. Default is -1 which enforces no

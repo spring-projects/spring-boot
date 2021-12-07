@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServlet;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

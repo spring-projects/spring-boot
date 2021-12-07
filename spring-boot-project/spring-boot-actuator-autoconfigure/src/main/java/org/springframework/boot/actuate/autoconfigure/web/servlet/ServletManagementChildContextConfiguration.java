@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.io.File;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CyclicBarrier;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
@@ -41,7 +41,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoC
 import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
@@ -139,9 +138,8 @@ class MetricsIntegrationTests {
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
 			LogbackMetricsAutoConfiguration.class, SystemMetricsAutoConfiguration.class,
 			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
-			DataSourcePoolMetricsAutoConfiguration.class, HibernateMetricsAutoConfiguration.class,
-			HttpClientMetricsAutoConfiguration.class, WebFluxMetricsAutoConfiguration.class,
-			WebMvcMetricsAutoConfiguration.class, JacksonAutoConfiguration.class,
+			DataSourcePoolMetricsAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class,
+			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class, JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, RestTemplateAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			ServletWebServerFactoryAutoConfiguration.class })

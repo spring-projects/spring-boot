@@ -335,14 +335,14 @@ public class FlywayProperties {
 	private Map<String, String> jdbcProperties = new HashMap<>();
 
 	/**
+	 * Path of the Kerberos config file. Requires Flyway Teams.
+	 */
+	private String kerberosConfigFile;
+
+	/**
 	 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
 	 */
 	private String oracleKerberosCacheFile;
-
-	/**
-	 * Path of the Oracle Kerberos config file. Requires Flyway Teams.
-	 */
-	private String oracleKerberosConfigFile;
 
 	/**
 	 * Location of the Oracle Wallet, used to sign-in to the database automatically.
@@ -355,6 +355,11 @@ public class FlywayProperties {
 	 * migrations. Requires Flyway Teams.
 	 */
 	private Boolean outputQueryResults;
+
+	/**
+	 * Path to the SQL Server Kerberos login file. Requires Flyway Teams.
+	 */
+	private String sqlServerKerberosLoginFile;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
@@ -856,6 +861,14 @@ public class FlywayProperties {
 		this.jdbcProperties = jdbcProperties;
 	}
 
+	public String getKerberosConfigFile() {
+		return this.kerberosConfigFile;
+	}
+
+	public void setKerberosConfigFile(String kerberosConfigFile) {
+		this.kerberosConfigFile = kerberosConfigFile;
+	}
+
 	public String getOracleKerberosCacheFile() {
 		return this.oracleKerberosCacheFile;
 	}
@@ -864,12 +877,15 @@ public class FlywayProperties {
 		this.oracleKerberosCacheFile = oracleKerberosCacheFile;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.kerberos-config-file")
+	@Deprecated
 	public String getOracleKerberosConfigFile() {
-		return this.oracleKerberosConfigFile;
+		return getKerberosConfigFile();
 	}
 
+	@Deprecated
 	public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
-		this.oracleKerberosConfigFile = oracleKerberosConfigFile;
+		setKerberosConfigFile(oracleKerberosConfigFile);
 	}
 
 	public Boolean getOutputQueryResults() {
@@ -878,6 +894,14 @@ public class FlywayProperties {
 
 	public void setOutputQueryResults(Boolean outputQueryResults) {
 		this.outputQueryResults = outputQueryResults;
+	}
+
+	public String getSqlServerKerberosLoginFile() {
+		return this.sqlServerKerberosLoginFile;
+	}
+
+	public void setSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
+		this.sqlServerKerberosLoginFile = sqlServerKerberosLoginFile;
 	}
 
 	public Boolean getSkipExecutingMigrations() {

@@ -28,6 +28,8 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -36,6 +38,7 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
@@ -169,6 +172,15 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	}
 
 	@Test
+	void consecutiveRunWithFilteredClassLoaderShouldHaveBeanWithLazyProperties() {
+		get().withClassLoader(new FilteredClassLoader(Gson.class)).withUserConfiguration(LazyConfig.class)
+				.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
+
+		get().withClassLoader(new FilteredClassLoader(Gson.class)).withUserConfiguration(LazyConfig.class)
+				.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
+	}
+
+	@Test
 	void thrownRuleWorksWithCheckedException() {
 		get().run((context) -> assertThatIOException().isThrownBy(() -> throwCheckedException("Expected message"))
 				.withMessageContaining("Expected message"));
@@ -257,6 +269,30 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(FilteredClassLoaderCondition.class)
 	static class ConditionalConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ExampleProperties.class)
+	static class LazyConfig {
+
+		@Bean
+		ExampleBeanWithLazyProperties exampleBeanWithLazyProperties() {
+			return new ExampleBeanWithLazyProperties();
+		}
+
+	}
+
+	static class ExampleBeanWithLazyProperties {
+
+		@Autowired
+		@Lazy
+		ExampleProperties exampleProperties;
+
+	}
+
+	@ConfigurationProperties
+	public static class ExampleProperties {
 
 	}
 

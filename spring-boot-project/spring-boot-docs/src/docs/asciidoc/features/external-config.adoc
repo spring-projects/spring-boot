@@ -354,7 +354,7 @@ It is not uncommon to use environment variables for such purposes, but this can 
 As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
 For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
 
-There are two common volume mount patterns that can be use:
+There are two common volume mount patterns that can be used:
 
 . A single file contains a complete set of properties (usually written as YAML).
 . Multiple files are written to a directory tree, with the filename becoming the '`key`' and the contents becoming the '`value`'.
@@ -470,10 +470,16 @@ For example, the following file has two logical documents:
 
 [source,yaml,indent=0,subs="verbatim"]
 ----
-	spring.application.name: MyApp
+	spring:
+	  application:
+	    name: MyApp
 	---
-	spring.config.activate.on-cloud-platform: kubernetes
-	spring.application.name: MyCloudApp
+	spring:
+	  application:
+	    name: MyCloudApp
+	  config:
+	    activate:
+	      on-cloud-platform: kubernetes
 ----
 
 For `application.properties` files a special `#---` comment is used to mark the document splits:
@@ -482,8 +488,8 @@ For `application.properties` files a special `#---` comment is used to mark the 
 ----
 	spring.application.name=MyApp
 	#---
-	spring.config.activate.on-cloud-platform=kubernetes
 	spring.application.name=MyCloudApp
+	spring.config.activate.on-cloud-platform=kubernetes
 ----
 
 NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
@@ -498,7 +504,7 @@ WARNING: Multi-document property files cannot be loaded by using the `@PropertyS
 
 [[features.external-config.files.activation-properties]]
 ==== Activation Properties
-It is sometimes useful to only activate a given get of properties when certain conditions are met.
+It is sometimes useful to only activate a given set of properties when certain conditions are met.
 For example, you might have properties that are only relevant when a specific profile is active.
 
 You can conditionally activate a properties document using `spring.config.activate.*`.
@@ -540,7 +546,7 @@ Spring Boot does not provide any built in support for encrypting property values
 The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
 See <<howto#howto.application.customize-the-environment-or-application-context>> for details.
 
-If you're looking for a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
+If you need a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
 
 
 
@@ -675,7 +681,7 @@ The preceding POJO defines the following properties:
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables, etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
@@ -712,7 +718,7 @@ This means that the binder will expect to find a constructor with the parameters
 If you are using Java 16 or later, constructor binding can be used with records.
 In this case, unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
-Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
+Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound through their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
 By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
@@ -725,7 +731,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
-You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)
+You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
@@ -761,7 +767,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/ena
 
 [NOTE]
 ====
-When the `@ConfigurationProperties` bean is registered using configuration property scanning or via `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
+When the `@ConfigurationProperties` bean is registered using configuration property scanning or through `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
 The bean name in the example above is `com.example.app-com.example.app.SomeProperties`.
@@ -780,13 +786,13 @@ This style of configuration works particularly well with the `SpringApplication`
 [source,yaml,indent=0,subs="verbatim"]
 ----
 	my:
-		service:
-			remote-address: 192.168.1.1
-			security:
-				username: admin
-				roles:
-				  - USER
-				  - ADMIN
+	  service:
+	    remote-address: 192.168.1.1
+	    security:
+	      username: admin
+	      roles:
+	      - USER
+	      - ADMIN
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
@@ -1215,4 +1221,4 @@ Doing so will provide you with structured, type-safe object that you can inject 
 
 `SpEL` expressions from  <<features#features.external-config.files,application property files>> are not processed at time of parsing these files and populating the environment.
 However, it is possible to write a `SpEL` expression in `@Value`.
-If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed via `@Value`.
+If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed through `@Value`.

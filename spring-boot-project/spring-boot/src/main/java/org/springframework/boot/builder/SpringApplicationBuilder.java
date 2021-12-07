@@ -604,7 +604,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Whether to allow circular references between beans and automatically try to resolve
 	 * them.
-	 * @param allowCircularReferences whether circular references are allows
+	 * @param allowCircularReferences whether circular references are allowed
 	 * @return the current builder
 	 * @since 2.6.0
 	 * @see AbstractAutowireCapableBeanFactory#setAllowCircularReferences(boolean)

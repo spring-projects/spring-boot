@@ -16,16 +16,21 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
+import io.prometheus.client.exporter.DefaultHttpConnectionFactory;
+import io.prometheus.client.exporter.HttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -150,6 +155,31 @@ public class PrometheusMetricsExportAutoConfiguration {
 			String job = properties.getJob();
 			job = (job != null) ? job : environment.getProperty("spring.application.name");
 			return (job != null) ? job : FALLBACK_JOB;
+		}
+
+	}
+
+	static class BasicAuthHttpConnectionFactory implements HttpConnectionFactory {
+
+		private final HttpConnectionFactory delegate = new DefaultHttpConnectionFactory();
+
+		private final String authorizationHeader;
+
+		BasicAuthHttpConnectionFactory(String username, String password) {
+			this.authorizationHeader = "Basic " + new String(
+					Base64.getEncoder().encode(new String(username + ":" + password).getBytes(StandardCharsets.UTF_8)),
+					StandardCharsets.UTF_8);
+		}
+
+		String getAuthorizationHeader() {
+			return this.authorizationHeader;
+		}
+
+		@Override
+		public HttpURLConnection create(String url) throws IOException {
+			HttpURLConnection connection = this.delegate.create(url);
+			connection.setRequestProperty("Authorization", this.authorizationHeader);
+			return connection;
 		}
 
 	}

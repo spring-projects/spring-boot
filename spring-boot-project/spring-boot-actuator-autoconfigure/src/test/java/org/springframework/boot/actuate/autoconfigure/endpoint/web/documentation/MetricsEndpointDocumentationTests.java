@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 						"id:Compressed Class Space"))
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric-with-tags", requestParameters(parameterWithName("tag")
-						.description("A tag to use for drill-down in the form 'name:value'."))));
+						.description("A tag to use for drill-down in the form `name:value`."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

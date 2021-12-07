@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,6 @@ import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
-import net.sf.ehcache.Status;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.jcache.embedded.JCachingProvider;
-import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -63,10 +59,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.couchbase.CouchbaseClientFactory;
-import org.springframework.data.couchbase.cache.CouchbaseCache;
-import org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration;
-import org.springframework.data.couchbase.cache.CouchbaseCacheManager;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -75,8 +67,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CacheAutoConfiguration}.
@@ -192,64 +182,6 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCache("first")).isEqualTo(context.getBean("firstCache"));
 					assertThat(cacheManager.getCache("second")).isEqualTo(context.getBean("secondCache"));
 					assertThat(cacheManager.getCacheNames()).hasSize(2);
-				});
-	}
-
-	@Test
-	void couchbaseCacheExplicit() {
-		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
-				.withPropertyValues("spring.cache.type=couchbase").run((context) -> {
-					CouchbaseCacheManager cacheManager = getCacheManager(context, CouchbaseCacheManager.class);
-					assertThat(cacheManager.getCacheNames()).isEmpty();
-				});
-	}
-
-	@Test
-	void couchbaseCacheWithCustomizers() {
-		this.contextRunner.withUserConfiguration(CouchbaseWithCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=couchbase")
-				.run(verifyCustomizers("allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer"));
-	}
-
-	@Test
-	void couchbaseCacheExplicitWithCaches() {
-		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
-				.withPropertyValues("spring.cache.type=couchbase", "spring.cache.cacheNames[0]=foo",
-						"spring.cache.cacheNames[1]=bar")
-				.run((context) -> {
-					CouchbaseCacheManager cacheManager = getCacheManager(context, CouchbaseCacheManager.class);
-					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-					Cache cache = cacheManager.getCache("foo");
-					assertThat(cache).isInstanceOf(CouchbaseCache.class);
-					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(0);
-				});
-	}
-
-	@Test
-	void couchbaseCacheExplicitWithTtl() {
-		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
-				.withPropertyValues("spring.cache.type=couchbase", "spring.cache.cacheNames=foo,bar",
-						"spring.cache.couchbase.expiration=2000")
-				.run((context) -> {
-					CouchbaseCacheManager cacheManager = getCacheManager(context, CouchbaseCacheManager.class);
-					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-					Cache cache = cacheManager.getCache("foo");
-					assertThat(cache).isInstanceOf(CouchbaseCache.class);
-					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(2);
-				});
-	}
-
-	@Test
-	void couchbaseCacheWithCouchbaseCacheManagerBuilderCustomizer() {
-		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
-				.withPropertyValues("spring.cache.type=couchbase", "spring.cache.couchbase.expiration=15s")
-				.withBean(CouchbaseCacheManagerBuilderCustomizer.class, () -> (builder) -> builder.cacheDefaults(
-						CouchbaseCacheConfiguration.defaultCacheConfig().entryExpiry(java.time.Duration.ofSeconds(10))))
-				.run((context) -> {
-					CouchbaseCacheManager cacheManager = getCacheManager(context, CouchbaseCacheManager.class);
-					CouchbaseCacheConfiguration couchbaseCacheConfiguration = getDefaultCouchbaseCacheConfiguration(
-							cacheManager);
-					assertThat(couchbaseCacheConfiguration.getExpiry()).isEqualTo(java.time.Duration.ofSeconds(10));
 				});
 	}
 
@@ -539,71 +471,6 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
-	void infinispanCacheWithConfig() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=infinispan", "spring.cache.infinispan.config=infinispan.xml")
-				.run((context) -> {
-					SpringEmbeddedCacheManager cacheManager = getCacheManager(context,
-							SpringEmbeddedCacheManager.class);
-					assertThat(cacheManager.getCacheNames()).contains("foo", "bar");
-				});
-	}
-
-	@Test
-	void infinispanCacheWithCustomizers() {
-		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=infinispan")
-				.run(verifyCustomizers("allCacheManagerCustomizer", "infinispanCacheManagerCustomizer"));
-	}
-
-	@Test
-	void infinispanCacheWithCaches() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=infinispan", "spring.cache.cacheNames[0]=foo",
-						"spring.cache.cacheNames[1]=bar")
-				.run((context) -> assertThat(getCacheManager(context, SpringEmbeddedCacheManager.class).getCacheNames())
-						.containsOnly("foo", "bar"));
-	}
-
-	@Test
-	void infinispanCacheWithCachesAndCustomConfig() {
-		this.contextRunner.withUserConfiguration(InfinispanCustomConfiguration.class)
-				.withPropertyValues("spring.cache.type=infinispan", "spring.cache.cacheNames[0]=foo",
-						"spring.cache.cacheNames[1]=bar")
-				.run((context) -> {
-					assertThat(getCacheManager(context, SpringEmbeddedCacheManager.class).getCacheNames())
-							.containsOnly("foo", "bar");
-					verify(context.getBean(ConfigurationBuilder.class), times(2)).build();
-				});
-	}
-
-	@Test
-	void infinispanAsJCacheWithCaches() {
-		String cachingProviderClassName = JCachingProvider.class.getName();
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=jcache",
-						"spring.cache.jcache.provider=" + cachingProviderClassName, "spring.cache.cacheNames[0]=foo",
-						"spring.cache.cacheNames[1]=bar")
-				.run((context) -> assertThat(getCacheManager(context, JCacheCacheManager.class).getCacheNames())
-						.containsOnly("foo", "bar"));
-	}
-
-	@Test
-	void infinispanAsJCacheWithConfig() {
-		String cachingProviderClassName = JCachingProvider.class.getName();
-		String configLocation = "infinispan.xml";
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=jcache",
-						"spring.cache.jcache.provider=" + cachingProviderClassName,
-						"spring.cache.jcache.config=" + configLocation)
-				.run((context) -> {
-					Resource configResource = new ClassPathResource(configLocation);
-					assertThat(getCacheManager(context, JCacheCacheManager.class).getCacheManager().getURI())
-							.isEqualTo(configResource.getURI());
-				});
-	}
-
-	@Test
 	void jCacheCacheWithCachesAndCustomizer() {
 		String cachingProviderFqn = HazelcastServerCachingProvider.class.getName();
 		try {
@@ -683,10 +550,6 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
-	private CouchbaseCacheConfiguration getDefaultCouchbaseCacheConfiguration(CouchbaseCacheManager cacheManager) {
-		return (CouchbaseCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
-	}
-
 	private RedisCacheConfiguration getDefaultRedisCacheConfiguration(RedisCacheManager cacheManager) {
 		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
 	}
@@ -735,23 +598,6 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	@EnableCaching
 	@Import({ HazelcastAutoConfiguration.class, CacheManagerCustomizersConfiguration.class })
 	static class HazelcastCacheAndCustomizersConfiguration {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableCaching
-	static class CouchbaseConfiguration {
-
-		@Bean
-		CouchbaseClientFactory couchbaseClientFactory() {
-			return mock(CouchbaseClientFactory.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import({ CouchbaseConfiguration.class, CacheManagerCustomizersConfiguration.class })
-	static class CouchbaseWithCustomizersConfiguration {
 
 	}
 
@@ -839,38 +685,11 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
-	static class EhCacheCustomCacheManager {
-
-		@Bean
-		net.sf.ehcache.CacheManager customEhCacheCacheManager() {
-			net.sf.ehcache.CacheManager cacheManager = mock(net.sf.ehcache.CacheManager.class);
-			given(cacheManager.getStatus()).willReturn(Status.STATUS_ALIVE);
-			given(cacheManager.getCacheNames()).willReturn(new String[0]);
-			return cacheManager;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableCaching
 	static class HazelcastCustomHazelcastInstance {
 
 		@Bean
 		HazelcastInstance customHazelcastInstance() {
 			return mock(HazelcastInstance.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableCaching
-	static class InfinispanCustomConfiguration {
-
-		@Bean
-		ConfigurationBuilder configurationBuilder() {
-			ConfigurationBuilder builder = mock(ConfigurationBuilder.class);
-			given(builder.build()).willReturn(new ConfigurationBuilder().build());
-			return builder;
 		}
 
 	}

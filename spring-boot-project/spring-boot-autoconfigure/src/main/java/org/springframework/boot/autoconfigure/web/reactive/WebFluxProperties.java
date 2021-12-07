@@ -52,7 +52,10 @@ public class WebFluxProperties {
 	}
 
 	private String cleanBasePath(String basePath) {
-		String candidate = StringUtils.trimWhitespace(basePath);
+		String candidate = null;
+		if (StringUtils.hasLength(basePath)) {
+			candidate = basePath.strip();
+		}
 		if (StringUtils.hasText(candidate)) {
 			if (!candidate.startsWith("/")) {
 				candidate = "/" + candidate;
@@ -84,17 +87,17 @@ public class WebFluxProperties {
 	public static class Format {
 
 		/**
-		 * Date format to use, for example {@code "dd/MM/yyyy"}.
+		 * Date format to use, for example 'dd/MM/yyyy'.
 		 */
 		private String date;
 
 		/**
-		 * Time format to use, for example {@code "HH:mm:ss"}.
+		 * Time format to use, for example 'HH:mm:ss'.
 		 */
 		private String time;
 
 		/**
-		 * Date-time format to use, for example {@code "yyyy-MM-dd HH:mm:ss"}.
+		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'.
 		 */
 		private String dateTime;
 

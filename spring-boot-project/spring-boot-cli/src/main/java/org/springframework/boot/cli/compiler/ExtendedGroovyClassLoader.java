@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -124,12 +122,11 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	@Override
 	public ClassCollector createCollector(CompilationUnit unit, SourceUnit su) {
-		InnerLoader loader = AccessController.doPrivileged(getInnerLoader());
-		return new ExtendedClassCollector(loader, unit, su);
+		return new ExtendedClassCollector(getInnerLoader(), unit, su);
 	}
 
-	private PrivilegedAction<InnerLoader> getInnerLoader() {
-		return () -> new InnerLoader(ExtendedGroovyClassLoader.this) {
+	private InnerLoader getInnerLoader() {
+		return new InnerLoader(ExtendedGroovyClassLoader.this) {
 
 			// Don't return URLs from the inner loader so that Tomcat only
 			// searches the parent. Fixes 'TLD skipped' issues

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.validation;
 
 import java.util.HashMap;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import org.junit.jupiter.api.Test;
 
@@ -86,7 +86,7 @@ class ValidatorAdapterTests {
 	@Test
 	void wrapperWhenValidationProviderNotPresentShouldNotThrowException() {
 		ClassPathResource hibernateValidator = new ClassPathResource(
-				"META-INF/services/javax.validation.spi.ValidationProvider");
+				"META-INF/services/jakarta.validation.spi.ValidationProvider");
 		this.contextRunner
 				.withClassLoader(
 						new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),

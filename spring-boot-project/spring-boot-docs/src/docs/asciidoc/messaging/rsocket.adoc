@@ -1,7 +1,7 @@
 [[messaging.rsocket]]
 == RSocket
 https://rsocket.io[RSocket] is a binary protocol for use on byte stream transports.
-It enables symmetric interaction models via async message passing over a single connection.
+It enables symmetric interaction models through async message passing over a single connection.
 
 
 The `spring-messaging` module of the Spring Framework provides support for RSocket requesters and responders, both on the client and on the server side.
@@ -18,7 +18,7 @@ By default, the auto-configuration will try to configure the following (in order
 . JSON codecs with Jackson
 
 The `spring-boot-starter-rsocket` starter provides both dependencies.
-Check out the <<features#features.json.jackson,Jackson support section>> to know more about customization possibilities.
+See the <<features#features.json.jackson,Jackson support section>> to know more about customization possibilities.
 
 Developers can customize the `RSocketStrategies` component by creating beans that implement the `RSocketStrategiesCustomizer` interface.
 Note that their `@Order` is important, as it determines the order of codecs.

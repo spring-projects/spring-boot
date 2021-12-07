@@ -354,7 +354,7 @@ include::{docs-java}/features/testing/springbootapplications/jsontests/MyJsonTes
 NOTE: JSON helper classes can also be used directly in standard unit tests.
 To do so, call the `initFields` method of the helper in your `@Before` method if you do not use `@JsonTest`.
 
-If you're using Spring Boot's AssertJ-based helpers to assert on a number value at a given JSON path, you might not be able to use `isEqualTo` depending on the type.
+If you use Spring Boot's AssertJ-based helpers to assert on a number value at a given JSON path, you might not be able to use `isEqualTo` depending on the type.
 Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
 For instance, the following example asserts that the actual number is a float value close to `0.15` within an offset of `0.01`.
 
@@ -438,11 +438,11 @@ include::{docs-java}/features/testing/springbootapplications/springwebfluxtests/
 
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a mocked web application only works with WebFlux at the moment.
 
-NOTE: `@WebFluxTest` cannot detect routes registered via the functional web framework.
-For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself via `@Import` or using `@SpringBootTest`.
+NOTE: `@WebFluxTest` cannot detect routes registered through the functional web framework.
+For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
 
-NOTE: `@WebFluxTest` cannot detect custom security configuration registered via a `@Bean` of type `SecurityWebFilterChain`.
-To include that in your test, you will need to import the configuration that registers the bean via `@Import` or use `@SpringBootTest`.
+NOTE: `@WebFluxTest` cannot detect custom security configuration registered as a `@Bean` of type `SecurityWebFilterChain`.
+To include that in your test, you will need to import the configuration that registers the bean by using `@Import` or by using `@SpringBootTest`.
 
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.
 
@@ -550,30 +550,6 @@ If that is not what you want, you can disable transaction management for a test 
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
 (See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
-
-
-
-[[features.testing.spring-boot-applications.autoconfigured-jooq]]
-==== Auto-configured jOOQ Tests
-You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
-As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
-If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
-(For more about using jOOQ with Spring Boot, see "<<data#data.sql.jooq>>", earlier in this chapter.)
-Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
-`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-
-TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
-`@JooqTest` configures a `DSLContext`.
-The following example shows the `@JooqTest` annotation in use:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredjooq/MyJooqTests.java[]
-----
-
-JOOQ tests are transactional and roll back at the end of each test by default.
-If that is not what you want, you can disable transaction management for a test or for the whole test class as <<features#features.testing.spring-boot-applications.autoconfigured-jdbc,shown in the JDBC example>>.
 
 
 
@@ -701,7 +677,7 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredrestc
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 ==== Auto-configured Spring REST Docs Tests
-You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
+You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC or WebTestClient.
 It removes the need for the JUnit extension in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you are using Gradle).
@@ -760,25 +736,6 @@ The following example shows such a `WebTestClientBuilderCustomizer` being define
 [source,java,indent=0]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyWebTestClientBuilderCustomizerConfiguration.java[]
-----
-
-
-
-[[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
-===== Auto-configured Spring REST Docs Tests with REST Assured
-`@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST Docs, available to your tests.
-You can inject it by using `@Autowired` and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyUserDocumentationTests.java[]
-----
-
-If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyRestDocsConfiguration.java[]
 ----
 
 
@@ -966,7 +923,7 @@ include::{docs-java}/features/testing/utilities/outputcapture/MyOutputCaptureTes
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
 In either case, the template is fault tolerant.
 This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
-Instead, such errors can be detected via the returned `ResponseEntity` and its status code.
+Instead, such errors can be detected through the returned `ResponseEntity` and its status code.
 
 TIP: Spring Framework 5.0 provides a new `WebTestClient` that works for <<features#features.testing.spring-boot-applications.spring-webflux-tests, WebFlux integration tests>> and both <<features#features.testing.spring-boot-applications.with-running-server, WebFlux and MVC end-to-end testing>>.
 It provides a fluent API for assertions, unlike `TestRestTemplate`.

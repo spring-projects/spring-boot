@@ -98,7 +98,7 @@ public class BatchProperties {
 
 		/**
 		 * Comma-separated list of job names to execute on startup (for instance,
-		 * {@code "job1,job2"}). By default, all Jobs found in the context are executed.
+		 * 'job1,job2'). By default, all Jobs found in the context are executed.
 		 */
 		private String names = "";
 

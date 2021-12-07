@@ -1,6 +1,6 @@
 [[web.servlet]]
 == Servlet Web Applications
-If you're looking to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC or Jersey.
+If you want to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC.
 
 [[web.servlet.spring-mvc]]
 === The "`Spring Web MVC Framework`"
@@ -280,7 +280,7 @@ Spring Boot now provides a configuration property to choose and opt in the new s
 	      matching-strategy: "path-pattern-parser"
 ----
 
-For more details on why you should consider this new implementation, please check out the
+For more details on why you should consider this new implementation, see the
 https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[dedicated blog post].
 
 NOTE: `PathPatternParser` is an optimized implementation but restricts usage of
@@ -308,7 +308,6 @@ Spring Boot includes auto-configuration support for the following templating eng
 
 * https://freemarker.apache.org/docs/[FreeMarker]
 * https://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
-* https://www.thymeleaf.org[Thymeleaf]
 * https://mustache.github.io/[Mustache]
 
 TIP: If possible, JSPs should be avoided.
@@ -456,48 +455,6 @@ include::{docs-java}/web/servlet/springmvc/cors/MyCorsConfiguration.java[]
 
 
 
-[[web.servlet.jersey]]
-=== JAX-RS and Jersey
-If you prefer the JAX-RS programming model for REST endpoints, you can use one of the available implementations instead of Spring MVC.
-https://jersey.github.io/[Jersey] and https://cxf.apache.org/[Apache CXF] work quite well out of the box.
-CXF requires you to register its `Servlet` or `Filter` as a `@Bean` in your application context.
-Jersey has some native Spring support, so we also provide auto-configuration support for it in Spring Boot, together with a starter.
-
-To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `ResourceConfig` in which you register all the endpoints, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/jersey/MyJerseyConfig.java[]
-----
-
-WARNING: Jersey's support for scanning executable archives is rather limited.
-For example, it cannot scan for endpoints in a package found in a <<deployment#deployment.installing, fully executable jar file>> or in `WEB-INF/classes` when running an executable war file.
-To avoid this limitation, the `packages` method should not be used, and endpoints should be registered individually by using the `register` method, as shown in the preceding example.
-
-For more advanced customizations, you can also register an arbitrary number of beans that implement `ResourceConfigCustomizer`.
-
-All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` and others), as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/jersey/MyEndpoint.java[]
-----
-
-Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
-By default, the Jersey servlet is registered and mapped to `/*`.
-You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
-
-By default, Jersey is set up as a servlet in a `@Bean` of type `ServletRegistrationBean` named `jerseyServletRegistration`.
-By default, the servlet is initialized lazily, but you can customize that behavior by setting `spring.jersey.servlet.load-on-startup`.
-You can disable or override that bean by creating one of your own with the same name.
-You can also use a filter instead of a servlet by setting `spring.jersey.type=filter` (in which case, the `@Bean` to replace or override is `jerseyFilterRegistration`).
-The filter has an `@Order`, which you can set with `spring.jersey.filter.order`.
-When using Jersey as a filter, a servlet that will handle any requests that are not intercepted by Jersey must be present.
-If your application does not contain such a servlet, you may want to enable the default servlet by setting configprop:server.servlet.register-default-servlet[] to `true`.
-Both the servlet and the filter registrations can be given init parameters by using `spring.jersey.init.*` to specify a map of properties.
-
-
-
 [[web.servlet.embedded-container]]
 === Embedded Servlet Container Support
 For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
@@ -540,7 +497,7 @@ If you need to register a `Filter` that interacts with other beans, consider usi
 
 [[web.servlet.embedded-container.context-initializer]]
 ==== Servlet Context Initialization
-Embedded servlet containers do not directly execute the servlet 3.0+ `javax.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
+Embedded servlet containers do not directly execute the `jakarta.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
 This is an intentional design decision intended to reduce the risk that third party libraries designed to run inside a war may break Spring Boot applications.
 
 If you need to perform servlet context initialization in a Spring Boot application, you should register a bean that implements the `org.springframework.boot.web.servlet.ServletContextInitializer` interface.
@@ -597,7 +554,7 @@ If you want to change the `SameSite` attribute of your session cookie, you can u
 This property is supported by auto-configured Tomcat, Jetty and Undertow servers.
 It is also used to configure Spring Session servlet based `SessionRepository` beans.
 
-For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to you `application.properties` or `application.yaml` file:
+For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -666,5 +623,3 @@ JSPs are not supported when using an executable jar.
 
 * Creating a custom `error.jsp` page does not override the default view for <<web#web.servlet.spring-mvc.error-handling,error handling>>.
   <<web#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
-
-

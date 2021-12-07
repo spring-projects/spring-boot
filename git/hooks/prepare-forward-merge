@@ -4,7 +4,7 @@ require 'net/http'
 require 'yaml'
 require 'logger'
 
-$main_branch = "2.6.x"
+$main_branch = "3.0.x"
 
 $log = Logger.new(STDOUT)
 $log.level = Logger::WARN
@@ -27,7 +27,7 @@ end
 def rewrite_message(message_file, fixed)
   current_branch = `git rev-parse --abbrev-ref HEAD`.strip
   if current_branch == "main"
-    current_branch = $main_branch
+    return nil
   end
   rewritten_message = ""
   message = File.read(message_file)
@@ -68,4 +68,6 @@ end
 $log.debug "Searching for for forward merge"
 fixed = get_fixed_issues()
 rewritten_message = rewrite_message(message_file, fixed)
-File.write(message_file, rewritten_message)
+unless rewritten_message.nil?
+  File.write(message_file, rewritten_message)
+end

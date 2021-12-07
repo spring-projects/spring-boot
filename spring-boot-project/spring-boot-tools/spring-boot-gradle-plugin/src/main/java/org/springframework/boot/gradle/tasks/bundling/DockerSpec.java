@@ -16,13 +16,11 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
-import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 
@@ -105,15 +103,6 @@ public class DockerSpec {
 	}
 
 	/**
-	 * Customizes the {@link DockerRegistrySpec} that configures authentication to the
-	 * builder registry.
-	 * @param closure the closure to apply
-	 */
-	public void builderRegistry(Closure<?> closure) {
-		builderRegistry(ConfigureUtil.configureUsing(closure));
-	}
-
-	/**
 	 * Returns the {@link DockerRegistrySpec} that configures authentication to the
 	 * publishing registry.
 	 * @return the registry spec
@@ -130,15 +119,6 @@ public class DockerSpec {
 	 */
 	public void publishRegistry(Action<DockerRegistrySpec> action) {
 		action.execute(this.publishRegistry);
-	}
-
-	/**
-	 * Customizes the {@link DockerRegistrySpec} that configures authentication to the
-	 * publishing registry.
-	 * @param closure the closure to apply
-	 */
-	public void publishRegistry(Closure<?> closure) {
-		publishRegistry(ConfigureUtil.configureUsing(closure));
 	}
 
 	/**

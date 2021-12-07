@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -32,6 +33,7 @@ import com.github.dockerjava.api.model.ContainerConfig;
 import org.assertj.core.api.Condition;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
@@ -61,6 +63,12 @@ class PaketoBuilderTests {
 
 	GradleBuild gradleBuild;
 
+	@BeforeEach
+	void configureGradleBuild() {
+		this.gradleBuild.scriptProperty("systemTestMavenRepository",
+				new File("build/system-test-maven-repository").getAbsoluteFile().toURI().toASCIIString());
+	}
+
 	@Test
 	void executableJarApp() throws Exception {
 		writeMainClass();
@@ -72,13 +80,9 @@ class PaketoBuilderTests {
 			container.waitingFor(Wait.forHttp("/test")).start();
 			ContainerConfig config = container.getContainerInfo().getConfig();
 			assertLabelsMatchManifestAttributes(config);
-			ImageAssertions.assertThat(config).buildMetadata().buildpacks().containsExactly(
+			ImageAssertions.assertThat(config).buildMetadata().buildpacks().contains(
 					"paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 					"paketo-buildpacks/executable-jar", "paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-			ImageAssertions.assertThat(config).buildMetadata().bomDependencies().contains("spring-beans", "spring-boot",
-					"spring-boot-autoconfigure", "spring-boot-jarmode-layertools", "spring-context", "spring-core",
-					"spring-web");
-			ImageAssertions.assertThat(config).buildMetadata().bomJavaVersion("jre").startsWith(javaMajorVersion());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("web").extracting("command", "args")
 					.containsExactly("java", Collections.singletonList("org.springframework.boot.loader.JarLauncher"));
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("executable-jar")
@@ -139,10 +143,9 @@ class PaketoBuilderTests {
 		try (GenericContainer<?> container = new GenericContainer<>(imageName).withExposedPorts(8080)) {
 			container.waitingFor(Wait.forHttp("/test")).start();
 			ContainerConfig config = container.getContainerInfo().getConfig();
-			ImageAssertions.assertThat(config).buildMetadata().buildpacks().containsExactly(
+			ImageAssertions.assertThat(config).buildMetadata().buildpacks().contains(
 					"paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 					"paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-			ImageAssertions.assertThat(config).buildMetadata().bomJavaVersion("jre").startsWith(javaMajorVersion());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("web").extracting("command", "args")
 					.containsExactly("/workspace/" + projectName + "-boot/bin/" + projectName, Collections.emptyList());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("dist-zip").extracting("command", "args")
@@ -168,10 +171,9 @@ class PaketoBuilderTests {
 		try (GenericContainer<?> container = new GenericContainer<>(imageName).withExposedPorts(8080)) {
 			container.waitingFor(Wait.forHttp("/test")).start();
 			ContainerConfig config = container.getContainerInfo().getConfig();
-			ImageAssertions.assertThat(config).buildMetadata().buildpacks().containsExactly(
+			ImageAssertions.assertThat(config).buildMetadata().buildpacks().contains(
 					"paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 					"paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-			ImageAssertions.assertThat(config).buildMetadata().bomJavaVersion("jre").startsWith(javaMajorVersion());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("web").extracting("command", "args")
 					.containsExactly("/workspace/" + projectName + "/bin/" + projectName, Collections.emptyList());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("dist-zip").extracting("command", "args")
@@ -201,13 +203,9 @@ class PaketoBuilderTests {
 			container.waitingFor(Wait.forHttp("/test")).start();
 			ContainerConfig config = container.getContainerInfo().getConfig();
 			assertLabelsMatchManifestAttributes(config);
-			ImageAssertions.assertThat(config).buildMetadata().buildpacks().containsExactly(
+			ImageAssertions.assertThat(config).buildMetadata().buildpacks().contains(
 					"paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 					"paketo-buildpacks/executable-jar", "paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-			ImageAssertions.assertThat(config).buildMetadata().bomDependencies().contains("spring-beans", "spring-boot",
-					"spring-boot-autoconfigure", "spring-boot-jarmode-layertools", "spring-context", "spring-core",
-					"spring-web");
-			ImageAssertions.assertThat(config).buildMetadata().bomJavaVersion("jre").startsWith(javaMajorVersion());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("web").extracting("command", "args")
 					.containsExactly("java", Collections.singletonList("org.springframework.boot.loader.WarLauncher"));
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("executable-jar")
@@ -231,14 +229,13 @@ class PaketoBuilderTests {
 		try (GenericContainer<?> container = new GenericContainer<>(imageName).withExposedPorts(8080)) {
 			container.waitingFor(Wait.forHttp("/test")).start();
 			ContainerConfig config = container.getContainerInfo().getConfig();
-			ImageAssertions.assertThat(config).buildMetadata().buildpacks().containsExactly(
+			ImageAssertions.assertThat(config).buildMetadata().buildpacks().contains(
 					"paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 					"paketo-buildpacks/apache-tomcat", "paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-			ImageAssertions.assertThat(config).buildMetadata().bomJavaVersion("jre").startsWith(javaMajorVersion());
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("web").extracting("command", "args")
-					.containsExactly("catalina.sh", Collections.singletonList("run"));
+					.containsExactly("bash", Arrays.asList("catalina.sh", "run"));
 			ImageAssertions.assertThat(config).buildMetadata().processOfType("tomcat").extracting("command", "args")
-					.containsExactly("catalina.sh", Collections.singletonList("run"));
+					.containsExactly("bash", Arrays.asList("catalina.sh", "run"));
 			DigestCapturingCondition digests = new DigestCapturingCondition();
 			ImageAssertions.assertThat(config).lifecycleMetadata().appLayerShas().haveExactly(1, digests);
 			ImageAssertions.assertThat(imageReference).hasLayer(digests.getDigest(0)).entries()

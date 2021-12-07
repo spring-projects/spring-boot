@@ -31,9 +31,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.SessionCookieConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.SessionCookieConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -347,13 +347,13 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(config::setMaxAge);
 		}
 
-		private Set<javax.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
+		private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
 			if (modes == null) {
 				return null;
 			}
-			Set<javax.servlet.SessionTrackingMode> result = new LinkedHashSet<>();
+			Set<jakarta.servlet.SessionTrackingMode> result = new LinkedHashSet<>();
 			for (Session.SessionTrackingMode mode : modes) {
-				result.add(javax.servlet.SessionTrackingMode.valueOf(mode.name()));
+				result.add(jakarta.servlet.SessionTrackingMode.valueOf(mode.name()));
 			}
 			return result;
 		}

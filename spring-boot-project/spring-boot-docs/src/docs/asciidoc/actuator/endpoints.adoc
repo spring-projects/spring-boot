@@ -90,7 +90,7 @@ The following technology-agnostic endpoints are available:
 | Performs a thread dump.
 |===
 
-If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can use the following additional endpoints:
+If your application is a web application (Spring MVC or Spring WebFlux), you can use the following additional endpoints:
 
 [cols="2,5"]
 |===
@@ -438,8 +438,7 @@ TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpo
 [[actuator.endpoints.implementing-custom]]
 === Implementing Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
-Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring WebFlux.
-If both Jersey and Spring MVC are available, Spring MVC is used.
+Endpoints can be exposed over HTTP by using Spring MVC, or Spring WebFlux.
 
 The following example exposes a read operation that returns a custom object:
 
@@ -502,8 +501,7 @@ Before calling an operation method, the input received over JMX or HTTP is conve
 
 [[actuator.endpoints.implementing-custom.web]]
 ==== Custom Web Endpoints
-Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
-If both Jersey and Spring MVC are available, Spring MVC is used.
+Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Spring MVC or Spring WebFlux.
 
 
 
@@ -582,9 +580,7 @@ If an operation is invoked without a required parameter or with a parameter that
 [[actuator.endpoints.implementing-custom.web.range-requests]]
 ===== Web Endpoint Range Requests
 You can use an HTTP range request to request part of an HTTP resource.
-When using Spring MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource` automatically support range requests.
-
-NOTE: Range requests are not supported when using Jersey.
+Operations that return a `org.springframework.core.io.Resource` automatically support range requests.
 
 
 
@@ -1147,7 +1143,7 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
 [cols="1,4,8,4"]
 |===
-| ID | Name | Description | Prequisites
+| ID | Name | Description | Prerequisites
 
 | `build`
 | {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
@@ -1174,7 +1170,7 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
+With no prerequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
 You can enable them by setting the configprop:management.info.env.enabled[] or configprop:management.info.java.enabled[] properties to `true`.
 
 The `build` and `git` info contributors are enabled by default.

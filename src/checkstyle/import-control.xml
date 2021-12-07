@@ -11,7 +11,7 @@
 			<disallow pkg="org.springframework.boot.web" />
 			<disallow pkg="org.springframework.web.servlet" />
 			<disallow pkg="org.springframework.web.reactive" />
-			<disallow pkg="javax.servlet" />
+			<disallow pkg="jakarta.servlet" />
 			<subpackage name="client">
 				<allow pkg="org.springframework.boot.web.client" />
 			</subpackage>
@@ -19,7 +19,7 @@
 				<allow pkg="org.springframework.boot.web.embedded" />
 			</subpackage>
 			<subpackage name="servlet">
-				<allow pkg="javax.servlet" />
+				<allow pkg="jakarta.servlet" />
 				<allow pkg="org.springframework.boot.web.embedded" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 				<allow pkg="org.springframework.web.servlet" />
@@ -75,7 +75,7 @@
 		<!-- Lock things down -->
 		<disallow pkg="org.springframework.boot.web" />
 		<disallow pkg="org.springframework.web.servlet" />
-		<disallow pkg="javax.servlet" />
+		<disallow pkg="jakarta.servlet" />
 
 		<!-- Common -->
 		<subpackage name="client">
@@ -89,7 +89,7 @@
 
 		<!-- Servlet -->
 		<subpackage name="servlet">
-			<allow pkg="javax.servlet" />
+			<allow pkg="jakarta.servlet" />
 			<subpackage name="context">
 				<allow pkg="org.springframework.boot.web.context" />
 				<allow pkg="org.springframework.boot.web.server" />
@@ -97,7 +97,7 @@
 				<allow pkg="org.springframework.boot.web.servlet" />
 			</subpackage>
 			<subpackage name="filter">
-				<allow pkg="javax.servlet" />
+				<allow pkg="jakarta.servlet" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 			</subpackage>
 			<subpackage name="server">
@@ -106,7 +106,7 @@
 				<allow pkg="org.springframework.boot.web.servlet" />
 			</subpackage>
 			<subpackage name="support">
-				<allow pkg="javax.servlet" />
+				<allow pkg="jakarta.servlet" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 				<allow pkg="org.springframework.boot.web.server" />
 			</subpackage>
@@ -142,7 +142,7 @@
 
 		<!-- Embedded Servers -->
 		<subpackage name="embedded">
-			<allow pkg="javax.servlet" />
+			<allow pkg="jakarta.servlet" />
 			<allow pkg="org.springframework.boot.web.server" />
 			<allow pkg="org.springframework.boot.web.servlet" />
 			<allow pkg="org.springframework.boot.web.servlet.server" />

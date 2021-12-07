@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 /**
  * @author Phillip Webb
  */
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.util.Assert;

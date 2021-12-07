@@ -36,7 +36,6 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -99,7 +98,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
-		SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
+		SourceSet mainSourceSet = javaPluginExtension(project).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		Configuration developmentOnly = project.getConfigurations()
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
@@ -127,7 +126,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			buildImage.setGroup(BasePlugin.BUILD_GROUP);
 			buildImage.getArchiveFile().set(bootJar.get().getArchiveFile());
 			buildImage.getTargetJavaVersion()
-					.set(project.provider(() -> javaPluginConvention(project).getTargetCompatibility()));
+					.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
 		});
 	}
 
@@ -137,7 +136,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
-		FileCollection classpath = javaPluginConvention(project).getSourceSets()
+		FileCollection classpath = javaPluginExtension(project).getSourceSets()
 				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
 				classpath);
@@ -168,8 +167,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 		return GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.7")) >= 0;
 	}
 
-	private JavaPluginConvention javaPluginConvention(Project project) {
-		return project.getConvention().getPlugin(JavaPluginConvention.class);
+	private JavaPluginExtension javaPluginExtension(Project project) {
+		return project.getExtensions().getByType(JavaPluginExtension.class);
 	}
 
 	private void configureUtf8Encoding(Project project) {
@@ -195,7 +194,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
-		SourceSetContainer sourceSets = compile.getProject().getConvention().getPlugin(JavaPluginConvention.class)
+		SourceSetContainer sourceSets = compile.getProject().getExtensions().getByType(JavaPluginExtension.class)
 				.getSourceSets();
 		sourceSets.stream().filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
 				.map((match) -> match.getResources().getSrcDirs()).findFirst()

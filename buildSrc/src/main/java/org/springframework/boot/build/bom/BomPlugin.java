@@ -17,10 +17,12 @@
 package org.springframework.boot.build.bom;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import groovy.namespace.QName;
 import groovy.util.Node;
-import groovy.xml.QName;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -34,6 +36,7 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.bomr.UpgradeBom;
 
 /**
@@ -108,6 +111,7 @@ public class BomPlugin implements Plugin<Project> {
 					addPropertiesBeforeDependencyManagement(projectNode, properties);
 					replaceVersionsWithVersionPropertyReferences(dependencyManagement);
 					addExclusionsToManagedDependencies(dependencyManagement);
+					addTypesToManagedDependencies(dependencyManagement);
 				}
 				else {
 					projectNode.children().add(properties);
@@ -156,6 +160,30 @@ public class BomPlugin implements Plugin<Project> {
 								node.appendNode("groupId", exclusion.getGroupId());
 								node.appendNode("artifactId", exclusion.getArtifactId());
 							});
+				}
+			}
+		}
+
+		private void addTypesToManagedDependencies(Node dependencyManagement) {
+			Node dependencies = findChild(dependencyManagement, "dependencies");
+			if (dependencies != null) {
+				for (Node dependency : findChildren(dependencies, "dependency")) {
+					String groupId = findChild(dependency, "groupId").text();
+					String artifactId = findChild(dependency, "artifactId").text();
+					Set<String> types = this.bom.getLibraries().stream()
+							.flatMap((library) -> library.getGroups().stream())
+							.filter((group) -> group.getId().equals(groupId))
+							.flatMap((group) -> group.getModules().stream())
+							.filter((module) -> module.getName().equals(artifactId)).map(Module::getType)
+							.filter(Objects::nonNull).collect(Collectors.toSet());
+					if (types.size() > 1) {
+						throw new IllegalStateException(
+								"Multiple types for " + groupId + ":" + artifactId + ": " + types);
+					}
+					if (types.size() == 1) {
+						String type = types.iterator().next();
+						dependency.appendNode("type", type);
+					}
 				}
 			}
 		}

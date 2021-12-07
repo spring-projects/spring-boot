@@ -27,4 +27,4 @@ spring:
 ----
 
 IMPORTANT: Using graceful shutdown with your IDE may not work properly if it does not send a proper `SIGTERM` signal.
-Refer to the documentation of your IDE for more details.
+See the documentation of your IDE for more details.

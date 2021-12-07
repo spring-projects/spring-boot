@@ -93,8 +93,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	 * {@link ConfigurationClassPostProcessor} and add a {@link WebTestClientFactory} bean
 	 * definition when a {@link WebTestClient} hasn't already been registered.
 	 */
-	private static class WebTestClientRegistrar
-			implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
+	static class WebTestClientRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 

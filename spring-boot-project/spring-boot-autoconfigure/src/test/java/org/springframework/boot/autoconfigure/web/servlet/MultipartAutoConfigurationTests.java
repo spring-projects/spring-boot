@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.net.URI;
 
-import javax.servlet.MultipartConfigElement;
+import jakarta.servlet.MultipartConfigElement;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -186,15 +185,6 @@ class MultipartAutoConfigurationTests {
 		MultipartResolver multipartResolver = this.context.getBean(MultipartResolver.class);
 		assertThat(multipartResolver).isNotInstanceOf(StandardServletMultipartResolver.class);
 		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(1);
-	}
-
-	@Test
-	void containerWithCommonsMultipartResolver() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ContainerWithCommonsMultipartResolver.class, BaseConfiguration.class);
-		MultipartResolver multipartResolver = this.context.getBean(MultipartResolver.class);
-		assertThat(multipartResolver).isInstanceOf(CommonsMultipartResolver.class);
-		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(0);
 	}
 
 	@Test
@@ -402,16 +392,6 @@ class MultipartAutoConfigurationTests {
 		@Bean
 		MultipartResolver multipartResolver() {
 			return mock(MultipartResolver.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ContainerWithCommonsMultipartResolver {
-
-		@Bean
-		CommonsMultipartResolver multipartResolver() {
-			return mock(CommonsMultipartResolver.class);
 		}
 
 	}

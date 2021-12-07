@@ -19,8 +19,8 @@ package org.springframework.boot.testsupport.testcontainers;
 import java.time.Duration;
 
 /**
- * Custom {@link org.testcontainers.containers.CassandraContainer} tuned to improve
- * startup time.
+ * Custom {@link org.testcontainers.containers.CassandraContainer} tuned for stability in
+ * heavily contended environments such as CI.
  *
  * @author Andy Wilkinson
  * @since 2.4.10
@@ -29,10 +29,6 @@ public class CassandraContainer extends org.testcontainers.containers.CassandraC
 
 	public CassandraContainer() {
 		super(DockerImageNames.cassandra());
-		withEnv("CASSANDRA_SNITCH", "GossipingPropertyFileSnitch");
-		withEnv("JVM_OPTS", "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0");
-		withEnv("HEAP_NEWSIZE", "128M");
-		withEnv("MAX_HEAP_SIZE", "1024M");
 		withStartupTimeout(Duration.ofMinutes(10));
 	}
 

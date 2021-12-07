@@ -33,7 +33,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -43,6 +43,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.work.DisableCachingByDefault;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -53,6 +54,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author Andy Wilkinson
  * @since 2.4
  */
+@DisableCachingByDefault(because = "Not worth caching")
 public class ResolveMainClassName extends DefaultTask {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
@@ -145,13 +147,13 @@ public class ResolveMainClassName extends DefaultTask {
 			FileCollection classpath) {
 		TaskProvider<ResolveMainClassName> resolveMainClassNameProvider = project.getTasks()
 				.register(taskName + "MainClassName", ResolveMainClassName.class, (resolveMainClassName) -> {
-					Convention convention = project.getConvention();
+					ExtensionContainer extensions = project.getExtensions();
 					resolveMainClassName.setDescription(
 							"Resolves the name of the application's main class for the " + taskName + " task.");
 					resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
 					resolveMainClassName.setClasspath(classpath);
 					resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
-						String javaApplicationMainClass = getJavaApplicationMainClass(convention);
+						String javaApplicationMainClass = getJavaApplicationMainClass(extensions);
 						if (javaApplicationMainClass != null) {
 							return javaApplicationMainClass;
 						}
@@ -166,8 +168,8 @@ public class ResolveMainClassName extends DefaultTask {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static String getJavaApplicationMainClass(Convention convention) {
-		JavaApplication javaApplication = convention.findByType(JavaApplication.class);
+	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
+		JavaApplication javaApplication = extensions.findByType(JavaApplication.class);
 		if (javaApplication == null) {
 			return null;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.config.annotation.EnableWs;
@@ -82,6 +83,7 @@ public class WebServicesAutoConfiguration {
 	}
 
 	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@Conditional(OnWsdlLocationsCondition.class)
 	public static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
@@ -93,7 +95,7 @@ public class WebServicesAutoConfiguration {
 
 	}
 
-	private static class WsdlDefinitionBeanFactoryPostProcessor
+	static class WsdlDefinitionBeanFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
 		private ApplicationContext applicationContext;

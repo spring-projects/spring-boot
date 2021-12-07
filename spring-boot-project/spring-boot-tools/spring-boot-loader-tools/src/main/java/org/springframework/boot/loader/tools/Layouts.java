@@ -29,6 +29,7 @@ import java.util.Map;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public final class Layouts {
@@ -158,11 +159,6 @@ public final class Layouts {
 		@Override
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
-		}
-
-		@Override
-		public String getClasspathIndexFileLocation() {
-			return "WEB-INF/classpath.idx";
 		}
 
 		@Override

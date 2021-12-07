@@ -82,7 +82,6 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 	}
 
 	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
-		checkPackageAccess(name);
 		if ((this.delegate || filter(name, true))) {
 			Class<?> result = loadFromParent(name);
 			return (result != null) ? result : findClassIgnoringNotFound(name);
@@ -124,17 +123,6 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		}
 		catch (ClassNotFoundException ex) {
 			return null;
-		}
-	}
-
-	private void checkPackageAccess(String name) throws ClassNotFoundException {
-		if (this.securityManager != null && name.lastIndexOf('.') >= 0) {
-			try {
-				this.securityManager.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
-			}
-			catch (SecurityException ex) {
-				throw new ClassNotFoundException("Security Violation, attempt to use Restricted Class: " + name, ex);
-			}
 		}
 	}
 

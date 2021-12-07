@@ -72,6 +72,7 @@ final class TldPatterns {
 		skipPatterns.add("hibernate*.jar");
 		skipPatterns.add("httpclient*.jar");
 		skipPatterns.add("icu4j-*.jar");
+		skipPatterns.add("jakartaee-migration-*.jar");
 		skipPatterns.add("jasper-el.jar");
 		skipPatterns.add("jasper.jar");
 		skipPatterns.add("jaspic-api.jar");
