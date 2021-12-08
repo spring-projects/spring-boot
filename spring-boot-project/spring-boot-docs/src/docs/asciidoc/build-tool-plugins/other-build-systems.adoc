@@ -37,7 +37,13 @@ An exception is thrown if more than one candidate is found.
 === Example Repackage Implementation
 The following example shows a typical repackage implementation:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/buildtoolplugins/otherbuildsystems/examplerepackageimplementation/MyBuildTool.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/buildtoolplugins/otherbuildsystems/examplerepackageimplementation/MyBuildTool.kt[]
 ----

@@ -110,16 +110,28 @@ Then the Spring Boot banner is not printed on startup, and the application is no
 Properties defined in external configuration override and replace the values specified with the Java API, with the notable exception of the primary sources.
 Primary sources are those provided to the `SpringApplication` constructor:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/application/MyApplication.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/propertiesandconfiguration/externalizeconfiguration/application/MyApplication.kt[]
 ----
 
 Or to `sources(...)` method of a `SpringApplicationBuilder`:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/builder/MyApplication.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/propertiesandconfiguration/externalizeconfiguration/builder/MyApplication.kt[]
 ----
 
 Given the examples above, if we have the following configuration:

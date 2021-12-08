@@ -10,9 +10,15 @@ This section answers common questions about Spring MVC and Spring Boot.
 === Write a JSON REST Service
 Any Spring `@RestController` in a Spring Boot application should render JSON response by default as long as Jackson2 is on the classpath, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/springmvc/writejsonrestservice/MyController.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/springmvc/writejsonrestservice/MyController.kt[]
 ----
 
 As long as `MyThing` can be serialized by Jackson2 (true for a normal POJO or Groovy object), then `http://localhost:8080/thing` serves a JSON representation of it by default.
@@ -36,9 +42,15 @@ To use the Jackson XML renderer, add the following dependency to your project:
 
 If Jackson's XML extension is not available and JAXB is available, XML can be rendered with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/springmvc/writexmlrestservice/MyThing.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/springmvc/writexmlrestservice/MyThing.kt[]
 ----
 
 JAXB is only available out of the box with Java 8.
