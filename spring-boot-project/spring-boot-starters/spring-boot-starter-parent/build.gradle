@@ -19,7 +19,7 @@ publishing.publications.withType(MavenPublication) {
 		root.remove(root.version)
 		root.description.plus {
 			properties {
-				delegate."java.version"('1.8')
+				delegate."java.version"('17')
 				delegate."resource.delimiter"('@')
 				delegate."maven.compiler.source"('${java.version}')
 				delegate."maven.compiler.target"('${java.version}')
