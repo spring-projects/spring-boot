@@ -1375,14 +1375,10 @@ bom {
 			]
 		}
 	}
-	library("Spring Session", "3.0.0-SNAPSHOT") {
+	library("Spring Session Bom", "2022.1.0-SNAPSHOT") {
 		group("org.springframework.session") {
-			modules = [
-				"spring-session-core",
-				"spring-session-data-mongodb",
-				"spring-session-data-redis",
-				"spring-session-hazelcast",
-				"spring-session-jdbc"
+			imports = [
+				"spring-session-bom"
 			]
 		}
 	}
