@@ -198,6 +198,7 @@ dependencies {
 	optional("org.springframework.security:spring-security-oauth2-jose")
 	optional("org.springframework.security:spring-security-oauth2-resource-server")
 	optional("org.springframework.security:spring-security-rsocket")
+	optional("org.springframework.security:spring-security-messaging")
 	optional("org.springframework.security:spring-security-saml2-service-provider")
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
