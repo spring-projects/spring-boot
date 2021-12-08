@@ -40,12 +40,12 @@ public abstract class JsonObjectSerializer<T> extends JsonSerializer<T> {
 			serializeObject(value, jgen, provider);
 			jgen.writeEndObject();
 		}
-		catch (Exception ex) {
-			if (ex instanceof IOException) {
-				throw (IOException) ex;
-			}
-			throw new JsonMappingException(jgen, "Object serialize error", ex);
+		catch (IOException ex) {
+			throw ex;
 		}
+		catch (Exception ex) {
+			throw new JsonMappingException(jgen, "Object serialize error", ex);
+		} 
 	}
 
 	/**
