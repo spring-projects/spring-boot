@@ -208,10 +208,17 @@ Deprecation can also be specified declaratively in code by adding the `@Deprecat
 For instance, assume that the `my.app.target` property was confusing and was renamed to `my.app.name`.
 The following example shows how to handle that situation:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/configurationmetadata/format/group/MyProperties.java[]
 ----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/configurationmetadata/format/group/MyProperties.kt[]
+----
+
 
 NOTE: There is no way to set a `level`.
 `warning` is always assumed, since code is still handling the property.

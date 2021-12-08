@@ -42,7 +42,13 @@ Alternatively, you can add the `RemoteIpValve` by customizing the `TomcatServlet
 
 To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `SecurityFilterChain` bean that adds the following `HttpSecurity` configuration:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/security/enablehttps/MySecurityConfig.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/security/enablehttps/MySecurityConfig.kt[]
 ----

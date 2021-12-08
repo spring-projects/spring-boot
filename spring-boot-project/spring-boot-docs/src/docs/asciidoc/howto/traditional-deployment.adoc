@@ -14,9 +14,15 @@ The first step in producing a deployable war file is to provide a `SpringBootSer
 Doing so makes use of Spring Framework's servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
 Typically, you should update your application's main class to extend `SpringBootServletInitializer`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/traditionaldeployment/war/MyApplication.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/traditionaldeployment/war/MyApplication.kt[]
 ----
 
 The next step is to update your build configuration such that your project produces a war file rather than a jar file.
@@ -79,9 +85,15 @@ See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on
 
 To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `Application`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/traditionaldeployment/convertexistingapplication/MyApplication.java[tag=!main]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/traditionaldeployment/convertexistingapplication/MyApplication.kt[tag=!main]
 ----
 
 Remember that, whatever you put in the `sources` is merely a Spring `ApplicationContext`.
@@ -101,18 +113,30 @@ If you have other features in your application (for instance, using other servle
 
 Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/traditionaldeployment/convertexistingapplication/MyApplication.java[tag=main]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/traditionaldeployment/convertexistingapplication/MyApplication.kt[tag=main]
 ----
 
 [NOTE]
 ====
 If you intend to start your application as a war or as an executable application, you need to share the customizations of the builder in a method that is both available to the `SpringBootServletInitializer` callback and in the `main` method in a class similar to the following:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/traditionaldeployment/convertexistingapplication/both/MyApplication.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/traditionaldeployment/convertexistingapplication/both/MyApplication.kt[]
 ----
 ====
 
@@ -144,9 +168,15 @@ To deploy a Spring Boot application to WebLogic, you must ensure that your servl
 
 A typical initializer for WebLogic should resemble the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/traditionaldeployment/weblogic/MyApplication.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/traditionaldeployment/weblogic/MyApplication.kt[]
 ----
 
 If you use Logback, you also need to tell WebLogic to prefer the packaged version rather than the version that was pre-installed with the server.

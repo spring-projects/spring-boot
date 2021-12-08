@@ -10,10 +10,17 @@ This section answers common questions about testing.
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/testing/withspringsecurity/MySecurityTests.java[]
 ----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/testing/withspringsecurity/MySecurityTests.kt[]
+----
+
 
 Spring Security provides comprehensive integration with Spring MVC Test and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
 
@@ -29,9 +36,15 @@ It integrates with JUnit, allowing you to write a test class that can start up a
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 Testcontainers can be used in a Spring Boot test as follows:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/testing/testcontainers/vanilla/MyIntegrationTests.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/testing/testcontainers/vanilla/MyIntegrationTests.kt[]
 ----
 
 This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
@@ -39,9 +52,15 @@ In most cases, you will need to configure the application using details from the
 
 This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/howto/testing/testcontainers/dynamicproperties/MyIntegrationTests.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/howto/testing/testcontainers/dynamicproperties/MyIntegrationTests.kt[]
 ----
 
 The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.

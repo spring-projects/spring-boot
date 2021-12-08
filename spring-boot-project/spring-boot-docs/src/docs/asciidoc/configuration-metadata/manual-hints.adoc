@@ -18,9 +18,15 @@ The special `.keys` and `.values` suffixes must refer to the keys and the values
 
 Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
+.Java
+[source,java,indent=0,subs="verbatim",role="primary"]
 ----
 include::{docs-java}/configurationmetadata/manualhints/valuehint/MyProperties.java[]
+----
+.Kotlin
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+----
+include::{docs-kotlin}/configurationmetadata/manualhints/valuehint/MyProperties.kt[]
 ----
 
 The magic values are (in this example) are `sample1` and `sample2`.
