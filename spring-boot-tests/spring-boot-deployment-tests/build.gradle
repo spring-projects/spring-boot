@@ -13,10 +13,11 @@ configurations {
 }
 
 dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
 		exclude group: "org.hibernate.validator"
 	}
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 
 	intTestImplementation(enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
