@@ -29,7 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class WildflyDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer("jboss/wildfly:latest",
+	static WarDeploymentContainer container = new WarDeploymentContainer("jboss/wildfly:24.0.0.Final",
 			"/opt/jboss/wildfly/standalone/deployments", DEFAULT_PORT);
 
 	@Override
