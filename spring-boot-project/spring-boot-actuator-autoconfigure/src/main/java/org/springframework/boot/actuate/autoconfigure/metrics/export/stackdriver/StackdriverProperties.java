@@ -78,11 +78,11 @@ public class StackdriverProperties extends StepRegistryProperties {
 		this.resourceLabels = resourceLabels;
 	}
 
-	boolean isUseSemanticMetricTypes() {
+	public boolean isUseSemanticMetricTypes() {
 		return this.useSemanticMetricTypes;
 	}
 
-	void setUseSemanticMetricTypes(boolean useSemanticMetricTypes) {
+	public void setUseSemanticMetricTypes(boolean useSemanticMetricTypes) {
 		this.useSemanticMetricTypes = useSemanticMetricTypes;
 	}
 
