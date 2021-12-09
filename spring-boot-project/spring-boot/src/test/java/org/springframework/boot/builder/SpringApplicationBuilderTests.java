@@ -304,8 +304,7 @@ class SpringApplicationBuilderTests {
 			}
 		};
 		SpringApplication application = applicationBuilder.build();
-		assertThat(application).isInstanceOf(CustomSpringApplication.class)
-				.asInstanceOf(InstanceOfAssertFactories.type(CustomSpringApplication.class))
+		assertThat(application).asInstanceOf(InstanceOfAssertFactories.type(CustomSpringApplication.class))
 				.satisfies((customApp) -> assertThat(customApp.resourceLoader).isEqualTo(resourceLoader));
 	}
 

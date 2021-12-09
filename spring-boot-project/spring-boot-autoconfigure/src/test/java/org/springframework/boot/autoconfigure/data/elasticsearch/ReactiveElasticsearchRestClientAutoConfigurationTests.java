@@ -276,8 +276,8 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	void whenMaxInMemorySizeIsConfiguredThenUnderlyingWebClientHasCustomMaxInMemorySize(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "max-in-memory-size=1MB").run((context) -> {
 			WebClient client = configureWebClient(context.getBean(ClientConfiguration.class).getClientConfigurers());
-			assertThat(client).extracting("exchangeFunction").extracting("strategies").extracting("codecConfigurer")
-					.extracting("defaultCodecs").asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
+			assertThat(client).extracting("exchangeFunction.strategies.codecConfigurer.defaultCodecs")
+					.asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
 					.extracting(DefaultCodecConfig::maxInMemorySize).isEqualTo(1024 * 1024);
 		});
 	}

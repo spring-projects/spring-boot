@@ -233,7 +233,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 					ExposableWebEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getOperations()).hasSize(2);
 					WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
-					assertThat(webOperation).extracting("invoker").extracting("target")
+					assertThat(webOperation).extracting("invoker.target")
 							.isInstanceOf(CloudFoundryHealthEndpointWebExtension.class);
 				});
 	}
