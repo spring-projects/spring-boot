@@ -75,17 +75,20 @@ abstract class AbstractArchiveIntegrationTests {
 			return Collections.emptyMap();
 		}
 		Map<String, List<String>> index = new LinkedHashMap<>();
+		String layerPrefix = "- ";
+		String entryPrefix = "  - ";
 		ZipEntry indexEntry = jarFile.getEntry(getLayersIndexLocation());
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
 			String line = reader.readLine();
 			String layer = null;
 			while (line != null) {
-				if (line.startsWith("- ")) {
-					layer = line.substring(3, line.length() - 2);
+				if (line.startsWith(layerPrefix)) {
+					layer = line.substring(layerPrefix.length() + 1, line.length() - 2);
 					index.put(layer, new ArrayList<>());
 				}
-				else if (line.startsWith("  - ")) {
-					index.computeIfAbsent(layer, (key) -> new ArrayList<>()).add(line.substring(5, line.length() - 1));
+				else if (line.startsWith(entryPrefix)) {
+					index.computeIfAbsent(layer, (key) -> new ArrayList<>())
+							.add(line.substring(entryPrefix.length() + 1, line.length() - 1));
 				}
 				line = reader.readLine();
 			}
@@ -95,6 +98,22 @@ abstract class AbstractArchiveIntegrationTests {
 
 	protected String getLayersIndexLocation() {
 		return null;
+	}
+
+	protected List<String> readClasspathIndex(JarFile jarFile, String location) throws IOException {
+		List<String> index = new ArrayList<>();
+		String entryPrefix = "- ";
+		ZipEntry indexEntry = jarFile.getEntry(location);
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
+			String line = reader.readLine();
+			while (line != null) {
+				if (line.startsWith(entryPrefix)) {
+					index.add(line.substring(entryPrefix.length() + 1, line.length() - 1));
+				}
+				line = reader.readLine();
+			}
+		}
+		return index;
 	}
 
 	static final class JarAssert extends AbstractAssert<JarAssert, File> {

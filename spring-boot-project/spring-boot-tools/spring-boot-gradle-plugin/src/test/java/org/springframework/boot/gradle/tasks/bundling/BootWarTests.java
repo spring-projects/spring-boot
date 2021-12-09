@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BootWar}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
@@ -109,6 +110,28 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 				.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
 	}
 
+	@Test
+	void whenWarIsLayeredClasspathIndexPointsToLayeredLibs() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar())) {
+			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
+					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
+		}
+	}
+
+	@Test
+	void classpathIndexPointsToWebInfLibs() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+					.isEqualTo("WEB-INF/classpath.idx");
+			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
+					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
+		}
+	}
+
 	@Override
 	protected void executeTask() {
 		getTask().copy();
@@ -122,11 +145,6 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Override
 	void applyLayered(Action<LayeredSpec> action) {
 		getTask().layered(action);
-	}
-
-	@Override
-	boolean archiveHasClasspathIndex() {
-		return false;
 	}
 
 }

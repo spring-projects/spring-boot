@@ -103,12 +103,6 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		}
 	}
 
-	private File createPopulatedJar() throws IOException {
-		addContent();
-		executeTask();
-		return getTask().getArchiveFile().get().getAsFile();
-	}
-
 	@Override
 	void applyLayered(Action<LayeredSpec> action) {
 		getTask().layered(action);
