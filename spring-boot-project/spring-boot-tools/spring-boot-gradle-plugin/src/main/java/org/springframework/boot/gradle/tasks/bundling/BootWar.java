@@ -42,6 +42,7 @@ import org.gradle.work.DisableCachingByDefault;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @DisableCachingByDefault(because = "Not worth caching")
@@ -56,6 +57,8 @@ public class BootWar extends War implements BootArchive {
 	private static final String LIB_DIRECTORY = "WEB-INF/lib/";
 
 	private static final String LAYERS_INDEX = "WEB-INF/layers.idx";
+
+	private static final String CLASSPATH_INDEX = "WEB-INF/classpath.idx";
 
 	private final BootArchiveSupport support;
 
@@ -94,8 +97,8 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY, null,
-				(isLayeredDisabled()) ? null : LAYERS_INDEX);
+		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
+				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX);
 		super.copy();
 	}
 

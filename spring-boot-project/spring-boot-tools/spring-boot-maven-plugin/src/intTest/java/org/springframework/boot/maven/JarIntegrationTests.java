@@ -372,6 +372,10 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).manifest(
 					(manifest) -> manifest.hasAttribute("Spring-Boot-Classpath-Index", "BOOT-INF/classpath.idx"));
 			assertThat(jar(repackaged)).hasEntryWithName("BOOT-INF/classpath.idx");
+			try (JarFile jarFile = new JarFile(repackaged)) {
+				List<String> index = readClasspathIndex(jarFile, "BOOT-INF/classpath.idx");
+				assertThat(index).allMatch((entry) -> entry.startsWith("BOOT-INF/lib/"));
+			}
 		});
 	}
 
