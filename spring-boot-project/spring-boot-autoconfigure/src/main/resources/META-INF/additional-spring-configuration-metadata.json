@@ -1627,7 +1627,7 @@
     },
     {
       "name": "spring.mvc.pathmatch.matching-strategy",
-      "defaultValue": "ant-path-matcher"
+      "defaultValue": "path-pattern-parser"
     },
     {
       "name": "spring.neo4j.security.trust-strategy",
