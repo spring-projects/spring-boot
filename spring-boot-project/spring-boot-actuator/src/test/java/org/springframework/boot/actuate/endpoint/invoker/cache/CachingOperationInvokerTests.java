@@ -34,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
@@ -115,8 +116,7 @@ class CachingOperationInvokerTests {
 			Thread.sleep(10);
 		}
 		invokeWithUniquePrincipal(invoker);
-		assertThat(invoker).extracting("cachedResponses").asInstanceOf(InstanceOfAssertFactories.MAP)
-				.hasSizeLessThan(count);
+		assertThat(invoker).extracting("cachedResponses", as(InstanceOfAssertFactories.MAP)).hasSizeLessThan(count);
 	}
 
 	private void invokeWithUniquePrincipal(CachingOperationInvoker invoker) {

@@ -102,8 +102,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		if (AprLifecycleListener.isAprAvailable()) {
-			assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
-					.isInstanceOf(AprLifecycleListener.class);
+			assertThat(factory.getContextLifecycleListeners()).singleElement().isInstanceOf(AprLifecycleListener.class);
 		}
 		else {
 			assertThat(factory.getContextLifecycleListeners()).isEmpty();

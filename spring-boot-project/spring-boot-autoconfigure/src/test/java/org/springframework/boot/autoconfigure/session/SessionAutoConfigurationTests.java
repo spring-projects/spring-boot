@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 				.withPropertyValues("server.port=0").run((context) -> {
 					SessionRepositoryFilter<?> filter = context.getBean(SessionRepositoryFilter.class);
-					assertThat(filter).extracting("httpSessionIdResolver").extracting("cookieSerializer")
+					assertThat(filter).extracting("httpSessionIdResolver.cookieSerializer")
 							.isSameAs(context.getBean(DefaultCookieSerializer.class));
 				});
 	}

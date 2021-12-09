@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ class SendGridAutoConfigurationTests {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY", "spring.sendgrid.proxy.host:localhost",
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("client").extracting("httpClient").extracting("routePlanner")
-				.isInstanceOf(DefaultProxyRoutePlanner.class);
+		assertThat(sendGrid).extracting("client.httpClient.routePlanner").isInstanceOf(DefaultProxyRoutePlanner.class);
 	}
 
 	private void loadContext(String... environment) {
