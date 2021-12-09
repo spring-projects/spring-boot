@@ -293,18 +293,18 @@ For instance, the two examples below produce the same result:
 ----
 	spring:
 	  config:
-	    import: my.properties
+	    import: "my.properties"
 	my:
-	  property: value
+	  property: "value"
 ----
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	my:
-	  property: value
+	  property: "value"
 	spring:
 	  config:
-	    import: my.properties
+	    import: "my.properties"
 ----
 
 In both of the above examples, the values from the `my.properties` file will take precedence over the file that triggered its import.
@@ -472,14 +472,14 @@ For example, the following file has two logical documents:
 ----
 	spring:
 	  application:
-	    name: MyApp
+	    name: "MyApp"
 	---
 	spring:
 	  application:
-	    name: MyCloudApp
+	    name: "MyCloudApp"
 	  config:
 	    activate:
-	      on-cloud-platform: kubernetes
+	      on-cloud-platform: "kubernetes"
 ----
 
 For `application.properties` files a special `#---` comment is used to mark the document splits:
@@ -528,14 +528,14 @@ For example, the following specifies that the second document is only active whe
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	myprop:
-	  always-set
+	  "always-set"
 	---
 	spring:
 	  config:
 	    activate:
 	      on-cloud-platform: "kubernetes"
 	      on-profile: "prod | staging"
-	myotherprop: sometimes-set
+	myotherprop: "sometimes-set"
 ----
 
 
@@ -568,11 +568,11 @@ For example, consider the following YAML document:
 ----
 	environments:
 	  dev:
-	    url: https://dev.example.com
-	    name: Developer Setup
+	    url: "https://dev.example.com"
+	    name: "Developer Setup"
 	  prod:
-	    url: https://another.example.com
-	    name: My Cool App
+	    url: "https://another.example.com"
+	    name: "My Cool App"
 ----
 
 In order to access these properties from the `Environment`, they would be flattened as follows:
@@ -593,8 +593,8 @@ For example, consider the following YAML:
 ----
 	 my:
 	  servers:
-	  - dev.example.com
-	  - another.example.com
+	  - "dev.example.com"
+	  - "another.example.com"
 ----
 
 The preceding example would be transformed into these properties:
@@ -789,10 +789,10 @@ This style of configuration works particularly well with the `SpringApplication`
 	  service:
 	    remote-address: 192.168.1.1
 	    security:
-	      username: admin
+	      username: "admin"
 	      roles:
-	      - USER
-	      - ADMIN
+	      - "USER"
+	      - "ADMIN"
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:

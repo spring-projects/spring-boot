@@ -76,7 +76,7 @@ For example, doing so lets a management server be available over HTTP while the 
 	  ssl:
 	    enabled: true
 	    key-store: "classpath:store.jks"
-	    key-password: secret
+	    key-password: "secret"
 	management:
 	  server:
 	    port: 8080

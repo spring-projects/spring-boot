@@ -984,21 +984,21 @@ They are also exposed as separate HTTP Probes by using <<actuator#actuator.endpo
 
 You can then configure your Kubernetes infrastructure with the following endpoint information:
 
-[source,yml,indent=0,subs="verbatim"]
+[source,yaml,indent=0,subs="verbatim"]
 ----
-livenessProbe:
-  httpGet:
-    path: /actuator/health/liveness
-    port: <actuator-port>
-  failureThreshold: ...
-  periodSeconds: ...
+    livenessProbe:
+      httpGet:
+        path: "/actuator/health/liveness"
+        port: <actuator-port>
+      failureThreshold: ...
+      periodSeconds: ...
 
-readinessProbe:
-  httpGet:
-    path: /actuator/health/readiness
-    port: <actuator-port>
-  failureThreshold: ...
-  periodSeconds: ...
+    readinessProbe:
+      httpGet:
+        path: "/actuator/health/readiness"
+        port: <actuator-port>
+      failureThreshold: ...
+      periodSeconds: ...
 ----
 
 NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.

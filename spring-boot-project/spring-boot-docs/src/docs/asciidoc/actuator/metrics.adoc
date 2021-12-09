@@ -461,10 +461,10 @@ The following example `scrape_config` adds to `prometheus.yml`:
 [source,yaml,indent=0,subs="verbatim"]
 ----
 	scrape_configs:
-	  - job_name: 'spring'
-		metrics_path: '/actuator/prometheus'
+	  - job_name: "spring"
+		metrics_path: "/actuator/prometheus"
 		static_configs:
-		  - targets: ['HOST:PORT']
+		  - targets: ["HOST:PORT"]
 ----
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
