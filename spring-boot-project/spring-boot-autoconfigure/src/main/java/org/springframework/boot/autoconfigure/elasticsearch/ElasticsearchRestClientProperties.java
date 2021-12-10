@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,12 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.time.Duration;
 
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties specific to Elasticsearch's {@link RestClient} and
- * {@link RestHighLevelClient}.
+ * {@link org.elasticsearch.client.RestHighLevelClient}.
  *
  * @author Brian Clozel
  * @since 2.1.0

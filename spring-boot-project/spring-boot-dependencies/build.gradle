@@ -276,7 +276,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.15.2") {
+	library("Elasticsearch", "7.16.2") {
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
@@ -1653,7 +1653,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.1.0") {
+	library("Spring Data Bom", "2021.2.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
