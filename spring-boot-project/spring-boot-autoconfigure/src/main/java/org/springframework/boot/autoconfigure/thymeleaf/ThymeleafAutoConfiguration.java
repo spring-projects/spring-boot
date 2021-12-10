@@ -58,6 +58,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
@@ -279,7 +280,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ SpringSecurityDialect.class })
+	@ConditionalOnClass({ SpringSecurityDialect.class, CsrfToken.class })
 	static class ThymeleafSecurityDialectConfiguration {
 
 		@Bean
