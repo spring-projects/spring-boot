@@ -412,21 +412,6 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
-	void explicityBoundRecordProperties(@TempDir File temp) throws IOException {
-		File exampleRecord = new File(temp, "ExampleRecord.java");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
-			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
-			writer.println("@org.springframework.boot.configurationsample.ConfigurationProperties(\"explicit\")");
-			writer.println("public record ExampleRecord(String someString, Integer someInteger) {");
-			writer.println("}");
-		}
-		ConfigurationMetadata metadata = compile(exampleRecord);
-		assertThat(metadata).has(Metadata.withProperty("explicit.some-string"));
-		assertThat(metadata).has(Metadata.withProperty("explicit.some-integer"));
-	}
-
-	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void implicitlyBoundRecordProperties(@TempDir File temp) throws IOException {
 		File exampleRecord = new File(temp, "ExampleRecord.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {

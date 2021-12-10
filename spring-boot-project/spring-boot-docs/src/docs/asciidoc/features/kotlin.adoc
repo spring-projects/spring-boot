@@ -108,11 +108,10 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 [[features.kotlin.configuration-properties]]
 === @ConfigurationProperties
-`@ConfigurationProperties` when used in combination with <<features#features.external-config.typesafe-configuration-properties.constructor-binding,`@ConstructorBinding`>> supports classes with immutable `val` properties as shown in the following example:
+`@ConfigurationProperties` when used in combination with <<features#features.external-config.typesafe-configuration-properties.constructor-binding,constructor binding>> supports classes with immutable `val` properties as shown in the following example:
 
 [source,kotlin,indent=0,subs="verbatim"]
 ----
-@ConstructorBinding
 @ConfigurationProperties("example.kotlin")
 data class KotlinExampleProperties(
 		val name: String,

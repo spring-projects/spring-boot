@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.context.properties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +51,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
@@ -63,7 +61,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBindConstructorProvider;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -72,11 +71,9 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.KotlinDetector;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -472,7 +469,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
 			Class<?> beanClass = beanDesc.getType().getRawClass();
-			Constructor<?> bindConstructor = findBindConstructor(ClassUtils.getUserClass(beanClass));
+			Bindable<?> bindable = Bindable.of(ClassUtils.getUserClass(beanClass));
+			Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
+					.getBindConstructor(bindable, false);
 			for (BeanPropertyWriter writer : beanProperties) {
 				if (isCandidate(beanDesc, writer, bindConstructor)) {
 					result.add(writer);
@@ -538,34 +537,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				return propertyName;
 			}
 			return StringUtils.capitalize(propertyName);
-		}
-
-		private Constructor<?> findBindConstructor(Class<?> type) {
-			boolean classConstructorBinding = MergedAnnotations
-					.from(type, SearchStrategy.TYPE_HIERARCHY_AND_ENCLOSING_CLASSES)
-					.isPresent(ConstructorBinding.class);
-			if (KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type)) {
-				Constructor<?> constructor = BeanUtils.findPrimaryConstructor(type);
-				if (constructor != null) {
-					return findBindConstructor(classConstructorBinding, constructor);
-				}
-			}
-			return findBindConstructor(classConstructorBinding, type.getDeclaredConstructors());
-		}
-
-		private Constructor<?> findBindConstructor(boolean classConstructorBinding, Constructor<?>... candidates) {
-			List<Constructor<?>> candidateConstructors = Arrays.stream(candidates)
-					.filter((constructor) -> constructor.getParameterCount() > 0).collect(Collectors.toList());
-			List<Constructor<?>> flaggedConstructors = candidateConstructors.stream()
-					.filter((candidate) -> MergedAnnotations.from(candidate).isPresent(ConstructorBinding.class))
-					.collect(Collectors.toList());
-			if (flaggedConstructors.size() == 1) {
-				return flaggedConstructors.get(0);
-			}
-			if (classConstructorBinding && candidateConstructors.size() == 1) {
-				return candidateConstructors.get(0);
-			}
-			return null;
 		}
 
 	}

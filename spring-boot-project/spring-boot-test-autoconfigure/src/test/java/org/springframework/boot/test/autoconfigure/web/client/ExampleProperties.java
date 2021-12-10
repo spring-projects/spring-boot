@@ -27,7 +27,6 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  *
  * @author Stephane Nicoll
  */
-@ConstructorBinding
 @ConfigurationProperties("example")
 public class ExampleProperties {
 

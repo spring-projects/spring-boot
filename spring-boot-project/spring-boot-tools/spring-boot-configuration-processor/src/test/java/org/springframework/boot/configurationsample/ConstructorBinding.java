@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  *
  * @author Stephane Nicoll
  */
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
+@Target(ElementType.CONSTRUCTOR)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConstructorBinding {

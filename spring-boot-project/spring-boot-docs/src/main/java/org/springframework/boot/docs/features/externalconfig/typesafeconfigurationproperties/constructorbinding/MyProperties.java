@@ -20,10 +20,8 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
-@ConstructorBinding
 @ConfigurationProperties("my.service")
 public class MyProperties {
 

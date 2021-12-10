@@ -23,9 +23,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be used to indicate that configuration properties should be bound
- * using constructor arguments rather than by calling setters. Can be added at the type
- * level (if there is an unambiguous constructor) or on the actual constructor to use.
+ * Annotation that can be used to indicate which constructor to use when binding
+ * configuration properties using constructor arguments rather than by calling setters. A
+ * single parameterized constructor implicitly indicates that constructor binding should
+ * be used unless the constructor is annotated with `@Autowired`.
  * <p>
  * Note: To use constructor binding the class must be enabled using
  * {@link EnableConfigurationProperties @EnableConfigurationProperties} or configuration
@@ -39,7 +40,7 @@ import java.lang.annotation.Target;
  * @since 2.2.0
  * @see ConfigurationProperties
  */
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
+@Target(ElementType.CONSTRUCTOR)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConstructorBinding {

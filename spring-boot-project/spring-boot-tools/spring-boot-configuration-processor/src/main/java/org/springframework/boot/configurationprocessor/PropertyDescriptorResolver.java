@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,16 +192,29 @@ class PropertyDescriptorResolver {
 		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
 			boolean constructorBoundType = isConstructorBoundType(type, env);
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
-			List<ExecutableElement> boundConstructors = constructors.stream()
-					.filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
+			List<ExecutableElement> boundConstructors = getBoundConstructors(env, constructors);
 			return new ConfigurationPropertiesTypeElement(type, constructorBoundType, constructors, boundConstructors);
 		}
 
-		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
-			if (env.hasConstructorBindingAnnotation(type)
-					|| "java.lang.Record".equals(type.getSuperclass().toString())) {
-				return true;
+		private static List<ExecutableElement> getBoundConstructors(MetadataGenerationEnvironment env,
+				List<ExecutableElement> constructors) {
+			ExecutableElement bindConstructor = deduceBindConstructor(constructors, env);
+			if (bindConstructor != null) {
+				return Collections.singletonList(bindConstructor);
 			}
+			return constructors.stream().filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
+		}
+
+		private static ExecutableElement deduceBindConstructor(List<ExecutableElement> constructors,
+				MetadataGenerationEnvironment env) {
+			if (constructors.size() == 1 && constructors.get(0).getParameters().size() > 0
+					&& !env.hasAutowiredAnnotation(constructors.get(0))) {
+				return constructors.get(0);
+			}
+			return null;
+		}
+
+		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
 			if (type.getNestingKind() == NestingKind.MEMBER) {
 				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), env);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,10 +99,12 @@ class MetadataGenerationEnvironment {
 
 	private final String nameAnnotation;
 
+	private final String autowiredAnnotation;
+
 	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
 			String nestedConfigurationPropertyAnnotation, String deprecatedConfigurationPropertyAnnotation,
-			String constructorBindingAnnotation, String defaultValueAnnotation, Set<String> endpointAnnotations,
-			String readOperationAnnotation, String nameAnnotation) {
+			String constructorBindingAnnotation, String autowiredAnnotation, String defaultValueAnnotation,
+			Set<String> endpointAnnotations, String readOperationAnnotation, String nameAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -111,6 +113,7 @@ class MetadataGenerationEnvironment {
 		this.nestedConfigurationPropertyAnnotation = nestedConfigurationPropertyAnnotation;
 		this.deprecatedConfigurationPropertyAnnotation = deprecatedConfigurationPropertyAnnotation;
 		this.constructorBindingAnnotation = constructorBindingAnnotation;
+		this.autowiredAnnotation = autowiredAnnotation;
 		this.defaultValueAnnotation = defaultValueAnnotation;
 		this.endpointAnnotations = endpointAnnotations;
 		this.readOperationAnnotation = readOperationAnnotation;
@@ -180,12 +183,12 @@ class MetadataGenerationEnvironment {
 		return new ItemDeprecation(reason, replacement);
 	}
 
-	boolean hasConstructorBindingAnnotation(TypeElement typeElement) {
-		return hasAnnotationRecursive(typeElement, this.constructorBindingAnnotation);
-	}
-
 	boolean hasConstructorBindingAnnotation(ExecutableElement element) {
 		return hasAnnotation(element, this.constructorBindingAnnotation);
+	}
+
+	boolean hasAutowiredAnnotation(ExecutableElement element) {
+		return hasAnnotation(element, this.autowiredAnnotation);
 	}
 
 	boolean hasAnnotation(Element element, String type) {

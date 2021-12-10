@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationsample.immutable;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.ConstructorBinding;
 import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
@@ -26,7 +25,6 @@ import org.springframework.boot.configurationsample.DefaultValue;
  * @author Phillip Webb
  */
 @ConfigurationProperties("test")
-@ConstructorBinding
 public class DeducedImmutableClassProperties {
 
 	private final Nested nested;

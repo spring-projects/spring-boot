@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.context.properties.ConstructorBinding";
 
+	static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
+
 	static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.context.properties.bind.DefaultValue";
 
 	static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint";
@@ -122,6 +124,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return CONSTRUCTOR_BINDING_ANNOTATION;
 	}
 
+	protected String autowiredAnnotation() {
+		return AUTOWIRED_ANNOTATION;
+	}
+
 	protected String defaultValueAnnotation() {
 		return DEFAULT_VALUE_ANNOTATION;
 	}
@@ -156,7 +162,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataCollector = new MetadataCollector(env, this.metadataStore.readMetadata());
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
-				constructorBindingAnnotation(), defaultValueAnnotation(), endpointAnnotations(),
+				constructorBindingAnnotation(), autowiredAnnotation(), defaultValueAnnotation(), endpointAnnotations(),
 				readOperationAnnotation(), nameAnnotation());
 	}
 

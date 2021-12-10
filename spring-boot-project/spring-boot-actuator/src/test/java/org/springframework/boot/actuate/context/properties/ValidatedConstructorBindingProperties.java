@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.context.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -27,7 +26,6 @@ import org.springframework.validation.annotation.Validated;
  * @author Madhura Bhave
  */
 @Validated
-@ConstructorBinding
 @ConfigurationProperties(prefix = "validated")
 public class ValidatedConstructorBindingProperties {
 

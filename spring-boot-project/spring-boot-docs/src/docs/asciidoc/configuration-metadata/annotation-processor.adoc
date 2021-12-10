@@ -63,7 +63,8 @@ You could also let the AspectJ plugin run all the processing and disable annotat
 === Automatic Metadata Generation
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
 
-If the class is also annotated with `@ConstructorBinding`, a single constructor is expected and one property is created per constructor parameter.
+If the class has a single parameterized constructor, one property is created per constructor parameter, unless the constructor is annotated with `@Autowired`.
+If the class has a constructor explicitly annotated with `@ConstructorBinding`, one property is created per constructor parameter for that constructor.
 Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection and map types (that is detected even if only a getter is present).
 The annotation processor also supports the use of the `@Data`, `@Value`, `@Getter`, and `@Setter` lombok annotations.
 

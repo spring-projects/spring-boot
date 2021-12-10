@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,35 @@
 package org.springframework.boot.configurationsample.immutable;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.Name;
+import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
- * Immutable properties making use of {@code @Name}.
- *
- * @author Phillip Webb
+ * @author Madhura Bhave
  */
-@ConfigurationProperties("named")
-public class ImmutableNameAnnotationProperties {
+@ConfigurationProperties("immutable")
+public class ImmutableDeducedConstructorBindingProperties {
 
-	private final String imports;
+	/**
+	 * The name of these properties.
+	 */
+	private final String theName;
 
-	public ImmutableNameAnnotationProperties(@Name("import") String imports) {
-		this.imports = imports;
+	/**
+	 * A simple flag.
+	 */
+	private final boolean flag;
+
+	public ImmutableDeducedConstructorBindingProperties(@DefaultValue("boot") String theName, boolean flag) {
+		this.theName = theName;
+		this.flag = flag;
 	}
 
-	public String getImports() {
-		return this.imports;
+	public String getTheName() {
+		return this.theName;
+	}
+
+	public boolean isFlag() {
+		return this.flag;
 	}
 
 }

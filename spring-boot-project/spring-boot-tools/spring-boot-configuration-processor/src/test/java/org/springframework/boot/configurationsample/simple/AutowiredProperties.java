@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.immutable;
+package org.springframework.boot.configurationsample.simple;
+
+import org.springframework.boot.configurationsample.Autowired;
 
 /**
- * Simple immutable properties with several constructors.
+ * Properties with autowired constructor.
  *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-@SuppressWarnings("unused")
-public class ImmutableClassConstructorBindingProperties {
+public class AutowiredProperties {
 
-	private final String name;
+	/**
+	 * The name of this simple properties.
+	 */
+	private String theName;
 
-	private final String description;
+	@Autowired
+	public AutowiredProperties(String theName) {
+		this.theName = theName;
+	}
 
-	public ImmutableClassConstructorBindingProperties(String name, String description) {
-		this.name = name;
-		this.description = description;
+	public String getTheName() {
+		return this.theName;
+	}
+
+	public void setTheName(String name) {
+		this.theName = name;
 	}
 
 }

@@ -32,7 +32,7 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 				"bar-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$BarProperties")
 		assertThat(beanDefinition.hasAttribute(ConfigurationPropertiesBean.BindMethod::class.java.name)).isTrue()
 		assertThat(beanDefinition.getAttribute(ConfigurationPropertiesBean.BindMethod::class.java.name))
-			.isEqualTo(ConfigurationPropertiesBean.BindMethod.VALUE_OBJECT)
+				.isEqualTo(ConfigurationPropertiesBean.BindMethod.VALUE_OBJECT)
 	}
 
 	@Test
@@ -46,7 +46,6 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 	@ConfigurationProperties(prefix = "foo")
 	class FooProperties
 
-	@ConstructorBinding
 	@ConfigurationProperties(prefix = "bar")
 	class BarProperties(val name: String?, val counter: Int = 42)
 

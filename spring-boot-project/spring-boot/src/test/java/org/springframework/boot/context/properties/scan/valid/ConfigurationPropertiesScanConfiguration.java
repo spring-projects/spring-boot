@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.scan.valid;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration;
 
@@ -47,7 +46,6 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConstructorBinding
 	@ConfigurationProperties(prefix = "bar")
 	static class BarProperties {
 

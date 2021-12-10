@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,11 +71,16 @@ public final class ConfigurationPropertiesBean {
 
 	private ConfigurationPropertiesBean(String name, Object instance, ConfigurationProperties annotation,
 			Bindable<?> bindTarget) {
+		this(name, instance, annotation, bindTarget, BindMethod.forType(bindTarget.getType().resolve()));
+	}
+
+	private ConfigurationPropertiesBean(String name, Object instance, ConfigurationProperties annotation,
+			Bindable<?> bindTarget, BindMethod bindMethod) {
 		this.name = name;
 		this.instance = instance;
 		this.annotation = annotation;
 		this.bindTarget = bindTarget;
-		this.bindMethod = BindMethod.forType(bindTarget.getType().resolve());
+		this.bindMethod = bindMethod;
 	}
 
 	/**
@@ -266,6 +271,9 @@ public final class ConfigurationPropertiesBean {
 		Bindable<Object> bindTarget = Bindable.of(bindType).withAnnotations(annotations);
 		if (instance != null) {
 			bindTarget = bindTarget.withExistingValue(instance);
+		}
+		if (factory != null) {
+			return new ConfigurationPropertiesBean(name, instance, annotation, bindTarget, BindMethod.JAVA_BEAN);
 		}
 		return new ConfigurationPropertiesBean(name, instance, annotation, bindTarget);
 	}

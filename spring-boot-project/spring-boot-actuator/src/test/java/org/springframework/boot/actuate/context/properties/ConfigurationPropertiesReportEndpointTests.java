@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -70,6 +71,12 @@ class ConfigurationPropertiesReportEndpointTests {
 	void descriptorWithJavaBeanBindMethodDetectsRelevantProperties() {
 		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
 				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+	}
+
+	@Test
+	void descriptorWithAutowiredConstructorBindMethodDetectsRelevantProperties() {
+		this.contextRunner.withUserConfiguration(AutowiredPropertiesConfiguration.class)
+				.run(assertProperties("autowired", (properties) -> assertThat(properties).containsOnlyKeys("counter")));
 	}
 
 	@Test
@@ -489,7 +496,6 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@ConfigurationProperties(prefix = "immutable")
-	@ConstructorBinding
 	public static class ImmutableProperties {
 
 		private final String dbPassword;
@@ -540,7 +546,6 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@ConfigurationProperties(prefix = "multiconstructor")
-	@ConstructorBinding
 	public static class MultiConstructorProperties {
 
 		private final String name;
@@ -569,13 +574,49 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(AutowiredProperties.class)
+	static class AutowiredPropertiesConfiguration {
+
+		@Bean
+		String hello() {
+			return "hello";
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "autowired")
+	public static class AutowiredProperties {
+
+		private final String name;
+
+		private int counter;
+
+		@Autowired
+		AutowiredProperties(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public int getCounter() {
+			return this.counter;
+		}
+
+		public void setCounter(int counter) {
+			this.counter = counter;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ImmutableNestedProperties.class)
 	static class ImmutableNestedPropertiesConfiguration {
 
 	}
 
 	@ConfigurationProperties("immutablenested")
-	@ConstructorBinding
 	public static class ImmutableNestedProperties {
 
 		private final String name;

@@ -704,12 +704,14 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 include::code:MyProperties[]
 
-In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
-This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
+In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
+This means that the binder will find a constructor with the parameters that you wish to have bound.
+If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
+To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
 If you are using Java 16 or later, constructor binding can be used with records.
-In this case, unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
+Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
-Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound through their constructor.
+Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
 By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
@@ -720,8 +722,6 @@ include::code:nonnull/MyProperties[tag=*]
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
-
-TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
 NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.

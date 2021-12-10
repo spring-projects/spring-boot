@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.scan.valid.b;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
  * @author Madhura Bhave
@@ -29,7 +28,6 @@ public class BScanConfiguration {
 
 	}
 
-	@ConstructorBinding
 	@ConfigurationProperties(prefix = "b.first")
 	public static class BFirstProperties implements BProperties {
 
