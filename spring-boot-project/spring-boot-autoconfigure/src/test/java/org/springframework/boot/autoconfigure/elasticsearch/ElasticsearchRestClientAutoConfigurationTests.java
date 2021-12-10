@@ -33,7 +33,6 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.elasticsearch.client.Node;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.sniff.Sniffer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,6 +56,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Evgeniy Cheban
  * @author Filip Hrisafov
  */
+@SuppressWarnings("deprecation")
 class ElasticsearchRestClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -65,34 +65,39 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureShouldOnlyCreateHighLevelRestClient() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class)
-				.hasSingleBean(RestClientBuilder.class).hasSingleBean(RestHighLevelClient.class));
+				.hasSingleBean(RestClientBuilder.class)
+				.hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class));
+
 	}
 
 	@Test
 	void configureWithoutRestHighLevelClientShouldOnlyCreateRestClientBuilder() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(RestHighLevelClient.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class)
-						.doesNotHaveBean(RestHighLevelClient.class).hasSingleBean(RestClientBuilder.class));
+						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class)
+						.hasSingleBean(RestClientBuilder.class));
 	}
 
 	@Test
 	void configureWhenCustomRestClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(RestHighLevelClient.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class)
 						.hasSingleBean(RestClientBuilder.class).hasSingleBean(RestClient.class)
 						.hasBean("customRestClient"));
 	}
 
 	@Test
 	void configureWhenCustomRestHighLevelClientShouldBackOff() {
-		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class));
+		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientConfiguration.class).run(
+				(context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class));
 	}
 
 	@Test
 	void configureWhenDefaultRestClientShouldCreateWhenNoUniqueRestHighLevelClient() {
 		this.contextRunner.withUserConfiguration(TwoCustomRestHighLevelClientConfiguration.class).run((context) -> {
-			Map<String, RestHighLevelClient> restHighLevelClients = context.getBeansOfType(RestHighLevelClient.class);
+			Map<String, org.elasticsearch.client.RestHighLevelClient> restHighLevelClients = context
+					.getBeansOfType(org.elasticsearch.client.RestHighLevelClient.class);
 			assertThat(restHighLevelClients).hasSize(2);
 		});
 	}
@@ -100,8 +105,9 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureWhenBuilderCustomizerShouldApply() {
 		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(RestHighLevelClient.class);
-			RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
+			assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class);
+			org.elasticsearch.client.RestHighLevelClient restClient = context
+					.getBean(org.elasticsearch.client.RestHighLevelClient.class);
 			RestClient lowLevelClient = restClient.getLowLevelClient();
 			assertThat(lowLevelClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
 			assertThat(lowLevelClient).extracting("client.connmgr.pool.maxTotal").isEqualTo(100);
@@ -112,8 +118,9 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureWithNoTimeoutsApplyDefaults() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(RestHighLevelClient.class);
-			RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
+			assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class);
+			org.elasticsearch.client.RestHighLevelClient restClient = context
+					.getBean(org.elasticsearch.client.RestHighLevelClient.class);
 			assertTimeouts(restClient, Duration.ofMillis(RestClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
 					Duration.ofMillis(RestClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS));
 		});
@@ -123,8 +130,9 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureWithLegacyCustomTimeouts() {
 		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
 				"spring.elasticsearch.rest.read-timeout=1m").run((context) -> {
-					assertThat(context).hasSingleBean(RestHighLevelClient.class);
-					RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
+					assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class);
+					org.elasticsearch.client.RestHighLevelClient restClient = context
+							.getBean(org.elasticsearch.client.RestHighLevelClient.class);
 					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
 				});
 	}
@@ -133,13 +141,15 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureWithCustomTimeouts() {
 		this.contextRunner.withPropertyValues("spring.elasticsearch.connection-timeout=15s",
 				"spring.elasticsearch.socket-timeout=1m").run((context) -> {
-					assertThat(context).hasSingleBean(RestHighLevelClient.class);
-					RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
+					assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class);
+					org.elasticsearch.client.RestHighLevelClient restClient = context
+							.getBean(org.elasticsearch.client.RestHighLevelClient.class);
 					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
 				});
 	}
 
-	private static void assertTimeouts(RestHighLevelClient restClient, Duration connectTimeout, Duration readTimeout) {
+	private static void assertTimeouts(org.elasticsearch.client.RestHighLevelClient restClient, Duration connectTimeout,
+			Duration readTimeout) {
 		assertThat(restClient.getLowLevelClient()).extracting("client.defaultConfig.socketTimeout")
 				.isEqualTo(Math.toIntExact(readTimeout.toMillis()));
 		assertThat(restClient.getLowLevelClient()).extracting("client.defaultConfig.connectTimeout")
@@ -149,7 +159,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@ParameterizedPropertyPrefixTest
 	void configureUriWithNoScheme(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "uris=localhost:9876").run((context) -> {
-			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			RestClient client = context.getBean(org.elasticsearch.client.RestHighLevelClient.class).getLowLevelClient();
 			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 					.containsExactly("http://localhost:9876");
 		});
@@ -158,7 +168,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@ParameterizedPropertyPrefixTest
 	void configureUriWithUsernameOnly(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "uris=http://user@localhost:9200").run((context) -> {
-			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			RestClient client = context.getBean(org.elasticsearch.client.RestHighLevelClient.class).getLowLevelClient();
 			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 					.containsExactly("http://localhost:9200");
 			assertThat(client)
@@ -174,7 +184,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@ParameterizedPropertyPrefixTest
 	void configureUriWithUsernameAndEmptyPassword(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "uris=http://user:@localhost:9200").run((context) -> {
-			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			RestClient client = context.getBean(org.elasticsearch.client.RestHighLevelClient.class).getLowLevelClient();
 			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 					.containsExactly("http://localhost:9200");
 			assertThat(client)
@@ -191,7 +201,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureUriWithUsernameAndPasswordWhenUsernameAndPasswordPropertiesSet(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "uris=http://user:password@localhost:9200,localhost:9201",
 				prefix + "username=admin", prefix + "password=admin").run((context) -> {
-					RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+					RestClient client = context.getBean(org.elasticsearch.client.RestHighLevelClient.class)
+							.getLowLevelClient();
 					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 							.containsExactly("http://localhost:9200", "http://localhost:9201");
 					assertThat(client)
@@ -213,7 +224,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureWithCustomPathPrefix() {
 		this.contextRunner.withPropertyValues("spring.elasticsearch.path-prefix=/some/prefix").run((context) -> {
-			RestClient client = context.getBean(RestHighLevelClient.class).getLowLevelClient();
+			RestClient client = context.getBean(org.elasticsearch.client.RestHighLevelClient.class).getLowLevelClient();
 			assertThat(client).extracting("pathPrefix").isEqualTo("/some/prefix");
 		});
 	}
@@ -221,7 +232,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureWithoutSnifferLibraryShouldNotCreateSniffer() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.elasticsearch.client.sniff"))
-				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class)
+				.run((context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
 						.doesNotHaveBean(Sniffer.class));
 	}
 
@@ -230,7 +241,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Sniffer.class);
 			assertThat(context.getBean(Sniffer.class)).hasFieldOrPropertyWithValue("restClient",
-					context.getBean(RestHighLevelClient.class).getLowLevelClient());
+					context.getBean(org.elasticsearch.client.RestHighLevelClient.class).getLowLevelClient());
 			// Validate shutdown order as the sniffer must be shutdown before the client
 			assertThat(context.getBeanFactory().getDependentBeans("elasticsearchRestHighLevelClient"))
 					.contains("elasticsearchSniffer");
@@ -292,8 +303,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	static class CustomRestHighLevelClientConfiguration {
 
 		@Bean
-		RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
-			return new RestHighLevelClient(builder);
+		org.elasticsearch.client.RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
+			return new org.elasticsearch.client.RestHighLevelClient(builder);
 		}
 
 	}
@@ -302,13 +313,13 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	static class TwoCustomRestHighLevelClientConfiguration {
 
 		@Bean
-		RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
-			return new RestHighLevelClient(builder);
+		org.elasticsearch.client.RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
+			return new org.elasticsearch.client.RestHighLevelClient(builder);
 		}
 
 		@Bean
-		RestHighLevelClient customRestHighLevelClient1(RestClientBuilder builder) {
-			return new RestHighLevelClient(builder);
+		org.elasticsearch.client.RestHighLevelClient customoRestHighLevelClient1(RestClientBuilder builder) {
+			return new org.elasticsearch.client.RestHighLevelClient(builder);
 		}
 
 	}
