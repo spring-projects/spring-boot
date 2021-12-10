@@ -30,10 +30,10 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -114,19 +114,16 @@ class PropertiesMigrationReporter {
 
 	private void getMatchingPropertiesForMapEntries(String name, ConfigurationPropertySource source,
 			ConfigurationMetadataProperty metadata, MultiValueMap<String, PropertyMigration> result) {
-		if (source.getUnderlyingSource() instanceof MapPropertySource && name.equals(metadata.getName())) {
-			MapPropertySource mapSource = ((MapPropertySource) source.getUnderlyingSource());
-			for (String propertyName : mapSource.getPropertyNames()) {
-				ConfigurationProperty configurationProperty = source
-						.getConfigurationProperty(ConfigurationPropertyName.of(propertyName));
+		if (source instanceof IterableConfigurationPropertySource)
+			((IterableConfigurationPropertySource) source).iterator().forEachRemaining(configurationPropertyName -> {
+				ConfigurationProperty configurationProperty = source.getConfigurationProperty(configurationPropertyName);
 				if (configurationProperty != null) {
-					ConfigurationMetadataProperty entryMetadata = generateMetadataForMapEntry(propertyName, metadata);
+					ConfigurationMetadataProperty entryMetadata = generateMetadataForMapEntry(configurationPropertyName.toString(), metadata);
 					result.add(name, new PropertyMigration(configurationProperty, entryMetadata,
 							determineReplacementMetadata(entryMetadata)));
 				}
-			}
+			});
 		}
-	}
 
 	private ConfigurationMetadataProperty generateMetadataForMapEntry(String propertyName,
 			ConfigurationMetadataProperty mapMetadata) {
