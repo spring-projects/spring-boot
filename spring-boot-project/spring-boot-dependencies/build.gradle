@@ -1145,6 +1145,8 @@ bom {
 				"spring-boot-starter-cache",
 				"spring-boot-starter-data-cassandra",
 				"spring-boot-starter-data-cassandra-reactive",
+				"spring-boot-starter-data-couchbase",
+				"spring-boot-starter-data-couchbase-reactive",
 				"spring-boot-starter-data-elasticsearch",
 				"spring-boot-starter-data-jdbc",
 				"spring-boot-starter-data-jpa",

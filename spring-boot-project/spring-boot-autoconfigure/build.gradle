@@ -12,7 +12,6 @@ description = "Spring Boot AutoConfigure"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.couchbase.client:java-client")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -117,6 +116,7 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.batch:spring-batch-core")
+	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

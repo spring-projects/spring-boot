@@ -118,6 +118,7 @@ dependencies {
 	implementation("org.springframework.amqp:spring-rabbit")
 	implementation("org.springframework.batch:spring-batch-core")
 	implementation("org.springframework.data:spring-data-cassandra")
+	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -258,6 +259,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
 					"spring-boot-version": project.version,
 					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
+					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
 					"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
 					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
 					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],

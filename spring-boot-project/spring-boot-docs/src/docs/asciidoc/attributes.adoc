@@ -57,6 +57,8 @@
 :spring-data: https://spring.io/projects/spring-data
 :spring-data-cassandra: https://spring.io/projects/spring-data-cassandra
 :spring-data-commons-api: https://docs.spring.io/spring-data/commons/docs/{spring-data-commons-version}/api/org/springframework/data
+:spring-data-couchbase: https://spring.io/projects/spring-data-couchbase
+:spring-data-couchbase-docs: https://docs.spring.io/spring-data/couchbase/docs/{spring-data-couchbase-version}/reference/html/
 :spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
 :spring-data-elasticsearch-docs: https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/
 :spring-data-envers: https://spring.io/projects/spring-data-envers

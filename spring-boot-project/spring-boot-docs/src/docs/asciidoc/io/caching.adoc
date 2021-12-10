@@ -42,6 +42,7 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 . <<io#io.caching.provider.generic,Generic>>
 . <<io#io.caching.provider.jcache,JCache (JSR-107)>> (Hazelcast and others)
 . <<io#io.caching.provider.hazelcast,Hazelcast>>
+. <<io#io.caching.provider.couchbase,Couchbase>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>
 . <<io#io.caching.provider.simple,Simple>>
@@ -113,6 +114,31 @@ No further customization is applied to it.
 ==== Hazelcast
 Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
+
+
+
+[[io.caching.provider.couchbase]]
+==== Couchbase
+If Spring Data Couchbase is available and Couchbase is <<data#data.nosql.couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
+It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
+For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cache:
+	    cache-names: "cache1,cache2"
+        couchbase:
+          expiration: "10m"
+----
+
+If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
+The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/io/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
+----
 
 
 

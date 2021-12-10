@@ -9,6 +9,9 @@ def caches = [
 	"caffeine": [
 		"com.github.ben-manes.caffeine:caffeine"
 	],
+	"couchbase": [
+			project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase")
+	],
 	"hazelcast": [
 		"com.hazelcast:hazelcast",
 		"com.hazelcast:hazelcast-spring"

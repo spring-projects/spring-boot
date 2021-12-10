@@ -38,9 +38,11 @@ import org.springframework.core.annotation.AliasFor;
  * {@link org.springframework.data.mapping.context.AbstractMappingContext#setInitialEntitySet(java.util.Set)
  * initial entity set} used with Spring Data
  * {@link org.springframework.data.mongodb.core.mapping.MongoMappingContext MongoDB},
- * {@link org.springframework.data.neo4j.core.mapping.Neo4jMappingContext Neo4j} and
+ * {@link org.springframework.data.neo4j.core.mapping.Neo4jMappingContext Neo4j},
  * {@link org.springframework.data.cassandra.core.mapping.CassandraMappingContext
- * Cassandra} mapping contexts.</li>
+ * Cassandra} and
+ * {@link org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext
+ * Couchbase} mapping contexts.</li>
  * </ul>
  * <p>
  * One of {@link #basePackageClasses()}, {@link #basePackages()} or its alias
