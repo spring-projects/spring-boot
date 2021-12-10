@@ -144,6 +144,31 @@ class PropertiesMigrationReporterTests {
 		assertThat(report).doesNotContain("null");
 	}
 
+	@Test
+	void detectDeprecatedPropertyInMap() {
+		MutablePropertySources propertySources = this.environment.getPropertySources();
+		Map<String, Object> content = new LinkedHashMap<>();
+		content.put("status.http-mapping.down", 500);
+		content.put("status.http-mapping.out-of-service", 503);
+		content.put("status.http-mapping.warning", 500);
+		propertySources.addFirst(new MapPropertySource("status.http-mapping", content));
+		assertThat(propertySources).hasSize(2);
+
+		String report = createWarningReport(loadRepository("metadata/map-deprecated-metadata.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).contains("Property source 'status.http-mapping'", "Key: status.http-mapping.down",
+				"Replacement: endpoint.status.http-mapping.down", "Key: status.http-mapping.out-of-service",
+				"Replacement: endpoint.status.http-mapping.out-of-service", "Key: status.http-mapping.warning",
+				"Replacement: endpoint.status.http-mapping.warning");
+		assertThat(mapToNames(propertySources)).containsExactly("migrate-status.http-mapping", "status.http-mapping",
+				"mockProperties");
+		PropertySource<?> propertySource = propertySources.get("migrate-status.http-mapping");
+		assertThat(propertySource).isNotNull();
+		assertMappedProperty(propertySource, "endpoint.status.http-mapping.down", 500, null);
+		assertMappedProperty(propertySource, "endpoint.status.http-mapping.out-of-service", 503, null);
+		assertMappedProperty(propertySource, "endpoint.status.http-mapping.warning", 500, null);
+	}
+
 	private List<String> mapToNames(PropertySources sources) {
 		List<String> names = new ArrayList<>();
 		for (PropertySource<?> source : sources) {

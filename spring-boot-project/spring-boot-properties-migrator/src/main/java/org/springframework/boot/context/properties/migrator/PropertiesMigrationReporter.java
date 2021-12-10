@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
+import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -32,6 +33,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -105,8 +107,51 @@ class PropertiesMigrationReporter {
 				result.add(name,
 						new PropertyMigration(configurationProperty, metadata, determineReplacementMetadata(metadata)));
 			}
+			getMatchingPropertiesForMapEntries(name, source, metadata, result);
 		}));
 		return result;
+	}
+
+	private void getMatchingPropertiesForMapEntries(String name, ConfigurationPropertySource source,
+			ConfigurationMetadataProperty metadata, MultiValueMap<String, PropertyMigration> result) {
+		if (source.getUnderlyingSource() instanceof MapPropertySource && name.equals(metadata.getName())) {
+			MapPropertySource mapSource = ((MapPropertySource) source.getUnderlyingSource());
+			for (String propertyName : mapSource.getPropertyNames()) {
+				ConfigurationProperty configurationProperty = source
+						.getConfigurationProperty(ConfigurationPropertyName.of(propertyName));
+				if (configurationProperty != null) {
+					ConfigurationMetadataProperty entryMetadata = generateMetadataForMapEntry(propertyName, metadata);
+					result.add(name, new PropertyMigration(configurationProperty, entryMetadata,
+							determineReplacementMetadata(entryMetadata)));
+				}
+			}
+		}
+	}
+
+	private ConfigurationMetadataProperty generateMetadataForMapEntry(String propertyName,
+			ConfigurationMetadataProperty mapMetadata) {
+		ConfigurationMetadataProperty newMetadata = new ConfigurationMetadataProperty();
+		newMetadata.setName(propertyName);
+		newMetadata.setId(propertyName);
+		String entryName = propertyName.substring(propertyName.lastIndexOf('.'));
+		Deprecation oldDeprecation = mapMetadata.getDeprecation();
+		if (oldDeprecation != null) {
+			Deprecation deprecation = new Deprecation();
+			deprecation.setLevel(oldDeprecation.getLevel());
+			deprecation.setReason(oldDeprecation.getReason());
+			deprecation.setShortReason(oldDeprecation.getShortReason());
+			deprecation.setReplacement(oldDeprecation.getReplacement() + entryName);
+			newMetadata.setDeprecation(deprecation);
+		}
+
+		String type = mapMetadata.getType();
+		if (type.startsWith(Map.class.getName())) {
+			int lastComma = type.lastIndexOf(',');
+			if (lastComma != -1) {
+				newMetadata.setType(type.substring(lastComma + 1, type.length() - 1).trim());
+			}
+		}
+		return newMetadata;
 	}
 
 	private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {

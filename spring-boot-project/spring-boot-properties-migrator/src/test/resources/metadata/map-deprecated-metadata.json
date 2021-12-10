@@ -1,0 +1,17 @@
+{
+  "properties": [
+    {
+      "name": "status.http-mapping",
+      "type": "java.util.Map<java.lang.String,java.lang.Integer>",
+      "deprecated": true,
+      "deprecation": {
+        "replacement": "endpoint.status.http-mapping"
+      }
+    },
+    {
+      "name": "endpoint.status.http-mapping",
+      "type": "java.util.Map<java.lang.String,java.lang.Integer>",
+      "description": ""
+    }
+  ]
+}
