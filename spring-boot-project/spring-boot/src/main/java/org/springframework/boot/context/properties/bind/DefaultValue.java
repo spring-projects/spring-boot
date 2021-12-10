@@ -31,13 +31,16 @@ import java.lang.annotation.Target;
  * {@link org.springframework.core.env.Environment} when binding to
  * {@link org.springframework.boot.context.properties.ConfigurationProperties @ConfigurationProperties},
  * the default value for the property will not be used even if the property value is
- * empty.
+ * empty. You can apply this annotation to both parameters and record components, but this annotation
+ * applied to fields is ignored unless you use some source code generating engine like Project Lombok
+ * to generate constructors or methods and pass to them fields with applied annotations as parameters.
  *
  * @author Madhura Bhave
+ * @author Pavel Anisimov
  * @since 2.2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER })
+@Target({ ElementType.PARAMETER, ElementType.RECORD_COMPONENT, ElementType.FIELD })
 @Documented
 public @interface DefaultValue {
 
