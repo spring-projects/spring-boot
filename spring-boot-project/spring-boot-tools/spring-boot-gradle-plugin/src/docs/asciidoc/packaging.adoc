@@ -48,7 +48,7 @@ NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as,
 By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are configured to use `plain` as the convention for their archive classifier.
 This ensures that `bootJar` and `jar` or `bootWar` and `war` have different output locations, allowing both the executable archive and the plain archive to be built at the same time.
 
-If you prefer that its the executable archive, rather than the plain archive, that uses a classifier, configure the classifiers as shown in the following example for the `jar` and `bootJar` tasks:
+If you prefer that it's the executable archive, rather than the plain archive, that uses a classifier, configure the classifiers as shown in the following example for the `jar` and `bootJar` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
