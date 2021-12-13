@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,12 @@ public class JdbcSessionProperties {
 	private String schema = DEFAULT_SCHEMA_LOCATION;
 
 	/**
+	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
+	 * Auto-detected by default.
+	 */
+	private String platform;
+
+	/**
 	 * Name of the database table used to store sessions.
 	 */
 	private String tableName = DEFAULT_TABLE_NAME;
@@ -75,6 +81,14 @@ public class JdbcSessionProperties {
 
 	public void setSchema(String schema) {
 		this.schema = schema;
+	}
+
+	public String getPlatform() {
+		return this.platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 
 	public String getTableName() {

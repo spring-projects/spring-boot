@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,13 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link QuartzDataSourceInitializer}.
@@ -47,6 +50,17 @@ class QuartzDataSourceInitializerTests {
 					AutoConfigurations.of(DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.url=" + String.format(
 					"jdbc:h2:mem:test-%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", UUID.randomUUID().toString()));
+
+	@Test
+	void getDatabaseNameWithPlatformDoesNotTouchDataSource() {
+		DataSource dataSource = mock(DataSource.class);
+		QuartzProperties properties = new QuartzProperties();
+		properties.getJdbc().setPlatform("test");
+		QuartzDataSourceInitializer initializer = new QuartzDataSourceInitializer(dataSource,
+				new DefaultResourceLoader(), properties);
+		assertThat(initializer.getDatabaseName()).isEqualTo("test");
+		verifyNoInteractions(dataSource);
+	}
 
 	@Test
 	void hashIsUsedAsACommentPrefixByDefault() {
