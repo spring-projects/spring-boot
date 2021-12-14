@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 import java.util.Collections;
 
 import org.elasticsearch.action.support.IndicesOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -83,14 +82,16 @@ abstract class ElasticsearchDataConfiguration {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(RestHighLevelClient.class)
+	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
 	static class RestClientConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
-		@ConditionalOnBean(RestHighLevelClient.class)
-		ElasticsearchRestTemplate elasticsearchTemplate(RestHighLevelClient client, ElasticsearchConverter converter) {
+		@ConditionalOnBean(org.elasticsearch.client.RestHighLevelClient.class)
+		ElasticsearchRestTemplate elasticsearchTemplate(org.elasticsearch.client.RestHighLevelClient client,
+				ElasticsearchConverter converter) {
 			return new ElasticsearchRestTemplate(client, converter);
 		}
 
