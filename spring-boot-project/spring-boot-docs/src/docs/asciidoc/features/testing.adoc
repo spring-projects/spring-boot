@@ -915,7 +915,16 @@ To use add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutpu
 include::{docs-java}/features/testing/utilities/outputcapture/MyOutputCaptureTests.java[]
 ----
 
+TIP: Gradle will redirect output to file by default, please ensure `testLogging.showStandardStreams` is enabled.
 
+[source,groovy,indent=0,subs="verbatim"]
+----
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+----
 
 [[features.testing.utilities.test-rest-template]]
 ==== TestRestTemplate
