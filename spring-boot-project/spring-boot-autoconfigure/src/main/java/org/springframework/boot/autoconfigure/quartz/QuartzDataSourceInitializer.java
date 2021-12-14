@@ -22,6 +22,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Initialize the Quartz Scheduler schema.
@@ -69,6 +70,10 @@ public class QuartzDataSourceInitializer extends org.springframework.boot.jdbc.A
 
 	@Override
 	protected String getDatabaseName() {
+		String platform = this.properties.getJdbc().getPlatform();
+		if (StringUtils.hasText(platform)) {
+			return platform;
+		}
 		String databaseName = super.getDatabaseName();
 		if ("db2".equals(databaseName)) {
 			return "db2_v95";

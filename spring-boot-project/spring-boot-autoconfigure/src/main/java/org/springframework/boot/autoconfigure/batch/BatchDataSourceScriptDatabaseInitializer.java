@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Batch database. May be
@@ -67,13 +70,20 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 	 */
 	public static DatabaseInitializationSettings getSettings(DataSource dataSource, BatchProperties.Jdbc properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.ORACLE, "oracle10g");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
-		settings.setSchemaLocations(platformResolver.resolveAll(dataSource, properties.getSchema()));
+		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
 		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
+	}
+
+	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
+		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.ORACLE, "oracle10g");
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
+		if (StringUtils.hasText(properties.getPlatform())) {
+			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
+		}
+		return platformResolver.resolveAll(dataSource, properties.getSchema());
 	}
 
 }

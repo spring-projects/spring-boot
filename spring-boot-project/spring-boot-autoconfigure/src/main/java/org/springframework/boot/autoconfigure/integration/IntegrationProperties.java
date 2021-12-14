@@ -210,6 +210,12 @@ public class IntegrationProperties {
 		private String schema = DEFAULT_SCHEMA_LOCATION;
 
 		/**
+		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
+		 * used. Auto-detected by default.
+		 */
+		private String platform;
+
+		/**
 		 * Database schema initialization mode.
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
@@ -220,6 +226,14 @@ public class IntegrationProperties {
 
 		public void setSchema(String schema) {
 			this.schema = schema;
+		}
+
+		public String getPlatform() {
+			return this.platform;
+		}
+
+		public void setPlatform(String platform) {
+			this.platform = platform;
 		}
 
 		public DatabaseInitializationMode getInitializeSchema() {
