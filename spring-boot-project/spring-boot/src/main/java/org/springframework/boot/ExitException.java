@@ -15,8 +15,9 @@
  */
 
 package org.springframework.boot;
-
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 import org.springframework.core.annotation.Order;
 
 /**
