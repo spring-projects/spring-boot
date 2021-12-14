@@ -31,10 +31,10 @@ import java.lang.annotation.Target;
  * {@link org.springframework.core.env.Environment} when binding to
  * {@link org.springframework.boot.context.properties.ConfigurationProperties @ConfigurationProperties},
  * the default value for the property will not be used even if the property value is
- * empty. You can apply this annotation to both parameters and record components, but this annotation
- * applied to fields or methods is ignored. Fields and methods support is added for usage with source
- * code generating engines like Project Lombok with help of which you can pass annotation of a field
- * to a constructor parameter.
+ * empty. You can apply this annotation to both parameters and record components, but this
+ * annotation applied to fields or methods is ignored. Fields and methods support is added
+ * for usage with source code generating engines like Project Lombok with help of which
+ * you can pass annotation of a field to a constructor parameter.
  *
  * @author Madhura Bhave
  * @author Pavel Anisimov
