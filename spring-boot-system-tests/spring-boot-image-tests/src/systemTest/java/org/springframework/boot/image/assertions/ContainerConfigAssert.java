@@ -18,13 +18,13 @@ package org.springframework.boot.image.assertions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.github.dockerjava.api.model.ContainerConfig;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.AbstractMapAssert;
 import org.assertj.core.api.AbstractObjectAssert;
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
@@ -45,16 +45,16 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 		super(containerConfig, ContainerConfigAssert.class);
 	}
 
-	public BuildMetadataAssert buildMetadata() {
-		return new BuildMetadataAssert(jsonLabel(BUILD_METADATA_LABEL));
+	public void buildMetadata(Consumer<BuildMetadataAssert> assertConsumer) {
+		assertConsumer.accept(new BuildMetadataAssert(jsonLabel(BUILD_METADATA_LABEL)));
 	}
 
-	public LifecycleMetadataAssert lifecycleMetadata() {
-		return new LifecycleMetadataAssert(jsonLabel(LIFECYCLE_METADATA_LABEL));
+	public void lifecycleMetadata(Consumer<LifecycleMetadataAssert> assertConsumer) {
+		assertConsumer.accept(new LifecycleMetadataAssert(jsonLabel(LIFECYCLE_METADATA_LABEL)));
 	}
 
-	public AbstractStringAssert<?> label(String label) {
-		return AssertionsForClassTypes.assertThat(getLabel(label));
+	public void labels(Consumer<LabelsAssert> assertConsumer) {
+		assertConsumer.accept(new LabelsAssert(this.actual.getLabels()));
 	}
 
 	private JsonContentAssert jsonLabel(String label) {
@@ -70,6 +70,17 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			failWithActualExpectedAndMessage(labels, label, "Expected label not found in container config");
 		}
 		return labels.get(label);
+	}
+
+	/**
+	 * Asserts for labels on an image.
+	 */
+	public static class LabelsAssert extends AbstractMapAssert<LabelsAssert, Map<String, String>, String, String> {
+
+		protected LabelsAssert(Map<String, String> labels) {
+			super(labels, LabelsAssert.class);
+		}
+
 	}
 
 	/**
@@ -114,6 +125,10 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 
 		public AbstractListAssert<?, List<?>, Object, ObjectAssert<Object>> appLayerShas() {
 			return this.actual.extractingJsonPathArrayValue("$.app").extracting("sha");
+		}
+
+		public AbstractObjectAssert<?, Object> sbomLayerSha() {
+			return this.actual.extractingJsonPathValue("$.sbom.sha");
 		}
 
 	}
