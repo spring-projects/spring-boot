@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Initialize the Spring Batch schema (ignoring errors, so it should be idempotent).
@@ -65,6 +66,10 @@ public class BatchDataSourceInitializer extends org.springframework.boot.jdbc.Ab
 
 	@Override
 	protected String getDatabaseName() {
+		String platform = this.jdbcProperties.getPlatform();
+		if (StringUtils.hasText(platform)) {
+			return platform;
+		}
 		String databaseName = super.getDatabaseName();
 		if ("oracle".equals(databaseName)) {
 			return "oracle10g";

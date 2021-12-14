@@ -43,6 +43,12 @@ public class JdbcSessionProperties {
 	private String schema = DEFAULT_SCHEMA_LOCATION;
 
 	/**
+	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
+	 * Auto-detected by default.
+	 */
+	private String platform;
+
+	/**
 	 * Name of the database table used to store sessions.
 	 */
 	private String tableName = DEFAULT_TABLE_NAME;
@@ -75,6 +81,14 @@ public class JdbcSessionProperties {
 
 	public void setSchema(String schema) {
 		this.schema = schema;
+	}
+
+	public String getPlatform() {
+		return this.platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 
 	public String getTableName() {
