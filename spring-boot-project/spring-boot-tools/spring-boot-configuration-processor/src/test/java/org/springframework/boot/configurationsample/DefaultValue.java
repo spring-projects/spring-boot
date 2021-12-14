@@ -27,8 +27,9 @@ import java.lang.annotation.Target;
  * dependency on the real annotation).
  *
  * @author Stephane Nicoll
+ * @author Pavel Anisimov
  */
-@Target({ ElementType.PARAMETER })
+@Target({ ElementType.PARAMETER, ElementType.RECORD_COMPONENT, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DefaultValue {
