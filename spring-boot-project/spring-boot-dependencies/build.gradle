@@ -1059,9 +1059,6 @@ bom {
 	}
 	library("Log4j2", "2.16.0") {
 		group("org.apache.logging.log4j") {
-			modules = [
-				"log4j-to-slf4j"
-			]
 			imports = [
 				"log4j-bom"
 			]
