@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -888,7 +888,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
-	static class CustomCacheManagerFromSupportConfiguration extends CachingConfigurerSupport {
+	static class CustomCacheManagerFromSupportConfiguration implements CachingConfigurer {
 
 		@Override
 		@Bean
@@ -901,7 +901,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
-	static class CustomCacheResolverFromSupportConfiguration extends CachingConfigurerSupport {
+	static class CustomCacheResolverFromSupportConfiguration implements CachingConfigurer {
 
 		@Override
 		@Bean
