@@ -20,6 +20,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +68,11 @@ class ErrorPageSecurityFilterTests {
 		this.securityFilter = new ErrorPageSecurityFilter(this.context);
 	}
 
+	@AfterEach
+	void tearDown() {
+		SecurityContextHolder.clearContext();
+	}
+
 	@Test
 	void whenAccessIsAllowedShouldContinueDownFilterChain() throws Exception {
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(true);
@@ -83,6 +92,9 @@ class ErrorPageSecurityFilterTests {
 	@Test
 	void whenAccessIsDeniedAndNoErrorCodeAttributeOnRequest() throws Exception {
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(false);
+		SecurityContext securityContext = mock(SecurityContext.class);
+		SecurityContextHolder.setContext(securityContext);
+		given(securityContext.getAuthentication()).willReturn(mock(Authentication.class));
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
 		verifyNoInteractions(this.filterChain);
 		assertThat(this.response.getStatus()).isEqualTo(401);
