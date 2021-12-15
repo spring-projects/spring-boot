@@ -853,7 +853,7 @@ bom {
 			]
 		}
 	}
-	library("JDOM2", "2.0.6") {
+	library("JDOM2", "2.0.6.1") {
 		group("org.jdom") {
 			modules = [
 				"jdom2"
