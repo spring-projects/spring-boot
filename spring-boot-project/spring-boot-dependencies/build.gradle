@@ -1721,7 +1721,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "3.1.1") {
+	library("Spring WS", "3.1.2") {
 		group("org.springframework.ws") {
 			modules = [
 				"spring-ws-core",
