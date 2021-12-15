@@ -481,7 +481,7 @@ bom {
 			]
 		}
 	}
-	library("HttpAsyncClient", "4.1.4") {
+	library("HttpAsyncClient", "4.1.5") {
 		group("org.apache.httpcomponents") {
 			modules = [
 				"httpasyncclient" {
