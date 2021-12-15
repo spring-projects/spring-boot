@@ -1342,6 +1342,33 @@ public class SpringApplication {
 		return exitCode;
 	}
 
+
+	public static int runAndExit(Class<?> primarySource,ExitCodeGenerator... exitCodeGenerators, String... args){
+
+		Assert.notNull(run(primarySource,args), "Context must not be null");
+		int exitCode = 0;
+		try {
+			try {
+				ExitCodeGenerators generators = new ExitCodeGenerators();
+				Collection<ExitCodeGenerator> beans = run(primarySource,args).getBeansOfType(ExitCodeGenerator.class).values();
+				generators.addAll(exitCodeGenerators);
+				generators.addAll(beans);
+				exitCode = generators.getExitCode();
+				if (exitCode != 0) {
+					run(primarySource,args).publishEvent(new ExitCodeEvent(run(primarySource,args), exitCode));
+				}
+			}
+			finally {
+				close(run(primarySource,args));
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			exitCode = (exitCode != 0) ? exitCode : 1;
+		}
+		return exitCode;
+	}
+ }
 	private static void close(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext) {
 			ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;

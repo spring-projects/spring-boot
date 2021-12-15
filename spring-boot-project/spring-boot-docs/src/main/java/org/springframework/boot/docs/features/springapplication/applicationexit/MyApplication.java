@@ -30,7 +30,8 @@ public class MyApplication {
 	}
 
 	public static void main(String[] args) {
-		System.exit(SpringApplication.exit(SpringApplication.run(MyApplication.class, args)));
-	}
+		System.exit(SpringApplication.runAndExit((MyApplication.class, args)));
+
+ 	}
 
 }

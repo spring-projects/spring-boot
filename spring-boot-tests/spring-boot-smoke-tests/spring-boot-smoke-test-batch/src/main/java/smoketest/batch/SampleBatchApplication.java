@@ -65,7 +65,7 @@ public class SampleBatchApplication {
 	public static void main(String[] args) {
 		// System.exit is common for Batch applications since the exit code can be used to
 		// drive a workflow
-		System.exit(SpringApplication.exit(SpringApplication.run(SampleBatchApplication.class, args)));
-	}
+		System.runAndExit((SampleBatchApplication.class, args));
+ 	}
 
 }
