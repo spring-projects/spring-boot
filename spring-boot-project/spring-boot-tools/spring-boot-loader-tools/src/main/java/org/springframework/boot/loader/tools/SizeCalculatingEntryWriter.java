@@ -145,7 +145,6 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 			return this.size;
 		}
 
-
 	}
 
 }
