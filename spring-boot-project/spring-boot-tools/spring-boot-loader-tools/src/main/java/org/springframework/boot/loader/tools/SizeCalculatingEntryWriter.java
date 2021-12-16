@@ -42,14 +42,15 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 	private final int size;
 
+	private File tempFile;
+
 	private SizeCalculatingEntryWriter(EntryWriter entryWriter) throws IOException {
 		SizeCalculatingOutputStream outputStream = new SizeCalculatingOutputStream();
+		this.tempFile = outputStream.getTempFile();
 		entryWriter.write(outputStream);
 		this.content = outputStream.getContent();
 		this.size = outputStream.getSize();
-		if (this.content instanceof File) {
-			outputStream.deleteTempFile();
-		}
+
 	}
 
 	@Override
@@ -77,6 +78,11 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 	@Override
 	public int size() {
 		return this.size;
+	}
+
+	@Override
+	public void deleteTempFile() {
+		this.tempFile.delete();
 	}
 
 	static EntryWriter get(EntryWriter entryWriter) throws IOException {
@@ -143,9 +149,8 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 			return this.size;
 		}
 
-		private void deleteTempFile() {
-			this.tempFile.delete();
-
+		private File getTempFile() {
+			return this.tempFile;
 		}
 
 	}

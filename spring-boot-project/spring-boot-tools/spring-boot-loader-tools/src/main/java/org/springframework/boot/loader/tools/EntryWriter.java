@@ -44,4 +44,7 @@ public interface EntryWriter {
 		return -1;
 	}
 
+	default void deleteTempFile() {
+	}
+
 }

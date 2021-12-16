@@ -261,6 +261,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			if (!entry.isDirectory() && entry.getSize() == -1) {
 				entryWriter = SizeCalculatingEntryWriter.get(entryWriter);
 				entry.setSize(entryWriter.size());
+				entryWriter.deleteTempFile();
 			}
 			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
 			updateLayerIndex(entry, library);
