@@ -57,7 +57,6 @@ public class ErrorPageSecurityFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		// Intentionally blank
 	}
 
 	@Override
