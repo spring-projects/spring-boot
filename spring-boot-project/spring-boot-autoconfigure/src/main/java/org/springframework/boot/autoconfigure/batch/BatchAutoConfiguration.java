@@ -34,9 +34,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
@@ -103,6 +105,7 @@ public class BatchAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnClass(DatabasePopulator.class)
+	@Conditional(OnBatchDatasourceInitializationCondition.class)
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
@@ -112,6 +115,14 @@ public class BatchAutoConfiguration {
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
 			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),
 					properties.getJdbc());
+		}
+
+	}
+
+	static class OnBatchDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+
+		OnBatchDatasourceInitializationCondition() {
+			super("Batch", "spring.batch.jdbc.initialize-schema", "spring.batch.initialize-schema");
 		}
 
 	}

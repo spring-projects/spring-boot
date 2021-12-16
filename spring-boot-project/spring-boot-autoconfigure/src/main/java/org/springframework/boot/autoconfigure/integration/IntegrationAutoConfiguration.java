@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -233,6 +234,7 @@ public class IntegrationAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JdbcMessageStore.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
+	@Conditional(OnIntegrationDatasourceInitializationCondition.class)
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
@@ -338,6 +340,14 @@ public class IntegrationAutoConfiguration {
 
 			}
 
+		}
+
+	}
+
+	static class OnIntegrationDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+
+		OnIntegrationDatasourceInitializationCondition() {
+			super("Integration", "spring.integration.jdbc.initialize-schema");
 		}
 
 	}
