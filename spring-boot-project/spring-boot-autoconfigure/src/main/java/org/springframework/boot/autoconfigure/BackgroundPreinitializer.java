@@ -20,8 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.validation.Configuration;
-import javax.validation.Validation;
+import jakarta.validation.Configuration;
+import jakarta.validation.Validation;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -139,7 +139,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	}
 
 	/**
-	 * Early initializer for javax.validation.
+	 * Early initializer for jakarta.validation.
 	 */
 	private static class ValidationInitializer implements Runnable {
 

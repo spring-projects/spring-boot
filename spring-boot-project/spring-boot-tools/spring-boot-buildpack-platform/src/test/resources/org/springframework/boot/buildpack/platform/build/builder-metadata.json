@@ -182,7 +182,7 @@
 		"version": "0.7.2",
 		"api": {
 			"buildpack": "0.2",
-			"platform": "0.4"
+			"platform": "0.8"
 		}
 	},
 	"createdBy": {

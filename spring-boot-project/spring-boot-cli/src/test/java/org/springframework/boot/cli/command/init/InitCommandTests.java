@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Vignesh Thangavel Ilangovan
  */
 @ExtendWith(MockitoExtension.class)
 class InitCommandTests extends AbstractHttpClientMockTests {
@@ -253,6 +254,58 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		this.command.run("-g=org.demo", "-a=acme", "-v=1.2.3-SNAPSHOT", "-n=acme-sample",
 				"--description=Acme sample project", "--package-name=demo.foo", "-t=ant-project", "--build=grunt",
 				"--format=web", "-p=war", "-j=1.9", "-l=groovy", "-b=1.2.0.RELEASE", "-d=web,data-jpa");
+		assertThat(this.handler.lastRequest.getGroupId()).isEqualTo("org.demo");
+		assertThat(this.handler.lastRequest.getArtifactId()).isEqualTo("acme");
+		assertThat(this.handler.lastRequest.getVersion()).isEqualTo("1.2.3-SNAPSHOT");
+		assertThat(this.handler.lastRequest.getName()).isEqualTo("acme-sample");
+		assertThat(this.handler.lastRequest.getDescription()).isEqualTo("Acme sample project");
+		assertThat(this.handler.lastRequest.getPackageName()).isEqualTo("demo.foo");
+		assertThat(this.handler.lastRequest.getType()).isEqualTo("ant-project");
+		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("grunt");
+		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("web");
+		assertThat(this.handler.lastRequest.getPackaging()).isEqualTo("war");
+		assertThat(this.handler.lastRequest.getJavaVersion()).isEqualTo("1.9");
+		assertThat(this.handler.lastRequest.getLanguage()).isEqualTo("groovy");
+		assertThat(this.handler.lastRequest.getBootVersion()).isEqualTo("1.2.0.RELEASE");
+		List<String> dependencies = this.handler.lastRequest.getDependencies();
+		assertThat(dependencies).hasSize(2);
+		assertThat(dependencies.contains("web")).isTrue();
+		assertThat(dependencies.contains("data-jpa")).isTrue();
+	}
+
+	@Test
+	void parseProjectWithCamelCaseOptions() throws Exception {
+		this.handler.disableProjectGeneration();
+		this.command.run("--groupId=org.demo", "--artifactId=acme", "--version=1.2.3-SNAPSHOT", "--name=acme-sample",
+				"--description=Acme sample project", "--packageName=demo.foo", "--type=ant-project", "--build=grunt",
+				"--format=web", "--packaging=war", "--javaVersion=1.9", "--language=groovy",
+				"--bootVersion=1.2.0.RELEASE", "--dependencies=web,data-jpa");
+		assertThat(this.handler.lastRequest.getGroupId()).isEqualTo("org.demo");
+		assertThat(this.handler.lastRequest.getArtifactId()).isEqualTo("acme");
+		assertThat(this.handler.lastRequest.getVersion()).isEqualTo("1.2.3-SNAPSHOT");
+		assertThat(this.handler.lastRequest.getName()).isEqualTo("acme-sample");
+		assertThat(this.handler.lastRequest.getDescription()).isEqualTo("Acme sample project");
+		assertThat(this.handler.lastRequest.getPackageName()).isEqualTo("demo.foo");
+		assertThat(this.handler.lastRequest.getType()).isEqualTo("ant-project");
+		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("grunt");
+		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("web");
+		assertThat(this.handler.lastRequest.getPackaging()).isEqualTo("war");
+		assertThat(this.handler.lastRequest.getJavaVersion()).isEqualTo("1.9");
+		assertThat(this.handler.lastRequest.getLanguage()).isEqualTo("groovy");
+		assertThat(this.handler.lastRequest.getBootVersion()).isEqualTo("1.2.0.RELEASE");
+		List<String> dependencies = this.handler.lastRequest.getDependencies();
+		assertThat(dependencies).hasSize(2);
+		assertThat(dependencies.contains("web")).isTrue();
+		assertThat(dependencies.contains("data-jpa")).isTrue();
+	}
+
+	@Test
+	void parseProjectWithKebabCaseOptions() throws Exception {
+		this.handler.disableProjectGeneration();
+		this.command.run("--group-id=org.demo", "--artifact-id=acme", "--version=1.2.3-SNAPSHOT", "--name=acme-sample",
+				"--description=Acme sample project", "--package-name=demo.foo", "--type=ant-project", "--build=grunt",
+				"--format=web", "--packaging=war", "--java-version=1.9", "--language=groovy",
+				"--boot-version=1.2.0.RELEASE", "--dependencies=web,data-jpa");
 		assertThat(this.handler.lastRequest.getGroupId()).isEqualTo("org.demo");
 		assertThat(this.handler.lastRequest.getArtifactId()).isEqualTo("acme");
 		assertThat(this.handler.lastRequest.getVersion()).isEqualTo("1.2.3-SNAPSHOT");

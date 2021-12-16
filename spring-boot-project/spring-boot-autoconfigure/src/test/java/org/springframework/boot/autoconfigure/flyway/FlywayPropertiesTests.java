@@ -44,11 +44,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class FlywayPropertiesTests {
 
+	@SuppressWarnings("deprecation")
 	@Test
 	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();
-		assertThat(configuration.getFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
+		assertThat(configuration.isFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
 				.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
@@ -61,7 +62,7 @@ class FlywayPropertiesTests {
 		assertThat(configuration.getLockRetryCount()).isEqualTo(50);
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
 		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
-		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.getCreateSchemas());
+		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.isCreateSchemas());
 		assertThat(properties.getTable()).isEqualTo(configuration.getTable());
 		assertThat(properties.getBaselineDescription()).isEqualTo(configuration.getBaselineDescription());
 		assertThat(MigrationVersion.fromVersion(properties.getBaselineVersion()))
@@ -113,7 +114,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "apiExtensions", "loggers");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

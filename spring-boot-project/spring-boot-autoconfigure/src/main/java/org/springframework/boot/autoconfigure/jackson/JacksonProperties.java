@@ -45,7 +45,7 @@ public class JacksonProperties {
 
 	/**
 	 * Date format string or a fully-qualified date format class name. For instance,
-	 * `yyyy-MM-dd HH:mm:ss`.
+	 * 'yyyy-MM-dd HH:mm:ss'.
 	 */
 	private String dateFormat;
 

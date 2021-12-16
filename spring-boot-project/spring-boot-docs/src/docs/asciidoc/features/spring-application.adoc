@@ -20,16 +20,16 @@ When your application starts, you should see something similar to the following 
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::   v{spring-boot-version}
 
-2021-02-03 10:33:25.224  INFO 17321 --- [           main] o.s.b.d.s.s.SpringAppplicationExample    : Starting SpringAppplicationExample using Java 1.8.0_232 on mycomputer with PID 17321 (/apps/myjar.jar started by pwebb)
-2021-02-03 10:33:25.226  INFO 17900 --- [           main] o.s.b.d.s.s.SpringAppplicationExample    : No active profile set, falling back to default profiles: default
-2021-02-03 10:33:26.046  INFO 17321 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-02-03 10:33:25.224  INFO 17900 --- [           main] o.s.b.d.s.s.SpringApplicationExample     : Starting SpringAppplicationExample using Java 17 on mycomputer with PID 17321 (/apps/myjar.jar started by pwebb)
+2021-02-03 10:33:25.226  INFO 17900 --- [           main] o.s.b.d.s.s.SpringApplicationExample     : No active profile set, falling back to default profiles: default
+2021-02-03 10:33:26.046  INFO 17900 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
 2021-02-03 10:33:26.054  INFO 17900 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
 2021-02-03 10:33:26.055  INFO 17900 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
 2021-02-03 10:33:26.097  INFO 17900 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
 2021-02-03 10:33:26.097  INFO 17900 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 821 ms
 2021-02-03 10:33:26.144  INFO 17900 --- [           main] s.tomcat.SampleTomcatApplication         : ServletContext initialized
 2021-02-03 10:33:26.376  INFO 17900 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2021-02-03 10:33:26.384  INFO 17900 --- [           main] o.s.b.d.s.s.SpringAppplicationExample    : Started SampleTomcatApplication in 1.514 seconds (JVM running for 1.823)
+2021-02-03 10:33:26.384  INFO 17900 --- [           main] o.s.b.d.s.s.SpringApplicationExample     : Started SampleTomcatApplication in 1.514 seconds (JVM running for 1.823)
 ----
 
 

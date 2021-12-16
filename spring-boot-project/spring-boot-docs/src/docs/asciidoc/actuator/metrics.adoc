@@ -461,10 +461,10 @@ The following example `scrape_config` adds to `prometheus.yml`:
 [source,yaml,indent=0,subs="verbatim"]
 ----
 	scrape_configs:
-	  - job_name: 'spring'
-		metrics_path: '/actuator/prometheus'
+	  - job_name: "spring"
+		metrics_path: "/actuator/prometheus"
 		static_configs:
-		  - targets: ['HOST:PORT']
+		  - targets: ["HOST:PORT"]
 ----
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
@@ -767,41 +767,6 @@ Applications can opt in and record exceptions by <<web#web.reactive.webflux.erro
 
 
 
-[[actuator.metrics.supported.jersey]]
-==== Jersey Server Metrics
-Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation whenever Micrometer's `micrometer-jersey2` module is on the classpath.
-By default, metrics are generated with the name, `http.server.requests`.
-You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
-
-`@Timed` annotations are supported on request-handling classes and methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
-If you do not want to record metrics for all Jersey requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
-
-By default, Jersey server metrics are tagged with the following information:
-
-|===
-| Tag | Description
-
-| `exception`
-| The simple class name of any exception that was thrown while handling the request.
-
-| `method`
-| The request's method (for example, `GET` or `POST`)
-
-| `outcome`
-| The request's outcome, based on the status code of the response.
-  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx is `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
-
-| `status`
-| The response's HTTP status code (for example, `200` or `500`)
-
-| `uri`
-| The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
-|===
-
-To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
-
-
-
 [[actuator.metrics.supported.http-clients]]
 ==== HTTP Client Metrics
 Spring Boot Actuator manages the instrumentation of both `RestTemplate` and `WebClient`.
@@ -860,7 +825,6 @@ Additional, cache-specific metrics are also available.
 The following cache libraries are supported:
 
 * Caffeine
-* EhCache 2
 * Hazelcast
 * Any compliant JCache (JSR-107) implementation
 * Redis
@@ -886,25 +850,6 @@ See `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
 Also, Hikari-specific metrics are exposed with a `hikaricp` prefix.
 Each metric is tagged by the name of the pool (you can control it with `spring.datasource.name`).
-
-
-
-[[actuator.metrics.supported.hibernate]]
-==== Hibernate Metrics
-If `org.hibernate:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled are instrumented with a metric named `hibernate`.
-
-Metrics are also tagged by the name of the `EntityManagerFactory`, which is derived from the bean name.
-
-To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
-You can enable that on the auto-configured `EntityManagerFactory`:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  jpa:
-	    properties:
-	      "[hibernate.generate_statistics]": true
-----
 
 
 
@@ -1090,7 +1035,7 @@ Long task timers require a separate metric name and can be stacked with a short 
 [[actuator.metrics.supported.redis]]
 ==== Redis Metrics
 Auto-configuration registers a `MicrometerCommandLatencyRecorder` for the auto-configured `LettuceConnectionFactory`.
-For more details refer to the {lettuce-docs}#command.latency.metrics.micrometer[Micrometer Metrics section] of the Lettuce documentation.
+For more detail, see the {lettuce-docs}#command.latency.metrics.micrometer[Micrometer Metrics section] of the Lettuce documentation.
 
 
 

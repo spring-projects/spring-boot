@@ -29,12 +29,11 @@ import org.apache.jasper.EmbeddedServletOptions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
@@ -55,6 +54,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -84,17 +84,10 @@ class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	void thymeleafCacheIsFalse() throws Exception {
-		this.context = getContext(() -> initializeAndRun(Config.class));
-		SpringResourceTemplateResolver resolver = this.context.getBean(SpringResourceTemplateResolver.class);
-		assertThat(resolver.isCacheable()).isFalse();
-	}
-
-	@Test
 	void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
-		this.context = getContext(() -> initializeAndRun(Config.class, "--spring.thymeleaf.cache=true"));
-		SpringResourceTemplateResolver resolver = this.context.getBean(SpringResourceTemplateResolver.class);
-		assertThat(resolver.isCacheable()).isTrue();
+		this.context = getContext(() -> initializeAndRun(Config.class, "--spring.freemarker.cache=true"));
+		AbstractTemplateViewResolver resolver = this.context.getBean(AbstractTemplateViewResolver.class);
+		assertThat(resolver.isCache()).isTrue();
 	}
 
 	@Test
@@ -103,8 +96,8 @@ class LocalDevToolsAutoConfigurationTests {
 		System.setProperty("user.home", new File("src/test/resources/user-home").getAbsolutePath());
 		try {
 			this.context = getContext(() -> initializeAndRun(Config.class));
-			SpringResourceTemplateResolver resolver = this.context.getBean(SpringResourceTemplateResolver.class);
-			assertThat(resolver.isCacheable()).isTrue();
+			AbstractTemplateViewResolver resolver = this.context.getBean(AbstractTemplateViewResolver.class);
+			assertThat(resolver.isCache()).isTrue();
 		}
 		finally {
 			System.setProperty("user.home", userHome);
@@ -257,7 +250,6 @@ class LocalDevToolsAutoConfigurationTests {
 
 	private Map<String, Object> getDefaultProperties(Map<String, Object> specifiedProperties) {
 		Map<String, Object> properties = new HashMap<>();
-		properties.put("spring.thymeleaf.check-template-location", false);
 		properties.put("spring.devtools.livereload.port", 0);
 		properties.put("server.port", 0);
 		properties.putAll(specifiedProperties);
@@ -266,14 +258,14 @@ class LocalDevToolsAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
-			ThymeleafAutoConfiguration.class })
+			FreeMarkerAutoConfiguration.class })
 	static class Config {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
-			ThymeleafAutoConfiguration.class })
+			FreeMarkerAutoConfiguration.class })
 	static class ConfigWithMockLiveReload {
 
 		@Bean

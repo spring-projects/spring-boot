@@ -41,6 +41,13 @@ bom {
 			]
 		}
 	}
+	library("Jakarta Inject", "2.0.1") {
+		group("jakarta.inject") {
+			modules = [
+				"jakarta.inject-api"
+			]
+		}
+	}
 	library("JLine", "2.11") {
 		prohibit("[2.12,)") {
 			because "it contains breaking changes"
@@ -133,6 +140,13 @@ bom {
 			]
 		}
 	}
+	library("Simple JNDI", "0.23.0") {
+		group("com.github.h-thurow") {
+			modules = [
+				"simple-jndi"
+			]
+		}
+	}
 	library("Sisu", "2.6.0") {
 		group("org.sonatype.sisu") {
 			modules = [
@@ -163,7 +177,7 @@ bom {
 			]
 		}
 	}
-	library("Testcontainers", "1.16.0") {
+	library("Testcontainers", "1.16.1") {
 		group("org.testcontainers") {
 			imports = [
 				"testcontainers-bom"
@@ -174,4 +188,9 @@ bom {
 
 dependencies {
 	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+	// Internal module so enforced platform dependencies are OK
+	suppressedValidationErrors.add('enforced-platform')
 }

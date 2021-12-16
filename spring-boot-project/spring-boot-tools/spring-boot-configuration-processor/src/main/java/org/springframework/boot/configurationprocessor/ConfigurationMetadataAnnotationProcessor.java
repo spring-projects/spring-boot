@@ -233,7 +233,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						element.toString());
 				if (this.metadataCollector.hasSimilarGroup(group)) {
 					this.processingEnv.getMessager().printMessage(Kind.ERROR,
-							"Duplicate `@ConfigurationProperties` definition for prefix '" + prefix + "'", element);
+							"Duplicate @ConfigurationProperties definition for prefix '" + prefix + "'", element);
 				}
 				else {
 					this.metadataCollector.add(group);

@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -32,10 +33,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ValidatorFactory;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.Test;
 
@@ -692,7 +692,7 @@ class WebMvcAutoConfigurationTests {
 	void validatorWhenNoValidatorShouldUseDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
-			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
+			assertThat(context).doesNotHaveBean(jakarta.validation.Validator.class);
 			assertThat(context).getBeanNames(Validator.class).containsOnly("mvcValidator");
 		});
 	}
@@ -701,7 +701,8 @@ class WebMvcAutoConfigurationTests {
 	void validatorWhenNoCustomizationShouldUseAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run((context) -> {
-					assertThat(context).getBeanNames(javax.validation.Validator.class).containsOnly("defaultValidator");
+					assertThat(context).getBeanNames(jakarta.validation.Validator.class)
+							.containsOnly("defaultValidator");
 					assertThat(context).getBeanNames(Validator.class).containsOnly("defaultValidator", "mvcValidator");
 					Validator validator = context.getBean("mvcValidator", Validator.class);
 					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
@@ -716,7 +717,7 @@ class WebMvcAutoConfigurationTests {
 	void validatorWithConfigurerAloneShouldUseSpringValidator() {
 		this.contextRunner.withUserConfiguration(MvcValidator.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
-			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
+			assertThat(context).doesNotHaveBean(jakarta.validation.Validator.class);
 			assertThat(context).getBeanNames(Validator.class).containsOnly("mvcValidator");
 			Validator expectedValidator = context.getBean(MvcValidator.class).validator;
 			assertThat(context.getBean("mvcValidator")).isSameAs(expectedValidator);
@@ -729,7 +730,8 @@ class WebMvcAutoConfigurationTests {
 	void validatorWithConfigurerShouldUseSpringValidator() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(MvcValidator.class).run((context) -> {
-					assertThat(context).getBeanNames(javax.validation.Validator.class).containsOnly("defaultValidator");
+					assertThat(context).getBeanNames(jakarta.validation.Validator.class)
+							.containsOnly("defaultValidator");
 					assertThat(context).getBeanNames(Validator.class).containsOnly("defaultValidator", "mvcValidator");
 					Validator expectedValidator = context.getBean(MvcValidator.class).validator;
 					assertThat(context.getBean("mvcValidator")).isSameAs(expectedValidator);
@@ -742,7 +744,7 @@ class WebMvcAutoConfigurationTests {
 	void validatorWithConfigurerDoesNotExposeJsr303() {
 		this.contextRunner.withUserConfiguration(MvcJsr303Validator.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
-			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
+			assertThat(context).doesNotHaveBean(jakarta.validation.Validator.class);
 			assertThat(context).getBeanNames(Validator.class).containsOnly("mvcValidator");
 			Validator validator = context.getBean("mvcValidator", Validator.class);
 			assertThat(validator).isInstanceOf(ValidatorAdapter.class);
@@ -756,7 +758,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(MvcValidator.class).run((context) -> {
 					assertThat(context).hasSingleBean(ValidatorFactory.class);
-					assertThat(context).hasSingleBean(javax.validation.Validator.class);
+					assertThat(context).hasSingleBean(jakarta.validation.Validator.class);
 					assertThat(context).getBeanNames(Validator.class).containsOnly("defaultValidator", "mvcValidator");
 					assertThat(context.getBean("mvcValidator")).isSameAs(context.getBean(MvcValidator.class).validator);
 					// Primary Spring validator is the auto-configured one as the MVC one
@@ -769,7 +771,8 @@ class WebMvcAutoConfigurationTests {
 	void validatorWithCustomSpringValidatorIgnored() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(CustomSpringValidator.class).run((context) -> {
-					assertThat(context).getBeanNames(javax.validation.Validator.class).containsOnly("defaultValidator");
+					assertThat(context).getBeanNames(jakarta.validation.Validator.class)
+							.containsOnly("defaultValidator");
 					assertThat(context).getBeanNames(Validator.class).containsOnly("customSpringValidator",
 							"defaultValidator", "mvcValidator");
 					Validator validator = context.getBean("mvcValidator", Validator.class);
@@ -786,7 +789,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(CustomJsr303Validator.class).run((context) -> {
 					assertThat(context).doesNotHaveBean(ValidatorFactory.class);
-					assertThat(context).getBeanNames(javax.validation.Validator.class)
+					assertThat(context).getBeanNames(jakarta.validation.Validator.class)
 							.containsOnly("customJsr303Validator");
 					assertThat(context).getBeanNames(Validator.class).containsOnly("mvcValidator");
 					Validator validator = context.getBean(Validator.class);
@@ -1027,7 +1030,7 @@ class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
 		Object bean = context.getBean("resourceHandlerMapping");
 		if (bean instanceof HandlerMapping) {
-			return getMappingLocations((HandlerMapping) bean);
+			return getMappingLocations(context, (HandlerMapping) bean);
 		}
 		assertThat(bean.toString()).isEqualTo("null");
 		return Collections.emptyMap();
@@ -1046,11 +1049,18 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping) {
+	private Map<String, List<Resource>> getMappingLocations(ApplicationContext context, HandlerMapping mapping) {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		getHandlerMap(mapping).forEach((key, value) -> {
-			Object locations = ReflectionTestUtils.getField(value, "locationsToUse");
-			mappingLocations.put(key, (List<Resource>) locations);
+			List<String> locationValues = (List<String>) ReflectionTestUtils.getField(value, "locationValues");
+			List<Resource> locationResources = (List<Resource>) ReflectionTestUtils.getField(value,
+					"locationResources");
+			List<Resource> resources = new ArrayList<>();
+			for (String locationValue : locationValues) {
+				resources.add(context.getResource(locationValue));
+			}
+			resources.addAll(locationResources);
+			mappingLocations.put(key, resources);
 		});
 		return mappingLocations;
 	}
@@ -1274,8 +1284,8 @@ class WebMvcAutoConfigurationTests {
 	static class CustomJsr303Validator {
 
 		@Bean
-		javax.validation.Validator customJsr303Validator() {
-			return mock(javax.validation.Validator.class);
+		jakarta.validation.Validator customJsr303Validator() {
+			return mock(jakarta.validation.Validator.class);
 		}
 
 	}
@@ -1503,7 +1513,7 @@ class WebMvcAutoConfigurationTests {
 		}
 
 		@Bean
-		private DispatcherServlet extraDispatcherServlet() throws ServletException {
+		private DispatcherServlet extraDispatcherServlet() {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 			applicationContext.register(ResourceHandlersWithChildAndParentContextChildConfiguration.class);

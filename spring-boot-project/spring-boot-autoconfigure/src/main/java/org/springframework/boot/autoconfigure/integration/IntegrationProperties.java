@@ -47,6 +47,8 @@ public class IntegrationProperties {
 
 	private final Poller poller = new Poller();
 
+	private final Management management = new Management();
+
 	public Channel getChannel() {
 		return this.channel;
 	}
@@ -69,6 +71,10 @@ public class IntegrationProperties {
 
 	public Poller getPoller() {
 		return this.poller;
+	}
+
+	public Management getManagement() {
+		return this.management;
 	}
 
 	public static class Channel {
@@ -204,6 +210,12 @@ public class IntegrationProperties {
 		private String schema = DEFAULT_SCHEMA_LOCATION;
 
 		/**
+		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
+		 * used. Auto-detected by default.
+		 */
+		private String platform;
+
+		/**
 		 * Database schema initialization mode.
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
@@ -214,6 +226,14 @@ public class IntegrationProperties {
 
 		public void setSchema(String schema) {
 			this.schema = schema;
+		}
+
+		public String getPlatform() {
+			return this.platform;
+		}
+
+		public void setPlatform(String platform) {
+			this.platform = platform;
 		}
 
 		public DatabaseInitializationMode getInitializeSchema() {
@@ -331,7 +351,7 @@ public class IntegrationProperties {
 		private Duration initialDelay;
 
 		/**
-		 * Cron expression for polling. Mutually explusive with 'fixedDelay' and
+		 * Cron expression for polling. Mutually exclusive with 'fixedDelay' and
 		 * 'fixedRate'.
 		 */
 		private String cron;
@@ -382,6 +402,26 @@ public class IntegrationProperties {
 
 		public void setCron(String cron) {
 			this.cron = cron;
+		}
+
+	}
+
+	public static class Management {
+
+		/**
+		 * Whether Spring Integration components should perform logging in the main
+		 * message flow. When disabled, such logging will be skipped without checking the
+		 * logging level. When enabled, such logging is controlled as normal by the
+		 * logging system's log level configuration.
+		 */
+		private boolean defaultLoggingEnabled = true;
+
+		public boolean isDefaultLoggingEnabled() {
+			return this.defaultLoggingEnabled;
+		}
+
+		public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
+			this.defaultLoggingEnabled = defaultLoggingEnabled;
 		}
 
 	}

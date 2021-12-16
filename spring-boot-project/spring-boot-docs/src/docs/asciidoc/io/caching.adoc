@@ -3,7 +3,7 @@
 The Spring Framework provides support for transparently adding caching to an application.
 At its core, the abstraction applies caching to methods, thus reducing the number of executions based on the information available in the cache.
 The caching logic is applied transparently, without any interference to the invoker.
-Spring Boot auto-configures the cache infrastructure as long as caching support is enabled via the `@EnableCaching` annotation.
+Spring Boot auto-configures the cache infrastructure as long as caching support is enabled by using the `@EnableCaching` annotation.
 
 NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section] of the Spring Framework reference for more details.
 
@@ -40,11 +40,8 @@ The cache abstraction does not provide an actual store and relies on abstraction
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
 . <<io#io.caching.provider.generic,Generic>>
-. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
-. <<io#io.caching.provider.ehcache2,EhCache 2.x>>
+. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (Hazelcast and others)
 . <<io#io.caching.provider.hazelcast,Hazelcast>>
-. <<io#io.caching.provider.infinispan,Infinispan>>
-. <<io#io.caching.provider.couchbase,Couchbase>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>
 . <<io#io.caching.provider.simple,Simple>>
@@ -54,7 +51,7 @@ Use this property if you need to <<io#io.caching.provider.none,disable caching a
 
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
-If you add dependencies manually, you must include `spring-context-support` in order to use the JCache, EhCache 2.x, or Caffeine support.
+If you add dependencies manually, you must include `spring-context-support` in order to use the JCache or Caffeine support.
 
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
 The following example sets a flag to say that `null` values should be passed down to the underlying map:
@@ -80,7 +77,7 @@ A `CacheManager` wrapping all beans of that type is created.
 [[io.caching.provider.jcache]]
 ==== JCache (JSR-107)
 https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` "`Starter`".
-Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
+Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3 and Hazelcast.
 Any other compliant library can be added as well.
 
 It might happen that more than one provider is present, in which case the provider must be explicitly specified.
@@ -112,73 +109,10 @@ No further customization is applied to it.
 
 
 
-[[io.caching.provider.ehcache2]]
-==== EhCache 2.x
-https://www.ehcache.org/[EhCache] 2.x is used if a file named `ehcache.xml` can be found at the root of the classpath.
-If EhCache 2.x is found, the `EhCacheCacheManager` provided by the `spring-boot-starter-cache` "`Starter`" is used to bootstrap the cache manager.
-An alternate configuration file can be provided as well, as shown in the following example:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  cache:
-	    ehcache:
-	      config: "classpath:config/another-config.xml"
-----
-
-
-
 [[io.caching.provider.hazelcast]]
 ==== Hazelcast
 Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
-
-
-
-[[io.caching.provider.infinispan]]
-==== Infinispan
-https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
-Otherwise, the default bootstrap is used.
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  cache:
-	    infinispan:
-	      config: "infinispan.xml"
-----
-
-Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
-If a custom `ConfigurationBuilder` bean is defined, it is used to customize the caches.
-
-NOTE: The support of Infinispan in Spring Boot is restricted to the embedded mode and is quite basic.
-If you want more options, you should use the official Infinispan Spring Boot starter instead.
-See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentation] for more details.
-
-
-
-[[io.caching.provider.couchbase]]
-==== Couchbase
-If Spring Data Couchbase is available and Couchbase is <<data#data.nosql.couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
-It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
-For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  cache:
-	    cache-names: "cache1,cache2"
-        couchbase:
-          expiration: "10m"
-----
-
-If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
-The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
-----
 
 
 
@@ -201,7 +135,7 @@ NOTE: By default, a key prefix is added so that, if two separate caches use the 
 We strongly recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 
 TIP: You can take full control of the default configuration by adding a `RedisCacheConfiguration` `@Bean` of your own.
-This can be useful if you're looking for customizing the default serialization strategy.
+This can be useful if you need to customize the default serialization strategy.
 
 If you need more control over the configuration, consider registering a `RedisCacheManagerBuilderCustomizer` bean.
 The following example shows a customizer that configures a specific time to live for `cache1` and `cache2`:

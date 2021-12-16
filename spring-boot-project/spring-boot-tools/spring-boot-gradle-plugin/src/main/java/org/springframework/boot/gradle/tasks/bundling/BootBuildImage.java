@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -37,7 +36,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
-import org.gradle.util.ConfigureUtil;
+import org.gradle.work.DisableCachingByDefault;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
@@ -60,8 +59,10 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Rafael Ceccone
  * @author Jeroen Meijer
+ * @author Julian Liebig
  * @since 2.3.0
  */
+@DisableCachingByDefault
 public class BootBuildImage extends DefaultTask {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
@@ -98,7 +99,11 @@ public class BootBuildImage extends DefaultTask {
 
 	private final ListProperty<String> tags;
 
-	private final DockerSpec docker = new DockerSpec();
+	private final CacheSpec buildCache;
+
+	private final CacheSpec launchCache;
+
+	private final DockerSpec docker;
 
 	public BootBuildImage() {
 		this.archiveFile = getProject().getObjects().fileProperty();
@@ -110,6 +115,9 @@ public class BootBuildImage extends DefaultTask {
 		this.buildpacks = getProject().getObjects().listProperty(String.class);
 		this.bindings = getProject().getObjects().listProperty(String.class);
 		this.tags = getProject().getObjects().listProperty(String.class);
+		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
+		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
+		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
 	}
 
 	/**
@@ -437,6 +445,44 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the build cache that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getBuildCache() {
+		return this.buildCache;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the build cache using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void buildCache(Action<CacheSpec> action) {
+		action.execute(this.buildCache);
+	}
+
+	/**
+	 * Returns the launch cache that will be used when building the image.
+	 * @return the cache
+	 */
+	@Nested
+	@Optional
+	public CacheSpec getLaunchCache() {
+		return this.launchCache;
+	}
+
+	/**
+	 * Customizes the {@link CacheSpec} for the launch cache using the given
+	 * {@code action}.
+	 * @param action the action
+	 */
+	public void launchCache(Action<CacheSpec> action) {
+		action.execute(this.launchCache);
+	}
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -453,15 +499,6 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	public void docker(Action<DockerSpec> action) {
 		action.execute(this.docker);
-	}
-
-	/**
-	 * Configures the Docker connection using the given {@code closure}.
-	 * @param closure the closure to apply
-	 * @since 2.4.0
-	 */
-	public void docker(Closure<?> closure) {
-		docker(ConfigureUtil.configureUsing(closure));
 	}
 
 	@TaskAction
@@ -499,6 +536,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
 		request = customizeTags(request);
+		request = customizeCaches(request);
 		request = request.withNetwork(this.network);
 		return request;
 	}
@@ -572,6 +610,16 @@ public class BootBuildImage extends DefaultTask {
 		List<String> tags = this.tags.getOrNull();
 		if (tags != null && !tags.isEmpty()) {
 			return request.withTags(tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCaches(BuildRequest request) {
+		if (this.buildCache.asCache() != null) {
+			request = request.withBuildCache(this.buildCache.asCache());
+		}
+		if (this.launchCache.asCache() != null) {
+			request = request.withLaunchCache(this.launchCache.asCache());
 		}
 		return request;
 	}

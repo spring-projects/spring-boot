@@ -31,4 +31,4 @@ To take more control, one or more `GsonBuilderCustomizer` beans can be used.
 === JSON-B
 Auto-configuration for JSON-B is provided.
 When the JSON-B API and an implementation are on the classpath a `Jsonb` bean will be automatically configured.
-The preferred JSON-B implementation is Apache Johnzon for which dependency management is provided.
+The preferred JSON-B implementation is Eclipse Yasson for which dependency management is provided.

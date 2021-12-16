@@ -122,14 +122,14 @@ Because this shutdown processing happens in parallel (and due to the nature of d
 
 You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
-The preStop handler can be configured via the PodSpec in the pod's configuration file as follows:
+The preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
 
-[source,yml,indent=0,subs="verbatim"]
+[source,yaml,indent=0,subs="verbatim"]
 ----
 	spec:
 	  containers:
-	  - name: example-container
-	    image: example-image
+	  - name: "example-container"
+	    image: "example-image"
 	    lifecycle:
 	      preStop:
 	        exec:
@@ -214,7 +214,7 @@ Which will result in the following:
 ----
 
 Your application should now be up and running on Heroku.
-For more details, refer to https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[Deploying Spring Boot Applications to Heroku].
+For more details, see https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[Deploying Spring Boot Applications to Heroku].
 
 
 
@@ -379,26 +379,26 @@ Normally, you put this file in `src/main/appengine`, and it should resemble the 
 
 [source,yaml,indent=0,subs="verbatim"]
 ----
-	service: default
+	service: "default"
 
-	runtime: java
-	env: flex
+	runtime: "java"
+	env: "flex"
 
 	runtime_config:
-	  jdk: openjdk8
+	  jdk: "openjdk8"
 
 	handlers:
-	- url: /.*
-	  script: this field is required, but ignored
+	- url: "/.*"
+	  script: "this field is required, but ignored"
 
 	manual_scaling:
 	  instances: 1
 
 	health_check:
-	  enable_health_check: False
+	  enable_health_check: false
 
 	env_variables:
-	  ENCRYPT_KEY: your_encryption_key_here
+	  ENCRYPT_KEY: "your_encryption_key_here"
 ----
 
 You can deploy the app (for example, with a Maven plugin) by adding the project ID to the build configuration, as shown in the following example:

@@ -7,12 +7,12 @@ plugins {
 
 // tag::main[]
 tasks.getByName<BootRun>("bootRun") {
-	main = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 // end::main[]
 
 task("configuredMainClass") {
 	doLast {
-		println(tasks.getByName<BootRun>("bootRun").main)
+		println(tasks.getByName<BootRun>("bootRun").mainClass.get())
 	}
 }

@@ -60,7 +60,7 @@ TIP: A custom `ChainedKafkaTransactionManager` must be marked `@Primary` as it u
 [[messaging.kafka.streams]]
 === Kafka Streams
 Spring for Apache Kafka provides a factory bean to create a `StreamsBuilder` object and manage the lifecycle of its streams.
-Spring Boot auto-configures the required `KafkaStreamsConfiguration` bean as long as `kafka-streams` is on the classpath and Kafka Streams is enabled via the `@EnableKafkaStreams` annotation.
+Spring Boot auto-configures the required `KafkaStreamsConfiguration` bean as long as `kafka-streams` is on the classpath and Kafka Streams is enabled by the `@EnableKafkaStreams` annotation.
 
 Enabling Kafka Streams means that the application id and bootstrap servers must be set.
 The former can be configured using `spring.kafka.streams.application-id`, defaulting to `spring.application.name` if not set.
@@ -85,7 +85,7 @@ You can customize this behavior using the configprop:spring.kafka.streams.auto-s
 === Additional Kafka Properties
 The properties supported by auto configuration are shown in <<application-properties#application-properties>>.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
-Refer to the Apache Kafka documentation for details.
+See the Apache Kafka documentation for details.
 
 The first few of these properties apply to all components (producers, consumers, admins, and streams) but can be specified at the component level if you wish to use different values.
 Apache Kafka designates properties with an importance of HIGH, MEDIUM, or LOW.

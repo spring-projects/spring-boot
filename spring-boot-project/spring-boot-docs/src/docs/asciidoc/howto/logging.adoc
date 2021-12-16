@@ -185,3 +185,11 @@ To configure Log4j 2 to use an alternative configuration file format, add the ap
 | `com.fasterxml.jackson.core:jackson-databind`
 | `log4j2.json` + `log4j2.jsn`
 |===
+
+
+
+[[howto.logging.log4j.composite-configuration]]
+==== Use Composite Configuration to Configure Log4j 2
+Log4j 2 has support for combining multiple configuration files into a single composite configuration.
+To use this support in Spring Boot, configure configprop:logging.log4j2.config.override[] with the locations of one or more secondary configuration files.
+The secondary configuration files will be merged with the primary configuration, whether the primary's source is Spring Boot's defaults, a standard location such as `log4j.xml`, or the location configured by the configprop:logging.config[] property.

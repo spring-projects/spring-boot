@@ -56,7 +56,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-core")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl")
-						.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-4")
+						.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-5")
 						.hasEntryWithName("org/springframework/boot/loader/WarLauncher.class")
 						.hasEntryWithName("WEB-INF/classes/org/test/SampleApplication.class")
 						.hasEntryWithName("index.html")
@@ -206,6 +206,21 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 								"WEB-INF/lib/jar-snapshot-0.0.1.BUILD-SNAPSHOT.jar",
 								"WEB-INF/lib/jar-classifier-0.0.1-bravo.jar")
 						.doesNotContain("WEB-INF/lib/jar-classifier-0.0.1-alpha.jar");
+			}
+		});
+	}
+
+	@TestTemplate
+	void repackagedWarContainsClasspathIndex(MavenBuild mavenBuild) {
+		mavenBuild.project("war").execute((project) -> {
+			File repackaged = new File(project, "target/war-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(repackaged)).manifest(
+					(manifest) -> manifest.hasAttribute("Spring-Boot-Classpath-Index", "WEB-INF/classpath.idx"));
+			assertThat(jar(repackaged)).hasEntryWithName("WEB-INF/classpath.idx");
+			try (JarFile jarFile = new JarFile(repackaged)) {
+				List<String> index = readClasspathIndex(jarFile, "WEB-INF/classpath.idx");
+				assertThat(index).allMatch(
+						(entry) -> entry.startsWith("WEB-INF/lib/") || entry.startsWith("WEB-INF/lib-provided/"));
 			}
 		});
 	}

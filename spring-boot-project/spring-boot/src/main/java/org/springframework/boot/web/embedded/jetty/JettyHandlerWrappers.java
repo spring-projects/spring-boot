@@ -18,9 +18,9 @@ package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
@@ -45,14 +45,6 @@ final class JettyHandlerWrappers {
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
 		for (HttpMethod httpMethod : HttpMethod.values()) {
 			handler.addIncludedMethods(httpMethod.name());
-		}
-		if (compression.getExcludedUserAgents() != null) {
-			try {
-				handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
-			}
-			catch (NoSuchMethodError ex) {
-				// Jetty 10 does not support User-Agent-based exclusions
-			}
 		}
 		return handler;
 	}

@@ -23,7 +23,6 @@ import java.util.Map;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -53,12 +52,14 @@ class ElasticsearchRestClientAutoConfigurationIntegrationTests {
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void restClientCanQueryElasticsearchNode() {
 		this.contextRunner
 				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
 						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
 				.run((context) -> {
-					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
+					org.elasticsearch.client.RestHighLevelClient client = context
+							.getBean(org.elasticsearch.client.RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");

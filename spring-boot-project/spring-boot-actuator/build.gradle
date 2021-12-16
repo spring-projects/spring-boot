@@ -11,7 +11,10 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.datastax.oss:java-driver-core")
+	optional("com.couchbase.client:java-client")
+	optional("com.datastax.oss:java-driver-core") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
@@ -22,29 +25,38 @@ dependencies {
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-core")
 	optional("io.micrometer:micrometer-registry-prometheus")
-	optional("io.prometheus:simpleclient_pushgateway")
+	optional("io.prometheus:simpleclient_pushgateway") {
+		exclude(group: "javax.xml.bind", module: "jaxb-api")
+	}
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.reactivex:rxjava-reactive-streams")
-	optional("org.elasticsearch.client:elasticsearch-rest-client")
-	optional("io.undertow:undertow-servlet") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
-		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
+	optional("io.undertow:undertow-servlet-jakartaee9") {
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	optional("javax.cache:cache-api")
-	optional("javax.jms:javax.jms-api")
-	optional("net.sf.ehcache:ehcache")
-    optional("org.apache.solr:solr-solrj")
+	optional("jakarta.jms:jakarta.jms-api")
+	optional("org.apache.solr:solr-solrj") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.eclipse.jetty:jetty-server")
+	optional("org.eclipse.jetty:jetty-server") {
+		exclude(group: "javax.servlet", module: "javax.servlet-api")
+	}
 	optional("org.elasticsearch:elasticsearch")
+	optional("org.elasticsearch.client:elasticsearch-rest-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
+	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	optional("org.flywaydb:flyway-core")
-	optional("org.glassfish.jersey.core:jersey-server")
-	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
-	optional("org.liquibase:liquibase-core")
+	optional("org.liquibase:liquibase-core") {
+		exclude(group: "javax.xml.bind", module: "jaxb-api")
+	}
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.neo4j.driver:neo4j-java-driver")
@@ -55,9 +67,12 @@ dependencies {
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.amqp:spring-rabbit")
-	optional("org.springframework.data:spring-data-cassandra")
-	optional("org.springframework.data:spring-data-couchbase")
-	optional("org.springframework.data:spring-data-elasticsearch")
+	optional("org.springframework.data:spring-data-cassandra") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
+	optional("org.springframework.data:spring-data-elasticsearch") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-redis")
@@ -76,7 +91,6 @@ dependencies {
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
@@ -88,8 +102,7 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
-	testRuntimeOnly("javax.xml.bind:jaxb-api")
+	testRuntimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
-	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }

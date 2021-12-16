@@ -100,7 +100,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
+	 * Add {@link NettyServerCustomizer}s that should be applied while building the
+	 * server.
 	 * @param serverCustomizers the customizers to add
 	 */
 	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {

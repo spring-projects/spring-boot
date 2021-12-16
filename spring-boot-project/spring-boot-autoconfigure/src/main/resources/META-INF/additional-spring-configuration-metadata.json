@@ -159,34 +159,6 @@
       }
     },
     {
-      "name": "server.servlet.session.cookie.comment",
-      "description": "Comment for the session cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.domain",
-      "description": "Domain for the session cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.http-only",
-      "description": "Whether to use \"HttpOnly\" cookies for session cookies."
-    },
-    {
-      "name": "server.servlet.session.cookie.max-age",
-      "description": "Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used."
-    },
-    {
-      "name": "server.servlet.session.cookie.name",
-      "description": "Session cookie name."
-    },
-    {
-      "name": "server.servlet.session.cookie.path",
-      "description": "Path of the session cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.secure",
-      "description": "Whether to always mark the session cookie as secure."
-    },
-    {
       "name": "server.servlet.session.persistent",
       "description": "Whether to persist session data between restarts.",
       "defaultValue": false
@@ -873,6 +845,10 @@
       ]
     },
     {
+      "name": "spring.flyway.baseline-migration-prefix",
+      "defaultValue": "B"
+    },
+    {
       "name": "spring.flyway.connect-retries-interval",
       "defaultValue": 120
     },
@@ -1083,10 +1059,6 @@
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "spring.jersey.type",
-      "defaultValue": "servlet"
     },
     {
       "name": "spring.jmx.default-domain",
@@ -1655,7 +1627,7 @@
     },
     {
       "name": "spring.mvc.pathmatch.matching-strategy",
-      "defaultValue": "ant-path-matcher"
+      "defaultValue": "path-pattern-parser"
     },
     {
       "name": "spring.neo4j.security.trust-strategy",
@@ -1683,11 +1655,6 @@
     {
       "name": "spring.quartz.scheduler-name",
       "defaultValue": "quartzScheduler"
-    },
-    {
-      "name": "spring.r2dbc.pool.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether pooling is enabled. Enabled automatically if \"r2dbc-pool\" is on the classpath."
     },
     {
       "name": "spring.r2dbc.pool.validation-depth",
@@ -2011,14 +1978,6 @@
       "defaultValue": "embedded"
     },
     {
-      "name": "spring.thymeleaf.prefix",
-      "defaultValue": "classpath:/templates/"
-    },
-    {
-      "name": "spring.thymeleaf.suffix",
-      "defaultValue": ".html"
-    },
-    {
       "name": "spring.web.locale-resolver",
       "defaultValue": "accept-header"
     },
@@ -2029,8 +1988,8 @@
       "defaultValue": false
     },
     {
-      "name": "spring.webflux.session.cookie.same-site",
-      "defaultValue": "lax"
+      "name": "spring.webflux.session.timeout",
+      "defaultValue": "30m"
     },
     {
       "name": "spring.webservices.wsdl-locations",
@@ -2049,7 +2008,7 @@
         {
           "name": "class-reference",
           "parameters": {
-            "target": "javax.servlet.http.HttpServlet"
+            "target": "jakarta.servlet.http.HttpServlet"
           }
         }
       ]

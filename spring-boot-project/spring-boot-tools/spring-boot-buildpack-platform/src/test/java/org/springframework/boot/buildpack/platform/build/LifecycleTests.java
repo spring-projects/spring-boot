@@ -159,8 +159,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
-				.withMessage("Detected platform API versions '0.2' are not included in supported versions '0.3,0.4'");
+				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute()).withMessage(
+						"Detected platform API versions '0.2' are not included in supported versions '0.3,0.4,0.5,0.6,0.7,0.8'");
 	}
 
 	@Test
@@ -170,7 +170,7 @@ class LifecycleTests {
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
 				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute()).withMessage(
-						"Detected platform API versions '0.5,0.6' are not included in supported versions '0.3,0.4'");
+						"Detected platform API versions '0.1,0.2' are not included in supported versions '0.3,0.4,0.5,0.6,0.7,0.8'");
 	}
 
 	@Test
@@ -197,6 +197,18 @@ class LifecycleTests {
 		BuildRequest request = getTestRequest().withNetwork("test");
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-network.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeWithCacheVolumeNamesExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest().withBuildCache(Cache.volume("build-volume"))
+				.withLaunchCache(Cache.volume("launch-volume"));
+		createLifecycle(request).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-volumes.json"));
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 

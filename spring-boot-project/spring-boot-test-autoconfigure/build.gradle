@@ -12,25 +12,31 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
-	optional("javax.json.bind:javax.json.bind-api")
-	optional("javax.servlet:javax.servlet-api")
-	optional("javax.transaction:javax.transaction-api")
+	optional("jakarta.json.bind:jakarta.json.bind-api")
+	optional("jakarta.persistence:jakarta.persistence-api")
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("jakarta.transaction:jakarta.transaction-api")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")
-	optional("io.rest-assured:rest-assured")
-	optional("net.sourceforge.htmlunit:htmlunit")
-	optional("org.hibernate:hibernate-core")
+	optional("net.sourceforge.htmlunit:htmlunit") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.junit.jupiter:junit-jupiter-api")
-	optional("org.seleniumhq.selenium:htmlunit-driver")
+	optional("org.seleniumhq.selenium:htmlunit-driver") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework:spring-webflux")
-	optional("org.springframework.data:spring-data-cassandra")
+	optional("org.springframework.data:spring-data-cassandra") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("org.springframework.data:spring-data-jdbc")
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
@@ -38,8 +44,9 @@ dependencies {
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-r2dbc")
 	optional("org.springframework.data:spring-data-redis")
-	optional("org.springframework.restdocs:spring-restdocs-mockmvc")
-	optional("org.springframework.restdocs:spring-restdocs-restassured")
+	optional("org.springframework.restdocs:spring-restdocs-mockmvc") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-test")
@@ -61,17 +68,16 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
-	testImplementation("javax.json:javax.json-api")
+	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("org.apache.commons:commons-pool2")
-	testImplementation("org.apache.johnzon:johnzon-jsonb")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-el")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.aspectj:aspectjweaver")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.eclipse:yasson")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
-	testImplementation("org.jooq:jooq")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")
@@ -85,7 +91,6 @@ dependencies {
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
-	testImplementation("org.thymeleaf:thymeleaf")
 }
 
 configurations {

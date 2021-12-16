@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Quartz Scheduler database. May be
@@ -66,16 +69,23 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 */
 	public static DatabaseInitializationSettings getSettings(DataSource dataSource, QuartzProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.SQLSERVER, "sqlServer");
-		settings.setSchemaLocations(platformResolver.resolveAll(dataSource, properties.getJdbc().getSchema()));
+		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties.getJdbc()));
 		settings.setMode(properties.getJdbc().getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
+	}
+
+	private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzProperties.Jdbc properties) {
+		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql_innodb");
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres");
+		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.SQLSERVER, "sqlServer");
+		if (StringUtils.hasText(properties.getPlatform())) {
+			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
+		}
+		return platformResolver.resolveAll(dataSource, properties.getSchema());
 	}
 
 }

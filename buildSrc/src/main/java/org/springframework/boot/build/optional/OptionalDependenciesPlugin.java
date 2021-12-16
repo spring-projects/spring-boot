@@ -20,7 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 
 /**
@@ -44,7 +44,7 @@ public class OptionalDependenciesPlugin implements Plugin<Project> {
 		optional.setCanBeConsumed(false);
 		optional.setCanBeResolved(false);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
-			SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class)
+			SourceSetContainer sourceSets = project.getExtensions().getByType(JavaPluginExtension.class)
 					.getSourceSets();
 			sourceSets.all((sourceSet) -> {
 				project.getConfigurations().getByName(sourceSet.getCompileClasspathConfigurationName())

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,6 +178,11 @@ public class R2dbcProperties {
 		 */
 		private ValidationDepth validationDepth = ValidationDepth.LOCAL;
 
+		/**
+		 * Whether pooling is enabled. Requires r2dbc-pool.
+		 */
+		private boolean enabled = true;
+
 		public Duration getMaxIdleTime() {
 			return this.maxIdleTime;
 		}
@@ -240,6 +245,14 @@ public class R2dbcProperties {
 
 		public void setValidationDepth(ValidationDepth validationDepth) {
 			this.validationDepth = validationDepth;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

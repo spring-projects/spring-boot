@@ -55,4 +55,9 @@ public class StackdriverPropertiesConfigAdapter extends StepRegistryPropertiesCo
 		return get(StackdriverProperties::getResourceLabels, StackdriverConfig.super::resourceLabels);
 	}
 
+	@Override
+	public boolean useSemanticMetricTypes() {
+		return get(StackdriverProperties::isUseSemanticMetricTypes, StackdriverConfig.super::useSemanticMetricTypes);
+	}
+
 }

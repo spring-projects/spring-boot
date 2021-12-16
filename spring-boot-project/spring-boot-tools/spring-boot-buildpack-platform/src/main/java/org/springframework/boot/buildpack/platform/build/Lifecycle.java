@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Jeroen Meijer
+ * @author Julian Liebig
  */
 class Lifecycle implements Closeable {
 
@@ -86,16 +87,37 @@ class Lifecycle implements Closeable {
 		this.platformVersion = getPlatformVersion(builder.getBuilderMetadata().getLifecycle());
 		this.layersVolume = createRandomVolumeName("pack-layers-");
 		this.applicationVolume = createRandomVolumeName("pack-app-");
-		this.buildCacheVolume = createCacheVolumeName(request, ".build");
-		this.launchCacheVolume = createCacheVolumeName(request, ".launch");
+		this.buildCacheVolume = getBuildCacheVolumeName(request);
+		this.launchCacheVolume = getLaunchCacheVolumeName(request);
 	}
 
 	protected VolumeName createRandomVolumeName(String prefix) {
 		return VolumeName.random(prefix);
 	}
 
+	private VolumeName getBuildCacheVolumeName(BuildRequest request) {
+		if (request.getBuildCache() != null) {
+			return getVolumeName(request.getBuildCache());
+		}
+		return createCacheVolumeName(request, "build");
+	}
+
+	private VolumeName getLaunchCacheVolumeName(BuildRequest request) {
+		if (request.getLaunchCache() != null) {
+			return getVolumeName(request.getLaunchCache());
+		}
+		return createCacheVolumeName(request, "launch");
+	}
+
+	private VolumeName getVolumeName(Cache cache) {
+		if (cache.getVolume() != null) {
+			return VolumeName.of(cache.getVolume().getName());
+		}
+		return null;
+	}
+
 	private VolumeName createCacheVolumeName(BuildRequest request, String suffix) {
-		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", suffix, 6);
+		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", "." + suffix, 6);
 	}
 
 	private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {
@@ -159,7 +181,7 @@ class Lifecycle implements Closeable {
 	}
 
 	private boolean requiresProcessTypeDefault() {
-		return this.platformVersion.supports(ApiVersion.of(0, 4));
+		return this.platformVersion.supportsAny(ApiVersion.of(0, 4), ApiVersion.of(0, 5));
 	}
 
 	private void run(Phase phase) throws IOException {

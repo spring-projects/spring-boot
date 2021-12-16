@@ -39,6 +39,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -80,7 +81,7 @@ class CouchbaseAutoConfigurationTests {
 					expectedModuleIds.add(new JsonValueModule().getTypeId());
 					JsonSerializer serializer = env.jsonSerializer();
 					assertThat(serializer).extracting("wrapped").isInstanceOf(JacksonJsonSerializer.class)
-							.extracting("mapper").asInstanceOf(InstanceOfAssertFactories.type(ObjectMapper.class))
+							.extracting("mapper", as(InstanceOfAssertFactories.type(ObjectMapper.class)))
 							.extracting(ObjectMapper::getRegisteredModuleIds).isEqualTo(expectedModuleIds);
 				});
 	}

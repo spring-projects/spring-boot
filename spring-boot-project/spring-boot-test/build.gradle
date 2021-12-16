@@ -15,10 +15,12 @@ dependencies {
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("io.projectreactor.netty:reactor-netty-http")
-	optional("javax.json.bind:javax.json.bind-api")
-	optional("javax.servlet:javax.servlet-api")
+	optional("jakarta.json.bind:jakarta.json.bind-api")
+	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("junit:junit")
-	optional("org.apache.httpcomponents:httpclient")
+	optional("org.apache.httpcomponents:httpclient") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	optional("org.assertj:assertj-core")
 	optional("org.hamcrest:hamcrest-core")
 	optional("org.hamcrest:hamcrest-library")
@@ -27,21 +29,25 @@ dependencies {
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.mockito:mockito-core")
 	optional("org.skyscreamer:jsonassert")
-	optional("org.seleniumhq.selenium:htmlunit-driver")
+	optional("org.seleniumhq.selenium:htmlunit-driver") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
-	optional("net.sourceforge.htmlunit:htmlunit")
+	optional("net.sourceforge.htmlunit:htmlunit") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.mockk:mockk")
-	testImplementation("javax.json:javax.json-api")
+	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.codehaus.groovy:groovy")
 	testImplementation("org.codehaus.groovy:groovy-xml")
-	testImplementation("org.apache.johnzon:johnzon-jsonb")
+	testImplementation("org.eclipse:yasson")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.slf4j:slf4j-api")

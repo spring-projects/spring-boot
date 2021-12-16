@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -51,7 +51,9 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -369,6 +371,14 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
 	}
 
+	@Test
+	void cookieSameSiteSuppliersAreApplied() {
+		this.contextRunner.withUserConfiguration(CookieSameSiteSupplierConfiguration.class).run((context) -> {
+			AbstractServletWebServerFactory webServerFactory = context.getBean(AbstractServletWebServerFactory.class);
+			assertThat(webServerFactory.getCookieSameSiteSuppliers()).hasSize(2);
+		});
+	}
+
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
 		return this::verifyContext;
 	}
@@ -652,6 +662,21 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		FilterRegistrationBean<ForwardedHeaderFilter> testForwardedHeaderFilter() {
 			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
 			return new FilterRegistrationBean<>(filter);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CookieSameSiteSupplierConfiguration {
+
+		@Bean
+		CookieSameSiteSupplier cookieSameSiteSupplier1() {
+			return CookieSameSiteSupplier.ofLax().whenHasName("test1");
+		}
+
+		@Bean
+		CookieSameSiteSupplier cookieSameSiteSupplier2() {
+			return CookieSameSiteSupplier.ofNone().whenHasName("test2");
 		}
 
 	}

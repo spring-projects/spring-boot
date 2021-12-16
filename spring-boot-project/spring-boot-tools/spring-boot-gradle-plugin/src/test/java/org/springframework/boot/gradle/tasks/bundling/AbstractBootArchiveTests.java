@@ -500,9 +500,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			expected.add("- \"application\":");
 			Set<String> applicationContents = new TreeSet<>();
 			applicationContents.add("  - \"" + this.classesPath + "\"");
-			if (archiveHasClasspathIndex()) {
-				applicationContents.add("  - \"" + this.indexPath + "classpath.idx\"");
-			}
+			applicationContents.add("  - \"" + this.indexPath + "classpath.idx\"");
 			applicationContents.add("  - \"" + this.indexPath + "layers.idx\"");
 			applicationContents.add("  - \"META-INF/\"");
 			expected.addAll(applicationContents);
@@ -551,9 +549,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			Set<String> applicationContents = new TreeSet<>();
 			applicationContents.add("  - \"" + this.classesPath + "application.properties\"");
 			applicationContents.add("  - \"" + this.classesPath + "com/\"");
-			if (archiveHasClasspathIndex()) {
-				applicationContents.add("  - \"" + this.indexPath + "classpath.idx\"");
-			}
+			applicationContents.add("  - \"" + this.indexPath + "classpath.idx\"");
 			applicationContents.add("  - \"" + this.indexPath + "layers.idx\"");
 			applicationContents.add("  - \"META-INF/\"");
 			applicationContents.add("  - \"org/\"");
@@ -634,11 +630,13 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
-	abstract void applyLayered(Action<LayeredSpec> action);
-
-	boolean archiveHasClasspathIndex() {
-		return true;
+	File createPopulatedJar() throws IOException {
+		addContent();
+		executeTask();
+		return getTask().getArchiveFile().get().getAsFile();
 	}
+
+	abstract void applyLayered(Action<LayeredSpec> action);
 
 	@SuppressWarnings("unchecked")
 	void addContent() throws IOException {

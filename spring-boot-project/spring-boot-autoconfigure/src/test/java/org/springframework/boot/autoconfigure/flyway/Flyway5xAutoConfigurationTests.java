@@ -117,7 +117,7 @@ class Flyway5xAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isStateScript() {
+		public boolean isBaselineMigration() {
 			return false;
 		}
 

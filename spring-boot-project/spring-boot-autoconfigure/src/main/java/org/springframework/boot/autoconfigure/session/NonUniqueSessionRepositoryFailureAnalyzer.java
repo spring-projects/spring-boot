@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class NonUniqueSessionRepositoryFailureAnalyzer extends AbstractFailureAnalyzer<
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider any of the following:%n"));
 		action.append(
-				String.format("    - Define the `spring.session.store-type` property to the store you want to use%n"));
+				String.format("    - Define the 'spring.session.store-type' property to the store you want to use%n"));
 		action.append(String.format("    - Review your classpath and remove the unwanted store implementation(s)%n"));
 		return new FailureAnalysis(message.toString(), action.toString(), cause);
 	}

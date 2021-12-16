@@ -91,7 +91,7 @@ In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.D
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
 These are the standard options that work regardless of <<features#data.sql.datasource.connection-pool, the actual implementation>>.
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
-Refer to the documentation of the connection pool implementation you are using for more details.
+See the documentation of the connection pool implementation you are using for more details.
 
 For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
@@ -311,113 +311,7 @@ Spring Boot will auto-configure Spring Data's JDBC repositories when the necessa
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
 If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or a `JdbcConfiguration` subclass to your application.
 
-TIP: For complete details of Spring Data JDBC, please refer to the {spring-data-jdbc-docs}[reference documentation].
-
-
-
-[[data.sql.h2-web-console]]
-=== Using H2's Web Console
-The https://www.h2database.com[H2 database] provides a https://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that Spring Boot can auto-configure for you.
-The console is auto-configured when the following conditions are met:
-
-* You are developing a servlet-based web application.
-* `com.h2database:h2` is on the classpath.
-* You are using <<using#using.devtools,Spring Boot's developer tools>>.
-
-TIP: If you are not using Spring Boot's developer tools but would still like to make use of H2's console, you can configure the configprop:spring.h2.console.enabled[] property with a value of `true`.
-
-NOTE: The H2 console is only intended for use during development, so you should take care to ensure that `spring.h2.console.enabled` is not set to `true` in production.
-
-
-
-[[data.sql.h2-web-console.custom-path]]
-==== Changing the H2 Console's Path
-By default, the console is available at `/h2-console`.
-You can customize the console's path by using the configprop:spring.h2.console.path[] property.
-
-
-
-[[data.sql.jooq]]
-=== Using jOOQ
-jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
-Both the commercial and open source editions can be used with Spring Boot.
-
-
-
-[[data.sql.jooq.codegen]]
-==== Code Generation
-In order to use jOOQ type-safe queries, you need to generate Java classes from your database schema.
-You can follow the instructions in the {jooq-docs}/#jooq-in-7-steps-step3[jOOQ user manual].
-If you use the `jooq-codegen-maven` plugin and you also use the `spring-boot-starter-parent` "`parent POM`", you can safely omit the plugin's `<version>` tag.
-You can also use Spring Boot-defined version variables (such as `h2.version`) to declare the plugin's database dependency.
-The following listing shows an example:
-
-[source,xml,indent=0,subs="verbatim"]
-----
-	<plugin>
-		<groupId>org.jooq</groupId>
-		<artifactId>jooq-codegen-maven</artifactId>
-		<executions>
-			...
-		</executions>
-		<dependencies>
-			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<version>${h2.version}</version>
-			</dependency>
-		</dependencies>
-		<configuration>
-			<jdbc>
-				<driver>org.h2.Driver</driver>
-				<url>jdbc:h2:~/yourdatabase</url>
-			</jdbc>
-			<generator>
-				...
-			</generator>
-		</configuration>
-	</plugin>
-----
-
-
-
-[[data.sql.jooq.dslcontext]]
-==== Using DSLContext
-The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` interface.
-Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
-To use the `DSLContext`, you can inject it, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=!method]
-----
-
-TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`.
-
-You can then use the `DSLContext` to construct your queries, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=method]
-----
-
-
-
-[[data.sql.jooq.sqldialect]]
-==== jOOQ SQL Dialect
-Unless the configprop:spring.jooq.sql-dialect[] property has been configured, Spring Boot determines the SQL dialect to use for your datasource.
-If Spring Boot could not detect the dialect, it uses `DEFAULT`.
-
-NOTE: Spring Boot can only auto-configure dialects supported by the open source version of jOOQ.
-
-
-
-[[data.sql.jooq.customizing]]
-==== Customizing jOOQ
-More advanced customizations can be achieved by defining your own `DefaultConfigurationCustomizer` bean that will be invoked prior to creating the `org.jooq.Configuration` `@Bean`.
-This takes precedence to anything that is applied by the auto-configuration.
-
-You can also create your own `org.jooq.Configuration` `@Bean` if you want to take complete control of the jOOQ configuration.
+TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[reference documentation].
 
 
 
@@ -425,7 +319,7 @@ You can also create your own `org.jooq.Configuration` `@Bean` if you want to tak
 === Using R2DBC
 The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.
 R2DBC's `io.r2dbc.spi.Connection` provides a standard method of working with non-blocking database connections.
-Connections are provided via a `ConnectionFactory`, similar to a `DataSource` with jdbc.
+Connections are provided by using a `ConnectionFactory`, similar to a `DataSource` with jdbc.
 
 `ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
 For example, you might declare the following section in `application.properties`:

@@ -122,7 +122,6 @@ class ServletWebServerFactoryCustomizerTests {
 		assertThat(cookie.getComment()).isEqualTo("testcomment");
 		assertThat(cookie.getHttpOnly()).isTrue();
 		assertThat(cookie.getMaxAge()).hasSeconds(60);
-
 	}
 
 	@Test

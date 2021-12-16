@@ -22,7 +22,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
@@ -112,7 +112,7 @@ public class SpringBootExtension {
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {
-		return this.project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+		return this.project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir();
 	}
 

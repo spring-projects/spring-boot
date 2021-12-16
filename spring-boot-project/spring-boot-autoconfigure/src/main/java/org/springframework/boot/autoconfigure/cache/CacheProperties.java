@@ -50,10 +50,6 @@ public class CacheProperties {
 
 	private final Couchbase couchbase = new Couchbase();
 
-	private final EhCache ehcache = new EhCache();
-
-	private final Infinispan infinispan = new Infinispan();
-
 	private final JCache jcache = new JCache();
 
 	private final Redis redis = new Redis();
@@ -80,14 +76,6 @@ public class CacheProperties {
 
 	public Couchbase getCouchbase() {
 		return this.couchbase;
-	}
-
-	public EhCache getEhcache() {
-		return this.ehcache;
-	}
-
-	public Infinispan getInfinispan() {
-		return this.infinispan;
 	}
 
 	public JCache getJcache() {
@@ -152,46 +140,6 @@ public class CacheProperties {
 
 		public void setExpiration(Duration expiration) {
 			this.expiration = expiration;
-		}
-
-	}
-
-	/**
-	 * EhCache specific cache properties.
-	 */
-	public static class EhCache {
-
-		/**
-		 * The location of the configuration file to use to initialize EhCache.
-		 */
-		private Resource config;
-
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Infinispan specific cache properties.
-	 */
-	public static class Infinispan {
-
-		/**
-		 * The location of the configuration file to use to initialize Infinispan.
-		 */
-		private Resource config;
-
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
 		}
 
 	}

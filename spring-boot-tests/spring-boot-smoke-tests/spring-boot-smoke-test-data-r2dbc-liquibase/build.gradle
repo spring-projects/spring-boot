@@ -9,7 +9,10 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-r2dbc"))
 
 	runtimeOnly("io.r2dbc:r2dbc-postgresql")
-	runtimeOnly("org.liquibase:liquibase-core")
+	runtimeOnly("org.liquibase:liquibase-core") {
+		exclude group: "javax.activation", module: "javax.activation-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.springframework:spring-jdbc")
 

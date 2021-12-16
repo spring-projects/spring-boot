@@ -161,7 +161,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	private HttpStatus getResponseStatus(AssertableWebApplicationContext context, String path)
-			throws IOException, javax.servlet.ServletException {
+			throws IOException, jakarta.servlet.ServletException {
 		FilterChainProxy filterChainProxy = context.getBean(FilterChainProxy.class);
 		MockServletContext servletContext = new MockServletContext();
 		MockHttpServletResponse response = new MockHttpServletResponse();

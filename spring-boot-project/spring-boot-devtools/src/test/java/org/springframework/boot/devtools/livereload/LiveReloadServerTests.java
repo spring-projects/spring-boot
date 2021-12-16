@@ -37,11 +37,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.ClientEndpointConfig.Configurator;
-import javax.websocket.Endpoint;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.WebSocketContainer;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.ClientEndpointConfig.Configurator;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.WebSocketContainer;
 
 import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.awaitility.Awaitility;

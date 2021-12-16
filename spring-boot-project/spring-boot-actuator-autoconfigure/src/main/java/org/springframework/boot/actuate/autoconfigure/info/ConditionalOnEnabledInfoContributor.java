@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,9 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional @Conditional} that checks whether or not a default info contributor
- * is enabled. Matches if the value of the {@code management.info.<name>.enabled} property
- * is {@code true}. Otherwise, matches if the value of the
- * {@code management.info.defaults.enabled} property is {@code true} or if it is not
- * configured.
+ * {@link Conditional @Conditional} that checks whether or not an info contributor is
+ * enabled. Matches if the value of the {@code management.info.<name>.enabled} property is
+ * {@code true}. Otherwise, use the specific {@link #fallback() fallback} method.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
@@ -45,5 +43,11 @@ public @interface ConditionalOnEnabledInfoContributor {
 	 * @return the name of the info contributor
 	 */
 	String value();
+
+	/**
+	 * Fallback behavior when {@code management.info.<name>.enabled} has not been set.
+	 * @return the fallback behavior
+	 */
+	InfoContributorFallback fallback() default InfoContributorFallback.USE_DEFAULTS_PROPERTY;
 
 }

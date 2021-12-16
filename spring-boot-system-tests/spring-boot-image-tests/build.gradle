@@ -7,12 +7,19 @@ plugins {
 description = "Spring Boot Image Building Tests"
 
 configurations {
+	app
 	providedRuntime {
 		extendsFrom dependencyManagement
 	}
 }
 
+task syncMavenRepository(type: Sync) {
+	from configurations.app
+	into "${buildDir}/system-test-maven-repository"
+}
+
 systemTest {
+	dependsOn syncMavenRepository
 	if (project.hasProperty("springBootVersion")) {
 		systemProperty "springBootVersion", project.properties["springBootVersion"]
 	} else {
@@ -21,11 +28,15 @@ systemTest {
 }
 
 dependencies {
+	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
 		exclude group: "org.hibernate.validator"
 	}
 
 	systemTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"))
 	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
 	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	systemTestImplementation(gradleTestKit())

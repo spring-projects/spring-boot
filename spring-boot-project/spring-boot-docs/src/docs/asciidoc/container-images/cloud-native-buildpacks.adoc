@@ -10,7 +10,7 @@ With Cloud Native Buildpacks, you can create Docker compatible images that you c
 Spring Boot includes buildpack support directly for both Maven and Gradle.
 This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon.
 
-Refer to the individual plugin documentation on how to use buildpacks with {spring-boot-maven-plugin-docs}#build-image[Maven] and {spring-boot-gradle-plugin-docs}#build-image[Gradle].
+See the individual plugin documentation on how to use buildpacks with {spring-boot-maven-plugin-docs}#build-image[Maven] and {spring-boot-gradle-plugin-docs}#build-image[Gradle].
 
 NOTE: The https://github.com/paketo-buildpacks/spring-boot[Paketo Spring Boot buildpack] has also been updated to support the `layers.idx` file so any customization that is applied to it will be reflected in the image created by the buildpack.
 

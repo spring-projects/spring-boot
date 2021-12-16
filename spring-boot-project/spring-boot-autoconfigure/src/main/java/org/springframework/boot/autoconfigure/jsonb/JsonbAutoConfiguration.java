@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jsonb;
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,8 +34,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Jsonb.class)
-@ConditionalOnResource(resources = { "classpath:META-INF/services/javax.json.bind.spi.JsonbProvider",
-		"classpath:META-INF/services/javax.json.spi.JsonProvider" })
+@ConditionalOnResource(resources = { "classpath:META-INF/services/jakarta.json.bind.spi.JsonbProvider",
+		"classpath:META-INF/services/jakarta.json.spi.JsonProvider" })
 public class JsonbAutoConfiguration {
 
 	@Bean

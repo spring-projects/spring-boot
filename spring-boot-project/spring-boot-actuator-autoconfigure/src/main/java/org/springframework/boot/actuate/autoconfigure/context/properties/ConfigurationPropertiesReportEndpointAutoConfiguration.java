@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.context.properties;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -62,6 +63,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
+	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
 	public ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
 			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint) {
 		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint);

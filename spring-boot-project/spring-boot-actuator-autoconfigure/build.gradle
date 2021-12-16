@@ -36,7 +36,10 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.datastax.oss:java-driver-core")
+	optional("com.couchbase.client:java-client")
+	optional("com.datastax.oss:java-driver-core") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
@@ -46,9 +49,10 @@ dependencies {
 	optional("io.dropwizard.metrics:metrics-jmx")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-jersey2")
 	optional("io.micrometer:micrometer-registry-appoptics")
-	optional("io.micrometer:micrometer-registry-atlas")
+	optional("io.micrometer:micrometer-registry-atlas") {
+		exclude group: "javax.inject", module: "javax.inject"
+	}
 	optional("io.micrometer:micrometer-registry-datadog")
 	optional("io.micrometer:micrometer-registry-dynatrace")
 	optional("io.micrometer:micrometer-registry-elastic")
@@ -60,8 +64,13 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-kairos")
 	optional("io.micrometer:micrometer-registry-new-relic")
 	optional("io.micrometer:micrometer-registry-prometheus")
-	optional("io.micrometer:micrometer-registry-stackdriver")
-	optional("io.prometheus:simpleclient_pushgateway")
+	optional("io.micrometer:micrometer-registry-stackdriver") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+	optional("io.prometheus:simpleclient_pushgateway") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	optional("io.micrometer:micrometer-registry-signalfx")
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
@@ -69,30 +78,35 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.jms:jakarta.jms-api")
+	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.cache:cache-api")
-	optional("net.sf.ehcache:ehcache")
-	optional("org.apache.activemq:activemq-broker")
-	optional("org.apache.commons:commons-dbcp2")
+	optional("org.apache.commons:commons-dbcp2") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.apache.kafka:kafka-clients")
 	optional("org.apache.kafka:kafka-streams")
-	optional("org.apache.solr:solr-solrj")
+	optional("org.apache.solr:solr-solrj") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.eclipse.jetty:jetty-server")
+	optional("org.eclipse.jetty:jetty-server") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
 	optional("org.elasticsearch:elasticsearch")
-	optional("org.elasticsearch.client:elasticsearch-rest-client")
+	optional("org.elasticsearch.client:elasticsearch-rest-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.flywaydb:flyway-core")
-	optional("org.glassfish.jersey.core:jersey-server")
-	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
-	optional("org.hibernate:hibernate-core")
-	optional("org.hibernate:hibernate-micrometer")
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
-	optional("org.jolokia:jolokia-core")
-	optional("org.liquibase:liquibase-core")
+	optional("org.liquibase:liquibase-core") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.neo4j.driver:neo4j-java-driver")
@@ -103,13 +117,16 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.amqp:spring-rabbit")
-	optional("org.springframework.data:spring-data-cassandra")
-	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-cassandra") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-redis")
-	optional("org.springframework.data:spring-data-elasticsearch")
+	optional("org.springframework.data:spring-data-elasticsearch") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.springframework.integration:spring-integration-core")
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
@@ -124,18 +141,17 @@ dependencies {
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.undertow:undertow-core")
-	testImplementation("io.undertow:undertow-servlet") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
-		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
+	testImplementation("io.undertow:undertow-servlet-jakartaee9") {
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
-	testImplementation("javax.xml.bind:jaxb-api")
+	testImplementation("jakarta.xml.bind:jakarta.xml.bind-api")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.eclipse.jetty:jetty-webapp")
-	testImplementation("org.glassfish.jersey.ext:jersey-spring5")
-	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
+	testImplementation("org.eclipse.jetty:jetty-webapp") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
@@ -143,16 +159,17 @@ dependencies {
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-orm")
-	testImplementation("org.springframework.data:spring-data-elasticsearch") {
-		exclude group: "org.elasticsearch.client", module: "transport"
-	}
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 	testImplementation("org.springframework.integration:spring-integration-jmx")
-	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
 	testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
 
+	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
+	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
@@ -175,7 +192,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		attributes "spring-integration-docs": integrationDocs
 	}
 	dependsOn test
-	inputs.dir("${buildDir}/generated-snippets")
+	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }
 
 asciidoctor {

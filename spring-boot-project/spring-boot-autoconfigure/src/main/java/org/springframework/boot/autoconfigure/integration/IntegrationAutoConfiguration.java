@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -140,10 +141,10 @@ public class IntegrationAutoConfiguration {
 				return new CronTrigger(poller.getCron());
 			}
 			if (poller.getFixedDelay() != null) {
-				return createPeriodicTrigger(poller.getFixedDelay(), poller.getInitialDelay(), true);
+				return createPeriodicTrigger(poller.getFixedDelay(), poller.getInitialDelay(), false);
 			}
 			if (poller.getFixedRate() != null) {
-				return createPeriodicTrigger(poller.getFixedRate(), poller.getInitialDelay(), false);
+				return createPeriodicTrigger(poller.getFixedRate(), poller.getInitialDelay(), true);
 			}
 			return null;
 		}
@@ -209,7 +210,8 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		@EnableIntegrationManagement
+		@EnableIntegrationManagement(
+				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}
@@ -232,6 +234,7 @@ public class IntegrationAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JdbcMessageStore.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
+	@Conditional(OnIntegrationDatasourceInitializationCondition.class)
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
@@ -337,6 +340,14 @@ public class IntegrationAutoConfiguration {
 
 			}
 
+		}
+
+	}
+
+	static class OnIntegrationDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+
+		OnIntegrationDatasourceInitializationCondition() {
+			super("Integration", "spring.integration.jdbc.initialize-schema");
 		}
 
 	}

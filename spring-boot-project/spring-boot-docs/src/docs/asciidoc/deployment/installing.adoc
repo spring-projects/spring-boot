@@ -179,7 +179,7 @@ To flag the application to start automatically on system boot, use the following
 	$ systemctl enable myapp.service
 ----
 
-Refer to `man systemctl` for more details.
+Run `man systemctl` for more details.
 
 
 

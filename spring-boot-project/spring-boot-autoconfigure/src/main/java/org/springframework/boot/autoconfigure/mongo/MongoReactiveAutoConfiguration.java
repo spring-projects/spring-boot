@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,14 +94,14 @@ public class MongoReactiveAutoConfiguration {
 	/**
 	 * {@link MongoClientSettingsBuilderCustomizer} to apply Mongo client settings.
 	 */
-	private static final class NettyDriverMongoClientSettingsBuilderCustomizer
+	static final class NettyDriverMongoClientSettingsBuilderCustomizer
 			implements MongoClientSettingsBuilderCustomizer, DisposableBean {
 
 		private final ObjectProvider<MongoClientSettings> settings;
 
 		private volatile EventLoopGroup eventLoopGroup;
 
-		private NettyDriverMongoClientSettingsBuilderCustomizer(ObjectProvider<MongoClientSettings> settings) {
+		NettyDriverMongoClientSettingsBuilderCustomizer(ObjectProvider<MongoClientSettings> settings) {
 			this.settings = settings;
 		}
 

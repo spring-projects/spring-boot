@@ -18,6 +18,5 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.bouncycastle:bcprov-jdk16:1.46")
-	testRuntimeOnly("org.slf4j:jcl-over-slf4j")
 	testRuntimeOnly("org.springframework:spring-webmvc")
 }

@@ -49,7 +49,7 @@ public class MetricsProperties {
 
 	/**
 	 * Whether meter IDs starting with the specified name should be enabled. The longest
-	 * match wins, the key `all` can also be used to configure all meters.
+	 * match wins, the key 'all' can also be used to configure all meters.
 	 */
 	private final Map<String, Boolean> enable = new LinkedHashMap<>();
 
@@ -301,14 +301,14 @@ public class MetricsProperties {
 		 * Whether meter IDs starting with the specified name should publish percentile
 		 * histograms. For monitoring systems that support aggregable percentile
 		 * calculation based on a histogram, this can be set to true. For other systems,
-		 * this has no effect. The longest match wins, the key `all` can also be used to
+		 * this has no effect. The longest match wins, the key 'all' can also be used to
 		 * configure all meters.
 		 */
 		private final Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
 
 		/**
 		 * Specific computed non-aggregable percentiles to ship to the backend for meter
-		 * IDs starting-with the specified name. The longest match wins, the key `all` can
+		 * IDs starting-with the specified name. The longest match wins, the key 'all' can
 		 * also be used to configure all meters.
 		 */
 		private final Map<String, double[]> percentiles = new LinkedHashMap<>();
@@ -316,21 +316,21 @@ public class MetricsProperties {
 		/**
 		 * Specific service-level objective boundaries for meter IDs starting with the
 		 * specified name. The longest match wins. Counters will be published for each
-		 * specified boundary. Values can be specified as a long or as a Duration value
+		 * specified boundary. Values can be specified as a double or as a Duration value
 		 * (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, ServiceLevelObjectiveBoundary[]> slo = new LinkedHashMap<>();
 
 		/**
 		 * Minimum value that meter IDs starting with the specified name are expected to
-		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * observe. The longest match wins. Values can be specified as a double or as a
 		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
 
 		/**
 		 * Maximum value that meter IDs starting with the specified name are expected to
-		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * observe. The longest match wins. Values can be specified as a double or as a
 		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();

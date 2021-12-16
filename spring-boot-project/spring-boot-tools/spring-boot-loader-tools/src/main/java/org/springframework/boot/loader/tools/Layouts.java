@@ -29,6 +29,7 @@ import java.util.Map;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public final class Layouts {

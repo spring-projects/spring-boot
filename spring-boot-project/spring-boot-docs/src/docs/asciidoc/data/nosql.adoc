@@ -8,12 +8,11 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-redis}[Redis]
 * {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
 * {spring-data-cassandra}[Cassandra]
-* {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
 
 Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Solr, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
 You can make use of the other projects, but you must configure them yourself.
-Refer to the appropriate reference documentation at {spring-data}.
+See the appropriate reference documentation at {spring-data}.
 
 
 
@@ -143,7 +142,7 @@ include::{docs-java}/data/nosql/mongodb/repositories/CityRepository.java[]
 
 TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
 
-TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, refer to its {spring-data-mongodb}[reference documentation].
+TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {spring-data-mongodb}[reference documentation].
 
 
 
@@ -208,7 +207,7 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 [[data.nosql.neo4j.repositories]]
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
-For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}[reference documentation].
+For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
@@ -308,8 +307,8 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 	  elasticsearch:
 	    restclient:
 	      sniffer:
-	        interval: 10m
-	        delay-after-failure: 30s
+	        interval: "10m"
+	        delay-after-failure: "30s"
 ----
 
 
@@ -327,7 +326,7 @@ In addition to the properties described previously, the `spring.elasticsearch.we
 	spring:
 	  elasticsearch:
 	    webclient:
-	      max-in-memory-size: 1MB
+	      max-in-memory-size: "1MB"
 ----
 
 If the `spring.elasticsearch.*` and `spring.elasticsearch.webclient.*` configuration properties are not enough and you'd like to fully control the client configuration, you can register a custom `ClientConfiguration` bean.
@@ -360,7 +359,7 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in the same way.
 
-TIP: For complete details of Spring Data Elasticsearch, refer to the {spring-data-elasticsearch-docs}[reference documentation].
+TIP: For complete details of Spring Data Elasticsearch, see the {spring-data-elasticsearch-docs}[reference documentation].
 
 Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
 Most likely those beans are auto-configured by Spring Boot given the required dependencies are present.
@@ -431,7 +430,7 @@ For more advanced driver customizations, you can register an arbitrary number of
 The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
 ====
 
-NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
+NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
 
 The following code listing shows how to inject a Cassandra bean:
 
@@ -449,16 +448,14 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 Spring Data includes basic repository support for Cassandra.
 Currently, this is more limited than the JPA repositories discussed earlier and needs to annotate finder methods with `@Query`.
 
-TIP: For complete details of Spring Data Cassandra, refer to the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
 
 [[data.nosql.couchbase]]
 === Couchbase
 https://www.couchbase.com/[Couchbase] is an open-source, distributed, multi-model NoSQL document-oriented database that is optimized for interactive applications.
-Spring Boot offers auto-configuration for Couchbase and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
-There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-couchbase-reactive` "`Starters`" for collecting the dependencies in a convenient way.
-
+Spring Boot offers auto-configuration for Couchbase.
 
 
 [[data.nosql.couchbase.connecting]]
@@ -493,45 +490,6 @@ For instance, the following configuration changes the timeout to use to open a n
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
 To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans can be used.
-
-
-
-[[data.nosql.couchbase.repositories]]
-==== Spring Data Couchbase Repositories
-Spring Data includes repository support for Couchbase.
-For complete details of Spring Data Couchbase, refer to the {spring-data-couchbase-docs}[reference documentation].
-
-You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  data:
-	    couchbase:
-	      bucket-name: "my-bucket"
-----
-
-The following examples shows how to inject a `CouchbaseTemplate` bean:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/couchbase/repositories/MyBean.java[]
-----
-
-There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
-
-* A `CouchbaseMappingContext` `@Bean` with a name of `couchbaseMappingContext`.
-* A `CustomConversions` `@Bean` with a name of `couchbaseCustomConversions`.
-* A `CouchbaseTemplate` `@Bean` with a name of `couchbaseTemplate`.
-
-To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
-For instance, you can customize the converters to use, as follows:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/couchbase/repositories/MyCouchbaseConfiguration.java[]
-----
 
 
 
@@ -570,7 +528,7 @@ Make sure to flag your customized `ContextSource` as `@Primary` so that the auto
 [[data.nosql.ldap.repositories]]
 ==== Spring Data LDAP Repositories
 Spring Data includes repository support for LDAP.
-For complete details of Spring Data LDAP, refer to the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
 
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
@@ -604,8 +562,8 @@ In yaml files, you can use the yaml list notation. In properties files, you must
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring.ldap.embedded.base-dn:
-	  - dc=spring,dc=io
-	  - dc=pivotal,dc=io
+	  - "dc=spring,dc=io"
+	  - "dc=pivotal,dc=io"
 ----
 ====
 

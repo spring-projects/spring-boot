@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.validation;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

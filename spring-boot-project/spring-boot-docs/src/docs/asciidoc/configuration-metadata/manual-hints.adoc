@@ -161,7 +161,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 				{
 					"name": "class-reference",
 					"parameters": {
-						"target": "javax.servlet.http.HttpServlet"
+						"target": "jakarta.servlet.http.HttpServlet"
 					}
 				}
 			]

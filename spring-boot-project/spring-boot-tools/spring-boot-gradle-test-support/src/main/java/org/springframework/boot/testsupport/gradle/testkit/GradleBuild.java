@@ -186,16 +186,11 @@ public class GradleBuild {
 	}
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
-		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script));
 		this.scriptProperties.put("bootVersion", getBootVersion());
 		this.scriptProperties.put("dependencyManagementPluginVersion", getDependencyManagementPluginVersion());
-		for (Entry<String, String> property : this.scriptProperties.entrySet()) {
-			scriptContent = scriptContent.replace("{" + property.getKey() + "}", property.getValue());
-		}
-		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
+		copyTransformedScript(this.script, new File(this.projectDir, "build" + this.dsl.getExtension()));
 		if (this.settings != null) {
-			FileCopyUtils.copy(new FileReader(this.settings),
-					new FileWriter(new File(this.projectDir, "settings.gradle")));
+			copyTransformedScript(this.settings, new File(this.projectDir, "settings.gradle"));
 		}
 		File repository = new File("src/test/resources/repository");
 		if (repository.exists()) {
@@ -221,6 +216,14 @@ public class GradleBuild {
 			allArguments.add("--configuration-cache");
 		}
 		return gradleRunner.withArguments(allArguments);
+	}
+
+	private void copyTransformedScript(String script, File destination) throws IOException {
+		String scriptContent = FileCopyUtils.copyToString(new FileReader(script));
+		for (Entry<String, String> property : this.scriptProperties.entrySet()) {
+			scriptContent = scriptContent.replace("{" + property.getKey() + "}", property.getValue());
+		}
+		FileCopyUtils.copy(scriptContent, new FileWriter(destination));
 	}
 
 	private File getTestKitDir() {

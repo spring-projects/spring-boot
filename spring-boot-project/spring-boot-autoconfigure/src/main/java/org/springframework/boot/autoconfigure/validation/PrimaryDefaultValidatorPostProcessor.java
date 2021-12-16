@@ -31,7 +31,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * Enable the {@code Primary} flag on the auto-configured validator if necessary.
  * <p>
  * As {@link LocalValidatorFactoryBean} exposes 3 validator related contracts and we're
- * only checking for the absence {@link javax.validation.Validator}, we should flag the
+ * only checking for the absence {@link jakarta.validation.Validator}, we should flag the
  * auto-configured validator as primary only if no Spring's {@link Validator} is flagged
  * as primary.
  *

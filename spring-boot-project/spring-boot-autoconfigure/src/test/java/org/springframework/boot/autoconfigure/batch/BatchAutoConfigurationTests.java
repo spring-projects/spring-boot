@@ -19,8 +19,9 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
+import jakarta.persistence.EntityManagerFactory;
 
 import org.junit.jupiter.api.Test;
 
@@ -204,6 +205,7 @@ class BatchAutoConfigurationTests {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.NEVER);
+			assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class);
 			assertThatExceptionOfType(BadSqlGrammarException.class)
 					.isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION"));

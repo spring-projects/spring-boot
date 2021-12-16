@@ -30,7 +30,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.sniff.Sniffer;
 import org.elasticsearch.client.sniff.SnifferBuilder;
 
@@ -111,26 +110,30 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(RestHighLevelClient.class)
+	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
+	@ConditionalOnMissingBean({ org.elasticsearch.client.RestHighLevelClient.class, RestClient.class })
 	static class RestHighLevelClientConfiguration {
 
 		@Bean
-		RestHighLevelClient elasticsearchRestHighLevelClient(RestClientBuilder restClientBuilder) {
-			return new RestHighLevelClient(restClientBuilder);
+		org.elasticsearch.client.RestHighLevelClient elasticsearchRestHighLevelClient(
+				RestClientBuilder restClientBuilder) {
+			return new org.elasticsearch.client.RestHighLevelClient(restClientBuilder);
 		}
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Sniffer.class)
-	@ConditionalOnSingleCandidate(RestHighLevelClient.class)
+	@ConditionalOnSingleCandidate(org.elasticsearch.client.RestHighLevelClient.class)
 	static class RestClientSnifferConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("deprecation")
-		Sniffer elasticsearchSniffer(RestHighLevelClient client, ElasticsearchRestClientProperties properties,
+		Sniffer elasticsearchSniffer(org.elasticsearch.client.RestHighLevelClient client,
+				ElasticsearchRestClientProperties properties,
 				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
 			SnifferBuilder builder = Sniffer.builder(client.getLowLevelClient());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

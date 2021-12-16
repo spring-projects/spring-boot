@@ -48,7 +48,7 @@ NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as,
 By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are configured to use `plain` as the convention for their archive classifier.
 This ensures that `bootJar` and `jar` or `bootWar` and `war` have different output locations, allowing both the executable archive and the plain archive to be built at the same time.
 
-If you prefer that its the executable archive, rather than the plain archive, that uses a classifier, configure the classifiers as shown in the following example for the `jar` and `bootJar` tasks:
+If you prefer that the executable archive, rather than the plain archive, uses a classifier, configure the classifiers as shown in the following example for the `jar` and `bootJar` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -353,7 +353,7 @@ These closures are evaluated in the order that they are defined, from top to bot
 Any content not claimed by an earlier `intoLayer` closure remains available for subsequent ones to consider.
 
 The `intoLayer` closure claims content using nested `include` and `exclude` calls.
-The `application` closure uses Ant-style patch matching for include/exclude parameters.
+The `application` closure uses Ant-style path matching for include/exclude parameters.
 The `dependencies` section uses `group:artifact[:version]` patterns.
 It also provides `includeProjectDependencies()` and `excludeProjectDependencies()` methods that can be used to include or exclude project dependencies.
 

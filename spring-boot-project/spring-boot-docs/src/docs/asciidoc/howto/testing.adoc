@@ -17,7 +17,7 @@ include::{docs-java}/howto/testing/withspringsecurity/MySecurityTests.java[]
 
 Spring Security provides comprehensive integration with Spring MVC Test and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
 
-For additional details on Spring Security's testing support, refer to Spring Security's {spring-security-docs}#test[reference documentation]).
+For additional details on Spring Security's testing support, see Spring Security's {spring-security-docs}/servlet/test/index.html[reference documentation].
 
 
 
@@ -26,7 +26,7 @@ For additional details on Spring Security's testing support, refer to Spring Sec
 ===  Use Testcontainers for Integration Testing
 The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
-Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
+Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 Testcontainers can be used in a Spring Boot test as follows:
 
 [source,java,indent=0,subs="verbatim"]

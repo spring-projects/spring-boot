@@ -25,7 +25,6 @@ import org.apache.http.StatusLine;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -50,7 +49,8 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 
 	private final JsonParser jsonParser;
 
-	public ElasticsearchRestHealthIndicator(RestHighLevelClient client) {
+	@SuppressWarnings("deprecation")
+	public ElasticsearchRestHealthIndicator(org.elasticsearch.client.RestHighLevelClient client) {
 		this(client.getLowLevelClient());
 	}
 

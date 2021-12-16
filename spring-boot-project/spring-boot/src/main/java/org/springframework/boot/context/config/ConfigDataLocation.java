@@ -63,7 +63,7 @@ public final class ConfigDataLocation implements OriginProvider {
 
 	/**
 	 * Return the value of the location (always excluding any user specified
-	 * {@code optional:} prefix.
+	 * {@code optional:} prefix).
 	 * @return the location value
 	 */
 	public String getValue() {

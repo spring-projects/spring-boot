@@ -98,7 +98,7 @@ public class BatchProperties {
 
 		/**
 		 * Comma-separated list of job names to execute on startup (for instance,
-		 * `job1,job2`). By default, all Jobs found in the context are executed.
+		 * 'job1,job2'). By default, all Jobs found in the context are executed.
 		 */
 		private String names = "";
 
@@ -123,6 +123,12 @@ public class BatchProperties {
 		private String schema = DEFAULT_SCHEMA_LOCATION;
 
 		/**
+		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
+		 * used. Auto-detected by default.
+		 */
+		private String platform;
+
+		/**
 		 * Table prefix for all the batch meta-data tables.
 		 */
 		private String tablePrefix;
@@ -138,6 +144,14 @@ public class BatchProperties {
 
 		public void setSchema(String schema) {
 			this.schema = schema;
+		}
+
+		public String getPlatform() {
+			return this.platform;
+		}
+
+		public void setPlatform(String platform) {
+			this.platform = platform;
 		}
 
 		public String getTablePrefix() {

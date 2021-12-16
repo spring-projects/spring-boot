@@ -27,6 +27,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
@@ -91,16 +92,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		application.setMainApplicationClass(config.getTestClass());
 		application.addPrimarySources(Arrays.asList(configClasses));
 		application.getSources().addAll(Arrays.asList(configLocations));
-		ConfigurableEnvironment environment = getEnvironment();
-		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
-			setActiveProfiles(environment, config.getActiveProfiles());
-		}
-		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
-				: new DefaultResourceLoader(null);
-		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
-				config.getPropertySourceLocations());
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
-		application.setEnvironment(environment);
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config, application);
 		if (config instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
@@ -119,8 +110,41 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
+		ConfigurableEnvironment environment = getEnvironment(application, config.getActiveProfiles());
+		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
+				: new DefaultResourceLoader(null);
+		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
+				config.getPropertySourceLocations());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
+		application.setEnvironment(environment);
 		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
 		return application.run(args);
+	}
+
+	private ConfigurableEnvironment getEnvironment(SpringApplication application, String[] activeProfiles) {
+		ConfigurableEnvironment environment = getEnvironment();
+		boolean applicationEnvironment = false;
+		if (environment.getClass() == StandardEnvironment.class) {
+			environment = application.convertEnvironment(environment);
+			applicationEnvironment = true;
+		}
+		setActiveProfiles(environment, activeProfiles, applicationEnvironment);
+		return environment;
+	}
+
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
+			boolean applicationEnvironment) {
+		if (ObjectUtils.isEmpty(profiles)) {
+			return;
+		}
+		if (!applicationEnvironment) {
+			environment.setActiveProfiles(profiles);
+		}
+		String[] pairs = new String[profiles.length];
+		for (int i = 0; i < profiles.length; i++) {
+			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
+		}
+		TestPropertyValues.of(pairs).applyTo(environment, Type.MAP, "active-test-profiles");
 	}
 
 	/**
@@ -139,16 +163,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
-		environment.setActiveProfiles(profiles);
-		// Also add as properties to override any application.properties
-		String[] pairs = new String[profiles.length];
-		for (int i = 0; i < profiles.length; i++) {
-			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
-		}
-		TestPropertyValues.of(pairs).applyTo(environment);
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {

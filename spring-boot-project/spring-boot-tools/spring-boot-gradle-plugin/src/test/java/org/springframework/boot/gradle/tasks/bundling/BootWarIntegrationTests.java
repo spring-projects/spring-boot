@@ -26,6 +26,7 @@ import org.springframework.boot.gradle.junit.GradleCompatibility;
  * Integration tests for {@link BootWar}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @GradleCompatibility(configurationCache = true)
 class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
@@ -37,7 +38,7 @@ class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	@Override
 	String[] getExpectedApplicationLayerContents(String... additionalFiles) {
 		Set<String> contents = new TreeSet<>(Arrays.asList(additionalFiles));
-		contents.addAll(Arrays.asList("WEB-INF/layers.idx", "META-INF/"));
+		contents.addAll(Arrays.asList("WEB-INF/classpath.idx", "WEB-INF/layers.idx", "META-INF/"));
 		return contents.toArray(new String[0]);
 	}
 

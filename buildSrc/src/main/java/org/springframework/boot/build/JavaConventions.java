@@ -45,19 +45,22 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
+import org.gradle.external.javadoc.CoreJavadocOptions;
 import org.gradle.testretry.TestRetryPlugin;
 import org.gradle.testretry.TestRetryTaskExtension;
 
+import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 import org.springframework.boot.build.toolchain.ToolchainPlugin;
+import org.springframework.util.StringUtils;
 
 /**
  * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
  * plugin is applied:
  *
  * <ul>
- * <li>The project is configured with source and target compatibility of 1.8
+ * <li>The project is configured with source and target compatibility of 17
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
@@ -72,9 +75,9 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * {@link JavaPlugin} applied
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link Format} tasks are configured to
  * use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}.
- * <li>When building with Java 8, {@link JavaCompile} tasks are also configured to:
+ * <li>{@link JavaCompile} tasks are configured to:
  * <ul>
+ * <li>Use {@code -parameters}.
  * <li>Treat warnings as errors
  * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varags}
  * warnings
@@ -100,7 +103,7 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  */
 class JavaConventions {
 
-	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "1.8";
+	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "17";
 
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
@@ -112,6 +115,7 @@ class JavaConventions {
 			configureJarManifestConventions(project);
 			configureDependencyManagement(project);
 			configureToolchain(project);
+			configureProhibitedDependencyChecks(project);
 		});
 	}
 
@@ -175,7 +179,12 @@ class JavaConventions {
 	}
 
 	private void configureJavadocConventions(Project project) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
+		project.getTasks().withType(Javadoc.class, (javadoc) -> {
+			CoreJavadocOptions options = (CoreJavadocOptions) javadoc.getOptions();
+			options.source("17");
+			options.encoding("UTF-8");
+			options.addStringOption("Xdoclint:none", "-quiet");
+		});
 	}
 
 	private void configureJavaConventions(Project project) {
@@ -193,15 +202,9 @@ class JavaConventions {
 				compile.setSourceCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
 				compile.setTargetCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
 			}
-			else if (buildingWithJava8(project)) {
-				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
-						"-Xlint:varargs"));
-			}
+			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+					"-Xlint:varargs"));
 		});
-	}
-
-	private boolean buildingWithJava8(Project project) {
-		return !project.hasProperty("toolchainVersion") && JavaVersion.current() == JavaVersion.VERSION_1_8;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
@@ -237,6 +240,28 @@ class JavaConventions {
 
 	private void configureToolchain(Project project) {
 		project.getPlugins().apply(ToolchainPlugin.class);
+	}
+
+	private void configureProhibitedDependencyChecks(Project project) {
+		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+		sourceSets.all((sourceSet) -> createProhibitedDependenciesChecks(project,
+				sourceSet.getCompileClasspathConfigurationName(), sourceSet.getRuntimeClasspathConfigurationName()));
+	}
+
+	private void createProhibitedDependenciesChecks(Project project, String... configurationNames) {
+		ConfigurationContainer configurations = project.getConfigurations();
+		for (String configurationName : configurationNames) {
+			Configuration configuration = configurations.getByName(configurationName);
+			createProhibitedDependenciesCheck(configuration, project);
+		}
+	}
+
+	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
+		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks().create(
+				"check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+				CheckClasspathForProhibitedDependencies.class);
+		checkClasspathForProhibitedDependencies.setClasspath(classpath);
+		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}
 
 }

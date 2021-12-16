@@ -137,7 +137,7 @@ public class HibernateProperties {
 		if (this.ddlAuto != null) {
 			return this.ddlAuto;
 		}
-		if (existing.get(AvailableSettings.HBM2DDL_DATABASE_ACTION) != null) {
+		if (existing.get(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION) != null) {
 			return null;
 		}
 		return defaultDdlAuto.get();

@@ -227,21 +227,25 @@ public class FlywayProperties {
 	/**
 	 * Whether to ignore missing migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignoreMissingMigrations;
 
 	/**
 	 * Whether to ignore ignored migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignoreIgnoredMigrations;
 
 	/**
 	 * Whether to ignore pending migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignorePendingMigrations;
 
 	/**
 	 * Whether to ignore future migrations when reading the schema history table.
 	 */
+	@Deprecated
 	private boolean ignoreFutureMigrations = true;
 
 	/**
@@ -331,14 +335,14 @@ public class FlywayProperties {
 	private Map<String, String> jdbcProperties = new HashMap<>();
 
 	/**
+	 * Path of the Kerberos config file. Requires Flyway Teams.
+	 */
+	private String kerberosConfigFile;
+
+	/**
 	 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
 	 */
 	private String oracleKerberosCacheFile;
-
-	/**
-	 * Path of the Oracle Kerberos config file. Requires Flyway Teams.
-	 */
-	private String oracleKerberosConfigFile;
 
 	/**
 	 * Location of the Oracle Wallet, used to sign-in to the database automatically.
@@ -351,6 +355,11 @@ public class FlywayProperties {
 	 * migrations. Requires Flyway Teams.
 	 */
 	private Boolean outputQueryResults;
+
+	/**
+	 * Path to the SQL Server Kerberos login file. Requires Flyway Teams.
+	 */
+	private String sqlServerKerberosLoginFile;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
@@ -371,9 +380,9 @@ public class FlywayProperties {
 	private Boolean detectEncoding;
 
 	/**
-	 * Filename prefix of state scripts. Requires Flyway Teams.
+	 * Filename prefix for baseline migrations. Requires Flyway Teams.
 	 */
-	private String stateScriptPrefix;
+	private String baselineMigrationPrefix;
 
 	/**
 	 * Prefix of placeholders in migration scripts.
@@ -672,34 +681,46 @@ public class FlywayProperties {
 		this.group = group;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnoreMissingMigrations() {
 		return this.ignoreMissingMigrations;
 	}
 
+	@Deprecated
 	public void setIgnoreMissingMigrations(boolean ignoreMissingMigrations) {
 		this.ignoreMissingMigrations = ignoreMissingMigrations;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnoreIgnoredMigrations() {
 		return this.ignoreIgnoredMigrations;
 	}
 
+	@Deprecated
 	public void setIgnoreIgnoredMigrations(boolean ignoreIgnoredMigrations) {
 		this.ignoreIgnoredMigrations = ignoreIgnoredMigrations;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnorePendingMigrations() {
 		return this.ignorePendingMigrations;
 	}
 
+	@Deprecated
 	public void setIgnorePendingMigrations(boolean ignorePendingMigrations) {
 		this.ignorePendingMigrations = ignorePendingMigrations;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
 	public boolean isIgnoreFutureMigrations() {
 		return this.ignoreFutureMigrations;
 	}
 
+	@Deprecated
 	public void setIgnoreFutureMigrations(boolean ignoreFutureMigrations) {
 		this.ignoreFutureMigrations = ignoreFutureMigrations;
 	}
@@ -840,6 +861,14 @@ public class FlywayProperties {
 		this.jdbcProperties = jdbcProperties;
 	}
 
+	public String getKerberosConfigFile() {
+		return this.kerberosConfigFile;
+	}
+
+	public void setKerberosConfigFile(String kerberosConfigFile) {
+		this.kerberosConfigFile = kerberosConfigFile;
+	}
+
 	public String getOracleKerberosCacheFile() {
 		return this.oracleKerberosCacheFile;
 	}
@@ -848,12 +877,15 @@ public class FlywayProperties {
 		this.oracleKerberosCacheFile = oracleKerberosCacheFile;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.kerberos-config-file")
+	@Deprecated
 	public String getOracleKerberosConfigFile() {
-		return this.oracleKerberosConfigFile;
+		return getKerberosConfigFile();
 	}
 
+	@Deprecated
 	public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
-		this.oracleKerberosConfigFile = oracleKerberosConfigFile;
+		setKerberosConfigFile(oracleKerberosConfigFile);
 	}
 
 	public Boolean getOutputQueryResults() {
@@ -862,6 +894,14 @@ public class FlywayProperties {
 
 	public void setOutputQueryResults(Boolean outputQueryResults) {
 		this.outputQueryResults = outputQueryResults;
+	}
+
+	public String getSqlServerKerberosLoginFile() {
+		return this.sqlServerKerberosLoginFile;
+	}
+
+	public void setSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
+		this.sqlServerKerberosLoginFile = sqlServerKerberosLoginFile;
 	}
 
 	public Boolean getSkipExecutingMigrations() {
@@ -888,12 +928,12 @@ public class FlywayProperties {
 		this.detectEncoding = detectEncoding;
 	}
 
-	public String getStateScriptPrefix() {
-		return this.stateScriptPrefix;
+	public String getBaselineMigrationPrefix() {
+		return this.baselineMigrationPrefix;
 	}
 
-	public void setStateScriptPrefix(String stateScriptPrefix) {
-		this.stateScriptPrefix = stateScriptPrefix;
+	public void setBaselineMigrationPrefix(String baselineMigrationPrefix) {
+		this.baselineMigrationPrefix = baselineMigrationPrefix;
 	}
 
 	public String getScriptPlaceholderPrefix() {

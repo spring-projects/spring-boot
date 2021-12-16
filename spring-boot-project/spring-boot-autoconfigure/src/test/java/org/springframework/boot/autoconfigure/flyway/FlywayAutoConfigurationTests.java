@@ -34,15 +34,11 @@ import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -499,8 +495,9 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getConfiguration().getConnectRetries()).isEqualTo(5);
-					assertThat(flyway.getConfiguration().isIgnoreMissingMigrations()).isTrue();
-					assertThat(flyway.getConfiguration().isIgnorePendingMigrations()).isTrue();
+					assertThat(flyway.getConfiguration().getBaselineDescription()).isEqualTo("<< Custom baseline >>");
+					assertThat(flyway.getConfiguration().getBaselineVersion())
+							.isEqualTo(MigrationVersion.fromVersion("1"));
 				});
 	}
 
@@ -602,17 +599,25 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void kerberosConfigFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.kerberos-config-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("kerberosConfigFile"));
+	}
+
+	@Test
+	@Deprecated
+	void oracleKerberosConfigFileIsCorrectlyMappedToReplacementProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("kerberosConfigFile"));
+	}
+
+	@Test
 	void oracleKerberosCacheFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
 				.run(validateFlywayTeamsPropertyOnly("oracle.kerberosCacheFile"));
-	}
-
-	@Test
-	void oracleKerberosConfigFileIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config")
-				.run(validateFlywayTeamsPropertyOnly("oracle.kerberosConfigFile"));
 	}
 
 	@Test
@@ -623,6 +628,13 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("sqlServer.kerberosLoginFile"));
+	}
+
+	@Test
 	void skipExecutingMigrationsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.skip-executing-migrations=true")
@@ -630,31 +642,28 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void whenFlywayIsAutoConfiguredThenJooqDslContextDependsOnFlywayBeans() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class)
-				.run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("flywayInitializer", "flyway");
-				});
+	void baselineMigrationPrefixIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.baseline-migration-prefix=BL")
+				.run(validateFlywayTeamsPropertyOnly("baselineMigrationPrefix"));
 	}
 
 	@Test
-	void whenCustomMigrationInitializerIsDefinedThenJooqDslContextDependsOnIt() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
-				CustomFlywayMigrationInitializer.class).run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("flywayMigrationInitializer",
-							"flyway");
-				});
+	void scriptPlaceholderPrefixIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.script-placeholder-prefix=SPP")
+				.run((context) -> assertThat(
+						context.getBean(Flyway.class).getConfiguration().getScriptPlaceholderPrefix())
+								.isEqualTo("SPP"));
 	}
 
 	@Test
-	void whenCustomFlywayIsDefinedThenJooqDslContextDependsOnIt() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
-				CustomFlyway.class).run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("customFlyway");
-				});
+	void scriptPlaceholderSuffixIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.script-placeholder-suffix=SPS")
+				.run((context) -> assertThat(
+						context.getBean(Flyway.class).getConfiguration().getScriptPlaceholderSuffix())
+								.isEqualTo("SPS"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {
@@ -892,23 +901,13 @@ class FlywayAutoConfigurationTests {
 		@Bean
 		@Order(1)
 		FlywayConfigurationCustomizer customizerOne() {
-			return (configuration) -> configuration.connectRetries(5).ignorePendingMigrations(true);
+			return (configuration) -> configuration.connectRetries(5).baselineVersion("1");
 		}
 
 		@Bean
 		@Order(0)
 		FlywayConfigurationCustomizer customizerTwo() {
-			return (configuration) -> configuration.connectRetries(10).ignoreMissingMigrations(true);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class JooqConfiguration {
-
-		@Bean
-		DSLContext dslContext() {
-			return new DefaultDSLContext(SQLDialect.H2);
+			return (configuration) -> configuration.connectRetries(10).baselineDescription("<< Custom baseline >>");
 		}
 
 	}
@@ -1008,7 +1007,7 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isStateScript() {
+		public boolean isBaselineMigration() {
 			return false;
 		}
 

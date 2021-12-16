@@ -25,7 +25,9 @@ dependencies {
 	systemTestImplementation(enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent")))
 	systemTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	systemTestImplementation("org.apache.httpcomponents:httpasyncclient")
+	systemTestImplementation("org.apache.httpcomponents:httpasyncclient") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	systemTestImplementation("org.awaitility:awaitility")
 	systemTestImplementation("org.testcontainers:junit-jupiter")
 	systemTestImplementation("org.testcontainers:testcontainers")
@@ -35,7 +37,7 @@ dependencies {
 }
 
 systemTest {
-	inputs.files(war).withNormalizer(ClasspathNormalizer)
+	inputs.files(war).withNormalizer(ClasspathNormalizer).withPropertyName("war")
 }
 
 war {

@@ -30,19 +30,30 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
-	implementation("org.apache.maven.shared:maven-common-artifact-filters")
-	implementation("org.apache.maven:maven-plugin-api")
+	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	implementation("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	intTestImplementation("org.apache.maven.shared:maven-invoker")
+	intTestImplementation("org.apache.maven.shared:maven-invoker") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
 	intTestImplementation("org.testcontainers:junit-jupiter")
 
-	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin")
+	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
