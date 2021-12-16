@@ -31,6 +31,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Mushtaq Ahmed
  * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
@@ -71,6 +72,11 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private Resource publicKeyLocation;
 
+		/**
+		 * Identifies the recipients that the JWT is intended for.
+		 */
+		private String audience;
+
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
@@ -101,6 +107,14 @@ public class OAuth2ResourceServerProperties {
 
 		public void setPublicKeyLocation(Resource publicKeyLocation) {
 			this.publicKeyLocation = publicKeyLocation;
+		}
+
+		public String getAudience() {
+			return this.audience;
+		}
+
+		public void setAudience(String audience) {
+			this.audience = audience;
 		}
 
 		public String readPublicKey() throws IOException {

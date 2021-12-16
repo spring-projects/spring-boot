@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,8 +34,14 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.jwt.JwtClaimValidator;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
@@ -49,6 +57,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  * @author Artsiom Yudovin
  * @author HaiTao Zhang
  * @author Anastasiia Losieva
+ * @author Mushtaq Ahmed
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -69,10 +78,18 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = NimbusReactiveJwtDecoder
 					.withJwkSetUri(this.properties.getJwkSetUri())
 					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
+			validators.add(new JwtTimestampValidator());
 			String issuerUri = this.properties.getIssuerUri();
 			if (issuerUri != null) {
-				nimbusReactiveJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
+				validators.add(new JwtIssuerValidator(issuerUri));
 			}
+			String audience = this.properties.getAudience();
+			if (audience != null) {
+				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
+						(aud) -> aud != null && aud.contains(audience)));
+			}
+			nimbusReactiveJwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(validators));
 			return nimbusReactiveJwtDecoder;
 		}
 
