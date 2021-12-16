@@ -210,6 +210,7 @@ class IntegrationAutoConfigurationTests {
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.integration.jdbc.initialize-schema=never")
 				.run((context) -> {
+					assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class);
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
