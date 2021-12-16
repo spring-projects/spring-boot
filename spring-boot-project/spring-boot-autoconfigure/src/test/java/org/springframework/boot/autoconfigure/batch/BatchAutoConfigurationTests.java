@@ -205,6 +205,7 @@ class BatchAutoConfigurationTests {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.NEVER);
+			assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class);
 			assertThatExceptionOfType(BadSqlGrammarException.class)
 					.isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION"));
