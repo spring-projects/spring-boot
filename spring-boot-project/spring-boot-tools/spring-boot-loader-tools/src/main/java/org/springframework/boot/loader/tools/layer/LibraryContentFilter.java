@@ -40,14 +40,13 @@ public class LibraryContentFilter implements ContentFilter<Library> {
 		StringBuilder regex = new StringBuilder();
 		for (int i = 0; i < coordinatesPattern.length(); i++) {
 			char c = coordinatesPattern.charAt(i);
-			if (c == '.') {
-				regex.append("\\.");
-			}
-			else if (c == '*') {
-				regex.append(".*");
-			}
-			else {
-				regex.append(c);
+			switch (c){
+				case '.':
+					regex.append("\\.");
+				case '*':
+					regex.append(".*");
+				default :
+					regex.append(c);
 			}
 		}
 		this.pattern = Pattern.compile(regex.toString());

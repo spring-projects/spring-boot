@@ -95,11 +95,11 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	}
 
 	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
-		if (ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-			protocol.setClientAuth(Boolean.TRUE.toString());
-		}
-		else if (ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-			protocol.setClientAuth("want");
+		switch (ssl.getClientAuth()){
+			case NEED:
+				protocol.setClientAuth(Boolean.TRUE.toString());
+			case WANT:
+				protocol.setClientAuth("want");
 		}
 	}
 

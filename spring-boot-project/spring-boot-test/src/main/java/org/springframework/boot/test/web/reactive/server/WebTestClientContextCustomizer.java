@@ -178,13 +178,14 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private String deduceBasePath() {
 			WebApplicationType webApplicationType = deduceFromApplicationContext(this.applicationContext.getClass());
-			if (webApplicationType == WebApplicationType.REACTIVE) {
-				return this.applicationContext.getEnvironment().getProperty("spring.webflux.base-path");
+			switch(webApplicationType){
+				case REACTIVE:
+					return this.applicationContext.getEnvironment().getProperty("spring.webflux.base-path");
+				case SERVLET:
+					return ((WebApplicationContext) this.applicationContext).getServletContext().getContextPath();
+				default :
+					return null;
 			}
-			else if (webApplicationType == WebApplicationType.SERVLET) {
-				return ((WebApplicationContext) this.applicationContext).getServletContext().getContextPath();
-			}
-			return null;
 		}
 
 		static WebApplicationType deduceFromApplicationContext(Class<?> applicationContextClass) {

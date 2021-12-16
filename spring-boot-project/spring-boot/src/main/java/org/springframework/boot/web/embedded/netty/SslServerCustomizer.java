@@ -97,11 +97,11 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 			if (this.ssl.getCiphers() != null) {
 				builder.ciphers(Arrays.asList(this.ssl.getCiphers()));
 			}
-			if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-				builder.clientAuth(ClientAuth.REQUIRE);
-			}
-			else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-				builder.clientAuth(ClientAuth.OPTIONAL);
+			switch (this.ssl.getClientAuth()){
+				case NEED :
+					builder.clientAuth(ClientAuth.REQUIRE);
+				case WANT:
+					builder.clientAuth(ClientAuth.OPTIONAL);
 			}
 		});
 		return sslContextSpec;

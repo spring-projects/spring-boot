@@ -197,12 +197,12 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private void configureSslClientAuth(SslContextFactory.Server factory, Ssl ssl) {
-		if (ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-			factory.setNeedClientAuth(true);
-			factory.setWantClientAuth(true);
-		}
-		else if (ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-			factory.setWantClientAuth(true);
+		switch (ssl.getClientAuth()){
+			case NEED:
+				factory.setNeedClientAuth(true);
+				factory.setWantClientAuth(true);
+			case WANT:
+				factory.setWantClientAuth(true);
 		}
 	}
 

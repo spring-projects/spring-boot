@@ -416,20 +416,18 @@ public class JSONStringer {
 		}
 
 		Scope context = peek();
-		if (context == Scope.EMPTY_ARRAY) { // first in array
-			replaceTop(Scope.NONEMPTY_ARRAY);
-			newline();
-		}
-		else if (context == Scope.NONEMPTY_ARRAY) { // another in array
-			this.out.append(',');
-			newline();
-		}
-		else if (context == Scope.DANGLING_KEY) { // value for key
-			this.out.append(this.indent == null ? ":" : ": ");
-			replaceTop(Scope.NONEMPTY_OBJECT);
-		}
-		else if (context != Scope.NULL) {
-			throw new JSONException("Nesting problem");
+		switch (context){
+			case EMPTY_ARRAY:
+				replaceTop(Scope.NONEMPTY_ARRAY);
+				newline();
+			case NONEMPTY_ARRAY:
+				this.out.append(',');
+				newline();
+			case DANGLING_KEY:
+				this.out.append(this.indent == null ? ":" : ": ");
+				replaceTop(Scope.NONEMPTY_OBJECT);
+			case NULL:
+				throw new JSONException("Nesting problem");
 		}
 	}
 

@@ -224,12 +224,12 @@ class OriginTrackedPropertiesLoader {
 					}
 				}
 			}
-			if (this.character == '\\') {
-				this.escaped = true;
-				readEscaped();
-			}
-			else if (this.character == '\n') {
-				this.columnNumber = -1;
+			switch (this.character){
+				case '\\':
+					this.escaped = true;
+					readEscaped();
+				case '\n':
+					this.columnNumber = -1;
 			}
 			return !isEndOfFile();
 		}
@@ -262,12 +262,14 @@ class OriginTrackedPropertiesLoader {
 			if (escapeIndex != -1) {
 				this.character = ESCAPES[1].charAt(escapeIndex);
 			}
-			else if (this.character == '\n') {
-				this.columnNumber = -1;
-				read(true);
-			}
-			else if (this.character == 'u') {
-				readUnicode();
+			else {
+				switch(this.character){
+					case '\n':
+						this.columnNumber = -1;
+						read(true);
+					case 'u':
+						readUnicode();
+				}
 			}
 		}
 

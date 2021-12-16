@@ -155,14 +155,15 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
 		if (webEnvironment != null && isWebEnvironmentSupported(mergedConfig)) {
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
-			if (webApplicationType == WebApplicationType.SERVLET
-					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
-				mergedConfig = new WebMergedContextConfiguration(mergedConfig, determineResourceBasePath(mergedConfig));
+			if(webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK){
+				switch(webApplicationType){
+					case SERVLET:
+						mergedConfig = new WebMergedContextConfiguration(mergedConfig, determineResourceBasePath(mergedConfig));
+					case REACTIVE:
+						return new ReactiveWebMergedContextConfiguration(mergedConfig);
+				}
 			}
-			else if (webApplicationType == WebApplicationType.REACTIVE
-					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
-				return new ReactiveWebMergedContextConfiguration(mergedConfig);
-			}
+
 		}
 		return mergedConfig;
 	}

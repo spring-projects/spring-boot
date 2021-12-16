@@ -30,6 +30,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * message using the underlying {@link MessageInterpolator}.
  *
  * @author Dmytro Nosan
+ * @author Tharik Lourenco
  */
 class MessageSourceMessageInterpolator implements MessageInterpolator {
 
@@ -78,20 +79,19 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 		int startIndex = -1;
 		int endIndex = -1;
 		for (int i = 0; i < buf.length(); i++) {
-			if (buf.charAt(i) == ESCAPE) {
-				i++;
-			}
-			else if (buf.charAt(i) == PREFIX) {
-				if (startIndex == -1) {
-					startIndex = i;
-				}
-				parentheses++;
-			}
-			else if (buf.charAt(i) == SUFFIX) {
-				if (parentheses > 0) {
-					parentheses--;
-				}
-				endIndex = i;
+			switch (buf.charAt(i)){
+				case ESCAPE:
+					i++;
+				case PREFIX:
+					if (startIndex == -1) {
+						startIndex = i;
+					}
+					parentheses++;
+				case SUFFIX:
+					if (parentheses > 0) {
+						parentheses--;
+					}
+					endIndex = i;
 			}
 			if (parentheses == 0 && startIndex < endIndex) {
 				String parameter = buf.substring(startIndex + 1, endIndex);

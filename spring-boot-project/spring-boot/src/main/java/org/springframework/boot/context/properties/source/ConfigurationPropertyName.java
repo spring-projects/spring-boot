@@ -902,29 +902,30 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			ElementType type = ElementType.EMPTY;
 			for (int i = 0; i < length; i++) {
 				char ch = this.source.charAt(i);
-				if (ch == '[') {
-					if (openBracketCount == 0) {
+				switch (ch){
+					case '[':
+						if (openBracketCount == 0) {
 						add(start, i, type, valueProcessor);
 						start = i + 1;
 						type = ElementType.NUMERICALLY_INDEXED;
-					}
-					openBracketCount++;
-				}
-				else if (ch == ']') {
-					openBracketCount--;
-					if (openBracketCount == 0) {
-						add(start, i, type, valueProcessor);
-						start = i + 1;
-						type = ElementType.EMPTY;
-					}
-				}
-				else if (!type.isIndexed() && ch == this.separator) {
-					add(start, i, type, valueProcessor);
-					start = i + 1;
-					type = ElementType.EMPTY;
-				}
-				else {
-					type = updateType(type, ch, i - start);
+						}
+						openBracketCount++;
+					case ']':
+						openBracketCount--;
+						if (openBracketCount == 0) {
+							add(start, i, type, valueProcessor);
+							start = i + 1;
+							type = ElementType.EMPTY;
+						}
+					default:
+						if (!type.isIndexed() && ch == this.separator) {
+							add(start, i, type, valueProcessor);
+							start = i + 1;
+							type = ElementType.EMPTY;
+						}
+						else {
+							type = updateType(type, ch, i - start);
+						}
 				}
 			}
 			if (openBracketCount != 0) {
