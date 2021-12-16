@@ -838,7 +838,7 @@ public class KafkaProperties {
 		}
 
 		public String getTransactionIdPrefix() {
-			return transactionIdPrefix;
+			return this.transactionIdPrefix;
 		}
 
 		public void setTransactionIdPrefix(String transactionIdPrefix) {
