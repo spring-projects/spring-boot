@@ -127,6 +127,7 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 		private void initializeTempFile() throws IOException {
 			if (this.tempFile == null) {
 				this.tempFile = File.createTempFile("springboot-", "-entrycontent");
+			this.tempFile.deleteOnExit();
 			}
 		}
 
