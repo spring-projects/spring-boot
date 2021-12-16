@@ -31,8 +31,11 @@ class JavaInfoTests {
 	@Test
 	void javaInfoIsAvailable() {
 		JavaInfo javaInfo = new JavaInfo();
-		assertThat(javaInfo.getVendor()).isEqualTo(System.getProperty("java.vendor"));
 		assertThat(javaInfo.getVersion()).isEqualTo(System.getProperty("java.version"));
+		assertThat(javaInfo.getVendor()).satisfies((vendorInfo) -> {
+			assertThat(vendorInfo.getName()).isEqualTo(System.getProperty("java.vendor"));
+			assertThat(vendorInfo.getVersion()).isEqualTo(System.getProperty("java.vendor.version"));
+		});
 		assertThat(javaInfo.getRuntime()).satisfies((jreInfo) -> {
 			assertThat(jreInfo.getName()).isEqualTo(System.getProperty("java.runtime.name"));
 			assertThat(jreInfo.getVersion()).isEqualTo(System.getProperty("java.runtime.version"));

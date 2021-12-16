@@ -25,27 +25,27 @@ package org.springframework.boot.info;
  */
 public class JavaInfo {
 
-	private final String vendor;
-
 	private final String version;
+
+	private final JavaVendorInfo vendor;
 
 	private final JavaRuntimeEnvironmentInfo runtime;
 
 	private final JavaVirtualMachineInfo jvm;
 
 	public JavaInfo() {
-		this.vendor = System.getProperty("java.vendor");
 		this.version = System.getProperty("java.version");
+		this.vendor = new JavaVendorInfo();
 		this.runtime = new JavaRuntimeEnvironmentInfo();
 		this.jvm = new JavaVirtualMachineInfo();
 	}
 
-	public String getVendor() {
-		return this.vendor;
-	}
-
 	public String getVersion() {
 		return this.version;
+	}
+
+	public JavaVendorInfo getVendor() {
+		return this.vendor;
 	}
 
 	public JavaRuntimeEnvironmentInfo getRuntime() {
@@ -57,7 +57,31 @@ public class JavaInfo {
 	}
 
 	/**
+	 * Information about the Java Vendor of the used Java Runtime.
+	 * @since 2.7.0
+	 */
+	public static class JavaVendorInfo {
+		private final String name;
+
+		private final String version;
+
+		public JavaVendorInfo() {
+			this.name = System.getProperty("java.vendor");
+			this.version = System.getProperty("java.vendor.version");
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getVersion() {
+			return this.version;
+		}
+	}
+
+	/**
 	 * Information about the Java Runtime Environment the application is running in.
+	 * @since 2.6.0
 	 */
 	public static class JavaRuntimeEnvironmentInfo {
 
@@ -82,6 +106,7 @@ public class JavaInfo {
 
 	/**
 	 * Information about the Java Virtual Machine the application is running in.
+	 * @since 2.6.0
 	 */
 	public static class JavaVirtualMachineInfo {
 
