@@ -41,7 +41,7 @@ class ConfigDataProperties {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("spring.config");
 
 	private static final ConfigurationPropertyName LEGACY_PROFILES_NAME = ConfigurationPropertyName
-			.of("spring.profiles");
+			.of("spring.config.activate.on-profile");
 
 	private static final Bindable<ConfigDataProperties> BINDABLE_PROPERTIES = Bindable.of(ConfigDataProperties.class);
 

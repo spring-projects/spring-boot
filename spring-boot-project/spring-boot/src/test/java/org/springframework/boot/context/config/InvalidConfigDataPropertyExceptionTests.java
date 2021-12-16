@@ -106,7 +106,6 @@ class InvalidConfigDataPropertyExceptionTests {
 	}
 
 	@Test
-	@Disabled("Disabled until spring.profiles support is dropped")
 	void throwOrWarnWhenHasInvalidPropertyThrowsException() {
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring.profiles", "a");

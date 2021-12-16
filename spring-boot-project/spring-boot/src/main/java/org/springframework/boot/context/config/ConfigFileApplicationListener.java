@@ -635,7 +635,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			return loaded.stream().map((propertySource) -> {
 				Binder binder = new Binder(ConfigurationPropertySources.from(propertySource),
 						this.placeholdersResolver);
-				String[] profiles = binder.bind("spring.profiles", STRING_ARRAY).orElse(null);
+				String[] profiles = binder.bind("spring.config.activate.on-profile", STRING_ARRAY).orElse(null);
 				Set<Profile> activeProfiles = getProfiles(binder, ACTIVE_PROFILES_PROPERTY);
 				Set<Profile> includeProfiles = getProfiles(binder, INCLUDE_PROFILES_PROPERTY);
 				return new Document(propertySource, profiles, activeProfiles, includeProfiles);

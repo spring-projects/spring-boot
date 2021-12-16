@@ -100,7 +100,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.main");
 		config.accept("spring.messages");
 		config.accept("spring.pid");
-		config.accept("spring.profiles");
+		config.accept("spring.config.activate.on-profile");
 		config.accept("spring.quartz");
 		config.accept("spring.reactor");
 		config.accept("spring.task");
