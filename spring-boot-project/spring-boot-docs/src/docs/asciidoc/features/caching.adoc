@@ -57,7 +57,7 @@ The starter brings in `spring-context-support`.
 If you add dependencies manually, you must include `spring-context-support` in order to use the JCache, EhCache 2.x, or Caffeine support.
 
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
-The following example sets a flag to say that `null` values should be passed down to the underlying map:
+The following example sets a flag to say that `null` values should not be passed down to the underlying map:
 
 [source,java,indent=0,subs="verbatim"]
 ----
