@@ -33,7 +33,7 @@ class AnnotationDependsOnDatabaseInitializationDetector implements DependsOnData
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		Set<String> dependentBeans = new HashSet<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
-			if (beanFactory.findAnnotationOnBean(beanName, DependsOnDatabaseInitialization.class) != null) {
+			if (beanFactory.findAnnotationOnBean(beanName, DependsOnDatabaseInitialization.class, false) != null) {
 				dependentBeans.add(beanName);
 			}
 		}
