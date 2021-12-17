@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
@@ -126,6 +127,23 @@ class CachingOperationInvokerAdvisorTests {
 		assertAdviseIsApplied(parameters);
 	}
 
+	@Test
+	void applyWithWebServerNamespaceShouldAddAdvise() {
+		OperationParameters parameters = getParameters("getWithServerNamespace", WebServerNamespace.class,
+				String.class);
+		given(this.timeToLive.apply(any())).willReturn(100L);
+		assertAdviseIsApplied(parameters);
+	}
+
+	@Test
+	void applyWithMandatoryCachedAndNonCachedShouldAddAdvise() {
+		OperationParameters parameters = getParameters("getWithServerNamespaceAndOtherMandatory",
+				WebServerNamespace.class, String.class);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
+				this.invoker);
+		assertThat(advised).isSameAs(this.invoker);
+	}
+
 	private void assertAdviseIsApplied(OperationParameters parameters) {
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
 				this.invoker);
@@ -162,6 +180,14 @@ class CachingOperationInvokerAdvisorTests {
 		}
 
 		String getWithApiVersion(ApiVersion apiVersion, @Nullable String bar) {
+			return "";
+		}
+
+		String getWithServerNamespace(WebServerNamespace serverNamespace, @Nullable String bar) {
+			return "";
+		}
+
+		String getWithServerNamespaceAndOtherMandatory(WebServerNamespace serverNamespace, String bar) {
 			return "";
 		}
 
