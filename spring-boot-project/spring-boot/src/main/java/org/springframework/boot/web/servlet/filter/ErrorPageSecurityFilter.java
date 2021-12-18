@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
@@ -67,17 +68,28 @@ public class ErrorPageSecurityFilter implements Filter {
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (DispatcherType.ERROR.equals(request.getDispatcherType()) && !isAllowed(request)) {
-			sendError(request, response);
+		Integer errorCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+		if (DispatcherType.ERROR.equals(request.getDispatcherType()) && !isAllowed(request, errorCode)) {
+			response.sendError((errorCode != null) ? errorCode : 401);
 			return;
 		}
 		chain.doFilter(request, response);
 	}
 
-	private boolean isAllowed(HttpServletRequest request) {
-		String uri = request.getRequestURI();
+	private boolean isAllowed(HttpServletRequest request, Integer errorCode) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return getPrivilegeEvaluator().isAllowed(uri, authentication);
+		if (isUnauthenticated(authentication) && isNotAuthenticationError(errorCode)) {
+			return true;
+		}
+		return getPrivilegeEvaluator().isAllowed(request.getRequestURI(), authentication);
+	}
+
+	private boolean isUnauthenticated(Authentication authentication) {
+		return (authentication == null || authentication instanceof AnonymousAuthenticationToken);
+	}
+
+	private boolean isNotAuthenticationError(Integer errorCode) {
+		return (errorCode == null || (errorCode != 401 && errorCode != 403));
 	}
 
 	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {
@@ -96,11 +108,6 @@ public class ErrorPageSecurityFilter implements Filter {
 		catch (NoSuchBeanDefinitionException ex) {
 			return ALWAYS;
 		}
-	}
-
-	private void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Integer errorCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-		response.sendError((errorCode != null) ? errorCode : 401);
 	}
 
 	/**
