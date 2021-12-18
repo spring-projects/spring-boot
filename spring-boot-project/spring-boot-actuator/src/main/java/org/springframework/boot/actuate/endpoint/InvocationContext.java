@@ -98,7 +98,6 @@ public class InvocationContext {
 	@Deprecated
 	public org.springframework.boot.actuate.endpoint.http.ApiVersion getApiVersion() {
 		ApiVersion version = resolveArgument(ApiVersion.class);
-		System.out.println(version);
 		return (version != null) ? org.springframework.boot.actuate.endpoint.http.ApiVersion.valueOf(version.name())
 				: org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST;
 	}
