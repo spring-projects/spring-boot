@@ -193,7 +193,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	private static final class CacheKey {
 
-		public static final Class<?>[] CACHEABLE_TYPES = new Class[] { ApiVersion.class, SecurityContext.class,
+		private static final Class<?>[] CACHEABLE_TYPES = new Class<?>[] { ApiVersion.class, SecurityContext.class,
 				WebServerNamespace.class };
 
 		private final ApiVersion apiVersion;
@@ -208,7 +208,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 			this.serverNamespace = serverNamespace;
 		}
 
-		public static boolean containsType(Class<?> type) {
+		static boolean containsType(Class<?> type) {
 			return Arrays.stream(CacheKey.CACHEABLE_TYPES).anyMatch((c) -> c.isAssignableFrom(type));
 		}
 

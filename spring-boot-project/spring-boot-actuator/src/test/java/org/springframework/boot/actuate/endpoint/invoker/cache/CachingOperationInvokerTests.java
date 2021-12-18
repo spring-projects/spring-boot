@@ -243,7 +243,7 @@ class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetInvokedWithDifferentWebServerNamespace() {
+	void targetInvokedWithDifferentWebServerNamespace() {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Object expectedV2 = new Object();
 		Object expectedV3 = new Object();
