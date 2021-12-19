@@ -26,7 +26,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
@@ -146,65 +145,55 @@ class SpringBootContextLoaderTests {
 		assertThat(actual.get(key)).isEqualTo(value);
 	}
 
-	@SpringBootTest({ "key=myValue", "anotherKey:anotherValue" })
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = { "key=myValue", "anotherKey:anotherValue" }, classes = Config.class)
 	static class SimpleConfig {
 
 	}
 
-	@SpringBootTest(properties = { "key=myValue", "anotherKey:anotherValue" })
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = { "key=myValue", "anotherKey:anotherValue" }, classes = Config.class)
 	static class SimpleConfigNonAlias {
 
 	}
 
-	@SpringBootTest("server.port=2345")
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = "server.port=2345", classes = Config.class)
 	static class OverrideConfig {
 
 	}
 
-	@SpringBootTest({ "key=myValue", "otherKey=otherValue" })
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = { "key=myValue", "otherKey=otherValue" }, classes = Config.class)
 	static class AppendConfig {
 
 	}
 
-	@SpringBootTest({ "key=my=Value", "anotherKey:another:Value" })
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = { "key=my=Value", "anotherKey:another:Value" }, classes = Config.class)
 	static class SameSeparatorInValue {
 
 	}
 
-	@SpringBootTest({ "key=my:Value", "anotherKey:another=Value" })
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = { "key=my:Value", "anotherKey:another=Value" }, classes = Config.class)
 	static class AnotherSeparatorInValue {
 
 	}
 
-	@SpringBootTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
-	@ContextConfiguration(classes = Config.class)
+	@SpringBootTest(properties = { "key=myValue", "variables=foo=FOO\n bar=BAR" }, classes = Config.class)
 	static class NewLineInValue {
 
 	}
 
-	@SpringBootTest
+	@SpringBootTest(classes = Config.class)
 	@ActiveProfiles({ "profile1", "profile2" })
-	@ContextConfiguration(classes = Config.class)
 	static class MultipleActiveProfiles {
 
 	}
 
-	@SpringBootTest
+	@SpringBootTest(classes = Config.class)
 	@ActiveProfiles({ "profile1,2" })
-	@ContextConfiguration(classes = Config.class)
 	static class ActiveProfileWithComma {
 
 	}
 
-	@SpringBootTest({ "key=myValue" })
+	@SpringBootTest(properties = { "key=myValue" }, classes = Config.class)
 	@ActiveProfiles({ "profile1,2" })
-	@ContextConfiguration(classes = Config.class)
 	static class ActiveProfileWithInlinedProperties {
 
 	}
