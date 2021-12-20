@@ -98,7 +98,7 @@ When placed on a `@Bean` method, the target type defaults to the return type of 
 include::{docs-java}/features/developingautoconfiguration/conditionannotations/beanconditions/MyAutoConfiguration.java[]
 ----
 
-In the preceding example, the `myService` bean is going to be created if no bean of type `MyService` is already contained in the `ApplicationContext`.
+In the preceding example, the `someService` bean is going to be created if no bean of type `SomeService` is already contained in the `ApplicationContext`.
 
 TIP: You need to be very careful about the order in which bean definitions are added, as these conditions are evaluated based on what has been processed so far.
 For this reason, we recommend using only `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations on auto-configuration classes (since these are guaranteed to load after any user-defined bean definitions have been added).
