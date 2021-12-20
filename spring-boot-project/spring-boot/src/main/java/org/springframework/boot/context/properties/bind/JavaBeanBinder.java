@@ -165,7 +165,8 @@ class JavaBeanBinder implements DataObjectBinder {
 		private boolean isCandidate(Method method) {
 			int modifiers = method.getModifiers();
 			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers) && !Modifier.isAbstract(modifiers)
-					&& !Modifier.isStatic(modifiers) && !Object.class.equals(method.getDeclaringClass())
+					&& !Modifier.isStatic(modifiers) && !method.isBridge()
+					&& !Object.class.equals(method.getDeclaringClass())
 					&& !Class.class.equals(method.getDeclaringClass()) && method.getName().indexOf('$') == -1;
 		}
 
