@@ -293,19 +293,27 @@ public class SpringApplication {
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			// step 加载属性配置,执行完成后所有的environment的属性都会加载进来，包括application.properties和外部的属性配置
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			configureIgnoreBeanInfo(environment);
+			// step 打印Spring Banner
 			Banner printedBanner = printBanner(environment);
+			// step 创建Spring 容器
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
+			// step 调用所有初始类的initialize 方法
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+			// step 初始化Spring 容器
 			refreshContext(context);
+			// step 执行Spring容器初始化的后置逻辑。默认实现为空
 			afterRefresh(context, applicationArguments);
 			Duration timeTakenToStartup = Duration.ofNanos(System.nanoTime() - startTime);
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakenToStartup);
 			}
+			// step 通知SpringApplicationRunListener的数组,Spring容器启动完成
 			listeners.started(context, timeTakenToStartup);
+			// step 调用Spring的ApplicationRunner和CommandLineRunner和运行方法
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -329,10 +337,17 @@ public class SpringApplication {
 		return bootstrapContext;
 	}
 
+	/**
+	 *  准备Spring 启动环境
+	 * @param listeners
+	 * @param bootstrapContext     {@link DefaultBootstrapContext}
+	 * @param applicationArguments {@link DefaultApplicationArguments}
+	 * @return
+	 */
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
 			DefaultBootstrapContext bootstrapContext, ApplicationArguments applicationArguments) {
 		// Create and configure the environment
-		ConfigurableEnvironment environment = getOrCreateEnvironment();
+		ConfigurableEnvironment environment = getOrCreateEnvironment();  // ApplicationServletEnvironment
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		ConfigurationPropertySources.attach(environment);
 		listeners.environmentPrepared(bootstrapContext, environment);

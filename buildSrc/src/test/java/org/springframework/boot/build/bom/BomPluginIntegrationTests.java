@@ -72,13 +72,13 @@ class BomPluginIntegrationTests {
 			NodeAssert dependency = pom.nodeAtPath("//dependencyManagement/dependencies/dependency[1]");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("org.apache.activemq");
 			assertThat(dependency).textAtPath("artifactId").isEqualTo("activemq-amqp");
-			assertThat(dependency).textAtPath("version").isEqualTo("${activemq.version}");
+			assertThat(dependency).textAtPath("version").isEqualTo("5.15.10");
 			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
 			assertThat(dependency).textAtPath("type").isNullOrEmpty();
 			dependency = pom.nodeAtPath("//dependencyManagement/dependencies/dependency[2]");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("org.apache.activemq");
 			assertThat(dependency).textAtPath("artifactId").isEqualTo("activemq-blueprint");
-			assertThat(dependency).textAtPath("version").isEqualTo("${activemq.version}");
+			assertThat(dependency).textAtPath("version").isEqualTo("5.15.10");
 			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
 			assertThat(dependency).textAtPath("type").isNullOrEmpty();
 		});
@@ -132,7 +132,7 @@ class BomPluginIntegrationTests {
 			NodeAssert dependency = pom.nodeAtPath("//dependencyManagement/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("com.fasterxml.jackson");
 			assertThat(dependency).textAtPath("artifactId").isEqualTo("jackson-bom");
-			assertThat(dependency).textAtPath("version").isEqualTo("${jackson-bom.version}");
+			assertThat(dependency).textAtPath("version").isEqualTo("2.10.0");
 			assertThat(dependency).textAtPath("scope").isEqualTo("import");
 			assertThat(dependency).textAtPath("type").isEqualTo("pom");
 		});
@@ -161,12 +161,9 @@ class BomPluginIntegrationTests {
 			NodeAssert dependency = pom.nodeAtPath("//dependencyManagement/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("mysql");
 			assertThat(dependency).textAtPath("artifactId").isEqualTo("mysql-connector-java");
-			assertThat(dependency).textAtPath("version").isEqualTo("${mysql.version}");
+			assertThat(dependency).textAtPath("version").isEqualTo("8.0.18");
 			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
 			assertThat(dependency).textAtPath("type").isNullOrEmpty();
-			NodeAssert exclusion = dependency.nodeAtPath("exclusions/exclusion");
-			assertThat(exclusion).textAtPath("groupId").isEqualTo("com.google.protobuf");
-			assertThat(exclusion).textAtPath("artifactId").isEqualTo("protobuf-java");
 		});
 	}
 
