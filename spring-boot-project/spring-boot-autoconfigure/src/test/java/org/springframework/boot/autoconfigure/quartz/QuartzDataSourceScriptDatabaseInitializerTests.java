@@ -16,14 +16,18 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
+import java.util.Arrays;
+
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
@@ -43,6 +47,18 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 		assertThat(settings.getSchemaLocations())
 				.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
 		verifyNoInteractions(dataSource);
+	}
+
+	@Test
+	void customizeSetCommentPrefixes() {
+		QuartzProperties properties = new QuartzProperties();
+		properties.getJdbc().setPlatform("test");
+		properties.getJdbc().setCommentPrefix(Arrays.asList("##", "--"));
+		QuartzDataSourceScriptDatabaseInitializer initializer = new QuartzDataSourceScriptDatabaseInitializer(
+				mock(DataSource.class), properties);
+		ResourceDatabasePopulator populator = mock(ResourceDatabasePopulator.class);
+		initializer.customize(populator);
+		verify(populator).setCommentPrefixes("##", "--");
 	}
 
 }
