@@ -352,6 +352,8 @@ Remote devtools support is provided in two parts: a server-side endpoint that ac
 The server component is automatically enabled when the configprop:spring.devtools.remote.secret[] property is set.
 The client component must be launched manually.
 
+NOTE: Remote devtools is not supported for Spring WebFlux applications.
+
 
 
 [[using.devtools.remote-applications.client]]
