@@ -42,13 +42,13 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 
-	protected final BatchProperties properties;
+	private final BatchProperties properties;
 
-	protected final DataSource dataSource;
+	private final DataSource dataSource;
 
 	private PlatformTransactionManager transactionManager;
 
-	protected final TransactionManagerCustomizers transactionManagerCustomizers;
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
 
 	private JobRepository jobRepository;
 

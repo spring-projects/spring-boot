@@ -41,14 +41,14 @@ final class JobRepositoryTestingSupport {
 
 	static Consumer<JobRepository> isolationLevelRequirements(String isolationLevel) {
 		return (jobRepository) ->
-				// jobRepository is proxied twice, the inner proxy has the transaction advice.
-				// This logic does not assume anything about proxy hierarchy, but it does about
-				// the advice itself.
-				assertThat(getTransactionAdvices(jobRepository))
-						.anySatisfy((advice) -> assertThat(advice).extracting("transactionAttributeSource")
-								.extracting(Object::toString, as(InstanceOfAssertFactories.STRING))
-								.contains("create*=PROPAGATION_REQUIRES_NEW," + isolationLevel)
-								.contains("getLastJobExecution*=PROPAGATION_REQUIRES_NEW," + isolationLevel));
+		// jobRepository is proxied twice, the inner proxy has the transaction advice.
+		// This logic does not assume anything about proxy hierarchy, but it does about
+		// the advice itself.
+		assertThat(getTransactionAdvices(jobRepository))
+				.anySatisfy((advice) -> assertThat(advice).extracting("transactionAttributeSource")
+						.extracting(Object::toString, as(InstanceOfAssertFactories.STRING))
+						.contains("create*=PROPAGATION_REQUIRES_NEW," + isolationLevel)
+						.contains("getLastJobExecution*=PROPAGATION_REQUIRES_NEW," + isolationLevel));
 	}
 
 	private static Stream<Advice> getTransactionAdvices(Object candidate) {
@@ -60,10 +60,8 @@ final class JobRepositoryTestingSupport {
 	private static void getTransactionAdvices(Object candidate, Builder<Advice> builder) {
 		try {
 			if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised) {
-				Arrays.stream(((Advised) candidate).getAdvisors())
-						.map(Advisor::getAdvice)
-						.filter(TransactionAspectSupport.class::isInstance)
-						.forEach(builder::add);
+				Arrays.stream(((Advised) candidate).getAdvisors()).map(Advisor::getAdvice)
+						.filter(TransactionAspectSupport.class::isInstance).forEach(builder::add);
 				Object target = ((Advised) candidate).getTargetSource().getTarget();
 				if (target != null) {
 					getTransactionAdvices(target, builder);
