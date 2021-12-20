@@ -250,7 +250,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.2.5") {
+	library("Dropwizard Metrics", "4.2.7") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
