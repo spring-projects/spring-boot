@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.session;
 
 import java.util.Collections;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -143,7 +143,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 				.withPropertyValues("server.servlet.session.cookie.name=sid",
 						"server.servlet.session.cookie.domain=spring", "server.servlet.session.cookie.path=/test",
 						"server.servlet.session.cookie.httpOnly=false", "server.servlet.session.cookie.secure=false",
-						"server.servlet.session.cookie.maxAge=10s")
+						"server.servlet.session.cookie.maxAge=10s", "server.servlet.session.cookie.sameSite=strict")
 				.run((context) -> {
 					DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName", "sid");
@@ -152,6 +152,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("useHttpOnlyCookie", false);
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("useSecureCookie", false);
 					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieMaxAge", 10);
+					assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Strict");
 				});
 	}
 
@@ -160,7 +161,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 				.withPropertyValues("server.port=0").run((context) -> {
 					SessionRepositoryFilter<?> filter = context.getBean(SessionRepositoryFilter.class);
-					assertThat(filter).extracting("httpSessionIdResolver").extracting("cookieSerializer")
+					assertThat(filter).extracting("httpSessionIdResolver.cookieSerializer")
 							.isSameAs(context.getBean(DefaultCookieSerializer.class));
 				});
 	}

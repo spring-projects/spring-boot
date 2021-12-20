@@ -31,4 +31,5 @@ war {
 
 bootBuildImage {
 	archiveFile = war.archiveFile
+	environment = ['BP_TOMCAT_VERSION': '10.*']
 }

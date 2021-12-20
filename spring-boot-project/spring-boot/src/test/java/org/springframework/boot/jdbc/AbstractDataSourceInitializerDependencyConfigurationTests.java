@@ -40,11 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AbstractDataSourceInitializerDependencyConfigurationTests {
 
 	@Test
-	void beanThatDependsOnDatabaseInitializationDependsOnAbstractDataSourceInitializerBeans() {
+	void beansThatDependOnDatabaseInitializationDependOnAbstractDataSourceInitializerBeans() {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				TestConfiguration.class)) {
-			assertThat(context.getBeanFactory().getBeanDefinition("dependsOnDataSourceInitialization").getDependsOn())
-					.contains("initializer");
+			assertThat(context.getBeanFactory().getBeanDefinition("factoryMethodDependsOnDatabaseInitialization")
+					.getDependsOn()).contains("initializer");
+			assertThat(context.getBeanFactory().getBeanDefinition("beanClassDependsOnDatabaseInitialization")
+					.getDependsOn()).contains("initializer");
 		}
 	}
 
@@ -59,8 +61,13 @@ class AbstractDataSourceInitializerDependencyConfigurationTests {
 
 		@Bean
 		@DependsOnDatabaseInitialization
-		String dependsOnDataSourceInitialization() {
+		String factoryMethodDependsOnDatabaseInitialization() {
 			return "test";
+		}
+
+		@Bean
+		DatabaseInitializationDependent beanClassDependsOnDatabaseInitialization() {
+			return new DatabaseInitializationDependent();
 		}
 
 		@Bean
@@ -79,6 +86,11 @@ class AbstractDataSourceInitializerDependencyConfigurationTests {
 
 			};
 		}
+
+	}
+
+	@DependsOnDatabaseInitialization
+	static class DatabaseInitializationDependent {
 
 	}
 

@@ -1,4 +1,4 @@
-= Spring Boot image:https://ci.spring.io/api/v1/teams/spring-boot/pipelines/spring-boot-2.6.x/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/spring-boot/pipelines/spring-boot-2.6.x?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Gradle Enterprise", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
+= Spring Boot image:https://ci.spring.io/api/v1/teams/spring-boot/pipelines/spring-boot-3.0.x/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/spring-boot/pipelines/spring-boot-3.0.x?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Gradle Enterprise", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
 :docs: https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
 :github: https://github.com/spring-projects/spring-boot
 
@@ -6,7 +6,7 @@ Spring Boot helps you to create Spring-powered, production-grade applications an
 It takes an opinionated view of the Spring platform so that new and existing users can quickly get to the bits they need.
 
 You can use Spring Boot to create stand-alone Java applications that can be started using `java -jar` or more traditional WAR deployments.
-We also provide a command line tool that runs Spring scripts.
+We also provide a command-line tool that runs Spring scripts.
 
 Our primary goals are:
 
@@ -50,7 +50,7 @@ Here is a quick teaser of a complete Spring Boot application in Java:
 Are you having trouble with Spring Boot? We want to help!
 
 * Check the {docs}/html/[reference documentation], especially the {docs}/html/howto.html#howto[How-to's] -- they provide solutions to the most common questions.
-* Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] web-site for a wealth of reference documentation.
+* Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] website for a wealth of reference documentation.
   If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
 * Ask a question -- we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
@@ -69,7 +69,7 @@ If you want to raise an issue, please follow the recommendations below:
 We like to know the Spring Boot version, operating system, and JVM version you're using.
 * If you need to paste code or include a stack trace, use Markdown.
 +++```+++ escapes before and after your text.
-* If possible, try to create a test-case or project that replicates the problem and attach it to the issue.
+* If possible, try to create a test case or project that replicates the problem and attach it to the issue.
 
 
 
@@ -104,7 +104,7 @@ The main library providing features that support the other parts of Spring Boot.
 * The `SpringApplication` class, providing static convenience methods that can be used to write a stand-alone Spring Application.
   Its sole job is to create and refresh an appropriate Spring `ApplicationContext`.
 * Embedded web applications with a choice of container (Tomcat, Jetty, or Undertow).
-* First class externalized configuration support.
+* First-class externalized configuration support.
 * Convenience `ApplicationContext` initializers, including support for sensible logging defaults.
 
 
@@ -120,13 +120,13 @@ Auto-configuration will always back away as the user starts to define their own 
 
 === spring-boot-starters
 Starters are a set of convenient dependency descriptors that you can include in your application.
-You get a one-stop-shop for all the Spring and related technology you need without having to hunt through sample code and copy paste loads of dependency descriptors.
+You get a one-stop shop for all the Spring and related technology you need without having to hunt through sample code and copy-paste loads of dependency descriptors.
 For example, if you want to get started using Spring and JPA for database access, include the `spring-boot-starter-data-jpa` dependency in your project, and you are good to go.
 
 
 
 === spring-boot-cli
-The Spring command line application compiles and runs Groovy source, allowing you to write the absolute minimum amount of code to get an application running.
+The Spring command-line application compiles and runs Groovy source, allowing you to write the absolute minimum amount of code to get an application running.
 Spring CLI can also watch files, automatically recompiling and restarting when they change.
 
 
@@ -160,7 +160,7 @@ It includes many annotations that can automatically configure a slice of your ap
 
 === spring-boot-loader
 Spring Boot Loader provides the secret sauce that allows you to build a single jar file that can be launched using `java -jar`.
-Generally you will not need to use `spring-boot-loader` directly, but instead work with the link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin.
+Generally, you will not need to use `spring-boot-loader` directly but work with the link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin instead.
 
 
 

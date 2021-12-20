@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -237,7 +238,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 			try {
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
 				acceptedMediaTypes.removeIf(MediaType.ALL::equalsTypeAndSubtype);
-				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
+				MimeTypeUtils.sortBySpecificity(acceptedMediaTypes);
 				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}
 			catch (InvalidMediaTypeException ex) {

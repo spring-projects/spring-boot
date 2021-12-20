@@ -44,8 +44,7 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
-	private static final String[] OPTIONAL_INCLUDES = { "com.fasterxml.jackson.databind.Module",
-			"org.thymeleaf.dialect.IDialect" };
+	private static final String[] OPTIONAL_INCLUDES = { "com.fasterxml.jackson.databind.Module" };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 

@@ -22,8 +22,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -526,7 +526,7 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@Override
 		public Validator mvcValidator() {
-			if (!ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
+			if (!ClassUtils.isPresent("jakarta.validation.Validator", getClass().getClassLoader())) {
 				return super.mvcValidator();
 			}
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());

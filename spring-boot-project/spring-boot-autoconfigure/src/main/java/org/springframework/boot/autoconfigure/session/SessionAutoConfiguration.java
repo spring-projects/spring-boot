@@ -48,6 +48,7 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -106,6 +107,7 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
+			map.from(cookie::getSameSite).as(SameSite::attributeValue).to(cookieSerializer::setSameSite);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
 		}

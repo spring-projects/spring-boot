@@ -31,7 +31,6 @@ org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguratio
 org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jms.JmsHealthContributorAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ldap.LdapHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration,\
@@ -70,9 +69,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetri
 org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.integration.IntegrationMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.mongo.MongoMetricsAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.r2dbc.ConnectionPoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.redis.LettuceMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.startup.StartupTimeMetricsListenerAutoConfiguration,\
@@ -106,10 +103,7 @@ org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguratio
 org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration,\
-org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration

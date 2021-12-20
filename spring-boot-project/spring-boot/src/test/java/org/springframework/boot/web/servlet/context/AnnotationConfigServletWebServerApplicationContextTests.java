@@ -16,11 +16,11 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import javax.servlet.GenericServlet;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.GenericServlet;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

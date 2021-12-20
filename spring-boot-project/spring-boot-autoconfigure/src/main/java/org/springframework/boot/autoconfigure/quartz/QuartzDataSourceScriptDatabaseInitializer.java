@@ -16,12 +16,17 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Quartz Scheduler database. May be
@@ -34,6 +39,8 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
  */
 public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
+	private final List<String> commentPrefixes;
+
 	/**
 	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the Quartz Scheduler data source
@@ -41,7 +48,7 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzProperties properties) {
-		this(dataSource, getSettings(dataSource, properties));
+		this(dataSource, getSettings(dataSource, properties), properties.getJdbc().getCommentPrefix());
 	}
 
 	/**
@@ -51,7 +58,20 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
+		this(dataSource, settings, null);
+	}
+
+	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
+			List<String> commentPrefixes) {
 		super(dataSource, settings);
+		this.commentPrefixes = commentPrefixes;
+	}
+
+	@Override
+	protected void customize(ResourceDatabasePopulator populator) {
+		if (!ObjectUtils.isEmpty(this.commentPrefixes)) {
+			populator.setCommentPrefixes(this.commentPrefixes.toArray(new String[0]));
+		}
 	}
 
 	/**
@@ -66,16 +86,23 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 */
 	public static DatabaseInitializationSettings getSettings(DataSource dataSource, QuartzProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties.getJdbc()));
+		settings.setMode(properties.getJdbc().getInitializeSchema());
+		settings.setContinueOnError(true);
+		return settings;
+	}
+
+	private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzProperties.Jdbc properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql_innodb");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.SQLSERVER, "sqlServer");
-		settings.setSchemaLocations(platformResolver.resolveAll(dataSource, properties.getJdbc().getSchema()));
-		settings.setMode(properties.getJdbc().getInitializeSchema());
-		settings.setContinueOnError(true);
-		return settings;
+		if (StringUtils.hasText(properties.getPlatform())) {
+			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
+		}
+		return platformResolver.resolveAll(dataSource, properties.getSchema());
 	}
 
 }

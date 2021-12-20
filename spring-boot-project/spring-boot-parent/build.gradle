@@ -41,7 +41,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Inject", "1.0.5") {
+	library("Jakarta Inject", "2.0.1") {
 		group("jakarta.inject") {
 			modules = [
 				"jakarta.inject-api"
@@ -188,4 +188,9 @@ bom {
 
 dependencies {
 	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+	// Internal module so enforced platform dependencies are OK
+	suppressedValidationErrors.add('enforced-platform')
 }

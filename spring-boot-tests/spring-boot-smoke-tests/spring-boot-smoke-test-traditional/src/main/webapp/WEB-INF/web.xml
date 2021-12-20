@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee "
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
 	<servlet>
 		<servlet-name>appServlet</servlet-name>
@@ -22,7 +22,7 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-	<!-- Disables Servlet Container welcome file handling. Needed for compatibility 
+	<!-- Disables Servlet Container welcome file handling. Needed for compatibility
 		with Servlet 3.0 and Tomcat 7.0 -->
 	<welcome-file-list>
 		<welcome-file></welcome-file>

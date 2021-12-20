@@ -19,13 +19,12 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.time.Duration;
 
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties specific to Elasticsearch's {@link RestClient} and
- * {@link RestHighLevelClient}.
+ * {@link org.elasticsearch.client.RestHighLevelClient}.
  *
  * @author Brian Clozel
  * @since 2.1.0

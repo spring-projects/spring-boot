@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.websocket.reactive;
 
-import javax.servlet.Servlet;
-import javax.websocket.server.ServerContainer;
+import jakarta.servlet.Servlet;
+import jakarta.websocket.server.ServerContainer;
 
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.websocket.server.WsSci;

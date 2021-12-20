@@ -29,12 +29,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -48,7 +46,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
@@ -57,8 +54,10 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
+import org.eclipse.jetty.webapp.ClassMatcher;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -76,6 +75,7 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -140,6 +140,13 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
+	@Override
+	@Disabled("Jetty 11 does not support User-Agent-based compression")
+	protected void noCompressionForUserAgent() {
+
+	}
+
+	@Test
 	void contextPathIsLoggedOnStartupWhenCompressionIsEnabled(CapturedOutput output) {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setContextPath("/custom");
@@ -152,18 +159,11 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	protected void correctVersionOfJettyUsed() {
-		String jettyVersion = ErrorHandler.class.getPackage().getImplementationVersion();
-		Matcher matcher = Pattern.compile("[0-9]+.[0-9]+.([0-9]+)[\\.-].*").matcher(jettyVersion);
-		assertThat(matcher.find()).isTrue();
-		assertThat(Integer.valueOf(matcher.group(1))).isGreaterThan(19);
-	}
-
-	@Test
-	protected void jettyConfigurations() throws Exception {
+	void jettyConfigurations() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		Configuration[] configurations = new Configuration[4];
-		Arrays.setAll(configurations, (i) -> mock(Configuration.class));
+		Configuration[] configurations = new Configuration[] { mockConfiguration(Configuration1.class),
+				mockConfiguration(Configuration2.class), mockConfiguration(Configuration3.class),
+				mockConfiguration(Configuration4.class) };
 		factory.setConfigurations(Arrays.asList(configurations[0], configurations[1]));
 		factory.addConfigurations(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
@@ -171,6 +171,14 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		for (Configuration configuration : configurations) {
 			ordered.verify(configuration).configure(any(WebAppContext.class));
 		}
+	}
+
+	Configuration mockConfiguration(Class<? extends Configuration> type) {
+		Configuration mock = mock(type);
+		ClassMatcher classMatcher = new ClassMatcher();
+		given(mock.getSystemClasses()).willReturn(classMatcher);
+		given(mock.getServerClasses()).willReturn(classMatcher);
+		return mock;
 	}
 
 	@Test
@@ -524,6 +532,22 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	private static class CustomErrorHandler extends ErrorPageErrorHandler {
+
+	}
+
+	interface Configuration1 extends Configuration {
+
+	}
+
+	interface Configuration2 extends Configuration {
+
+	}
+
+	interface Configuration3 extends Configuration {
+
+	}
+
+	interface Configuration4 extends Configuration {
 
 	}
 

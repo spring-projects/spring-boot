@@ -71,7 +71,7 @@ class WarPluginAction implements PluginApplicationAction {
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		FileCollection classpath = project.getConvention().getByType(SourceSetContainer.class)
+		FileCollection classpath = project.getExtensions().getByType(SourceSetContainer.class)
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
 				.minus(providedRuntimeConfiguration(project)).minus((developmentOnly.minus(productionRuntimeClasspath)))
 				.filter(new JarTypeFileSpec());

@@ -73,7 +73,7 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '1.8'");
+			out.println("sourceCompatibility = '17'");
 			out.println("description 'Test project for manifest customization'");
 			out.println("jar.archiveFileName = 'test.jar'");
 		}
@@ -90,7 +90,7 @@ class ConventionsPluginTests {
 					.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
-			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
 		}
 	}
 
@@ -103,7 +103,7 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '1.8'");
+			out.println("sourceCompatibility = '17'");
 			out.println("description 'Test'");
 			out.println("repositories {");
 			out.println("    mavenCentral()");
@@ -125,7 +125,7 @@ class ConventionsPluginTests {
 					.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
-			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
 		}
 	}
 
@@ -138,7 +138,7 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '1.8'");
+			out.println("sourceCompatibility = '17'");
 			out.println("description 'Test'");
 			out.println("repositories {");
 			out.println("    mavenCentral()");
@@ -160,7 +160,7 @@ class ConventionsPluginTests {
 					.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
-			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
 		}
 	}
 

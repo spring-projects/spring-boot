@@ -16,21 +16,11 @@
 
 package smoketest.web.secure;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Tests to ensure that the error page is accessible only to authorized users.
@@ -38,61 +28,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		classes = { ErrorPageTests.TestConfiguration.class, SampleWebSecureApplication.class },
+		classes = { AbstractErrorPageTests.TestConfiguration.class, ErrorPageTests.SecurityConfiguration.class,
+				SampleWebSecureApplication.class },
 		properties = { "server.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password" })
-class ErrorPageTests {
+class ErrorPageTests extends AbstractErrorPageTests {
 
-	@Autowired
-	private TestRestTemplate testRestTemplate;
+	@org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods = false)
+	static class SecurityConfiguration {
 
-	@Test
-	void testBadCredentials() {
-		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "wrongpassword")
-				.exchange("/test", HttpMethod.GET, null, JsonNode.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull();
-	}
-
-	@Test
-	void testNoCredentials() {
-		final ResponseEntity<JsonNode> response = this.testRestTemplate.exchange("/test", HttpMethod.GET, null,
-				JsonNode.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull();
-	}
-
-	@Test
-	void testPublicNotFoundPage() {
-		final ResponseEntity<JsonNode> response = this.testRestTemplate.exchange("/public/notfound", HttpMethod.GET,
-				null, JsonNode.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull();
-	}
-
-	@Test
-	void testCorrectCredentials() {
-		final ResponseEntity<String> response = this.testRestTemplate.withBasicAuth("username", "password")
-				.exchange("/test", HttpMethod.GET, null, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		response.getBody();
-		assertThat(response.getBody()).isEqualTo("test");
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@RestController
-		static class TestController {
-
-			@GetMapping("/test")
-			String test() {
-				return "test";
-			}
-
+		@Bean
+		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+			http.authorizeRequests((requests) -> {
+				requests.antMatchers("/public/**").permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
+			http.httpBasic();
+			http.formLogin((form) -> form.loginPage("/login").permitAll());
+			return http.build();
 		}
 
 	}

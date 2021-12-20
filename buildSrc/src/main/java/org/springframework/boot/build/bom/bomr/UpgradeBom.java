@@ -84,6 +84,7 @@ public class UpgradeBom extends DefaultTask {
 	}
 
 	@TaskAction
+	@SuppressWarnings("deprecation")
 	void upgradeDependencies() {
 		GitHubRepository repository = createGitHub().getRepository(this.bom.getUpgrade().getGitHub().getOrganization(),
 				this.bom.getUpgrade().getGitHub().getRepository());

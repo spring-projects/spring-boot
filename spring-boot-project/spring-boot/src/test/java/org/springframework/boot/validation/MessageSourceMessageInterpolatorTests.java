@@ -18,8 +18,8 @@ package org.springframework.boot.validation;
 
 import java.util.Locale;
 
-import javax.validation.MessageInterpolator;
-import javax.validation.MessageInterpolator.Context;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.MessageInterpolator.Context;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dmytro Nosan
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class MessageSourceMessageInterpolatorTests {
 
@@ -53,6 +54,14 @@ class MessageSourceMessageInterpolatorTests {
 
 	@Test
 	void interpolateWhenParametersAreUnknownShouldLeaveThemUnchanged() {
+		this.messageSource.addMessage("top", Locale.getDefault(), "{child}+{child}");
+		assertThat(this.interpolator.interpolate("{foo}{top}{bar}", this.context))
+				.isEqualTo("{foo}{child}+{child}{bar}");
+	}
+
+	@Test
+	void interpolateWhenParametersAreUnknownUsingCodeAsDefaultShouldLeaveThemUnchanged() {
+		this.messageSource.setUseCodeAsDefaultMessage(true);
 		this.messageSource.addMessage("top", Locale.getDefault(), "{child}+{child}");
 		assertThat(this.interpolator.interpolate("{foo}{top}{bar}", this.context))
 				.isEqualTo("{foo}{child}+{child}{bar}");

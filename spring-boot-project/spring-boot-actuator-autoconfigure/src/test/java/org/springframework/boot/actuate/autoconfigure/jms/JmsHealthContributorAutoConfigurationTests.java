@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure.jms;
 
+import jakarta.jms.ConnectionFactory;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.jms.JmsHealthIndicator;
 import org.springframework.boot.actuate.ldap.LdapHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JmsHealthContributorAutoConfiguration}.
@@ -35,8 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmsHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
-					JmsHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JmsHealthContributorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class))
+			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
 	void runShouldCreateIndicator() {
@@ -47,6 +52,16 @@ class JmsHealthContributorAutoConfigurationTests {
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.jms.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration {
+
+		@Bean
+		ConnectionFactory connectionFactory() {
+			return mock(ConnectionFactory.class);
+		}
+
 	}
 
 }

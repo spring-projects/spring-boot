@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
 
@@ -125,7 +123,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		if (file.getKind() == Kind.DELETED) {
 			return null;
 		}
-		return AccessController.doPrivileged((PrivilegedAction<URL>) () -> createFileUrl(name, file));
+		return createFileUrl(name, file);
 	}
 
 	@Override
@@ -162,10 +160,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		if (file.getKind() == Kind.DELETED) {
 			throw new ClassNotFoundException(name);
 		}
-		return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
-			byte[] bytes = file.getContents();
-			return defineClass(name, bytes, 0, bytes.length);
-		});
+		byte[] bytes = file.getContents();
+		return defineClass(name, bytes, 0, bytes.length);
 	}
 
 	@Override

@@ -30,7 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import javax.servlet.ServletRegistration.Dynamic;
+
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;

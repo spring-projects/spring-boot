@@ -110,6 +110,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.initialize-schema=never")
 				.run((context) -> {
+					assertThat(context).doesNotHaveBean(JdbcSessionDataSourceScriptDatabaseInitializer.class);
 					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 							JdbcIndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
@@ -190,8 +191,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 							JdbcIndexedSessionRepository.class);
 					DataSource sessionDataSource = context.getBean("sessionDataSource", DataSource.class);
-					assertThat(repository).extracting("jdbcOperations").extracting("dataSource")
-							.isEqualTo(sessionDataSource);
+					assertThat(repository).extracting("jdbcOperations.dataSource").isEqualTo(sessionDataSource);
 					assertThat(context.getBean(JdbcSessionDataSourceScriptDatabaseInitializer.class))
 							.hasFieldOrPropertyWithValue("dataSource", sessionDataSource);
 					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.io.FileNotFoundException;
 
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
@@ -67,56 +68,63 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	 */
 	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl, SslStoreProvider sslStoreProvider) {
 		protocol.setSSLEnabled(true);
-		protocol.setSslProtocol(ssl.getProtocol());
-		configureSslClientAuth(protocol, ssl);
+		SSLHostConfig sslHostConfig = new SSLHostConfig();
+		sslHostConfig.setHostName(protocol.getDefaultSSLHostConfigName());
+		sslHostConfig.setSslProtocol(ssl.getProtocol());
+		protocol.addSslHostConfig(sslHostConfig);
+		configureSslClientAuth(sslHostConfig, ssl);
+		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.UNDEFINED);
 		if (ssl.getKeyStorePassword() != null) {
-			protocol.setKeystorePass(ssl.getKeyStorePassword());
+			certificate.setCertificateKeystorePassword(ssl.getKeyStorePassword());
 		}
 		if (ssl.getKeyPassword() != null) {
-			protocol.setKeyPass(ssl.getKeyPassword());
+			certificate.setCertificateKeyPassword(ssl.getKeyPassword());
 		}
-		protocol.setKeyAlias(ssl.getKeyAlias());
+		if (ssl.getKeyAlias() != null) {
+			certificate.setCertificateKeyAlias(ssl.getKeyAlias());
+		}
+		sslHostConfig.addCertificate(certificate);
 		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
 		if (StringUtils.hasText(ciphers)) {
-			protocol.setCiphers(ciphers);
+			sslHostConfig.setCiphers(ciphers);
 		}
+		configureEnabledProtocols(protocol, ssl);
+		if (sslStoreProvider != null) {
+			configureSslStoreProvider(protocol, sslHostConfig, certificate, sslStoreProvider);
+		}
+		else {
+			configureSslKeyStore(certificate, ssl);
+			configureSslTrustStore(sslHostConfig, ssl);
+		}
+	}
+
+	private void configureEnabledProtocols(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getEnabledProtocols() != null) {
 			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
 				sslHostConfig.setProtocols(StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
 			}
 		}
-		if (sslStoreProvider != null) {
-			configureSslStoreProvider(protocol, sslStoreProvider);
-		}
-		else {
-			configureSslKeyStore(protocol, ssl);
-			configureSslTrustStore(protocol, ssl);
-		}
 	}
 
-	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+	private void configureSslClientAuth(SSLHostConfig config, Ssl ssl) {
 		if (ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-			protocol.setClientAuth(Boolean.TRUE.toString());
+			config.setCertificateVerification("required");
 		}
 		else if (ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-			protocol.setClientAuth("want");
+			config.setCertificateVerification("optional");
 		}
 	}
 
-	protected void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol,
-			SslStoreProvider sslStoreProvider) {
+	protected void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol, SSLHostConfig sslHostConfig,
+			SSLHostConfigCertificate certificate, SslStoreProvider sslStoreProvider) {
 		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
 				"SslStoreProvider can only be used with Http11NioProtocol");
-		TomcatURLStreamHandlerFactory instance = TomcatURLStreamHandlerFactory.getInstance();
-		instance.addUserFactory(new SslStoreProviderUrlStreamHandlerFactory(sslStoreProvider));
 		try {
 			if (sslStoreProvider.getKeyStore() != null) {
-				protocol.setKeystorePass("");
-				protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+				certificate.setCertificateKeystore(sslStoreProvider.getKeyStore());
 			}
 			if (sslStoreProvider.getTrustStore() != null) {
-				protocol.setTruststorePass("");
-				protocol.setTruststoreFile(SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
+				sslHostConfig.setTrustStore(sslStoreProvider.getTrustStore());
 			}
 		}
 		catch (Exception ex) {
@@ -124,38 +132,38 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		}
 	}
 
-	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+	private void configureSslKeyStore(SSLHostConfigCertificate certificate, Ssl ssl) {
 		try {
-			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
+			certificate.setCertificateKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (Exception ex) {
 			throw new WebServerException("Could not load key store '" + ssl.getKeyStore() + "'", ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
-			protocol.setKeystoreType(ssl.getKeyStoreType());
+			certificate.setCertificateKeystoreType(ssl.getKeyStoreType());
 		}
 		if (ssl.getKeyStoreProvider() != null) {
-			protocol.setKeystoreProvider(ssl.getKeyStoreProvider());
+			certificate.setCertificateKeystoreProvider(ssl.getKeyStoreProvider());
 		}
 	}
 
-	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+	private void configureSslTrustStore(SSLHostConfig sslHostConfig, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				protocol.setTruststoreFile(ResourceUtils.getURL(ssl.getTrustStore()).toString());
+				sslHostConfig.setTruststoreFile(ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
 				throw new WebServerException("Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}
 		if (ssl.getTrustStorePassword() != null) {
-			protocol.setTruststorePass(ssl.getTrustStorePassword());
+			sslHostConfig.setTruststorePassword(ssl.getTrustStorePassword());
 		}
 		if (ssl.getTrustStoreType() != null) {
-			protocol.setTruststoreType(ssl.getTrustStoreType());
+			sslHostConfig.setTruststoreType(ssl.getTrustStoreType());
 		}
 		if (ssl.getTrustStoreProvider() != null) {
-			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
+			sslHostConfig.setTruststoreProvider(ssl.getTrustStoreProvider());
 		}
 	}
 

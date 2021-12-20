@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
@@ -640,9 +640,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			}
 		}
 
-		private javax.servlet.http.Cookie asServletCookie(Cookie cookie) {
+		private jakarta.servlet.http.Cookie asServletCookie(Cookie cookie) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			javax.servlet.http.Cookie result = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+			jakarta.servlet.http.Cookie result = new jakarta.servlet.http.Cookie(cookie.getName(), cookie.getValue());
 			map.from(cookie::getComment).to(result::setComment);
 			map.from(cookie::getDomain).to(result::setDomain);
 			map.from(cookie::getMaxAge).to(result::setMaxAge);
@@ -653,7 +653,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			return result;
 		}
 
-		private SameSite getSameSite(javax.servlet.http.Cookie cookie) {
+		private SameSite getSameSite(jakarta.servlet.http.Cookie cookie) {
 			for (CookieSameSiteSupplier supplier : this.suppliers) {
 				SameSite sameSite = supplier.getSameSite(cookie);
 				if (sameSite != null) {

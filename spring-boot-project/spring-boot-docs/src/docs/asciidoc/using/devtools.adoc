@@ -50,7 +50,6 @@ While caching is very beneficial in production, it can be counter-productive dur
 For this reason, spring-boot-devtools disables the caching options by default.
 
 Cache options are usually configured by settings in your `application.properties` file.
-For example, Thymeleaf offers the configprop:spring.thymeleaf.cache[] property.
 Rather than needing to set these properties manually, the `spring-boot-devtools` module automatically applies sensible development-time configuration.
 
 Because you need more information about web requests while developing Spring MVC and Spring WebFlux applications, developer tools suggests you to enable `DEBUG` logging for the `web` logging group.
@@ -354,6 +353,8 @@ Like any important password or secret, the value should be unique and strong suc
 Remote devtools support is provided in two parts: a server-side endpoint that accepts connections and a client application that you run in your IDE.
 The server component is automatically enabled when the configprop:spring.devtools.remote.secret[] property is set.
 The client component must be launched manually.
+
+NOTE: Remote devtools is not supported for Spring WebFlux applications.
 
 
 

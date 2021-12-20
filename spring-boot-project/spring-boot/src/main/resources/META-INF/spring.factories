@@ -93,5 +93,4 @@ org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
 org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector,\
-org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector

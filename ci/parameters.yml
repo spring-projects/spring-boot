@@ -7,7 +7,7 @@ homebrew-tap-repo: "https://github.com/spring-io/homebrew-tap.git"
 docker-hub-organization: "springci"
 artifactory-server: "https://repo.spring.io"
 branch: "main"
-milestone: "2.6.x"
+milestone: "3.0.x"
 build-name: "spring-boot"
 concourse-url: "https://ci.spring.io"
 task-timeout: 2h00m

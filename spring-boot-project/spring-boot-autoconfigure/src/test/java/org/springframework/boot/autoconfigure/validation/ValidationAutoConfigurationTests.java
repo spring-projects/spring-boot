@@ -19,10 +19,10 @@ package org.springframework.boot.autoconfigure.validation;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 import org.junit.jupiter.api.Test;
 

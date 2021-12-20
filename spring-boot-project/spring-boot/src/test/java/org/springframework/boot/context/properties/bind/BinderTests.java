@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Validation;
+import jakarta.validation.Validation;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;

@@ -22,9 +22,6 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.atomikos:transactions-jdbc")
-	optional("com.atomikos:transactions-jms")
-	optional("com.atomikos:transactions-jta")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.h2database:h2")
 	optional("com.google.code.gson:gson")
@@ -38,9 +35,8 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet") {
+	optional("io.undertow:undertow-servlet-jakartaee9") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
 	}
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
@@ -75,16 +71,8 @@ dependencies {
 	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.hamcrest:hamcrest-library")
-	optional("org.hibernate:hibernate-core") {
-		exclude(group: "javax.activation", module: "javax.activation-api")
-		exclude(group: "javax.persistence", module: "javax.persistence-api")
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-		exclude(group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec")
-	}
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.jooq:jooq") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
@@ -100,7 +88,13 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.security:spring-security-web")
-	optional("org.springframework.ws:spring-ws-core")
+	optional("org.springframework.ws:spring-ws-core") {
+		exclude group: "com.sun.mail", module: "jakarta.mail"
+		exclude group: "jakarta.platform", module: "jakarta.jakartaee-api"
+		exclude group: "org.eclipse.jetty", module: "jetty-server"
+		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
+		exclude group: "jakarta.mail", module: "jakarta.mail-api"
+	}
 	optional("org.yaml:snakeyaml")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
@@ -116,7 +110,7 @@ dependencies {
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
-	testImplementation("jakarta.persistence:jakarta.persistence-api")
+	testImplementation("jakarta.inject:jakarta.inject-api")
 	testImplementation("jakarta.xml.ws:jakarta.xml.ws-api")
 	testImplementation("mysql:mysql-connector-java")
 	testImplementation("net.sourceforge.jtds:jtds")
@@ -177,6 +171,6 @@ compileJava {
 	doLast new org.springframework.boot.build.log4j2.ReproducibleLog4j2PluginsDatAction()
 }
 
-toolchain {
-	testJvmArgs.add("--add-opens=java.base/java.net=ALL-UNNAMED")
+test {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

@@ -21,14 +21,14 @@ import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionIdListener;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRequestAttributeListener;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.http.HttpSessionAttributeListener;
+import jakarta.servlet.http.HttpSessionIdListener;
+import jakarta.servlet.http.HttpSessionListener;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;

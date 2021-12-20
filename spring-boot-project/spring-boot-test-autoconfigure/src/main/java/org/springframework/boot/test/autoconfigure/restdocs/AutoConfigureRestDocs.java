@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.restassured.RestAssured;
-
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.context.annotation.Import;
@@ -35,22 +33,19 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Annotation that can be applied to a test class to enable and configure
  * auto-configuration of Spring REST Docs. The auto-configuration sets up
- * {@link MockMvc}-based testing of a servlet web application, {@link WebTestClient}-based
- * testing of a reactive web application, or {@link RestAssured}-based testing of any web
- * application over HTTP.
+ * {@link MockMvc}-based testing of a servlet web application or
+ * {@link WebTestClient}-based testing of a reactive web application.
  * <p>
  * Allows configuration of the output directory and the host, scheme, and port of
  * generated URIs. When further configuration is required a
- * {@link RestDocsMockMvcConfigurationCustomizer},
- * {@link RestDocsWebTestClientConfigurationCustomizer}, or
- * {@link RestDocsRestAssuredConfigurationCustomizer} bean can be used.
+ * {@link RestDocsMockMvcConfigurationCustomizer} or
+ * {@link RestDocsWebTestClientConfigurationCustomizer} bean can be used.
  *
  * @author Andy Wilkinson
  * @since 1.4.0
  * @see RestDocsAutoConfiguration
  * @see RestDocsMockMvcConfigurationCustomizer
  * @see RestDocsWebTestClientConfigurationCustomizer
- * @see RestDocsRestAssuredConfigurationCustomizer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

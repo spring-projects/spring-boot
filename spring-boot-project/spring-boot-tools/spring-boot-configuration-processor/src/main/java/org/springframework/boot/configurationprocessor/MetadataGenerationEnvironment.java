@@ -63,7 +63,7 @@ class MetadataGenerationEnvironment {
 		excludes.add("java.io.PrintWriter");
 		excludes.add("java.lang.ClassLoader");
 		excludes.add("java.util.concurrent.ThreadFactory");
-		excludes.add("javax.jms.XAConnectionFactory");
+		excludes.add("jakarta.jms.XAConnectionFactory");
 		excludes.add("javax.sql.DataSource");
 		excludes.add("javax.sql.XADataSource");
 		excludes.add("org.apache.tomcat.jdbc.pool.PoolConfiguration");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
+
+import jakarta.transaction.TransactionManager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;

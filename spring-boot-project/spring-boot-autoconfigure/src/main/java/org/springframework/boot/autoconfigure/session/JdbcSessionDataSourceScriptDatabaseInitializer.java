@@ -16,11 +16,14 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Session JDBC database. May
@@ -67,11 +70,18 @@ public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceSc
 	 */
 	static DatabaseInitializationSettings getSettings(DataSource dataSource, JdbcSessionProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		settings.setSchemaLocations(platformResolver.resolveAll(dataSource, properties.getSchema()));
+		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
 		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
+	}
+
+	private static List<String> resolveSchemaLocations(DataSource dataSource, JdbcSessionProperties properties) {
+		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
+		if (StringUtils.hasText(properties.getPlatform())) {
+			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
+		}
+		return platformResolver.resolveAll(dataSource, properties.getSchema());
 	}
 
 }

@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -134,7 +135,7 @@ class WebFluxTagsTests {
 		ServerWebExchange exchange = mock(ServerWebExchange.class);
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
 		given(exchange.getRequest()).willReturn(request);
-		given(request.getMethodValue()).willReturn("CUSTOM");
+		given(request.getMethod()).willReturn(HttpMethod.valueOf("CUSTOM"));
 		Tag tag = WebFluxTags.method(exchange);
 		assertThat(tag.getValue()).isEqualTo("CUSTOM");
 	}

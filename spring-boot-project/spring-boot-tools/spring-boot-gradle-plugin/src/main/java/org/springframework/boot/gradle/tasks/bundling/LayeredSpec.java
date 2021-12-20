@@ -23,11 +23,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import groovy.lang.Closure;
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Layers;
@@ -54,14 +55,20 @@ public class LayeredSpec {
 
 	private boolean enabled = true;
 
-	private ApplicationSpec application = new ApplicationSpec();
+	private ApplicationSpec application;
 
-	private DependenciesSpec dependencies = new DependenciesSpec();
+	private DependenciesSpec dependencies;
 
 	@Optional
 	private List<String> layerOrder;
 
 	private Layers layers;
+
+	@Inject
+	public LayeredSpec(ObjectFactory objects) {
+		this.application = objects.newInstance(ApplicationSpec.class);
+		this.dependencies = objects.newInstance(DependenciesSpec.class);
+	}
 
 	/**
 	 * Returns whether the layer tools should be included as a dependency in the layered
@@ -129,14 +136,6 @@ public class LayeredSpec {
 	}
 
 	/**
-	 * Customizes the {@link ApplicationSpec} using the given {@code closure}.
-	 * @param closure the closure
-	 */
-	public void application(Closure<?> closure) {
-		application(ConfigureUtil.configureUsing(closure));
-	}
-
-	/**
 	 * Returns the {@link DependenciesSpec} that controls the layers to which dependencies
 	 * belong.
 	 * @return the dependencies spec
@@ -161,14 +160,6 @@ public class LayeredSpec {
 	 */
 	public void dependencies(Action<DependenciesSpec> action) {
 		action.execute(this.dependencies);
-	}
-
-	/**
-	 * Customizes the {@link DependenciesSpec} using the given {@code closure}.
-	 * @param closure the closure
-	 */
-	public void dependencies(Closure<?> closure) {
-		dependencies(ConfigureUtil.configureUsing(closure));
 	}
 
 	/**
@@ -242,10 +233,6 @@ public class LayeredSpec {
 
 		public void intoLayer(String layer) {
 			this.intoLayers.add(this.specFactory.apply(layer));
-		}
-
-		public void intoLayer(String layer, Closure<?> closure) {
-			intoLayer(layer, ConfigureUtil.configureUsing(closure));
 		}
 
 		public void intoLayer(String layer, Action<IntoLayerSpec> action) {
@@ -385,6 +372,11 @@ public class LayeredSpec {
 	 */
 	public static class ApplicationSpec extends IntoLayersSpec {
 
+		@Inject
+		public ApplicationSpec() {
+			super(new IntoLayerSpecFactory());
+		}
+
 		/**
 		 * Creates a new {@code ApplicationSpec} with the given {@code contents}.
 		 * @param contents specs for the layers in which application content should be
@@ -413,6 +405,11 @@ public class LayeredSpec {
 	 * An {@link IntoLayersSpec} that controls the layers to which dependencies belong.
 	 */
 	public static class DependenciesSpec extends IntoLayersSpec implements Serializable {
+
+		@Inject
+		public DependenciesSpec() {
+			super(new IntoLayerSpecFactory());
+		}
 
 		/**
 		 * Creates a new {@code DependenciesSpec} with the given {@code contents}.

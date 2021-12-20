@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.ExceptionListener;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ExceptionListener;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

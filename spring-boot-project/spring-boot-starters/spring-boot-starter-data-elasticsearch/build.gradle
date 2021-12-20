@@ -6,7 +6,5 @@ description = "Starter for using Elasticsearch search and analytics engine and S
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-	api("org.springframework.data:spring-data-elasticsearch") {
-		exclude group: "org.elasticsearch.client", module: "transport"
-	}
+	api("org.springframework.data:spring-data-elasticsearch")
 }

@@ -18,8 +18,9 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Properties;
 
-import javax.mail.Session;
 import javax.naming.Context;
+
+import jakarta.mail.Session;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

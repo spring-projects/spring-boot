@@ -20,21 +20,10 @@ dependencies {
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")
-	optional("io.rest-assured:rest-assured") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "activation"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
 	optional("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	optional("org.hibernate:hibernate-core") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "javax.activation-api"
-		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
-	}
+	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit-driver") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -57,11 +46,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
-	}
-	optional("org.springframework.restdocs:spring-restdocs-restassured") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "activation"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
@@ -86,17 +70,14 @@ dependencies {
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("org.apache.commons:commons-pool2")
-	testImplementation("org.apache.johnzon:johnzon-jsonb")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-el")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.aspectj:aspectjweaver")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.eclipse:yasson")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
-	testImplementation("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")
@@ -110,7 +91,6 @@ dependencies {
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
-	testImplementation("org.thymeleaf:thymeleaf")
 }
 
 configurations {

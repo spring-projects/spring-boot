@@ -20,7 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.validation.MessageInterpolator;
+import jakarta.validation.MessageInterpolator;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -30,6 +30,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * message using the underlying {@link MessageInterpolator}.
  *
  * @author Dmytro Nosan
+ * @author Scott Frederick
  */
 class MessageSourceMessageInterpolator implements MessageInterpolator {
 
@@ -115,7 +116,12 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 	private String replaceParameter(String parameter, Locale locale, Set<String> visitedParameters) {
 		parameter = replaceParameters(parameter, locale, visitedParameters);
 		String value = this.messageSource.getMessage(parameter, null, null, locale);
-		return (value != null) ? replaceParameters(value, locale, visitedParameters) : null;
+		return (value != null && !isUsingCodeAsDefaultMessage(value, parameter))
+				? replaceParameters(value, locale, visitedParameters) : null;
+	}
+
+	private boolean isUsingCodeAsDefaultMessage(String value, String parameter) {
+		return value.equals(parameter);
 	}
 
 }

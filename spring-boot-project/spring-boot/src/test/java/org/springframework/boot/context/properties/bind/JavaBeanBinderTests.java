@@ -319,6 +319,18 @@ class JavaBeanBinderTests {
 	}
 
 	@Test
+	void bindToClassWithOverriddenPropertyShouldSetSubclassProperty() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value-bean.int-value", "123");
+		source.put("foo.value-bean.sub-int-value", "456");
+		this.sources.add(source);
+		ExampleNestedSubclassBean bean = this.binder.bind("foo", Bindable.of(ExampleNestedSubclassBean.class)).get();
+		assertThat(bean.getValueBean()).isNotNull();
+		assertThat(bean.getValueBean().getIntValue()).isEqualTo(123);
+		assertThat(bean.getValueBean().getSubIntValue()).isEqualTo(456);
+	}
+
+	@Test
 	void bindToClassWhenPropertiesMissingShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.int-value", "12");
@@ -798,6 +810,35 @@ class JavaBeanBinderTests {
 
 			String getFoo() {
 				return "foo";
+			}
+
+		}
+
+	}
+
+	static class ExampleNestedSubclassBean extends ExampleNestedBean {
+
+		private ExampleValueSubclassBean valueBean;
+
+		@Override
+		ExampleValueSubclassBean getValueBean() {
+			return this.valueBean;
+		}
+
+		void setValueBean(ExampleValueSubclassBean valueBean) {
+			this.valueBean = valueBean;
+		}
+
+		static class ExampleValueSubclassBean extends ExampleValueBean {
+
+			private int subIntValue;
+
+			int getSubIntValue() {
+				return this.subIntValue;
+			}
+
+			void setSubIntValue(int intValue) {
+				this.subIntValue = intValue;
 			}
 
 		}

@@ -32,7 +32,7 @@ import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.plugins.ApplicationPlugin;
-import org.gradle.api.plugins.ApplicationPluginConvention;
+import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
@@ -50,11 +50,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		ApplicationPluginConvention applicationConvention = project.getConvention()
-				.getPlugin(ApplicationPluginConvention.class);
+		JavaApplication javaApplication = project.getExtensions().getByType(JavaApplication.class);
 		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
-		configureBaseNameConvention(project, applicationConvention, distribution);
+		configureBaseNameConvention(project, javaApplication, distribution);
 		CreateStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
 				determineCreateStartScriptsClass());
 		bootStartScripts
@@ -73,9 +72,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 			}
 		});
 		bootStartScripts.getConventionMapping().map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
-		bootStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
-		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
-				applicationConvention::getApplicationDefaultJvmArgs);
+		bootStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
+		bootStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
@@ -90,7 +88,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void configureBaseNameConvention(Project project, ApplicationPluginConvention applicationConvention,
+	private void configureBaseNameConvention(Project project, JavaApplication javaApplication,
 			Distribution distribution) {
 		Method getDistributionBaseName = findMethod(distribution.getClass(), "getDistributionBaseName");
 		if (getDistributionBaseName != null) {
@@ -98,7 +96,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				Property<String> distributionBaseName = (Property<String>) distribution.getClass()
 						.getMethod("getDistributionBaseName").invoke(distribution);
 				distributionBaseName.getClass().getMethod("convention", Provider.class).invoke(distributionBaseName,
-						project.provider(() -> applicationConvention.getApplicationName() + "-boot"));
+						project.provider(() -> javaApplication.getApplicationName() + "-boot"));
 				return;
 			}
 			catch (Exception ex) {
@@ -107,7 +105,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 		if (distribution instanceof IConventionAware) {
 			((IConventionAware) distribution).getConventionMapping().map("baseName",
-					() -> applicationConvention.getApplicationName() + "-boot");
+					() -> javaApplication.getApplicationName() + "-boot");
 		}
 	}
 

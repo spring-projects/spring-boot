@@ -267,7 +267,7 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public Validator webFluxValidator() {
-			if (!ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
+			if (!ClassUtils.isPresent("jakarta.validation.Validator", getClass().getClassLoader())) {
 				return super.webFluxValidator();
 			}
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());

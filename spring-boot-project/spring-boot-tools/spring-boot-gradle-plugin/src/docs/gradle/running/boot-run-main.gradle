@@ -5,7 +5,7 @@ plugins {
 
 // tag::main[]
 bootRun {
-	main = 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }
 // end::main[]
 

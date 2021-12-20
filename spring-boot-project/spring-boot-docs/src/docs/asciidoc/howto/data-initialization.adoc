@@ -209,7 +209,6 @@ To have other beans be detected, register an implementation of `DatabaseInitiali
 Spring Boot will automatically detect beans of the following types that depends upon database initialization:
 
 - `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
-- `DSLContext` (jOOQ)
 - `EntityManagerFactory` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
 - `JdbcOperations`
 - `NamedParameterJdbcOperations`

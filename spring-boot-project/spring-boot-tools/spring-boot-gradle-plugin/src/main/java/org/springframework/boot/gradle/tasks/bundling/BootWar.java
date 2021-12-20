@@ -35,14 +35,17 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.0.0
  */
+@DisableCachingByDefault(because = "Not worth caching")
 public class BootWar extends War implements BootArchive {
 
 	private static final String LAUNCHER = "org.springframework.boot.loader.WarLauncher";
@@ -55,15 +58,17 @@ public class BootWar extends War implements BootArchive {
 
 	private static final String LAYERS_INDEX = "WEB-INF/layers.idx";
 
+	private static final String CLASSPATH_INDEX = "WEB-INF/classpath.idx";
+
 	private final BootArchiveSupport support;
 
 	private final Property<String> mainClass;
 
-	private FileCollection providedClasspath;
-
 	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
 
-	private LayeredSpec layered = new LayeredSpec();
+	private final LayeredSpec layered;
+
+	private FileCollection providedClasspath;
 
 	/**
 	 * Creates a new {@code BootWar} task.
@@ -72,6 +77,7 @@ public class BootWar extends War implements BootArchive {
 		this.support = new BootArchiveSupport(LAUNCHER, new LibrarySpec(), new ZipCompressionResolver());
 		Project project = getProject();
 		this.mainClass = project.getObjects().property(String.class);
+		this.layered = project.getObjects().newInstance(LayeredSpec.class);
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
@@ -91,8 +97,8 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY, null,
-				(isLayeredDisabled()) ? null : LAYERS_INDEX);
+		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
+				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX);
 		super.copy();
 	}
 

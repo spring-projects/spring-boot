@@ -117,10 +117,9 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	private void registerPluginActions(Project project, Configuration bootArchives) {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives.getArtifacts());
-		@SuppressWarnings("deprecation")
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
-				new WarPluginAction(singlePublishedArtifact), new MavenPluginAction(bootArchives.getUploadTaskName()),
-				new DependencyManagementPluginAction(), new ApplicationPluginAction(), new KotlinPluginAction());
+				new WarPluginAction(singlePublishedArtifact), new DependencyManagementPluginAction(),
+				new ApplicationPluginAction(), new KotlinPluginAction());
 		for (PluginApplicationAction action : actions) {
 			withPluginClassOfAction(action,
 					(pluginClass) -> project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project)));

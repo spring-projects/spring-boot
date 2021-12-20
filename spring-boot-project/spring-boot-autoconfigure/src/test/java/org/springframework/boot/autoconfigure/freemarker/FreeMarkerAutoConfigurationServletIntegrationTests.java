@@ -21,8 +21,8 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

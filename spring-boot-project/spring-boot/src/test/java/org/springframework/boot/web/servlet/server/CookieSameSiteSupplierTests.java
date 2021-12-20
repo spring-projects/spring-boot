@@ -19,7 +19,7 @@ package org.springframework.boot.web.servlet.server;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.junit.jupiter.api.Test;
 

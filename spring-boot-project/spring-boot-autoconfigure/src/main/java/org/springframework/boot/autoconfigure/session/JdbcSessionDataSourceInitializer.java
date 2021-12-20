@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Initializer for Spring Session schema.
@@ -59,6 +60,15 @@ public class JdbcSessionDataSourceInitializer extends org.springframework.boot.j
 	@Override
 	protected String getSchemaLocation() {
 		return this.properties.getSchema();
+	}
+
+	@Override
+	protected String getDatabaseName() {
+		String platform = this.properties.getPlatform();
+		if (StringUtils.hasText(platform)) {
+			return platform;
+		}
+		return super.getDatabaseName();
 	}
 
 }

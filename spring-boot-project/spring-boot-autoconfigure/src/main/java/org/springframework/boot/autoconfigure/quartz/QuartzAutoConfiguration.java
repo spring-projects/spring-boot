@@ -37,10 +37,12 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
@@ -134,11 +136,20 @@ public class QuartzAutoConfiguration {
 		@SuppressWarnings("deprecation")
 		@ConditionalOnMissingBean({ QuartzDataSourceScriptDatabaseInitializer.class,
 				QuartzDataSourceInitializer.class })
+		@Conditional(OnQuartzDatasourceInitializationCondition.class)
 		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
 				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
 				QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
 			return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties);
+		}
+
+		static class OnQuartzDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+
+			OnQuartzDatasourceInitializationCondition() {
+				super("Quartz", "spring.quartz.jdbc.initialize-schema");
+			}
+
 		}
 
 	}

@@ -25,12 +25,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -42,7 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Scott Frederick
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		classes = { SampleWebSecureApplicationTests.SecurityConfiguration.class, SampleWebSecureApplication.class })
 class SampleWebSecureApplicationTests {
 
 	@Autowired
@@ -83,6 +87,23 @@ class SampleWebSecureApplicationTests {
 				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
+	}
+
+	@org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods = false)
+	static class SecurityConfiguration {
+
+		@Bean
+		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+			http.csrf().disable();
+			http.authorizeRequests((requests) -> {
+				requests.antMatchers("/public/**").permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
+			http.httpBasic();
+			http.formLogin((form) -> form.loginPage("/login").permitAll());
+			return http.build();
+		}
+
 	}
 
 }
