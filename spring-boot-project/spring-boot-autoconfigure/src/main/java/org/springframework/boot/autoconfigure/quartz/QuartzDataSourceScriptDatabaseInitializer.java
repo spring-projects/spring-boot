@@ -24,6 +24,8 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,6 +39,8 @@ import org.springframework.util.StringUtils;
  */
 public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
+	private final List<String> commentPrefixes;
+
 	/**
 	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the Quartz Scheduler data source
@@ -44,7 +48,7 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzProperties properties) {
-		this(dataSource, getSettings(dataSource, properties));
+		this(dataSource, getSettings(dataSource, properties), properties.getJdbc().getCommentPrefix());
 	}
 
 	/**
@@ -54,7 +58,20 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
+		this(dataSource, settings, null);
+	}
+
+	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
+			List<String> commentPrefixes) {
 		super(dataSource, settings);
+		this.commentPrefixes = commentPrefixes;
+	}
+
+	@Override
+	protected void customize(ResourceDatabasePopulator populator) {
+		if (!ObjectUtils.isEmpty(this.commentPrefixes)) {
+			populator.setCommentPrefixes(this.commentPrefixes.toArray(new String[0]));
+		}
 	}
 
 	/**
