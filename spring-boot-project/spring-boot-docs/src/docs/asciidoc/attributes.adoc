@@ -21,6 +21,7 @@
 :github-wiki: https://github.com/{github-repo}/wiki
 :docs-java: ../../main/java/org/springframework/boot/docs
 :docs-groovy: ../../main/groovy/org/springframework/boot/docs
+:docs-resources: ../../main/resources
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
@@ -81,6 +82,9 @@
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/org/springframework
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference/html
+:spring-graphql: https://spring.io/projects/spring-graphql
+:spring-graphql-api: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/api/
+:spring-graphql-docs: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/reference/html/
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/

@@ -448,6 +448,62 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 
 
 
+[[features.testing.spring-boot-applications.spring-graphql-tests]]
+==== Auto-configured Spring GraphQL Tests
+Spring GraphQL offers a dedicated testing support module; you'll need to add it to your project:
+
+.Maven
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.graphql</groupId>
+			<artifactId>spring-graphql-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Unless already present in the compile scope -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+----
+
+.Gradle
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		testImplementation("org.springframework.graphql:spring-graphql-test")
+		// Unless already present in the implementation configuration
+		testImplementation("org.springframework:spring-webflux")
+	}
+----
+
+This testing module ships the {spring-graphql-docs}/testing.html#testing-webgraphqltester[WebGraphQlTester].
+The tester is heavily used in test, so be sure to become familiar with using it.
+
+Spring Boot helps you to test your {spring-graphql-docs}#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
+`@GraphQlTest` auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
+This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `Converter` and `GenericConverter`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+
+TIP: A list of the auto-configurations that are enabled by `@GraphQlTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
+
+Often, `@GraphQlTest` is limited to a set of controllers and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/testing/springbootapplications/springgraphqltests/GreetingControllerTests.java[]
+----
+
+TIP: You can also auto-configure `WebGraphQlTester` in a non-`@GraphQlTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebGraphQlTester`.
+
+
+
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
 ==== Auto-configured Data Cassandra Tests
 You can use `@DataCassandraTest` to test Cassandra applications.
