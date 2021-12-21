@@ -75,6 +75,8 @@ org.springframework.boot.autoconfigure.graphql.data.GraphQlQueryByExampleAutoCon
 org.springframework.boot.autoconfigure.graphql.data.GraphQlQuerydslAutoConfiguration,\
 org.springframework.boot.autoconfigure.graphql.reactive.GraphQlWebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.graphql.security.GraphQlWebFluxSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.graphql.security.GraphQlWebMvcSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration,\
