@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.graphql;
 
+import org.springframework.data.annotation.Id;
+
 /**
  * Sample class for
  *
@@ -23,6 +25,7 @@ package org.springframework.boot.autoconfigure.graphql;
  */
 public class Book {
 
+	@Id
 	String id;
 
 	String name;
