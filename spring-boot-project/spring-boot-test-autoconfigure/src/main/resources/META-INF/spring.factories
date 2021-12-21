@@ -188,6 +188,12 @@ org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfigurati
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
+# AutoConfigureGraphQl auto-configuration imports
+org.springframework.boot.test.autoconfigure.graphql.AutoConfigureGraphQl=\
+org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration,\
+org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
+org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
+
 # AutoConfigureWebServiceClient
 org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureWebServiceClient=\
 org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTemplateAutoConfiguration,\
