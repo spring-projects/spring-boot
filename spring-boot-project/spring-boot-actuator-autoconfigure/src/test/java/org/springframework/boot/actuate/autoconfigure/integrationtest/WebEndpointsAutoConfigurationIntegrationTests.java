@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -75,12 +76,12 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
-			ElasticsearchDataAutoConfiguration.class, SolrAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
+			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class, GraphQlAutoConfiguration.class,
+			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class,
+			MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+			MongoReactiveDataAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
+			HazelcastAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, SolrAutoConfiguration.class,
+			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {
 
