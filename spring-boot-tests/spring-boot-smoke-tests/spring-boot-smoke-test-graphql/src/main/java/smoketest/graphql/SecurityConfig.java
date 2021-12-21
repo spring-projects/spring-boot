@@ -42,6 +42,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
+	@SuppressWarnings("deprecation")
 	public static InMemoryUserDetailsManager userDetailsService() {
 		User.UserBuilder userBuilder = User.withDefaultPasswordEncoder();
 		UserDetails rob = userBuilder.username("rob").password("rob").roles("USER").build();

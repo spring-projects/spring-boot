@@ -53,6 +53,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
+@SuppressWarnings("unchecked")
 class GraphQlMetricsInstrumentationTests {
 
 	private final ExecutionInput input = ExecutionInput.newExecutionInput("{greeting}").build();

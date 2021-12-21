@@ -39,11 +39,11 @@ public final class GraphQlTestDataFetchers {
 
 	}
 
-	public static DataFetcher getBookByIdDataFetcher() {
+	public static DataFetcher<Book> getBookByIdDataFetcher() {
 		return (environment) -> getBookById(environment.getArgument("id"));
 	}
 
-	public static DataFetcher getBooksOnSaleDataFetcher() {
+	public static DataFetcher<Flux<Book>> getBooksOnSaleDataFetcher() {
 		return (environment) -> getBooksOnSale(environment.getArgument("minPages"));
 	}
 

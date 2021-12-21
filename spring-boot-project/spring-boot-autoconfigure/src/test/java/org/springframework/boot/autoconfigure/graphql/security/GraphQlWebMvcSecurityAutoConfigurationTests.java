@@ -155,6 +155,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
+	@SuppressWarnings("deprecation")
 	static class SecurityConfig {
 
 		@Bean
