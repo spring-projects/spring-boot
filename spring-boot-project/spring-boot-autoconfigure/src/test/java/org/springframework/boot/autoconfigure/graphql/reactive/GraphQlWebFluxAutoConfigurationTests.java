@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.web.WebInterceptor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -55,7 +56,9 @@ class GraphQlWebFluxAutoConfigurationTests {
 					GraphQlWebFluxAutoConfiguration.class))
 			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class)
 			.withPropertyValues("spring.main.web-application-type=reactive", "spring.graphql.graphiql.enabled=true",
-					"spring.graphql.schema.printer.enabled=true");
+					"spring.graphql.schema.printer.enabled=true",
+					"spring.graphql.cors.allowed-origins=https://example.com",
+					"spring.graphql.cors.allowed-methods=POST", "spring.graphql.cors.allow-credentials=true");
 
 	@Test
 	void simpleQueryShouldWork() {
@@ -111,6 +114,19 @@ class GraphQlWebFluxAutoConfigurationTests {
 					.location("https://spring.example.org/graphiql?path=/graphql");
 			client.get().uri("/graphiql?path=/graphql").accept(MediaType.ALL).exchange().expectStatus().isOk()
 					.expectHeader().contentType(MediaType.TEXT_HTML);
+		});
+	}
+
+	@Test
+	void shouldSupportCors() {
+		testWithWebClient((client) -> {
+			String query = "{" + "  bookById(id: \\\"book-1\\\"){ " + "    id" + "    name" + "    pageCount"
+					+ "    author" + "  }" + "}";
+			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}")
+					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+					.header(HttpHeaders.ORIGIN, "https://example.com").exchange().expectStatus().isOk().expectHeader()
+					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com").expectHeader()
+					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 		});
 	}
 
