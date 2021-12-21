@@ -29,7 +29,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.graphql")
 public class GraphQlProperties {
 
+	/**
+	 * Path at which to expose a GraphQL request HTTP endpoint.
+	 */
+	private String path = "/graphql";
+
 	private final Schema schema = new Schema();
+
+	public String getPath() {
+		return this.path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public Schema getSchema() {
 		return this.schema;
