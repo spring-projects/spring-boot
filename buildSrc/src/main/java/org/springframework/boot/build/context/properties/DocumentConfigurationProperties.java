@@ -174,6 +174,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	private void webPrefixes(Config prefix) {
+		prefix.accept("spring.graphql");
 		prefix.accept("spring.hateoas");
 		prefix.accept("spring.http");
 		prefix.accept("spring.servlet");

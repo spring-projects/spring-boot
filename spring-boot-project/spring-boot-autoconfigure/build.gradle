@@ -187,6 +187,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-r2dbc")
 	optional("org.springframework.data:spring-data-redis")
+	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.hateoas:spring-hateoas")
 	optional("org.springframework.security:spring-security-acl")
 	optional("org.springframework.security:spring-security-config")
