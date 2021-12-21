@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -38,6 +39,8 @@ public class GraphQlProperties {
 
 	private final Schema schema = new Schema();
 
+	private final Websocket websocket = new Websocket();
+
 	public Graphiql getGraphiql() {
 		return this.graphiql;
 	}
@@ -52,6 +55,10 @@ public class GraphQlProperties {
 
 	public Schema getSchema() {
 		return this.schema;
+	}
+
+	public Websocket getWebsocket() {
+		return this.websocket;
 	}
 
 	public static class Schema {
@@ -139,6 +146,37 @@ public class GraphQlProperties {
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+	}
+
+	public static class Websocket {
+
+		/**
+		 * Path of the GraphQL WebSocket subscription endpoint.
+		 */
+		private String path;
+
+		/**
+		 * Time within which the initial {@code CONNECTION_INIT} type message must be
+		 * received.
+		 */
+		private Duration connectionInitTimeout = Duration.ofSeconds(60);
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			this.path = path;
+		}
+
+		public Duration getConnectionInitTimeout() {
+			return this.connectionInitTimeout;
+		}
+
+		public void setConnectionInitTimeout(Duration connectionInitTimeout) {
+			this.connectionInitTimeout = connectionInitTimeout;
 		}
 
 	}

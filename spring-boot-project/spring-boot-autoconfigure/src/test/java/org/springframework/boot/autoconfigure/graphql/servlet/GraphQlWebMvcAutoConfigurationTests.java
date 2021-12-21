@@ -31,13 +31,17 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
+import org.springframework.graphql.web.WebGraphQlHandler;
 import org.springframework.graphql.web.WebInterceptor;
+import org.springframework.graphql.web.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.web.webmvc.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -64,6 +68,12 @@ class GraphQlWebMvcAutoConfigurationTests {
 					"spring.graphql.schema.printer.enabled=true",
 					"spring.graphql.cors.allowed-origins=https://example.com",
 					"spring.graphql.cors.allowed-methods=POST", "spring.graphql.cors.allow-credentials=true");
+
+	@Test
+	void shouldContributeDefaultBeans() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlHttpHandler.class)
+				.hasSingleBean(WebGraphQlHandler.class).doesNotHaveBean(GraphQlWebSocketHandler.class));
+	}
 
 	@Test
 	void simpleQueryShouldWork() {
@@ -135,6 +145,12 @@ class GraphQlWebMvcAutoConfigurationTests {
 					.andExpect(header().stringValues(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com"))
 					.andExpect(header().stringValues(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
 		});
+	}
+
+	@Test
+	void shouldConfigureWebSocketBeans() {
+		this.contextRunner.withPropertyValues("spring.graphql.websocket.path=/ws")
+				.run((context) -> assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class));
 	}
 
 	private void testWith(MockMvcConsumer mockMvcConsumer) {

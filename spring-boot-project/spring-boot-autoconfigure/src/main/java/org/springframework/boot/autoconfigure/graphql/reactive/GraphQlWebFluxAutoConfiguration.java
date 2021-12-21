@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlCorsProperties;
@@ -42,17 +43,22 @@ import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.web.WebGraphQlHandler;
 import org.springframework.graphql.web.WebInterceptor;
 import org.springframework.graphql.web.webflux.GraphQlHttpHandler;
+import org.springframework.graphql.web.webflux.GraphQlWebSocketHandler;
 import org.springframework.graphql.web.webflux.GraphiQlHandler;
 import org.springframework.graphql.web.webflux.SchemaHandler;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.reactive.socket.server.support.WebSocketUpgradeHandlerPredicate;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
@@ -135,6 +141,34 @@ public class GraphQlWebFluxAutoConfiguration {
 			if (configuration != null) {
 				registry.addMapping(this.graphQlProperties.getPath()).combine(configuration);
 			}
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.graphql.websocket", name = "path")
+	public static class WebSocketConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
+				GraphQlProperties properties, ServerCodecConfigurer configurer) {
+			return new GraphQlWebSocketHandler(webGraphQlHandler, configurer,
+					properties.getWebsocket().getConnectionInitTimeout());
+		}
+
+		@Bean
+		public HandlerMapping graphQlWebSocketEndpoint(GraphQlWebSocketHandler graphQlWebSocketHandler,
+				GraphQlProperties properties) {
+			String path = properties.getWebsocket().getPath();
+			if (logger.isInfoEnabled()) {
+				logger.info("GraphQL endpoint WebSocket " + path);
+			}
+			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+			mapping.setHandlerPredicate(new WebSocketUpgradeHandlerPredicate());
+			mapping.setUrlMap(Collections.singletonMap(path, graphQlWebSocketHandler));
+			mapping.setOrder(-2); // Ahead of HTTP endpoint ("routerFunctionMapping" bean)
+			return mapping;
 		}
 
 	}

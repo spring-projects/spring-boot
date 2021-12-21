@@ -33,12 +33,16 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
+import org.springframework.graphql.web.WebGraphQlHandler;
 import org.springframework.graphql.web.WebInterceptor;
+import org.springframework.graphql.web.webflux.GraphQlHttpHandler;
+import org.springframework.graphql.web.webflux.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 /**
@@ -59,6 +63,12 @@ class GraphQlWebFluxAutoConfigurationTests {
 					"spring.graphql.schema.printer.enabled=true",
 					"spring.graphql.cors.allowed-origins=https://example.com",
 					"spring.graphql.cors.allowed-methods=POST", "spring.graphql.cors.allow-credentials=true");
+
+	@Test
+	void shouldContributeDefaultBeans() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlHttpHandler.class)
+				.hasSingleBean(WebGraphQlHandler.class).doesNotHaveBean(GraphQlWebSocketHandler.class));
+	}
 
 	@Test
 	void simpleQueryShouldWork() {
@@ -128,6 +138,12 @@ class GraphQlWebFluxAutoConfigurationTests {
 					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com").expectHeader()
 					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 		});
+	}
+
+	@Test
+	void shouldConfigureWebSocketBeans() {
+		this.contextRunner.withPropertyValues("spring.graphql.websocket.path=/ws")
+				.run((context) -> assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class));
 	}
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {
