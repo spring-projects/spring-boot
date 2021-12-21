@@ -194,6 +194,14 @@ org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
 
+# AutoConfigureGraphQlTester auto-configuration imports
+org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester=\
+org.springframework.boot.test.autoconfigure.graphql.tester.GraphQlTesterAutoConfiguration
+
+# AutoConfigureWebGraphQlTester auto-configuration imports
+org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureWebGraphQlTester=\
+org.springframework.boot.test.autoconfigure.graphql.tester.WebGraphQlTesterAutoConfiguration
+
 # AutoConfigureWebServiceClient
 org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureWebServiceClient=\
 org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTemplateAutoConfiguration,\
