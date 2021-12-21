@@ -34,7 +34,13 @@ public class GraphQlProperties {
 	 */
 	private String path = "/graphql";
 
+	private final Graphiql graphiql = new Graphiql();
+
 	private final Schema schema = new Schema();
+
+	public Graphiql getGraphiql() {
+		return this.graphiql;
+	}
 
 	public String getPath() {
 		return this.path;
@@ -103,6 +109,36 @@ public class GraphQlProperties {
 				this.enabled = enabled;
 			}
 
+		}
+
+	}
+
+	public static class Graphiql {
+
+		/**
+		 * Path to the GraphiQL UI endpoint.
+		 */
+		private String path = "/graphiql";
+
+		/**
+		 * Whether the default GraphiQL UI is enabled.
+		 */
+		private boolean enabled = false;
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			this.path = path;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

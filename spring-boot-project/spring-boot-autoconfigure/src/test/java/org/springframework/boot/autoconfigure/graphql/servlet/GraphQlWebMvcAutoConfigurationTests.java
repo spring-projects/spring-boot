@@ -43,6 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -57,8 +58,9 @@ class GraphQlWebMvcAutoConfigurationTests {
 					AutoConfigurations.of(DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 							HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
 							GraphQlAutoConfiguration.class, GraphQlWebMvcAutoConfiguration.class))
-			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class).withPropertyValues(
-					"spring.main.web-application-type=servlet", "spring.graphql.schema.printer.enabled=true");
+			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class)
+			.withPropertyValues("spring.main.web-application-type=servlet", "spring.graphql.graphiql.enabled=true",
+					"spring.graphql.schema.printer.enabled=true");
 
 	@Test
 	void simpleQueryShouldWork() {
@@ -105,6 +107,16 @@ class GraphQlWebMvcAutoConfigurationTests {
 		testWith((mockMvc) -> mockMvc.perform(get("/graphql/schema")).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(content().string(Matchers.containsString("type Book"))));
+	}
+
+	@Test
+	void shouldExposeGraphiqlEndpoint() {
+		testWith((mockMvc) -> {
+			mockMvc.perform(get("/graphiql")).andExpect(status().is3xxRedirection())
+					.andExpect(redirectedUrl("http://localhost/graphiql?path=/graphql"));
+			mockMvc.perform(get("/graphiql?path=/graphql")).andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.TEXT_HTML));
+		});
 	}
 
 	private void testWith(MockMvcConsumer mockMvcConsumer) {

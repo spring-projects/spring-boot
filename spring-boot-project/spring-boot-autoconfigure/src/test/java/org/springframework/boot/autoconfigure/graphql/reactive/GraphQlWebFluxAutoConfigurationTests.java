@@ -47,20 +47,21 @@ import static org.hamcrest.Matchers.containsString;
  */
 class GraphQlWebFluxAutoConfigurationTests {
 
-	private static final String BASE_URL = "https://spring.example.org/graphql";
+	private static final String BASE_URL = "https://spring.example.org/";
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 					CodecsAutoConfiguration.class, JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class,
 					GraphQlWebFluxAutoConfiguration.class))
-			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class).withPropertyValues(
-					"spring.main.web-application-type=reactive", "spring.graphql.schema.printer.enabled=true");
+			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class)
+			.withPropertyValues("spring.main.web-application-type=reactive", "spring.graphql.graphiql.enabled=true",
+					"spring.graphql.schema.printer.enabled=true");
 
 	@Test
 	void simpleQueryShouldWork() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			client.post().uri("").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
+			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
 					.expectBody().jsonPath("data.bookById.name").isEqualTo("GraphQL for beginners");
 		});
 	}
@@ -69,19 +70,21 @@ class GraphQlWebFluxAutoConfigurationTests {
 	void httpGetQueryShouldBeSupported() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			client.get().uri("?query={query}", "{  \"query\": \"" + query + "\"}").exchange().expectStatus()
+			client.get().uri("/graphql?query={query}", "{  \"query\": \"" + query + "\"}").exchange().expectStatus()
 					.isEqualTo(HttpStatus.METHOD_NOT_ALLOWED).expectHeader().valueEquals("Allow", "POST");
 		});
 	}
 
 	@Test
 	void shouldRejectMissingQuery() {
-		testWithWebClient((client) -> client.post().uri("").bodyValue("{}").exchange().expectStatus().isBadRequest());
+		testWithWebClient(
+				(client) -> client.post().uri("/graphql").bodyValue("{}").exchange().expectStatus().isBadRequest());
 	}
 
 	@Test
 	void shouldRejectQueryWithInvalidJson() {
-		testWithWebClient((client) -> client.post().uri("").bodyValue(":)").exchange().expectStatus().isBadRequest());
+		testWithWebClient(
+				(client) -> client.post().uri("/graphql").bodyValue(":)").exchange().expectStatus().isBadRequest());
 	}
 
 	@Test
@@ -89,16 +92,26 @@ class GraphQlWebFluxAutoConfigurationTests {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 
-			client.post().uri("").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
+			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
 					.expectHeader().valueEquals("X-Custom-Header", "42");
 		});
 	}
 
 	@Test
 	void shouldExposeSchemaEndpoint() {
-		testWithWebClient((client) -> client.get().uri("/schema").accept(MediaType.ALL).exchange()
+		testWithWebClient((client) -> client.get().uri("/graphql/schema").accept(MediaType.ALL).exchange()
 				.expectStatus().isOk().expectHeader().contentType(MediaType.TEXT_PLAIN).expectBody(String.class)
 				.value(containsString("type Book")));
+	}
+
+	@Test
+	void shouldExposeGraphiqlEndpoint() {
+		testWithWebClient((client) -> {
+			client.get().uri("/graphiql").exchange().expectStatus().is3xxRedirection().expectHeader()
+					.location("https://spring.example.org/graphiql?path=/graphql");
+			client.get().uri("/graphiql?path=/graphql").accept(MediaType.ALL).exchange().expectStatus().isOk()
+					.expectHeader().contentType(MediaType.TEXT_HTML);
+		});
 	}
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {
