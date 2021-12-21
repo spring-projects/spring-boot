@@ -36,7 +36,6 @@ dependencies {
 	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
-	optional("org.springframework.graphql:spring-graphql-test")
 	optional("net.sourceforge.htmlunit:htmlunit") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}

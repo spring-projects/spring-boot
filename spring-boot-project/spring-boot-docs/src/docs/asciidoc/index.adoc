@@ -16,7 +16,7 @@ The reference documentation consists of the following sections:
 <<upgrading#upgrading,Upgrading Spring Boot Applications>> :: Upgrading from 1.x, Upgrading to a new feature release, and Upgrading the Spring Boot CLI.
 <<using#using,Using Spring Boot>> :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, DevTools, and more.
 <<features#features,Core Features>> :: Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
-<<web#web,Web>> :: Servlet Web, Reactive Web, GraphQL, Embedded Container Support, Graceful Shutdown, and more.
+<<web#web,Web>> :: Servlet Web, Reactive Web, Embedded Container Support, Graceful Shutdown, and more.
 <<data#data,Data>> :: SQL and NOSQL data access.
 <<io#io,IO>> :: Caching, Quartz Scheduler, REST clients, Sending email, Spring Web Services, and more.
 <<messaging#messaging,Messaging>> :: JMS, AMQP, RSocket, WebSocket, and Spring Integration.

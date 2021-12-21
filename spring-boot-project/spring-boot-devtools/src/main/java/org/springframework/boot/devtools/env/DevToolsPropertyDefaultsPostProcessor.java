@@ -62,7 +62,6 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	static {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.freemarker.cache", "false");
-		properties.put("spring.graphql.graphiql.enabled", "true");
 		properties.put("spring.groovy.template.cache", "false");
 		properties.put("spring.mustache.cache", "false");
 		properties.put("server.servlet.session.persistent", "true");

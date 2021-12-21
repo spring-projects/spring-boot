@@ -19,8 +19,6 @@ include::web/spring-security.adoc[]
 
 include::web/spring-session.adoc[]
 
-include::web/spring-graphql.adoc[]
-
 include::web/spring-hateoas.adoc[]
 
 include::web/whats-next.adoc[]

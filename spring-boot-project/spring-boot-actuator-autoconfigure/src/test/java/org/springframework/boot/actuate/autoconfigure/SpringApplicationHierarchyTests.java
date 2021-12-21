@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoCo
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.ApplicationContextTestUtils;
@@ -70,7 +69,7 @@ class SpringApplicationHierarchyTests {
 	@Configuration
 	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
 			ElasticsearchRepositoriesAutoConfiguration.class, CassandraAutoConfiguration.class,
-			CassandraDataAutoConfiguration.class, GraphQlAutoConfiguration.class, MongoDataAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveDataAutoConfiguration.class, Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, FlywayAutoConfiguration.class, MetricsAutoConfiguration.class })
@@ -81,7 +80,7 @@ class SpringApplicationHierarchyTests {
 	@Configuration
 	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
 			ElasticsearchRepositoriesAutoConfiguration.class, CassandraAutoConfiguration.class,
-			CassandraDataAutoConfiguration.class, GraphQlAutoConfiguration.class, MongoDataAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveDataAutoConfiguration.class, Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, FlywayAutoConfiguration.class, MetricsAutoConfiguration.class })

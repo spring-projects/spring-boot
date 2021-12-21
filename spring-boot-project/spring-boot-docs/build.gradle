@@ -133,8 +133,6 @@ dependencies {
 	implementation("org.springframework.data:spring-data-neo4j")
 	implementation("org.springframework.data:spring-data-redis")
 	implementation("org.springframework.data:spring-data-r2dbc")
-	implementation("org.springframework.graphql:spring-graphql")
-	implementation("org.springframework.graphql:spring-graphql-test")
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.kafka:spring-kafka-test")
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc") {
@@ -268,9 +266,8 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
-					"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
-					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
+					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-security-version": securityVersion,
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]
 	}
@@ -313,9 +310,6 @@ syncDocumentationSourceForAsciidoctor {
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
 }
 
 syncDocumentationSourceForAsciidoctorMultipage {
@@ -337,9 +331,6 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
 }
 
 syncDocumentationSourceForAsciidoctorPdf {
@@ -360,9 +351,6 @@ syncDocumentationSourceForAsciidoctorPdf {
 	}
 	from("src/main/groovy") {
 		into "main/groovy"
-	}
-	from("src/main/resources") {
-		into "main/resources"
 	}
 }
 
