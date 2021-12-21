@@ -952,6 +952,14 @@
       }
     },
     {
+      "name": "spring.graphql.schema.locations",
+      "defaultValue": "classpath:graphql/**/"
+    },
+    {
+      "name": "spring.graphql.schema.file-extensions",
+      "defaultValue": ".graphqls,.gqls"
+    },
+    {
       "name": "spring.groovy.template.prefix",
       "defaultValue": ""
     },
@@ -2187,6 +2195,45 @@
           "parameters": {
             "target": "javax.sql.XADataSource"
           }
+        }
+      ]
+    },
+    {
+      "name": "spring.graphql.cors.allowed-headers",
+      "values": [
+        {
+          "value": "*"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.graphql.cors.allowed-methods",
+      "values": [
+        {
+          "value": "*"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.graphql.cors.allowed-origins",
+      "values": [
+        {
+          "value": "*"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
         }
       ]
     },
