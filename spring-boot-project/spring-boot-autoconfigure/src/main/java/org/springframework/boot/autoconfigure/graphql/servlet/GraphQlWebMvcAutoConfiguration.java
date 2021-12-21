@@ -41,6 +41,7 @@ import org.springframework.graphql.execution.ThreadLocalAccessor;
 import org.springframework.graphql.web.WebGraphQlHandler;
 import org.springframework.graphql.web.WebInterceptor;
 import org.springframework.graphql.web.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.web.webmvc.SchemaHandler;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -96,6 +97,11 @@ public class GraphQlWebMvcAutoConfiguration {
 								.headers((headers) -> headers.setAllow(Collections.singleton(HttpMethod.POST))).build())
 				.POST(graphQLPath, RequestPredicates.contentType(MediaType.APPLICATION_JSON)
 						.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::handleRequest);
+
+		if (properties.getSchema().getPrinter().isEnabled()) {
+			SchemaHandler schemaHandler = new SchemaHandler(graphQlSource);
+			builder = builder.GET(graphQLPath + "/schema", schemaHandler::handleRequest);
+		}
 
 		return builder.build();
 	}

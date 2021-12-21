@@ -38,6 +38,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.hamcrest.Matchers.containsString;
+
 /**
  * Tests for {@link GraphQlWebFluxAutoConfiguration}
  *
@@ -51,8 +53,8 @@ class GraphQlWebFluxAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 					CodecsAutoConfiguration.class, JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class,
 					GraphQlWebFluxAutoConfiguration.class))
-			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class)
-			.withPropertyValues("spring.main.web-application-type=reactive");
+			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class).withPropertyValues(
+					"spring.main.web-application-type=reactive", "spring.graphql.schema.printer.enabled=true");
 
 	@Test
 	void simpleQueryShouldWork() {
@@ -90,6 +92,13 @@ class GraphQlWebFluxAutoConfigurationTests {
 			client.post().uri("").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
 					.expectHeader().valueEquals("X-Custom-Header", "42");
 		});
+	}
+
+	@Test
+	void shouldExposeSchemaEndpoint() {
+		testWithWebClient((client) -> client.get().uri("/schema").accept(MediaType.ALL).exchange()
+				.expectStatus().isOk().expectHeader().contentType(MediaType.TEXT_PLAIN).expectBody(String.class)
+				.value(containsString("type Book")));
 	}
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {

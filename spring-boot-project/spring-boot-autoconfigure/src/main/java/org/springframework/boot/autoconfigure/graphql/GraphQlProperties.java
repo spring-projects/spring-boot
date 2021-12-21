@@ -60,6 +60,8 @@ public class GraphQlProperties {
 		 */
 		private String[] fileExtensions = new String[] { ".graphqls", ".gqls" };
 
+		private final Printer printer = new Printer();
+
 		public String[] getLocations() {
 			return this.locations;
 		}
@@ -79,6 +81,28 @@ public class GraphQlProperties {
 		private String[] appendSlashIfNecessary(String[] locations) {
 			return Arrays.stream(locations).map((location) -> location.endsWith("/") ? location : location + "/")
 					.toArray(String[]::new);
+		}
+
+		public Printer getPrinter() {
+			return this.printer;
+		}
+
+		public static class Printer {
+
+			/**
+			 * Whether the endpoint that prints the schema is enabled. Schema is available
+			 * under spring.graphql.path + "/schema".
+			 */
+			private boolean enabled = false;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
 		}
 
 	}

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.graphql.servlet;
 
 import graphql.schema.idl.TypeRuntimeWiring;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -56,8 +57,8 @@ class GraphQlWebMvcAutoConfigurationTests {
 					AutoConfigurations.of(DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 							HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
 							GraphQlAutoConfiguration.class, GraphQlWebMvcAutoConfiguration.class))
-			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class)
-			.withPropertyValues("spring.main.web-application-type=servlet");
+			.withUserConfiguration(DataFetchersConfiguration.class, CustomWebInterceptor.class).withPropertyValues(
+					"spring.main.web-application-type=servlet", "spring.graphql.schema.printer.enabled=true");
 
 	@Test
 	void simpleQueryShouldWork() {
@@ -97,6 +98,13 @@ class GraphQlWebMvcAutoConfigurationTests {
 			mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk())
 					.andExpect(header().string("X-Custom-Header", "42"));
 		});
+	}
+
+	@Test
+	void shouldExposeSchemaEndpoint() {
+		testWith((mockMvc) -> mockMvc.perform(get("/graphql/schema")).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(content().string(Matchers.containsString("type Book"))));
 	}
 
 	private void testWith(MockMvcConsumer mockMvcConsumer) {
