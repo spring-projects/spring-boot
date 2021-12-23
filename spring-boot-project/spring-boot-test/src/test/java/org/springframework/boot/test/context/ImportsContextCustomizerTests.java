@@ -75,9 +75,9 @@ class ImportsContextCustomizerTests {
 	}
 
 	@Test
-	void customizersForTestClassesWithDifferentJunitAnnotationsAreEqual() {
-		assertThat(new ImportsContextCustomizer(FirstJunitAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondJunitAnnotatedTestClass.class));
+	void customizersForTestClassesWithDifferentJUnitAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstJUnitAnnotatedTestClass.class))
+				.isEqualTo(new ImportsContextCustomizer(SecondJUnitAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -142,13 +142,13 @@ class ImportsContextCustomizerTests {
 
 	@Nested
 	@Import(TestImportSelector.class)
-	static class FirstJunitAnnotatedTestClass {
+	static class FirstJUnitAnnotatedTestClass {
 
 	}
 
 	@Tag("test")
 	@Import(TestImportSelector.class)
-	static class SecondJunitAnnotatedTestClass {
+	static class SecondJUnitAnnotatedTestClass {
 
 	}
 
