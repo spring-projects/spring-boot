@@ -223,7 +223,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			filters.add(new JavaLangAnnotationFilter());
 			filters.add(new KotlinAnnotationFilter());
 			filters.add(new SpockAnnotationFilter());
-			filters.add(new JunitAnnotationFilter());
+			filters.add(new JUnitAnnotationFilter());
 			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
 		}
 
@@ -389,7 +389,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	/**
 	 * {@link AnnotationFilter} for JUnit annotations.
 	 */
-	private static final class JunitAnnotationFilter implements AnnotationFilter {
+	private static final class JUnitAnnotationFilter implements AnnotationFilter {
 
 		@Override
 		public boolean isIgnored(Annotation annotation) {

@@ -182,7 +182,7 @@ class WebMvcMetricsFilterTests {
 
 	@Test
 	void unhandledError() {
-		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10")).andExpect(status().isOk()))
+		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10")))
 				.hasRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.get("http.server.requests").tags("exception", "RuntimeException").timer().count())
 				.isEqualTo(1L);
@@ -191,8 +191,8 @@ class WebMvcMetricsFilterTests {
 	@Test
 	void unhandledServletException() {
 		assertThatCode(() -> this.mvc
-				.perform(get("/api/filterError").header(CustomBehaviorFilter.TEST_SERVLET_EXCEPTION_HEADER, "throw"))
-				.andExpect(status().isOk())).isInstanceOf(ServletException.class);
+				.perform(get("/api/filterError").header(CustomBehaviorFilter.TEST_SERVLET_EXCEPTION_HEADER, "throw")))
+						.isInstanceOf(ServletException.class);
 		Id meterId = this.registry.get("http.server.requests").tags("exception", "ServletException").timer().getId();
 		assertThat(meterId.getTag("status")).isEqualTo("500");
 	}
@@ -372,7 +372,7 @@ class WebMvcMetricsFilterTests {
 		}
 
 		@Bean
-		CustomBehaviorFilter redirectAndNotFoundFilter() {
+		CustomBehaviorFilter customBehaviorFilter() {
 			return new CustomBehaviorFilter();
 		}
 

@@ -234,32 +234,32 @@ class CachingOperationInvokerTests {
 		given(target.invoke(contextV2)).willReturn(expectedV2);
 		given(target.invoke(contextV3)).willReturn(expectedV3);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
-		Object response = invoker.invoke(contextV2);
-		assertThat(response).isSameAs(expectedV2);
+		Object responseV2 = invoker.invoke(contextV2);
+		assertThat(responseV2).isSameAs(expectedV2);
 		verify(target, times(1)).invoke(contextV2);
-		Object cachedResponse = invoker.invoke(contextV3);
-		assertThat(cachedResponse).isNotSameAs(response);
+		Object responseV3 = invoker.invoke(contextV3);
+		assertThat(responseV3).isNotSameAs(responseV2);
 		verify(target, times(1)).invoke(contextV3);
 	}
 
 	@Test
 	void targetInvokedWithDifferentWebServerNamespace() {
 		OperationInvoker target = mock(OperationInvoker.class);
-		Object expectedV2 = new Object();
-		Object expectedV3 = new Object();
-		InvocationContext contextV2 = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
+		Object expectedServer = new Object();
+		Object expectedManagement = new Object();
+		InvocationContext contextServer = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
 				new WebServerNamespaceArgumentResolver(WebServerNamespace.SERVER));
-		InvocationContext contextV3 = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
+		InvocationContext contextManagement = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
 				new WebServerNamespaceArgumentResolver(WebServerNamespace.MANAGEMENT));
-		given(target.invoke(contextV2)).willReturn(expectedV2);
-		given(target.invoke(contextV3)).willReturn(expectedV3);
+		given(target.invoke(contextServer)).willReturn(expectedServer);
+		given(target.invoke(contextManagement)).willReturn(expectedManagement);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
-		Object response = invoker.invoke(contextV2);
-		assertThat(response).isSameAs(expectedV2);
-		verify(target, times(1)).invoke(contextV2);
-		Object cachedResponse = invoker.invoke(contextV3);
-		assertThat(cachedResponse).isNotSameAs(response);
-		verify(target, times(1)).invoke(contextV3);
+		Object responseServer = invoker.invoke(contextServer);
+		assertThat(responseServer).isSameAs(expectedServer);
+		verify(target, times(1)).invoke(contextServer);
+		Object responseManagement = invoker.invoke(contextManagement);
+		assertThat(responseManagement).isNotSameAs(responseServer);
+		verify(target, times(1)).invoke(contextManagement);
 	}
 
 	private static class MonoOperationInvoker implements OperationInvoker {
