@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  */
 public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
-	private final List<String> commentPrefixes;
+	private QuartzProperties properties;
 
 	/**
 	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
@@ -48,7 +48,8 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzProperties properties) {
-		this(dataSource, getSettings(dataSource, properties), properties.getJdbc().getCommentPrefix());
+		this(dataSource, getSettings(dataSource, properties));
+		this.properties = properties;
 	}
 
 	/**
@@ -58,19 +59,16 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
-		this(dataSource, settings, null);
-	}
-
-	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
-			List<String> commentPrefixes) {
 		super(dataSource, settings);
-		this.commentPrefixes = commentPrefixes;
 	}
 
 	@Override
 	protected void customize(ResourceDatabasePopulator populator) {
-		if (!ObjectUtils.isEmpty(this.commentPrefixes)) {
-			populator.setCommentPrefixes(this.commentPrefixes.toArray(new String[0]));
+		if (this.properties != null) {
+			List<String> commentPrefix = this.properties.getJdbc().getCommentPrefix();
+			if (!ObjectUtils.isEmpty(commentPrefix)) {
+				populator.setCommentPrefixes(commentPrefix.toArray(new String[0]));
+			}
 		}
 	}
 
