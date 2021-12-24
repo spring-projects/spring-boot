@@ -113,14 +113,18 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		List<HttpMessageConverter<?>> processing = new ArrayList<>(converters);
 		for (HttpMessageConverter<?> defaultConverter : defaultConverters) {
 			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
+			boolean notReplaced = true;
 			while (iterator.hasNext()) {
 				HttpMessageConverter<?> candidate = iterator.next();
 				if (isReplacement(defaultConverter, candidate)) {
 					combined.add(candidate);
 					iterator.remove();
+					notReplaced = false;
 				}
 			}
-			combined.add(defaultConverter);
+			if (notReplaced) {
+				combined.add(defaultConverter);
+			}
 			if (defaultConverter instanceof AllEncompassingFormHttpMessageConverter) {
 				configurePartConverters((AllEncompassingFormHttpMessageConverter) defaultConverter, converters);
 			}
