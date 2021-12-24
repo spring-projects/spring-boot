@@ -31,7 +31,6 @@ import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.format.support.DefaultFormattingConversionService;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
 /**
@@ -101,7 +100,6 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
 					runSafely(new MessageConverterInitializer());
-					runSafely(new JacksonInitializer());
 					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
 				}
@@ -147,18 +145,6 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		public void run() {
 			Configuration<?> configuration = Validation.byDefaultProvider().configure();
 			configuration.buildValidatorFactory().getValidator();
-		}
-
-	}
-
-	/**
-	 * Early initializer for Jackson.
-	 */
-	private static class JacksonInitializer implements Runnable {
-
-		@Override
-		public void run() {
-			Jackson2ObjectMapperBuilder.json().build();
 		}
 
 	}
