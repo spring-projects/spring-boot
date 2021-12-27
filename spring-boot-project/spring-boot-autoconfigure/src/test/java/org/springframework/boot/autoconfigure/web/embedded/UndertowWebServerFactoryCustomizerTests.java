@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link UndertowWebServerFactoryCustomizer}.
@@ -53,6 +53,7 @@ import static org.mockito.Mockito.verify;
  * @author Artsiom Yudovin
  * @author Rafiullah Hamedy
  * @author HaiTao Zhang
+ * @author Yanming Zhou
  */
 class UndertowWebServerFactoryCustomizerTests {
 
@@ -77,12 +78,12 @@ class UndertowWebServerFactoryCustomizerTests {
 				"server.undertow.accesslog.dir=test-logs", "server.undertow.accesslog.rotate=false");
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setAccessLogEnabled(true);
-		verify(factory).setAccessLogPattern("foo");
-		verify(factory).setAccessLogPrefix("test_log");
-		verify(factory).setAccessLogSuffix("txt");
-		verify(factory).setAccessLogDirectory(new File("test-logs"));
-		verify(factory).setAccessLogRotate(false);
+		then(factory).should().setAccessLogEnabled(true);
+		then(factory).should().setAccessLogPattern("foo");
+		then(factory).should().setAccessLogPrefix("test_log");
+		then(factory).should().setAccessLogSuffix("txt");
+		then(factory).should().setAccessLogDirectory(new File("test-logs"));
+		then(factory).should().setAccessLogRotate(false);
 	}
 
 	@Test
@@ -138,7 +139,7 @@ class UndertowWebServerFactoryCustomizerTests {
 		bind("server.undertow.threads.io=4");
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setIoThreads(4);
+		then(factory).should().setIoThreads(4);
 	}
 
 	@Test
@@ -146,7 +147,7 @@ class UndertowWebServerFactoryCustomizerTests {
 		bind("server.undertow.threads.worker=10");
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setWorkerThreads(10);
+		then(factory).should().setWorkerThreads(10);
 	}
 
 	@Test
@@ -202,14 +203,14 @@ class UndertowWebServerFactoryCustomizerTests {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
 	void defaultUseForwardHeaders() {
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
@@ -217,7 +218,7 @@ class UndertowWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
@@ -226,7 +227,7 @@ class UndertowWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	private <T> T boundServerOption(Option<T> option) {

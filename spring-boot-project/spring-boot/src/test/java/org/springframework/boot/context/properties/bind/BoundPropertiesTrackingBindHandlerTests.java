@@ -31,14 +31,14 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link BoundPropertiesTrackingBindHandler}.
  *
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class BoundPropertiesTrackingBindHandlerTests {
@@ -62,8 +62,8 @@ class BoundPropertiesTrackingBindHandlerTests {
 	void handlerShouldCallRecordBindingIfConfigurationPropertyIsNotNull() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
 		this.binder.bind("foo", Bindable.of(ExampleBean.class), this.handler);
-		verify(this.consumer, times(1)).accept(any(ConfigurationProperty.class));
-		verify(this.consumer, never()).accept(null);
+		then(this.consumer).should().accept(any(ConfigurationProperty.class));
+		then(this.consumer).should(never()).accept(null);
 	}
 
 	static class ExampleBean {

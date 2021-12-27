@@ -31,15 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link EnableConfigurationPropertiesRegistrar}.
  *
  * @author Madhura Bhave
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class EnableConfigurationPropertiesRegistrarTests {
 
@@ -88,7 +88,7 @@ class EnableConfigurationPropertiesRegistrarTests {
 	void registrationWithDuplicatedTypeShouldRegisterSingleBeanDefinition() {
 		register(DuplicateConfiguration.class);
 		String name = "foo-" + getClass().getName() + "$FooProperties";
-		verify(this.beanFactory, times(1)).registerBeanDefinition(eq(name), any());
+		then(this.beanFactory).should().registerBeanDefinition(eq(name), any());
 	}
 
 	@Test

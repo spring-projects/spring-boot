@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,16 +35,16 @@ import org.springframework.beans.factory.ObjectProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link MeterRegistryConfigurer}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class MeterRegistryConfigurerTests {
@@ -77,7 +77,7 @@ class MeterRegistryConfigurerTests {
 				createObjectProvider(this.filters), createObjectProvider(this.binders), false, false);
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
 		configurer.configure(composite);
-		verify(this.mockCustomizer).customize(composite);
+		then(this.mockCustomizer).should().customize(composite);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class MeterRegistryConfigurerTests {
 		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders), false, false);
 		configurer.configure(this.mockRegistry);
-		verify(this.mockCustomizer).customize(this.mockRegistry);
+		then(this.mockCustomizer).should().customize(this.mockRegistry);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ class MeterRegistryConfigurerTests {
 		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders), false, false);
 		configurer.configure(this.mockRegistry);
-		verify(this.mockConfig).meterFilter(this.mockFilter);
+		then(this.mockConfig).should().meterFilter(this.mockFilter);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class MeterRegistryConfigurerTests {
 		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders), false, false);
 		configurer.configure(this.mockRegistry);
-		verify(this.mockBinder).bindTo(this.mockRegistry);
+		then(this.mockBinder).should().bindTo(this.mockRegistry);
 	}
 
 	@Test
@@ -117,7 +117,7 @@ class MeterRegistryConfigurerTests {
 				createObjectProvider(this.filters), createObjectProvider(this.binders), false, true);
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
 		configurer.configure(composite);
-		verify(this.mockBinder).bindTo(composite);
+		then(this.mockBinder).should().bindTo(composite);
 	}
 
 	@Test
@@ -126,7 +126,7 @@ class MeterRegistryConfigurerTests {
 		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), null, false, true);
 		configurer.configure(this.mockRegistry);
-		verifyNoInteractions(this.mockBinder);
+		then(this.mockBinder).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -139,9 +139,9 @@ class MeterRegistryConfigurerTests {
 				createObjectProvider(this.filters), createObjectProvider(this.binders), false, false);
 		configurer.configure(this.mockRegistry);
 		InOrder ordered = inOrder(this.mockBinder, this.mockConfig, this.mockCustomizer);
-		ordered.verify(this.mockCustomizer).customize(this.mockRegistry);
-		ordered.verify(this.mockConfig).meterFilter(this.mockFilter);
-		ordered.verify(this.mockBinder).bindTo(this.mockRegistry);
+		then(this.mockCustomizer).should(ordered).customize(this.mockRegistry);
+		then(this.mockConfig).should(ordered).meterFilter(this.mockFilter);
+		then(this.mockBinder).should(ordered).bindTo(this.mockRegistry);
 	}
 
 	@Test

@@ -34,14 +34,15 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link EnvironmentPostProcessorApplicationListener}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class EnvironmentPostProcessorApplicationListenerTests {
 
@@ -105,7 +106,7 @@ class EnvironmentPostProcessorApplicationListenerTests {
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(application, new String[0], context);
 		this.listener.onApplicationEvent(event);
-		verify(this.deferredLogs).switchOverAll();
+		then(this.deferredLogs).should().switchOverAll();
 	}
 
 	@Test
@@ -115,7 +116,7 @@ class EnvironmentPostProcessorApplicationListenerTests {
 		ApplicationFailedEvent event = new ApplicationFailedEvent(application, new String[0], context,
 				new RuntimeException());
 		this.listener.onApplicationEvent(event);
-		verify(this.deferredLogs).switchOverAll();
+		then(this.deferredLogs).should().switchOverAll();
 	}
 
 	static class TestEnvironmentPostProcessor implements EnvironmentPostProcessor {

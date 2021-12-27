@@ -39,16 +39,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link PrometheusPushGatewayManager}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class PrometheusPushGatewayManagerTests {
@@ -110,9 +110,9 @@ class PrometheusPushGatewayManagerTests {
 	void createShouldSchedulePushAsFixedRate() throws Exception {
 		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
 				this.groupingKey, null);
-		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
+		then(this.scheduler).should().scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
 		this.task.getValue().run();
-		verify(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
+		then(this.pushGateway).should().pushAdd(this.registry, "job", this.groupingKey);
 	}
 
 	@Test
@@ -122,7 +122,7 @@ class PrometheusPushGatewayManagerTests {
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				ownedScheduler, this.pushRate, "job", this.groupingKey, null);
 		manager.shutdown();
-		verify(ownedScheduler).shutdown();
+		then(ownedScheduler).should().shutdown();
 	}
 
 	@Test
@@ -132,7 +132,7 @@ class PrometheusPushGatewayManagerTests {
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				otherScheduler, this.pushRate, "job", this.groupingKey, null);
 		manager.shutdown();
-		verify(otherScheduler, never()).shutdown();
+		then(otherScheduler).should(never()).shutdown();
 	}
 
 	@Test
@@ -141,8 +141,8 @@ class PrometheusPushGatewayManagerTests {
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUSH);
 		manager.shutdown();
-		verify(this.future).cancel(false);
-		verify(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
+		then(this.future).should().cancel(false);
+		then(this.pushGateway).should().pushAdd(this.registry, "job", this.groupingKey);
 	}
 
 	@Test
@@ -151,8 +151,8 @@ class PrometheusPushGatewayManagerTests {
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.DELETE);
 		manager.shutdown();
-		verify(this.future).cancel(false);
-		verify(this.pushGateway).delete("job", this.groupingKey);
+		then(this.future).should().cancel(false);
+		then(this.pushGateway).should().delete("job", this.groupingKey);
 	}
 
 	@Test
@@ -161,15 +161,15 @@ class PrometheusPushGatewayManagerTests {
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.NONE);
 		manager.shutdown();
-		verify(this.future).cancel(false);
-		verifyNoInteractions(this.pushGateway);
+		then(this.future).should().cancel(false);
+		then(this.pushGateway).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void pushDoesNotThrowException() throws Exception {
 		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
 				this.groupingKey, null);
-		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
+		then(this.scheduler).should().scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
 		willThrow(RuntimeException.class).given(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
 		this.task.getValue().run();
 	}

@@ -84,9 +84,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RabbitAutoConfiguration}.
@@ -96,6 +96,7 @@ import static org.mockito.Mockito.verify;
  * @author Gary Russell
  * @author HaiTao Zhang
  * @author Franjo Zilic
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
@@ -179,10 +180,10 @@ class RabbitAutoConfigurationTests {
 			given(rcf.newConnection(isNull(), eq(addresses), anyString())).willReturn(mock(Connection.class));
 			ReflectionTestUtils.setField(connectionFactory, "rabbitConnectionFactory", rcf);
 			connectionFactory.createConnection();
-			verify(rcf).newConnection(isNull(), eq(addresses), eq("test#0"));
+			then(rcf).should().newConnection(isNull(), eq(addresses), eq("test#0"));
 			connectionFactory.resetConnection();
 			connectionFactory.createConnection();
-			verify(rcf).newConnection(isNull(), eq(addresses), eq("test#1"));
+			then(rcf).should().newConnection(isNull(), eq(addresses), eq("test#1"));
 		});
 	}
 
@@ -360,10 +361,11 @@ class RabbitAutoConfigurationTests {
 					RabbitTemplate template = mock(RabbitTemplate.class);
 					ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 					configurer.configure(template, connectionFactory);
-					verify(template).setMessageConverter(context.getBean("myMessageConverter", MessageConverter.class));
-					verify(template).setExchange("my-exchange");
-					verify(template).setRoutingKey("my-routing-key");
-					verify(template).setDefaultReceiveQueue("default-queue");
+					then(template).should()
+							.setMessageConverter(context.getBean("myMessageConverter", MessageConverter.class));
+					then(template).should().setExchange("my-exchange");
+					then(template).should().setRoutingKey("my-routing-key");
+					then(template).should().setDefaultReceiveQueue("default-queue");
 				});
 	}
 
@@ -434,7 +436,7 @@ class RabbitAutoConfigurationTests {
 			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
 			rabbitListenerContainerFactory.setBatchSize(10);
-			verify(rabbitListenerContainerFactory).setBatchSize(10);
+			then(rabbitListenerContainerFactory).should().setBatchSize(10);
 			assertThat(rabbitListenerContainerFactory.getAdviceChain()).isNull();
 		});
 	}
@@ -554,9 +556,9 @@ class RabbitAutoConfigurationTests {
 							.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
 					SimpleRabbitListenerContainerFactory factory = mock(SimpleRabbitListenerContainerFactory.class);
 					configurer.configure(factory, mock(ConnectionFactory.class));
-					verify(factory).setConcurrentConsumers(5);
-					verify(factory).setMaxConcurrentConsumers(10);
-					verify(factory).setPrefetchCount(40);
+					then(factory).should().setConcurrentConsumers(5);
+					then(factory).should().setMaxConcurrentConsumers(10);
+					then(factory).should().setPrefetchCount(40);
 				});
 	}
 
@@ -568,7 +570,7 @@ class RabbitAutoConfigurationTests {
 							.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
 					SimpleRabbitListenerContainerFactory factory = mock(SimpleRabbitListenerContainerFactory.class);
 					configurer.configure(factory, mock(ConnectionFactory.class));
-					verify(factory).setConsumerBatchEnabled(true);
+					then(factory).should().setConsumerBatchEnabled(true);
 				});
 	}
 
@@ -583,9 +585,9 @@ class RabbitAutoConfigurationTests {
 							.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
 					DirectRabbitListenerContainerFactory factory = mock(DirectRabbitListenerContainerFactory.class);
 					configurer.configure(factory, mock(ConnectionFactory.class));
-					verify(factory).setConsumersPerQueue(5);
-					verify(factory).setPrefetchCount(40);
-					verify(factory).setDeBatchingEnabled(false);
+					then(factory).should().setConsumersPerQueue(5);
+					then(factory).should().setPrefetchCount(40);
+					then(factory).should().setDeBatchingEnabled(false);
 				});
 	}
 
@@ -608,7 +610,7 @@ class RabbitAutoConfigurationTests {
 		Message message = mock(Message.class);
 		Exception ex = new Exception("test");
 		mir.recover(new Object[] { "foo", message }, ex);
-		verify(messageRecoverer).recover(message, ex);
+		then(messageRecoverer).should().recover(message, ex);
 		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryOperations");
 		assertThat(retryTemplate).isNotNull();
 		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(retryTemplate, "retryPolicy");
@@ -849,8 +851,8 @@ class RabbitAutoConfigurationTests {
 							ConnectionFactoryCustomizer.class);
 					InOrder inOrder = inOrder(firstCustomizer, secondCustomizer);
 					com.rabbitmq.client.ConnectionFactory targetConnectionFactory = getTargetConnectionFactory(context);
-					inOrder.verify(firstCustomizer).customize(targetConnectionFactory);
-					inOrder.verify(secondCustomizer).customize(targetConnectionFactory);
+					then(firstCustomizer).should(inOrder).customize(targetConnectionFactory);
+					then(secondCustomizer).should(inOrder).customize(targetConnectionFactory);
 					inOrder.verifyNoMoreInteractions();
 				});
 	}
@@ -859,7 +861,7 @@ class RabbitAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	void whenASimpleContainerCustomizerIsDefinedThenItIsCalledToConfigureTheContainer() {
 		this.contextRunner.withUserConfiguration(SimpleContainerCustomizerConfiguration.class)
-				.run((context) -> verify(context.getBean(ContainerCustomizer.class))
+				.run((context) -> then(context.getBean(ContainerCustomizer.class)).should()
 						.configure(any(SimpleMessageListenerContainer.class)));
 	}
 
@@ -868,7 +870,7 @@ class RabbitAutoConfigurationTests {
 	void whenADirectContainerCustomizerIsDefinedThenItIsCalledToConfigureTheContainer() {
 		this.contextRunner.withUserConfiguration(DirectContainerCustomizerConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.listener.type:direct")
-				.run((context) -> verify(context.getBean(ContainerCustomizer.class))
+				.run((context) -> then(context.getBean(ContainerCustomizer.class)).should()
 						.configure(any(DirectMessageListenerContainer.class)));
 	}
 

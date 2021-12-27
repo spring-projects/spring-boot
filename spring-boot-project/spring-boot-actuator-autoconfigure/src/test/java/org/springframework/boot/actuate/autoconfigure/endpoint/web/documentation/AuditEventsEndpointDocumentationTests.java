@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -46,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for generating documentation describing {@link AuditEventsEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
@@ -83,7 +84,7 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 										"Restricts the events to those with the given principal. Optional."),
 								parameterWithName("type")
 										.description("Restricts the events to those with the given type. Optional."))));
-		verify(this.repository).find("alice", now.toInstant(), "logout");
+		then(this.repository).should().find("alice", now.toInstant(), "logout");
 	}
 
 	@Configuration(proxyBeanMethods = false)

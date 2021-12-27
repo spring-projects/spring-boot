@@ -36,13 +36,14 @@ import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.RequestCreators;
 import org.springframework.ws.test.server.ResponseMatchers;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link SampleWsApplicationTests} that use {@link WebServiceServerTest} and
  * {@link MockWebServiceClient}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @WebServiceServerTest
 @ExtendWith(OutputCaptureExtension.class)
@@ -64,7 +65,8 @@ class WebServiceServerTestSampleWsApplicationTests {
 		StreamSource source = new StreamSource(new StringReader(request));
 		this.client.sendRequest(RequestCreators.withPayload(source)).andExpect(ResponseMatchers.noFault());
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		verify(this.service).bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"), "John Doe");
+		then(this.service).should().bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"),
+				"John Doe");
 	}
 
 }

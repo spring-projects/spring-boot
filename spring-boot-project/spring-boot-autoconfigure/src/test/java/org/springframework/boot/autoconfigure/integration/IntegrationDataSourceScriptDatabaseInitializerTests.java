@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link IntegrationDataSourceScriptDatabaseInitializer}.
@@ -42,7 +42,7 @@ class IntegrationDataSourceScriptDatabaseInitializerTests {
 				properties.getJdbc());
 		assertThat(settings.getSchemaLocations())
 				.containsOnly("classpath:org/springframework/integration/jdbc/schema-test.sql");
-		verifyNoInteractions(dataSource);
+		then(dataSource).shouldHaveNoInteractions();
 	}
 
 }

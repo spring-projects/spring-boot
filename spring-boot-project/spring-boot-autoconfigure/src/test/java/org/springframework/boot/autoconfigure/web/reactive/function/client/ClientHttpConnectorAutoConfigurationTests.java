@@ -34,14 +34,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClientHttpConnectorAutoConfiguration}
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  */
 class ClientHttpConnectorAutoConfigurationTests {
 
@@ -94,7 +94,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
 			WebClient.Builder builder = mock(WebClient.Builder.class);
 			clientCustomizer.customize(builder);
-			verify(builder, times(1)).clientConnector(any(ReactorClientHttpConnector.class));
+			then(builder).should().clientConnector(any(ReactorClientHttpConnector.class));
 		});
 	}
 
@@ -106,7 +106,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
 			WebClient.Builder builder = mock(WebClient.Builder.class);
 			clientCustomizer.customize(builder);
-			verify(builder, times(1)).clientConnector(any(ClientHttpConnector.class));
+			then(builder).should().clientConnector(any(ClientHttpConnector.class));
 		});
 	}
 

@@ -39,13 +39,14 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link CachingOperationInvokerAdvisor}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class CachingOperationInvokerAdvisorTests {
@@ -86,7 +87,7 @@ class CachingOperationInvokerAdvisorTests {
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
 				this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
-		verify(this.timeToLive).apply(EndpointId.of("foo"));
+		then(this.timeToLive).should().apply(EndpointId.of("foo"));
 	}
 
 	@Test
@@ -96,7 +97,7 @@ class CachingOperationInvokerAdvisorTests {
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
 				this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
-		verify(this.timeToLive).apply(EndpointId.of("foo"));
+		then(this.timeToLive).should().apply(EndpointId.of("foo"));
 	}
 
 	@Test

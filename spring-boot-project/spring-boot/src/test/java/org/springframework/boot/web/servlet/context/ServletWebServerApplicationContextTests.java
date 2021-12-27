@@ -81,10 +81,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
 /**
@@ -92,6 +92,7 @@ import static org.mockito.Mockito.withSettings;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 @ExtendWith({ OutputCaptureExtension.class, MockitoExtension.class })
 class ServletWebServerApplicationContextTests {
@@ -113,8 +114,8 @@ class ServletWebServerApplicationContextTests {
 		MockServletWebServerFactory factory = getWebServerFactory();
 		// Ensure that the context has been setup
 		assertThat(this.context.getServletContext()).isEqualTo(factory.getServletContext());
-		verify(factory.getServletContext()).setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.context);
+		then(factory.getServletContext()).should()
+				.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
 		assertThat(this.context.getBeanFactory().getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
 				.isInstanceOf(SessionScope.class);
@@ -161,7 +162,7 @@ class ServletWebServerApplicationContextTests {
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
 		this.context.close();
-		verify(factory.getWebServer()).stop();
+		then(factory.getWebServer()).should().stop();
 	}
 
 	@Test
@@ -199,7 +200,7 @@ class ServletWebServerApplicationContextTests {
 		ServletContextAware bean = mock(ServletContextAware.class);
 		this.context.registerBeanDefinition("bean", beanDefinition(bean));
 		this.context.refresh();
-		verify(bean).setServletContext(getWebServerFactory().getServletContext());
+		then(bean).should().setServletContext(getWebServerFactory().getServletContext());
 	}
 
 	@Test
@@ -227,8 +228,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
-		verify(factory.getServletContext()).addServlet("servletBean", servlet);
-		verify(factory.getRegisteredServlet(0).getRegistration()).addMapping("/");
+		then(factory.getServletContext()).should().addServlet("servletBean", servlet);
+		then(factory.getRegisteredServlet(0).getRegistration()).should().addMapping("/");
 	}
 
 	@Test
@@ -242,8 +243,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterRegistrationBean", beanDefinition(registration));
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
-		verify(factory.getServletContext()).addFilter("filterBean", filter);
-		verify(factory.getServletContext()).addFilter("object", registration.getFilter());
+		then(factory.getServletContext()).should().addFilter("filterBean", filter);
+		then(factory.getServletContext()).should().addFilter("object", registration.getFilter());
 		assertThat(factory.getRegisteredFilter(0).getFilter()).isEqualTo(filter);
 	}
 
@@ -260,10 +261,10 @@ class ServletWebServerApplicationContextTests {
 		MockServletWebServerFactory factory = getWebServerFactory();
 		ServletContext servletContext = factory.getServletContext();
 		InOrder ordered = inOrder(servletContext);
-		ordered.verify(servletContext).addServlet("servletBean1", servlet1);
-		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
-		verify(factory.getRegisteredServlet(0).getRegistration()).addMapping("/servletBean1/");
-		verify(factory.getRegisteredServlet(1).getRegistration()).addMapping("/servletBean2/");
+		then(servletContext).should(ordered).addServlet("servletBean1", servlet1);
+		then(servletContext).should(ordered).addServlet("servletBean2", servlet2);
+		then(factory.getRegisteredServlet(0).getRegistration()).should().addMapping("/servletBean1/");
+		then(factory.getRegisteredServlet(1).getRegistration()).should().addMapping("/servletBean2/");
 	}
 
 	@Test
@@ -279,10 +280,10 @@ class ServletWebServerApplicationContextTests {
 		MockServletWebServerFactory factory = getWebServerFactory();
 		ServletContext servletContext = factory.getServletContext();
 		InOrder ordered = inOrder(servletContext);
-		ordered.verify(servletContext).addServlet("dispatcherServlet", servlet1);
-		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
-		verify(factory.getRegisteredServlet(0).getRegistration()).addMapping("/");
-		verify(factory.getRegisteredServlet(1).getRegistration()).addMapping("/servletBean2/");
+		then(servletContext).should(ordered).addServlet("dispatcherServlet", servlet1);
+		then(servletContext).should(ordered).addServlet("servletBean2", servlet2);
+		then(factory.getRegisteredServlet(0).getRegistration()).should().addMapping("/");
+		then(factory.getRegisteredServlet(1).getRegistration()).should().addMapping("/servletBean2/");
 	}
 
 	@Test
@@ -300,13 +301,13 @@ class ServletWebServerApplicationContextTests {
 		MockServletWebServerFactory factory = getWebServerFactory();
 		ServletContext servletContext = factory.getServletContext();
 		InOrder ordered = inOrder(servletContext);
-		verify(factory.getServletContext()).addServlet("servletBean", servlet);
-		verify(factory.getRegisteredServlet(0).getRegistration()).addMapping("/");
-		ordered.verify(factory.getServletContext()).addFilter("filterBean1", filter1);
-		ordered.verify(factory.getServletContext()).addFilter("filterBean2", filter2);
-		verify(factory.getRegisteredFilter(0).getRegistration())
+		then(factory.getServletContext()).should().addServlet("servletBean", servlet);
+		then(factory.getRegisteredServlet(0).getRegistration()).should().addMapping("/");
+		then(factory.getServletContext()).should(ordered).addFilter("filterBean1", filter1);
+		then(factory.getServletContext()).should(ordered).addFilter("filterBean2", filter2);
+		then(factory.getRegisteredFilter(0).getRegistration()).should()
 				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
-		verify(factory.getRegisteredFilter(1).getRegistration())
+		then(factory.getRegisteredFilter(1).getRegistration()).should()
 				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
@@ -324,8 +325,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
 		InOrder ordered = inOrder(initializer1, initializer2);
-		ordered.verify(initializer1).onStartup(servletContext);
-		ordered.verify(initializer2).onStartup(servletContext);
+		then(initializer1).should(ordered).onStartup(servletContext);
+		then(initializer2).should(ordered).onStartup(servletContext);
 	}
 
 	@Test
@@ -335,7 +336,7 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("initializerBean", beanDefinition(initializer));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(servletContext).addListener(initializer);
+		then(servletContext).should().addListener(initializer);
 	}
 
 	@Test
@@ -347,8 +348,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("initializerBean1", beanDefinition(initializer1));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(initializer1).onStartup(servletContext);
-		verify(initializer2).onStartup(servletContext);
+		then(initializer1).should().onStartup(servletContext);
+		then(initializer2).should().onStartup(servletContext);
 	}
 
 	@Test
@@ -362,9 +363,9 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(initializer).onStartup(servletContext);
-		verify(servletContext).addServlet(anyString(), any(Servlet.class));
-		verify(servletContext).addFilter(anyString(), any(Filter.class));
+		then(initializer).should().onStartup(servletContext);
+		then(servletContext).should().addServlet(anyString(), any(Servlet.class));
+		then(servletContext).should().addFilter(anyString(), any(Filter.class));
 	}
 
 	@Test
@@ -378,8 +379,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(servletContext, atMost(1)).addServlet(anyString(), any(Servlet.class));
-		verify(servletContext, atMost(1)).addFilter(anyString(), any(Filter.class));
+		then(servletContext).should(atMost(1)).addServlet(anyString(), any(Servlet.class));
+		then(servletContext).should(atMost(1)).addFilter(anyString(), any(Filter.class));
 	}
 
 	@Test
@@ -391,7 +392,7 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(servletContext, atMost(1)).addFilter(anyString(), any(Filter.class));
+		then(servletContext).should(atMost(1)).addFilter(anyString(), any(Filter.class));
 	}
 
 	@Test
@@ -404,7 +405,7 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterBean", filterBeanDefinition);
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(servletContext, atMost(1)).addFilter(anyString(), this.filterCaptor.capture());
+		then(servletContext).should(atMost(1)).addFilter(anyString(), this.filterCaptor.capture());
 		// Up to this point the filterBean should not have been created, calling
 		// the delegate proxy will trigger creation and an exception
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> {

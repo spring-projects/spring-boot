@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for nested test configuration when the configuration is inherited from the
  * enclosing class (the default behaviour).
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @SpringBootTest(classes = AppConfiguration.class)
 @Import(ActionPerformer.class)
@@ -50,14 +51,14 @@ class InheritedNestedTestConfigurationTests {
 	@Test
 	void mockWasInvokedOnce() {
 		this.performer.run();
-		verify(this.action, times(1)).perform();
+		then(this.action).should().perform();
 	}
 
 	@Test
 	void mockWasInvokedTwice() {
 		this.performer.run();
 		this.performer.run();
-		verify(this.action, times(2)).perform();
+		then(this.action).should(times(2)).perform();
 	}
 
 	@Nested
@@ -66,14 +67,14 @@ class InheritedNestedTestConfigurationTests {
 		@Test
 		void mockWasInvokedOnce() {
 			InheritedNestedTestConfigurationTests.this.performer.run();
-			verify(InheritedNestedTestConfigurationTests.this.action, times(1)).perform();
+			then(InheritedNestedTestConfigurationTests.this.action).should().perform();
 		}
 
 		@Test
 		void mockWasInvokedTwice() {
 			InheritedNestedTestConfigurationTests.this.performer.run();
 			InheritedNestedTestConfigurationTests.this.performer.run();
-			verify(InheritedNestedTestConfigurationTests.this.action, times(2)).perform();
+			then(InheritedNestedTestConfigurationTests.this.action).should(times(2)).perform();
 		}
 
 	}

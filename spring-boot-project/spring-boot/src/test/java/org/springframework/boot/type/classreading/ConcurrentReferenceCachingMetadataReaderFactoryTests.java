@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,16 @@ import org.springframework.core.type.classreading.MetadataReader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConcurrentReferenceCachingMetadataReaderFactory}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 
@@ -42,7 +43,7 @@ class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 		MetadataReader metadataReader1 = factory.getMetadataReader(getClass().getName());
 		MetadataReader metadataReader2 = factory.getMetadataReader(getClass().getName());
 		assertThat(metadataReader1).isSameAs(metadataReader2);
-		verify(factory, times(1)).createMetadataReader(any(Resource.class));
+		then(factory).should().createMetadataReader(any(Resource.class));
 	}
 
 	@Test
@@ -53,7 +54,7 @@ class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 		factory.clearCache();
 		MetadataReader metadataReader2 = factory.getMetadataReader(getClass().getName());
 		assertThat(metadataReader1).isNotSameAs(metadataReader2);
-		verify(factory, times(2)).createMetadataReader(any(Resource.class));
+		then(factory).should(times(2)).createMetadataReader(any(Resource.class));
 	}
 
 	static class TestConcurrentReferenceCachingMetadataReaderFactory

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,14 @@ import org.springframework.context.support.StaticApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link ApplicationContextAssertProvider} and
  * {@link AssertProviderApplicationContextInvocationHandler}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class ApplicationContextAssertProviderTests {
@@ -102,7 +103,7 @@ class ApplicationContextAssertProviderTests {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat((Object) context).isNotNull();
 		context.getBean("foo");
-		verify(this.mockContext).getBean("foo");
+		then(this.mockContext).should().getBean("foo");
 	}
 
 	@Test
@@ -186,7 +187,7 @@ class ApplicationContextAssertProviderTests {
 	void closeShouldCloseContext() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.mockContextSupplier);
 		context.close();
-		verify(this.mockContext).close();
+		then(this.mockContext).should().close();
 	}
 
 	private ApplicationContextAssertProvider<ApplicationContext> get(Supplier<ApplicationContext> contextSupplier) {

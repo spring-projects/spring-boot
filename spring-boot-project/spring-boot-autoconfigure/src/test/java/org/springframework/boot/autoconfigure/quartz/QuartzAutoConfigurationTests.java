@@ -72,8 +72,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link QuartzAutoConfiguration}.
@@ -81,6 +81,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class QuartzAutoConfigurationTests {
@@ -164,7 +165,7 @@ class QuartzAutoConfigurationTests {
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getMetaData().getThreadPoolSize()).isEqualTo(50);
 					Executor executor = context.getBean(Executor.class);
-					verifyNoInteractions(executor);
+					then(executor).shouldHaveNoInteractions();
 				});
 	}
 

@@ -41,13 +41,14 @@ import org.springframework.core.convert.support.GenericConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link BindConverter}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class BindConverterTests {
@@ -63,7 +64,7 @@ class BindConverterTests {
 	@Test
 	void createWhenPropertyEditorInitializerIsNotNullShouldUseToInitialize() {
 		BindConverter.get(null, this.propertyEditorInitializer);
-		verify(this.propertyEditorInitializer).accept(any(PropertyEditorRegistry.class));
+		then(this.propertyEditorInitializer).should().accept(any(PropertyEditorRegistry.class));
 	}
 
 	@Test

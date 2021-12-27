@@ -30,15 +30,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.Environment;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link FailureAnalyzers}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class FailureAnalyzersTests {
 
@@ -53,42 +54,42 @@ class FailureAnalyzersTests {
 	void analyzersAreLoadedAndCalled() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
-		verify(failureAnalyzer, times(2)).analyze(failure);
+		then(failureAnalyzer).should(times(2)).analyze(failure);
 	}
 
 	@Test
 	void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
-		verify(failureAnalyzer).setBeanFactory(any(BeanFactory.class));
+		then(failureAnalyzer).should().setBeanFactory(any(BeanFactory.class));
 	}
 
 	@Test
 	void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
-		verify(failureAnalyzer).setEnvironment(any(Environment.class));
+		then(failureAnalyzer).should().setEnvironment(any(Environment.class));
 	}
 
 	@Test
 	void analyzerThatFailsDuringInitializationDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("broken-initialization.factories", failure);
-		verify(failureAnalyzer, times(1)).analyze(failure);
+		then(failureAnalyzer).should().analyze(failure);
 	}
 
 	@Test
 	void analyzerThatFailsDuringAnalysisDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("broken-analysis.factories", failure);
-		verify(failureAnalyzer, times(1)).analyze(failure);
+		then(failureAnalyzer).should().analyze(failure);
 	}
 
 	@Test
 	void createWithNullContextSkipsAwareAnalyzers() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure, null);
-		verify(failureAnalyzer, times(1)).analyze(failure);
+		then(failureAnalyzer).should().analyze(failure);
 	}
 
 	private void analyzeAndReport(String factoriesName, Throwable failure) {

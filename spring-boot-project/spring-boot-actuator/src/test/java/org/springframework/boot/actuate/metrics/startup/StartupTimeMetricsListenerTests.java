@@ -31,13 +31,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link StartupTimeMetricsListener}.
  *
  * @author Chris Bono
+ * @author Yanming Zhou
  */
 class StartupTimeMetricsListenerTests {
 
@@ -99,14 +100,14 @@ class StartupTimeMetricsListenerTests {
 
 	private ApplicationStartedEvent applicationStartedEvent(Long startupTimeMs) {
 		SpringApplication application = mock(SpringApplication.class);
-		doReturn(TestMainApplication.class).when(application).getMainApplicationClass();
+		willReturn(TestMainApplication.class).given(application).getMainApplicationClass();
 		return new ApplicationStartedEvent(application, null, null,
 				(startupTimeMs != null) ? Duration.ofMillis(startupTimeMs) : null);
 	}
 
 	private ApplicationReadyEvent applicationReadyEvent(Long startupTimeMs) {
 		SpringApplication application = mock(SpringApplication.class);
-		doReturn(TestMainApplication.class).when(application).getMainApplicationClass();
+		willReturn(TestMainApplication.class).given(application).getMainApplicationClass();
 		return new ApplicationReadyEvent(application, null, null,
 				(startupTimeMs != null) ? Duration.ofMillis(startupTimeMs) : null);
 	}

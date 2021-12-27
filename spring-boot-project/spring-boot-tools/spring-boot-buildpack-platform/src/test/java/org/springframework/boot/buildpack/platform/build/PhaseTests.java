@@ -23,9 +23,8 @@ import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig.U
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link Phase}.
@@ -33,6 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Jeroen Meijer
+ * @author Yanming Zhou
  */
 class PhaseTests {
 
@@ -55,9 +55,9 @@ class PhaseTests {
 		Phase phase = new Phase("test", false);
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
-		verify(update).withLabel("author", "spring-boot");
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test", NO_ARGS);
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -66,11 +66,11 @@ class PhaseTests {
 		phase.withDaemonAccess();
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withUser("root");
-		verify(update).withBinding(Binding.from("/var/run/docker.sock", "/var/run/docker.sock"));
-		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
-		verify(update).withLabel("author", "spring-boot");
-		verifyNoMoreInteractions(update);
+		then(update).should().withUser("root");
+		then(update).should().withBinding(Binding.from("/var/run/docker.sock", "/var/run/docker.sock"));
+		then(update).should().withCommand("/cnb/lifecycle/test", NO_ARGS);
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -79,9 +79,9 @@ class PhaseTests {
 		phase.withLogLevelArg();
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test", "-log-level", "debug");
-		verify(update).withLabel("author", "spring-boot");
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test", "-log-level", "debug");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -90,9 +90,9 @@ class PhaseTests {
 		phase.withLogLevelArg();
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test");
-		verify(update).withLabel("author", "spring-boot");
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -101,9 +101,9 @@ class PhaseTests {
 		phase.withArgs("a", "b", "c");
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test", "a", "b", "c");
-		verify(update).withLabel("author", "spring-boot");
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test", "a", "b", "c");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -113,10 +113,10 @@ class PhaseTests {
 		phase.withBinding(Binding.from(volumeName, "/test"));
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test");
-		verify(update).withLabel("author", "spring-boot");
-		verify(update).withBinding(Binding.from(volumeName, "/test"));
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).should().withBinding(Binding.from(volumeName, "/test"));
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -126,11 +126,11 @@ class PhaseTests {
 		phase.withEnv("name2", "value2");
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test");
-		verify(update).withLabel("author", "spring-boot");
-		verify(update).withEnv("name1", "value1");
-		verify(update).withEnv("name2", "value2");
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).should().withEnv("name1", "value1");
+		then(update).should().withEnv("name2", "value2");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -139,10 +139,10 @@ class PhaseTests {
 		phase.withNetworkMode("test");
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/cnb/lifecycle/test");
-		verify(update).withNetworkMode("test");
-		verify(update).withLabel("author", "spring-boot");
-		verifyNoMoreInteractions(update);
+		then(update).should().withCommand("/cnb/lifecycle/test");
+		then(update).should().withNetworkMode("test");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).shouldHaveNoMoreInteractions();
 	}
 
 }

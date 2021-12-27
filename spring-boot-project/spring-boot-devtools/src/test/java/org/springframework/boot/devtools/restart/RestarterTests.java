@@ -49,14 +49,15 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link Restarter}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RestarterTests {
@@ -140,7 +141,7 @@ class RestarterTests {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
 		assertThat(attribute).isEqualTo("abc");
-		verifyNoInteractions(objectFactory);
+		then(objectFactory).shouldHaveNoInteractions();
 	}
 
 	@Test

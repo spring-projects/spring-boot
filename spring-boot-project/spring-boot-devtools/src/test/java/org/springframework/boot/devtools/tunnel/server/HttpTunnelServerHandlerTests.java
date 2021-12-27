@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link HttpTunnelServerHandler}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class HttpTunnelServerHandlerTests {
 
@@ -45,7 +46,7 @@ class HttpTunnelServerHandlerTests {
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
 		ServerHttpResponse response = mock(ServerHttpResponse.class);
 		handler.handle(request, response);
-		verify(server).handle(request, response);
+		then(server).should().handle(request, response);
 	}
 
 }

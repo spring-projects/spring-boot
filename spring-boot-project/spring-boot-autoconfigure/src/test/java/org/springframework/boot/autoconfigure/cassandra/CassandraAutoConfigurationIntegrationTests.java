@@ -31,13 +31,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Integration tests for {@link CassandraAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @Testcontainers(disabledWithoutDocker = true)
 class CassandraAutoConfigurationIntegrationTests {
@@ -61,7 +62,7 @@ class CassandraAutoConfigurationIntegrationTests {
 			context.getBean(CqlSession.class);
 			DriverConfigLoader driverConfigLoader = context.getBean(DriverConfigLoader.class);
 			context.close();
-			verify(driverConfigLoader).close();
+			then(driverConfigLoader).should().close();
 		});
 	}
 

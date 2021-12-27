@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AuditListener}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class AuditListenerTests {
 
@@ -39,7 +40,7 @@ class AuditListenerTests {
 		AuditEvent event = new AuditEvent("principal", "type", Collections.emptyMap());
 		AuditListener listener = new AuditListener(repository);
 		listener.onApplicationEvent(new AuditApplicationEvent(event));
-		verify(repository).add(event);
+		then(repository).should().add(event);
 	}
 
 }

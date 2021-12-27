@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,15 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebTestClientAutoConfiguration}
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class WebTestClientAutoConfigurationTests {
 
@@ -65,7 +66,7 @@ class WebTestClientAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CodecConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(WebTestClient.class);
 			assertThat(context).hasSingleBean(CodecCustomizer.class);
-			verify(context.getBean(CodecCustomizer.class)).customize(any(CodecConfigurer.class));
+			then(context.getBean(CodecCustomizer.class)).should().customize(any(CodecConfigurer.class));
 		});
 	}
 

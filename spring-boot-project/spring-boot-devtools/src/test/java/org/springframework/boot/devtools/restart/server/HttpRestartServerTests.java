@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link HttpRestartServer}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class HttpRestartServerTests {
@@ -83,7 +83,7 @@ class HttpRestartServerTests {
 		byte[] bytes = serialize(files);
 		request.setContent(bytes);
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
-		verify(this.delegate).updateAndRestart(this.filesCaptor.capture());
+		then(this.delegate).should().updateAndRestart(this.filesCaptor.capture());
 		assertThat(this.filesCaptor.getValue().getFile("name")).isNotNull();
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
@@ -93,7 +93,7 @@ class HttpRestartServerTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
-		verifyNoInteractions(this.delegate);
+		then(this.delegate).shouldHaveNoInteractions();
 		assertThat(response.getStatus()).isEqualTo(500);
 
 	}
@@ -104,7 +104,7 @@ class HttpRestartServerTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		request.setContent(new byte[] { 0, 0, 0 });
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
-		verifyNoInteractions(this.delegate);
+		then(this.delegate).shouldHaveNoInteractions();
 		assertThat(response.getStatus()).isEqualTo(500);
 	}
 

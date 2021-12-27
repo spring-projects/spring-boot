@@ -35,13 +35,14 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JmxEndpointAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class JmxEndpointAutoConfigurationTests {
 
@@ -72,7 +73,7 @@ class JmxEndpointAutoConfigurationTests {
 				.withBean(EndpointObjectNameFactory.class, () -> factory).run((context) -> {
 					ArgumentCaptor<ExposableJmxEndpoint> argumentCaptor = ArgumentCaptor
 							.forClass(ExposableJmxEndpoint.class);
-					verify(factory).getObjectName(argumentCaptor.capture());
+					then(factory).should().getObjectName(argumentCaptor.capture());
 					ExposableJmxEndpoint jmxEndpoint = argumentCaptor.getValue();
 					assertThat(jmxEndpoint.getEndpointId().toLowerCaseString()).isEqualTo("test");
 				});

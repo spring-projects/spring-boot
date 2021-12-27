@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,14 @@ import org.springframework.boot.logging.DeferredLog.Lines;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link DeferredLog}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class DeferredLogTests {
 
@@ -77,84 +76,84 @@ class DeferredLogTests {
 	void trace() {
 		this.deferredLog.trace(this.message);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).trace(this.message, null);
+		then(this.log).should().trace(this.message, null);
 	}
 
 	@Test
 	void traceWithThrowable() {
 		this.deferredLog.trace(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).trace(this.message, this.throwable);
+		then(this.log).should().trace(this.message, this.throwable);
 	}
 
 	@Test
 	void debug() {
 		this.deferredLog.debug(this.message);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).debug(this.message, null);
+		then(this.log).should().debug(this.message, null);
 	}
 
 	@Test
 	void debugWithThrowable() {
 		this.deferredLog.debug(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).debug(this.message, this.throwable);
+		then(this.log).should().debug(this.message, this.throwable);
 	}
 
 	@Test
 	void info() {
 		this.deferredLog.info(this.message);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).info(this.message, null);
+		then(this.log).should().info(this.message, null);
 	}
 
 	@Test
 	void infoWithThrowable() {
 		this.deferredLog.info(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).info(this.message, this.throwable);
+		then(this.log).should().info(this.message, this.throwable);
 	}
 
 	@Test
 	void warn() {
 		this.deferredLog.warn(this.message);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).warn(this.message, null);
+		then(this.log).should().warn(this.message, null);
 	}
 
 	@Test
 	void warnWithThrowable() {
 		this.deferredLog.warn(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).warn(this.message, this.throwable);
+		then(this.log).should().warn(this.message, this.throwable);
 	}
 
 	@Test
 	void error() {
 		this.deferredLog.error(this.message);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).error(this.message, null);
+		then(this.log).should().error(this.message, null);
 	}
 
 	@Test
 	void errorWithThrowable() {
 		this.deferredLog.error(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).error(this.message, this.throwable);
+		then(this.log).should().error(this.message, this.throwable);
 	}
 
 	@Test
 	void fatal() {
 		this.deferredLog.fatal(this.message);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).fatal(this.message, null);
+		then(this.log).should().fatal(this.message, null);
 	}
 
 	@Test
 	void fatalWithThrowable() {
 		this.deferredLog.fatal(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
-		verify(this.log).fatal(this.message, this.throwable);
+		then(this.log).should().fatal(this.message, this.throwable);
 	}
 
 	@Test
@@ -164,10 +163,10 @@ class DeferredLogTests {
 		Log log2 = mock(Log.class);
 		this.deferredLog.replayTo(this.log);
 		this.deferredLog.replayTo(log2);
-		verify(this.log).info("1", null);
-		verify(this.log).fatal("2", null);
-		verifyNoMoreInteractions(this.log);
-		verifyNoInteractions(log2);
+		then(this.log).should().info("1", null);
+		then(this.log).should().fatal("2", null);
+		then(this.log).shouldHaveNoMoreInteractions();
+		then(log2).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -180,8 +179,8 @@ class DeferredLogTests {
 		assertThat(lines).isEmpty();
 		this.deferredLog.info("Message2");
 		assertThat(lines).isEmpty();
-		verify(this.log).error(this.message, this.throwable);
-		verify(this.log).info("Message2", null);
+		then(this.log).should().error(this.message, this.throwable);
+		then(this.log).should().info("Message2", null);
 	}
 
 }

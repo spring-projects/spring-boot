@@ -28,14 +28,15 @@ import org.springframework.boot.system.ApplicationPid;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link StartupInfoLogger}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class StartupInfoLoggerTests {
 
@@ -46,7 +47,7 @@ class StartupInfoLoggerTests {
 		given(this.log.isInfoEnabled()).willReturn(true);
 		new StartupInfoLogger(getClass()).logStarting(this.log);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-		verify(this.log).info(captor.capture());
+		then(this.log).should().info(captor.capture());
 		assertThat(captor.getValue().toString()).contains("Starting " + getClass().getSimpleName() + " using Java "
 				+ System.getProperty("java.version") + " on " + InetAddress.getLocalHost().getHostName() + " with PID "
 				+ new ApplicationPid() + " (started by " + System.getProperty("user.name") + " in "
@@ -59,7 +60,7 @@ class StartupInfoLoggerTests {
 		Duration timeTakenToStartup = Duration.ofMillis(10);
 		new StartupInfoLogger(getClass()).logStarted(this.log, timeTakenToStartup);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-		verify(this.log).info(captor.capture());
+		then(this.log).should().info(captor.capture());
 		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()
 				+ " in \\d+\\.\\d{1,3} seconds \\(JVM running for \\d+\\.\\d{1,3}\\)");
 	}

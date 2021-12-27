@@ -41,14 +41,14 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link EntityScanner}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class EntityScannerTests {
 
@@ -112,10 +112,10 @@ class EntityScannerTests {
 		TestEntityScanner scanner = new TestEntityScanner(context, candidateComponentProvider);
 		scanner.scan(Entity.class);
 		ArgumentCaptor<AnnotationTypeFilter> annotationTypeFilter = ArgumentCaptor.forClass(AnnotationTypeFilter.class);
-		verify(candidateComponentProvider).addIncludeFilter(annotationTypeFilter.capture());
-		verify(candidateComponentProvider)
+		then(candidateComponentProvider).should().addIncludeFilter(annotationTypeFilter.capture());
+		then(candidateComponentProvider).should()
 				.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan");
-		verifyNoMoreInteractions(candidateComponentProvider);
+		then(candidateComponentProvider).shouldHaveNoMoreInteractions();
 		assertThat(annotationTypeFilter.getValue().getAnnotationType()).isEqualTo(Entity.class);
 	}
 

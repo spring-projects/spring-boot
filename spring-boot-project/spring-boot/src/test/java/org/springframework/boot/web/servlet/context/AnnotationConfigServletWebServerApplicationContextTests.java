@@ -39,12 +39,13 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link AnnotationConfigServletWebServerApplicationContext}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class AnnotationConfigServletWebServerApplicationContextTests {
 
@@ -138,7 +139,7 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 	private void verifyContext() {
 		MockServletWebServerFactory factory = this.context.getBean(MockServletWebServerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
-		verify(factory.getServletContext()).addServlet("servlet", servlet);
+		then(factory.getServletContext()).should().addServlet("servlet", servlet);
 	}
 
 	@Component

@@ -95,9 +95,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TomcatServletWebServerFactory}.
@@ -105,6 +105,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
@@ -153,7 +154,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (LifecycleListener listener : listeners) {
-			ordered.verify(listener).lifecycleEvent(any(LifecycleEvent.class));
+			then(listener).should(ordered).lifecycleEvent(any(LifecycleEvent.class));
 		}
 	}
 
@@ -167,7 +168,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (TomcatContextCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize(any(Context.class));
+			then(customizer).should(ordered).customize(any(Context.class));
 		}
 	}
 
@@ -178,7 +179,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer();
 		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
-		verify(customizer).customize(contextCaptor.capture());
+		then(customizer).should().customize(contextCaptor.capture());
 		assertThat(contextCaptor.getValue().getParent()).isNotNull();
 	}
 
@@ -192,7 +193,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (TomcatConnectorCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize(any(Connector.class));
+			then(customizer).should(ordered).customize(any(Connector.class));
 		}
 	}
 
@@ -207,7 +208,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (TomcatProtocolHandlerCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize(any(ProtocolHandler.class));
+			then(customizer).should(ordered).customize(any(ProtocolHandler.class));
 		}
 	}
 
@@ -268,7 +269,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		Valve valve = mock(Valve.class);
 		factory.addContextValves(valve);
 		this.webServer = factory.getWebServer();
-		verify(valve).setNext(any(Valve.class));
+		then(valve).should().setNext(any(Valve.class));
 	}
 
 	@Test

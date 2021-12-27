@@ -38,13 +38,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletRegistrationBean}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class ServletRegistrationBeanTests {
@@ -65,9 +66,9 @@ class ServletRegistrationBeanTests {
 		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(this.registration);
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet("mockServlet", this.servlet);
-		verify(this.registration).setAsyncSupported(true);
-		verify(this.registration).addMapping("/*");
+		then(this.servletContext).should().addServlet("mockServlet", this.servlet);
+		then(this.registration).should().setAsyncSupported(true);
+		then(this.registration).should().addMapping("/*");
 	}
 
 	@Test
@@ -75,8 +76,8 @@ class ServletRegistrationBeanTests {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(null);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet("mockServlet", this.servlet);
-		verify(this.registration, never()).setAsyncSupported(true);
+		then(this.servletContext).should().addServlet("mockServlet", this.servlet);
+		then(this.registration).should(never()).setAsyncSupported(true);
 	}
 
 	@Test
@@ -92,14 +93,14 @@ class ServletRegistrationBeanTests {
 		bean.addUrlMappings("/c");
 		bean.setLoadOnStartup(10);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet("test", this.servlet);
-		verify(this.registration).setAsyncSupported(false);
+		then(this.servletContext).should().addServlet("test", this.servlet);
+		then(this.registration).should().setAsyncSupported(false);
 		Map<String, String> expectedInitParameters = new HashMap<>();
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
-		verify(this.registration).setInitParameters(expectedInitParameters);
-		verify(this.registration).addMapping("/a", "/b", "/c");
-		verify(this.registration).setLoadOnStartup(10);
+		then(this.registration).should().setInitParameters(expectedInitParameters);
+		then(this.registration).should().addMapping("/a", "/b", "/c");
+		then(this.registration).should().setLoadOnStartup(10);
 	}
 
 	@Test
@@ -108,7 +109,7 @@ class ServletRegistrationBeanTests {
 		bean.setName("specificName");
 		bean.setServlet(this.servlet);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet("specificName", this.servlet);
+		then(this.servletContext).should().addServlet("specificName", this.servlet);
 	}
 
 	@Test
@@ -116,7 +117,7 @@ class ServletRegistrationBeanTests {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		bean.setServlet(this.servlet);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet("mockServlet", this.servlet);
+		then(this.servletContext).should().addServlet("mockServlet", this.servlet);
 	}
 
 	@Test
@@ -125,7 +126,7 @@ class ServletRegistrationBeanTests {
 		bean.setServlet(this.servlet);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, never()).addServlet("mockServlet", this.servlet);
+		then(this.servletContext).should(never()).addServlet("mockServlet", this.servlet);
 	}
 
 	@Test
@@ -168,7 +169,7 @@ class ServletRegistrationBeanTests {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, "/a", "/b");
 		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/c", "/d")));
 		bean.onStartup(this.servletContext);
-		verify(this.registration).addMapping("/c", "/d");
+		then(this.registration).should().addMapping("/c", "/d");
 	}
 
 	@Test
@@ -178,14 +179,14 @@ class ServletRegistrationBeanTests {
 		bean.addInitParameter("a", "b");
 		bean.getInitParameters().put("a", "c");
 		bean.onStartup(this.servletContext);
-		verify(this.registration).setInitParameters(Collections.singletonMap("a", "c"));
+		then(this.registration).should().setInitParameters(Collections.singletonMap("a", "c"));
 	}
 
 	@Test
 	void withoutDefaultMappings() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, false);
 		bean.onStartup(this.servletContext);
-		verify(this.registration, never()).addMapping(any(String[].class));
+		then(this.registration).should(never()).addMapping(any(String[].class));
 	}
 
 }

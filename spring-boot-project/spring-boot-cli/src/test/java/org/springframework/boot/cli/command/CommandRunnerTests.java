@@ -31,15 +31,16 @@ import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CommandRunner}.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class CommandRunnerTests {
@@ -101,7 +102,7 @@ class CommandRunnerTests {
 	@Test
 	void runCommand() throws Exception {
 		this.commandRunner.run("command", "--arg1", "arg2");
-		verify(this.regularCommand).run("--arg1", "arg2");
+		then(this.regularCommand).should().run("--arg1", "arg2");
 	}
 
 	@Test
@@ -112,7 +113,7 @@ class CommandRunnerTests {
 	@Test
 	void appArguments() throws Exception {
 		this.commandRunner.runAndHandleErrors("command", "--", "--debug", "bar");
-		verify(this.regularCommand).run("--", "--debug", "bar");
+		then(this.regularCommand).should().run("--", "--debug", "bar");
 		// When handled by the command itself it shouldn't cause the system property to be
 		// set
 		assertThat(System.getProperty("debug")).isNull();
@@ -166,7 +167,7 @@ class CommandRunnerTests {
 	@Test
 	void help() throws Exception {
 		this.commandRunner.run("help", "command");
-		verify(this.regularCommand).getHelp();
+		then(this.regularCommand).should().getHelp();
 	}
 
 	@Test

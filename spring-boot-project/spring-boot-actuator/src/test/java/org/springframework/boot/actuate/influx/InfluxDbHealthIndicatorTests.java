@@ -28,13 +28,14 @@ import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link InfluxDbHealthIndicator}.
  *
  * @author Eddú Meléndez
+ * @author Yanming Zhou
  */
 class InfluxDbHealthIndicatorTests {
 
@@ -48,7 +49,7 @@ class InfluxDbHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("0.9");
-		verify(influxDb).ping();
+		then(influxDb).should().ping();
 	}
 
 	@Test
@@ -59,7 +60,7 @@ class InfluxDbHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(influxDb).ping();
+		then(influxDb).should().ping();
 	}
 
 }

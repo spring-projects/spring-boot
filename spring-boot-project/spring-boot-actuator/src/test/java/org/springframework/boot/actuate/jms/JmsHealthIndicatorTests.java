@@ -30,16 +30,16 @@ import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JmsHealthIndicator}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class JmsHealthIndicatorTests {
 
@@ -55,7 +55,7 @@ class JmsHealthIndicatorTests {
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("provider")).isEqualTo("JMS test provider");
-		verify(connection, times(1)).close();
+		then(connection).should().close();
 	}
 
 	@Test
@@ -80,7 +80,7 @@ class JmsHealthIndicatorTests {
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("provider")).isNull();
-		verify(connection, times(1)).close();
+		then(connection).should().close();
 	}
 
 	@Test

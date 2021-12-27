@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link SessionProperties}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class SessionPropertiesTests {
 
@@ -39,7 +40,7 @@ class SessionPropertiesTests {
 		properties.setTimeout(Duration.ofMinutes(1));
 		Supplier<Duration> fallback = mock(Supplier.class);
 		assertThat(properties.determineTimeout(fallback)).isEqualTo(Duration.ofMinutes(1));
-		verifyNoInteractions(fallback);
+		then(fallback).shouldHaveNoInteractions();
 	}
 
 	@Test

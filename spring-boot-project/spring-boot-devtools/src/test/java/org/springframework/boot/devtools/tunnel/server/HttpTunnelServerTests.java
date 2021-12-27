@@ -50,15 +50,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link HttpTunnelServer}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class HttpTunnelServerTests {
@@ -103,10 +103,10 @@ class HttpTunnelServerTests {
 
 	@Test
 	void serverConnectedOnFirstRequest() throws Exception {
-		verify(this.serverConnection, never()).open(anyInt());
+		then(this.serverConnection).should(never()).open(anyInt());
 		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.handle(this.request, this.response);
-		verify(this.serverConnection, times(1)).open(DEFAULT_LONG_POLL_TIMEOUT);
+		then(this.serverConnection).should().open(DEFAULT_LONG_POLL_TIMEOUT);
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class HttpTunnelServerTests {
 		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.setLongPollTimeout(800);
 		this.server.handle(this.request, this.response);
-		verify(this.serverConnection, times(1)).open(800);
+		then(this.serverConnection).should().open(800);
 	}
 
 	@Test
@@ -292,9 +292,9 @@ class HttpTunnelServerTests {
 		given(request.getAsyncRequestControl(this.response)).willReturn(async);
 		HttpConnection connection = new HttpConnection(request, this.response);
 		connection.waitForResponse();
-		verify(async).start();
+		then(async).should().start();
 		connection.respond(HttpStatus.NO_CONTENT);
-		verify(async).complete();
+		then(async).should().complete();
 	}
 
 	@Test

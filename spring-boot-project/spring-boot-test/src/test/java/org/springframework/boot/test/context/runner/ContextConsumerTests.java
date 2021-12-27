@@ -27,15 +27,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link ContextConsumer}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class ContextConsumerTests {
 
@@ -62,8 +62,8 @@ class ContextConsumerTests {
 		ContextConsumer<ApplicationContext> secondConsumer = (context) -> assertThat(predicate.test(24)).isFalse();
 		assertThatThrownBy(() -> firstConsumer.andThen(secondConsumer).accept(mock(ApplicationContext.class)))
 				.isInstanceOf(AssertionError.class);
-		verify(predicate).test(42);
-		verifyNoMoreInteractions(predicate);
+		then(predicate).should().test(42);
+		then(predicate).shouldHaveNoMoreInteractions();
 	}
 
 	@Test

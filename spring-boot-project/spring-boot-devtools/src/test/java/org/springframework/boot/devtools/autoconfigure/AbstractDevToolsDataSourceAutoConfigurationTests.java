@@ -36,16 +36,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Base class for tests for {@link DevToolsDataSourceAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
@@ -54,7 +55,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		ConfigurableApplicationContext context = getContext(() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -64,7 +65,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
-			verify(statement, never()).execute("SHUTDOWN");
+			then(statement).should(never()).execute("SHUTDOWN");
 		}
 	}
 
@@ -82,7 +83,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	protected final Statement configureDataSourceBehavior(DataSource dataSource) throws SQLException {
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);
-		doReturn(connection).when(dataSource).getConnection();
+		willReturn(connection).given(dataSource).getConnection();
 		given(connection.createStatement()).willReturn(statement);
 		return statement;
 	}
