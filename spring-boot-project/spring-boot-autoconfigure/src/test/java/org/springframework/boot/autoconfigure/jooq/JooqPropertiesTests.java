@@ -33,14 +33,15 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JooqProperties}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class JooqPropertiesTests {
 
@@ -59,7 +60,7 @@ class JooqPropertiesTests {
 		DataSource dataSource = mockStandaloneDataSource();
 		SQLDialect sqlDialect = properties.determineSqlDialect(dataSource);
 		assertThat(sqlDialect).isEqualTo(SQLDialect.POSTGRES);
-		verify(dataSource, never()).getConnection();
+		then(dataSource).should(never()).getConnection();
 	}
 
 	@Test

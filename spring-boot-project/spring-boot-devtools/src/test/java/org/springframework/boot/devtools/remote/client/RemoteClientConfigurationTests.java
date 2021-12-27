@@ -52,13 +52,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RemoteClientConfiguration}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith({ OutputCaptureExtension.class, MockRestarter.class })
 class RemoteClientConfigurationTests {
@@ -108,7 +109,7 @@ class RemoteClientConfigurationTests {
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.clientContext.publishEvent(event);
 		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
-		Awaitility.await().atMost(Duration.ofMinutes(1)).untilAsserted(() -> verify(server).triggerReload());
+		Awaitility.await().atMost(Duration.ofMinutes(1)).untilAsserted(() -> then(server).should().triggerReload());
 	}
 
 	@Test

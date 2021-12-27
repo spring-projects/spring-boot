@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebClientAutoConfiguration}
  *
  * @author Brian Clozel
+ * @author Yanming Zhou
  */
 class WebClientAutoConfigurationTests {
 
@@ -71,7 +72,7 @@ class WebClientAutoConfigurationTests {
 			WebClientCodecCustomizer clientCustomizer = context.getBean(WebClientCodecCustomizer.class);
 			builder.build();
 			assertThat(clientCustomizer).isNotNull();
-			verify(codecCustomizer).customize(any(CodecConfigurer.class));
+			then(codecCustomizer).should().customize(any(CodecConfigurer.class));
 		});
 	}
 
@@ -81,7 +82,7 @@ class WebClientAutoConfigurationTests {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
 			builder.build();
-			verify(customizer).customize(any(WebClient.Builder.class));
+			then(customizer).should().customize(any(WebClient.Builder.class));
 		});
 	}
 
@@ -102,11 +103,12 @@ class WebClientAutoConfigurationTests {
 			assertThat(firstBuilder).isNotEqualTo(secondBuilder);
 			firstBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 			secondBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
-			verify(firstConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")), any());
-			verify(secondConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
+			then(firstConnector).should().connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")),
+					any());
+			then(secondConnector).should().connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
 					any());
 			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
-			verify(customizer, times(2)).customize(any(WebClient.Builder.class));
+			then(customizer).should(times(2)).customize(any(WebClient.Builder.class));
 		});
 	}
 

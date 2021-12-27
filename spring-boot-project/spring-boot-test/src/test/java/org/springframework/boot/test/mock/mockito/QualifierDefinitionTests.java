@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,13 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link QualifierDefinition}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class QualifierDefinitionTests {
@@ -81,7 +82,7 @@ class QualifierDefinitionTests {
 		Field field = ReflectionUtils.findField(ConfigA.class, "directQualifier");
 		QualifierDefinition qualifierDefinition = QualifierDefinition.forElement(field);
 		qualifierDefinition.matches(this.beanFactory, "bean");
-		verify(this.beanFactory).isAutowireCandidate(eq("bean"), this.descriptorCaptor.capture());
+		then(this.beanFactory).should().isAutowireCandidate(eq("bean"), this.descriptorCaptor.capture());
 		assertThat(this.descriptorCaptor.getValue().getAnnotatedElement()).isEqualTo(field);
 	}
 

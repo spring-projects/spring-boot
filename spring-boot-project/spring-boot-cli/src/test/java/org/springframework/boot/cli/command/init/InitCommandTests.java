@@ -37,7 +37,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.cli.command.status.ExitStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link InitCommand}
@@ -340,7 +340,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	@Test
 	void userAgent() throws Exception {
 		this.command.run("--list", "--target=https://fake-service");
-		verify(this.http).execute(this.requestCaptor.capture());
+		then(this.http).should().execute(this.requestCaptor.capture());
 		Header agent = this.requestCaptor.getValue().getHeaders("User-Agent")[0];
 		assertThat(agent.getValue()).startsWith("SpringBootCli/");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link DeferredLogs}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class DeferredLogsTests {
 
@@ -43,18 +43,20 @@ class DeferredLogsTests {
 		dlog2.info("b");
 		dlog1.info("c");
 		dlog2.info("d");
-		verifyNoInteractions(log1, log2);
+		then(log1).shouldHaveNoInteractions();
+		then(log2).shouldHaveNoInteractions();
 		loggers.switchOverAll();
 		InOrder ordered = inOrder(log1, log2);
-		ordered.verify(log1).info("a", null);
-		ordered.verify(log2).info("b", null);
-		ordered.verify(log1).info("c", null);
-		ordered.verify(log2).info("d", null);
-		verifyNoMoreInteractions(log1, log2);
+		then(log1).should(ordered).info("a", null);
+		then(log2).should(ordered).info("b", null);
+		then(log1).should(ordered).info("c", null);
+		then(log2).should(ordered).info("d", null);
+		then(log1).shouldHaveNoMoreInteractions();
+		then(log2).shouldHaveNoMoreInteractions();
 		dlog1.info("e");
 		dlog2.info("f");
-		ordered.verify(log1).info("e", null);
-		ordered.verify(log2).info("f", null);
+		then(log1).should(ordered).info("e", null);
+		then(log2).should(ordered).info("f", null);
 	}
 
 }

@@ -23,12 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link XmlServletWebServerApplicationContext}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class XmlServletWebServerApplicationContextTests {
 
@@ -84,7 +85,7 @@ class XmlServletWebServerApplicationContextTests {
 	private void verifyContext() {
 		MockServletWebServerFactory factory = this.context.getBean(MockServletWebServerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
-		verify(factory.getServletContext()).addServlet("servlet", servlet);
+		then(factory.getServletContext()).should().addServlet("servlet", servlet);
 	}
 
 }

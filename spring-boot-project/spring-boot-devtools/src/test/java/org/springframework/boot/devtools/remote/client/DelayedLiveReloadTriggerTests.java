@@ -35,13 +35,14 @@ import org.springframework.http.client.ClientHttpResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DelayedLiveReloadTrigger}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class DelayedLiveReloadTriggerTests {
@@ -113,7 +114,7 @@ class DelayedLiveReloadTriggerTests {
 		this.trigger.setTimings(10, 200, 30000);
 		this.trigger.run();
 		assertThat(System.currentTimeMillis() - startTime).isGreaterThan(300L);
-		verify(this.liveReloadServer).triggerReload();
+		then(this.liveReloadServer).should().triggerReload();
 	}
 
 	@Test
@@ -121,7 +122,7 @@ class DelayedLiveReloadTriggerTests {
 		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException());
 		this.trigger.setTimings(10, 0, 10);
 		this.trigger.run();
-		verify(this.liveReloadServer, never()).triggerReload();
+		then(this.liveReloadServer).should(never()).triggerReload();
 	}
 
 }

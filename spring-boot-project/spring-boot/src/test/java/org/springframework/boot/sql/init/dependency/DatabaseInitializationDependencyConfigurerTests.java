@@ -53,15 +53,16 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DatabaseInitializationDependencyConfigurer}.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class DatabaseInitializationDependencyConfigurerTests {
 
@@ -132,7 +133,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 					assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName()))
 							.isEqualTo(MockDatabaseInitializerDetector.class.getName());
 					assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
-					verify(MockDatabaseInitializerDetector.instance).detectionComplete(context.getBeanFactory(),
+					then(MockDatabaseInitializerDetector.instance).should().detectionComplete(context.getBeanFactory(),
 							Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
 				});

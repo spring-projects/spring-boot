@@ -30,12 +30,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link SpyBean @SpyBean} with a JDK proxy.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(SpringExtension.class)
 class SpyBeanWithJdkProxyTests {
@@ -50,7 +51,7 @@ class SpyBeanWithJdkProxyTests {
 	void jdkProxyCanBeSpied() throws Exception {
 		Example example = this.service.find("id");
 		assertThat(example.id).isEqualTo("id");
-		verify(this.repository).find("id");
+		then(this.repository).should().find("id");
 	}
 
 	@Configuration(proxyBeanMethods = false)

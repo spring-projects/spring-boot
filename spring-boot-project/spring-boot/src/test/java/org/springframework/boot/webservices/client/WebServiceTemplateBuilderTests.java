@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,16 @@ import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link WebServiceTemplateBuilder}.
  *
  * @author Stephane Nicoll
  * @author Dmytro Nosan
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class WebServiceTemplateBuilderTests {
@@ -70,7 +70,7 @@ class WebServiceTemplateBuilderTests {
 	void createWithCustomizersShouldApplyCustomizers() {
 		WebServiceTemplateCustomizer customizer = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = new WebServiceTemplateBuilder(customizer).build();
-		verify(customizer).customize(template);
+		then(customizer).should().customize(template);
 	}
 
 	@Test
@@ -220,14 +220,14 @@ class WebServiceTemplateBuilderTests {
 	void customizersShouldApply() {
 		WebServiceTemplateCustomizer customizer = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer).build();
-		verify(customizer).customize(template);
+		then(customizer).should().customize(template);
 	}
 
 	@Test
 	void customizersShouldBeAppliedLast() {
 		WebServiceTemplate template = spy(new WebServiceTemplate());
-		this.builder
-				.additionalCustomizers(((webServiceTemplate) -> verify(webServiceTemplate).setMessageSenders(any())));
+		this.builder.additionalCustomizers(
+				((webServiceTemplate) -> then(webServiceTemplate).should().setMessageSenders(any())));
 		this.builder.configure(template);
 	}
 
@@ -237,8 +237,8 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyNoInteractions(customizer1);
-		verify(customizer2).customize(template);
+		then(customizer1).shouldHaveNoInteractions();
+		then(customizer2).should().customize(template);
 	}
 
 	@Test
@@ -260,22 +260,22 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplateCustomizer customizer1 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1).additionalCustomizers(customizer2).build();
-		verify(customizer1).customize(template);
-		verify(customizer2).customize(template);
+		then(customizer1).should().customize(template);
+		then(customizer2).should().customize(template);
 	}
 
 	@Test
 	void setCheckConnectionForFault() {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setCheckConnectionForFault(false).configure(template);
-		verify(template).setCheckConnectionForFault(false);
+		then(template).should().setCheckConnectionForFault(false);
 	}
 
 	@Test
 	void setCheckConnectionForError() {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setCheckConnectionForError(false).configure(template);
-		verify(template).setCheckConnectionForError(false);
+		then(template).should().setCheckConnectionForError(false);
 
 	}
 
@@ -283,7 +283,7 @@ class WebServiceTemplateBuilderTests {
 	void setTransformerFactoryClass() {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setTransformerFactoryClass(SAXTransformerFactory.class).configure(template);
-		verify(template).setTransformerFactoryClass(SAXTransformerFactory.class);
+		then(template).should().setTransformerFactoryClass(SAXTransformerFactory.class);
 	}
 
 	@Test

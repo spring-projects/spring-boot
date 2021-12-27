@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link MockitoTestExecutionListener}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class MockitoTestExecutionListenerTests {
@@ -72,14 +72,14 @@ class MockitoTestExecutionListenerTests {
 		TestContext testContext = mockTestContext(instance);
 		given(testContext.getApplicationContext()).willReturn(this.applicationContext);
 		this.listener.prepareTestInstance(testContext);
-		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
+		then(this.postProcessor).should().inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
 		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");
 	}
 
 	@Test
 	void beforeTestMethodShouldDoNothingWhenDirtiesContextAttributeIsNotSet() throws Exception {
 		this.listener.beforeTestMethod(mock(TestContext.class));
-		verifyNoMoreInteractions(this.postProcessor);
+		then(this.postProcessor).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class MockitoTestExecutionListenerTests {
 		given(mockTestContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))
 				.willReturn(Boolean.TRUE);
 		this.listener.beforeTestMethod(mockTestContext);
-		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
+		then(this.postProcessor).should().inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
 		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");
 	}
 

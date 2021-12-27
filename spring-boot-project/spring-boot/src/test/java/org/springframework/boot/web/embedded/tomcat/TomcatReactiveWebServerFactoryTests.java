@@ -55,9 +55,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TomcatReactiveWebServerFactory}.
@@ -65,6 +65,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Madhura Bhave
  * @author HaiTao Zhang
+ * @author Yanming Zhou
  */
 class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -83,7 +84,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (TomcatContextCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize(any(Context.class));
+			then(customizer).should(ordered).customize(any(Context.class));
 		}
 	}
 
@@ -94,7 +95,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
-		verify(customizer).customize(contextCaptor.capture());
+		then(customizer).should().customize(contextCaptor.capture());
 		assertThat(contextCaptor.getValue().getParent()).isNotNull();
 	}
 
@@ -120,7 +121,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (LifecycleListener listener : listeners) {
-			ordered.verify(listener).lifecycleEvent(any(LifecycleEvent.class));
+			then(listener).should(ordered).lifecycleEvent(any(LifecycleEvent.class));
 		}
 	}
 
@@ -165,7 +166,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (TomcatConnectorCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize(any(Connector.class));
+			then(customizer).should(ordered).customize(any(Connector.class));
 		}
 	}
 
@@ -181,7 +182,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (TomcatProtocolHandlerCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize(any(ProtocolHandler.class));
+			then(customizer).should(ordered).customize(any(ProtocolHandler.class));
 		}
 	}
 

@@ -57,9 +57,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Log4J2LoggingSystem}.
@@ -69,6 +69,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Ben Hale
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
@@ -333,11 +334,11 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
-		verify(listener, times(2)).propertyChange(any(PropertyChangeEvent.class));
+		then(listener).should(times(2)).propertyChange(any(PropertyChangeEvent.class));
 		this.loggingSystem.cleanUp();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
-		verify(listener, times(4)).propertyChange(any(PropertyChangeEvent.class));
+		then(listener).should(times(4)).propertyChange(any(PropertyChangeEvent.class));
 	}
 
 	@Test

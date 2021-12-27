@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,14 @@ import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AvailabilityChangeEvent}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class AvailabilityChangeEventTests {
 
@@ -77,7 +78,7 @@ class AvailabilityChangeEventTests {
 		AvailabilityState state = LivenessState.CORRECT;
 		AvailabilityChangeEvent.publish(context, state);
 		ArgumentCaptor<ApplicationEvent> captor = ArgumentCaptor.forClass(ApplicationEvent.class);
-		verify(context).publishEvent(captor.capture());
+		then(context).should().publishEvent(captor.capture());
 		AvailabilityChangeEvent<?> event = (AvailabilityChangeEvent<?>) captor.getValue();
 		assertThat(event.getSource()).isEqualTo(context);
 		assertThat(event.getState()).isEqualTo(state);

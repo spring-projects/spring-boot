@@ -33,16 +33,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ValidatorAdapter}.
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 class ValidatorAdapterTests {
 
@@ -63,11 +63,11 @@ class ValidatorAdapterTests {
 	void wrapperInvokesCallbackOnNonManagedBean() {
 		this.contextRunner.withUserConfiguration(NonManagedBeanConfig.class).run((context) -> {
 			LocalValidatorFactoryBean validator = context.getBean(NonManagedBeanConfig.class).validator;
-			verify(validator, times(1)).setApplicationContext(any(ApplicationContext.class));
-			verify(validator, times(1)).afterPropertiesSet();
-			verify(validator, never()).destroy();
+			then(validator).should().setApplicationContext(any(ApplicationContext.class));
+			then(validator).should().afterPropertiesSet();
+			then(validator).should(never()).destroy();
 			context.close();
-			verify(validator, times(1)).destroy();
+			then(validator).should().destroy();
 		});
 	}
 
@@ -75,11 +75,11 @@ class ValidatorAdapterTests {
 	void wrapperDoesNotInvokeCallbackOnManagedBean() {
 		this.contextRunner.withUserConfiguration(ManagedBeanConfig.class).run((context) -> {
 			LocalValidatorFactoryBean validator = context.getBean(ManagedBeanConfig.class).validator;
-			verify(validator, never()).setApplicationContext(any(ApplicationContext.class));
-			verify(validator, never()).afterPropertiesSet();
-			verify(validator, never()).destroy();
+			then(validator).should(never()).setApplicationContext(any(ApplicationContext.class));
+			then(validator).should(never()).afterPropertiesSet();
+			then(validator).should(never()).destroy();
 			context.close();
-			verify(validator, never()).destroy();
+			then(validator).should(never()).destroy();
 		});
 	}
 

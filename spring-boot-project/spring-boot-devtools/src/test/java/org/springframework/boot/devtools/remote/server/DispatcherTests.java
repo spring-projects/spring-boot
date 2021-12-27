@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,16 +38,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link Dispatcher}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class DispatcherTests {
@@ -81,7 +81,7 @@ class DispatcherTests {
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
 		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
-		verifyNoInteractions(handler);
+		then(handler).shouldHaveNoInteractions();
 		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
@@ -93,7 +93,7 @@ class DispatcherTests {
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
 		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
-		verify(handler).handle(this.serverRequest, this.serverResponse);
+		then(handler).should().handle(this.serverRequest, this.serverResponse);
 	}
 
 	@Test
@@ -106,8 +106,8 @@ class DispatcherTests {
 		Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		InOrder inOrder = inOrder(mapper1, mapper2);
-		inOrder.verify(mapper1).getHandler(this.serverRequest);
-		inOrder.verify(mapper2).getHandler(this.serverRequest);
+		then(mapper1).should(inOrder).getHandler(this.serverRequest);
+		then(mapper2).should(inOrder).getHandler(this.serverRequest);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClassPathFileChangeListener}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class ClassPathFileChangeListenerTests {
@@ -77,13 +78,13 @@ class ClassPathFileChangeListenerTests {
 	@Test
 	void sendsEventWithoutRestart() {
 		testSendsEvent(false);
-		verify(this.fileSystemWatcher, never()).stop();
+		then(this.fileSystemWatcher).should(never()).stop();
 	}
 
 	@Test
 	void sendsEventWithRestart() {
 		testSendsEvent(true);
-		verify(this.fileSystemWatcher).stop();
+		then(this.fileSystemWatcher).should().stop();
 	}
 
 	private void testSendsEvent(boolean restart) {
@@ -102,7 +103,7 @@ class ClassPathFileChangeListenerTests {
 			given(this.restartStrategy.isRestartRequired(file2)).willReturn(true);
 		}
 		listener.onChange(changeSet);
-		verify(this.eventPublisher).publishEvent(this.eventCaptor.capture());
+		then(this.eventPublisher).should().publishEvent(this.eventCaptor.capture());
 		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor.getValue();
 		assertThat(actualEvent.getChangeSet()).isEqualTo(changeSet);
 		assertThat(actualEvent.isRestartRequired()).isEqualTo(restart);

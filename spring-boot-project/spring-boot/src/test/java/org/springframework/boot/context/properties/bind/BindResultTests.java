@@ -32,14 +32,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link BindResult}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class BindResultTests {
@@ -89,14 +89,14 @@ class BindResultTests {
 	void ifBoundWhenHasValueShouldCallConsumer() {
 		BindResult<String> result = BindResult.of("foo");
 		result.ifBound(this.consumer);
-		verify(this.consumer).accept("foo");
+		then(this.consumer).should().accept("foo");
 	}
 
 	@Test
 	void ifBoundWhenHasNoValueShouldNotCallConsumer() {
 		BindResult<String> result = BindResult.of(null);
 		result.ifBound(this.consumer);
-		verifyNoInteractions(this.consumer);
+		then(this.consumer).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -117,7 +117,7 @@ class BindResultTests {
 	void mapWhenHasNoValueShouldNotCallMapper() {
 		BindResult<String> result = BindResult.of(null);
 		result.map(this.mapper);
-		verifyNoInteractions(this.mapper);
+		then(this.mapper).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -136,7 +136,7 @@ class BindResultTests {
 	void orElseGetWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("foo");
-		verifyNoInteractions(this.supplier);
+		then(this.supplier).shouldHaveNoInteractions();
 	}
 
 	@Test

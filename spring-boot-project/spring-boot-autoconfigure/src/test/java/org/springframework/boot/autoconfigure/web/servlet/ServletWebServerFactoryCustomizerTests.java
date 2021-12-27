@@ -38,14 +38,15 @@ import org.springframework.boot.web.servlet.server.Session.Cookie;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
  * @author Yunkun Huang
+ * @author Yanming Zhou
  */
 class ServletWebServerFactoryCustomizerTests {
 
@@ -62,7 +63,7 @@ class ServletWebServerFactoryCustomizerTests {
 	void testDefaultDisplayName() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setDisplayName("application");
+		then(factory).should().setDisplayName("application");
 	}
 
 	@Test
@@ -70,7 +71,7 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
-		verify(factory).setDisplayName("TestName");
+		then(factory).should().setDisplayName("TestName");
 	}
 
 	@Test
@@ -78,7 +79,7 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.getServlet().setRegisterDefaultServlet(false);
 		this.customizer.customize(factory);
-		verify(factory).setRegisterDefaultServlet(false);
+		then(factory).should().setRegisterDefaultServlet(false);
 	}
 
 	@Test
@@ -87,14 +88,14 @@ class ServletWebServerFactoryCustomizerTests {
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
-		verify(factory).setSsl(ssl);
+		then(factory).should().setSsl(ssl);
 	}
 
 	@Test
 	void testCustomizeJsp() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setJsp(any(Jsp.class));
+		then(factory).should().setJsp(any(Jsp.class));
 	}
 
 	@Test
@@ -113,7 +114,7 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
-		verify(factory).setSession(sessionCaptor.capture());
+		then(factory).should().setSession(sessionCaptor.capture());
 		assertThat(sessionCaptor.getValue().getTimeout()).hasSeconds(123);
 		Cookie cookie = sessionCaptor.getValue().getCookie();
 		assertThat(cookie.getName()).isEqualTo("testname");
@@ -130,7 +131,7 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.setPort(8080);
 		this.customizer.customize(factory);
-		verify(factory).setPort(8080);
+		then(factory).should().setPort(8080);
 	}
 
 	@Test
@@ -140,7 +141,7 @@ class ServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setDisplayName("MyBootApp");
+		then(factory).should().setDisplayName("MyBootApp");
 	}
 
 	@Test
@@ -159,7 +160,7 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
-		verify(factory).setSession(sessionCaptor.capture());
+		then(factory).should().setSession(sessionCaptor.capture());
 		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("mydirectory"));
 	}
 
@@ -171,7 +172,7 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
-		verify(factory).setShutdown(shutdownCaptor.capture());
+		then(factory).should().setShutdown(shutdownCaptor.capture());
 		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
 	}
 

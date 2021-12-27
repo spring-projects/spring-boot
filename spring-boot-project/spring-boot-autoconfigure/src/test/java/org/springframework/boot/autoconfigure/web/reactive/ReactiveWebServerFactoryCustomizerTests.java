@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,15 @@ import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ReactiveWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
  * @author Yunkun Huang
+ * @author Yanming Zhou
  */
 class ReactiveWebServerFactoryCustomizerTests {
 
@@ -53,7 +54,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.properties.setPort(9000);
 		this.customizer.customize(factory);
-		verify(factory).setPort(9000);
+		then(factory).should().setPort(9000);
 	}
 
 	@Test
@@ -62,7 +63,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 		InetAddress address = mock(InetAddress.class);
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
-		verify(factory).setAddress(address);
+		then(factory).should().setAddress(address);
 	}
 
 	@Test
@@ -71,7 +72,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
-		verify(factory).setSsl(ssl);
+		then(factory).should().setSsl(ssl);
 	}
 
 	@Test
@@ -80,7 +81,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
-		verify(factory).setShutdown(shutdownCaptor.capture());
+		then(factory).should().setShutdown(shutdownCaptor.capture());
 		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
 	}
 

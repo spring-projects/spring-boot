@@ -37,15 +37,16 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link EndpointMBean}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class EndpointMBeanTests {
 
@@ -160,8 +161,8 @@ class EndpointMBeanTests {
 		TestJmxOperationResponseMapper responseMapper = spy(this.responseMapper);
 		EndpointMBean bean = new EndpointMBean(responseMapper, null, this.endpoint);
 		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
-		verify(responseMapper).mapResponseType(String.class);
-		verify(responseMapper).mapResponse("result");
+		then(responseMapper).should().mapResponseType(String.class);
+		then(responseMapper).should().mapResponse("result");
 	}
 
 	@Test

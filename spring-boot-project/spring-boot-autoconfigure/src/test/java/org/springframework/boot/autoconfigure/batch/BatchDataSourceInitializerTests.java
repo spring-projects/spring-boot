@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link BatchDataSourceInitializer}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class BatchDataSourceInitializerTests {
 
@@ -41,7 +42,7 @@ class BatchDataSourceInitializerTests {
 		BatchDataSourceInitializer initializer = new BatchDataSourceInitializer(dataSource, new DefaultResourceLoader(),
 				properties);
 		assertThat(initializer.getDatabaseName()).isEqualTo("test");
-		verifyNoInteractions(dataSource);
+		then(dataSource).shouldHaveNoInteractions();
 	}
 
 }

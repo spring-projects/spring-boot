@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link HttpClientTransport}.
@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Mike Smithson
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class HttpClientTransportTests {
@@ -103,7 +104,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.get(this.uri);
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpGet.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -117,7 +118,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri);
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -132,7 +133,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "auth token");
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -147,7 +148,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "");
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -164,7 +165,7 @@ class HttpClientTransportTests {
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -186,7 +187,7 @@ class HttpClientTransportTests {
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -208,7 +209,7 @@ class HttpClientTransportTests {
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -230,7 +231,7 @@ class HttpClientTransportTests {
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -250,7 +251,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.delete(this.uri);
-		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpDelete.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);

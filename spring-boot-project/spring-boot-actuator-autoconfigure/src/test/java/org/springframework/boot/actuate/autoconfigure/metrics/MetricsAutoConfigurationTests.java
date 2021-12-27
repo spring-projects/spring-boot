@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricsAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class MetricsAutoConfigurationTests {
 
@@ -67,8 +68,8 @@ class MetricsAutoConfigurationTests {
 			assertThat(filters[0].accept((Meter.Id) null)).isEqualTo(MeterFilterReply.DENY);
 			assertThat(filters[1]).isInstanceOf(PropertiesMeterFilter.class);
 			assertThat(filters[2].accept((Meter.Id) null)).isEqualTo(MeterFilterReply.ACCEPT);
-			verify((MeterBinder) context.getBean("meterBinder")).bindTo(meterRegistry);
-			verify(context.getBean(MeterRegistryCustomizer.class)).customize(meterRegistry);
+			then((MeterBinder) context.getBean("meterBinder")).should().bindTo(meterRegistry);
+			then(context.getBean(MeterRegistryCustomizer.class)).should().customize(meterRegistry);
 		});
 	}
 

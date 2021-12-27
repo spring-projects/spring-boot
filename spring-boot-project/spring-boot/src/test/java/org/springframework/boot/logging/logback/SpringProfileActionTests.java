@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,14 @@ import org.springframework.core.env.Profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringProfileAction}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class SpringProfileActionTests {
 
@@ -64,7 +65,7 @@ class SpringProfileActionTests {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("dev");
 		this.action.begin(this.interpretationContext, null, this.attributes);
 		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		verify(this.environment).acceptsProfiles(profiles.capture());
+		then(this.environment).should().acceptsProfiles(profiles.capture());
 		List<String> profileNames = new ArrayList<>();
 		profiles.getValue().matches((profile) -> {
 			profileNames.add(profile);
@@ -78,7 +79,7 @@ class SpringProfileActionTests {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("dev,qa");
 		this.action.begin(this.interpretationContext, null, this.attributes);
 		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		verify(this.environment).acceptsProfiles(profiles.capture());
+		then(this.environment).should().acceptsProfiles(profiles.capture());
 		List<String> profileNames = new ArrayList<>();
 		profiles.getValue().matches((profile) -> {
 			profileNames.add(profile);
@@ -93,7 +94,7 @@ class SpringProfileActionTests {
 		this.context.putProperty("profile", "dev");
 		this.action.begin(this.interpretationContext, null, this.attributes);
 		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		verify(this.environment).acceptsProfiles(profiles.capture());
+		then(this.environment).should().acceptsProfiles(profiles.capture());
 		List<String> profileNames = new ArrayList<>();
 		profiles.getValue().matches((profile) -> {
 			profileNames.add(profile);
@@ -110,7 +111,7 @@ class SpringProfileActionTests {
 		this.context.putProperty("profile2", "qa");
 		this.action.begin(this.interpretationContext, null, this.attributes);
 		ArgumentCaptor<Profiles> profiles = ArgumentCaptor.forClass(Profiles.class);
-		verify(this.environment).acceptsProfiles(profiles.capture());
+		then(this.environment).should().acceptsProfiles(profiles.capture());
 		List<String> profileNames = new ArrayList<>();
 		profiles.getValue().matches((profile) -> {
 			profileNames.add(profile);

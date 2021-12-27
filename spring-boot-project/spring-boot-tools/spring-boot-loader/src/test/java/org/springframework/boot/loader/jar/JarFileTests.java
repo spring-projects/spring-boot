@@ -64,8 +64,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JarFile}.
@@ -74,6 +74,7 @@ import static org.mockito.Mockito.verify;
  * @author Martin Lau
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 @ExtendWith(JarUrlProtocolHandler.class)
 class JarFileTests {
@@ -243,7 +244,7 @@ class JarFileTests {
 		RandomAccessDataFile randomAccessDataFile = spy(new RandomAccessDataFile(this.rootJarFile));
 		JarFile jarFile = new JarFile(randomAccessDataFile);
 		jarFile.close();
-		verify(randomAccessDataFile).close();
+		then(randomAccessDataFile).should().close();
 	}
 
 	@Test

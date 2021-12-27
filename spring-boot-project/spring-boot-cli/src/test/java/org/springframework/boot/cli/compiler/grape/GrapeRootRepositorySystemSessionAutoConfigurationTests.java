@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link GrapeRootRepositorySystemSessionAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class GrapeRootRepositorySystemSessionAutoConfigurationTests {
@@ -55,7 +55,8 @@ class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 	@Test
 	void noLocalRepositoryWhenNoGrapeRoot() {
 		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session, this.repositorySystem);
-		verify(this.repositorySystem, never()).newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
+		then(this.repositorySystem).should(never()).newLocalRepositoryManager(eq(this.session),
+				any(LocalRepository.class));
 		assertThat(this.session.getLocalRepository()).isNull();
 	}
 
@@ -72,7 +73,7 @@ class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 			System.clearProperty("grape.root");
 		}
 
-		verify(this.repositorySystem, times(1)).newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
+		then(this.repositorySystem).should().newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 
 		assertThat(this.session.getLocalRepository()).isNotNull();
 		assertThat(this.session.getLocalRepository().getBasedir().getAbsolutePath())

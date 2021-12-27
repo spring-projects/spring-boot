@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Test {@link SpyBean @SpyBean} when mixed with Spring AOP.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>
  */
 @ExtendWith(SpringExtension.class)
@@ -57,9 +57,9 @@ class SpyBeanWithAopProxyTests {
 		Thread.sleep(200);
 		Long d2 = this.dateService.getDate(false);
 		assertThat(d1).isEqualTo(d2);
-		verify(this.dateService, times(1)).getDate(false);
-		verify(this.dateService, times(1)).getDate(eq(false));
-		verify(this.dateService, times(1)).getDate(anyBoolean());
+		then(this.dateService).should().getDate(false);
+		then(this.dateService).should().getDate(eq(false));
+		then(this.dateService).should().getDate(anyBoolean());
 	}
 
 	@Configuration(proxyBeanMethods = false)

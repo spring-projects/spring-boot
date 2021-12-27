@@ -57,11 +57,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -74,6 +73,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Dmytro Nosan
  * @author Kevin Strijbos
  * @author Ilya Lukyanovich
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class RestTemplateBuilderTests {
@@ -97,7 +97,7 @@ class RestTemplateBuilderTests {
 	void createWithCustomizersShouldApplyCustomizers() {
 		RestTemplateCustomizer customizer = mock(RestTemplateCustomizer.class);
 		RestTemplate template = new RestTemplateBuilder(customizer).build();
-		verify(customizer).customize(template);
+		then(customizer).should().customize(template);
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class RestTemplateBuilderTests {
 		UriTemplateHandler handler = template.getUriTemplateHandler();
 		handler.expand("/hello");
 		assertThat(handler).isInstanceOf(RootUriTemplateHandler.class);
-		verify(uriTemplateHandler).expand("https://example.com/hello");
+		then(uriTemplateHandler).should().expand("https://example.com/hello");
 	}
 
 	@Test
@@ -369,14 +369,14 @@ class RestTemplateBuilderTests {
 	void customizersShouldApply() {
 		RestTemplateCustomizer customizer = mock(RestTemplateCustomizer.class);
 		RestTemplate template = this.builder.customizers(customizer).build();
-		verify(customizer).customize(template);
+		then(customizer).should().customize(template);
 	}
 
 	@Test
 	void customizersShouldBeAppliedLast() {
 		RestTemplate template = spy(new RestTemplate());
 		this.builder.additionalCustomizers(
-				(restTemplate) -> verify(restTemplate).setRequestFactory(any(ClientHttpRequestFactory.class)));
+				(restTemplate) -> then(restTemplate).should().setRequestFactory(any(ClientHttpRequestFactory.class)));
 		this.builder.configure(template);
 	}
 
@@ -386,8 +386,8 @@ class RestTemplateBuilderTests {
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
 		RestTemplate template = this.builder.customizers(customizer1).customizers(Collections.singleton(customizer2))
 				.build();
-		verifyNoInteractions(customizer1);
-		verify(customizer2).customize(template);
+		then(customizer1).shouldHaveNoInteractions();
+		then(customizer2).should().customize(template);
 	}
 
 	@Test

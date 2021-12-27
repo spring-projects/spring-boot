@@ -43,14 +43,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TaskExecutionAutoConfiguration}.
  *
  * @author Stephane Nicoll
  * @author Camille Vienot
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class TaskExecutionAutoConfigurationTests {
@@ -119,7 +120,7 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class).run((context) -> {
 			TaskExecutorCustomizer customizer = context.getBean(TaskExecutorCustomizer.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
-			verify(customizer).customize(executor);
+			then(customizer).should().customize(executor);
 		});
 	}
 

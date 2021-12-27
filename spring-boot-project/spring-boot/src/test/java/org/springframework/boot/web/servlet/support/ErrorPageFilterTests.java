@@ -52,15 +52,16 @@ import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ErrorPageFilter}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ErrorPageFilterTests {
@@ -339,7 +340,7 @@ class ErrorPageFilterTests {
 		given(committedResponse.isCommitted()).willReturn(true);
 		given(committedResponse.getStatus()).willReturn(200);
 		this.filter.doFilter(this.request, committedResponse, this.chain);
-		verify(committedResponse, never()).flushBuffer();
+		then(committedResponse).should(never()).flushBuffer();
 	}
 
 	@Test

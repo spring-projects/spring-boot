@@ -36,14 +36,14 @@ import org.springframework.format.Printer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link ApplicationConversionService}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ApplicationConversionServiceTests {
 
@@ -54,8 +54,8 @@ class ApplicationConversionServiceTests {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				ExampleGenericConverter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addConverter(context.getBean(ExampleGenericConverter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addConverter(context.getBean(ExampleGenericConverter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -63,8 +63,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasConverterBeanAddConverter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleConverter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addConverter(context.getBean(ExampleConverter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addConverter(context.getBean(ExampleConverter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -72,8 +72,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasFormatterBeanAddsOnlyFormatter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleFormatter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addFormatter(context.getBean(ExampleFormatter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addFormatter(context.getBean(ExampleFormatter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -81,8 +81,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasPrinterBeanAddPrinter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExamplePrinter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addPrinter(context.getBean(ExamplePrinter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addPrinter(context.getBean(ExamplePrinter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -90,8 +90,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasParserBeanAddParser() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleParser.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addParser(context.getBean(ExampleParser.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addParser(context.getBean(ExampleParser.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 

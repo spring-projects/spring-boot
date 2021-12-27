@@ -33,14 +33,14 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.datasource.SmartDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link DataSourceUnwrapper}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class DataSourceUnwrapperTests {
 
@@ -102,15 +102,15 @@ class DataSourceUnwrapperTests {
 	void unwrappingIsNotAttemptedWhenTargetIsNotAnInterface() {
 		DataSource dataSource = mock(DataSource.class);
 		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isNull();
-		verifyNoMoreInteractions(dataSource);
+		then(dataSource).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
 	void unwrappingIsNotAttemptedWhenDataSourceIsNotWrapperForTarget() throws SQLException {
 		DataSource dataSource = mock(DataSource.class);
 		assertThat(DataSourceUnwrapper.unwrap(dataSource, Consumer.class)).isNull();
-		verify(dataSource).isWrapperFor(Consumer.class);
-		verifyNoMoreInteractions(dataSource);
+		then(dataSource).should().isWrapperFor(Consumer.class);
+		then(dataSource).shouldHaveNoMoreInteractions();
 	}
 
 	private DataSource wrapInProxy(DataSource dataSource) {

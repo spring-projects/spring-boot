@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,14 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Test {@link SpyBean @SpyBean} on a test class field can be used to inject a spy
  * instance when there are multiple candidates and one is primary.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(SpringExtension.class)
 class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
@@ -52,7 +53,7 @@ class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
 		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings().getMockName().toString())
 				.isEqualTo("two");
-		verify(this.spy).greeting();
+		then(this.spy).should().greeting();
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -61,10 +61,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DockerApi}.
@@ -260,7 +260,7 @@ class DockerApiTests {
 			ordered.verify(this.loadListener).onStart();
 			ordered.verify(this.loadListener).onUpdate(any());
 			ordered.verify(this.loadListener).onFinish();
-			verify(http()).post(any(), any(), this.writer.capture());
+			then(http()).should().post(any(), any(), this.writer.capture());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			this.writer.getValue().accept(out);
 			assertThat(out.toByteArray()).hasSizeGreaterThan(21000);
@@ -280,7 +280,7 @@ class DockerApiTests {
 					+ "/docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 			given(http().delete(removeUri)).willReturn(emptyResponse());
 			this.api.remove(reference, false);
-			verify(http()).delete(removeUri);
+			then(http()).should().delete(removeUri);
 		}
 
 		@Test
@@ -291,7 +291,7 @@ class DockerApiTests {
 					+ "/docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d?force=1");
 			given(http().delete(removeUri)).willReturn(emptyResponse());
 			this.api.remove(reference, true);
-			verify(http()).delete(removeUri);
+			then(http()).should().delete(removeUri);
 		}
 
 		@Test
@@ -381,7 +381,7 @@ class DockerApiTests {
 					.willReturn(responseOf("create-container-response.json"));
 			ContainerReference containerReference = this.api.create(config);
 			assertThat(containerReference.toString()).isEqualTo("e90e34656806");
-			verify(http()).post(any(), any(), this.writer.capture());
+			then(http()).should().post(any(), any(), this.writer.capture());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			this.writer.getValue().accept(out);
 			assertThat(out.toByteArray().length).isEqualTo(config.toString().length());
@@ -403,11 +403,11 @@ class DockerApiTests {
 			given(http().put(eq(uploadUri), eq("application/x-tar"), any())).willReturn(emptyResponse());
 			ContainerReference containerReference = this.api.create(config, content);
 			assertThat(containerReference.toString()).isEqualTo("e90e34656806");
-			verify(http()).post(any(), any(), this.writer.capture());
+			then(http()).should().post(any(), any(), this.writer.capture());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			this.writer.getValue().accept(out);
 			assertThat(out.toByteArray().length).isEqualTo(config.toString().length());
-			verify(http()).put(any(), any(), this.writer.capture());
+			then(http()).should().put(any(), any(), this.writer.capture());
 			this.writer.getValue().accept(out);
 			assertThat(out.toByteArray()).hasSizeGreaterThan(2000);
 		}
@@ -424,7 +424,7 @@ class DockerApiTests {
 			URI startContainerUri = new URI(CONTAINERS_URL + "/e90e34656806/start");
 			given(http().post(startContainerUri)).willReturn(emptyResponse());
 			this.api.start(reference);
-			verify(http()).post(startContainerUri);
+			then(http()).should().post(startContainerUri);
 		}
 
 		@Test
@@ -479,7 +479,7 @@ class DockerApiTests {
 			URI removeUri = new URI(CONTAINERS_URL + "/e90e34656806");
 			given(http().delete(removeUri)).willReturn(emptyResponse());
 			this.api.remove(reference, false);
-			verify(http()).delete(removeUri);
+			then(http()).should().delete(removeUri);
 		}
 
 		@Test
@@ -488,7 +488,7 @@ class DockerApiTests {
 			URI removeUri = new URI(CONTAINERS_URL + "/e90e34656806?force=1");
 			given(http().delete(removeUri)).willReturn(emptyResponse());
 			this.api.remove(reference, true);
-			verify(http()).delete(removeUri);
+			then(http()).should().delete(removeUri);
 		}
 
 	}
@@ -515,7 +515,7 @@ class DockerApiTests {
 			URI removeUri = new URI(VOLUMES_URL + "/test");
 			given(http().delete(removeUri)).willReturn(emptyResponse());
 			this.api.delete(name, false);
-			verify(http()).delete(removeUri);
+			then(http()).should().delete(removeUri);
 		}
 
 		@Test
@@ -524,7 +524,7 @@ class DockerApiTests {
 			URI removeUri = new URI(VOLUMES_URL + "/test?force=1");
 			given(http().delete(removeUri)).willReturn(emptyResponse());
 			this.api.delete(name, true);
-			verify(http()).delete(removeUri);
+			then(http()).should().delete(removeUri);
 		}
 
 	}

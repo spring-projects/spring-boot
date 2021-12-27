@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link TaskExecutorBuilder}.
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
+ * @author Yanming Zhou
  */
 class TaskExecutorBuilderTests {
 
@@ -96,7 +96,7 @@ class TaskExecutorBuilderTests {
 	void customizersShouldApply() {
 		TaskExecutorCustomizer customizer = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer).build();
-		verify(customizer).customize(executor);
+		then(customizer).should().customize(executor);
 	}
 
 	@Test
@@ -106,15 +106,15 @@ class TaskExecutorBuilderTests {
 		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8).allowCoreThreadTimeOut(true)
 				.keepAlive(Duration.ofMinutes(1)).awaitTermination(true).awaitTerminationPeriod(Duration.ofSeconds(30))
 				.threadNamePrefix("test-").taskDecorator(taskDecorator).additionalCustomizers((taskExecutor) -> {
-					verify(taskExecutor).setQueueCapacity(10);
-					verify(taskExecutor).setCorePoolSize(4);
-					verify(taskExecutor).setMaxPoolSize(8);
-					verify(taskExecutor).setAllowCoreThreadTimeOut(true);
-					verify(taskExecutor).setKeepAliveSeconds(60);
-					verify(taskExecutor).setWaitForTasksToCompleteOnShutdown(true);
-					verify(taskExecutor).setAwaitTerminationSeconds(30);
-					verify(taskExecutor).setThreadNamePrefix("test-");
-					verify(taskExecutor).setTaskDecorator(taskDecorator);
+					then(taskExecutor).should().setQueueCapacity(10);
+					then(taskExecutor).should().setCorePoolSize(4);
+					then(taskExecutor).should().setMaxPoolSize(8);
+					then(taskExecutor).should().setAllowCoreThreadTimeOut(true);
+					then(taskExecutor).should().setKeepAliveSeconds(60);
+					then(taskExecutor).should().setWaitForTasksToCompleteOnShutdown(true);
+					then(taskExecutor).should().setAwaitTerminationSeconds(30);
+					then(taskExecutor).should().setThreadNamePrefix("test-");
+					then(taskExecutor).should().setTaskDecorator(taskDecorator);
 				});
 		this.builder.configure(executor);
 	}
@@ -125,8 +125,8 @@ class TaskExecutorBuilderTests {
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyNoInteractions(customizer1);
-		verify(customizer2).customize(executor);
+		then(customizer1).shouldHaveNoInteractions();
+		then(customizer2).should().customize(executor);
 	}
 
 	@Test
@@ -149,8 +149,8 @@ class TaskExecutorBuilderTests {
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1).additionalCustomizers(customizer2)
 				.build();
-		verify(customizer1).customize(executor);
-		verify(customizer2).customize(executor);
+		then(customizer1).should().customize(executor);
+		then(customizer2).should().customize(executor);
 	}
 
 }

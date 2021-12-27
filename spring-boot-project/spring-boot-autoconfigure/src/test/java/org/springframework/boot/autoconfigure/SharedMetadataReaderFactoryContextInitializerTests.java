@@ -39,14 +39,15 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SharedMetadataReaderFactoryContextInitializer}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class SharedMetadataReaderFactoryContextInitializerTests {
 
@@ -84,7 +85,7 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		assertThat(bean).isSameAs(configurationAnnotationPostProcessor);
 		ArgumentCaptor<MetadataReaderFactory> metadataReaderFactory = ArgumentCaptor
 				.forClass(MetadataReaderFactory.class);
-		verify(configurationAnnotationPostProcessor).setMetadataReaderFactory(metadataReaderFactory.capture());
+		then(configurationAnnotationPostProcessor).should().setMetadataReaderFactory(metadataReaderFactory.capture());
 		assertThat(metadataReaderFactory.getValue())
 				.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link SolrHealthIndicator}
@@ -43,6 +42,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Andy Wilkinson
  * @author Markus Schuch
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class SolrHealthIndicatorTests {
 
@@ -52,8 +52,8 @@ class SolrHealthIndicatorTests {
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		assertHealth(healthIndicator, Status.UP, 0, "root");
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should().request(any(CoreAdminRequest.class), isNull());
+		then(solrClient).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -62,8 +62,8 @@ class SolrHealthIndicatorTests {
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		assertHealth(healthIndicator, Status.DOWN, 400, "root");
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should().request(any(CoreAdminRequest.class), isNull());
+		then(solrClient).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -74,9 +74,9 @@ class SolrHealthIndicatorTests {
 		given(solrClient.ping()).willReturn(mockPingResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		assertHealth(healthIndicator, Status.UP, 0, "particular core");
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verify(solrClient, times(1)).ping();
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should().request(any(CoreAdminRequest.class), isNull());
+		then(solrClient).should().ping();
+		then(solrClient).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -87,9 +87,9 @@ class SolrHealthIndicatorTests {
 		given(solrClient.ping()).willReturn(mockPingResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		assertHealth(healthIndicator, Status.DOWN, 400, "particular core");
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verify(solrClient, times(1)).ping();
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should().request(any(CoreAdminRequest.class), isNull());
+		then(solrClient).should().ping();
+		then(solrClient).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -101,8 +101,8 @@ class SolrHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should().request(any(CoreAdminRequest.class), isNull());
+		then(solrClient).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -113,12 +113,12 @@ class SolrHealthIndicatorTests {
 		given(solrClient.ping()).willReturn(mockPingResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		healthIndicator.health();
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verify(solrClient, times(1)).ping();
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should().request(any(CoreAdminRequest.class), isNull());
+		then(solrClient).should().ping();
+		then(solrClient).shouldHaveNoMoreInteractions();
 		healthIndicator.health();
-		verify(solrClient, times(2)).ping();
-		verifyNoMoreInteractions(solrClient);
+		then(solrClient).should(times(2)).ping();
+		then(solrClient).shouldHaveNoMoreInteractions();
 	}
 
 	private void assertHealth(SolrHealthIndicator healthIndicator, Status expectedStatus, int expectedStatusCode,

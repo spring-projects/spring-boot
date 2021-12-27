@@ -27,13 +27,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link OriginTrackedResource}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class OriginTrackedResourceTests {
 
@@ -53,91 +54,91 @@ class OriginTrackedResourceTests {
 	@Test
 	void getInputStreamDelegatesToResource() throws IOException {
 		this.tracked.getInputStream();
-		verify(this.resource).getInputStream();
+		then(this.resource).should().getInputStream();
 	}
 
 	@Test
 	void existsDelegatesToResource() {
 		this.tracked.exists();
-		verify(this.resource).exists();
+		then(this.resource).should().exists();
 	}
 
 	@Test
 	void isReadableDelegatesToResource() {
 		this.tracked.isReadable();
-		verify(this.resource).isReadable();
+		then(this.resource).should().isReadable();
 	}
 
 	@Test
 	void isOpenDelegatesToResource() {
 		this.tracked.isOpen();
-		verify(this.resource).isOpen();
+		then(this.resource).should().isOpen();
 	}
 
 	@Test
 	void isFileDelegatesToResource() {
 		this.tracked.isFile();
-		verify(this.resource).isFile();
+		then(this.resource).should().isFile();
 	}
 
 	@Test
 	void getURLDelegatesToResource() throws IOException {
 		this.tracked.getURL();
-		verify(this.resource).getURL();
+		then(this.resource).should().getURL();
 	}
 
 	@Test
 	void getURIDelegatesToResource() throws IOException {
 		this.tracked.getURI();
-		verify(this.resource).getURI();
+		then(this.resource).should().getURI();
 	}
 
 	@Test
 	void getFileDelegatesToResource() throws IOException {
 		this.tracked.getFile();
-		verify(this.resource).getFile();
+		then(this.resource).should().getFile();
 	}
 
 	@Test
 	void readableChannelDelegatesToResource() throws IOException {
 		this.tracked.readableChannel();
-		verify(this.resource).readableChannel();
+		then(this.resource).should().readableChannel();
 	}
 
 	@Test
 	void contentLengthDelegatesToResource() throws IOException {
 		this.tracked.contentLength();
-		verify(this.resource).contentLength();
+		then(this.resource).should().contentLength();
 	}
 
 	@Test
 	void lastModifiedDelegatesToResource() throws IOException {
 		this.tracked.lastModified();
-		verify(this.resource).lastModified();
+		then(this.resource).should().lastModified();
 	}
 
 	@Test
 	void createRelativeDelegatesToResource() throws IOException {
 		this.tracked.createRelative("path");
-		verify(this.resource).createRelative("path");
+		then(this.resource).should().createRelative("path");
 	}
 
 	@Test
 	void getFilenameDelegatesToResource() {
 		this.tracked.getFilename();
-		verify(this.resource).getFilename();
+		then(this.resource).should().getFilename();
 	}
 
 	@Test
 	void getDescriptionDelegatesToResource() {
 		this.tracked.getDescription();
-		verify(this.resource).getDescription();
+		then(this.resource).should().getDescription();
 	}
 
 	@Test
 	void getOutputStreamDelegatesToResource() throws IOException {
 		this.tracked.getOutputStream();
-		verify(this.resource).getOutputStream();
+		then(this.resource).should().getOutputStream();
 	}
 
 	@Test

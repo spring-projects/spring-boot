@@ -54,8 +54,8 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JettyWebServerFactoryCustomizer}.
@@ -63,6 +63,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Phillip Webb
  * @author HaiTao Zhang
+ * @author Yanming Zhou
  */
 class JettyWebServerFactoryCustomizerTests {
 
@@ -85,14 +86,14 @@ class JettyWebServerFactoryCustomizerTests {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
 	void defaultUseForwardHeaders() {
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
@@ -100,7 +101,7 @@ class JettyWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
@@ -109,7 +110,7 @@ class JettyWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
@@ -256,7 +257,7 @@ class JettyWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test

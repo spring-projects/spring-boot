@@ -32,13 +32,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebServer}s driving {@link ServletContextListener}s correctly
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class ServletWebServerServletContextListenerTests {
 
@@ -77,7 +78,7 @@ class ServletWebServerServletContextListenerTests {
 				ServletContextListenerBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = context.getBean("servletContextListener",
 				ServletContextListener.class);
-		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
+		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
 
@@ -86,7 +87,7 @@ class ServletWebServerServletContextListenerTests {
 				ServletListenerRegistrationBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = (ServletContextListener) context
 				.getBean("registration", ServletListenerRegistrationBean.class).getListener();
-		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
+		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
 

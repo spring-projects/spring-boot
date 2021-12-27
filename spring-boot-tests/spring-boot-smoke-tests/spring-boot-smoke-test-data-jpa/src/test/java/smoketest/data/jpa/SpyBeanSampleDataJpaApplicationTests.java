@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link SampleDataJpaApplication} that use {@link SpyBean @SpyBean}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -58,7 +59,7 @@ class SpyBeanSampleDataJpaApplicationTests {
 	@Test
 	void testHome() throws Exception {
 		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Bath"));
-		verify(this.repository).findByNameAndCountryAllIgnoringCase("Bath", "UK");
+		then(this.repository).should().findByNameAndCountryAllIgnoringCase("Bath", "UK");
 	}
 
 }

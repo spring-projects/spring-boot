@@ -36,9 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Neo4jHealthIndicator}.
@@ -46,6 +46,7 @@ import static org.mockito.Mockito.verify;
  * @author Eric Spiegelberg
  * @author Stephane Nicoll
  * @author Michael Simons
+ * @author Yanming Zhou
  */
 class Neo4jHealthIndicatorTests {
 
@@ -100,7 +101,7 @@ class Neo4jHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
-		verify(session, times(2)).close();
+		then(session).should(times(2)).close();
 	}
 
 	@Test

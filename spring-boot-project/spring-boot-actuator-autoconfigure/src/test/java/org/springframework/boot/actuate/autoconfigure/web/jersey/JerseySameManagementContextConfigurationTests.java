@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JerseySameManagementContextConfiguration}.
@@ -99,7 +99,7 @@ class JerseySameManagementContextConfigurationTests {
 			ResourceConfig config = context.getBean(ResourceConfig.class);
 			ManagementContextResourceConfigCustomizer customizer = context
 					.getBean(ManagementContextResourceConfigCustomizer.class);
-			verify(customizer).customize(config);
+			then(customizer).should().customize(config);
 		});
 	}
 

@@ -57,14 +57,15 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringBootServletInitializer}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringBootServletInitializerTests {
@@ -220,7 +221,7 @@ class SpringBootServletInitializerTests {
 
 		}.onStartup(servletContext);
 		ArgumentCaptor<ServletContextListener> captor = ArgumentCaptor.forClass(ServletContextListener.class);
-		verify(servletContext).addListener(captor.capture());
+		then(servletContext).should().addListener(captor.capture());
 		captor.getValue().contextDestroyed(new ServletContextEvent(servletContext));
 		assertThat(driversDeregistered).isTrue();
 	}

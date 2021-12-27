@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClassLoaderFilesResourcePatternResolver}.
@@ -50,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class ClassLoaderFilesResourcePatternResolverTests {
 
@@ -112,7 +113,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.setResourceLoader(resourceLoader);
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		this.resolver.getResource("foo.txt");
-		verify(resourceLoader).getResource("foo.txt");
+		then(resourceLoader).should().getResource("foo.txt");
 	}
 
 	@Test
@@ -124,7 +125,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -136,7 +137,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.addProtocolResolver(resolver);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -146,7 +147,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.setResourceLoader(resourceLoader);
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		this.resolver.getResource("foo.txt");
-		verify(resourceLoader).getResource("foo.txt");
+		then(resourceLoader).should().getResource("foo.txt");
 	}
 
 	@Test
@@ -158,7 +159,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -170,7 +171,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.addProtocolResolver(resolver);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	private ProtocolResolver mockProtocolResolver(String path, Resource resource) {

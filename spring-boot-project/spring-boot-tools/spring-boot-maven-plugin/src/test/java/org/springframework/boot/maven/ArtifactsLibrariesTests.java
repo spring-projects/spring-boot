@@ -42,14 +42,15 @@ import org.springframework.boot.loader.tools.LibraryScope;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ArtifactsLibraries}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class ArtifactsLibrariesTests {
@@ -85,7 +86,7 @@ class ArtifactsLibrariesTests {
 		given(this.artifact.getArtifactHandler()).willReturn(this.artifactHandler);
 		given(this.artifact.getScope()).willReturn("compile");
 		this.libs.doWithLibraries(this.callback);
-		verify(this.callback).library(this.libraryCaptor.capture());
+		then(this.callback).should().library(this.libraryCaptor.capture());
 		Library library = this.libraryCaptor.getValue();
 		assertThat(library.getFile()).isEqualTo(this.file);
 		assertThat(library.getScope()).isEqualTo(LibraryScope.COMPILE);
@@ -105,7 +106,7 @@ class ArtifactsLibrariesTests {
 		this.libs = new ArtifactsLibraries(this.artifacts, Collections.emptyList(), Collections.singleton(unpack),
 				mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
-		verify(this.callback).library(this.libraryCaptor.capture());
+		then(this.callback).should().library(this.libraryCaptor.capture());
 		assertThat(this.libraryCaptor.getValue().isUnpackRequired()).isTrue();
 	}
 
@@ -128,7 +129,7 @@ class ArtifactsLibrariesTests {
 		this.artifacts = new LinkedHashSet<>(Arrays.asList(artifact1, artifact2));
 		this.libs = new ArtifactsLibraries(this.artifacts, Collections.emptyList(), null, mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
-		verify(this.callback, times(2)).library(this.libraryCaptor.capture());
+		then(this.callback).should(times(2)).library(this.libraryCaptor.capture());
 		assertThat(this.libraryCaptor.getAllValues().get(0).getName()).isEqualTo("g1-artifact-1.0.jar");
 		assertThat(this.libraryCaptor.getAllValues().get(1).getName()).isEqualTo("g2-artifact-1.0.jar");
 	}

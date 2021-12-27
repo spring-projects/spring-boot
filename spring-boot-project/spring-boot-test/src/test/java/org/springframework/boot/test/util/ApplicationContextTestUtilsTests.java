@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ApplicationContextTestUtils}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class ApplicationContextTestUtilsTests {
 
@@ -50,10 +51,10 @@ class ApplicationContextTestUtilsTests {
 		given(mock.getParent()).willReturn(parent);
 		given(parent.getParent()).willReturn(null);
 		ApplicationContextTestUtils.closeAll(mock);
-		verify(mock).getParent();
-		verify(mock).close();
-		verify(parent).getParent();
-		verify(parent).close();
+		then(mock).should().getParent();
+		then(mock).should().close();
+		then(parent).should().getParent();
+		then(parent).should().close();
 	}
 
 }

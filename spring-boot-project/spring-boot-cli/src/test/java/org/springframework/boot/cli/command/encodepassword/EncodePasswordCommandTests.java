@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,13 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link EncodePasswordCommand}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class EncodePasswordCommandTests {
@@ -60,7 +61,7 @@ class EncodePasswordCommandTests {
 	void encodeWithNoAlgorithmShouldUseBcrypt() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("boot");
-		verify(this.log).info(this.message.capture());
+		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).startsWith("{bcrypt}");
 		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder().matches("boot", this.message.getValue()))
 				.isTrue();
@@ -71,7 +72,7 @@ class EncodePasswordCommandTests {
 	void encodeWithBCryptShouldUseBCrypt() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("-a", "bcrypt", "boot");
-		verify(this.log).info(this.message.capture());
+		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
 		assertThat(new BCryptPasswordEncoder().matches("boot", this.message.getValue())).isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
@@ -81,7 +82,7 @@ class EncodePasswordCommandTests {
 	void encodeWithPbkdf2ShouldUsePbkdf2() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("-a", "pbkdf2", "boot");
-		verify(this.log).info(this.message.capture());
+		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
 		assertThat(new Pbkdf2PasswordEncoder().matches("boot", this.message.getValue())).isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
@@ -91,7 +92,7 @@ class EncodePasswordCommandTests {
 	void encodeWithUnknownAlgorithmShouldExitWithError() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("--algorithm", "bad", "boot");
-		verify(this.log).error("Unknown algorithm, valid options are: default,bcrypt,pbkdf2");
+		then(this.log).should().error("Unknown algorithm, valid options are: default,bcrypt,pbkdf2");
 		assertThat(status).isEqualTo(ExitStatus.ERROR);
 	}
 

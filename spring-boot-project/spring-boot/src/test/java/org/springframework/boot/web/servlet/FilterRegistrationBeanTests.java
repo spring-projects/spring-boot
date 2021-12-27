@@ -36,12 +36,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link FilterRegistrationBean}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 
@@ -62,7 +63,7 @@ class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(this.filter);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addFilter("mockFilter", this.filter);
+		then(this.servletContext).should().addFilter("mockFilter", this.filter);
 	}
 
 	@Test
@@ -90,9 +91,9 @@ class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 		FilterRegistrationBean<?> bean = new FilterRegistrationBean<>(this.oncePerRequestFilter);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addFilter(eq("oncePerRequestFilter"), eq(this.oncePerRequestFilter));
-		verify(this.registration).setAsyncSupported(true);
-		verify(this.registration).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
+		then(this.servletContext).should().addFilter(eq("oncePerRequestFilter"), eq(this.oncePerRequestFilter));
+		then(this.registration).should().setAsyncSupported(true);
+		then(this.registration).should().addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
 	}
 
 	@Override
