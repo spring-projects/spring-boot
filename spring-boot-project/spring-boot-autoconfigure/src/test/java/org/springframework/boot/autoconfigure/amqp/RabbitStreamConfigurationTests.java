@@ -85,7 +85,7 @@ class RabbitStreamConfigurationTests {
 	}
 
 	@Test
-	void whenCustomMessageListenerContainerIsDefinedThenAutoConfiguredContainerBacksOff() {
+	void whenCustomMessageListenerContainerFactoryIsDefinedThenAutoConfiguredContainerFactoryBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomMessageListenerContainerFactoryConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RabbitListenerContainerFactory.class);
