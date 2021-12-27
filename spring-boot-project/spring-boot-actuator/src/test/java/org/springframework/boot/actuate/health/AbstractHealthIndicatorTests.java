@@ -45,7 +45,7 @@ class AbstractHealthIndicatorTests {
 	}
 
 	@Test
-	void healthCheckWhenDownWithExceptionThrownDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
+	void healthCheckWhenDownWithExceptionThrownLogsHealthCheckFailedMessage(CapturedOutput output) {
 		TestHealthIndicator indicator = new TestHealthIndicator("Test message", (builder) -> {
 			throw new IllegalStateException("Test exception");
 		});
@@ -55,7 +55,7 @@ class AbstractHealthIndicatorTests {
 	}
 
 	@Test
-	void healthCheckWhenDownWithExceptionConfiguredDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
+	void healthCheckWhenDownWithExceptionConfiguredLogsHealthCheckFailedMessage(CapturedOutput output) {
 		Health heath = new TestHealthIndicator("Test message",
 				(builder) -> builder.down().withException(new IllegalStateException("Test exception"))).health();
 		assertThat(heath.getStatus()).isEqualTo(Status.DOWN);

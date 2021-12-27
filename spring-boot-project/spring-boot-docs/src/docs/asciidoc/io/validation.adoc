@@ -11,6 +11,6 @@ For instance, the following service triggers the validation of the first argumen
 include::{docs-java}/io/validation/MyBean.java[]
 ----
 
-The application's `MessageSource` is used when resolving +`{parameters}`+ in constraint messages.
+The application's `MessageSource` is used when resolving `+{parameters}+` in constraint messages.
 This allows you to use <<features.adoc#features.internationalization,your application's `messages.properties` files>> for Bean Validation messages.
 Once the parameters have been resolved, message interpolation is completed using Bean Validation's default interpolator.
