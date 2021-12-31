@@ -35,6 +35,12 @@ import io.micrometer.core.instrument.Timer;
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.lang.Nullable;
 
+/**
+ * Micrometer-based {@link SimpleInstrumentation}.
+ *
+ * @author Brian Clozel
+ * @since 2.7.0
+ */
 public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 
 	private final MeterRegistry registry;
@@ -127,7 +133,7 @@ public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 
 		private Timer.Sample sample;
 
-		private AtomicLong dataFetchingCount = new AtomicLong(0L);
+		private final AtomicLong dataFetchingCount = new AtomicLong();
 
 		RequestMetricsInstrumentationState(AutoTimer autoTimer, MeterRegistry registry) {
 			this.timer = autoTimer.builder("graphql.request");

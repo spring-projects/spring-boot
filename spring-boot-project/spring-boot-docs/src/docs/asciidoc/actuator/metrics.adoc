@@ -905,7 +905,7 @@ A single GraphQL query can involve many `DataFetcher` calls, so there is a dedic
 
 
 The `graphql.request.datafetch.count` https://micrometer.io/docs/concepts#_distribution_summaries[distribution summary] counts the number of non-trivial `DataFetcher` calls made per request.
-This metric is useful for detecting "N+1" data fetching issues and consider batch loading; it provides the `"TOTAL"` number of data fetcher calls made over the `"COUNT"` of recorded requests, as well as the `"MAX"` calls made for a single request over the considered period.
+This metric is useful for detecting "N+1" data fetching issues and considering batch loading; it provides the `"TOTAL"` number of data fetcher calls made over the `"COUNT"` of recorded requests, as well as the `"MAX"` calls made for a single request over the considered period.
 More options are available for <<application-properties#application-properties.actuator.management.metrics.distribution.maximum-expected-value, configuring distributions with application properties>>.
 
 A single response can contain many GraphQL errors, counted by the `graphql.error` counter:

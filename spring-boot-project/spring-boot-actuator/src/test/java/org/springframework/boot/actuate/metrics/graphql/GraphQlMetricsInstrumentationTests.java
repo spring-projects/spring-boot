@@ -85,7 +85,7 @@ class GraphQlMetricsInstrumentationTests {
 
 		Timer timer = this.registry.find("graphql.request").timer();
 		assertThat(timer).isNotNull();
-		assertThat(timer.takeSnapshot().count()).isEqualTo(1);
+		assertThat(timer.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ class GraphQlMetricsInstrumentationTests {
 
 		Timer timer = this.registry.find("graphql.datafetcher").timer();
 		assertThat(timer).isNotNull();
-		assertThat(timer.takeSnapshot().count()).isEqualTo(1);
+		assertThat(timer.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class GraphQlMetricsInstrumentationTests {
 
 		Timer timer = this.registry.find("graphql.datafetcher").timer();
 		assertThat(timer).isNotNull();
-		assertThat(timer.takeSnapshot().count()).isEqualTo(1);
+		assertThat(timer.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -150,7 +150,7 @@ class GraphQlMetricsInstrumentationTests {
 
 		Timer timer = this.registry.find("graphql.datafetcher").timer();
 		assertThat(timer).isNotNull();
-		assertThat(timer.takeSnapshot().count()).isEqualTo(1);
+		assertThat(timer.count()).isEqualTo(1);
 	}
 
 	@Test

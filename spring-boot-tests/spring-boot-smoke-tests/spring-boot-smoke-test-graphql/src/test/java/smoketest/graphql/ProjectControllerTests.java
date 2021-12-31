@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
-@GraphQlTest(ProjectsController.class)
+@GraphQlTest(ProjectController.class)
 class ProjectControllerTests {
 
 	@Autowired
