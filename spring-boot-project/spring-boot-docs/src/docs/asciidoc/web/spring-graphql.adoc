@@ -49,7 +49,7 @@ You can declare `RuntimeWiringConfigurer` beans in your Spring config to get acc
 Spring Boot detects such beans and adds them to the {spring-graphql-docs}#execution-graphqlsource[GraphQlSource builder].
 
 Typically, however, applications will not implement `DataFetcher` directly and will instead create {spring-graphql-docs}#controllers[annotated controllers].
-Spring Boot will automatically register `@Controller` classes with annotated handler methods and registers those as `DataFetcher`s.
+Spring Boot will automatically detect `@Controller` classes with annotated handler methods and register those as `DataFetcher`s.
 Here's a sample implementation for our greeting query with a `@Controller` class:
 
 [source,java,indent=0,subs="verbatim"]

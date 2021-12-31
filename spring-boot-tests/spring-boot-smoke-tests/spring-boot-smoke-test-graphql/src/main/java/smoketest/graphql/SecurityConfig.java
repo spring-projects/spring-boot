@@ -28,13 +28,13 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
 	@Bean
-	DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
+	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf((csrf) -> csrf.disable())
 				// Demonstrate that method security works
 				// Best practice to use both for defense in depth
@@ -43,7 +43,7 @@ public class SecurityConfig {
 
 	@Bean
 	@SuppressWarnings("deprecation")
-	public static InMemoryUserDetailsManager userDetailsService() {
+	public InMemoryUserDetailsManager userDetailsService() {
 		User.UserBuilder userBuilder = User.withDefaultPasswordEncoder();
 		UserDetails rob = userBuilder.username("rob").password("rob").roles("USER").build();
 		UserDetails admin = userBuilder.username("admin").password("admin").roles("USER", "ADMIN").build();

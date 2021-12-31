@@ -34,7 +34,7 @@ import org.springframework.util.CollectionUtils;
  * Factory methods for Tags associated with a GraphQL request.
  *
  * @author Brian Clozel
- * @since 1.0.0
+ * @since 2.7.0
  */
 public final class GraphQlTags {
 
@@ -72,7 +72,7 @@ public final class GraphQlTags {
 			builder.append('$');
 			for (Object segment : pathSegments) {
 				try {
-					int index = Integer.parseUnsignedInt(segment.toString());
+					Integer.parseUnsignedInt(segment.toString());
 					builder.append("[*]");
 				}
 				catch (NumberFormatException exc) {
@@ -90,13 +90,13 @@ public final class GraphQlTags {
 
 	public static Tag dataFetchingPath(InstrumentationFieldFetchParameters parameters) {
 		ExecutionStepInfo executionStepInfo = parameters.getExecutionStepInfo();
-		StringBuilder dataFetchingType = new StringBuilder();
+		StringBuilder dataFetchingPath = new StringBuilder();
 		if (executionStepInfo.hasParent() && executionStepInfo.getParent().getType() instanceof GraphQLObjectType) {
-			dataFetchingType.append(((GraphQLObjectType) executionStepInfo.getParent().getType()).getName());
-			dataFetchingType.append('.');
+			dataFetchingPath.append(((GraphQLObjectType) executionStepInfo.getParent().getType()).getName());
+			dataFetchingPath.append('.');
 		}
-		dataFetchingType.append(executionStepInfo.getPath().getSegmentName());
-		return Tag.of("path", dataFetchingType.toString());
+		dataFetchingPath.append(executionStepInfo.getPath().getSegmentName());
+		return Tag.of("path", dataFetchingPath.toString());
 	}
 
 }

@@ -25,11 +25,11 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ProjectsController {
+public class ProjectController {
 
 	private final List<Project> projects;
 
-	public ProjectsController() {
+	public ProjectController() {
 		this.projects = Arrays.asList(new Project("spring-boot", "Spring Boot"),
 				new Project("spring-graphql", "Spring GraphQL"), new Project("spring-framework", "Spring Framework"));
 	}
