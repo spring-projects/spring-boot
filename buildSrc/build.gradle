@@ -26,7 +26,7 @@ dependencies {
 	implementation("org.springframework:spring-web:5.3.10")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	testImplementation("org.assertj:assertj-core:3.11.1")
-	testImplementation("org.apache.logging.log4j:log4j-core:2.17.0")
+	testImplementation("org.apache.logging.log4j:log4j-core:2.17.1")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
