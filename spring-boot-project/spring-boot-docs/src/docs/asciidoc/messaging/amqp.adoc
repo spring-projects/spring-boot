@@ -78,6 +78,24 @@ If you need to create more `RabbitTemplate` instances or if you want to override
 
 
 
+[[messaging.amqp.sending-stream]]
+=== Sending a Message To A Stream
+To send a message to a particular stream, specify the name of the stream, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  rabbitmq:
+	    stream:
+	      name: "my-stream"
+----
+
+If a `MessageConverter`, `StreamMessageConverter`, or `ProducerCustomizer` bean is defined, it is associated automatically to the auto-configured `RabbitStreamTemplate`.
+
+If you need to create more `RabbitStreamTemplate` instances or if you want to override the default, Spring Boot provides a `RabbitStreamTemplateConfigurer` bean that you can use to initialize a `RabbitStreamTemplate` with the same settings as the factories used by the auto-configuration.
+
+
+
 [[messaging.amqp.receiving]]
 === Receiving a Message
 When the Rabbit infrastructure is present, any bean can be annotated with `@RabbitListener` to create a listener endpoint.

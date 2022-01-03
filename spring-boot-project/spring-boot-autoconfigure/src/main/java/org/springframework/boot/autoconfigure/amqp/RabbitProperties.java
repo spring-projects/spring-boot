@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Gary Russell
  * @author Artsiom Yudovin
  * @author Franjo Zilic
+ * @author Eddú Meléndez
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -1194,6 +1195,11 @@ public class RabbitProperties {
 		 */
 		private String password;
 
+		/**
+		 * Name of the stream.
+		 */
+		private String name;
+
 		public String getHost() {
 			return this.host;
 		}
@@ -1224,6 +1230,14 @@ public class RabbitProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 	}
