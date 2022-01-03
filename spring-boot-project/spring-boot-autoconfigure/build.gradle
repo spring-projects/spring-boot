@@ -114,6 +114,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
+	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")

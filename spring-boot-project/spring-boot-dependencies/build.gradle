@@ -314,10 +314,11 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "8.0.4") {
+	library("Flyway", "8.3.0") {
 		group("org.flywaydb") {
 			modules = [
-				"flyway-core"
+				"flyway-core",
+                "flyway-sqlserver"
 			]
 			plugins = [
 				"flyway-maven-plugin"
