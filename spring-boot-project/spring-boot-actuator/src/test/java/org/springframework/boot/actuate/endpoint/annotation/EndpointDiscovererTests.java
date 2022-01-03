@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -267,8 +267,7 @@ class EndpointDiscovererTests {
 		Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 		assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 		Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
-		assertThat(operations).hasSize(4);
-		assertThat(operations).containsKeys();
+		assertThat(operations).containsOnlyKeys(testEndpointMethods());
 	}
 
 	private Method[] testEndpointMethods() {
