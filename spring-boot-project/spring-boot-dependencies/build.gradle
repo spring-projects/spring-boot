@@ -152,7 +152,7 @@ bom {
 			]
 		}
 	}
-	library("Caffeine", "2.9.2") {
+	library("Caffeine", "2.9.3") {
 		prohibit("[3.0.0,)") {
 			because "it requires Java 11"
 		}
