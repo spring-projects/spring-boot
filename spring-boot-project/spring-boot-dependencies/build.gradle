@@ -524,7 +524,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore", "4.4.14") {
+	library("HttpCore", "4.4.15") {
 		group("org.apache.httpcomponents") {
 			modules = [
 				"httpcore",
