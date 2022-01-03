@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
@@ -45,10 +44,19 @@ public class RabbitStreamTemplateConfigurer {
 		this.messageConverter = messageConverter;
 	}
 
+	/**
+	 * Set the {@link StreamMessageConverter} to use or {@code null} if the out-of-the-box
+	 * stream message converter should be used.
+	 * @param streamMessageConverter the {@link StreamMessageConverter}
+	 */
 	public void setStreamMessageConverter(StreamMessageConverter streamMessageConverter) {
 		this.streamMessageConverter = streamMessageConverter;
 	}
 
+	/**
+	 * Set the {@link ProducerCustomizer} instances to use.
+	 * @param producerCustomizer the producer customizer
+	 */
 	public void setProducerCustomizer(ProducerCustomizer producerCustomizer) {
 		this.producerCustomizer = producerCustomizer;
 	}
@@ -59,7 +67,6 @@ public class RabbitStreamTemplateConfigurer {
 	 * @param template the {@link RabbitStreamTemplate} instance to configure
 	 */
 	public void configure(RabbitStreamTemplate template) {
-		PropertyMapper map = PropertyMapper.get();
 		if (this.messageConverter != null) {
 			template.setMessageConverter(this.messageConverter);
 		}

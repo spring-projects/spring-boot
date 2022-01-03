@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,13 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -160,10 +160,9 @@ class RabbitStreamConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
 				.run((context) -> {
-					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
-					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
-					assertThat(streamName).isEqualTo("stream-test");
+					assertThat(context.getBean(RabbitStreamTemplate.class)).hasFieldOrPropertyWithValue("streamName",
+							"stream-test");
 				});
 	}
 
@@ -175,43 +174,39 @@ class RabbitStreamConfigurationTests {
 
 	@Test
 	void testRabbitStreamTemplateConfigurationWithCustomMessageConverter() {
-		this.contextRunner.withUserConfiguration(RabbitAutoConfigurationTests.MessageConvertersConfiguration.class)
+		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
 				.run((context) -> {
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
-					MessageConverter messageConverter = (MessageConverter) ReflectionTestUtils.getField(streamTemplate,
-							"messageConverter");
-					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
-					assertThat(messageConverter).isSameAs(context.getBean(MessageConverter.class));
-					assertThat(streamName).isEqualTo("stream-test");
+					assertThat(streamTemplate).hasFieldOrPropertyWithValue("streamName", "stream-test");
+					assertThat(streamTemplate).extracting("messageConverter")
+							.isSameAs(context.getBean(MessageConverter.class));
 				});
 	}
 
 	@Test
 	void testRabbitStreamTemplateConfigurationWithCustomStreamMessageConverter() {
-		this.contextRunner.withUserConfiguration(StreamMessageConverterConfiguration.class)
+		this.contextRunner
+				.withBean("myStreamMessageConverter", StreamMessageConverter.class,
+						() -> mock(StreamMessageConverter.class))
 				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
 				.run((context) -> {
-					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
-					StreamMessageConverter messageConverter = (StreamMessageConverter) ReflectionTestUtils
-							.getField(streamTemplate, "streamConverter");
-					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
-					assertThat(messageConverter).isSameAs(context.getBean(StreamMessageConverter.class));
-					assertThat(streamName).isEqualTo("stream-test");
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("messageConverter")
+							.isSameAs(context.getBean("myStreamMessageConverter"));
 				});
 	}
 
 	@Test
 	void testRabbitStreamTemplateConfigurationWithCustomProducerCustomizer() {
-		this.contextRunner.withUserConfiguration(ProducerCustomizerConfiguration.class)
+		this.contextRunner
+				.withBean("myProducerCustomizer", ProducerCustomizer.class, () -> mock(ProducerCustomizer.class))
 				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
 				.run((context) -> {
-					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
-					ProducerCustomizer producerCustomizer = (ProducerCustomizer) ReflectionTestUtils
-							.getField(streamTemplate, "producerCustomizer");
-					String streamName = (String) ReflectionTestUtils.getField(streamTemplate, "streamName");
-					assertThat(producerCustomizer).isSameAs(context.getBean(ProducerCustomizer.class));
-					assertThat(streamName).isEqualTo("stream-test");
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("producerCustomizer")
+							.isSameAs(context.getBean("myProducerCustomizer"));
 				});
 	}
 
@@ -263,21 +258,17 @@ class RabbitStreamConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class StreamMessageConverterConfiguration {
+	static class MessageConvertersConfiguration {
 
 		@Bean
-		StreamMessageConverter myStreamMessageConverter() {
-			return mock(StreamMessageConverter.class);
+		@Primary
+		MessageConverter myMessageConverter() {
+			return mock(MessageConverter.class);
 		}
 
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ProducerCustomizerConfiguration {
-
 		@Bean
-		ProducerCustomizer myProducerCustomizer() {
-			return mock(ProducerCustomizer.class);
+		MessageConverter anotherMessageConverter() {
+			return mock(MessageConverter.class);
 		}
 
 	}

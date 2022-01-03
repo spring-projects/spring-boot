@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,21 +69,6 @@ class RabbitStreamConfiguration {
 		return configure(Environment.builder(), properties).build();
 	}
 
-	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
-		builder.lazyInitialization(true);
-		RabbitProperties.Stream stream = properties.getStream();
-		PropertyMapper mapper = PropertyMapper.get();
-		mapper.from(stream.getHost()).to(builder::host);
-		mapper.from(stream.getPort()).to(builder::port);
-		mapper.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
-		mapper.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
-		return builder;
-	}
-
-	private static Function<String, String> withFallback(Supplier<String> fallback) {
-		return (value) -> (value != null) ? value : fallback.get();
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	RabbitStreamTemplateConfigurer rabbitStreamTemplateConfigurer(RabbitProperties properties,
@@ -106,6 +91,21 @@ class RabbitStreamConfiguration {
 				properties.getStream().getName());
 		configurer.configure(template);
 		return template;
+	}
+
+	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
+		builder.lazyInitialization(true);
+		RabbitProperties.Stream stream = properties.getStream();
+		PropertyMapper mapper = PropertyMapper.get();
+		mapper.from(stream.getHost()).to(builder::host);
+		mapper.from(stream.getPort()).to(builder::port);
+		mapper.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
+		mapper.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
+		return builder;
+	}
+
+	private static Function<String, String> withFallback(Supplier<String> fallback) {
+		return (value) -> (value != null) ? value : fallback.get();
 	}
 
 }
