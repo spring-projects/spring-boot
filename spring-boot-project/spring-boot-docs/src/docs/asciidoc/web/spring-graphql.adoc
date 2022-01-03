@@ -40,6 +40,8 @@ In the following sections, we'll consider this sample GraphQL schema, defining t
 include::{docs-resources}/graphql/schema.graphqls[]
 ----
 
+NOTE: By default, https://spec.graphql.org/draft/#sec-Introspection[field introspection] will be allowed on the schema as it is required for tools such as GraphiQL.
+If you wish to not expose information about the schema, you can disable introspection by setting configprop:spring.graphql.schema.introspection.enabled[] to `false`.
 
 [[web.graphql.runtimewiring]]
 === GraphQL RuntimeWiring

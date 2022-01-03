@@ -73,6 +73,8 @@ public class GraphQlProperties {
 		 */
 		private String[] fileExtensions = new String[] { ".graphqls", ".gqls" };
 
+		private final Introspection introspection = new Introspection();
+
 		private final Printer printer = new Printer();
 
 		public String[] getLocations() {
@@ -96,8 +98,29 @@ public class GraphQlProperties {
 					.toArray(String[]::new);
 		}
 
+		public Introspection getIntrospection() {
+			return this.introspection;
+		}
+
 		public Printer getPrinter() {
 			return this.printer;
+		}
+
+		public static class Introspection {
+
+			/**
+			 * Whether field introspection should be enabled at the schema level.
+			 */
+			private boolean enabled = true;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
 		}
 
 		public static class Printer {

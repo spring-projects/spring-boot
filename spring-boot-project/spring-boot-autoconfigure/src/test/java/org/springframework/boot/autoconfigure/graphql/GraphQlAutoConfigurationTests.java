@@ -21,6 +21,8 @@ import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
+import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -142,6 +144,25 @@ class GraphQlAutoConfigurationTests {
 			GraphQlSourceBuilderCustomizerConfiguration.CustomGraphQlSourceBuilderCustomizer customizer = context
 					.getBean(GraphQlSourceBuilderCustomizerConfiguration.CustomGraphQlSourceBuilderCustomizer.class);
 			assertThat(customizer.applied).isTrue();
+		});
+	}
+
+	@Test
+	void fieldIntrospectionShouldBeEnabledByDefault() {
+		this.contextRunner.run((context) -> {
+			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+			GraphQLSchema schema = graphQlSource.schema();
+			assertThat(schema.getCodeRegistry().getFieldVisibility()).isInstanceOf(DefaultGraphqlFieldVisibility.class);
+		});
+	}
+
+	@Test
+	void shouldDisableFieldIntrospection() {
+		this.contextRunner.withPropertyValues("spring.graphql.schema.introspection.enabled:false").run((context) -> {
+			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+			GraphQLSchema schema = graphQlSource.schema();
+			assertThat(schema.getCodeRegistry().getFieldVisibility())
+					.isInstanceOf(NoIntrospectionGraphqlFieldVisibility.class);
 		});
 	}
 
