@@ -1361,7 +1361,7 @@ bom {
 			]
 		}
 	}
-	library("Prometheus Client", "0.12.0") {
+	library("Prometheus Client", "0.14.1") {
 		group("io.prometheus") {
 			imports = [
 				"simpleclient_bom"
