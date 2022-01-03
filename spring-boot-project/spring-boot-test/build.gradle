@@ -45,6 +45,7 @@ dependencies {
 	testImplementation("io.mockk:mockk")
 	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("ch.qos.logback:logback-classic")
+    testImplementation("com.squareup.okhttp3:okhttp")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.codehaus.groovy:groovy")
 	testImplementation("org.codehaus.groovy:groovy-xml")

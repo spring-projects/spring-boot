@@ -1549,7 +1549,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "3.141.59") {
+	library("Selenium", "4.1.1") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"selenium-api",
