@@ -35,7 +35,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.WebGraphQlTester;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -46,32 +45,32 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * {@link ContextCustomizer} for {@link GraphQlTester}.
+ * {@link ContextCustomizer} for {@link WebGraphQlTester}.
  *
  * @author Brian Clozel
  */
-class GraphQlTesterContextCustomizer implements ContextCustomizer {
+class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
 				SpringBootTest.class);
 		if (springBootTest.webEnvironment().isEmbedded()) {
-			registerGraphQlTester(context);
+			registerWebGraphQlTester(context);
 		}
 	}
 
-	private void registerGraphQlTester(ConfigurableApplicationContext context) {
+	private void registerWebGraphQlTester(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerGraphQlTester((BeanDefinitionRegistry) beanFactory);
+			registerWebGraphQlTester((BeanDefinitionRegistry) beanFactory);
 		}
 	}
 
-	private void registerGraphQlTester(BeanDefinitionRegistry registry) {
-		RootBeanDefinition definition = new RootBeanDefinition(GraphQlTesterRegistrar.class);
+	private void registerWebGraphQlTester(BeanDefinitionRegistry registry) {
+		RootBeanDefinition definition = new RootBeanDefinition(WebGraphQlTesterRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(GraphQlTesterRegistrar.class.getName(), definition);
+		registry.registerBeanDefinition(WebGraphQlTesterRegistrar.class.getName(), definition);
 	}
 
 	@Override
@@ -84,7 +83,7 @@ class GraphQlTesterContextCustomizer implements ContextCustomizer {
 		return getClass().hashCode();
 	}
 
-	private static class GraphQlTesterRegistrar
+	private static class WebGraphQlTesterRegistrar
 			implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
@@ -97,9 +96,9 @@ class GraphQlTesterContextCustomizer implements ContextCustomizer {
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
-					GraphQlTester.class, false, false).length == 0) {
+					WebGraphQlTester.class, false, false).length == 0) {
 				registry.registerBeanDefinition(WebGraphQlTester.class.getName(),
-						new RootBeanDefinition(GraphQlTesterFactory.class));
+						new RootBeanDefinition(WebGraphQlTesterFactory.class));
 			}
 		}
 
@@ -115,7 +114,7 @@ class GraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	}
 
-	public static class GraphQlTesterFactory implements FactoryBean<GraphQlTester>, ApplicationContextAware {
+	public static class WebGraphQlTesterFactory implements FactoryBean<WebGraphQlTester>, ApplicationContextAware {
 
 		private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
@@ -123,7 +122,7 @@ class GraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		private ApplicationContext applicationContext;
 
-		private GraphQlTester object;
+		private WebGraphQlTester object;
 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -137,11 +136,11 @@ class GraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public Class<?> getObjectType() {
-			return GraphQlTester.class;
+			return WebGraphQlTester.class;
 		}
 
 		@Override
-		public GraphQlTester getObject() throws Exception {
+		public WebGraphQlTester getObject() throws Exception {
 			if (this.object == null) {
 				this.object = createGraphQlTester();
 			}

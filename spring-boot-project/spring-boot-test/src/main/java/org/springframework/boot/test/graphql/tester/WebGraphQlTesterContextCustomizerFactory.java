@@ -30,11 +30,11 @@ import org.springframework.util.ClassUtils;
  * {@link ContextCustomizerFactory} for {@link GraphQlTester}.
  *
  * @author Brian Clozel
- * @see GraphQlTesterContextCustomizer
+ * @see WebGraphQlTesterContextCustomizer
  */
-class GraphQlTesterContextCustomizerFactory implements ContextCustomizerFactory {
+class WebGraphQlTesterContextCustomizerFactory implements ContextCustomizerFactory {
 
-	private static final String GRAPHQLTESTER_CLASS = "org.springframework.graphql.test.tester.GraphQlTester";
+	private static final String WEBGRAPHQLTESTER_CLASS = "org.springframework.graphql.test.tester.WebGraphQlTester";
 
 	private static final String WEBTESTCLIENT_CLASS = "org.springframework.test.web.reactive.server.WebTestClient";
 
@@ -43,12 +43,12 @@ class GraphQlTesterContextCustomizerFactory implements ContextCustomizerFactory 
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
-		return (springBootTest != null && isGraphQlTesterPresent()) ? new GraphQlTesterContextCustomizer() : null;
+		return (springBootTest != null && isGraphQlTesterPresent()) ? new WebGraphQlTesterContextCustomizer() : null;
 	}
 
 	private boolean isGraphQlTesterPresent() {
 		return ClassUtils.isPresent(WEBTESTCLIENT_CLASS, getClass().getClassLoader())
-				&& ClassUtils.isPresent(GRAPHQLTESTER_CLASS, getClass().getClassLoader());
+				&& ClassUtils.isPresent(WEBGRAPHQLTESTER_CLASS, getClass().getClassLoader());
 	}
 
 }
