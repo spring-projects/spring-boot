@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -903,6 +903,12 @@ public class KafkaProperties {
 		private Duration idleEventInterval;
 
 		/**
+		 * Time between publishing idle partition consumer events (no data received for
+		 * partition).
+		 */
+		private Duration idlePartitionEventInterval;
+
+		/**
 		 * Time between checks for non-responsive consumers. If a duration suffix is not
 		 * specified, seconds will be used.
 		 */
@@ -1004,6 +1010,14 @@ public class KafkaProperties {
 
 		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Duration getIdlePartitionEventInterval() {
+			return this.idlePartitionEventInterval;
+		}
+
+		public void setIdlePartitionEventInterval(Duration idlePartitionEventInterval) {
+			this.idlePartitionEventInterval = idlePartitionEventInterval;
 		}
 
 		public Duration getMonitorInterval() {
