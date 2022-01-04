@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.config.YamlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-
 import com.hazelcast.spring.context.SpringManagedContext;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,6 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
@@ -65,14 +66,11 @@ class HazelcastServerConfiguration {
 
 		@Bean
 		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader,
-											ObjectProvider<ConfigurationCustomizer> customizerProvider)
-				throws IOException {
+				ObjectProvider<HazelcastConfigCustomizer> hazelcastConfigCustomizers) throws IOException {
 			Resource configLocation = properties.resolveConfigLocation();
 			Config config = (configLocation != null) ? loadConfig(configLocation) : Config.load();
-			customizerProvider.ifAvailable(c -> {
-				c.customize(config);
-			});
 			config.setClassLoader(resourceLoader.getClassLoader());
+			hazelcastConfigCustomizers.orderedStream().forEach((customizer) -> customizer.customize(config));
 			return getHazelcastInstance(config);
 		}
 
@@ -101,6 +99,7 @@ class HazelcastServerConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(Config.class)
 	static class HazelcastServerConfigConfiguration {
+
 		@Bean
 		HazelcastInstance hazelcastInstance(Config config) {
 			return getHazelcastInstance(config);
@@ -108,27 +107,16 @@ class HazelcastServerConfiguration {
 
 	}
 
-	@FunctionalInterface
-	private interface ConfigurationCustomizer {
-		void customize(Config configuration);
-	}
-
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(name = "com.hazelcast.spring.context.SpringManagedContext")
-	static class HazelcastConfigCustomizerConfiguration {
-		private final ApplicationContext applicationContext;
-
-		public HazelcastConfigCustomizerConfiguration(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
+	@ConditionalOnClass(SpringManagedContext.class)
+	static class SpringManagedContextHazelcastConfigCustomizerConfiguration {
 
 		@Bean
-		public ConfigurationCustomizer springManagedContextConfigurationCustomizer() {
-			return configuration -> {
-				SpringManagedContext springManagedContext = new SpringManagedContext(applicationContext);
-				configuration.setManagedContext(springManagedContext);
-			};
+		@Order(0)
+		HazelcastConfigCustomizer springManagedContextHazelcastConfigCustomizer(ApplicationContext applicationContext) {
+			return (config) -> config.setManagedContext(new SpringManagedContext(applicationContext));
 		}
+
 	}
 
 	/**
