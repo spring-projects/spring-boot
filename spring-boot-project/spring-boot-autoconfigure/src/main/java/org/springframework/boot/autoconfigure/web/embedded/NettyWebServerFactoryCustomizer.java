@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @author Chentao Qu
  * @author Artsiom Yudovin
- * @author Leo Li
  * @since 2.1.0
  */
 public class NettyWebServerFactoryCustomizer
@@ -63,7 +62,7 @@ public class NettyWebServerFactoryCustomizer
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(nettyProperties::getIdleTimeout).whenNonNull()
 				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
-		propertyMapper.from(nettyProperties::getMaxKeepAliveRequests).whenNonNull()
+		propertyMapper.from(nettyProperties::getMaxKeepAliveRequests)
 				.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
 		customizeRequestDecoder(factory, propertyMapper);
 	}

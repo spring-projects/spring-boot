@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rafiullah Hamedy
  * @author Chris Bono
  * @author Parviz Rozikov
- * @author Leo Li
  */
 class ServerPropertiesTests {
 
@@ -344,11 +343,6 @@ class ServerPropertiesTests {
 	void testCustomizeNettyMaxKeepAliveRequests() {
 		bind("server.netty.max-keep-alive-requests", "100");
 		assertThat(this.properties.getNetty().getMaxKeepAliveRequests()).isEqualTo(100);
-	}
-
-	@Test
-	void testCustomizeNettyMaxKeepAliveRequestsDefault() {
-		assertThat(this.properties.getNetty().getMaxKeepAliveRequests()).isEqualTo(-1);
 	}
 
 	@Test
