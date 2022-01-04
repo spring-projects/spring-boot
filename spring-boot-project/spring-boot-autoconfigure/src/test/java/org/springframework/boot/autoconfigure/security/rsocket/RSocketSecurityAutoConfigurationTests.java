@@ -16,20 +16,16 @@
 
 package org.springframework.boot.autoconfigure.security.rsocket;
 
-import java.util.List;
-
 import io.rsocket.core.RSocketServer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.rsocket.RSocketMessageHandlerCustomizer;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.messaging.handler.invocation.reactive.HandlerMethodArgumentResolver;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.security.messaging.handler.invocation.reactive.AuthenticationPrincipalArgumentResolver;
@@ -76,16 +72,11 @@ class RSocketSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationAddsCustomizerForMessageHandlerRSocketFactory() {
-		RSocketMessageHandler handler = new RSocketMessageHandler();
+	void autoConfigurationAddsCustomizerForAuthenticationPrincipalArgumentResolver() {
 		this.contextRunner.run((context) -> {
-			RSocketMessageHandlerCustomizer customizer = context.getBean(RSocketMessageHandlerCustomizer.class);
-			customizer.customize(handler);
-
-			List<HandlerMethodArgumentResolver> customResolvers = handler.getArgumentResolverConfigurer()
-					.getCustomResolvers();
-			assertThat(customResolvers).isNotEmpty();
-			assertThat(customResolvers)
+			assertThat(context).hasSingleBean(RSocketMessageHandler.class);
+			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
+			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers()).isNotEmpty()
 					.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
 		});
 	}

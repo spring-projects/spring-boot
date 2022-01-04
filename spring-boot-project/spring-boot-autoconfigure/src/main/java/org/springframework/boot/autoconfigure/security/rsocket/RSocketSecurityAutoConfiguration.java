@@ -50,7 +50,7 @@ public class RSocketSecurityAutoConfiguration {
 	static class RSocketSecurityMessageHandlerConfiguration {
 
 		@Bean
-		RSocketMessageHandlerCustomizer springSecurityRSocketMessageHandler() {
+		RSocketMessageHandlerCustomizer rSocketAuthenticationPrincipalMessageHandlerCustomizer() {
 			return (messageHandler) -> messageHandler.getArgumentResolverConfigurer()
 					.addCustomResolver(new AuthenticationPrincipalArgumentResolver());
 		}
