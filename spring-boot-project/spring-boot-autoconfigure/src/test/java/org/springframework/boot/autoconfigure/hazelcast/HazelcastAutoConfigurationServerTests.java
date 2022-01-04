@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,24 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.QueueConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.EntryProcessor;
+import com.hazelcast.map.IMap;
+import com.hazelcast.spring.context.SpringAware;
+import com.hazelcast.spring.context.SpringManagedContext;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -164,6 +172,39 @@ class HazelcastAutoConfigurationServerTests {
 		});
 	}
 
+	@Test
+	void autoConfiguredConfigUsesSpringManagedContext() {
+		this.contextRunner.run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getManagedContext()).isInstanceOf(SpringManagedContext.class);
+		});
+	}
+
+	@Test
+	void autoConfiguredConfigCanUseSpringAwareComponent() {
+		this.contextRunner.withPropertyValues("test.hazelcast.key=42").run((context) -> {
+			HazelcastInstance hz = context.getBean(HazelcastInstance.class);
+			IMap<String, String> map = hz.getMap("test");
+			assertThat(map.executeOnKey("test.hazelcast.key", new SpringAwareEntryProcessor<>())).isEqualTo("42");
+		});
+	}
+
+	@Test
+	void autoConfiguredConfigWithoutHazelcastSpringDoesNotUseSpringManagedContext() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(SpringManagedContext.class)).run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getManagedContext()).isNull();
+		});
+	}
+
+	@Test
+	void autoConfiguredContextCanOverrideManagementContextUsingCustomizer() {
+		this.contextRunner.withBean(TestHazelcastConfigCustomizer.class).run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getManagedContext()).isNull();
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfigWithName {
 
@@ -182,6 +223,29 @@ class HazelcastAutoConfigurationServerTests {
 			Config config = new Config();
 			config.addQueueConfig(new QueueConfig("another-queue"));
 			return config;
+		}
+
+	}
+
+	@SpringAware
+	static class SpringAwareEntryProcessor<V> implements EntryProcessor<String, V, String> {
+
+		@Autowired
+		private Environment environment;
+
+		@Override
+		public String process(Map.Entry<String, V> entry) {
+			return this.environment.getProperty(entry.getKey());
+		}
+
+	}
+
+	@Order(1)
+	static class TestHazelcastConfigCustomizer implements HazelcastConfigCustomizer {
+
+		@Override
+		public void customize(Config config) {
+			config.setManagedContext(null);
 		}
 
 	}
