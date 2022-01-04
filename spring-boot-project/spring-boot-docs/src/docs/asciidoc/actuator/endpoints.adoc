@@ -1169,13 +1169,18 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 | Exposes Java runtime information.
 | None.
 
+| `os`
+| {spring-boot-actuator-module-code}/info/OsInfoContributor.java[`OsInfoContributor`]
+| Exposes Operating System information.
+| None.
+
 |===
 
-Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
+Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prerequisites to indicate that they should be enabled, the `env` and `java` contributors are disabled by default.
-You can enable them by setting the configprop:management.info.env.enabled[] or configprop:management.info.java.enabled[] properties to `true`.
+With no prerequisites to indicate that they should be enabled, the `env`, `java`, and `os` contributors are disabled by default.
+Each can be enabled by setting its `management.info.<id>.enabled` property to `true`.
 
 The `build` and `git` info contributors are enabled by default.
 Each can be disabled by setting its `management.info.<id>.enabled` property to `false`.
@@ -1263,6 +1268,12 @@ See "<<howto#howto.build.generate-info,how to generate build information>>" for 
 [[actuator.endpoints.info.java-information]]
 ==== Java Information
 The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
+
+
+
+[[actuator.endpoints.info.os-information]]
+==== OS Information
+The `info` endpoint publishes information about your Operating System, see {spring-boot-module-api}/info/OsInfo.html[`OsInfo`] for more details.
 
 
 
