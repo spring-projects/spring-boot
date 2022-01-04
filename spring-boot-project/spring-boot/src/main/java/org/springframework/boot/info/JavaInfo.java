@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,13 @@ public class JavaInfo {
 	}
 
 	/**
-	 * Information about the Java Vendor of the used Java Runtime.
+	 * Information about the Java Vendor of the Java Runtime the application is running
+	 * in.
+	 *
 	 * @since 2.7.0
 	 */
 	public static class JavaVendorInfo {
+
 		private final String name;
 
 		private final String version;
@@ -77,11 +80,11 @@ public class JavaInfo {
 		public String getVersion() {
 			return this.version;
 		}
+
 	}
 
 	/**
 	 * Information about the Java Runtime Environment the application is running in.
-	 * @since 2.6.0
 	 */
 	public static class JavaRuntimeEnvironmentInfo {
 
@@ -106,7 +109,6 @@ public class JavaInfo {
 
 	/**
 	 * Information about the Java Virtual Machine the application is running in.
-	 * @since 2.6.0
 	 */
 	public static class JavaVirtualMachineInfo {
 
