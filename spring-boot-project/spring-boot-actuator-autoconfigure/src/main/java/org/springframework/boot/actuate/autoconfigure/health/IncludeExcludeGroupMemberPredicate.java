@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
 	@Override
 	public boolean test(String name) {
-		return testCleanName(clean(name));
-	}
-
-	private boolean testCleanName(String name) {
+		name = clean(name);
 		return isIncluded(name) && !isExcluded(name);
 	}
 
@@ -64,7 +61,18 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	private boolean isExcluded(String name) {
-		return this.exclude.contains("*") || this.exclude.contains(name);
+		return this.exclude.contains("*") || isExcludedName(name);
+	}
+
+	private boolean isExcludedName(String name) {
+		if (this.exclude.contains(name)) {
+			return true;
+		}
+		if (name.contains("/")) {
+			String parent = name.substring(0, name.lastIndexOf("/"));
+			return isExcludedName(parent);
+		}
+		return false;
 	}
 
 	private Set<String> clean(Set<String> names) {
