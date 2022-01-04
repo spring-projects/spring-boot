@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -66,10 +67,12 @@ public class KafkaAutoConfiguration {
 	public KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
-		kafkaTemplate.setProducerListener(kafkaProducerListener);
-		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
+		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);
+		map.from(this.properties.getTemplate().getDefaultTopic()).to(kafkaTemplate::setDefaultTopic);
+		map.from(this.properties.getTemplate().getTransactionIdPrefix()).to(kafkaTemplate::setTransactionIdPrefix);
 		return kafkaTemplate;
 	}
 
