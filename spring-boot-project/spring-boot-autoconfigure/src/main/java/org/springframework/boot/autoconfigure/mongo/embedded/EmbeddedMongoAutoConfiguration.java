@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.RuntimeConfig;
-import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.process.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.DownloadConfig;
 import de.flapdoodle.embed.process.config.store.ImmutableDownloadConfig;
 import de.flapdoodle.embed.process.distribution.Version.GenericVersion;
@@ -138,8 +138,8 @@ public class EmbeddedMongoAutoConfiguration {
 			builder.net(new Net(getHost().getHostAddress(), configuredPort, Network.localhostIsIPv6()));
 		}
 		else {
-			builder.net(new Net(getHost().getHostAddress(), Network.getFreeServerPort(getHost()),
-					Network.localhostIsIPv6()));
+			builder.net(
+					new Net(getHost().getHostAddress(), Network.freeServerPort(getHost()), Network.localhostIsIPv6()));
 		}
 		return builder.build();
 	}
@@ -204,9 +204,9 @@ public class EmbeddedMongoAutoConfiguration {
 		RuntimeConfig embeddedMongoRuntimeConfig(
 				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
-			ProcessOutput processOutput = new ProcessOutput(Processors.logTo(logger, Slf4jLevel.INFO),
-					Processors.logTo(logger, Slf4jLevel.ERROR),
-					Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
+			ProcessOutput processOutput = ProcessOutput.builder().output(Processors.logTo(logger, Slf4jLevel.INFO))
+					.error(Processors.logTo(logger, Slf4jLevel.ERROR))
+					.commands(Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG))).build();
 			return Defaults.runtimeConfigFor(Command.MongoD, logger).processOutput(processOutput)
 					.artifactStore(getArtifactStore(logger, downloadConfigBuilderCustomizers.orderedStream()))
 					.isDaemonProcess(false).build();
