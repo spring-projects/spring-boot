@@ -824,12 +824,26 @@ public class KafkaProperties {
 		 */
 		private String defaultTopic;
 
+		/**
+		 * Transaction id prefix, override the transaction id prefix in the producer
+		 * factory.
+		 */
+		private String transactionIdPrefix;
+
 		public String getDefaultTopic() {
 			return this.defaultTopic;
 		}
 
 		public void setDefaultTopic(String defaultTopic) {
 			this.defaultTopic = defaultTopic;
+		}
+
+		public String getTransactionIdPrefix() {
+			return this.transactionIdPrefix;
+		}
+
+		public void setTransactionIdPrefix(String transactionIdPrefix) {
+			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
 	}

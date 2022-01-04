@@ -384,6 +384,7 @@ class KafkaAutoConfigurationTests {
 	void listenerProperties() {
 		this.contextRunner
 				.withPropertyValues("spring.kafka.template.default-topic=testTopic",
+						"spring.kafka.template.transaction-id-prefix=txOverride",
 						"spring.kafka.listener.ack-mode=MANUAL", "spring.kafka.listener.client-id=client",
 						"spring.kafka.listener.ack-count=123", "spring.kafka.listener.ack-time=456",
 						"spring.kafka.listener.concurrency=3", "spring.kafka.listener.poll-timeout=2000",
@@ -406,6 +407,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(kafkaTemplate.getMessageConverter()).isInstanceOf(MessagingMessageConverter.class);
 					assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("producerFactory", producerFactory);
 					assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
+					assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("transactionIdPrefix", "txOverride");
 					assertThat(kafkaListenerContainerFactory.getConsumerFactory()).isEqualTo(consumerFactory);
 					ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
 					assertThat(containerProperties.getAckMode()).isEqualTo(AckMode.MANUAL);
