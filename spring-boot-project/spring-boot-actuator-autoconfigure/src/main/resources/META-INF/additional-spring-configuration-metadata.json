@@ -282,7 +282,7 @@
     {
       "name": "management.info.os.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable OS info.",
+      "description": "Whether to enable Operating System info.",
       "defaultValue": false
     },
     {

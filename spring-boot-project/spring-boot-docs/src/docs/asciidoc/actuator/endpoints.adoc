@@ -1176,11 +1176,11 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
 |===
 
-Whether or not an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
+Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prerequisites to indicate that they should be enabled, the `env`, `java` and `os` contributors are disabled by default.
-You can enable them by setting the configprop:management.info.env.enabled[], configprop:management.info.java.enabled[] or configprop:management.info.os.enabled[] properties to `true`.
+With no prerequisites to indicate that they should be enabled, the `env`, `java`, and `os` contributors are disabled by default.
+Each can be enabled by setting its `management.info.<id>.enabled` property to `true`.
 
 The `build` and `git` info contributors are enabled by default.
 Each can be disabled by setting its `management.info.<id>.enabled` property to `false`.
