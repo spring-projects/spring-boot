@@ -114,7 +114,11 @@ class HazelcastServerConfiguration {
 		@Bean
 		@Order(0)
 		HazelcastConfigCustomizer springManagedContextHazelcastConfigCustomizer(ApplicationContext applicationContext) {
-			return (config) -> config.setManagedContext(new SpringManagedContext(applicationContext));
+			return (config) -> {
+				SpringManagedContext managementContext = new SpringManagedContext();
+				managementContext.setApplicationContext(applicationContext);
+				config.setManagedContext(managementContext);
+			};
 		}
 
 	}
