@@ -825,7 +825,8 @@ public class KafkaProperties {
 		private String defaultTopic;
 
 		/**
-		 * Override the transaction id prefix in the producer factory.
+		 * Transaction id prefix, override the transaction id prefix in the producer
+		 * factory.
 		 */
 		private String transactionIdPrefix;
 
