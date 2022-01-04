@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Artsiom Yudovin
+ * @author Leo Li
  */
 @ExtendWith(MockitoExtension.class)
 class NettyWebServerFactoryCustomizerTests {
@@ -118,6 +119,14 @@ class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void setMaxKeepAliveRequests() {
+		this.serverProperties.getNetty().setMaxKeepAliveRequests(100);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verifyMaxKeepAliveRequests(factory, 100);
+	}
+
+	@Test
 	void configureHttpRequestDecoder() {
 		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
 		nettyProperties.setValidateHeaders(false);
@@ -160,6 +169,14 @@ class NettyWebServerFactoryCustomizerTests {
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Duration idleTimeout = httpServer.configuration().idleTimeout();
 		assertThat(idleTimeout).isEqualTo(expected);
+	}
+
+	private void verifyMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int expected) {
+		verify(factory, times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		int maxKeepAliveRequests = httpServer.configuration().maxKeepAliveRequests();
+		assertThat(maxKeepAliveRequests).isEqualTo(expected);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,8 @@ public class NettyWebServerFactoryCustomizer
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(nettyProperties::getIdleTimeout).whenNonNull()
 				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+		propertyMapper.from(nettyProperties::getMaxKeepAliveRequests)
+				.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
 		customizeRequestDecoder(factory, propertyMapper);
 	}
 
@@ -102,6 +104,10 @@ public class NettyWebServerFactoryCustomizer
 
 	private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
 		factory.addServerCustomizers((httpServer) -> httpServer.idleTimeout(idleTimeout));
+	}
+
+	private void customizeMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int maxKeepAliveRequests) {
+		factory.addServerCustomizers((httpServer) -> httpServer.maxKeepAliveRequests(maxKeepAliveRequests));
 	}
 
 }
