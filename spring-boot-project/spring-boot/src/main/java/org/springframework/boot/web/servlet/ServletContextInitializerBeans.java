@@ -141,8 +141,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
-		if (beanFactory instanceof BeanDefinitionRegistry) {
-			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			return registry.getBeanDefinition(beanName).getResourceDescription();
 		}
 		return "unknown";

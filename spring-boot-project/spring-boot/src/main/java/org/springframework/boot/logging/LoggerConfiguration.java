@@ -79,8 +79,7 @@ public final class LoggerConfiguration {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof LoggerConfiguration) {
-			LoggerConfiguration other = (LoggerConfiguration) obj;
+		if (obj instanceof LoggerConfiguration other) {
 			boolean rtn = true;
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel, other.configuredLevel);

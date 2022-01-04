@@ -103,8 +103,7 @@ class DefinitionsParser {
 	private void addDefinition(AnnotatedElement element, Definition definition, String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
 		Assert.state(isNewDefinition, () -> "Duplicate " + type + " definition " + definition);
-		if (element instanceof Field) {
-			Field field = (Field) element;
+		if (element instanceof Field field) {
 			this.definitionFields.put(definition, field);
 		}
 	}
@@ -114,8 +113,7 @@ class DefinitionsParser {
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));
 		}
-		if (types.isEmpty() && element instanceof Field) {
-			Field field = (Field) element;
+		if (types.isEmpty() && element instanceof Field field) {
 			types.add((field.getGenericType() instanceof TypeVariable) ? ResolvableType.forField(field, source)
 					: ResolvableType.forField(field));
 		}

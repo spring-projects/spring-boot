@@ -42,8 +42,7 @@ public class TestDefaultTestExecutionListenersPostProcessor implements DefaultTe
 		@Override
 		public void prepareTestInstance(TestContext testContext) throws Exception {
 			Object testInstance = testContext.getTestInstance();
-			if (testInstance instanceof SpringBootTestContextBootstrapperIntegrationTests) {
-				SpringBootTestContextBootstrapperIntegrationTests test = (SpringBootTestContextBootstrapperIntegrationTests) testInstance;
+			if (testInstance instanceof SpringBootTestContextBootstrapperIntegrationTests test) {
 				test.defaultTestExecutionListenersPostProcessorCalled = true;
 			}
 		}

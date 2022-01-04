@@ -73,8 +73,7 @@ public class TextResourceOrigin implements Origin {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof TextResourceOrigin) {
-			TextResourceOrigin other = (TextResourceOrigin) obj;
+		if (obj instanceof TextResourceOrigin other) {
 			boolean result = true;
 			result = result && ObjectUtils.nullSafeEquals(this.resource, other.resource);
 			result = result && ObjectUtils.nullSafeEquals(this.location, other.location);

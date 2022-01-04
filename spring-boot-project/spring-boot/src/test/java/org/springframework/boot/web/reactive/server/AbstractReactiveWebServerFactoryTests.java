@@ -629,9 +629,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) {
-			if (msg instanceof HttpResponse) {
-				HttpResponse response = (HttpResponse) msg;
-				boolean compressed = response.headers().contains(HttpHeaderNames.CONTENT_ENCODING, "gzip", true);
+			if (msg instanceof HttpResponse response) {
+                boolean compressed = response.headers().contains(HttpHeaderNames.CONTENT_ENCODING, "gzip", true);
 				if (compressed) {
 					response.headers().set("X-Test-Compressed", "true");
 				}

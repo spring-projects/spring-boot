@@ -80,8 +80,7 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 	 * @return if string conversion is better
 	 */
 	private boolean isStringConversionBetter(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (this.conversionService instanceof ApplicationConversionService) {
-			ApplicationConversionService applicationConversionService = (ApplicationConversionService) this.conversionService;
+		if (this.conversionService instanceof ApplicationConversionService applicationConversionService) {
 			if (applicationConversionService.isConvertViaObjectSourceType(sourceType, targetType)) {
 				// If an ObjectTo... converter is being used then there might be a better
 				// StringTo... version

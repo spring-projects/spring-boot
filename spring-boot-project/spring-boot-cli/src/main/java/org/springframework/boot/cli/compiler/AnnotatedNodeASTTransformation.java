@@ -57,8 +57,7 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 		List<AnnotationNode> annotationNodes = new ArrayList<>();
 		ClassVisitor classVisitor = new ClassVisitor(source, annotationNodes);
 		for (ASTNode node : nodes) {
-			if (node instanceof ModuleNode) {
-				ModuleNode module = (ModuleNode) node;
+			if (node instanceof ModuleNode module) {
 				visitAnnotatedNode(module.getPackage(), annotationNodes);
 				for (ImportNode importNode : module.getImports()) {
 					visitAnnotatedNode(importNode, annotationNodes);

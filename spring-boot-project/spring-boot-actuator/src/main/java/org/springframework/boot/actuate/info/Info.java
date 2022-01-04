@@ -71,8 +71,7 @@ public final class Info {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof Info) {
-			Info other = (Info) obj;
+		if (obj instanceof Info other) {
 			return this.details.equals(other.details);
 		}
 		return false;

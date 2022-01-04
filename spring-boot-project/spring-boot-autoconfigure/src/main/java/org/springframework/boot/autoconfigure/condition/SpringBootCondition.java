@@ -65,16 +65,14 @@ public abstract class SpringBootCondition implements Condition {
 		if (metadata instanceof AnnotationMetadata) {
 			return ((AnnotationMetadata) metadata).getClassName();
 		}
-		if (metadata instanceof MethodMetadata) {
-			MethodMetadata methodMetadata = (MethodMetadata) metadata;
+		if (metadata instanceof MethodMetadata methodMetadata) {
 			return methodMetadata.getDeclaringClassName() + "." + methodMetadata.getMethodName();
 		}
 		return metadata.toString();
 	}
 
 	private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
-		if (metadata instanceof ClassMetadata) {
-			ClassMetadata classMetadata = (ClassMetadata) metadata;
+		if (metadata instanceof ClassMetadata classMetadata) {
 			return classMetadata.getClassName();
 		}
 		MethodMetadata methodMetadata = (MethodMetadata) metadata;

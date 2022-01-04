@@ -365,8 +365,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	protected void configureContext(Context context, ServletContextInitializer[] initializers) {
 		TomcatStarter starter = new TomcatStarter(initializers);
-		if (context instanceof TomcatEmbeddedContext) {
-			TomcatEmbeddedContext embeddedContext = (TomcatEmbeddedContext) context;
+		if (context instanceof TomcatEmbeddedContext embeddedContext) {
 			embeddedContext.setStarter(starter);
 			embeddedContext.setFailCtxIfServletStartFails(true);
 		}

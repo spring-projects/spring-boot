@@ -69,8 +69,7 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof ChangedFiles) {
-			ChangedFiles other = (ChangedFiles) obj;
+		if (obj instanceof ChangedFiles other) {
 			return this.sourceDirectory.equals(other.sourceDirectory) && this.files.equals(other.files);
 		}
 		return super.equals(obj);

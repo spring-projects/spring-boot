@@ -133,8 +133,7 @@ public class ScheduledTasksEndpoint {
 			if (trigger instanceof CronTrigger) {
 				return new CronTaskDescription(triggerTask, (CronTrigger) trigger);
 			}
-			if (trigger instanceof PeriodicTrigger) {
-				PeriodicTrigger periodicTrigger = (PeriodicTrigger) trigger;
+			if (trigger instanceof PeriodicTrigger periodicTrigger) {
 				if (periodicTrigger.isFixedRate()) {
 					return new FixedRateTaskDescription(triggerTask, periodicTrigger);
 				}

@@ -46,8 +46,7 @@ final class Elements {
 	}
 
 	private static TypeElement getEnclosingTypeElement(TypeMirror type) {
-		if (type instanceof DeclaredType) {
-			DeclaredType declaredType = (DeclaredType) type;
+		if (type instanceof DeclaredType declaredType) {
 			Element enclosingElement = declaredType.asElement().getEnclosingElement();
 			if (enclosingElement instanceof TypeElement) {
 				return (TypeElement) enclosingElement;

@@ -1354,9 +1354,8 @@ public class SpringApplication {
 	}
 
 	private static void close(ApplicationContext context) {
-		if (context instanceof ConfigurableApplicationContext) {
-			ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
-			closable.close();
+		if (context instanceof ConfigurableApplicationContext closable) {
+            closable.close();
 		}
 	}
 

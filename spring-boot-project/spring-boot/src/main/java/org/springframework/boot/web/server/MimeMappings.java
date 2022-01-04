@@ -309,8 +309,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof MimeMappings) {
-			MimeMappings other = (MimeMappings) obj;
+		if (obj instanceof MimeMappings other) {
 			return this.map.equals(other.map);
 		}
 		return false;
@@ -363,8 +362,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			if (obj == this) {
 				return true;
 			}
-			if (obj instanceof Mapping) {
-				Mapping other = (Mapping) obj;
+			if (obj instanceof Mapping other) {
 				return this.extension.equals(other.extension) && this.mimeType.equals(other.mimeType);
 			}
 			return false;

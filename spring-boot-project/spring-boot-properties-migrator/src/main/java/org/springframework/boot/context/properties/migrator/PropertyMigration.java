@@ -58,8 +58,7 @@ class PropertyMigration {
 
 	private static Integer determineLineNumber(ConfigurationProperty property) {
 		Origin origin = property.getOrigin();
-		if (origin instanceof TextResourceOrigin) {
-			TextResourceOrigin textOrigin = (TextResourceOrigin) origin;
+		if (origin instanceof TextResourceOrigin textOrigin) {
 			if (textOrigin.getLocation() != null) {
 				return textOrigin.getLocation().getLine() + 1;
 			}

@@ -163,8 +163,7 @@ class InitializrServiceMetadata {
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
 			Object o = root.get(key);
-			if (o instanceof JSONObject) {
-				JSONObject child = (JSONObject) o;
+			if (o instanceof JSONObject child) {
 				if (child.has(DEFAULT_ATTRIBUTE)) {
 					result.put(key, child.getString(DEFAULT_ATTRIBUTE));
 				}

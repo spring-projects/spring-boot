@@ -130,8 +130,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory, int acceptCount) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+			if (handler instanceof AbstractProtocol<?> protocol) {
 				protocol.setAcceptCount(acceptCount);
 			}
 		});
@@ -149,8 +148,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+			if (handler instanceof AbstractProtocol<?> protocol) {
 				protocol.setKeepAliveTimeout((int) keepAliveTimeout.toMillis());
 			}
 		});
@@ -159,8 +157,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+			if (handler instanceof AbstractHttp11Protocol<?> protocol) {
 				protocol.setMaxKeepAliveRequests(maxKeepAliveRequests);
 			}
 		});
@@ -169,8 +166,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory, int maxConnections) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+			if (handler instanceof AbstractProtocol<?> protocol) {
 				protocol.setMaxConnections(maxConnections);
 			}
 		});
@@ -179,8 +175,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeConnectionTimeout(ConfigurableTomcatWebServerFactory factory, Duration connectionTimeout) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+			if (handler instanceof AbstractProtocol<?> protocol) {
 				protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
 			}
 		});
@@ -197,8 +192,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeRejectIllegalHeader(ConfigurableTomcatWebServerFactory factory, boolean rejectIllegalHeader) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+			if (handler instanceof AbstractHttp11Protocol<?> protocol) {
 				protocol.setRejectIllegalHeader(rejectIllegalHeader);
 			}
 		});
@@ -248,8 +242,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory, int maxThreads) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				AbstractProtocol protocol = (AbstractProtocol) handler;
+			if (handler instanceof AbstractProtocol protocol) {
 				protocol.setMaxThreads(maxThreads);
 			}
 		});
@@ -259,8 +252,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeMinThreads(ConfigurableTomcatWebServerFactory factory, int minSpareThreads) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				AbstractProtocol protocol = (AbstractProtocol) handler;
+			if (handler instanceof AbstractProtocol protocol) {
 				protocol.setMinSpareThreads(minSpareThreads);
 			}
 		});
@@ -270,8 +262,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeMaxHttpHeaderSize(ConfigurableTomcatWebServerFactory factory, int maxHttpHeaderSize) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+			if (handler instanceof AbstractHttp11Protocol protocol) {
 				protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
 			}
 		});
@@ -280,8 +271,7 @@ public class TomcatWebServerFactoryCustomizer
 	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory, int maxSwallowSize) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+			if (handler instanceof AbstractHttp11Protocol<?> protocol) {
 				protocol.setMaxSwallowSize(maxSwallowSize);
 			}
 		});

@@ -394,10 +394,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				return new ResponseEntity<>(
 						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
 			}
-			if (!(result instanceof WebEndpointResponse)) {
+			if (!(result instanceof WebEndpointResponse<?> response)) {
 				return result;
 			}
-			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
 			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
 					: null;
 			return ResponseEntity.status(response.getStatus()).contentType(contentType).body(response.getBody());

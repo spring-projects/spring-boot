@@ -284,8 +284,7 @@ class TypeUtils {
 		public String visitTypeVariable(TypeVariable t, TypeDescriptor descriptor) {
 			TypeMirror typeMirror = descriptor.resolveGeneric(t);
 			if (typeMirror != null) {
-				if (typeMirror instanceof TypeVariable) {
-					TypeVariable typeVariable = (TypeVariable) typeMirror;
+				if (typeMirror instanceof TypeVariable typeVariable) {
 					// Still unresolved, let's use the upper bound, checking first if
 					// a cycle may exist
 					if (!hasCycle(typeVariable)) {
@@ -340,8 +339,7 @@ class TypeUtils {
 		}
 
 		private TypeElement getEnclosingTypeElement(TypeMirror type) {
-			if (type instanceof DeclaredType) {
-				DeclaredType declaredType = (DeclaredType) type;
+			if (type instanceof DeclaredType declaredType) {
 				Element enclosingElement = declaredType.asElement().getEnclosingElement();
 				if (enclosingElement instanceof TypeElement) {
 					return (TypeElement) enclosingElement;
@@ -373,8 +371,7 @@ class TypeUtils {
 		}
 
 		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
-			if (variable instanceof TypeVariable) {
-				TypeVariable typeVariable = (TypeVariable) variable;
+			if (variable instanceof TypeVariable typeVariable) {
 				if (this.generics.keySet().stream()
 						.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
 					this.generics.put(typeVariable, resolution);

@@ -39,10 +39,9 @@ public final class Binding {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Binding)) {
+		if (!(obj instanceof Binding binding)) {
 			return false;
 		}
-		Binding binding = (Binding) obj;
 		return Objects.equals(this.value, binding.value);
 	}
 

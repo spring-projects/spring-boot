@@ -57,8 +57,7 @@ class ServletManagementContextFactory implements ManagementContextFactory {
 			AnnotationConfigServletWebServerApplicationContext childContext) {
 		try {
 			ConfigurableListableBeanFactory beanFactory = childContext.getBeanFactory();
-			if (beanFactory instanceof BeanDefinitionRegistry) {
-				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			if (beanFactory instanceof BeanDefinitionRegistry registry) {
 				registry.registerBeanDefinition("ServletWebServerFactory",
 						new RootBeanDefinition(determineServletWebServerFactoryClass(parent)));
 			}

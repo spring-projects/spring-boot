@@ -54,8 +54,7 @@ class ReactiveManagementContextFactory implements ManagementContextFactory {
 			AnnotationConfigReactiveWebServerApplicationContext childContext) {
 		try {
 			ConfigurableListableBeanFactory beanFactory = childContext.getBeanFactory();
-			if (beanFactory instanceof BeanDefinitionRegistry) {
-				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			if (beanFactory instanceof BeanDefinitionRegistry registry) {
 				registry.registerBeanDefinition("ReactiveWebServerFactory",
 						new RootBeanDefinition(determineReactiveWebServerFactoryClass(parent)));
 			}

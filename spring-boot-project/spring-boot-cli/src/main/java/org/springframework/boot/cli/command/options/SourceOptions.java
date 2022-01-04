@@ -76,8 +76,7 @@ public class SourceOptions {
 		List<String> sources = new ArrayList<>();
 		int sourceArgCount = 0;
 		for (Object option : nonOptionArguments) {
-			if (option instanceof String) {
-				String filename = (String) option;
+			if (option instanceof String filename) {
 				if ("--".equals(filename)) {
 					break;
 				}

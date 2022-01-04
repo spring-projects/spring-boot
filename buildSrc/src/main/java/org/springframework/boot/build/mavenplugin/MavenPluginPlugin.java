@@ -339,9 +339,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		@TaskAction
 		public void createRepository() {
 			for (ResolvedArtifactResult result : this.runtimeClasspath.getIncoming().getArtifacts()) {
-				if (result.getId().getComponentIdentifier() instanceof ModuleComponentIdentifier) {
-					ModuleComponentIdentifier identifier = (ModuleComponentIdentifier) result.getId()
-							.getComponentIdentifier();
+				if (result.getId().getComponentIdentifier() instanceof ModuleComponentIdentifier identifier) {
 					String fileName = result.getFile().getName()
 							.replace(identifier.getVersion() + "-" + identifier.getVersion(), identifier.getVersion());
 					File repositoryLocation = this.outputDirectory.dir(identifier.getGroup().replace('.', '/') + "/"

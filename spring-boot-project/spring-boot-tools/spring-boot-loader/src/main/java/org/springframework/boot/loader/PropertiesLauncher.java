@@ -283,8 +283,7 @@ public class PropertiesLauncher extends Launcher {
 		URLConnection connection = url.openConnection();
 		try {
 			connection.setUseCaches(connection.getClass().getSimpleName().startsWith("JNLP"));
-			if (connection instanceof HttpURLConnection) {
-				HttpURLConnection httpConnection = (HttpURLConnection) connection;
+			if (connection instanceof HttpURLConnection httpConnection) {
 				httpConnection.setRequestMethod("HEAD");
 				int responseCode = httpConnection.getResponseCode();
 				if (responseCode == HttpURLConnection.HTTP_OK) {

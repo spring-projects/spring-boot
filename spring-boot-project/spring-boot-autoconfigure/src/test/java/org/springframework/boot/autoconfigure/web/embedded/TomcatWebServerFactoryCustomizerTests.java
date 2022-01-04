@@ -334,8 +334,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		Valve[] valves = server.getTomcat().getHost().getPipeline().getValves();
 		assertThat(valves).hasAtLeastOneElementOfType(ErrorReportValve.class);
 		for (Valve valve : valves) {
-			if (valve instanceof ErrorReportValve) {
-				ErrorReportValve errorReportValve = (ErrorReportValve) valve;
+			if (valve instanceof ErrorReportValve errorReportValve) {
 				assertThat(errorReportValve.isShowReport()).isFalse();
 				assertThat(errorReportValve.isShowServerInfo()).isFalse();
 			}

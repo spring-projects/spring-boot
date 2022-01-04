@@ -59,8 +59,7 @@ class JavaCompilerPluginConfiguration {
 		Plugin plugin = this.project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
 		if (plugin != null) {
 			Object pluginConfiguration = plugin.getConfiguration();
-			if (pluginConfiguration instanceof Xpp3Dom) {
-				Xpp3Dom dom = (Xpp3Dom) pluginConfiguration;
+			if (pluginConfiguration instanceof Xpp3Dom dom) {
 				return getNodeValue(dom, propertyName);
 			}
 		}

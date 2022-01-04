@@ -185,8 +185,7 @@ class JsonReader {
 	}
 
 	private Object readItemValue(Object value) throws Exception {
-		if (value instanceof JSONArray) {
-			JSONArray array = (JSONArray) value;
+		if (value instanceof JSONArray array) {
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {
 				content[i] = array.get(i);

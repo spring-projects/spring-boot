@@ -115,8 +115,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 				(!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty())
 						? "revisiting the entries above or defining" : "defining",
 				getBeanDescription(cause));
-		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor) {
-			Constructor<?> constructor = (Constructor<?>) injectionPoint.getMember();
+		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor) {
 			Class<?> declaringClass = constructor.getDeclaringClass();
 			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
 					.get(ConfigurationProperties.class);
