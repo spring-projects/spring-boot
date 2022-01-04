@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,12 @@ import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
+import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.info.JavaInfo;
+import org.springframework.boot.info.OsInfo;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -148,6 +150,16 @@ class InfoContributorAutoConfigurationTests {
 			Map<String, Object> content = invokeContributor(context.getBean(JavaInfoContributor.class));
 			assertThat(content).containsKey("java");
 			assertThat(content.get("java")).isInstanceOf(JavaInfo.class);
+		});
+	}
+
+	@Test
+	void osInfoContributor() {
+		this.contextRunner.withPropertyValues("management.info.os.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(OsInfoContributor.class);
+			Map<String, Object> content = invokeContributor(context.getBean(OsInfoContributor.class));
+			assertThat(content).containsKey("os");
+			assertThat(content.get("os")).isInstanceOf(OsInfo.class);
 		});
 	}
 
