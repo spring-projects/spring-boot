@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,27 +25,27 @@ package org.springframework.boot.info;
  */
 public class JavaInfo {
 
-	private final String vendor;
-
 	private final String version;
+
+	private final JavaVendorInfo vendor;
 
 	private final JavaRuntimeEnvironmentInfo runtime;
 
 	private final JavaVirtualMachineInfo jvm;
 
 	public JavaInfo() {
-		this.vendor = System.getProperty("java.vendor");
 		this.version = System.getProperty("java.version");
+		this.vendor = new JavaVendorInfo();
 		this.runtime = new JavaRuntimeEnvironmentInfo();
 		this.jvm = new JavaVirtualMachineInfo();
 	}
 
-	public String getVendor() {
-		return this.vendor;
-	}
-
 	public String getVersion() {
 		return this.version;
+	}
+
+	public JavaVendorInfo getVendor() {
+		return this.vendor;
 	}
 
 	public JavaRuntimeEnvironmentInfo getRuntime() {
@@ -54,6 +54,33 @@ public class JavaInfo {
 
 	public JavaVirtualMachineInfo getJvm() {
 		return this.jvm;
+	}
+
+	/**
+	 * Information about the Java Vendor of the Java Runtime the application is running
+	 * in.
+	 *
+	 * @since 2.7.0
+	 */
+	public static class JavaVendorInfo {
+
+		private final String name;
+
+		private final String version;
+
+		public JavaVendorInfo() {
+			this.name = System.getProperty("java.vendor");
+			this.version = System.getProperty("java.vendor.version");
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getVersion() {
+			return this.version;
+		}
+
 	}
 
 	/**
