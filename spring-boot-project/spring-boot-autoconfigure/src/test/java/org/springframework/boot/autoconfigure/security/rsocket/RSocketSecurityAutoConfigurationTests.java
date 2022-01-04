@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDeta
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
+import org.springframework.security.messaging.handler.invocation.reactive.AuthenticationPrincipalArgumentResolver;
 import org.springframework.security.rsocket.core.SecuritySocketAcceptorInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,6 +68,16 @@ class RSocketSecurityAutoConfigurationTests {
 				assertThat(interceptors)
 						.anyMatch((interceptor) -> interceptor instanceof SecuritySocketAcceptorInterceptor);
 			}));
+		});
+	}
+
+	@Test
+	void autoConfigurationAddsCustomizerForAuthenticationPrincipalArgumentResolver() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(RSocketMessageHandler.class);
+			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
+			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers()).isNotEmpty()
+					.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
 		});
 	}
 
