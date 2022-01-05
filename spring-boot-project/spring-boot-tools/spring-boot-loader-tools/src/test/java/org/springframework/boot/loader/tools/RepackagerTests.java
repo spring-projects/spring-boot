@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -196,6 +197,18 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
 			assertThat(entry.getTime()).isEqualTo(timestamp);
 		}
+	}
+
+	@Test
+	void repackagingDeeplyNestedPackageIsNotProhibitivelySlow() throws IOException {
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		this.testJarFile.addClass("a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/Some.class",
+				ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		repackager.repackage(this.destination, NO_LIBRARIES, null, null);
+		stopWatch.stop();
+		assertThat(stopWatch.getTotalTimeMillis()).isLessThan(5000);
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
