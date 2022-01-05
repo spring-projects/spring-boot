@@ -40,6 +40,10 @@ public @interface ConditionalOnExpression {
 	/**
 	 * The SpEL expression to evaluate. Expression should return {@code true} if the
 	 * condition passes or {@code false} if it fails.
+	 * <p>
+	 * NOTE: Referencing a bean in the expression will cause that bean to be initialized
+	 * very early in context refresh processing. As a result, the bean will load with
+	 * default property values.
 	 * @return the SpEL expression
 	 */
 	String value() default "true";
