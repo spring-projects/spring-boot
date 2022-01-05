@@ -73,6 +73,9 @@ dependencies {
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.hibernate.validator:hibernate-validator")
+	optional("org.jooq:jooq") {
+		exclude(group: "javax.xml.bind", module: "jaxb-api")
+	}
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
