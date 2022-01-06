@@ -10,8 +10,8 @@ Spring Boot first attempts to create a client by checking the following configur
 * A `hazelcast-client.xml` in the working directory or at the root of the classpath.
 * A `hazelcast-client.yaml` in the working directory or at the root of the classpath.
 
-NOTE: Spring Boot supports both Hazelcast 4 and Hazelcast 3.
-If you downgrade to Hazelcast 3, `hazelcast-client` should be added to the classpath to configure a client.
+WARNING: Hazelcast 3 support is deprecated.
+If you still need to downgrade to Hazelcast 3, `hazelcast-client` should be added to the classpath to configure a client.
 
 If a client can not be created, Spring Boot attempts to configure an embedded server.
 If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.

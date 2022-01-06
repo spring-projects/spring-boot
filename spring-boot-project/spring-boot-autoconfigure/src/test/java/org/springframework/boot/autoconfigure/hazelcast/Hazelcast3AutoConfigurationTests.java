@@ -40,8 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("hazelcast*.jar")
-@ClassPathOverrides({ "com.hazelcast:hazelcast:3.12.8", "com.hazelcast:hazelcast-client:3.12.8",
-		"com.hazelcast:hazelcast-spring:3.12.8" })
+@ClassPathOverrides({ "com.hazelcast:hazelcast:3.12.12", "com.hazelcast:hazelcast-client:3.12.12",
+		"com.hazelcast:hazelcast-spring:3.12.12" })
 class Hazelcast3AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
