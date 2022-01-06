@@ -202,10 +202,10 @@ task aggregatedJavadoc(type: Javadoc) {
 			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
 			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
 			options.links = [
-				"https://docs.oracle.com/javase/8/docs/api/",
-				"https://docs.oracle.com/javaee/7/api/",
+				"https://docs.oracle.com/en/java/javase/17/docs/api/",
 				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
 				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
+				"https://jakarta.ee/specifications/platform/9/apidocs/",
 				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
 			] as String[]
 		}
