@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -26,13 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
-import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.context.webflux.SpringWebFluxContext;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.springsecurity6.util.SpringSecurityContextUtils;
+import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.reactive.ThymeleafReactiveViewResolver;
+import org.thymeleaf.spring6.web.webflux.SpringWebFluxWebApplication;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -198,7 +199,8 @@ class ThymeleafReactiveAutoConfigurationTests {
 			MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 			exchange.getAttributes().put(SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
 					new SecurityContextImpl(new TestingAuthenticationToken("alice", "admin")));
-			IContext attrs = new SpringWebFluxContext(exchange);
+			WebContext attrs = new WebContext(SpringWebFluxWebApplication.buildApplication(null).buildExchange(exchange,
+					Locale.US, MediaType.TEXT_HTML, StandardCharsets.UTF_8));
 			String result = engine.process("security-dialect", attrs);
 			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
 		});

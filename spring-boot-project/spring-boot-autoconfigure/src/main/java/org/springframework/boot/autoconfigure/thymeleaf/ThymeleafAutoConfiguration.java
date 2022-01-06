@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,21 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.LinkedHashMap;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
-import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring5.ISpringTemplateEngine;
-import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -57,6 +52,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
@@ -79,6 +75,8 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 @EnableConfigurationProperties(ThymeleafProperties.class)
 @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
+@Import({ TemplateEngineConfigurations.ReactiveTemplateEngineConfiguration.class,
+		TemplateEngineConfigurations.DefaultTemplateEngineConfiguration.class })
 public class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -125,23 +123,6 @@ public class ThymeleafAutoConfiguration {
 			}
 			resolver.setCheckExistence(this.properties.isCheckTemplate());
 			return resolver;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	protected static class ThymeleafDefaultConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(ISpringTemplateEngine.class)
-		SpringTemplateEngine templateEngine(ThymeleafProperties properties,
-				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
-			SpringTemplateEngine engine = new SpringTemplateEngine();
-			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
-			engine.setRenderHiddenMarkersBeforeCheckboxes(properties.isRenderHiddenMarkersBeforeCheckboxes());
-			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
-			dialects.orderedStream().forEach(engine::addDialect);
-			return engine;
 		}
 
 	}
@@ -194,25 +175,6 @@ public class ThymeleafAutoConfiguration {
 				return new MimeType(type, parameters).toString();
 			}
 
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
-	static class ThymeleafReactiveConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
-		SpringWebFluxTemplateEngine templateEngine(ThymeleafProperties properties,
-				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
-			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
-			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
-			engine.setRenderHiddenMarkersBeforeCheckboxes(properties.isRenderHiddenMarkersBeforeCheckboxes());
-			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
-			dialects.orderedStream().forEach(engine::addDialect);
-			return engine;
 		}
 
 	}

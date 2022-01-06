@@ -1436,11 +1436,11 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf", "3.0.12.RELEASE") {
+	library("Thymeleaf", "3.1.0.M1") {
 		group("org.thymeleaf") {
 			modules = [
 				"thymeleaf",
-				"thymeleaf-spring5"
+				"thymeleaf-spring6"
 			]
 		}
 	}
@@ -1458,10 +1458,10 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf Extras SpringSecurity", "3.0.4.RELEASE") {
+	library("Thymeleaf Extras SpringSecurity", "3.1.0.M1") {
 		group("org.thymeleaf.extras") {
 			modules = [
-				"thymeleaf-extras-springsecurity5"
+				"thymeleaf-extras-springsecurity6"
 			]
 		}
 	}
