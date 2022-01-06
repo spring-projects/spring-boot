@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public abstract class AbstractErrorController implements ErrorController {
 	private final List<ErrorViewResolver> errorViewResolvers;
 
 	public AbstractErrorController(ErrorAttributes errorAttributes) {
-		this(errorAttributes, null);
+		this(errorAttributes, Collections.emptyList());
 	}
 
 	public AbstractErrorController(ErrorAttributes errorAttributes, List<ErrorViewResolver> errorViewResolvers) {
@@ -62,7 +63,7 @@ public abstract class AbstractErrorController implements ErrorController {
 
 	private List<ErrorViewResolver> sortErrorViewResolvers(List<ErrorViewResolver> resolvers) {
 		List<ErrorViewResolver> sorted = new ArrayList<>();
-		if (resolvers != null) {
+		if (!resolvers.isEmpty()) {
 			sorted.addAll(resolvers);
 			AnnotationAwareOrderComparator.sortIfNecessary(sorted);
 		}
