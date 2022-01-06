@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -144,12 +144,12 @@ class AutoConfigurationImportSelectorTests {
 
 	@Test
 	void combinedExclusionsAreApplied() {
-		this.environment.setProperty("spring.autoconfigure.exclude", GroovyTemplateAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude", ThymeleafAutoConfiguration.class.getName());
 		String[] imports = selectImports(EnableAutoConfigurationWithClassAndClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 3);
 		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
 				FreeMarkerAutoConfiguration.class.getName(), MustacheAutoConfiguration.class.getName(),
-				GroovyTemplateAutoConfiguration.class.getName());
+				ThymeleafAutoConfiguration.class.getName());
 	}
 
 	@Test

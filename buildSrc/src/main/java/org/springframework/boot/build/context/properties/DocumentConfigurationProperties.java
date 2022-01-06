@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,6 +189,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.freemarker");
 		prefix.accept("spring.groovy");
 		prefix.accept("spring.mustache");
+		prefix.accept("spring.thymeleaf");
 		prefix.accept("spring.groovy.template.configuration", "See GroovyMarkupConfigurer");
 	}
 
