@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,12 @@
 
 package org.springframework.boot.actuate.hazelcast;
 
-import java.lang.reflect.Method;
-
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link HealthIndicator} for Hazelcast.
@@ -46,22 +43,10 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) {
 		this.hazelcast.executeTransaction((context) -> {
-			builder.up().withDetail("name", this.hazelcast.getName()).withDetail("uuid", extractUuid());
+			String uuid = this.hazelcast.getLocalEndpoint().getUuid().toString();
+			builder.up().withDetail("name", this.hazelcast.getName()).withDetail("uuid", uuid);
 			return null;
 		});
-	}
-
-	private String extractUuid() {
-		try {
-			return this.hazelcast.getLocalEndpoint().getUuid().toString();
-		}
-		catch (NoSuchMethodError ex) {
-			// Hazelcast 3
-			Method endpointAccessor = ReflectionUtils.findMethod(HazelcastInstance.class, "getLocalEndpoint");
-			Object endpoint = ReflectionUtils.invokeMethod(endpointAccessor, this.hazelcast);
-			Method uuidAccessor = ReflectionUtils.findMethod(endpoint.getClass(), "getUuid");
-			return (String) ReflectionUtils.invokeMethod(uuidAccessor, endpoint);
-		}
 	}
 
 }
