@@ -118,7 +118,6 @@ class SampleIntegrationTests {
 	}
 
 	@Test
-	@Disabled("Requires Artemis to be run, so disable it")
 	void jmsSample() throws Exception {
 		System.setProperty("spring.artemis.embedded.queues", "spring-boot");
 		try {

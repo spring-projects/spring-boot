@@ -145,6 +145,17 @@ dependencies {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	testImplementation("jakarta.xml.bind:jakarta.xml.bind-api")
+	testImplementation("org.apache.activemq:artemis-jms-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
+	}
+	testImplementation("org.apache.activemq:artemis-jms-server") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
+	}
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")
