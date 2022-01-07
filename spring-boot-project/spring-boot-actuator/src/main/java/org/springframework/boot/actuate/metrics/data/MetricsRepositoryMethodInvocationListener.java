@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,21 +45,6 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 	private final String metricName;
 
 	private final AutoTimer autoTimer;
-
-	/**
-	 * Create a new {@code MetricsRepositoryMethodInvocationListener}.
-	 * @param registry the registry to which metrics are recorded
-	 * @param tagsProvider provider for metrics tags
-	 * @param metricName name of the metric to record
-	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
-	 * @deprecated since 2.5.4 for removal in 2.7.0 in favor of
-	 * {@link #MetricsRepositoryMethodInvocationListener(Supplier, RepositoryTagsProvider, String, AutoTimer)}
-	 */
-	@Deprecated
-	public MetricsRepositoryMethodInvocationListener(MeterRegistry registry, RepositoryTagsProvider tagsProvider,
-			String metricName, AutoTimer autoTimer) {
-		this(SingletonSupplier.of(registry), tagsProvider, metricName, autoTimer);
-	}
 
 	/**
 	 * Create a new {@code MetricsRepositoryMethodInvocationListener}.

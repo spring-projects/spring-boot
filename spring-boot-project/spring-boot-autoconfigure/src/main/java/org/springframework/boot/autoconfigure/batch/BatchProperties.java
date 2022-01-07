@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 /**
@@ -35,56 +34,6 @@ public class BatchProperties {
 	private final Job job = new Job();
 
 	private final Jdbc jdbc = new Jdbc();
-
-	/**
-	 * Return the datasource schema.
-	 * @return the schema
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of {@link Jdbc#getSchema()}
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.schema")
-	public String getSchema() {
-		return this.jdbc.getSchema();
-	}
-
-	@Deprecated
-	public void setSchema(String schema) {
-		this.jdbc.setSchema(schema);
-	}
-
-	/**
-	 * Return the table prefix.
-	 * @return the table prefix
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
-	 * {@link Jdbc#getTablePrefix()}
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.table-prefix")
-	public String getTablePrefix() {
-		return this.jdbc.getTablePrefix();
-	}
-
-	@Deprecated
-	public void setTablePrefix(String tablePrefix) {
-		this.jdbc.setTablePrefix(tablePrefix);
-	}
-
-	/**
-	 * Return whether the schema should be initialized.
-	 * @return the initialization mode
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
-	 * {@link Jdbc#getInitializeSchema()}
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.initialize-schema")
-	public DatabaseInitializationMode getInitializeSchema() {
-		return this.jdbc.getInitializeSchema();
-	}
-
-	@Deprecated
-	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-		this.jdbc.setInitializeSchema(initializeSchema);
-	}
 
 	public Job getJob() {
 		return this.job;

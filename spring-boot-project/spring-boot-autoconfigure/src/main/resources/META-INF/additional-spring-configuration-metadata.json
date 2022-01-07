@@ -329,9 +329,25 @@
       "defaultValue": "tcp://localhost:61616"
     },
     {
+      "name": "spring.artemis.host",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.artemis.broker-url",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
       "deprecation": {
         "replacement": "spring.artemis.pool.max-sessions-per-connection"
+      }
+    },
+    {
+      "name": "spring.artemis.port",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.artemis.broker-url",
+        "level": "error"
       }
     },
     {
@@ -341,7 +357,11 @@
     },
     {
       "name": "spring.batch.initialize-schema",
-      "defaultValue": "embedded"
+      "type" : "org.springframework.boot.sql.init.DatabaseInitializationMode",
+      "deprecation" : {
+        "replacement": "spring.batch.jdbc.initialize-schema",
+        "level" : "error"
+      },
     },
     {
       "name": "spring.batch.initializer.enabled",
@@ -361,6 +381,22 @@
       "type": "java.lang.Boolean",
       "description": "Execute all Spring Batch jobs in the context on startup.",
       "defaultValue": true
+    },
+    {
+      "name" : "spring.batch.schema",
+      "type" : "java.lang.String",
+      "deprecation" : {
+        "replacement": "spring.batch.jdbc.schema",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.batch.table-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.batch.jdbc.table-prefix",
+        "level": "error"
+      }
     },
     {
       "name": "spring.couchbase.bootstrap-hosts",
@@ -847,6 +883,14 @@
     {
       "name": "spring.flyway.baseline-migration-prefix",
       "defaultValue": "B"
+    },
+    {
+      "name": "spring.flyway.check-location",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.fail-on-missing-locations",
+        "level": "error"
+      }
     },
     {
       "name": "spring.flyway.connect-retries-interval",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,6 @@ class InvocationContextTests {
 	private final Map<String, Object> arguments = Collections.singletonMap("test", "value");
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void createWhenApiVersionIsNullUsesLatestVersion() {
-		InvocationContext context = new InvocationContext(null, this.securityContext, this.arguments);
-		assertThat(context.getApiVersion()).isEqualTo(org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST);
-	}
-
-	@Test
-	@Deprecated
-	void whenCreatedWithoutApiVersionThenGetApiVersionReturnsLatestVersion() {
-		InvocationContext context = new InvocationContext(this.securityContext, this.arguments);
-		assertThat(context.getApiVersion()).isEqualTo(org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST);
-	}
-
-	@Test
 	void whenCreatedWithoutApiVersionThenResolveApiVersionReturnsLatestVersion() {
 		InvocationContext context = new InvocationContext(this.securityContext, this.arguments);
 		assertThat(context.resolveArgument(ApiVersion.class)).isEqualTo(ApiVersion.LATEST);
@@ -66,21 +52,6 @@ class InvocationContextTests {
 	void createWhenArgumentsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InvocationContext(this.securityContext, null))
 				.withMessage("Arguments must not be null");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void getApiVersionReturnsApiVersion() {
-		InvocationContext context = new InvocationContext(org.springframework.boot.actuate.endpoint.http.ApiVersion.V2,
-				this.securityContext, this.arguments);
-		assertThat(context.getApiVersion()).isEqualTo(org.springframework.boot.actuate.endpoint.http.ApiVersion.V2);
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void getSecurityContextReturnsSecurityContext() {
-		InvocationContext context = new InvocationContext(this.securityContext, this.arguments);
-		assertThat(context.getSecurityContext()).isEqualTo(this.securityContext);
 	}
 
 	@Test

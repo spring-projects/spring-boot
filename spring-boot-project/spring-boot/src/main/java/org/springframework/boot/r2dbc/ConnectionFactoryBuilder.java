@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,20 +84,6 @@ public final class ConnectionFactoryBuilder {
 	 */
 	public static ConnectionFactoryBuilder withOptions(Builder options) {
 		return new ConnectionFactoryBuilder(options);
-	}
-
-	/**
-	 * Initialize a new {@link ConnectionFactoryBuilder} derived from the options of the
-	 * specified {@code connectionFactory}.
-	 * @param connectionFactory the connection factory whose options are to be used to
-	 * initialize the builder
-	 * @return a new builder initialized with the options from the connection factory
-	 * @deprecated since 2.5.1 for removal in 2.7.0 in favor of
-	 * {@link #derivedFrom(ConnectionFactory)}
-	 */
-	@Deprecated
-	public static ConnectionFactoryBuilder derivefrom(ConnectionFactory connectionFactory) {
-		return derivedFrom(connectionFactory);
 	}
 
 	/**

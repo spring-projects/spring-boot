@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.mustache;
 
 import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Collector;
 import com.samskivert.mustache.Mustache.TemplateLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
@@ -71,15 +69,8 @@ public class MustacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader, Environment environment) {
-		return Mustache.compiler().withLoader(mustacheTemplateLoader).withCollector(collector(environment));
-	}
-
-	@Deprecated
-	private Collector collector(Environment environment) {
-		MustacheEnvironmentCollector collector = new MustacheEnvironmentCollector();
-		collector.setEnvironment(environment);
-		return collector;
+	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
+		return Mustache.compiler().withLoader(mustacheTemplateLoader);
 	}
 
 	@Bean

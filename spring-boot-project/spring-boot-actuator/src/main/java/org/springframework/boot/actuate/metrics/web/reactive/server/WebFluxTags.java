@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,20 +164,6 @@ public final class WebFluxTags {
 			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName : exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
-	}
-
-	/**
-	 * Creates an {@code outcome} tag based on the response status of the given
-	 * {@code exchange}.
-	 * @param exchange the exchange
-	 * @return the outcome tag derived from the response status
-	 * @since 2.1.0
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
-	 * {@link #outcome(ServerWebExchange, Throwable)}
-	 */
-	@Deprecated
-	public static Tag outcome(ServerWebExchange exchange) {
-		return outcome(exchange, null);
 	}
 
 	/**

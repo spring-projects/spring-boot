@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -402,18 +402,6 @@ public class FlywayProperties {
 		this.enabled = enabled;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(
-			reason = "Locations can no longer be checked accurately due to changes in Flyway's location support.")
-	public boolean isCheckLocation() {
-		return this.checkLocation;
-	}
-
-	@Deprecated
-	public void setCheckLocation(boolean checkLocation) {
-		this.checkLocation = checkLocation;
-	}
-
 	public boolean isFailOnMissingLocations() {
 		return this.failOnMissingLocations;
 	}
@@ -596,17 +584,6 @@ public class FlywayProperties {
 
 	public void setTarget(String target) {
 		this.target = target;
-	}
-
-	/**
-	 * Return if a new datasource is being created.
-	 * @return {@code true} if a new datasource is created
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of directly checking user and
-	 * url.
-	 */
-	@Deprecated
-	public boolean isCreateDataSource() {
-		return this.url != null || this.user != null;
 	}
 
 	public String getUser() {

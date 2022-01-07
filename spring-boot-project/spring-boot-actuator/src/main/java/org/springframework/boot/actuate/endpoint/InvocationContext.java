@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,33 +43,6 @@ public class InvocationContext {
 	 * {@code securityContext} with the given available {@code arguments}.
 	 * @param securityContext the current security context. Never {@code null}
 	 * @param arguments the arguments available to the operation. Never {@code null}
-	 */
-	public InvocationContext(SecurityContext securityContext, Map<String, Object> arguments) {
-		this(null, securityContext, arguments);
-	}
-
-	/**
-	 * Creates a new context for an operation being invoked by the given
-	 * {@code securityContext} with the given available {@code arguments}.
-	 * @param apiVersion the API version or {@code null} to use the latest
-	 * @param securityContext the current security context. Never {@code null}
-	 * @param arguments the arguments available to the operation. Never {@code null}
-	 * @since 2.2.0
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
-	 * {@link #InvocationContext(SecurityContext, Map, OperationArgumentResolver[])}
-	 */
-	@Deprecated
-	public InvocationContext(org.springframework.boot.actuate.endpoint.http.ApiVersion apiVersion,
-			SecurityContext securityContext, Map<String, Object> arguments) {
-		this(securityContext, arguments, OperationArgumentResolver.of(ApiVersion.class,
-				() -> (apiVersion != null) ? ApiVersion.valueOf(apiVersion.name()) : null));
-	}
-
-	/**
-	 * Creates a new context for an operation being invoked by the given
-	 * {@code securityContext} with the given available {@code arguments}.
-	 * @param securityContext the current security context. Never {@code null}
-	 * @param arguments the arguments available to the operation. Never {@code null}
 	 * @param argumentResolvers resolvers for additional arguments should be available to
 	 * the operation.
 	 */
@@ -85,32 +58,6 @@ public class InvocationContext {
 		this.argumentResolvers.add(OperationArgumentResolver.of(SecurityContext.class, () -> securityContext));
 		this.argumentResolvers.add(OperationArgumentResolver.of(Principal.class, securityContext::getPrincipal));
 		this.argumentResolvers.add(OperationArgumentResolver.of(ApiVersion.class, () -> ApiVersion.LATEST));
-	}
-
-	/**
-	 * Return the API version in use.
-	 * @return the apiVersion the API version
-	 * @since 2.2.0
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
-	 * {@link #resolveArgument(Class)} using
-	 * {@link org.springframework.boot.actuate.endpoint.ApiVersion}
-	 */
-	@Deprecated
-	public org.springframework.boot.actuate.endpoint.http.ApiVersion getApiVersion() {
-		ApiVersion version = resolveArgument(ApiVersion.class);
-		return (version != null) ? org.springframework.boot.actuate.endpoint.http.ApiVersion.valueOf(version.name())
-				: org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST;
-	}
-
-	/**
-	 * Return the security context to use for the invocation.
-	 * @return the security context
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
-	 * {@link #resolveArgument(Class)}
-	 */
-	@Deprecated
-	public SecurityContext getSecurityContext() {
-		return resolveArgument(SecurityContext.class);
 	}
 
 	/**

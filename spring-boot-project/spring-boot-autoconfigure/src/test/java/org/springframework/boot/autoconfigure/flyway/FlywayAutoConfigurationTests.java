@@ -291,53 +291,18 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void changeLogDoesNotExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations:filesystem:no-such-dir").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
-				});
-	}
-
-	@Test
-	@Deprecated
-	void checkLocationsAllMissing() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
+				.withPropertyValues("spring.flyway.fail-on-missing-locations=true",
+						"spring.flyway.locations:filesystem:no-such-dir")
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure().isInstanceOf(BeanCreationException.class);
-					assertThat(context).getFailure().hasMessageContaining("Cannot find migration scripts in");
 				});
-	}
-
-	@Test
-	@Deprecated
-	void checkLocationsAllExist() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
-				.run((context) -> assertThat(context).hasNotFailed());
-	}
-
-	@Test
-	@Deprecated
-	void checkLocationsAllExistWithImplicitClasspathPrefix() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
-				.run((context) -> assertThat(context).hasNotFailed());
-	}
-
-	@Test
-	@Deprecated
-	void checkLocationsAllExistWithFilesystemPrefix() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations:filesystem:src/test/resources/db/migration")
-				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
 	void failOnMissingLocationsAllMissing() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.check-location=false",
-						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
 				.withPropertyValues("spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
 				.run((context) -> {
 					assertThat(context).hasFailed();
@@ -349,8 +314,7 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void failOnMissingLocationsAllExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.check-location=false",
-						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
 				.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
@@ -358,8 +322,7 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void failOnMissingLocationsAllExistWithImplicitClasspathPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.check-location=false",
-						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
 				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
@@ -367,8 +330,7 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void failOnMissingLocationsAllExistWithFilesystemPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.check-location=false",
-						"spring.flyway.fail-on-missing-locations=true")
+				.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
 				.withPropertyValues("spring.flyway.locations:filesystem:src/test/resources/db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
