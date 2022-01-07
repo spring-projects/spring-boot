@@ -16,20 +16,31 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,12 +48,14 @@ import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 /**
  * Tests for {@link ValueObjectBinder}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class ValueObjectBinderTests {
 
@@ -355,6 +368,30 @@ class ValueObjectBinderTests {
 		Bindable<NamedParameter> target = Bindable.of(NamedParameter.class);
 		NamedParameter bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getImportName()).isEqualTo("test");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void bindToRecordWithDefaultValue(@TempDir File tempDir) throws IOException, ClassNotFoundException {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.record.property1", "value-from-config-1");
+		this.sources.add(source);
+		File recordProperties = new File(tempDir, "RecordProperties.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(recordProperties))) {
+			writer.println("public record RecordProperties(");
+			writer.println(
+					"@org.springframework.boot.context.properties.bind.DefaultValue(\"default-value-1\") String property1,");
+			writer.println(
+					"@org.springframework.boot.context.properties.bind.DefaultValue(\"default-value-2\") String property2");
+			writer.println(") {");
+			writer.println("}");
+		}
+		TestCompiler compiler = new TestCompiler(tempDir);
+		compiler.getTask(Arrays.asList(recordProperties)).call();
+		ClassLoader ucl = new URLClassLoader(new URL[] { tempDir.toURI().toURL() });
+		Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, ucl)).get();
+		assertThat(getField(bean, "property1")).isEqualTo("value-from-config-1");
+		assertThat(getField(bean, "property2")).isEqualTo("default-value-2");
 	}
 
 	private void noConfigurationProperty(BindException ex) {
