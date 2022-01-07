@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * @author Stephane Nicoll
  * @author Pavel Anisimov
  */
-@Target({ ElementType.PARAMETER, ElementType.RECORD_COMPONENT, ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.PARAMETER, ElementType.RECORD_COMPONENT })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DefaultValue {
