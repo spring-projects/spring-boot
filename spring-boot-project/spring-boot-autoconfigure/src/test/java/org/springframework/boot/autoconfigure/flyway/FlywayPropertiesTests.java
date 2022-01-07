@@ -108,8 +108,7 @@ class FlywayPropertiesTests {
 		Map<String, PropertyDescriptor> configuration = indexProperties(
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
-		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled", "checkLocation",
-				"createDataSource");
+		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled");
 		// Property that moved to a separate SQL plugin
 		ignoreProperties(properties, "sqlServerKerberosLoginFile");
 		// High level object we can't set with properties
