@@ -361,7 +361,7 @@
       "deprecation" : {
         "replacement": "spring.batch.jdbc.initialize-schema",
         "level" : "error"
-      },
+      }
     },
     {
       "name": "spring.batch.initializer.enabled",
