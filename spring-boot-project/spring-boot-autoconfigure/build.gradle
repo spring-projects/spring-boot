@@ -48,16 +48,11 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
-	optional("org.apache.activemq:artemis-jms-client") {
+	optional("org.apache.activemq:artemis-jakarta-client") {
 		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
 	}
-	optional("org.apache.activemq:artemis-jms-server") {
+	optional("org.apache.activemq:artemis-jakarta-server") {
 		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
 	}
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.TextMessage;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.SimpleString;
@@ -43,7 +43,6 @@ import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationI
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
@@ -319,58 +318,6 @@ class ArtemisAutoConfigurationTests {
 										.isEqualTo("test");
 							});
 				});
-	}
-
-	@Test
-	void defaultPoolConnectionFactoryIsApplied() {
-		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled=true").run((context) -> {
-			assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
-			JmsPoolConnectionFactory connectionFactory = context.getBean(JmsPoolConnectionFactory.class);
-			JmsPoolConnectionFactory defaultFactory = new JmsPoolConnectionFactory();
-			assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
-					.isEqualTo(defaultFactory.isBlockIfSessionPoolIsFull());
-			assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout())
-					.isEqualTo(defaultFactory.getBlockIfSessionPoolIsFullTimeout());
-			assertThat(connectionFactory.getConnectionIdleTimeout())
-					.isEqualTo(defaultFactory.getConnectionIdleTimeout());
-			assertThat(connectionFactory.getMaxConnections()).isEqualTo(defaultFactory.getMaxConnections());
-			assertThat(connectionFactory.getMaxSessionsPerConnection())
-					.isEqualTo(defaultFactory.getMaxSessionsPerConnection());
-			assertThat(connectionFactory.getConnectionCheckInterval())
-					.isEqualTo(defaultFactory.getConnectionCheckInterval());
-			assertThat(connectionFactory.isUseAnonymousProducers()).isEqualTo(defaultFactory.isUseAnonymousProducers());
-		});
-	}
-
-	@Test
-	void customPoolConnectionFactoryIsApplied() {
-		this.contextRunner
-				.withPropertyValues("spring.artemis.pool.enabled=true", "spring.artemis.pool.blockIfFull=false",
-						"spring.artemis.pool.blockIfFullTimeout=64", "spring.artemis.pool.idleTimeout=512",
-						"spring.artemis.pool.maxConnections=256", "spring.artemis.pool.maxSessionsPerConnection=1024",
-						"spring.artemis.pool.timeBetweenExpirationCheck=2048",
-						"spring.artemis.pool.useAnonymousProducers=false")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
-					JmsPoolConnectionFactory connectionFactory = context.getBean(JmsPoolConnectionFactory.class);
-					assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isFalse();
-					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout()).isEqualTo(64);
-					assertThat(connectionFactory.getConnectionIdleTimeout()).isEqualTo(512);
-					assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
-					assertThat(connectionFactory.getMaxSessionsPerConnection()).isEqualTo(1024);
-					assertThat(connectionFactory.getConnectionCheckInterval()).isEqualTo(2048);
-					assertThat(connectionFactory.isUseAnonymousProducers()).isFalse();
-				});
-	}
-
-	@Test
-	void poolConnectionFactoryConfiguration() {
-		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled:true").run((context) -> {
-			ConnectionFactory factory = getConnectionFactory(context);
-			assertThat(factory).isInstanceOf(JmsPoolConnectionFactory.class);
-			context.getSourceApplicationContext().close();
-			assertThat(factory.createConnection()).isNull();
-		});
 	}
 
 	private ConnectionFactory getConnectionFactory(AssertableApplicationContext context) {

@@ -1,5 +1,5 @@
 @Grab("spring-boot-starter-artemis")
-@Grab("artemis-jms-server")
+@Grab("artemis-jakarta-server")
 import java.util.concurrent.CountDownLatch
 
 @Log

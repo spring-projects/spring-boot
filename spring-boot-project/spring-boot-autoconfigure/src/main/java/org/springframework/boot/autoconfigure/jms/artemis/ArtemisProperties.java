@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.activemq.artemis.core.remoting.impl.invm.TransportConstants;
 
-import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Configuration properties for Artemis.
@@ -70,9 +68,6 @@ public class ArtemisProperties {
 	private String password;
 
 	private final Embedded embedded = new Embedded();
-
-	@NestedConfigurationProperty
-	private final JmsPoolConnectionFactoryProperties pool = new JmsPoolConnectionFactoryProperties();
 
 	public ArtemisMode getMode() {
 		return this.mode;
@@ -140,10 +135,6 @@ public class ArtemisProperties {
 
 	public Embedded getEmbedded() {
 		return this.embedded;
-	}
-
-	public JmsPoolConnectionFactoryProperties getPool() {
-		return this.pool;
 	}
 
 	/**

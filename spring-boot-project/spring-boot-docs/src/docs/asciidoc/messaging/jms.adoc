@@ -43,19 +43,6 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 	      session-cache-size: 5
 ----
 
-If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  artemis:
-	    pool:
-	      enabled: true
-	      max-connections: 50
-----
-
-See {spring-boot-autoconfigure-module-code}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
-
 No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the Artemis configuration or the names provided through configuration.
 
 

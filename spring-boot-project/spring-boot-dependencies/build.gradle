@@ -31,28 +31,17 @@ bom {
 			]
 		}
 	}
-	library("Artemis", "2.19.0") {
+	library("Artemis", "2.20.0") {
 		group("org.apache.activemq") {
 			modules = [
 				"artemis-amqp-protocol",
-				"artemis-commons" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"artemis-core-client" {
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
-				"artemis-jms-client" {
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
-				"artemis-jms-server" {
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
+				"artemis-commons",
+				"artemis-core-client",
+				"artemis-jakarta-client",
+				"artemis-jakarta-server",
 				"artemis-journal",
 				"artemis-selector",
-				"artemis-server" {
-					exclude group: "commons-logging", module: "commons-logging"
-					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
-				},
+				"artemis-server",
 				"artemis-service-extensions"
 			]
 		}
