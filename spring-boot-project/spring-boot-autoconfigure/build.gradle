@@ -48,6 +48,12 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
+	optional("org.apache.activemq:artemis-jakarta-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	optional("org.apache.activemq:artemis-jakarta-server") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}

@@ -145,6 +145,12 @@ dependencies {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	testImplementation("jakarta.xml.bind:jakarta.xml.bind-api")
+	testImplementation("org.apache.activemq:artemis-jakarta-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	testImplementation("org.apache.activemq:artemis-jakarta-server") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")

@@ -31,6 +31,21 @@ bom {
 			]
 		}
 	}
+	library("Artemis", "2.20.0") {
+		group("org.apache.activemq") {
+			modules = [
+				"artemis-amqp-protocol",
+				"artemis-commons",
+				"artemis-core-client",
+				"artemis-jakarta-client",
+				"artemis-jakarta-server",
+				"artemis-journal",
+				"artemis-selector",
+				"artemis-server",
+				"artemis-service-extensions"
+			]
+		}
+	}
 	library("AspectJ", "1.9.7") {
 		group("org.aspectj") {
 			modules = [
