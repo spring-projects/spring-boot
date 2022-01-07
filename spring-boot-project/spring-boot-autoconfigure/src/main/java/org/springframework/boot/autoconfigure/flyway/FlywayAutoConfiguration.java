@@ -117,7 +117,6 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
 			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique());
-			checkLocationExists(configuration.getDataSource(), properties, resourceLoader);
 			configureProperties(configuration, properties);
 			List<Callback> orderedCallbacks = callbacks.orderedStream().collect(Collectors.toList());
 			configureCallbacks(configuration, orderedCallbacks);
@@ -160,17 +159,6 @@ public class FlywayAutoConfiguration {
 			builder.password(properties.getPassword());
 			if (StringUtils.hasText(properties.getDriverClassName())) {
 				builder.driverClassName(properties.getDriverClassName());
-			}
-		}
-
-		@SuppressWarnings("deprecation")
-		private void checkLocationExists(DataSource dataSource, FlywayProperties properties,
-				ResourceLoader resourceLoader) {
-			if (properties.isCheckLocation()) {
-				List<String> locations = new LocationResolver(dataSource).resolveLocations(properties.getLocations());
-				if (!hasAtLeastOneLocation(resourceLoader, locations)) {
-					throw new FlywayMigrationScriptMissingException(locations);
-				}
 			}
 		}
 

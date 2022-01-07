@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,17 +123,6 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	public RegularFileProperty getArchiveFile() {
-		return this.archiveFile;
-	}
-
-	/**
-	 * Returns the property for the archive file from which the image will be built.
-	 * @return the archive file property
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of {@link #getArchiveFile()}
-	 */
-	@Deprecated
-	@Input
-	public RegularFileProperty getJar() {
 		return this.archiveFile;
 	}
 

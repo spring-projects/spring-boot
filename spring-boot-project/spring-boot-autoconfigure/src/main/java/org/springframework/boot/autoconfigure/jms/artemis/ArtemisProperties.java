@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.apache.activemq.artemis.core.remoting.impl.invm.TransportConstants;
 
 import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -88,38 +87,6 @@ public class ArtemisProperties {
 
 	public void setBrokerUrl(String brokerUrl) {
 		this.brokerUrl = brokerUrl;
-	}
-
-	/**
-	 * Return the host of the broker.
-	 * @return the host
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of broker url
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.artemis.broker-url")
-	public String getHost() {
-		return this.host;
-	}
-
-	@Deprecated
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	/**
-	 * Return the port of the broker.
-	 * @return the port
-	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of broker url
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.artemis.broker-url")
-	public int getPort() {
-		return this.port;
-	}
-
-	@Deprecated
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getUser() {

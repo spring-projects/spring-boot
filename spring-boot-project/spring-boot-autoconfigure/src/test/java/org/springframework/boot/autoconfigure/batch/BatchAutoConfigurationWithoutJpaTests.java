@@ -31,9 +31,7 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -77,26 +75,13 @@ class BatchAutoConfigurationWithoutJpaTests {
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
 						"spring.batch.jdbc.tablePrefix:PREFIX_")
-				.run(assertCustomPrefix());
-	}
-
-	@Test
-	@Deprecated
-	void jdbcWithCustomPrefixWithDeprecatedProperties() {
-		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
-						"spring.batch.tablePrefix:PREFIX_")
-				.run(assertCustomPrefix());
-	}
-
-	private ContextConsumer<AssertableApplicationContext> assertCustomPrefix() {
-		return (context) -> {
-			assertThat(new JdbcTemplate(context.getBean(DataSource.class))
-					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
-			assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
-			assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters())).isNull();
-		};
+				.run((context) -> {
+					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
+							.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
+					assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
+					assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters()))
+							.isNull();
+				});
 	}
 
 	@EnableBatchProcessing
