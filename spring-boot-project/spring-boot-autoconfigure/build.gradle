@@ -12,7 +12,6 @@ description = "Spring Boot AutoConfigure"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.couchbase.client:java-client")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -91,6 +90,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
+	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
 	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.hibernate:hibernate-jcache") {
@@ -98,6 +98,9 @@ dependencies {
 	}
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
+	optional("org.jooq:jooq") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
@@ -117,6 +120,7 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.batch:spring-batch-core")
+	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
@@ -143,6 +147,7 @@ dependencies {
 	optional("org.springframework.security:spring-security-data") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
+	optional("org.springframework.security:spring-security-messaging")
 	optional("org.springframework.security:spring-security-oauth2-client")
 	optional("org.springframework.security:spring-security-oauth2-jose")
 	optional("org.springframework.security:spring-security-oauth2-resource-server")

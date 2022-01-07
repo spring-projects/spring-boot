@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.spring.context.SpringManagedContext;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("hazelcast*.jar")
-@ClassPathOverrides({ "com.hazelcast:hazelcast:3.12.8", "com.hazelcast:hazelcast-client:3.12.8" })
+@ClassPathOverrides({ "com.hazelcast:hazelcast:3.12.12", "com.hazelcast:hazelcast-client:3.12.12",
+		"com.hazelcast:hazelcast-spring:3.12.12" })
 class Hazelcast3AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -68,6 +70,14 @@ class Hazelcast3AutoConfigurationTests {
 		finally {
 			hazelcastServer.shutdown();
 		}
+	}
+
+	@Test
+	void autoConfiguredConfigUsesSpringManagedContext() {
+		this.contextRunner.run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getManagedContext()).isInstanceOf(SpringManagedContext.class);
+		});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {

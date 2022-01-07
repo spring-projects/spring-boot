@@ -261,7 +261,7 @@
       "name": "management.info.env.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable environment info.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name": "management.info.git.enabled",
@@ -277,6 +277,12 @@
       "name": "management.info.java.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Java info.",
+      "defaultValue": false
+    },
+    {
+      "name": "management.info.os.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Operating System info.",
       "defaultValue": false
     },
     {

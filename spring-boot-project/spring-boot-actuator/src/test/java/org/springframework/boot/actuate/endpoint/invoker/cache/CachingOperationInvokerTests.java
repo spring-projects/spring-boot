@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -233,12 +234,32 @@ class CachingOperationInvokerTests {
 		given(target.invoke(contextV2)).willReturn(expectedV2);
 		given(target.invoke(contextV3)).willReturn(expectedV3);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
-		Object response = invoker.invoke(contextV2);
-		assertThat(response).isSameAs(expectedV2);
+		Object responseV2 = invoker.invoke(contextV2);
+		assertThat(responseV2).isSameAs(expectedV2);
 		verify(target, times(1)).invoke(contextV2);
-		Object cachedResponse = invoker.invoke(contextV3);
-		assertThat(cachedResponse).isNotSameAs(response);
+		Object responseV3 = invoker.invoke(contextV3);
+		assertThat(responseV3).isNotSameAs(responseV2);
 		verify(target, times(1)).invoke(contextV3);
+	}
+
+	@Test
+	void targetInvokedWithDifferentWebServerNamespace() {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Object expectedServer = new Object();
+		Object expectedManagement = new Object();
+		InvocationContext contextServer = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
+				new WebServerNamespaceArgumentResolver(WebServerNamespace.SERVER));
+		InvocationContext contextManagement = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
+				new WebServerNamespaceArgumentResolver(WebServerNamespace.MANAGEMENT));
+		given(target.invoke(contextServer)).willReturn(expectedServer);
+		given(target.invoke(contextManagement)).willReturn(expectedManagement);
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
+		Object responseServer = invoker.invoke(contextServer);
+		assertThat(responseServer).isSameAs(expectedServer);
+		verify(target, times(1)).invoke(contextServer);
+		Object responseManagement = invoker.invoke(contextManagement);
+		assertThat(responseManagement).isNotSameAs(responseServer);
+		verify(target, times(1)).invoke(contextManagement);
 	}
 
 	private static class MonoOperationInvoker implements OperationInvoker {
@@ -283,6 +304,27 @@ class CachingOperationInvokerTests {
 		@Override
 		public boolean canResolve(Class<?> type) {
 			return ApiVersion.class.equals(type);
+		}
+
+	}
+
+	private static final class WebServerNamespaceArgumentResolver implements OperationArgumentResolver {
+
+		private final WebServerNamespace webServerNamespace;
+
+		private WebServerNamespaceArgumentResolver(WebServerNamespace webServerNamespace) {
+			this.webServerNamespace = webServerNamespace;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T resolve(Class<T> type) {
+			return (T) this.webServerNamespace;
+		}
+
+		@Override
+		public boolean canResolve(Class<?> type) {
+			return WebServerNamespace.class.equals(type);
 		}
 
 	}

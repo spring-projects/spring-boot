@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -824,12 +824,26 @@ public class KafkaProperties {
 		 */
 		private String defaultTopic;
 
+		/**
+		 * Transaction id prefix, override the transaction id prefix in the producer
+		 * factory.
+		 */
+		private String transactionIdPrefix;
+
 		public String getDefaultTopic() {
 			return this.defaultTopic;
 		}
 
 		public void setDefaultTopic(String defaultTopic) {
 			this.defaultTopic = defaultTopic;
+		}
+
+		public String getTransactionIdPrefix() {
+			return this.transactionIdPrefix;
+		}
+
+		public void setTransactionIdPrefix(String transactionIdPrefix) {
+			this.transactionIdPrefix = transactionIdPrefix;
 		}
 
 	}
@@ -901,6 +915,12 @@ public class KafkaProperties {
 		 * Time between publishing idle consumer events (no data received).
 		 */
 		private Duration idleEventInterval;
+
+		/**
+		 * Time between publishing idle partition consumer events (no data received for
+		 * partition).
+		 */
+		private Duration idlePartitionEventInterval;
 
 		/**
 		 * Time between checks for non-responsive consumers. If a duration suffix is not
@@ -1004,6 +1024,14 @@ public class KafkaProperties {
 
 		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Duration getIdlePartitionEventInterval() {
+			return this.idlePartitionEventInterval;
+		}
+
+		public void setIdlePartitionEventInterval(Duration idlePartitionEventInterval) {
+			this.idlePartitionEventInterval = idlePartitionEventInterval;
 		}
 
 		public Duration getMonitorInterval() {

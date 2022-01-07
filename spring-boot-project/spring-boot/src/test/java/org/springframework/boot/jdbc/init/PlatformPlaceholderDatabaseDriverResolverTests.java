@@ -35,29 +35,50 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link PlatformPlaceholderDatabaseDriverResolver}
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class PlatformPlaceholderDatabaseDriverResolverTests {
 
 	@Test
-	void resolveAllWhenThereAreNoValuesShouldReturnEmptyList() {
+	void resolveAllWithPlatformWhenThereAreNoValuesShouldReturnEmptyList() {
+		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll("test")).isEmpty();
+	}
+
+	@Test
+	void resolveAllWithPlatformWhenValueDoesNotContainPlaceholderShouldReturnValueUnchanged() {
+		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll("test", "schema.sql"))
+				.containsExactly("schema.sql");
+	}
+
+	@Test
+	void resolveAllWithPlatformWhenValuesContainPlaceholdersShouldReturnValuesWithPlaceholdersReplaced() {
+		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll("postgresql", "schema.sql",
+				"schema-@@platform@@.sql", "data-@@platform@@.sql")).containsExactly("schema.sql",
+						"schema-postgresql.sql", "data-postgresql.sql");
+	}
+
+	@Test
+	void resolveAllWithDataSourceWhenThereAreNoValuesShouldReturnEmptyList() {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll(mock(DataSource.class))).isEmpty();
 	}
 
 	@Test
-	void resolveAllWhenValueDoesNotContainPlaceholderShouldReturnValueUnchanged() {
+	void resolveAllWithDataSourceWhenValueDoesNotContainPlaceholderShouldReturnValueUnchanged() {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll(mock(DataSource.class), "schema.sql"))
 				.containsExactly("schema.sql");
 	}
 
 	@Test
-	void resolveAllWhenValuesContainPlaceholdersShouldReturnValuesWithPlaceholdersReplaced() throws SQLException {
+	void resolveAllWithDataSourceWhenValuesContainPlaceholdersShouldReturnValuesWithPlaceholdersReplaced()
+			throws SQLException {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll(dataSourceWithProductName("PostgreSQL"),
 				"schema.sql", "schema-@@platform@@.sql", "data-@@platform@@.sql")).containsExactly("schema.sql",
 						"schema-postgresql.sql", "data-postgresql.sql");
 	}
 
 	@Test
-	void resolveAllWhenDriverMappingsAreCustomizedShouldResolvePlaceholderUsingCustomMapping() throws SQLException {
+	void resolveAllWithDataSourceWhenDriverMappingsAreCustomizedShouldResolvePlaceholderUsingCustomMapping()
+			throws SQLException {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver()
 				.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres")
 				.resolveAll(dataSourceWithProductName("PostgreSQL"), "schema-@@platform@@.sql"))
@@ -65,19 +86,19 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 	}
 
 	@Test
-	void resolveAllWhenValueIsAnEmptyStringShouldReturnValueUnchanged() {
+	void resolveAllWithDataSourceWhenValueIsAnEmptyStringShouldReturnValueUnchanged() {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll(mock(DataSource.class), ""))
 				.containsExactly("");
 	}
 
 	@Test
-	void resolveAllWhenDriverIsUnknownShouldThrow() {
+	void resolveAllWithDataSourceWhenDriverIsUnknownShouldThrow() {
 		assertThatIllegalStateException().isThrownBy(() -> new PlatformPlaceholderDatabaseDriverResolver()
 				.resolveAll(dataSourceWithProductName("CustomDB"), "schema-@@platform@@.sql"));
 	}
 
 	@Test
-	void resolveAllWhenPlaceholderIsCustomizedShouldResolvePlaceholders() throws SQLException {
+	void resolveAllWithDataSourceWhenPlaceholderIsCustomizedShouldResolvePlaceholders() throws SQLException {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver("##platform##").resolveAll(
 				dataSourceWithProductName("PostgreSQL"), "schema-##platform##.sql", "schema-@@platform@@.sql"))
 						.containsExactly("schema-postgresql.sql", "schema-@@platform@@.sql");

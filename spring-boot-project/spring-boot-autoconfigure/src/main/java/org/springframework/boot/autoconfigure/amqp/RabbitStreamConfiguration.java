@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,11 +34,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
+import org.springframework.rabbit.stream.producer.ProducerCustomizer;
+import org.springframework.rabbit.stream.producer.RabbitStreamOperations;
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
+import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
 
 /**
  * Configuration for Spring RabbitMQ Stream plugin support.
  *
  * @author Gary Russell
+ * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
@@ -61,6 +67,30 @@ class RabbitStreamConfiguration {
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
 	Environment rabbitStreamEnvironment(RabbitProperties properties) {
 		return configure(Environment.builder(), properties).build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	RabbitStreamTemplateConfigurer rabbitStreamTemplateConfigurer(RabbitProperties properties,
+			ObjectProvider<MessageConverter> messageConverter,
+			ObjectProvider<StreamMessageConverter> streamMessageConverter,
+			ObjectProvider<ProducerCustomizer> producerCustomizer) {
+		RabbitStreamTemplateConfigurer configurer = new RabbitStreamTemplateConfigurer();
+		configurer.setMessageConverter(messageConverter.getIfUnique());
+		configurer.setStreamMessageConverter(streamMessageConverter.getIfUnique());
+		configurer.setProducerCustomizer(producerCustomizer.getIfUnique());
+		return configurer;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(RabbitStreamOperations.class)
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.stream", name = "name")
+	RabbitStreamTemplate rabbitStreamTemplate(Environment rabbitStreamEnvironment, RabbitProperties properties,
+			RabbitStreamTemplateConfigurer configurer) {
+		RabbitStreamTemplate template = new RabbitStreamTemplate(rabbitStreamEnvironment,
+				properties.getStream().getName());
+		configurer.configure(template);
+		return template;
 	}
 
 	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {

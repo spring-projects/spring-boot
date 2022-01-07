@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jdbc.init;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -29,8 +30,11 @@ import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializerTests;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.jdbc.datasource.init.ScriptStatementFailedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link DataSourceScriptDatabaseInitializer}.
@@ -59,6 +63,22 @@ class DataSourceScriptDatabaseInitializerTests
 		DataSourceScriptDatabaseInitializer initializer = new DataSourceScriptDatabaseInitializer(
 				new HikariDataSource(), new DatabaseInitializationSettings());
 		assertThat(initializer.isEmbeddedDatabase()).isFalse();
+	}
+
+	@Test
+	void whenCustomizeIsOverriddenThenDatabasePopulatorIsConfiguredAccordingly() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setContinueOnError(true);
+		settings.setDataLocations(Collections.singletonList("data.sql"));
+		DataSourceScriptDatabaseInitializer initializer = new DataSourceScriptDatabaseInitializer(
+				this.embeddedDataSource, settings) {
+			@Override
+			protected void customize(ResourceDatabasePopulator populator) {
+				assertThat(populator).hasFieldOrPropertyWithValue("continueOnError", true);
+				populator.setContinueOnError(false);
+			}
+		};
+		assertThatThrownBy(initializer::initializeDatabase).isInstanceOf(ScriptStatementFailedException.class);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1344,6 +1344,12 @@ public class ServerProperties {
 		private DataSize maxInitialLineLength = DataSize.ofKilobytes(4);
 
 		/**
+		 * Maximum number of requests that can be made per connection. By default, a
+		 * connection serves unlimited number of requests.
+		 */
+		private Integer maxKeepAliveRequests;
+
+		/**
 		 * Whether to validate headers when decoding requests.
 		 */
 		private boolean validateHeaders = true;
@@ -1392,6 +1398,14 @@ public class ServerProperties {
 
 		public void setMaxInitialLineLength(DataSize maxInitialLineLength) {
 			this.maxInitialLineLength = maxInitialLineLength;
+		}
+
+		public Integer getMaxKeepAliveRequests() {
+			return this.maxKeepAliveRequests;
+		}
+
+		public void setMaxKeepAliveRequests(Integer maxKeepAliveRequests) {
+			this.maxKeepAliveRequests = maxKeepAliveRequests;
 		}
 
 		public boolean isValidateHeaders() {

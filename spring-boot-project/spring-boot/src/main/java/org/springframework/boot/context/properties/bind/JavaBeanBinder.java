@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,8 @@ class JavaBeanBinder implements DataObjectBinder {
 		private boolean isCandidate(Method method) {
 			int modifiers = method.getModifiers();
 			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers) && !Modifier.isAbstract(modifiers)
-					&& !Modifier.isStatic(modifiers) && !Object.class.equals(method.getDeclaringClass())
+					&& !Modifier.isStatic(modifiers) && !method.isBridge()
+					&& !Object.class.equals(method.getDeclaringClass())
 					&& !Class.class.equals(method.getDeclaringClass()) && method.getName().indexOf('$') == -1;
 		}
 

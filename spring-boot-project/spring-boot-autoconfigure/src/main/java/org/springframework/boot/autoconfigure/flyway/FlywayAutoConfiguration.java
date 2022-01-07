@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
+import org.flywaydb.core.internal.plugin.PluginRegister;
+import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -249,9 +251,8 @@ public class FlywayAutoConfiguration {
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getOutputQueryResults())
 					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getSqlServerKerberosLoginFile()).to((sqlServerKerberosLoginFile) -> configuration
-					.sqlServerKerberosLoginFile(sqlServerKerberosLoginFile));
+			map.from(properties.getSqlServerKerberosLoginFile()).whenNonNull()
+					.to(this::configureSqlServerKerberosLoginFile);
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getSkipExecutingMigrations())
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
@@ -293,6 +294,12 @@ public class FlywayAutoConfiguration {
 			catch (NoSuchMethodError ex) {
 				// Flyway < 6.5
 			}
+		}
+
+		private void configureSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
+			SQLServerConfigurationExtension sqlServerConfigurationExtension = PluginRegister
+					.getPlugin(SQLServerConfigurationExtension.class);
+			sqlServerConfigurationExtension.setKerberosLoginFile(sqlServerKerberosLoginFile);
 		}
 
 		private void configureValidateMigrationNaming(FluentConfiguration configuration,

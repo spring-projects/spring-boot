@@ -11,7 +11,6 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.couchbase.client:java-client")
 	optional("com.datastax.oss:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
@@ -70,7 +69,8 @@ dependencies {
 	optional("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
-	optional("org.springframework.data:spring-data-elasticsearch") {
+	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-elasticsearch")  {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 	optional("org.springframework.data:spring-data-ldap")

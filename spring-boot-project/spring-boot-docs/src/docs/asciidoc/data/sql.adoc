@@ -315,6 +315,90 @@ TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[r
 
 
 
+[[data.sql.jooq]]
+=== Using jOOQ
+jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
+Both the commercial and open source editions can be used with Spring Boot.
+
+
+
+[[data.sql.jooq.codegen]]
+==== Code Generation
+In order to use jOOQ type-safe queries, you need to generate Java classes from your database schema.
+You can follow the instructions in the {jooq-docs}/#jooq-in-7-steps-step3[jOOQ user manual].
+If you use the `jooq-codegen-maven` plugin and you also use the `spring-boot-starter-parent` "`parent POM`", you can safely omit the plugin's `<version>` tag.
+You can also use Spring Boot-defined version variables (such as `h2.version`) to declare the plugin's database dependency.
+The following listing shows an example:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<plugin>
+		<groupId>org.jooq</groupId>
+		<artifactId>jooq-codegen-maven</artifactId>
+		<executions>
+			...
+		</executions>
+		<dependencies>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${h2.version}</version>
+			</dependency>
+		</dependencies>
+		<configuration>
+			<jdbc>
+				<driver>org.h2.Driver</driver>
+				<url>jdbc:h2:~/yourdatabase</url>
+			</jdbc>
+			<generator>
+				...
+			</generator>
+		</configuration>
+	</plugin>
+----
+
+
+
+[[data.sql.jooq.dslcontext]]
+==== Using DSLContext
+The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` interface.
+Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
+To use the `DSLContext`, you can inject it, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=!method]
+----
+
+TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`.
+
+You can then use the `DSLContext` to construct your queries, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/data/sql/jooq/dslcontext/MyBean.java[tag=method]
+----
+
+
+
+[[data.sql.jooq.sqldialect]]
+==== jOOQ SQL Dialect
+Unless the configprop:spring.jooq.sql-dialect[] property has been configured, Spring Boot determines the SQL dialect to use for your datasource.
+If Spring Boot could not detect the dialect, it uses `DEFAULT`.
+
+NOTE: Spring Boot can only auto-configure dialects supported by the open source version of jOOQ.
+
+
+
+[[data.sql.jooq.customizing]]
+==== Customizing jOOQ
+More advanced customizations can be achieved by defining your own `DefaultConfigurationCustomizer` bean that will be invoked prior to creating the `org.jooq.Configuration` `@Bean`.
+This takes precedence to anything that is applied by the auto-configuration.
+
+You can also create your own `org.jooq.Configuration` `@Bean` if you want to take complete control of the jOOQ configuration.
+
+
+
 [[data.sql.r2dbc]]
 === Using R2DBC
 The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.

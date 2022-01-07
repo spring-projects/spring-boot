@@ -18,8 +18,10 @@ package org.springframework.boot.build.test;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.testing.Test;
@@ -34,6 +36,8 @@ import org.gradle.plugins.ide.eclipse.model.EclipseModel;
  * @author Scott Frederick
  */
 public class SystemTestPlugin implements Plugin<Project> {
+
+	private static final Spec<Task> NEVER = (task) -> false;
 
 	/**
 	 * Name of the {@code systemTest} task.
@@ -78,6 +82,13 @@ public class SystemTestPlugin implements Plugin<Project> {
 		systemTest.setTestClassesDirs(systemTestSourceSet.getOutput().getClassesDirs());
 		systemTest.setClasspath(systemTestSourceSet.getRuntimeClasspath());
 		systemTest.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
+		if (isCi()) {
+			systemTest.getOutputs().upToDateWhen(NEVER);
+		}
+	}
+
+	private boolean isCi() {
+		return Boolean.parseBoolean(System.getenv("CI"));
 	}
 
 }

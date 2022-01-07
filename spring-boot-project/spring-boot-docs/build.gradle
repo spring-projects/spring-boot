@@ -102,6 +102,9 @@ dependencies {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
+	implementation("org.jooq:jooq") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	implementation("org.mockito:mockito-core")
 	implementation("org.mongodb:mongodb-driver-sync")
 	implementation("org.quartz-scheduler:quartz")
@@ -118,6 +121,7 @@ dependencies {
 	implementation("org.springframework.amqp:spring-rabbit")
 	implementation("org.springframework.batch:spring-batch-core")
 	implementation("org.springframework.data:spring-data-cassandra")
+	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -198,10 +202,10 @@ task aggregatedJavadoc(type: Javadoc) {
 			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
 			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
 			options.links = [
-				"https://docs.oracle.com/javase/8/docs/api/",
-				"https://docs.oracle.com/javaee/7/api/",
+				"https://docs.oracle.com/en/java/javase/17/docs/api/",
 				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
 				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
+				"https://jakarta.ee/specifications/platform/9/apidocs/",
 				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
 			] as String[]
 		}
@@ -258,6 +262,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
 					"spring-boot-version": project.version,
 					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
+					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
 					"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
 					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
 					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],

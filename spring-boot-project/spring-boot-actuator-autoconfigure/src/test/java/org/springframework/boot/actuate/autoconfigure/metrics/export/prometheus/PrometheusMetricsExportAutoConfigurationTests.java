@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.DefaultHttpConnectionFactory;
 import io.prometheus.client.exporter.HttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
@@ -27,7 +28,6 @@ import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration.BasicAuthHttpConnectionFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
@@ -192,11 +192,8 @@ class PrometheusMetricsExportAutoConfigurationTests {
 						"management.metrics.export.prometheus.pushgateway.username=admin",
 						"management.metrics.export.prometheus.pushgateway.password=secret")
 				.withUserConfiguration(BaseConfiguration.class)
-				.run(hasHttpConnectionFactory((httpConnectionFactory) -> {
-					assertThat(httpConnectionFactory).isInstanceOf(BasicAuthHttpConnectionFactory.class);
-					assertThat(((BasicAuthHttpConnectionFactory) httpConnectionFactory).getAuthorizationHeader())
-							.isEqualTo("Basic YWRtaW46c2VjcmV0");
-				}));
+				.run(hasHttpConnectionFactory((httpConnectionFactory) -> assertThat(httpConnectionFactory)
+						.isInstanceOf(BasicAuthHttpConnectionFactory.class)));
 	}
 
 	private void hasGatewayURL(AssertableApplicationContext context, String url) {

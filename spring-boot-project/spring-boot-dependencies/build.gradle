@@ -211,17 +211,18 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "3.0.0") {
+	library("Embedded Mongo", "3.2.5") {
 		group("de.flapdoodle.embed") {
 			modules = [
 				"de.flapdoodle.embed.mongo"
 			]
 		}
 	}
-	library("Flyway", "8.0.4") {
+	library("Flyway", "8.3.0") {
 		group("org.flywaydb") {
 			modules = [
-				"flyway-core"
+				"flyway-core",
+                "flyway-sqlserver"
 			]
 			plugins = [
 				"flyway-maven-plugin"
@@ -303,7 +304,7 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast", "5.0") {
+	library("Hazelcast", "5.0.2") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
@@ -651,6 +652,19 @@ bom {
 			]
 		}
 	}
+	library("jOOQ", "3.16.0") {
+		group("org.jooq") {
+			modules = [
+				"jooq",
+				"jooq-codegen",
+				"jooq-kotlin",
+				"jooq-meta"
+			]
+			plugins = [
+				"jooq-codegen-maven"
+			]
+		}
+	}
 	library("Json Path", "2.6.0") {
 		group("com.jayway.jsonpath") {
 			modules = [
@@ -733,7 +747,7 @@ bom {
 			]
 		}
 	}
-	library("Kotlin Coroutines", "1.5.2") {
+	library("Kotlin Coroutines", "1.6.0") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
@@ -747,7 +761,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.5.0") {
+	library("Liquibase", "4.6.2") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-core"
@@ -757,17 +771,14 @@ bom {
 			]
 		}
 	}
-	library("Log4j2", "2.15.0") {
+	library("Log4j2", "2.17.1") {
 		group("org.apache.logging.log4j") {
-			modules = [
-				"log4j-to-slf4j"
-			]
 			imports = [
 				"log4j-bom"
 			]
 		}
 	}
-	library("Logback", "1.2.7") {
+	library("Logback", "1.2.9") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -1032,7 +1043,7 @@ bom {
 			]
 		}
 	}
-	library("Prometheus Client", "0.12.0") {
+	library("Prometheus Client", "0.14.1") {
 		group("io.prometheus") {
 			imports = [
 				"simpleclient_bom"
@@ -1148,6 +1159,8 @@ bom {
 				"spring-boot-starter-cache",
 				"spring-boot-starter-data-cassandra",
 				"spring-boot-starter-data-cassandra-reactive",
+				"spring-boot-starter-data-couchbase",
+				"spring-boot-starter-data-couchbase-reactive",
 				"spring-boot-starter-data-elasticsearch",
 				"spring-boot-starter-data-jdbc",
 				"spring-boot-starter-data-jpa",

@@ -27,6 +27,7 @@ import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -58,8 +59,10 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
 import org.springframework.integration.context.IntegrationContextUtils;
+import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
+import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.rsocket.ClientRSocketConnector;
 import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
 import org.springframework.integration.rsocket.ServerRSocketConnector;
@@ -210,6 +213,7 @@ class IntegrationAutoConfigurationTests {
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.integration.jdbc.initialize-schema=never")
 				.run((context) -> {
+					assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class);
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
@@ -525,9 +529,8 @@ class IntegrationAutoConfigurationTests {
 	static class MessageSourceConfiguration {
 
 		@Bean
-		org.springframework.integration.core.MessageSource<?> myMessageSource() {
-			return new MessageProcessorMessageSource(
-					mock(org.springframework.integration.handler.MessageProcessor.class));
+		MessageSource<?> myMessageSource() {
+			return new MessageProcessorMessageSource(mock(MessageProcessor.class));
 		}
 
 	}
@@ -540,7 +543,7 @@ class IntegrationAutoConfigurationTests {
 			return new IntegrationRSocketEndpoint() {
 
 				@Override
-				public reactor.core.publisher.Mono<Void> handleMessage(Message<?> message) {
+				public Mono<Void> handleMessage(Message<?> message) {
 					return null;
 				}
 

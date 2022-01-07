@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,18 @@ import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
+import org.springframework.rabbit.stream.producer.ProducerCustomizer;
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
+import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,6 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Gary Russell
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 class RabbitStreamConfigurationTests {
 
@@ -85,7 +91,7 @@ class RabbitStreamConfigurationTests {
 	}
 
 	@Test
-	void whenCustomMessageListenerContainerIsDefinedThenAutoConfiguredContainerBacksOff() {
+	void whenCustomMessageListenerContainerFactoryIsDefinedThenAutoConfiguredContainerFactoryBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomMessageListenerContainerFactoryConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RabbitListenerContainerFactory.class);
@@ -149,6 +155,61 @@ class RabbitStreamConfigurationTests {
 		verify(builder).password("confidential");
 	}
 
+	@Test
+	void testDefaultRabbitStreamTemplateConfiguration() {
+		this.contextRunner
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					assertThat(context.getBean(RabbitStreamTemplate.class)).hasFieldOrPropertyWithValue("streamName",
+							"stream-test");
+				});
+	}
+
+	@Test
+	void testDefaultRabbitStreamTemplateConfigurationWithoutStreamName() {
+		this.contextRunner.withPropertyValues("spring.rabbitmq.listener.type:stream")
+				.run((context) -> assertThat(context).doesNotHaveBean(RabbitStreamTemplate.class));
+	}
+
+	@Test
+	void testRabbitStreamTemplateConfigurationWithCustomMessageConverter() {
+		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
+					assertThat(streamTemplate).hasFieldOrPropertyWithValue("streamName", "stream-test");
+					assertThat(streamTemplate).extracting("messageConverter")
+							.isSameAs(context.getBean(MessageConverter.class));
+				});
+	}
+
+	@Test
+	void testRabbitStreamTemplateConfigurationWithCustomStreamMessageConverter() {
+		this.contextRunner
+				.withBean("myStreamMessageConverter", StreamMessageConverter.class,
+						() -> mock(StreamMessageConverter.class))
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("messageConverter")
+							.isSameAs(context.getBean("myStreamMessageConverter"));
+				});
+	}
+
+	@Test
+	void testRabbitStreamTemplateConfigurationWithCustomProducerCustomizer() {
+		this.contextRunner
+				.withBean("myProducerCustomizer", ProducerCustomizer.class, () -> mock(ProducerCustomizer.class))
+				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("producerCustomizer")
+							.isSameAs(context.getBean("myProducerCustomizer"));
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -192,6 +253,22 @@ class RabbitStreamConfigurationTests {
 		@SuppressWarnings("unchecked")
 		RabbitListenerContainerFactory<MessageListenerContainer> rabbitListenerContainerFactory() {
 			return this.listenerContainerFactory;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MessageConvertersConfiguration {
+
+		@Bean
+		@Primary
+		MessageConverter myMessageConverter() {
+			return mock(MessageConverter.class);
+		}
+
+		@Bean
+		MessageConverter anotherMessageConverter() {
+			return mock(MessageConverter.class);
 		}
 
 	}
