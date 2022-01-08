@@ -3,6 +3,19 @@
 A number of questions often arise when people use Spring Batch from within a Spring Boot application.
 This section addresses those questions.
 
+[[howto.batch.architectural-considerations]]
+=== Architectural Considerations
+
+The default configuration of Spring Batch is geared towards single-job containerized Spring Boot apps orchestrated by a job scheduler like Kubernetes, optionally using https://dataflow.spring.io/[Spring Cloud Dataflow]:
+
+* All `Jobs` in the application context are executed once on application startup; see <<#howto.batch.running-jobs-on-startup>>.
+* Jobs are run on the same thread they are launched on.
+
+However, it is also a valid option to run batch jobs as part of other applications, notably web applications running in servlet containers.
+Example use cases include reporting, ad-hoc job running, and web application support.
+See {spring-batch-docs}job.html#runningJobsFromWebContainer[the Spring Batch documentation] for how to do this.
+You might need to <<#howto.batch.customizing-task-executor,customize the task executor for batch jobs>> if you opt for this approach.
+
 
 
 [[howto.batch.specifying-a-data-source]]
@@ -57,3 +70,20 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 Spring Batch requires a data store for the `Job` repository.
 If you use Spring Boot, you must use an actual database.
 Note that it can be an in-memory database, see {spring-batch-docs}job.html#configuringJobRepository[Configuring a Job Repository].
+
+[[howto.batch.customizing-task-executor]]
+=== Customizing the TaskExecutor for Batch Jobs
+
+By default, jobs are run on the same thread they are launched on.
+See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[the Javadoc of `@EnableBatchProcessing`] for details.
+Depending on your type of application, this might be undesirable because the starting thread is blocked while the batch job runs.
+Furthermore, additional jobs might have to wait for the currently running job to complete.
+In such a case, it is necessary to customize the `TaskExecutor` used by Spring Batch.
+The auto-configuration of Spring Batch automatically picks up any `TaskExecutor` annotated with `@BatchTaskExecutor`, for example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/batch/customizingtaskexecutor/BatchConfiguration.java[tag=bean]
+----
+
+The example configures a `TaskExecutor` that dynamically adapts it size and uses up to 4 threads with a maximum queue size of 10. Adjust this configuration to match the needs of your application.

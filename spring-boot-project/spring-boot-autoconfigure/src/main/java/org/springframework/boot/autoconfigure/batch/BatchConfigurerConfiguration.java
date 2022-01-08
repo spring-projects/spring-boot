@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Provide a {@link BatchConfigurer} according to the current environment.
  *
  * @author Stephane Nicoll
+ * @author Andreas Ahlenstorf
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
 @ConditionalOnBean(DataSource.class)
@@ -47,9 +49,10 @@ class BatchConfigurerConfiguration {
 		@Bean
 		BasicBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
-				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
+				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor) {
 			return new BasicBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
-					transactionManagerCustomizers.getIfAvailable());
+					transactionManagerCustomizers.getIfAvailable(), batchTaskExecutor.getIfAvailable());
 		}
 
 	}
@@ -63,9 +66,11 @@ class BatchConfigurerConfiguration {
 		JpaBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
-				EntityManagerFactory entityManagerFactory) {
+				EntityManagerFactory entityManagerFactory,
+				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor) {
 			return new JpaBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
-					transactionManagerCustomizers.getIfAvailable(), entityManagerFactory);
+					transactionManagerCustomizers.getIfAvailable(), entityManagerFactory,
+					batchTaskExecutor.getIfAvailable());
 		}
 
 	}

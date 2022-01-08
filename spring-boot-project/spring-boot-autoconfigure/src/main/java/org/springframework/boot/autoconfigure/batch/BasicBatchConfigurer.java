@@ -29,6 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.batch.BatchProperties.Isolation;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -39,6 +40,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
+ * @author Andreas Ahlenstorf
  * @since 1.0.0
  */
 public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
@@ -50,6 +52,8 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	private PlatformTransactionManager transactionManager;
 
 	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+	private final TaskExecutor taskExecutor;
 
 	private JobRepository jobRepository;
 
@@ -63,12 +67,30 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	 * @param dataSource the underlying data source
 	 * @param transactionManagerCustomizers transaction manager customizers (or
 	 * {@code null})
+	 * @deprecated since 2.7.0 for removal in 3.0.0 in favor of
+	 * {@link #BasicBatchConfigurer(BatchProperties, DataSource, TransactionManagerCustomizers, TaskExecutor)}
 	 */
+	@Deprecated
 	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			TransactionManagerCustomizers transactionManagerCustomizers) {
+		this(properties, dataSource, transactionManagerCustomizers, null);
+	}
+
+	/**
+	 * Create a new {@link BasicBatchConfigurer} instance.
+	 * @param properties the batch properties
+	 * @param dataSource the underlying data source
+	 * @param transactionManagerCustomizers transaction manager customizers (or
+	 * {@code null})
+	 * @param taskExecutor the executor to be used by {@link JobLauncher} (or
+	 * {@code null})
+	 */
+	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
+			TransactionManagerCustomizers transactionManagerCustomizers, TaskExecutor taskExecutor) {
 		this.properties = properties;
 		this.dataSource = dataSource;
 		this.transactionManagerCustomizers = transactionManagerCustomizers;
+		this.taskExecutor = taskExecutor;
 	}
 
 	@Override
@@ -120,6 +142,9 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	protected JobLauncher createJobLauncher() throws Exception {
 		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
 		jobLauncher.setJobRepository(getJobRepository());
+		if (this.taskExecutor != null) {
+			jobLauncher.setTaskExecutor(this.taskExecutor);
+		}
 		jobLauncher.afterPropertiesSet();
 		return jobLauncher;
 	}
