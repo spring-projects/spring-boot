@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
-
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
+
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
@@ -44,11 +44,11 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 /**
  * Tests for {@link ValueObjectBinder}.
@@ -390,8 +390,8 @@ class ValueObjectBinderTests {
 		compiler.getTask(Arrays.asList(recordProperties)).call();
 		ClassLoader ucl = new URLClassLoader(new URL[] { tempDir.toURI().toURL() });
 		Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, ucl)).get();
-		assertThat(getField(bean, "property1")).isEqualTo("value-from-config-1");
-		assertThat(getField(bean, "property2")).isEqualTo("default-value-2");
+		assertThat(ReflectionTestUtils.getField(bean, "property1")).isEqualTo("value-from-config-1");
+		assertThat(ReflectionTestUtils.getField(bean, "property2")).isEqualTo("default-value-2");
 	}
 
 	private void noConfigurationProperty(BindException ex) {
