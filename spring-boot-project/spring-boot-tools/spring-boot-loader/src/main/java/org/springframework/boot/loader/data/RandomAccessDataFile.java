@@ -182,7 +182,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		
 		@Override
 	    public int available() throws IOException {
-		    return RandomAccessDataFile.this.length - this.position;
+			return (int) RandomAccessDataFile.this.length - this.position;
 	    }
 
 		/**
