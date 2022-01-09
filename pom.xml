@@ -10,8 +10,10 @@
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
 	<properties>
-		<revision>2.2.5.RELEASE</revision>
+		<revision>2.2.5.snapshot</revision>
 		<main.basedir>${basedir}</main.basedir>
+		<!-- 添加属性 -->
+        <disable.checks>true</disable.checks>
 	</properties>
 	<!-- Most elements are in profiles so they are stripped out during maven-flatten -->
 	<profiles>

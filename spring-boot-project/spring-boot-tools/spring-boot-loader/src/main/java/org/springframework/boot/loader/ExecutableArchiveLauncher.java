@@ -66,7 +66,12 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
+		// 得到一个Archive的集合（BOOT-INF/classes/）和（BOOT-INF/lib/）目录所有的文件
+		//     a. this.archive 中当前类的 archive 是怎么来的？
+		//     b. getNestedArachives()是如何获得一个嵌套的 jar 归档？
+		//     c. this::isNestedArchive 这个方法引用它做了什么？
 		List<Archive> archives = new ArrayList<>(this.archive.getNestedArchives(this::isNestedArchive));
+		// 一个事后处理的方法
 		postProcessClassPathArchives(archives);
 		return archives;
 	}

@@ -46,8 +46,20 @@ public abstract class Launcher {
 	 * @throws Exception if the application fails to launch
 	 */
 	protected void launch(String[] args) throws Exception {
+		// 1. 注册一些 URL的属性
 		JarFile.registerUrlProtocolHandler();
+		//
+		//
+		// 		1、BOOT-INF/classes/
+		//    	2、或者BOOT-INF/lib/的目录或者是他们下边的class文件或者jar依赖文件
+		/**
+		 * 2. 创建类加载器（LaunchedURLClassLoader）
+		 * 	加载路径URL，规则见 {@link org.springframework.boot.loader.JarLauncher#isNestedArchive(org.springframework.boot.loader.archive.Archive.Entry)}:
+		 * 		1、BOOT-INF/classes/
+		 * 		2、或者BOOT-INF/lib/的目录及其子目录下jar文件
+		 */
 		ClassLoader classLoader = createClassLoader(getClassPathArchives());
+		// 3. 启动给定归档文件和完全配置的类加载器的应用程序
 		launch(args, getMainClass(), classLoader);
 	}
 
@@ -120,6 +132,7 @@ public abstract class Launcher {
 		if (path == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}
+		// 返回我们要执行的jar文件的绝对路径(java -jar xxx.jar中 xxx.jar的绝对路径)
 		File root = new File(path);
 		if (!root.exists()) {
 			throw new IllegalStateException("Unable to determine code source archive from " + root);

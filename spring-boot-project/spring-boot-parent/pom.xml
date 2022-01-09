@@ -19,7 +19,7 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<disable.checks>false</disable.checks>
+		<disable.checks>true</disable.checks>
 		<git.url>https://github.com/spring-projects/spring-boot</git.url>
 		<git.connection>scm:git:git://github.com/spring-projects/spring-boot.git</git.connection>
 		<git.developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</git.developerConnection>

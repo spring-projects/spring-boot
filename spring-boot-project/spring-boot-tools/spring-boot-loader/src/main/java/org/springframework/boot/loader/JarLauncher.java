@@ -18,6 +18,8 @@ package org.springframework.boot.loader;
 
 import org.springframework.boot.loader.archive.Archive;
 
+import java.util.Arrays;
+
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
  * included inside a {@code /BOOT-INF/lib} directory and that application classes are
@@ -40,6 +42,11 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 		super(archive);
 	}
 
+	/**
+	 * BOOT-INF/classes/ 和 BOOT-INF/lib/xx.jar
+	 * @param entry the jar entry
+	 * @return
+	 */
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
 		if (entry.isDirectory()) {
@@ -49,6 +56,7 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// launch 方法是调用父类 Launcher 的 launch 方法
 		new JarLauncher().launch(args);
 	}
 
