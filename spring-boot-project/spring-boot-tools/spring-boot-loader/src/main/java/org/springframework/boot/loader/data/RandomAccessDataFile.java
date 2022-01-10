@@ -179,11 +179,11 @@ public class RandomAccessDataFile implements RandomAccessData {
 		public long skip(long n) throws IOException {
 			return (n <= 0) ? 0 : moveOn(cap(n));
 		}
-		
+
 		@Override
-	    public int available() throws IOException {
+		public int available() throws IOException {
 			return (int) RandomAccessDataFile.this.length - this.position;
-	    }
+		}
 
 		/**
 		 * Cap the specified value such that it cannot exceed the number of bytes
