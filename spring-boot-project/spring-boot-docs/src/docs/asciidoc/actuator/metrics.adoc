@@ -693,7 +693,7 @@ Metrics are tagged by the name of the executor, which is derived from the bean n
 ==== Spring MVC Metrics
 Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-You can customized the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
 `@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
 If you do not want to record metrics for all Spring MVC requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
@@ -725,6 +725,9 @@ To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvid
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
 Applications can opt in and record exceptions by <<web#web.servlet.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
+
+By default, all requests are handled.
+To customize the filter, provide a `@Bean` that implements `FilterRegistrationBean<WebMvcMetricsFilter>`.
 
 
 
