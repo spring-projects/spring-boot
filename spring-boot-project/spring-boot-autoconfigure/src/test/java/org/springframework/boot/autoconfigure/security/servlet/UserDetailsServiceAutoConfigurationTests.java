@@ -159,7 +159,9 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestConfigWithRelyingPartyRegistrationRepository.class)
+		this.contextRunner
+				.withBean(RelyingPartyRegistrationRepository.class,
+						() -> mock(RelyingPartyRegistrationRepository.class))
 				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
@@ -237,17 +239,6 @@ class UserDetailsServiceAutoConfigurationTests {
 		@Bean
 		ClientRegistrationRepository clientRegistrationRepository() {
 			return mock(ClientRegistrationRepository.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(TestSecurityConfiguration.class)
-	static class TestConfigWithRelyingPartyRegistrationRepository {
-
-		@Bean
-		RelyingPartyRegistrationRepository relyingPartyRegistrationRepository() {
-			return mock(RelyingPartyRegistrationRepository.class);
 		}
 
 	}
