@@ -118,7 +118,7 @@ public class GraphQlWebMvcAutoConfiguration {
 						.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::handleRequest);
 
 		if (properties.getGraphiql().isEnabled()) {
-			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(graphQLPath);
+			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(graphQLPath, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);
 		}
 

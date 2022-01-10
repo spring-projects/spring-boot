@@ -111,7 +111,7 @@ public class GraphQlWebFluxAutoConfiguration {
 						handler::handleRequest);
 
 		if (properties.getGraphiql().isEnabled()) {
-			GraphiQlHandler graphiQlHandler = new GraphiQlHandler(graphQLPath);
+			GraphiQlHandler graphiQlHandler = new GraphiQlHandler(graphQLPath, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphiQlHandler::handleRequest);
 		}
 
