@@ -463,8 +463,8 @@ Spring GraphQL offers a dedicated testing support module; you'll need to add it 
 		</dependency>
 		<!-- Unless already present in the compile scope -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webflux</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -476,7 +476,7 @@ Spring GraphQL offers a dedicated testing support module; you'll need to add it 
 	dependencies {
 		testImplementation("org.springframework.graphql:spring-graphql-test")
 		// Unless already present in the implementation configuration
-		testImplementation("org.springframework:spring-webflux")
+		testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 	}
 ----
 
