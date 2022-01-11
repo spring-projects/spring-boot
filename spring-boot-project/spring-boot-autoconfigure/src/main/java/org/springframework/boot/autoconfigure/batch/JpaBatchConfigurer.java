@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import jakarta.persistence.EntityManagerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Isolation;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -55,8 +56,15 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 
 	@Override
 	protected String determineIsolationLevel() {
-		logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
-		return "ISOLATION_DEFAULT";
+		String name = super.determineIsolationLevel();
+		if (name != null) {
+			return name;
+		}
+		else {
+			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs. "
+					+ "To silence this warning, set 'spring.batch.jdbc.isolation-level-for-create' to 'default'.");
+			return Isolation.DEFAULT.toIsolationName();
+		}
 	}
 
 	@Override
