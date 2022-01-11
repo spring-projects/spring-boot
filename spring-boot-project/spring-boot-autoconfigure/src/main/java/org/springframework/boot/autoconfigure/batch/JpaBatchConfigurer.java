@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Isolation;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,8 +39,6 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 
 	private final EntityManagerFactory entityManagerFactory;
 
-	private final String isolationLevelForCreate;
-
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
@@ -52,18 +51,19 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 			TransactionManagerCustomizers transactionManagerCustomizers, EntityManagerFactory entityManagerFactory) {
 		super(properties, dataSource, transactionManagerCustomizers);
 		this.entityManagerFactory = entityManagerFactory;
-		this.isolationLevelForCreate = properties.getJdbc().getIsolationLevelForCreate();
 	}
 
 	@Override
 	protected String determineIsolationLevel() {
-		if (this.isolationLevelForCreate == null) {
-			logger.warn(
-					"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs. Define spring.batch.jdbc.isolation-level-for-create property to force a custom isolation level.");
-			return "ISOLATION_DEFAULT";
+		String name = super.determineIsolationLevel();
+		if (name != null) {
+			return name;
 		}
-
-		return this.isolationLevelForCreate;
+		else {
+			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs. "
+					+ "To silence this warning, set 'spring.batch.jdbc.isolation-level-for-create' to 'default'.");
+			return Isolation.DEFAULT.toIsolationName();
+		}
 	}
 
 	@Override

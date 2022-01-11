@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -57,6 +58,8 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -78,6 +81,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Kazuki Shimizu
  */
+@ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -208,8 +212,30 @@ class BatchAutoConfigurationTests {
 					// level)
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("job", new JobParameters()))
 							.isNull();
-					assertThat(context.getBean(JobRepository.class))
-							.satisfies(JobRepositoryTestingSupport.isolationLevelRequirements("ISOLATION_DEFAULT"));
+				});
+	}
+
+	@Test
+	void testDefaultIsolationLevelWithJpaLogsWarning(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class).run((context) -> {
+					assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel())
+							.isEqualTo("ISOLATION_DEFAULT");
+					assertThat(output).contains("JPA does not support custom isolation levels")
+							.contains("set 'spring.batch.jdbc.isolation-level-for-create' to 'default'");
+				});
+	}
+
+	@Test
+	void testCustomIsolationLevelWithJpaDoesNotLogWarning(CapturedOutput output) {
+		this.contextRunner.withPropertyValues("spring.batch.jdbc.isolation-level-for-create=default")
+				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+						HibernateJpaAutoConfiguration.class)
+				.run((context) -> {
+					assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel())
+							.isEqualTo("ISOLATION_DEFAULT");
+					assertThat(output).doesNotContain("JPA does not support custom isolation levels")
+							.doesNotContain("set 'spring.batch.jdbc.isolation-level-for-create' to 'default'");
 				});
 	}
 
@@ -232,16 +258,6 @@ class BatchAutoConfigurationTests {
 					JobRepository jobRepository = context.getBean(JobRepository.class);
 					assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
 				});
-	}
-
-	@Test
-	void testCustomIsolationLevelForCreate() {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
-						HibernateJpaAutoConfiguration.class)
-				.withPropertyValues("spring.batch.jdbc.isolation-level-for-create:ISOLATION_READ_COMMITTED")
-				.run((context) -> assertThat(context.getBean(JobRepository.class))
-						.satisfies(JobRepositoryTestingSupport.isolationLevelRequirements("ISOLATION_READ_COMMITTED")));
 	}
 
 	@Test
