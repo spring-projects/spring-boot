@@ -1709,7 +1709,7 @@ bom {
 			]
 		}
 	}
-	library("Spring RESTDocs", "2.0.5.RELEASE") {
+	library("Spring RESTDocs", "2.0.6.BUILD-SNAPSHOT") {
 		group("org.springframework.restdocs") {
 			modules = [
 				"spring-restdocs-asciidoctor",
