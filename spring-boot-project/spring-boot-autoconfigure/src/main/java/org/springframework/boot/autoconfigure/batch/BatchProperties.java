@@ -67,6 +67,12 @@ public class BatchProperties {
 				+ "batch/core/schema-@@platform@@.sql";
 
 		/**
+		 * Transaction isolation level to use when creating job meta-data for new jobs.
+		 * Auto-detected based on whether JPA is being used or not.
+		 */
+		private Isolation isolationLevelForCreate;
+
+		/**
 		 * Path to the SQL file to use to initialize the database schema.
 		 */
 		private String schema = DEFAULT_SCHEMA_LOCATION;
@@ -86,6 +92,14 @@ public class BatchProperties {
 		 * Database schema initialization mode.
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
+
+		public Isolation getIsolationLevelForCreate() {
+			return this.isolationLevelForCreate;
+		}
+
+		public void setIsolationLevelForCreate(Isolation isolationLevelForCreate) {
+			this.isolationLevelForCreate = isolationLevelForCreate;
+		}
 
 		public String getSchema() {
 			return this.schema;
@@ -117,6 +131,47 @@ public class BatchProperties {
 
 		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
+		}
+
+	}
+
+	/**
+	 * Available transaction isolation levels.
+	 */
+	public enum Isolation {
+
+		/**
+		 * Use the default isolation level of the underlying datastore.
+		 */
+		DEFAULT,
+
+		/**
+		 * Indicates that dirty reads, non-repeatable reads and phantom reads can occur.
+		 */
+		READ_UNCOMMITTED,
+
+		/**
+		 * Indicates that dirty reads are prevented; non-repeatable reads and phantom
+		 * reads can occur.
+		 */
+		READ_COMMITTED,
+
+		/**
+		 * Indicates that dirty reads and non-repeatable reads are prevented; phantom
+		 * reads can occur.
+		 */
+		REPEATABLE_READ,
+
+		/**
+		 * Indicate that dirty reads, non-repeatable reads and phantom reads are
+		 * prevented.
+		 */
+		SERIALIZABLE;
+
+		private static final String PREFIX = "ISOLATION_";
+
+		String toIsolationName() {
+			return PREFIX + name();
 		}
 
 	}

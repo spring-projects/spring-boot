@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ class BatchAutoConfigurationWithoutJpaTests {
 							.contains("DataSourceTransactionManager");
 					assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+					assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel()).isNull();
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 					assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
@@ -82,6 +83,15 @@ class BatchAutoConfigurationWithoutJpaTests {
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters()))
 							.isNull();
 				});
+	}
+
+	@Test
+	void jdbcWithCustomIsolationLevel() {
+		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.batch.jdbc.isolation-level-for-create=read_committed")
+				.run((context) -> assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel())
+						.isEqualTo("ISOLATION_READ_COMMITTED"));
 	}
 
 	@EnableBatchProcessing
