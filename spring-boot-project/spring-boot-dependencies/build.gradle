@@ -1164,7 +1164,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Jar Plugin", "3.2.0") {
+	library("Maven Jar Plugin", "3.2.2") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-jar-plugin"
