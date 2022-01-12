@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -110,7 +111,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		ConfigurableEnvironment environment = getEnvironment(application, config.getActiveProfiles());
+		ConfigurableEnvironment environment = getEnvironment();
+		setActiveProfiles(environment, config.getActiveProfiles());
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
@@ -121,23 +123,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return application.run(args);
 	}
 
-	private ConfigurableEnvironment getEnvironment(SpringApplication application, String[] activeProfiles) {
-		ConfigurableEnvironment environment = getEnvironment();
-		boolean applicationEnvironment = false;
-		if (environment.getClass() == StandardEnvironment.class) {
-			environment = application.convertEnvironment(environment);
-			applicationEnvironment = true;
-		}
-		setActiveProfiles(environment, activeProfiles, applicationEnvironment);
-		return environment;
-	}
-
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
-			boolean applicationEnvironment) {
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
 		if (ObjectUtils.isEmpty(profiles)) {
 			return;
 		}
-		if (!applicationEnvironment) {
+		if (!(environment instanceof TestEnvironment)) {
 			environment.setActiveProfiles(profiles);
 		}
 		String[] pairs = new String[profiles.length];
@@ -162,7 +152,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * @return a {@link ConfigurableEnvironment} instance
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
-		return new StandardEnvironment();
+		return new TestEnvironment();
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
@@ -293,6 +283,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	}
 
+	/**
+	 * {@link ApplicationContextInitializer} used to set the parent context.
+	 */
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	private static class ParentContextApplicationContextInitializer
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -306,6 +299,24 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			applicationContext.setParent(this.parent);
+		}
+
+	}
+
+	/**
+	 * Side-effect free {@link Environment} that doesn't set profiles directly from
+	 * properties.
+	 */
+	static class TestEnvironment extends StandardEnvironment {
+
+		@Override
+		protected String doGetActiveProfilesProperty() {
+			return null;
+		}
+
+		@Override
+		protected String doGetDefaultProfilesProperty() {
+			return null;
 		}
 
 	}
