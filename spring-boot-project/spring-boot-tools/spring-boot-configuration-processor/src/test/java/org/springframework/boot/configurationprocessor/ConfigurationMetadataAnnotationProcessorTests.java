@@ -74,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Kris De Volder
  * @author Jonas Keßler
+ * @author Pavel Anisimov
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -458,6 +459,26 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(exampleRecord);
 		assertThat(metadata).has(Metadata.withProperty("multi.some-string"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("multi.some-integer"));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void recordPropertiesWithDefaultValues(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "ExampleRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println(
+					"@org.springframework.boot.configurationsample.ConfigurationProperties(\"record.defaults\")");
+			writer.println("public record ExampleRecord(");
+			writer.println("@org.springframework.boot.configurationsample.DefaultValue(\"An1s9n\") String someString,");
+			writer.println("@org.springframework.boot.configurationsample.DefaultValue(\"594\") Integer someInteger");
+			writer.println(") {");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata)
+				.has(Metadata.withProperty("record.defaults.some-string", String.class).withDefaultValue("An1s9n"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("record.defaults.some-integer", Integer.class).withDefaultValue(594));
 	}
 
 }
