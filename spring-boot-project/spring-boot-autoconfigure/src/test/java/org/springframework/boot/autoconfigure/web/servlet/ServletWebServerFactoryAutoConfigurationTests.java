@@ -57,6 +57,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FrameworkServlet;
@@ -366,6 +367,36 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")
 				.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void relativeRedirectsShouldBeEnabledWhenUsingTomcatContainerAndUseRelativeRedirects() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withPropertyValues("server.forward-headers-strategy=framework",
+								"server.tomcat.use-relative-redirects=true");
+
+		runner.run((context) -> {
+			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+			Boolean relativeRedirects = (Boolean) ReflectionTestUtils.getField(filter, "relativeRedirects");
+			assertThat(relativeRedirects).isTrue();
+		});
+	}
+
+	@Test
+	void relativeRedirectsShouldNotBeEnabledWhenNotUsingTomcatContainer() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withPropertyValues("server.forward-headers-strategy=framework");
+
+		runner.run((context) -> {
+			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+			Boolean relativeRedirects = (Boolean) ReflectionTestUtils.getField(filter, "relativeRedirects");
+			assertThat(relativeRedirects).isFalse();
+		});
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
