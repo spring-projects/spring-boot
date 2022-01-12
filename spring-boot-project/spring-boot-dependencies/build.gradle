@@ -829,7 +829,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "4.0.4.java8") {
+	library("Jaybird", "4.0.5.java8") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird",
