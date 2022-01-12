@@ -389,7 +389,9 @@ public class SpringApplication {
 	 * @param environment the environment to convert
 	 * @return the converted environment
 	 * @since 2.5.7
+	 * @deprecated since 2.5.8 for removal in 2.7.0
 	 */
+	@Deprecated
 	public StandardEnvironment convertEnvironment(ConfigurableEnvironment environment) {
 		return new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
 				deduceEnvironmentClass());

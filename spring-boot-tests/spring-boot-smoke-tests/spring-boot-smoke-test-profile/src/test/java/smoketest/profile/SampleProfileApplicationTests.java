@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,14 @@ class SampleProfileApplicationTests {
 
 	@Test
 	void testDefaultProfile(CapturedOutput output) {
-		SampleProfileApplication.main(new String[0]);
+		SampleProfileApplication.main();
 		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
 	void testGoodbyeProfile(CapturedOutput output) {
 		System.setProperty("spring.profiles.active", "goodbye");
-		SampleProfileApplication.main(new String[0]);
+		SampleProfileApplication.main();
 		assertThat(output).contains("Goodbye Everyone");
 	}
 
@@ -68,13 +68,13 @@ class SampleProfileApplicationTests {
 		 * "name" property.
 		 */
 		System.setProperty("spring.profiles.active", "generic");
-		SampleProfileApplication.main(new String[0]);
+		SampleProfileApplication.main();
 		assertThat(output).contains("Bonjour Phil");
 	}
 
 	@Test
 	void testGoodbyeProfileFromCommandline(CapturedOutput output) {
-		SampleProfileApplication.main(new String[] { "--spring.profiles.active=goodbye" });
+		SampleProfileApplication.main("--spring.profiles.active=goodbye");
 		assertThat(output).contains("Goodbye Everyone");
 	}
 
