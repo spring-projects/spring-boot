@@ -513,7 +513,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore5", "5.1.2") {
+	library("HttpCore5", "5.1.3") {
 		group("org.apache.httpcomponents.core5") {
 			modules = [
 				"httpcore5",
