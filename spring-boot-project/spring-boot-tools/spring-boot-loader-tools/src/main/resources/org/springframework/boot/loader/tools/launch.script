@@ -128,6 +128,9 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 # shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
+# Ensure the user actually exists
+id -u "$run_user" &> /dev/null || unset run_user
+
 # Run as user specified in RUN_AS_USER
 if [[ -n "$RUN_AS_USER" ]]; then
     if ! [[ "$action" =~ ^(status|run)$ ]]; then
