@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import smoketest.profile.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 @SpringBootApplication
 public class SampleProfileApplication implements CommandLineRunner {
@@ -38,8 +40,16 @@ public class SampleProfileApplication implements CommandLineRunner {
 		System.out.println(this.helloWorldService.getMessage());
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleProfileApplication.class, args);
+	public static void main(String... args) {
+		SpringApplication application = new SpringApplication(SampleProfileApplication.class) {
+
+			@Override
+			protected void bindToSpringApplication(ConfigurableEnvironment environment) {
+			}
+
+		};
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.run(args);
 	}
 
 }
