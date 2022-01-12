@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,15 +85,33 @@ public class ServletWebServerFactoryAutoConfiguration {
 		return new TomcatServletWebServerFactoryCustomizer(serverProperties);
 	}
 
-	@Bean
-	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
-	public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
-		ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
-		FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
-		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
-		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		return registration;
+	static class ForwardedHeaderFilterConfiguration {
+
+		@Bean
+		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
+		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+		public FilterRegistrationBean<ForwardedHeaderFilter> tomcatForwardedHeaderFilter(
+				ServerProperties serverProperties) {
+			return createForwardedHeaderFilter(serverProperties.getTomcat().isUseRelativeRedirects());
+		}
+
+		@Bean
+		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+		public FilterRegistrationBean<ForwardedHeaderFilter> defaultForwardedHeaderFilter() {
+			return createForwardedHeaderFilter(false);
+		}
+
+		private FilterRegistrationBean<ForwardedHeaderFilter> createForwardedHeaderFilter(boolean relativeRedirects) {
+			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
+			filter.setRelativeRedirects(relativeRedirects);
+			FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
+			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+			return registration;
+		}
+
 	}
 
 	/**
