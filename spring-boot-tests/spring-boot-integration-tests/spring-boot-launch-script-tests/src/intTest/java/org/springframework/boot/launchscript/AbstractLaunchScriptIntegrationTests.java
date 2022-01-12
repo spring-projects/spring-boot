@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.assertj.core.api.Condition;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.output.ToStringConsumer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -85,6 +87,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 		try (LaunchScriptTestContainer container = new LaunchScriptTestContainer(os, version, this.scriptsDir,
 				script)) {
 			container.withLogConsumer(consumer);
+			container.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("docker")));
 			container.start();
 			while (container.isRunning()) {
 				Thread.sleep(100);
