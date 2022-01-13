@@ -193,7 +193,6 @@ task aggregatedJavadoc(type: Javadoc) {
 			outputLevel = "quiet"
 			source = "1.8"
 			splitIndex = true
-			stylesheetFile = file("src/main/javadoc/spring-javadoc.css")
 			use = true
 			windowTitle = "Spring Boot ${project.version} API"
 		}
