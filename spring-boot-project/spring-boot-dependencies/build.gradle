@@ -942,7 +942,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.8.0") {
+	library("Micrometer", "2.0.0-M1") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
