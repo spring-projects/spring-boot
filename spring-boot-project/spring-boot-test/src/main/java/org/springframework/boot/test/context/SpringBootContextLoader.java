@@ -18,12 +18,15 @@ package org.springframework.boot.test.context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -32,14 +35,18 @@ import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicati
 import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -53,6 +60,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
@@ -80,6 +88,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
+
+	private static final String[] PRIORITY_PROPERTY_SOURCES = { "configurationProperties",
+			DefaultPropertiesPropertySource.NAME, CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME };
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
@@ -111,23 +122,49 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		ConfigurableEnvironment environment = getEnvironment();
-		setActiveProfiles(environment, config.getActiveProfiles());
+		boolean customEnvironent = ReflectionUtils.findMethod(getClass(), "getEnvironment")
+				.getDeclaringClass() != SpringBootContextLoader.class;
+		if (customEnvironent) {
+			ConfigurableEnvironment environment = getEnvironment();
+			prepareEnvironment(config, application, environment, false);
+			application.setEnvironment(environment);
+		}
+		else {
+			application.addListeners(new PrepareEnvironmentListener(config));
+		}
+		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
+		return application.run(args);
+	}
+
+	private void prepareEnvironment(MergedContextConfiguration config, SpringApplication application,
+			ConfigurableEnvironment environment, boolean applicationEnvironment) {
+		MutablePropertySources propertySources = environment.getPropertySources();
+		List<PropertySource<?>> priorityPropertySources = new ArrayList<>();
+		if (applicationEnvironment) {
+			for (String priorityPropertySourceName : PRIORITY_PROPERTY_SOURCES) {
+				PropertySource<?> priorityPropertySource = propertySources.get(priorityPropertySourceName);
+				if (priorityPropertySource != null) {
+					priorityPropertySources.add(priorityPropertySource);
+					propertySources.remove(priorityPropertySourceName);
+				}
+			}
+		}
+		setActiveProfiles(environment, config.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
 				config.getPropertySourceLocations());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
-		application.setEnvironment(environment);
-		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
-		return application.run(args);
+		Collections.reverse(priorityPropertySources);
+		priorityPropertySources.forEach(propertySources::addFirst);
 	}
 
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
+			boolean applicationEnvironment) {
 		if (ObjectUtils.isEmpty(profiles)) {
 			return;
 		}
-		if (!(environment instanceof TestEnvironment)) {
+		if (!applicationEnvironment) {
 			environment.setActiveProfiles(profiles);
 		}
 		String[] pairs = new String[profiles.length];
@@ -152,7 +189,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * @return a {@link ConfigurableEnvironment} instance
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
-		return new TestEnvironment();
+		return new StandardEnvironment();
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
@@ -304,19 +341,25 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * Side-effect free {@link Environment} that doesn't set profiles directly from
-	 * properties.
+	 * {@link ApplicationListener} used to prepare the application created environment.
 	 */
-	static class TestEnvironment extends StandardEnvironment {
+	private class PrepareEnvironmentListener
+			implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, PriorityOrdered {
 
-		@Override
-		protected String doGetActiveProfilesProperty() {
-			return null;
+		private final MergedContextConfiguration config;
+
+		PrepareEnvironmentListener(MergedContextConfiguration config) {
+			this.config = config;
 		}
 
 		@Override
-		protected String doGetDefaultProfilesProperty() {
-			return null;
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
+		@Override
+		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+			prepareEnvironment(this.config, event.getSpringApplication(), event.getEnvironment(), true);
 		}
 
 	}
