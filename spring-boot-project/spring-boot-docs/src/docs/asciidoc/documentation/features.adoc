@@ -6,4 +6,4 @@ Need more details about Spring Boot's core features?
 * *Spring Application:* <<features#features.spring-application, SpringApplication>>
 * *External Configuration:* <<features#features.external-config, External Configuration>>
 * *Profiles:* <<features#features.profiles, Profiles>>
-* *Logging:* <<features#features.logging, Logging>> <<features#features.logging, Logging>>
+* *Logging:* <<features#features.logging, Logging>>
