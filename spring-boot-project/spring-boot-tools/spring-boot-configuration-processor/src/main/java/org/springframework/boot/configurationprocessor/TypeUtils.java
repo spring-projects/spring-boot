@@ -180,7 +180,7 @@ class TypeUtils {
 
 	String getJavaDoc(Element element) {
 		if (element instanceof RecordComponentElement) {
-			return getJavaDoc((RecordComponentElement) element);
+			return getJavadoc((RecordComponentElement) element);
 		}
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
@@ -252,20 +252,20 @@ class TypeUtils {
 		}
 	}
 
-	private String getJavaDoc(RecordComponentElement recordComponent) {
-		String recordJavaDoc = this.env.getElementUtils().getDocComment(recordComponent.getEnclosingElement());
-		if (recordJavaDoc != null) {
-			Pattern paramJavaDocPattern = paramJavaDocPattern(recordComponent.getSimpleName().toString());
-			Matcher paramJavaDocMatcher = paramJavaDocPattern.matcher(recordJavaDoc);
-			if (paramJavaDocMatcher.find()) {
-				String paramJavaDoc = NEW_LINE_PATTERN.matcher(paramJavaDocMatcher.group()).replaceAll("").trim();
-				return paramJavaDoc.isEmpty() ? null : paramJavaDoc;
+	private String getJavadoc(RecordComponentElement recordComponent) {
+		String recordJavadoc = this.env.getElementUtils().getDocComment(recordComponent.getEnclosingElement());
+		if (recordJavadoc != null) {
+			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
+			Matcher paramJavadocMatcher = paramJavadocPattern.matcher(recordJavadoc);
+			if (paramJavadocMatcher.find()) {
+				String paramJavadoc = NEW_LINE_PATTERN.matcher(paramJavadocMatcher.group()).replaceAll("").trim();
+				return paramJavadoc.isEmpty() ? null : paramJavadoc;
 			}
 		}
 		return null;
 	}
 
-	private Pattern paramJavaDocPattern(String paramName) {
+	private Pattern paramJavadocPattern(String paramName) {
 		String pattern = String.format("(?<=@param +%s).*?(?=([\r\n]+ *@)|$)", paramName);
 		return Pattern.compile(pattern, Pattern.DOTALL);
 	}
