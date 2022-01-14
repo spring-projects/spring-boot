@@ -180,7 +180,7 @@ class TypeUtils {
 
 	String getJavaDoc(Element element) {
 		if (element instanceof RecordComponentElement) {
-			return getJavadoc((RecordComponentElement) element);
+			return getJavaDoc((RecordComponentElement) element);
 		}
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
@@ -252,7 +252,7 @@ class TypeUtils {
 		}
 	}
 
-	private String getJavadoc(RecordComponentElement recordComponent) {
+	private String getJavaDoc(RecordComponentElement recordComponent) {
 		String recordJavadoc = this.env.getElementUtils().getDocComment(recordComponent.getEnclosingElement());
 		if (recordJavadoc != null) {
 			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
