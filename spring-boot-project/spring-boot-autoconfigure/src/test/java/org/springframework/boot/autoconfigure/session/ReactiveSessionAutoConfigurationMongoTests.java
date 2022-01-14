@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,21 @@ import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.http.ResponseCookie;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
@@ -44,17 +47,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Weix Sun
  */
+@Testcontainers
 class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
+	@Container
+	static final MongoDBContainer mongoDb = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(5));
+
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
-			.withPropertyValues("spring.mongodb.embedded.version=3.5.5");
+			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=mongodb",
+						"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
@@ -62,17 +70,18 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 	@Test
 	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveRedisSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				.withPropertyValues("spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
 	void defaultConfigWithCustomTimeout() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "spring.session.timeout=1m")
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.timeout=1m",
+						"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run((context) -> {
 					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
@@ -83,9 +92,10 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 
 	@Test
 	void defaultConfigWithCustomSessionTimeout() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "server.reactive.session.timeout=1m")
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=mongodb", "server.reactive.session.timeout=1m",
+						"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run((context) -> {
 					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
@@ -97,26 +107,24 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 	@Test
 	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo")
+				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo",
+						"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 				.run(validateSpringSessionUsesMongo("foo"));
 	}
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
-		AutoConfigurations autoConfigurations = AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+		AutoConfigurations autoConfigurations = AutoConfigurations.of(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
 				MongoReactiveDataAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class);
-		this.contextRunner.withConfiguration(autoConfigurations).withUserConfiguration(Config.class)
-				.withPropertyValues("spring.session.store-type=mongodb",
-						"server.reactive.session.cookie.name:JSESSIONID",
-						"server.reactive.session.cookie.domain:.example.com",
-						"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
-						"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
-						"server.reactive.session.cookie.same-site:strict")
-				.run(assertExchangeWithSession((exchange) -> {
+		this.contextRunner.withConfiguration(autoConfigurations).withUserConfiguration(Config.class).withPropertyValues(
+				"spring.session.store-type=mongodb", "server.reactive.session.cookie.name:JSESSIONID",
+				"server.reactive.session.cookie.domain:.example.com", "server.reactive.session.cookie.path:/example",
+				"server.reactive.session.cookie.max-age:60", "server.reactive.session.cookie.http-only:false",
+				"server.reactive.session.cookie.secure:false", "server.reactive.session.cookie.same-site:strict",
+				"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl()).run(assertExchangeWithSession((exchange) -> {
 					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 					assertThat(cookies).isNotEmpty();
 					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
