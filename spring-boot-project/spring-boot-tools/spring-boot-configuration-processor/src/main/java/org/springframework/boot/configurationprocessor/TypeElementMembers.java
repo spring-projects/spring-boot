@@ -27,6 +27,7 @@ import java.util.function.Function;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
@@ -39,6 +40,7 @@ import javax.lang.model.util.ElementFilter;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Pavel Anisimov
  */
 class TypeElementMembers {
 
@@ -53,6 +55,8 @@ class TypeElementMembers {
 	private final boolean isRecord;
 
 	private final Map<String, VariableElement> fields = new LinkedHashMap<>();
+
+	private final Map<String, RecordComponentElement> recordComponents = new LinkedHashMap<>();
 
 	private final Map<String, List<ExecutableElement>> publicGetters = new LinkedHashMap<>();
 
@@ -71,6 +75,9 @@ class TypeElementMembers {
 		}
 		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
 			processMethod(method);
+		}
+		for (RecordComponentElement recordComponent : ElementFilter.recordComponentsIn(element.getEnclosedElements())) {
+			processRecordComponent(recordComponent);
 		}
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
 		if (superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())
@@ -189,8 +196,19 @@ class TypeElementMembers {
 		this.fields.putIfAbsent(name, field);
 	}
 
+	private void processRecordComponent(RecordComponentElement recordComponent) {
+		String name = recordComponent.getSimpleName().toString();
+		if (!this.recordComponents.containsKey(name)) {
+			this.recordComponents.put(name, recordComponent);
+		}
+	}
+
 	Map<String, VariableElement> getFields() {
 		return Collections.unmodifiableMap(this.fields);
+	}
+
+	Map<String, RecordComponentElement> getRecordComponents() {
+		return Collections.unmodifiableMap(this.recordComponents);
 	}
 
 	Map<String, List<ExecutableElement>> getPublicGetters() {

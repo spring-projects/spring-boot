@@ -155,7 +155,7 @@ abstract class PropertyDescriptor<S extends Element> {
 		return environment.getTypeUtils().getType(getOwnerElement(), getType());
 	}
 
-	private String resolveDescription(MetadataGenerationEnvironment environment) {
+	protected String resolveDescription(MetadataGenerationEnvironment environment) {
 		return environment.getTypeUtils().getJavaDoc(getField());
 	}
 

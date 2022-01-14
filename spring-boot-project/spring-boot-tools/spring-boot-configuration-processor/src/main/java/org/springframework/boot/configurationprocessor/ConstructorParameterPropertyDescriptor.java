@@ -23,6 +23,7 @@ import java.util.function.Function;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.PrimitiveType;
@@ -34,13 +35,17 @@ import javax.tools.Diagnostic.Kind;
  * A {@link PropertyDescriptor} for a constructor parameter.
  *
  * @author Stephane Nicoll
+ * @author Pavel Anisimov
  */
 class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 
+	private final RecordComponentElement recordComponent;
+
 	ConstructorParameterPropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod,
-			VariableElement source, String name, TypeMirror type, VariableElement field, ExecutableElement getter,
-			ExecutableElement setter) {
+			VariableElement source, String name, TypeMirror type, VariableElement field,
+			RecordComponentElement recordComponent, ExecutableElement getter, ExecutableElement setter) {
 		super(ownerElement, factoryMethod, source, name, type, field, getter, setter);
+		this.recordComponent = recordComponent;
 	}
 
 	@Override
@@ -57,6 +62,15 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 			return defaultValue;
 		}
 		return getSource().asType().accept(DefaultPrimitiveTypeVisitor.INSTANCE, null);
+	}
+
+	@Override
+	protected String resolveDescription(MetadataGenerationEnvironment environment) {
+		// record components descriptions are written using @param tag
+		if (this.recordComponent != null) {
+			return environment.getTypeUtils().getJavaDoc(this.recordComponent);
+		}
+		return super.resolveDescription(environment);
 	}
 
 	private Object getDefaultValueFromAnnotation(MetadataGenerationEnvironment environment, Element element) {

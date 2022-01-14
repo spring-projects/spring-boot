@@ -131,7 +131,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			VariableElement field = getField(ownerElement, "flag");
 			VariableElement constructorParameter = getConstructorParameter(ownerElement, "flag");
 			ConstructorParameterPropertyDescriptor property = new ConstructorParameterPropertyDescriptor(ownerElement,
-					null, constructorParameter, "flag", field.asType(), field, getter, null);
+					null, constructorParameter, "flag", field.asType(), field, null, getter, null);
 			assertItemMetadata(metadataEnv, property).isProperty().isDeprecatedWithNoInformation();
 		});
 	}
@@ -223,7 +223,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		ExecutableElement getter = getMethod(ownerElement, createAccessorMethodName("get", name));
 		ExecutableElement setter = getMethod(ownerElement, createAccessorMethodName("set", name));
 		return new ConstructorParameterPropertyDescriptor(ownerElement, null, constructorParameter, name,
-				field.asType(), field, getter, setter);
+				field.asType(), field, null, getter, setter);
 	}
 
 	private VariableElement getConstructorParameter(TypeElement ownerElement, String name) {
