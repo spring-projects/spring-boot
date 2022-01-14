@@ -66,8 +66,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 	@Override
 	protected String resolveDescription(MetadataGenerationEnvironment environment) {
-		// record components descriptions are written using @param notation and require
-		// special processing
+		// record components descriptions are written using @param tag
 		if (this.recordComponent != null) {
 			return environment.getTypeUtils().getJavaDoc(this.recordComponent);
 		}
