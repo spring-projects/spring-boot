@@ -1642,7 +1642,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.3.14-SNAPSHOT") {
+	library("Spring AMQP", "2.3.14") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
