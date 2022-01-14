@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.graphql;
 
+import java.nio.charset.StandardCharsets;
+
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
@@ -30,6 +32,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.graphql.GraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
@@ -182,7 +185,9 @@ class GraphQlAutoConfigurationTests {
 
 		@Bean
 		GraphQlSource customGraphQlSource() {
-			return mock(GraphQlSource.class);
+			ByteArrayResource schemaResource = new ByteArrayResource(
+					"type Query { greeting: String }".getBytes(StandardCharsets.UTF_8));
+			return GraphQlSource.builder().schemaResources(schemaResource).build();
 		}
 
 	}

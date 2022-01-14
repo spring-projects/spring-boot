@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2021 the original author or authors.
+ * Copyright 2002-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.graphql.data;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,8 +42,9 @@ import org.springframework.graphql.execution.GraphQlSource;
  * matching return type.
  *
  * @author Rossen Stoyanchev
+ * @author Brian Clozel
  * @since 2.7.0
- * @see QuerydslDataFetcher#autoRegistrationTypeVisitor(List, List)
+ * @see QuerydslDataFetcher#autoRegistrationConfigurer(List, List)
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GraphQL.class, QuerydslDataFetcher.class, QuerydslPredicateExecutor.class })
@@ -59,11 +59,11 @@ public class GraphQlQuerydslAutoConfiguration {
 
 		return (builder) -> {
 			List<QuerydslPredicateExecutor<?>> executors = executorsProvider.stream().collect(Collectors.toList());
-			List<ReactiveQuerydslPredicateExecutor<?>> reactiveExecutors = reactiveExecutorsProvider.stream()
-					.collect(Collectors.toList());
 			if (!executors.isEmpty()) {
-				builder.typeVisitors(Collections
-						.singletonList(QuerydslDataFetcher.autoRegistrationTypeVisitor(executors, reactiveExecutors)));
+				List<ReactiveQuerydslPredicateExecutor<?>> reactiveExecutors = reactiveExecutorsProvider.stream()
+						.collect(Collectors.toList());
+				builder.configureRuntimeWiring(
+						QuerydslDataFetcher.autoRegistrationConfigurer(executors, reactiveExecutors));
 			}
 		};
 	}
