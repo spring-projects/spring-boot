@@ -34,9 +34,10 @@ The following example shows a customizer that configures the use of a proxy for 
 include::{docs-java}/features/resttemplate/customization/MyRestTemplateCustomizer.java[]
 ----
 
-Finally, you can also create your own `RestTemplateBuilder` bean.
-To prevent switching off the auto-configuration of a `RestTemplateBuilder` and prevent any `RestTemplateCustomizer` beans from being used, make sure to configure your custom instance with a `RestTemplateBuilderConfigurer`.
-The following example exposes a `RestTemplateBuilder` with what Spring Boot would auto-configure, except that custom connect and read timeouts are also specified:
+Finally, you can define your own `RestTemplateBuilder` bean.
+Doing so will replace the auto-configured builder.
+If you want any `RestTemplateCustomizer` beans to be applied to your custom builder, as the auto-configuration would have done, configure it using a `RestTemplateBuilderConfigurer`.
+The following example exposes a `RestTemplateBuilder` that matches what Spring Boot's auto-configuration would have done, except that custom connect and read timeouts are also specified:
 
 [source,java,indent=0,subs="verbatim"]
 ----
@@ -44,4 +45,4 @@ include::{docs-java}/features/resttemplate/customization/MyRestTemplateBuilderCo
 ----
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
-Doing so switches off the auto-configuration of a `RestTemplateBuilder` and prevents any `RestTemplateCustomizer` beans from being used.
+In addition to replacing the auto-configured builder, this also prevents any `RestTemplateCustomizer` beans from being used.
