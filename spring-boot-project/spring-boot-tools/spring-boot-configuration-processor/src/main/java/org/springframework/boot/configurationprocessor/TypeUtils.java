@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
@@ -44,6 +46,7 @@ import javax.lang.model.util.Types;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class TypeUtils {
 
@@ -176,6 +179,9 @@ class TypeUtils {
 	}
 
 	String getJavaDoc(Element element) {
+		if (element instanceof RecordComponentElement) {
+			return getJavaDoc((RecordComponentElement) element);
+		}
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
@@ -244,6 +250,24 @@ class TypeUtils {
 			TypeElement element = (TypeElement) this.types.asElement(type);
 			process(descriptor, element.getSuperclass());
 		}
+	}
+
+	private String getJavaDoc(RecordComponentElement recordComponent) {
+		String recordJavaDoc = this.env.getElementUtils().getDocComment(recordComponent.getEnclosingElement());
+		if (recordJavaDoc != null) {
+			Pattern paramJavaDocPattern = paramJavaDocPattern(recordComponent.getSimpleName().toString());
+			Matcher paramJavaDocMatcher = paramJavaDocPattern.matcher(recordJavaDoc);
+			if (paramJavaDocMatcher.find()) {
+				String paramJavaDoc = NEW_LINE_PATTERN.matcher(paramJavaDocMatcher.group()).replaceAll("").trim();
+				return paramJavaDoc.isEmpty() ? null : paramJavaDoc;
+			}
+		}
+		return null;
+	}
+
+	private Pattern paramJavaDocPattern(String paramName) {
+		String pattern = String.format("(?<=@param +%s).*?(?=([\r\n]+ *@)|$)", paramName);
+		return Pattern.compile(pattern, Pattern.DOTALL);
 	}
 
 	/**

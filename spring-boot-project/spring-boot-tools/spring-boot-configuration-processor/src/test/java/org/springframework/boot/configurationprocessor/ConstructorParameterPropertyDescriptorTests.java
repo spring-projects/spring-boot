@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			VariableElement field = getField(ownerElement, "flag");
 			VariableElement constructorParameter = getConstructorParameter(ownerElement, "flag");
 			ConstructorParameterPropertyDescriptor property = new ConstructorParameterPropertyDescriptor(ownerElement,
-					null, constructorParameter, "flag", field.asType(), field, getter, null);
+					null, constructorParameter, "flag", field.asType(), field, null, getter, null);
 			assertItemMetadata(metadataEnv, property).isProperty().isDeprecatedWithNoInformation();
 		});
 	}
@@ -213,7 +213,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		ExecutableElement getter = getMethod(ownerElement, createAccessorMethodName("get", name));
 		ExecutableElement setter = getMethod(ownerElement, createAccessorMethodName("set", name));
 		return new ConstructorParameterPropertyDescriptor(ownerElement, null, constructorParameter, name,
-				field.asType(), field, getter, setter);
+				field.asType(), field, null, getter, setter);
 	}
 
 	private VariableElement getConstructorParameter(TypeElement ownerElement, String name) {
