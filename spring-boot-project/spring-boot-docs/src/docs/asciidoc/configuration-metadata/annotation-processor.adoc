@@ -79,6 +79,8 @@ The Javadoc on fields is used to populate the `description` attribute. For insta
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
+If you use `@ConfigurationProperties` with record class then record components' descriptions should be provided via class-level Javadoc tag `@param` (there are no explicit instance fields in record classes to put regular field-level Javadocs on).
+
 The annotation processor applies a number of heuristics to extract the default value from the source model.
 Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
 Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.

@@ -256,6 +256,8 @@ include::{docs-java}/features/developingautoconfiguration/customstarter/configur
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
+If you use `@ConfigurationProperties` with record class then record components' descriptions should be provided via class-level Javadoc tag `@param` (there are no explicit instance fields in record classes to put regular field-level Javadocs on).
+
 Here are some rules we follow internally to make sure descriptions are consistent:
 
 * Do not start the description by "The" or "A".
