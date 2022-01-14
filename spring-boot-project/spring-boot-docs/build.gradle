@@ -83,6 +83,7 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "xml-apis", module: "xml-apis"
 	}
 	implementation("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
