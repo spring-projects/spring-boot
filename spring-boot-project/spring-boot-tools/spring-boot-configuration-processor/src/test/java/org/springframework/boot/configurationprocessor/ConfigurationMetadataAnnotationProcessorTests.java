@@ -476,6 +476,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			writer.println(" *    @param   someBoolean   description with extra spaces");
 			writer.println(" *@param someLong description without space after asterisk");
 			writer.println(" * @since 1.0.0");
+			writer.println(" * @param someByte last description in Javadoc");
 			writer.println(" */");
 			writer.println(
 					"@org.springframework.boot.configurationsample.ConfigurationProperties(\"record.descriptions\")");
@@ -483,7 +484,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			writer.println("String someString,");
 			writer.println("Integer someInteger,");
 			writer.println("Boolean someBoolean,");
-			writer.println("Long someLong");
+			writer.println("Long someLong,");
+			writer.println("Byte someByte");
 			writer.println(") {");
 			writer.println("}");
 		}
@@ -496,6 +498,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 				.withDescription("description with extra spaces"));
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-long", Long.class)
 				.withDescription("description without space after asterisk"));
+		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-byte", Byte.class)
+				.withDescription("last description in Javadoc"));
 	}
 
 }
