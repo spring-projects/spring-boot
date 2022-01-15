@@ -18,12 +18,10 @@ package org.springframework.boot.test.context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
-import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -43,10 +41,7 @@ import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -88,9 +83,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
-
-	private static final String[] PRIORITY_PROPERTY_SOURCES = { "configurationProperties",
-			DefaultPropertiesPropertySource.NAME, CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME };
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
@@ -138,25 +130,12 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private void prepareEnvironment(MergedContextConfiguration config, SpringApplication application,
 			ConfigurableEnvironment environment, boolean applicationEnvironment) {
-		MutablePropertySources propertySources = environment.getPropertySources();
-		List<PropertySource<?>> priorityPropertySources = new ArrayList<>();
-		if (applicationEnvironment) {
-			for (String priorityPropertySourceName : PRIORITY_PROPERTY_SOURCES) {
-				PropertySource<?> priorityPropertySource = propertySources.get(priorityPropertySourceName);
-				if (priorityPropertySource != null) {
-					priorityPropertySources.add(priorityPropertySource);
-					propertySources.remove(priorityPropertySourceName);
-				}
-			}
-		}
 		setActiveProfiles(environment, config.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
 				config.getPropertySourceLocations());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
-		Collections.reverse(priorityPropertySources);
-		priorityPropertySources.forEach(propertySources::addFirst);
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
