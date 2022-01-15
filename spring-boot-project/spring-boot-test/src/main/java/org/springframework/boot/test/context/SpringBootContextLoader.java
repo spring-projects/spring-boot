@@ -42,7 +42,6 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -55,7 +54,6 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
@@ -114,10 +112,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		boolean customEnvironent = ReflectionUtils.findMethod(getClass(), "getEnvironment")
-				.getDeclaringClass() != SpringBootContextLoader.class;
-		if (customEnvironent) {
-			ConfigurableEnvironment environment = getEnvironment();
+		ConfigurableEnvironment environment = getEnvironment();
+		if (environment != null) {
 			prepareEnvironment(config, application, environment, false);
 			application.setEnvironment(environment);
 		}
@@ -163,12 +159,13 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * Builds a new {@link ConfigurableEnvironment} instance. You can override this method
-	 * to return something other than {@link StandardEnvironment} if necessary.
+	 * Returns the {@link ConfigurableEnvironment} instance that should be applied to
+	 * {@link SpringApplication} or {@code null} to use the default. You can override this
+	 * method if you need a custom environment.
 	 * @return a {@link ConfigurableEnvironment} instance
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
-		return new StandardEnvironment();
+		return null;
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
