@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,19 @@ class ConfigurationPropertySourcesTests {
 				.addLast(new MapPropertySource("config", Collections.singletonMap("my.example_property", "1234")));
 		ConfigurationPropertySources.attach(child);
 		assertThat(child.getProperty("my.example-property")).isEqualTo("1234");
+	}
+
+	@Test
+	void attachWhenAlreadyAttachedWithSameSourcesShouldReturnExistingInstance() {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		MutablePropertySources sources = environment.getPropertySources();
+		sources.addLast(new SystemEnvironmentPropertySource("system", Collections.singletonMap("SERVER_PORT", "1234")));
+		sources.addLast(new MapPropertySource("config", Collections.singletonMap("server.port", "4568")));
+		ConfigurationPropertySources.attach(environment);
+		Iterable<ConfigurationPropertySource> first = ConfigurationPropertySources.get(environment);
+		ConfigurationPropertySources.attach(environment);
+		Iterable<ConfigurationPropertySource> second = ConfigurationPropertySources.get(environment);
+		assertThat(first).isSameAs(second);
 	}
 
 	@Test
