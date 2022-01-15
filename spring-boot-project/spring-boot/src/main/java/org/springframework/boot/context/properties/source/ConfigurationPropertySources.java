@@ -87,15 +87,17 @@ public final class ConfigurationPropertySources {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
 		MutablePropertySources sources = ((ConfigurableEnvironment) environment).getPropertySources();
 		PropertySource<?> attached = getAttached(sources);
-		if (attached != null) {
-			if (attached instanceof ConfigurationPropertySourcesPropertySource
-					&& ((SpringConfigurationPropertySources) attached.getSource()).isUsingSources(sources)) {
-				return;
-			}
-			sources.remove(ATTACHED_PROPERTY_SOURCE_NAME);
+		if (attached == null || !isUsingSources(attached, sources)) {
+			attached = new ConfigurationPropertySourcesPropertySource(ATTACHED_PROPERTY_SOURCE_NAME,
+					new SpringConfigurationPropertySources(sources));
 		}
-		sources.addFirst(new ConfigurationPropertySourcesPropertySource(ATTACHED_PROPERTY_SOURCE_NAME,
-				new SpringConfigurationPropertySources(sources)));
+		sources.remove(ATTACHED_PROPERTY_SOURCE_NAME);
+		sources.addFirst(attached);
+	}
+
+	private static boolean isUsingSources(PropertySource<?> attached, MutablePropertySources sources) {
+		return attached instanceof ConfigurationPropertySourcesPropertySource
+				&& ((SpringConfigurationPropertySources) attached.getSource()).isUsingSources(sources);
 	}
 
 	static PropertySource<?> getAttached(MutablePropertySources sources) {
