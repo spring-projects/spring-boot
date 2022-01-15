@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Weix Sun
  */
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
 	@Container

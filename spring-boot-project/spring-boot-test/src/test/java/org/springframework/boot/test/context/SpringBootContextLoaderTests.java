@@ -16,7 +16,9 @@
 
 package org.springframework.boot.test.context;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,11 +26,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -127,6 +132,20 @@ class SpringBootContextLoaderTests {
 		assertThat(environment.getPropertySources().get("active-test-profiles")).isNotNull();
 	}
 
+	@Test
+	void propertySourceOrdering() throws Exception {
+		TestContext context = new ExposedTestContextManager(PropertySourceOrdering.class).getExposedTestContext();
+		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getApplicationContext()
+				.getEnvironment();
+		List<String> names = environment.getPropertySources().stream().map(PropertySource::getName)
+				.collect(Collectors.toList());
+		String last = names.remove(names.size() - 1);
+		assertThat(names).containsExactly("configurationProperties", "Inlined Test Properties", "commandLineArgs",
+				"servletConfigInitParams", "servletContextInitParams", "systemProperties", "systemEnvironment",
+				"random");
+		assertThat(last).startsWith("Config resource");
+	}
+
 	private String[] getActiveProfiles(Class<?> testClass) {
 		TestContext testContext = new ExposedTestContextManager(testClass).getExposedTestContext();
 		ApplicationContext applicationContext = testContext.getApplicationContext();
@@ -195,6 +214,12 @@ class SpringBootContextLoaderTests {
 	@SpringBootTest(properties = { "key=myValue" }, classes = Config.class)
 	@ActiveProfiles({ "profile1,2" })
 	static class ActiveProfileWithInlinedProperties {
+
+	}
+
+	@SpringBootTest(classes = Config.class, args = "args", properties = "one=1")
+	@TestPropertySource(properties = "two=2")
+	static class PropertySourceOrdering {
 
 	}
 
