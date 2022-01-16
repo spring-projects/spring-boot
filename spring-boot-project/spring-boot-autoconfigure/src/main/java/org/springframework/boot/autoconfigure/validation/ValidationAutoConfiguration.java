@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import java.util.List;
+
 import jakarta.validation.Validator;
 import jakarta.validation.executable.ExecutableValidator;
+import jakarta.validation.valueextraction.ValueExtractor;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -27,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
+import org.springframework.boot.validation.beanvalidation.AddValueExtractorsLocalValidatorFactoryBean;
 import org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
 import org.springframework.context.ApplicationContext;
@@ -56,8 +60,9 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean(Validator.class)
-	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext) {
-		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
+	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext, List<ValueExtractor> valueExtractors) {
+		AddValueExtractorsLocalValidatorFactoryBean factoryBean = new AddValueExtractorsLocalValidatorFactoryBean();
+		factoryBean.setValueExtractors(valueExtractors);
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;
