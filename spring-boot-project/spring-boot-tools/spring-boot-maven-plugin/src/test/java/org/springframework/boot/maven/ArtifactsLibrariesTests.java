@@ -118,19 +118,22 @@ class ArtifactsLibrariesTests {
 		given(artifact1.getArtifactId()).willReturn("artifact");
 		given(artifact1.getBaseVersion()).willReturn("1.0");
 		given(artifact1.getFile()).willReturn(new File("a"));
+		given(artifact1.getClassifier()).willReturn("cl-1");
 		given(artifact1.getArtifactHandler()).willReturn(this.artifactHandler);
 		given(artifact2.getScope()).willReturn("compile");
-		given(artifact2.getGroupId()).willReturn("g2");
+		given(artifact2.getGroupId()).willReturn("g1");
 		given(artifact2.getArtifactId()).willReturn("artifact");
 		given(artifact2.getBaseVersion()).willReturn("1.0");
 		given(artifact2.getFile()).willReturn(new File("a"));
+		given(artifact2.getClassifier()).willReturn("cl-1");
 		given(artifact2.getArtifactHandler()).willReturn(this.artifactHandler);
 		this.artifacts = new LinkedHashSet<>(Arrays.asList(artifact1, artifact2));
 		this.libs = new ArtifactsLibraries(this.artifacts, Collections.emptyList(), null, mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback, times(2)).library(this.libraryCaptor.capture());
-		assertThat(this.libraryCaptor.getAllValues().get(0).getName()).isEqualTo("g1-artifact-1.0.jar");
-		assertThat(this.libraryCaptor.getAllValues().get(1).getName()).isEqualTo("g2-artifact-1.0.jar");
+		assertThat(this.libraryCaptor.getAllValues().get(0).getName()).isEqualTo(this.libraryCaptor.getAllValues().get(1).getName());
+		assertThat(this.libraryCaptor.getAllValues().get(0).getName()).isEqualTo("g1-artifact-g1-1.0-cl-1.jar");
+		assertThat(this.libraryCaptor.getAllValues().get(1).getName()).isEqualTo("g1-artifact-g1-1.0-cl-1.jar");
 	}
 
 	@Test
