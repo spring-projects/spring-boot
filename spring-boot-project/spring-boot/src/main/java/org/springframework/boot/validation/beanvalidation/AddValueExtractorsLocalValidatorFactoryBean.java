@@ -23,24 +23,23 @@ import jakarta.validation.valueextraction.ValueExtractor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
- * Custom {@link LocalValidatorFactoryBean} that applies
- * {@link ValueExtractor} custom ValueExtractor(s)
+ * Custom {@link LocalValidatorFactoryBean} that applies {@link ValueExtractor} custom
+ * ValueExtractor(s)
  *
- * These custom ValueExtractor(s) should be Spring components.
- * For example:
- * <pre>{@code
- * @Component
+ * These custom ValueExtractor(s) should be Spring components. For example: <pre>{@code
+ * &#64;Component
  * public class CustomValueExtractor implements ValueExtractor<CustomResult<@ExtractedValue ?>> {
  *
- *     @Override
+
+ *     &#64;Override
  *     public void extractValues(CustomResult<?> result, ValueReceiver valueReceiver) {
  *         valueReceiver.value(null, result.getData());
  *     }
  * }
  * }</pre>
- *
  * @author Dang Zhicairang
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class AddValueExtractorsLocalValidatorFactoryBean extends LocalValidatorFactoryBean {
 
 	private List<ValueExtractor> valueExtractors;
@@ -52,6 +51,7 @@ public class AddValueExtractorsLocalValidatorFactoryBean extends LocalValidatorF
 	public void setValueExtractors(List<ValueExtractor> valueExtractors) {
 		this.valueExtractors = valueExtractors;
 	}
+
 
 	@Override
 	protected void postProcessConfiguration(Configuration<?> configuration) {
