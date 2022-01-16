@@ -20,6 +20,7 @@ import java.util.List;
 
 import jakarta.validation.Configuration;
 import jakarta.validation.valueextraction.ValueExtractor;
+
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
@@ -37,25 +38,26 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *     }
  * }
  * }</pre>
+ *
  * @author Dang Zhicairang
+ * @since 2.6.2
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class AddValueExtractorsLocalValidatorFactoryBean extends LocalValidatorFactoryBean {
 
 	private List<ValueExtractor> valueExtractors;
 
 	public List<ValueExtractor> getValueExtractors() {
-		return valueExtractors;
+		return this.valueExtractors;
 	}
 
 	public void setValueExtractors(List<ValueExtractor> valueExtractors) {
 		this.valueExtractors = valueExtractors;
 	}
 
-
 	@Override
 	protected void postProcessConfiguration(Configuration<?> configuration) {
-		valueExtractors.forEach(configuration::addValueExtractor);
+		this.valueExtractors.forEach(configuration::addValueExtractor);
 	}
 
 }

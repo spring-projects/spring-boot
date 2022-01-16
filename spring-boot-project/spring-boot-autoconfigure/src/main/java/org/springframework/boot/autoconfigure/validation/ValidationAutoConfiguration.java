@@ -61,7 +61,7 @@ public class ValidationAutoConfiguration {
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean(Validator.class)
 	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext,
-			List<ValueExtractor> valueExtractors) {
+			@SuppressWarnings({ "rawtypes", "unchecked" }) List<ValueExtractor> valueExtractors) {
 		AddValueExtractorsLocalValidatorFactoryBean factoryBean = new AddValueExtractorsLocalValidatorFactoryBean();
 		factoryBean.setValueExtractors(valueExtractors);
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
