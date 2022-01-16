@@ -164,17 +164,15 @@ public class ArtifactsLibraries implements Libraries {
 
 	private String getFileName(Artifact artifact) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(artifact.getArtifactId())
-				.append("-")
-				.append(artifact.getGroupId())
-				.append("-")
+		sb.append(artifact.getArtifactId()).append("-").append(artifact.getGroupId()).append("-")
 				.append(artifact.getBaseVersion());
 		String classifier = artifact.getClassifier();
 		if (classifier != null) {
 			sb.append("-").append(classifier);
 		}
-		sb.append(".")
-			.append(artifact.getArtifactHandler().getExtension());
+		sb
+
+				.append(".").append(artifact.getArtifactHandler().getExtension());
 		return sb.toString();
 	}
 
