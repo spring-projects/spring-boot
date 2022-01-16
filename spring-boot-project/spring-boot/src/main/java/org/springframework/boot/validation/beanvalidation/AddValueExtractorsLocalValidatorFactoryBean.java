@@ -17,6 +17,7 @@
 package org.springframework.boot.validation.beanvalidation;
 
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.validation.Configuration;
 import jakarta.validation.valueextraction.ValueExtractor;
@@ -57,7 +58,8 @@ public class AddValueExtractorsLocalValidatorFactoryBean extends LocalValidatorF
 
 	@Override
 	protected void postProcessConfiguration(Configuration<?> configuration) {
-		this.valueExtractors.forEach(configuration::addValueExtractor);
+		Optional.ofNullable(this.getValueExtractors())
+				.ifPresent((list) -> list.forEach(configuration::addValueExtractor));
 	}
 
 }
