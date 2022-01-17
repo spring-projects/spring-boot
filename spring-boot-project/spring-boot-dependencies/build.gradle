@@ -1378,7 +1378,7 @@ bom {
 			]
 		}
 	}
-	library("Spring RESTDocs", "3.0.0-SNAPSHOT") {
+	library("Spring RESTDocs", "3.0.0-M1") {
 		group("org.springframework.restdocs") {
 			modules = [
 				"spring-restdocs-asciidoctor",
