@@ -102,18 +102,6 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	void whenThereIsNoDataSourceAutoConfigurationBacksOff() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
-	}
-
-	@Test
-	void whenThereIsAnEntityManagerFactoryButNoDataSourceAutoConfigurationBacksOff() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class, EntityManagerFactoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
-	}
-
-	@Test
 	void testNoBatchConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {

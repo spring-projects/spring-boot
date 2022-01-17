@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JobLauncher.class, DataSource.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
-@ConditionalOnBean(JobLauncher.class)
+@ConditionalOnBean({ DataSource.class, JobLauncher.class })
 @EnableConfigurationProperties(BatchProperties.class)
 @Import({ BatchConfigurerConfiguration.class, DatabaseInitializationDependencyConfigurer.class })
 public class BatchAutoConfiguration {
@@ -103,7 +103,6 @@ public class BatchAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnClass(DatabasePopulator.class)
 	@Conditional(OnBatchDatasourceInitializationCondition.class)
 	static class DataSourceInitializerConfiguration {
