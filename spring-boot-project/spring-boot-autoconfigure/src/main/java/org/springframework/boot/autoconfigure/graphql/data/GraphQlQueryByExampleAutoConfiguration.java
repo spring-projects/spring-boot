@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2021 the original author or authors.
+ * Copyright 2002-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.graphql.data;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +43,7 @@ import org.springframework.graphql.execution.GraphQlSource;
  *
  * @author Rossen Stoyanchev
  * @since 2.7.0
- * @see QueryByExampleDataFetcher#autoRegistrationTypeVisitor(List, List)
+ * @see QueryByExampleDataFetcher#autoRegistrationConfigurer(List, List)
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GraphQL.class, QueryByExampleDataFetcher.class, QueryByExampleExecutor.class })
@@ -62,8 +61,8 @@ public class GraphQlQueryByExampleAutoConfiguration {
 			List<ReactiveQueryByExampleExecutor<?>> reactiveExecutors = reactiveExecutorsProvider.stream()
 					.collect(Collectors.toList());
 			if (!executors.isEmpty()) {
-				builder.typeVisitors(Collections.singletonList(
-						QueryByExampleDataFetcher.autoRegistrationTypeVisitor(executors, reactiveExecutors)));
+				builder.configureRuntimeWiring(
+						QueryByExampleDataFetcher.autoRegistrationConfigurer(executors, reactiveExecutors));
 			}
 		};
 	}
