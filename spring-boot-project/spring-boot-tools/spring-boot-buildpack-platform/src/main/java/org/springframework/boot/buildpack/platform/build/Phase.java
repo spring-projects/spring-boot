@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -33,6 +34,8 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  */
 class Phase {
+
+	private static final String SYSTEM_PROPERTY_DOCKER_HOST = "docker.host";
 
 	private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
 
@@ -121,12 +124,34 @@ class Phase {
 	void apply(ContainerConfig.Update update) {
 		if (this.daemonAccess) {
 			update.withUser("root");
-			update.withBinding(Binding.from(DOMAIN_SOCKET_PATH, DOMAIN_SOCKET_PATH));
+			update.withBinding(Binding.from(getDomainSocketPath(), DOMAIN_SOCKET_PATH));
 		}
 		update.withCommand("/cnb/lifecycle/" + this.name, StringUtils.toStringArray(this.args));
 		update.withLabel("author", "spring-boot");
 		this.bindings.forEach(update::withBinding);
 		this.env.forEach(update::withEnv);
+	}
+
+	private static String getDomainSocketPath() {
+		try {
+			String domainSocketPath = System.getProperty(SYSTEM_PROPERTY_DOCKER_HOST);
+			if (domainSocketPath == null) {
+				String envName = SYSTEM_PROPERTY_DOCKER_HOST.replace('.', '_');
+				domainSocketPath = System.getenv(envName);
+			}
+			if (domainSocketPath == null) {
+				String envName = SYSTEM_PROPERTY_DOCKER_HOST.toUpperCase(Locale.ENGLISH).replace('.', '_');
+				domainSocketPath = System.getenv(envName);
+			}
+			if (domainSocketPath != null) {
+				return domainSocketPath;
+			}
+		}
+		catch (Throwable ex) {
+			System.err.println("Could not resolve '" + SYSTEM_PROPERTY_DOCKER_HOST
+					+ "' in as system property or in environment: " + ex);
+		}
+		return DOMAIN_SOCKET_PATH;
 	}
 
 }

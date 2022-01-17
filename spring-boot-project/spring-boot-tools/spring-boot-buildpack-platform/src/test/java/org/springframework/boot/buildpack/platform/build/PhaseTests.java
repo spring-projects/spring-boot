@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,17 @@ class PhaseTests {
 		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
+	}
+
+	@Test
+	void applyWhenDockerHostConfiguredWithDaemonAccessUpdatesConfigurationWithDomainSocketBinding() {
+		System.setProperty("docker.host", "/my/docker.sock");
+
+		Phase phase = new Phase("test", false);
+		phase.withDaemonAccess();
+		Update update = mock(Update.class);
+		phase.apply(update);
+		verify(update).withBinding(Binding.from("/my/docker.sock", "/var/run/docker.sock"));
 	}
 
 	@Test
