@@ -73,7 +73,8 @@ org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyNameFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
-org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
+org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.ReactiveMissingWebServerFactoryFailureAnalyzer
 
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
