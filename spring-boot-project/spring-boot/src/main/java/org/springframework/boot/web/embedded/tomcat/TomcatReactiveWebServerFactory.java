@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private final List<Valve> engineValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
+
+	private List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
 
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
@@ -105,7 +107,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		super(port);
 	}
 
-	private static List<LifecycleListener> getDefaultLifecycleListeners() {
+	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
 		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
 		return AprLifecycleListener.isAprAvailable() ? new ArrayList<>(Arrays.asList(aprLifecycleListener))
 				: new ArrayList<>();
@@ -119,6 +121,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
+		for (LifecycleListener listener : this.serverLifecycleListeners) {
+			tomcat.getServer().addLifecycleListener(listener);
+		}
 		Connector connector = new Connector(this.protocol);
 		connector.setThrowOnFailure(true);
 		tomcat.getService().addConnector(connector);
