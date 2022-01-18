@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,12 +103,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 				return result;
 			}
 			if (contributor.getKind() == Kind.UNBOUND_IMPORT) {
-				Iterable<ConfigurationPropertySource> sources = Collections
-						.singleton(contributor.getConfigurationPropertySource());
-				PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-						result, activationContext, true);
-				Binder binder = new Binder(sources, placeholdersResolver, null, null, null);
-				ConfigDataEnvironmentContributor bound = contributor.withBoundProperties(binder);
+				ConfigDataEnvironmentContributor bound = contributor.withBoundProperties(result, activationContext);
 				result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapContext,
 						result.getRoot().withReplacement(contributor, bound));
 				continue;
@@ -220,7 +215,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		Iterable<ConfigurationPropertySource> sources = () -> getBinderSources(
 				filter.and((contributor) -> failOnInactiveSource || contributor.isActive(activationContext)));
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(this.root,
-				activationContext, failOnInactiveSource);
+				activationContext, null, failOnInactiveSource);
 		BindHandler bindHandler = !failOnInactiveSource ? null : new InactiveSourceChecker(activationContext);
 		return new Binder(sources, placeholdersResolver, null, null, bindHandler);
 	}
