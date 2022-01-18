@@ -141,6 +141,7 @@ Spring WebFlux supports a variety of templating technologies, including Thymelea
 Spring Boot includes auto-configuration support for the following templating engines:
 
 * https://freemarker.apache.org/docs/[FreeMarker]
+* https://www.thymeleaf.org[Thymeleaf]
 * https://mustache.github.io/[Mustache]
 
 When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
