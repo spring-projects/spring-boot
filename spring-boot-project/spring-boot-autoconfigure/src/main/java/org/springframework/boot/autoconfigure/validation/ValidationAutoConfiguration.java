@@ -30,9 +30,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
-import org.springframework.boot.validation.beanvalidation.AddValueExtractorsLocalValidatorFactoryBean;
+import org.springframework.boot.validation.beanvalidation.CustomizableLocalValidatorFactoryBean;
 import org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
+import org.springframework.boot.validation.beanvalidation.customize.AddValueExtractorCustomizer;
+import org.springframework.boot.validation.beanvalidation.customize.Customizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,12 +60,19 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 public class ValidationAutoConfiguration {
 
 	@Bean
+	public static AddValueExtractorCustomizer autoAddValueExtractorCustomizer(
+			@SuppressWarnings({ "rawtypes", "unchecked" }) List<ValueExtractor> valueExtractors) {
+
+		return new AddValueExtractorCustomizer(valueExtractors);
+	}
+
+	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean(Validator.class)
 	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext,
-			@SuppressWarnings({ "rawtypes", "unchecked" }) List<ValueExtractor> valueExtractors) {
-		AddValueExtractorsLocalValidatorFactoryBean factoryBean = new AddValueExtractorsLocalValidatorFactoryBean();
-		factoryBean.setValueExtractors(valueExtractors);
+			List<Customizer> customizers) {
+		CustomizableLocalValidatorFactoryBean factoryBean = new CustomizableLocalValidatorFactoryBean();
+		factoryBean.setCustomizers(customizers);
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;

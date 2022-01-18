@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.validation.beanvalidation;
+package org.springframework.boot.validation.beanvalidation.customize;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,31 +22,20 @@ import java.util.Optional;
 import jakarta.validation.Configuration;
 import jakarta.validation.valueextraction.ValueExtractor;
 
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-
 /**
- * Custom {@link LocalValidatorFactoryBean} that applies {@link ValueExtractor} custom
- * ValueExtractor(s)
- *
- * These custom ValueExtractor(s) should be Spring components. For example: <pre>{@code
- * &#64;Component
- * public class CustomValueExtractor implements ValueExtractor<CustomResult<@ExtractedValue ?>> {
- *
-
- *     &#64;Override
- *     public void extractValues(CustomResult<?> result, ValueReceiver valueReceiver) {
- *         valueReceiver.value(null, result.getData());
- *     }
- * }
- * }</pre>
+ * Add given collection of {@link ValueExtractor} into {@link Configuration}.
  *
  * @author Dang Zhicairang
  * @since 2.6.2
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class AddValueExtractorsLocalValidatorFactoryBean extends LocalValidatorFactoryBean {
+public class AddValueExtractorCustomizer implements Customizer {
 
 	private List<ValueExtractor> valueExtractors;
+
+	public AddValueExtractorCustomizer(List<ValueExtractor> valueExtractors) {
+		this.valueExtractors = valueExtractors;
+	}
 
 	public List<ValueExtractor> getValueExtractors() {
 		return this.valueExtractors;
@@ -57,7 +46,7 @@ public class AddValueExtractorsLocalValidatorFactoryBean extends LocalValidatorF
 	}
 
 	@Override
-	protected void postProcessConfiguration(Configuration<?> configuration) {
+	public void customize(Configuration<?> configuration) {
 		Optional.ofNullable(this.getValueExtractors())
 				.ifPresent((list) -> list.forEach(configuration::addValueExtractor));
 	}
