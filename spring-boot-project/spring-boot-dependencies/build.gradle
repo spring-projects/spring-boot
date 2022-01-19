@@ -226,17 +226,19 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "3.2.5") {
+	library("Embedded Mongo", "3.2.8") {
 		group("de.flapdoodle.embed") {
 			modules = [
 				"de.flapdoodle.embed.mongo"
 			]
 		}
 	}
-	library("Flyway", "8.3.0") {
+	library("Flyway", "8.4.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
+				"flyway-firebird",
+				"flyway-mysql",
                 "flyway-sqlserver"
 			]
 			plugins = [
@@ -776,7 +778,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.6.2") {
+	library("Liquibase", "4.7.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-core"
@@ -988,7 +990,7 @@ bom {
 			]
 		}
 	}
-	library("MySQL", "8.0.27") {
+	library("MySQL", "8.0.28") {
 		group("mysql") {
 			modules = [
 				"mysql-connector-java" {
