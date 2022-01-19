@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -40,10 +41,14 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 
 	private final PropertyPlaceholderHelper helper;
 
+	private final ConfigDataEnvironmentContributor activeContributor;
+
 	ConfigDataEnvironmentContributorPlaceholdersResolver(Iterable<ConfigDataEnvironmentContributor> contributors,
-			ConfigDataActivationContext activationContext, boolean failOnResolveFromInactiveContributor) {
+			ConfigDataActivationContext activationContext, ConfigDataEnvironmentContributor activeContributor,
+			boolean failOnResolveFromInactiveContributor) {
 		this.contributors = contributors;
 		this.activationContext = activationContext;
+		this.activeContributor = activeContributor;
 		this.failOnResolveFromInactiveContributor = failOnResolveFromInactiveContributor;
 		this.helper = new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
 				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true);
@@ -62,7 +67,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 		for (ConfigDataEnvironmentContributor contributor : this.contributors) {
 			PropertySource<?> propertySource = contributor.getPropertySource();
 			Object value = (propertySource != null) ? propertySource.getProperty(placeholder) : null;
-			if (value != null && !contributor.isActive(this.activationContext)) {
+			if (value != null && !isActive(contributor)) {
 				if (this.failOnResolveFromInactiveContributor) {
 					ConfigDataResource resource = contributor.getResource();
 					Origin origin = OriginLookup.getOrigin(propertySource, placeholder);
@@ -73,6 +78,17 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 			result = (result != null) ? result : value;
 		}
 		return (result != null) ? String.valueOf(result) : null;
+	}
+
+	private boolean isActive(ConfigDataEnvironmentContributor contributor) {
+		if (contributor == this.activeContributor) {
+			return true;
+		}
+		if (contributor.getKind() != Kind.UNBOUND_IMPORT) {
+			return contributor.isActive(this.activationContext);
+		}
+		return contributor.withBoundProperties(this.contributors, this.activationContext)
+				.isActive(this.activationContext);
 	}
 
 }
