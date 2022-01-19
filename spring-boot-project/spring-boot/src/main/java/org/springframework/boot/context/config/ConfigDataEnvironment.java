@@ -138,7 +138,6 @@ class ConfigDataEnvironment {
 			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles,
 			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		Binder binder = Binder.get(environment);
-		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
 		this.notFoundAction = binder.bind(ON_NOT_FOUND_PROPERTY, ConfigDataNotFoundAction.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,19 +113,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	/**
 	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
-	 * {@link #AbstractApplicationContextRunner(Supplier, Function)}
-	 */
-	@Deprecated
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
-		Assert.notNull(contextFactory, "ContextFactory must not be null");
-		this.runnerConfiguration = new RunnerConfiguration<>(contextFactory);
-		this.instanceFactory = this::legacyNewInstance;
-	}
-
-	/**
-	 * Create a new {@link AbstractApplicationContextRunner} instance.
-	 * @param contextFactory the factory used to create the actual context
 	 * @param instanceFactory the factory used to create new instance of the runner
 	 * @since 2.6.0
 	 */
@@ -149,43 +136,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		Assert.notNull(instanceFactory, "instanceFactory must not be null");
 		this.runnerConfiguration = configuration;
 		this.instanceFactory = instanceFactory;
-	}
-
-	/**
-	 * Create a new {@link AbstractApplicationContextRunner} instance.
-	 * @param contextFactory the factory used to create the actual context
-	 * @param allowBeanDefinitionOverriding whether bean definition overriding is allowed
-	 * @param initializers the initializers
-	 * @param environmentProperties the environment properties
-	 * @param systemProperties the system properties
-	 * @param classLoader the class loader
-	 * @param parent the parent
-	 * @param beanRegistrations the bean registrations
-	 * @param configurations the configuration
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
-	 * {@link #AbstractApplicationContextRunner(Supplier, Function)}
-	 */
-	@Deprecated
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory, boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
-			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations) {
-		Assert.notNull(contextFactory, "ContextFactory must not be null");
-		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
-		Assert.notNull(systemProperties, "SystemProperties must not be null");
-		Assert.notNull(configurations, "Configurations must not be null");
-		Assert.notNull(initializers, "Initializers must not be null");
-		RunnerConfiguration<C> configuration = new RunnerConfiguration<>(contextFactory);
-		configuration.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
-		configuration.initializers = Collections.unmodifiableList(initializers);
-		configuration.environmentProperties = environmentProperties;
-		configuration.systemProperties = systemProperties;
-		configuration.classLoader = classLoader;
-		configuration.parent = parent;
-		configuration.beanRegistrations = Collections.unmodifiableList(beanRegistrations);
-		configuration.configurations = Collections.unmodifiableList(configurations);
-		this.runnerConfiguration = configuration;
-		this.instanceFactory = this::legacyNewInstance;
 	}
 
 	/**
@@ -373,20 +323,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	public SELF with(Function<SELF, SELF> customizer) {
 		return customizer.apply((SELF) this);
 	}
-
-	@Deprecated
-	private SELF legacyNewInstance(RunnerConfiguration<C> configuration) {
-		return newInstance(configuration.contextFactory, configuration.allowBeanDefinitionOverriding,
-				configuration.initializers, configuration.environmentProperties, configuration.systemProperties,
-				configuration.classLoader, configuration.parent, configuration.beanRegistrations,
-				configuration.configurations);
-	}
-
-	@Deprecated
-	protected abstract SELF newInstance(Supplier<C> contextFactory, boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
-			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations);
 
 	private SELF newInstance(RunnerConfiguration<C> runnerConfiguration) {
 		return this.instanceFactory.apply(runnerConfiguration);

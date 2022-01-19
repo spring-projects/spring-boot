@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,19 +191,6 @@ public class EnvironmentEndpoint {
 		else {
 			map.put(root + source.getName(), source);
 		}
-	}
-
-	/**
-	 * Apply sanitization to the given name and value.
-	 * @param key the name to sanitize
-	 * @param value the value to sanitize
-	 * @return the sanitized value
-	 * @deprecated since 2.6.0 for removal in 2.8.0 as sanitization should be internal to
-	 * the class
-	 */
-	@Deprecated
-	public Object sanitize(String key, Object value) {
-		return this.sanitizer.sanitize(key, value);
 	}
 
 	private Object sanitize(PropertySource<?> source, String name, Object value) {

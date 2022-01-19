@@ -49,19 +49,16 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 2.2.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveRestClients.class, WebClient.class, HttpClient.class })
-@EnableConfigurationProperties({ ElasticsearchProperties.class, ReactiveElasticsearchRestClientProperties.class,
-		DeprecatedReactiveElasticsearchRestClientProperties.class })
+@EnableConfigurationProperties({ ElasticsearchProperties.class, ReactiveElasticsearchRestClientProperties.class })
 public class ReactiveElasticsearchRestClientAutoConfiguration {
 
 	private final ConsolidatedProperties properties;
 
 	ReactiveElasticsearchRestClientAutoConfiguration(ElasticsearchProperties properties,
-			ReactiveElasticsearchRestClientProperties restClientProperties,
-			DeprecatedReactiveElasticsearchRestClientProperties reactiveProperties) {
-		this.properties = new ConsolidatedProperties(properties, restClientProperties, reactiveProperties);
+			ReactiveElasticsearchRestClientProperties restClientProperties) {
+		this.properties = new ConsolidatedProperties(properties, restClientProperties);
 	}
 
 	@Bean
@@ -103,24 +100,17 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 
 		private final ReactiveElasticsearchRestClientProperties restClientProperties;
 
-		private final DeprecatedReactiveElasticsearchRestClientProperties deprecatedProperties;
-
 		private final List<URI> uris;
 
 		private ConsolidatedProperties(ElasticsearchProperties properties,
-				ReactiveElasticsearchRestClientProperties restClientProperties,
-				DeprecatedReactiveElasticsearchRestClientProperties deprecatedreactiveProperties) {
+				ReactiveElasticsearchRestClientProperties restClientProperties) {
 			this.properties = properties;
 			this.restClientProperties = restClientProperties;
-			this.deprecatedProperties = deprecatedreactiveProperties;
 			this.uris = properties.getUris().stream().map((s) -> s.startsWith("http") ? s : "http://" + s)
 					.map(URI::create).collect(Collectors.toList());
 		}
 
 		private List<String> getEndpoints() {
-			if (this.deprecatedProperties.isCustomized()) {
-				return this.deprecatedProperties.getEndpoints();
-			}
 			return this.uris.stream().map(this::getEndpoint).collect(Collectors.toList());
 		}
 
@@ -129,9 +119,6 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 		}
 
 		private Credentials getCredentials() {
-			if (this.deprecatedProperties.isCustomized()) {
-				return Credentials.from(this.deprecatedProperties);
-			}
 			Credentials propertyCredentials = Credentials.from(this.properties);
 			Credentials uriCredentials = Credentials.from(this.uris);
 			if (uriCredentials == null) {
@@ -144,31 +131,25 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 		}
 
 		private Duration getConnectionTimeout() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getConnectionTimeout()
-					: this.properties.getConnectionTimeout();
+			return this.properties.getConnectionTimeout();
 		}
 
 		private Duration getSocketTimeout() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getSocketTimeout()
-					: this.properties.getSocketTimeout();
+			return this.properties.getSocketTimeout();
 		}
 
 		private boolean isUseSsl() {
-			if (this.deprecatedProperties.isCustomized()) {
-				return this.deprecatedProperties.isUseSsl();
-			}
 			Set<String> schemes = this.uris.stream().map(URI::getScheme).collect(Collectors.toSet());
 			Assert.isTrue(schemes.size() == 1, "Configured Elasticsearch URIs have varying schemes");
 			return schemes.iterator().next().equals("https");
 		}
 
 		private DataSize getMaxInMemorySize() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getMaxInMemorySize()
-					: this.restClientProperties.getMaxInMemorySize();
+			return this.restClientProperties.getMaxInMemorySize();
 		}
 
 		private String getPathPrefix() {
-			return this.deprecatedProperties.isCustomized() ? null : this.properties.getPathPrefix();
+			return this.properties.getPathPrefix();
 		}
 
 		private static final class Credentials {
@@ -204,10 +185,6 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			}
 
 			private static Credentials from(ElasticsearchProperties properties) {
-				return getCredentials(properties.getUsername(), properties.getPassword());
-			}
-
-			private static Credentials from(DeprecatedReactiveElasticsearchRestClientProperties properties) {
 				return getCredentials(properties.getUsername(), properties.getPassword());
 			}
 

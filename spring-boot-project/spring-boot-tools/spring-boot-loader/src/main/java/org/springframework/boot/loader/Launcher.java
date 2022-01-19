@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,19 +63,6 @@ public abstract class Launcher {
 	 * @param archives the archives
 	 * @return the classloader
 	 * @throws Exception if the classloader cannot be created
-	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
-	 * {@link #createClassLoader(Iterator)}
-	 */
-	@Deprecated
-	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		return createClassLoader(archives.iterator());
-	}
-
-	/**
-	 * Create a classloader for the specified archives.
-	 * @param archives the archives
-	 * @return the classloader
-	 * @throws Exception if the classloader cannot be created
 	 * @since 2.3.0
 	 */
 	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
@@ -132,21 +119,7 @@ public abstract class Launcher {
 	 * @throws Exception if the class path archives cannot be obtained
 	 * @since 2.3.0
 	 */
-	protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
-		return getClassPathArchives().iterator();
-	}
-
-	/**
-	 * Returns the archives that will be used to construct the class path.
-	 * @return the class path archives
-	 * @throws Exception if the class path archives cannot be obtained
-	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of implementing
-	 * {@link #getClassPathArchivesIterator()}.
-	 */
-	@Deprecated
-	protected List<Archive> getClassPathArchives() throws Exception {
-		throw new IllegalStateException("Unexpected call to getClassPathArchives()");
-	}
+	protected abstract Iterator<Archive> getClassPathArchivesIterator() throws Exception;
 
 	protected final Archive createArchive() throws Exception {
 		ProtectionDomain protectionDomain = getClass().getProtectionDomain();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,14 +68,6 @@ class SqlInitializationAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenConnectionFactoryIsAvailableAndInitializationIsDisabledThenInitializerIsNotAutoConfigured() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withPropertyValues("spring.sql.init.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
-	}
-
-	@Test
 	void whenConnectionFactoryIsAvailableAndModeIsNeverThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
@@ -87,14 +79,6 @@ class SqlInitializationAutoConfigurationTests {
 	void whenDataSourceIsAvailableThenDataSourceInitializerIsAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(DataSourceScriptDatabaseInitializer.class));
-	}
-
-	@Test
-	@Deprecated
-	void whenDataSourceIsAvailableAndInitializationIsDisabledThenInitializerIsNotAutoConfigured() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.sql.init.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}
 
 	@Test
@@ -167,16 +151,6 @@ class SqlInitializationAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ConnectionFactory.class);
 					assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
-				});
-	}
-
-	@Test
-	void whenDataSourceAutoConfigurationHasDefinedAnInitializerThenAutoConfigurationBacksOff() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.schema=classpath:schema.sql")
-				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO)).run((context) -> {
-					assertThat(context).hasSingleBean(SqlDataSourceScriptDatabaseInitializer.class);
-					assertThat(context).hasBean("scriptDataSourceInitializer");
 				});
 	}
 

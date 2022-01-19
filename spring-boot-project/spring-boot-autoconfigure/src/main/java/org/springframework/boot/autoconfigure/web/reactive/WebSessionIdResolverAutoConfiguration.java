@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.web.server.Cookie;
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
@@ -48,24 +48,9 @@ public class WebSessionIdResolverAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
-	private final WebFluxProperties webFluxProperties;
-
 	public WebSessionIdResolverAutoConfiguration(ServerProperties serverProperties,
 			WebFluxProperties webFluxProperties) {
 		this.serverProperties = serverProperties;
-		this.webFluxProperties = webFluxProperties;
-		assertNoMutuallyExclusiveProperties(serverProperties, webFluxProperties);
-	}
-
-	@SuppressWarnings("deprecation")
-	private void assertNoMutuallyExclusiveProperties(ServerProperties serverProperties,
-			WebFluxProperties webFluxProperties) {
-		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
-			entries.put("spring.webflux.session.cookie.same-site",
-					webFluxProperties.getSession().getCookie().getSameSite());
-			entries.put("server.reactive.session.cookie.same-site",
-					serverProperties.getReactive().getSession().getCookie().getSameSite());
-		});
 	}
 
 	@Bean
@@ -91,16 +76,9 @@ public class WebSessionIdResolverAutoConfiguration {
 		map.from(getSameSite(cookie)).to(builder::sameSite);
 	}
 
-	@SuppressWarnings("deprecation")
 	private String getSameSite(Cookie properties) {
-		if (properties.getSameSite() != null) {
-			return properties.getSameSite().attributeValue();
-		}
-		WebFluxProperties.Cookie deprecatedProperties = this.webFluxProperties.getSession().getCookie();
-		if (deprecatedProperties.getSameSite() != null) {
-			return deprecatedProperties.getSameSite().attribute();
-		}
-		return null;
+		SameSite sameSite = properties.getSameSite();
+		return (sameSite != null) ? sameSite.attributeValue() : null;
 	}
 
 }

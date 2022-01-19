@@ -34,7 +34,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -351,14 +350,6 @@ class ConfigDataEnvironmentContributorTests {
 		assertThat(contributor.getPropertySource()).isEqualTo(propertySource);
 		assertThat(contributor.getConfigurationPropertySource()).isNotNull();
 		assertThat(contributor.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION)).isEmpty();
-	}
-
-	@Test
-	void bindWhenHasUseLegacyPropertyThrowsException() {
-		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty("spring.config.use-legacy-processing", "true");
-		assertThatExceptionOfType(UseLegacyConfigProcessingException.class).isThrownBy(
-				() -> createBoundContributor(null, new ConfigData(Collections.singleton(propertySource)), 0));
 	}
 
 	@Test // gh-25029

@@ -108,8 +108,7 @@ public class BatchAutoConfiguration {
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
-		@ConditionalOnMissingBean({ BatchDataSourceScriptDatabaseInitializer.class, BatchDataSourceInitializer.class })
+		@ConditionalOnMissingBean(BatchDataSourceScriptDatabaseInitializer.class)
 		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
 			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),

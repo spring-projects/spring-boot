@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -387,18 +386,6 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void whenTheUserDefinesTheirOwnIntegrationDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
-		this.contextRunner.withUserConfiguration(CustomIntegrationDataSourceInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class)
-						.hasSingleBean(IntegrationDataSourceInitializer.class).hasBean("customInitializer"));
-	}
-
-	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredIntegrationInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -574,18 +561,6 @@ class IntegrationAutoConfigurationTests {
 		@Bean
 		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
 			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
-		}
-
-	}
-
-	@Deprecated
-	@Configuration(proxyBeanMethods = false)
-	static class CustomIntegrationDataSourceInitializerConfiguration {
-
-		@Bean
-		IntegrationDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-				IntegrationProperties properties) {
-			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

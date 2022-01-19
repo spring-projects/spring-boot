@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,19 +38,6 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	private final ConfigurableApplicationContext context;
 
 	private final Duration timeTaken;
-
-	/**
-	 * Create a new {@link ApplicationReadyEvent} instance.
-	 * @param application the current application
-	 * @param args the arguments the application is running with
-	 * @param context the context that was being created
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
-	 * {@link #ApplicationReadyEvent(SpringApplication, String[], ConfigurableApplicationContext, Duration)}
-	 */
-	@Deprecated
-	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context) {
-		this(application, args, context, null);
-	}
 
 	/**
 	 * Create a new {@link ApplicationReadyEvent} instance.

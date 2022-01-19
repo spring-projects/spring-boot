@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
@@ -319,18 +318,6 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void whenTheUserDefinesTheirOwnQuartzDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
-		this.contextRunner.withUserConfiguration(CustomQuartzDataSourceInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.quartz.job-store-type=jdbc")
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class)
-						.hasSingleBean(QuartzDataSourceInitializer.class).hasBean("customInitializer"));
-	}
-
-	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredQuartzInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -557,18 +544,6 @@ class QuartzAutoConfigurationTests {
 		@Bean
 		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
 			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
-		}
-
-	}
-
-	@Deprecated
-	@Configuration(proxyBeanMethods = false)
-	static class CustomQuartzDataSourceInitializerConfiguration {
-
-		@Bean
-		QuartzDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-				QuartzProperties properties) {
-			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

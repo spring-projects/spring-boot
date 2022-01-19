@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -28,8 +24,6 @@ import java.util.List;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -79,33 +73,6 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomClientConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class)
 						.hasSingleBean(ClientConfiguration.class).hasBean("customClientConfiguration"));
-	}
-
-	@Test
-	@Deprecated
-	void whenEndpointIsCustomizedThenClientConfigurationHasCustomEndpoint() {
-		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints=localhost:9876")
-				.run((context) -> {
-					List<InetSocketAddress> endpoints = context.getBean(ClientConfiguration.class).getEndpoints();
-					assertThat(endpoints).hasSize(1);
-					assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
-					assertThat(endpoints.get(0).getPort()).isEqualTo(9876);
-				});
-	}
-
-	@Test
-	@Deprecated
-	void whenMultipleEndpointsAreConfiguredThenClientConfigurationHasMultipleEndpoints() {
-		this.contextRunner
-				.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints=localhost:9876,localhost:8765")
-				.run((context) -> {
-					List<InetSocketAddress> endpoints = context.getBean(ClientConfiguration.class).getEndpoints();
-					assertThat(endpoints).hasSize(2);
-					assertThat(endpoints.get(0).getHostString()).isEqualTo("localhost");
-					assertThat(endpoints.get(0).getPort()).isEqualTo(9876);
-					assertThat(endpoints.get(1).getHostString()).isEqualTo("localhost");
-					assertThat(endpoints.get(1).getPort()).isEqualTo(8765);
-				});
 	}
 
 	@Test
@@ -224,13 +191,6 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenConfiguredToUseSslThenClientConfigurationUsesSsl() {
-		this.contextRunner.withPropertyValues("spring.data.elasticsearch.client.reactive.use-ssl=true")
-				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).useSsl()).isTrue());
-	}
-
-	@Test
 	void whenSocketTimeoutIsNotConfiguredThenClientConfigurationUsesDefault() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getSocketTimeout())
 				.isEqualTo(Duration.ofSeconds(30)));
@@ -242,16 +202,16 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 				.isEqualTo(Duration.ofSeconds(1)));
 	}
 
-	@ParameterizedPropertyPrefixTest
-	void whenSocketTimeoutIsConfiguredThenClientConfigurationHasCustomSocketTimeout(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "socket-timeout=2s")
+	@Test
+	void whenSocketTimeoutIsConfiguredThenClientConfigurationHasCustomSocketTimeout() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.socket-timeout=2s")
 				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getSocketTimeout())
 						.isEqualTo(Duration.ofSeconds(2)));
 	}
 
-	@ParameterizedPropertyPrefixTest
-	void whenConnectionTimeoutIsConfiguredThenClientConfigurationHasCustomConnectTimeout(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "connection-timeout=2s")
+	@Test
+	void whenConnectionTimeoutIsConfiguredThenClientConfigurationHasCustomConnectTimeout() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.connection-timeout=2s")
 				.run((context) -> assertThat(context.getBean(ClientConfiguration.class).getConnectTimeout())
 						.isEqualTo(Duration.ofSeconds(2)));
 	}
@@ -263,23 +223,25 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 						.isEqualTo("/some/prefix"));
 	}
 
-	@ParameterizedPropertyPrefixTest
-	void whenCredentialsAreConfiguredThenClientConfigurationHasDefaultAuthorizationHeader(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "username=alice", prefix + "password=secret")
+	@Test
+	void whenCredentialsAreConfiguredThenClientConfigurationHasDefaultAuthorizationHeader() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.username=alice", "spring.elasticsearch.password=secret")
 				.run((context) -> assertThat(
 						context.getBean(ClientConfiguration.class).getDefaultHeaders().get(HttpHeaders.AUTHORIZATION))
 								.containsExactly("Basic YWxpY2U6c2VjcmV0"));
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "spring.elasticsearch.webclient.", "spring.data.elasticsearch.client.reactive." })
-	void whenMaxInMemorySizeIsConfiguredThenUnderlyingWebClientHasCustomMaxInMemorySize(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "max-in-memory-size=1MB").run((context) -> {
-			WebClient client = configureWebClient(context.getBean(ClientConfiguration.class).getClientConfigurers());
-			assertThat(client).extracting("exchangeFunction.strategies.codecConfigurer.defaultCodecs")
-					.asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
-					.extracting(DefaultCodecConfig::maxInMemorySize).isEqualTo(1024 * 1024);
-		});
+	@Test
+	void whenMaxInMemorySizeIsConfiguredThenUnderlyingWebClientHasCustomMaxInMemorySize() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.webclient.max-in-memory-size=1MB")
+				.run((context) -> {
+					WebClient client = configureWebClient(
+							context.getBean(ClientConfiguration.class).getClientConfigurers());
+					assertThat(client).extracting("exchangeFunction.strategies.codecConfigurer.defaultCodecs")
+							.asInstanceOf(InstanceOfAssertFactories.type(DefaultCodecConfig.class))
+							.extracting(DefaultCodecConfig::maxInMemorySize).isEqualTo(1024 * 1024);
+				});
 	}
 
 	private WebClient configureWebClient(List<ClientConfigurationCallback<?>> callbacks) {
@@ -307,14 +269,6 @@ class ReactiveElasticsearchRestClientAutoConfigurationTests {
 		ClientConfiguration customClientConfiguration() {
 			return ClientConfiguration.localhost();
 		}
-
-	}
-
-	@ParameterizedTest
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@ValueSource(strings = { "spring.data.elasticsearch.client.reactive.", "spring.elasticsearch." })
-	static @interface ParameterizedPropertyPrefixTest {
 
 	}
 

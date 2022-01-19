@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,22 +159,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			JsonMapper.Builder builder = JsonMapper.builder();
 			configureJsonMapper(builder);
 			this.objectMapper = builder.build();
-			configureObjectMapper(this.objectMapper);
 		}
 		return this.objectMapper;
-	}
-
-	/**
-	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
-	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
-	 * structure.
-	 * @param mapper the object mapper
-	 * @deprecated since 2.6 for removal in 2.8 in favor of
-	 * {@link #configureJsonMapper(com.fasterxml.jackson.databind.json.JsonMapper.Builder)}
-	 */
-	@Deprecated
-	protected void configureObjectMapper(ObjectMapper mapper) {
-
 	}
 
 	/**

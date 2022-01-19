@@ -316,12 +316,6 @@
       "defaultValue": "application"
     },
     {
-      "name": "spring.config.use-legacy-processing",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable configuration data processing legacy mode.",
-      "defaultValue": false
-    },
-    {
       "name": "spring.jpa.defer-datasource-initialization",
       "type": "java.lang.Boolean",
       "defaultValue": false
