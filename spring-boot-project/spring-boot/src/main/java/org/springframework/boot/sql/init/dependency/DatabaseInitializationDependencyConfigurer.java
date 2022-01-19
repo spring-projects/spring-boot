@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.util.Instantiator;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
@@ -63,36 +64,27 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseInitializationDependencyConfigurer implements ImportBeanDefinitionRegistrar {
 
-	private final Environment environment;
-
-	DatabaseInitializationDependencyConfigurer(Environment environment) {
-		this.environment = environment;
-	}
-
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		String name = DependsOnDatabaseInitializationPostProcessor.class.getName();
 		if (!registry.containsBeanDefinition(name)) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(
-					DependsOnDatabaseInitializationPostProcessor.class,
-					this::createDependsOnDatabaseInitializationPostProcessor);
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder
+					.rootBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class);
 			registry.registerBeanDefinition(name, builder.getBeanDefinition());
 		}
-	}
-
-	private DependsOnDatabaseInitializationPostProcessor createDependsOnDatabaseInitializationPostProcessor() {
-		return new DependsOnDatabaseInitializationPostProcessor(this.environment);
 	}
 
 	/**
 	 * {@link BeanFactoryPostProcessor} used to configure database initialization
 	 * dependency relationships.
 	 */
-	static class DependsOnDatabaseInitializationPostProcessor implements BeanFactoryPostProcessor, Ordered {
+	static class DependsOnDatabaseInitializationPostProcessor
+			implements BeanFactoryPostProcessor, EnvironmentAware, Ordered {
 
-		private final Environment environment;
+		private Environment environment;
 
-		DependsOnDatabaseInitializationPostProcessor(Environment environment) {
+		@Override
+		public void setEnvironment(Environment environment) {
 			this.environment = environment;
 		}
 
