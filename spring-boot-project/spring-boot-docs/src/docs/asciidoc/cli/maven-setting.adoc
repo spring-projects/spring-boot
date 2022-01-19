@@ -1,7 +1,7 @@
 [[cli.maven-setting]]
 == Configuring the CLI with settings.xml
-The Spring Boot CLI uses Aether, Maven's dependency resolution engine, to resolve dependencies.
-The CLI makes use of the Maven configuration found in `~/.m2/settings.xml` to configure Aether.
+The Spring Boot CLI uses Maven Resolver, Maven's dependency resolution engine, to resolve dependencies.
+The CLI makes use of the Maven configuration found in `~/.m2/settings.xml` to configure Maven Resolver.
 The following configuration settings are honored by the CLI:
 
 * Offline

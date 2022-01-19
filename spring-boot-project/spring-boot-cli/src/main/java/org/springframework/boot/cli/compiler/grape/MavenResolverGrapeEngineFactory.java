@@ -36,17 +36,14 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
 /**
- * Utility class to create a pre-configured {@link AetherGrapeEngine}.
+ * Utility class to create a pre-configured {@link MavenResolverGrapeEngine}.
  *
  * @author Andy Wilkinson
- * @since 1.0.0
- * @deprecated since 2.5.9 for removal in 2.8.0 in favor of
- * {@link MavenResolverGrapeEngineFactory}
+ * @since 2.5.9
  */
-@Deprecated
-public abstract class AetherGrapeEngineFactory {
+public abstract class MavenResolverGrapeEngineFactory {
 
-	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
+	public static MavenResolverGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
 			DependencyResolutionContext dependencyResolutionContext, boolean quiet) {
 		RepositorySystem repositorySystem = createServiceLocator().getService(RepositorySystem.class);
@@ -57,7 +54,7 @@ public abstract class AetherGrapeEngineFactory {
 			autoConfiguration.apply(repositorySystemSession, repositorySystem);
 		}
 		new DefaultRepositorySystemSessionAutoConfiguration().apply(repositorySystemSession, repositorySystem);
-		return new AetherGrapeEngine(classLoader, repositorySystem, repositorySystemSession,
+		return new MavenResolverGrapeEngine(classLoader, repositorySystem, repositorySystemSession,
 				createRepositories(repositoryConfigurations), dependencyResolutionContext, quiet);
 	}
 
