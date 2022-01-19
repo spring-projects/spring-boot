@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,8 @@ class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class,
 					ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
 			.withPropertyValues(
-					"spring.data.elasticsearch.client.reactive.endpoints=" + elasticsearch.getHost() + ":"
-							+ elasticsearch.getFirstMappedPort(),
-					"spring.data.elasticsearch.client.reactive.socket-timeout=30s");
+					"spring.elasticsearch.uris=" + elasticsearch.getHost() + ":" + elasticsearch.getFirstMappedPort(),
+					"spring.elasticsearch.socket-timeout=30s");
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
