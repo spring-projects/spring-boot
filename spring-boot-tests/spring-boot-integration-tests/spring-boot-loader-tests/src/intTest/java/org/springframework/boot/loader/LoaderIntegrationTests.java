@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -32,6 +33,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +50,7 @@ class LoaderIntegrationTests {
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
+		javaRuntime.assumeCompatible();
 		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
@@ -72,32 +75,48 @@ class LoaderIntegrationTests {
 
 	static Stream<JavaRuntime> javaRuntimes() {
 		List<JavaRuntime> javaRuntimes = new ArrayList<>();
-		javaRuntimes.add(JavaRuntime.openJdk("17"));
+		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
 		return javaRuntimes.stream();
 	}
 
 	static final class JavaRuntime {
 
+		private final String name;
+
+		private final JavaVersion version;
+
 		private final Supplier<GenericContainer<?>> container;
 
-		private JavaRuntime(Supplier<GenericContainer<?>> container) {
+		private JavaRuntime(String name, JavaVersion version, Supplier<GenericContainer<?>> container) {
+			this.name = name;
+			this.version = version;
 			this.container = container;
+		}
+
+		private void assumeCompatible() {
+			Assume.assumeTrue(JavaVersion.getJavaVersion().isEqualOrNewerThan(this.version));
 		}
 
 		GenericContainer<?> getContainer() {
 			return this.container.get();
 		}
 
-		static JavaRuntime openJdk(String version) {
-			DockerImageName image = DockerImageName.parse("bellsoft/liberica-openjdk-debian:" + version);
-			return new JavaRuntime(() -> new GenericContainer<>(image));
+		@Override
+		public String toString() {
+			return this.name;
+		}
+
+		static JavaRuntime openJdk(JavaVersion version) {
+			String imageVersion = (version != JavaVersion.EIGHT) ? version.toString() : "8";
+			DockerImageName image = DockerImageName.parse("bellsoft/liberica-openjdk-debian:" + imageVersion);
+			return new JavaRuntime("OpenJDK " + imageVersion, version, () -> new GenericContainer<>(image));
 		}
 
 		static JavaRuntime oracleJdk17() {
 			ImageFromDockerfile image = new ImageFromDockerfile("spring-boot-loader/oracle-jdk-17")
 					.withFileFromFile("Dockerfile", new File("src/intTest/resources/conf/oracle-jdk-17/Dockerfile"));
-			return new JavaRuntime(() -> new GenericContainer<>(image));
+			return new JavaRuntime("Oracle JDK 17", JavaVersion.SEVENTEEN, () -> new GenericContainer<>(image));
 		}
 
 	}
