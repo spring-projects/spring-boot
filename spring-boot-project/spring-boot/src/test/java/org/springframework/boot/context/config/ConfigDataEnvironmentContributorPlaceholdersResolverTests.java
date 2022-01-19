@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,14 +44,14 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 	@Test
 	void resolvePlaceholdersWhenNotStringReturnsResolved() {
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				Collections.emptyList(), null, false);
+				Collections.emptyList(), null, null, false);
 		assertThat(resolver.resolvePlaceholders(123)).isEqualTo(123);
 	}
 
 	@Test
 	void resolvePlaceholdersWhenNotFoundReturnsOriginal() {
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				Collections.emptyList(), null, false);
+				Collections.emptyList(), null, null, false);
 		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("${test}");
 	}
 
@@ -62,7 +62,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true));
 		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), true));
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, null, true);
+				contributors, null, null, true);
 		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("t2");
 	}
 
@@ -73,7 +73,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true));
 		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), false));
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, null, true);
+				contributors, null, null, true);
 		assertThatExceptionOfType(InactiveConfigDataAccessException.class)
 				.isThrownBy(() -> resolver.resolvePlaceholders("${test}"))
 				.satisfies(propertyNameAndOriginOf("test", "s3"));
@@ -86,7 +86,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true));
 		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), false));
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, null, false);
+				contributors, null, null, false);
 		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("t2");
 	}
 

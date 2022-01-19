@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -634,6 +634,21 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
 				"--spring.config.location=classpath:application-import-with-placeholder-in-profile-document.properties"))
 				.withCauseInstanceOf(InactiveConfigDataAccessException.class);
+	}
+
+	@Test // gh-29386
+	void runWhenHasPropertyInEarlierProfileDocumentThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
+				"--spring.config.location=classpath:application-import-with-placeholder-in-earlier-profile-document.properties"))
+				.withCauseInstanceOf(InactiveConfigDataAccessException.class);
+	}
+
+	@Test // gh-29386
+	void runWhenHasPropertyInEarlierDocumentLoads() {
+		ConfigurableApplicationContext context = this.application.run(
+				"--spring.config.location=classpath:application-import-with-placeholder-in-earlier-document.properties");
+		assertThat(context.getEnvironment().getProperty("my.value"))
+				.isEqualTo("application-import-with-placeholder-in-earlier-document-imported");
 	}
 
 	@Test
