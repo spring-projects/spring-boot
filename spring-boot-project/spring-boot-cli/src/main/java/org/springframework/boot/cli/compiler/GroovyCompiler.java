@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import groovy.grape.GrapeEngine;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 import groovy.lang.GroovyCodeSource;
@@ -44,10 +45,9 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
 
 import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
-import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
-import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
+import org.springframework.boot.cli.compiler.grape.MavenResolverGrapeEngineFactory;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.ClassUtils;
@@ -96,7 +96,7 @@ public class GroovyCompiler {
 		DependencyResolutionContext resolutionContext = new DependencyResolutionContext();
 		resolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
 
-		AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(this.loader,
+		GrapeEngine grapeEngine = MavenResolverGrapeEngineFactory.create(this.loader,
 				configuration.getRepositoryConfiguration(), resolutionContext, configuration.isQuiet());
 
 		GrapeEngineInstaller.install(grapeEngine);

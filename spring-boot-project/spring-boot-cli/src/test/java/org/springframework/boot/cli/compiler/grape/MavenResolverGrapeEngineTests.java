@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import groovy.grape.GrapeEngine;
 import groovy.lang.GroovyClassLoader;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.Authentication;
@@ -43,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Andy Wilkinson
  */
-class AetherGrapeEngineTests {
+class MavenResolverGrapeEngineTests {
 
 	private final GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
@@ -53,14 +54,14 @@ class AetherGrapeEngineTests {
 	private final RepositoryConfiguration springSnapshot = new RepositoryConfiguration("spring-snapshot",
 			URI.create("https://repo.spring.io/snapshot"), true);
 
-	private AetherGrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
+	private GrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
 		repositoryConfigurations
 				.add(new RepositoryConfiguration("central", URI.create("https://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
 		dependencyResolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
-		return AetherGrapeEngineFactory.create(this.groovyClassLoader, repositoryConfigurations,
+		return MavenResolverGrapeEngineFactory.create(this.groovyClassLoader, repositoryConfigurations,
 				dependencyResolutionContext, false);
 	}
 
@@ -75,7 +76,7 @@ class AetherGrapeEngineTests {
 	@Test
 	void proxySelector() {
 		doWithCustomUserHome(() -> {
-			AetherGrapeEngine grapeEngine = createGrapeEngine();
+			GrapeEngine grapeEngine = createGrapeEngine();
 			DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
 					.getField(grapeEngine, "session");
 
@@ -139,7 +140,7 @@ class AetherGrapeEngineTests {
 	@Test
 	void resolutionWithCustomResolver() {
 		Map<String, Object> args = new HashMap<>();
-		AetherGrapeEngine grapeEngine = createGrapeEngine();
+		GrapeEngine grapeEngine = createGrapeEngine();
 		grapeEngine.addResolver(createResolver("spring-releases", "https://repo.spring.io/release"));
 		Map<String, Object> dependency = createDependency("io.spring.docresources", "spring-doc-resources",
 				"0.1.1.RELEASE");
@@ -153,7 +154,7 @@ class AetherGrapeEngineTests {
 		Map<String, Object> dependency = createDependency("org.grails", "grails-dependencies", "2.4.0");
 		dependency.put("type", "foo");
 		dependency.put("ext", "bar");
-		AetherGrapeEngine grapeEngine = createGrapeEngine();
+		GrapeEngine grapeEngine = createGrapeEngine();
 		assertThatIllegalArgumentException().isThrownBy(() -> grapeEngine.grab(Collections.emptyMap(), dependency));
 	}
 
@@ -196,7 +197,7 @@ class AetherGrapeEngineTests {
 
 	@SuppressWarnings("unchecked")
 	private List<RemoteRepository> getRepositories() {
-		AetherGrapeEngine grapeEngine = createGrapeEngine();
+		GrapeEngine grapeEngine = createGrapeEngine();
 		return (List<RemoteRepository>) ReflectionTestUtils.getField(grapeEngine, "repositories");
 	}
 

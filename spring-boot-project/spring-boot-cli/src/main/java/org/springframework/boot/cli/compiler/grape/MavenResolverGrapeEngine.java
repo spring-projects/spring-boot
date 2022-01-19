@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,15 +44,15 @@ import org.eclipse.aether.util.filter.DependencyFilterUtils;
 
 /**
  * A {@link GrapeEngine} implementation that uses
- * <a href="https://eclipse.org/aether">Aether</a>, the dependency resolution system used
- * by Maven.
+ * <a href="https://maven.apache.org/resolver/index.html">Maven Resolver</a>, the
+ * dependency resolution system used by Maven.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 1.0.0
+ * @since 2.5.9
  */
 @SuppressWarnings("rawtypes")
-public class AetherGrapeEngine implements GrapeEngine {
+public class MavenResolverGrapeEngine implements GrapeEngine {
 
 	private static final Collection<Exclusion> WILDCARD_EXCLUSION;
 
@@ -74,7 +74,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private final List<RemoteRepository> repositories;
 
-	public AetherGrapeEngine(GroovyClassLoader classLoader, RepositorySystem repositorySystem,
+	public MavenResolverGrapeEngine(GroovyClassLoader classLoader, RepositorySystem repositorySystem,
 			DefaultRepositorySystemSession repositorySystemSession, List<RemoteRepository> remoteRepositories,
 			DependencyResolutionContext resolutionContext, boolean quiet) {
 		this.classLoader = classLoader;

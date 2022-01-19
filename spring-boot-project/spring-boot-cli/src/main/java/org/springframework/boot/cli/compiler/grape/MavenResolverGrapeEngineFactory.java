@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,14 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
 /**
- * Utility class to create a pre-configured {@link AetherGrapeEngine}.
+ * Utility class to create a pre-configured {@link MavenResolverGrapeEngine}.
  *
  * @author Andy Wilkinson
- * @since 1.0.0
+ * @since 2.5.9
  */
-public abstract class AetherGrapeEngineFactory {
+public abstract class MavenResolverGrapeEngineFactory {
 
-	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
+	public static MavenResolverGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
 			DependencyResolutionContext dependencyResolutionContext, boolean quiet) {
 		RepositorySystem repositorySystem = createServiceLocator().getService(RepositorySystem.class);
@@ -54,7 +54,7 @@ public abstract class AetherGrapeEngineFactory {
 			autoConfiguration.apply(repositorySystemSession, repositorySystem);
 		}
 		new DefaultRepositorySystemSessionAutoConfiguration().apply(repositorySystemSession, repositorySystem);
-		return new AetherGrapeEngine(classLoader, repositorySystem, repositorySystemSession,
+		return new MavenResolverGrapeEngine(classLoader, repositorySystem, repositorySystemSession,
 				createRepositories(repositoryConfigurations), dependencyResolutionContext, quiet);
 	}
 
