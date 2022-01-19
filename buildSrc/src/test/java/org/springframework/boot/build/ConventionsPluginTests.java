@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,14 +105,8 @@ class ConventionsPluginTests {
 			out.println("version = '1.2.3'");
 			out.println("sourceCompatibility = '1.8'");
 			out.println("description 'Test'");
-			out.println("repositories {");
-			out.println("    mavenCentral()");
-			out.println("}");
-			out.println("dependencies {");
-			out.println("    implementation(platform(\"org.junit:junit-bom:5.6.0\"))");
-			out.println("}");
 		}
-		runGradle("build");
+		runGradle("assemble");
 		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-sources.jar");
 		assertThat(file).exists();
 		try (JarFile jar = new JarFile(file)) {
@@ -140,14 +134,8 @@ class ConventionsPluginTests {
 			out.println("version = '1.2.3'");
 			out.println("sourceCompatibility = '1.8'");
 			out.println("description 'Test'");
-			out.println("repositories {");
-			out.println("    mavenCentral()");
-			out.println("}");
-			out.println("dependencies {");
-			out.println("    implementation(platform(\"org.junit:junit-bom:5.6.0\"))");
-			out.println("}");
 		}
-		runGradle("build");
+		runGradle("assemble");
 		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-javadoc.jar");
 		assertThat(file).exists();
 		try (JarFile jar = new JarFile(file)) {
