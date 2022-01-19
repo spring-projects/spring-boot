@@ -318,6 +318,8 @@ bom {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
+				"flyway-firebird",
+				"flyway-mysql",
                 "flyway-sqlserver"
 			]
 			plugins = [
