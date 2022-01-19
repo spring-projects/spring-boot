@@ -33,10 +33,10 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet-jakartaee9") {
+	optional("io.undertow:undertow-servlet-jakarta") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
-	optional("io.undertow:undertow-websockets-jsr-jakartaee9") {
+	optional("io.undertow:undertow-websockets-jsr-jakarta") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	optional("jakarta.jms:jakarta.jms-api")

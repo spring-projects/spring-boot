@@ -24,7 +24,7 @@ bom {
 			]
 		}
 	}
-	library("AppEngine SDK", "1.9.92") {
+	library("AppEngine SDK", "1.9.93") {
 		group("com.google.appengine") {
 			modules = [
 				"appengine-api-1.0-sdk"
@@ -55,7 +55,7 @@ bom {
 			]
 		}
 	}
-	library("AssertJ", "3.21.0") {
+	library("AssertJ", "3.22.0") {
 		group("org.assertj") {
 			modules = [
 				"assertj-core"
@@ -72,14 +72,14 @@ bom {
 			]
 		}
 	}
-	library("Build Helper Maven Plugin", "3.2.0") {
+	library("Build Helper Maven Plugin", "3.3.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"build-helper-maven-plugin"
 			]
 		}
 	}
-	library("Byte Buddy", "1.11.22") {
+	library("Byte Buddy", "1.12.7") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -87,7 +87,7 @@ bom {
 			]
 		}
 	}
-	library("Caffeine", "2.9.2") {
+	library("Caffeine", "2.9.3") {
 		prohibit("[3.0.0,)") {
 			because "it requires Java 11"
 		}
@@ -163,7 +163,7 @@ bom {
 			]
 		}
 	}
-	library("DB2 JDBC", "11.5.6.0") {
+	library("DB2 JDBC", "11.5.7.0") {
 		group("com.ibm.db2") {
 			modules = [
 				"jcc"
@@ -188,7 +188,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.2.4") {
+	library("Dropwizard Metrics", "4.2.7") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -337,7 +337,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.6.1.Final") {
+	library("Hibernate", "5.6.3.Final") {
 		group("org.hibernate") {
 			modules = [
 				"hibernate-c3p0",
@@ -385,7 +385,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "2.54.0") {
+	library("HtmlUnit", "2.56.0") {
 		group("net.sourceforge.htmlunit") {
 			modules = [
 				"htmlunit" {
@@ -394,7 +394,7 @@ bom {
 			]
 		}
 	}
-	library("HttpAsyncClient", "4.1.4") {
+	library("HttpAsyncClient", "4.1.5") {
 		group("org.apache.httpcomponents") {
 			modules = [
 				"httpasyncclient" {
@@ -427,7 +427,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore", "4.4.14") {
+	library("HttpCore", "4.4.15") {
 		group("org.apache.httpcomponents") {
 			modules = [
 				"httpcore",
@@ -435,7 +435,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore5", "5.1.2") {
+	library("HttpCore5", "5.1.3") {
 		group("org.apache.httpcomponents.core5") {
 			modules = [
 				"httpcore5",
@@ -451,7 +451,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.13.0") {
+	library("Jackson Bom", "2.13.1") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
@@ -612,7 +612,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "4.0.4.java8") {
+	library("Jaybird", "4.0.5.java8") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird",
@@ -620,21 +620,21 @@ bom {
 			]
 		}
 	}
-	library("JBoss Logging", "3.4.2.Final") {
+	library("JBoss Logging", "3.4.3.Final") {
 		group("org.jboss.logging") {
 			modules = [
 				"jboss-logging"
 			]
 		}
 	}
-	library("JDOM2", "2.0.6") {
+	library("JDOM2", "2.0.6.1") {
 		group("org.jdom") {
 			modules = [
 				"jdom2"
 			]
 		}
 	}
-	library("Jedis", "3.7.1") {
+	library("Jedis", "3.8.0") {
 		group("redis.clients") {
 			modules = [
 				"jedis"
@@ -725,7 +725,7 @@ bom {
 			]
 		}
 	}
-	library("JUnit Jupiter", "5.8.1") {
+	library("JUnit Jupiter", "5.8.2") {
 		group("org.junit") {
 			imports = [
 				"junit-bom"
@@ -795,7 +795,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.2.9") {
+	library("Logback", "1.2.10") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -839,7 +839,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Compiler Plugin", "3.8.1") {
+	library("Maven Compiler Plugin", "3.9.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-compiler-plugin"
@@ -895,7 +895,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Jar Plugin", "3.2.0") {
+	library("Maven Jar Plugin", "3.2.2") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-jar-plugin"
@@ -963,7 +963,7 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "4.0.0") {
+	library("Mockito", "4.2.0") {
 		group("org.mockito") {
 			modules = [
 				"mockito-core",
@@ -983,7 +983,7 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "9.4.0.jre8") {
+	library("MSSQL JDBC", "9.4.1.jre8") {
 		group("com.microsoft.sqlserver") {
 			modules = [
 				"mssql-jdbc"
@@ -1006,21 +1006,21 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "4.3.6") {
+	library("Neo4j Java Driver", "4.4.2") {
 		group("org.neo4j.driver") {
 			modules = [
 				"neo4j-java-driver"
 			]
 		}
 	}
-	library("Netty", "4.1.70.Final") {
+	library("Netty", "4.1.73.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.46.Final") {
+	library("Netty tcNative", "2.0.47.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
@@ -1046,7 +1046,7 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "21.3.0.0") {
+	library("Oracle Database", "21.4.0.0.1") {
 		group("com.oracle.database.jdbc") {
 			imports = [
 				"ojdbc-bom"
@@ -1092,7 +1092,7 @@ bom {
 			]
 		}
 	}
-	library("Rabbit AMQP Client", "5.13.1") {
+	library("Rabbit AMQP Client", "5.14.1") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
@@ -1230,7 +1230,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "3.141.59") {
+	library("Selenium", "4.1.1") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"selenium-api",
@@ -1246,14 +1246,14 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "2.54.0") {
+	library("Selenium HtmlUnit", "3.56.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
 			]
 		}
 	}
-	library("SendGrid", "4.7.6") {
+	library("SendGrid", "4.8.2") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
@@ -1267,7 +1267,7 @@ bom {
 			]
 		}
 	}
-	library("SLF4J", "1.7.32") {
+	library("SLF4J", "1.7.33") {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",
@@ -1283,7 +1283,7 @@ bom {
 			]
 		}
 	}
-	library("SnakeYAML", "1.29") {
+	library("SnakeYAML", "1.30") {
 		group("org.yaml") {
 			modules = [
 				"snakeyaml"
@@ -1498,12 +1498,12 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.2.12.Final") {
+	library("Undertow", "2.2.14.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
-				"undertow-servlet-jakartaee9",
-				"undertow-websockets-jsr-jakartaee9"
+				"undertow-servlet-jakarta",
+				"undertow-websockets-jsr-jakarta"
 			]
 		}
 	}
@@ -1535,7 +1535,7 @@ bom {
 			]
 		}
 	}
-	library("XmlUnit2", "2.8.3") {
+	library("XmlUnit2", "2.8.4") {
 		group("org.xmlunit") {
 			modules = [
 				"xmlunit-assertj",
