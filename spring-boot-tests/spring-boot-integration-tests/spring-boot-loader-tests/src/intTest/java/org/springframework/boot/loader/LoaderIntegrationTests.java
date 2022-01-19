@@ -33,6 +33,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.system.JavaVersion;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@DisabledIfDockerUnavailable
 class LoaderIntegrationTests {
 
 	private final ToStringConsumer output = new ToStringConsumer();
