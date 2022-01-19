@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -50,7 +49,6 @@ class LoaderIntegrationTests {
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
-		javaRuntime.assumeCompatible();
 		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
@@ -77,7 +75,7 @@ class LoaderIntegrationTests {
 		List<JavaRuntime> javaRuntimes = new ArrayList<>();
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
-		return javaRuntimes.stream();
+		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 
 	static final class JavaRuntime {
@@ -94,8 +92,8 @@ class LoaderIntegrationTests {
 			this.container = container;
 		}
 
-		private void assumeCompatible() {
-			Assume.assumeTrue(JavaVersion.getJavaVersion().isEqualOrNewerThan(this.version));
+		private boolean isCompatible() {
+			return this.version.isEqualOrNewerThan(JavaVersion.getJavaVersion());
 		}
 
 		GenericContainer<?> getContainer() {
