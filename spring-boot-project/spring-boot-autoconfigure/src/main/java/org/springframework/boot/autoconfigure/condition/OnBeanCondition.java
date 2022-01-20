@@ -69,6 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Jakub Kubrynski
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Uladzislau Seuruk
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
  * @see ConditionalOnSingleCandidate
@@ -156,6 +157,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		boolean considerHierarchy = spec.getStrategy() != SearchStrategy.CURRENT;
 		Set<Class<?>> parameterizedContainers = spec.getParameterizedContainers();
+		Set<Class<?>> typeArguments = spec.getTypeArguments();
 		if (spec.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
@@ -167,7 +169,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				spec.getIgnoredTypes(), parameterizedContainers);
 		for (String type : spec.getTypes()) {
 			Collection<String> typeMatches = getBeanNamesForType(classLoader, considerHierarchy, beanFactory, type,
-					parameterizedContainers);
+					parameterizedContainers, typeArguments);
 			Iterator<String> iterator = typeMatches.iterator();
 			while (iterator.hasNext()) {
 				String match = iterator.next();
@@ -209,17 +211,18 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		Set<String> result = null;
 		for (String ignoredType : ignoredTypes) {
 			Collection<String> ignoredNames = getBeanNamesForType(classLoader, considerHierarchy, beanFactory,
-					ignoredType, parameterizedContainers);
+					ignoredType, parameterizedContainers, Collections.emptySet());
 			result = addAll(result, ignoredNames);
 		}
 		return (result != null) ? result : Collections.emptySet();
 	}
 
 	private Set<String> getBeanNamesForType(ClassLoader classLoader, boolean considerHierarchy,
-			ListableBeanFactory beanFactory, String type, Set<Class<?>> parameterizedContainers) throws LinkageError {
+			ListableBeanFactory beanFactory, String type, Set<Class<?>> parameterizedContainers,
+			Set<Class<?>> typeArguments) throws LinkageError {
 		try {
 			return getBeanNamesForType(beanFactory, considerHierarchy, resolve(type, classLoader),
-					parameterizedContainers);
+					parameterizedContainers, typeArguments);
 		}
 		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			return Collections.emptySet();
@@ -227,25 +230,49 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	private Set<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy, Class<?> type,
-			Set<Class<?>> parameterizedContainers) {
+			Set<Class<?>> parameterizedContainers, Set<Class<?>> typeArguments) {
 		Set<String> result = collectBeanNamesForType(beanFactory, considerHierarchy, type, parameterizedContainers,
-				null);
+				typeArguments, null);
 		return (result != null) ? result : Collections.emptySet();
 	}
 
-	private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
-			Class<?> type, Set<Class<?>> parameterizedContainers, Set<String> result) {
+	private Set<String> collectBeanNamesWithoutTypeArguments(ListableBeanFactory beanFactory, Class<?> type,
+			Set<Class<?>> parameterizedContainers, Set<String> result) {
 		result = addAll(result, beanFactory.getBeanNamesForType(type, true, false));
 		for (Class<?> container : parameterizedContainers) {
 			ResolvableType generic = ResolvableType.forClassWithGenerics(container, type);
 			result = addAll(result, beanFactory.getBeanNamesForType(generic, true, false));
 		}
+		return result;
+	}
+
+	private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
+			Class<?> type, Set<Class<?>> parameterizedContainers, Set<Class<?>> typeArguments, Set<String> result) {
+		if (!typeArguments.isEmpty()) {
+			result = collectBeanNamesWithTypeArguments(beanFactory, type, parameterizedContainers, typeArguments,
+					result);
+		}
+		else {
+			result = collectBeanNamesWithoutTypeArguments(beanFactory, type, parameterizedContainers, result);
+		}
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
 			if (parent instanceof ListableBeanFactory) {
 				result = collectBeanNamesForType((ListableBeanFactory) parent, considerHierarchy, type,
-						parameterizedContainers, result);
+						parameterizedContainers, typeArguments, result);
 			}
+		}
+		return result;
+	}
+
+	private Set<String> collectBeanNamesWithTypeArguments(ListableBeanFactory beanFactory, Class<?> type,
+			Set<Class<?>> parameterizedContainers, Set<Class<?>> typeArguments, Set<String> result) {
+		Class<?>[] typeArgumentArray = typeArguments.toArray(Class<?>[]::new);
+		ResolvableType genericType = ResolvableType.forClassWithGenerics(type, typeArgumentArray);
+		result = addAll(result, beanFactory.getBeanNamesForType(genericType, true, false));
+		for (Class<?> container : parameterizedContainers) {
+			ResolvableType generic = ResolvableType.forClassWithGenerics(container, genericType);
+			result = addAll(result, beanFactory.getBeanNamesForType(generic, true, false));
 		}
 		return result;
 	}
@@ -407,6 +434,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		private final Set<Class<?>> parameterizedContainers;
 
+		private final Set<Class<?>> typeArguments;
+
 		private final SearchStrategy strategy;
 
 		Spec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations,
@@ -421,6 +450,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			this.annotations = extract(attributes, "annotation");
 			this.ignoredTypes = extract(attributes, "ignored", "ignoredType");
 			this.parameterizedContainers = resolveWhenPossible(extract(attributes, "parameterizedContainer"));
+			this.typeArguments = resolveWhenPossible(extract(attributes, "typeArguments", "typeArgumentNames"));
 			this.strategy = annotation.getValue("search", SearchStrategy.class).orElse(null);
 			Set<String> types = extractTypes(attributes);
 			BeanTypeDeductionException deductionException = null;
@@ -584,6 +614,10 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return this.ignoredTypes;
 		}
 
+		Set<Class<?>> getTypeArguments() {
+			return this.typeArguments;
+		}
+
 		Set<Class<?>> getParameterizedContainers() {
 			return this.parameterizedContainers;
 		}
@@ -601,6 +635,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			boolean hasNames = !this.names.isEmpty();
 			boolean hasTypes = !this.types.isEmpty();
 			boolean hasIgnoredTypes = !this.ignoredTypes.isEmpty();
+			boolean hasTypeArguments = !this.typeArguments.isEmpty();
 			StringBuilder string = new StringBuilder();
 			string.append("(");
 			if (hasNames) {
@@ -616,6 +651,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			if (hasIgnoredTypes) {
 				string.append("ignored: ");
 				string.append(StringUtils.collectionToCommaDelimitedString(this.ignoredTypes));
+				string.append("; ");
+			}
+			if (hasTypeArguments) {
+				string.append("argument types: ");
+				string.append(StringUtils.collectionToCommaDelimitedString(this.typeArguments));
 				string.append("; ");
 			}
 			string.append("SearchStrategy: ");

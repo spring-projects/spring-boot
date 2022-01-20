@@ -57,6 +57,7 @@ import org.springframework.context.annotation.Conditional;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Uladzislau Seuruk
  * @since 1.0.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -125,5 +126,21 @@ public @interface ConditionalOnMissingBean {
 	 * @since 2.1.0
 	 */
 	Class<?>[] parameterizedContainer() default {};
+
+	/**
+	 * The class types of generic bean type arguments that should be checked. The
+	 * condition matches when no bean of each class specified is contained in the
+	 * {@link BeanFactory}.
+	 * @return the class types of beans to check
+	 */
+	Class<?>[] typeArguments() default {};
+
+	/**
+	 * The class type names of generic bean type arguments that should be checked. The
+	 * condition matches when no bean of each class specified is contained in the
+	 * {@link BeanFactory}.
+	 * @return the class type names of beans to check
+	 */
+	String[] typeArgumentNames() default {};
 
 }
