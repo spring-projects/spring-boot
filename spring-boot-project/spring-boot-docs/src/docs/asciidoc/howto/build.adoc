@@ -60,8 +60,8 @@ To use it, add the following declaration for the https://github.com/git-commit-i
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
+				<groupId>io.github.git-commit-id</groupId>
+				<artifactId>git-commit-id-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

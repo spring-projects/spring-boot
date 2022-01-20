@@ -133,8 +133,8 @@ publishing.publications.withType(MavenPublication) {
 							}
 						}
 						plugin {
-							delegate.groupId('pl.project13.maven')
-							delegate.artifactId('git-commit-id-plugin')
+							delegate.groupId('io.github.git-commit-id')
+							delegate.artifactId('git-commit-id-maven-plugin')
 							executions {
 								execution {
 									goals {

@@ -249,10 +249,10 @@ bom {
 			]
 		}
 	}
-	library("Git Commit ID Plugin", "4.9.10") {
-		group("pl.project13.maven") {
+	library("Git Commit ID Plugin", "5.0.0") {
+		group("io.github.git-commit-id") {
 			plugins = [
-				"git-commit-id-plugin"
+				"git-commit-id-maven-plugin"
 			]
 		}
 	}
