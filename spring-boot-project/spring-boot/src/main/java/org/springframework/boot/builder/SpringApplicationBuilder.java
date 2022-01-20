@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,20 +100,6 @@ public class SpringApplicationBuilder {
 
 	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
 		this.application = createSpringApplication(resourceLoader, sources);
-	}
-
-	/**
-	 * Creates a new {@link SpringApplication} instance from the given sources. Subclasses
-	 * may override in order to provide a custom subclass of {@link SpringApplication}.
-	 * @param sources the sources
-	 * @return the {@link SpringApplication} instance
-	 * @since 1.1.0
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
-	 * {@link #createSpringApplication(ResourceLoader, Class...)}
-	 */
-	@Deprecated
-	protected SpringApplication createSpringApplication(Class<?>... sources) {
-		return new SpringApplication(sources);
 	}
 
 	/**

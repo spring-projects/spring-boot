@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
@@ -134,21 +133,6 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 */
 	public void setViewResolvers(List<ViewResolver> viewResolvers) {
 		this.viewResolvers = viewResolvers;
-	}
-
-	/**
-	 * Extract the error attributes from the current request, to be used to populate error
-	 * views or JSON payloads.
-	 * @param request the source request
-	 * @param includeStackTrace whether to include the error stacktrace information
-	 * @return the error attributes as a Map
-	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
-	 * {@link #getErrorAttributes(ServerRequest, ErrorAttributeOptions)}
-	 */
-	@Deprecated
-	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return getErrorAttributes(request,
-				(includeStackTrace) ? ErrorAttributeOptions.of(Include.STACK_TRACE) : ErrorAttributeOptions.defaults());
 	}
 
 	/**

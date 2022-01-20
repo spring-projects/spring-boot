@@ -28,13 +28,14 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,13 +53,11 @@ class BatchAutoConfigurationWithoutJpaTests {
 	@Test
 	void jdbcWithDefaultSettings() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.generate-unique-name=true").run((context) -> {
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO)).run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(context).hasSingleBean(JobExplorer.class);
 					assertThat(context).hasSingleBean(JobRepository.class);
-					assertThat(context).hasSingleBean(PlatformTransactionManager.class);
-					assertThat(context.getBean(PlatformTransactionManager.class).toString())
-							.contains("DataSourceTransactionManager");
 					assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 					assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel()).isNull();

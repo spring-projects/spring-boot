@@ -6,13 +6,8 @@ description = "Starter for using Undertow as the embedded servlet container. An 
 
 dependencies {
 	api("io.undertow:undertow-core")
-	api("io.undertow:undertow-servlet-jakartaee9") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
-	api("io.undertow:undertow-websockets-jsr-jakartaee9") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-		exclude group: "jakarta.websocket", module: "jakarta.websocket-client-api"
-	}
+	api("io.undertow:undertow-servlet-jakarta")
+	api("io.undertow:undertow-websockets-jsr-jakarta")
 	api("jakarta.websocket:jakarta.websocket-api")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 }

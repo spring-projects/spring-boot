@@ -203,6 +203,11 @@ If you add your own, you have to be aware of the order and in which position you
   This is a composite resolver, delegating to all the others and attempting to find a match to the '`Accept`' HTTP header sent by the client.
   There is a useful https://spring.io/blog/2013/06/03/content-negotiation-using-views[blog about `ContentNegotiatingViewResolver`] that you might like to study to learn more, and you might also look at the source code for detail.
   You can switch off the auto-configured `ContentNegotiatingViewResolver` by defining a bean named '`viewResolver`'.
+* If you use Thymeleaf, you also have a `ThymeleafViewResolver` named '`thymeleafViewResolver`'.
+  It looks for resources by surrounding the view name with a prefix and suffix.
+  The prefix is `spring.thymeleaf.prefix`, and the suffix is `spring.thymeleaf.suffix`.
+  The values of the prefix and suffix default to '`classpath:/templates/`' and '`.html`', respectively.
+  You can override `ThymeleafViewResolver` by providing a bean of the same name.
 * If you use FreeMarker, you also have a `FreeMarkerViewResolver` named '`freeMarkerViewResolver`'.
   It looks for resources in a loader path (which is externalized to `spring.freemarker.templateLoaderPath` and has a default value of '`classpath:/templates/`') by surrounding the view name with a prefix and a suffix.
   The prefix is externalized to `spring.freemarker.prefix`, and the suffix is externalized to `spring.freemarker.suffix`.
@@ -221,5 +226,6 @@ If you add your own, you have to be aware of the order and in which position you
 For more detail, see the following sections:
 
 * {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
+* {spring-boot-autoconfigure-module-code}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
 * {spring-boot-autoconfigure-module-code}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
 * {spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]

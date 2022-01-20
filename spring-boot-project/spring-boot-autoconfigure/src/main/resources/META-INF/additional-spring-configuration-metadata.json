@@ -2022,6 +2022,14 @@
       "defaultValue": "embedded"
     },
     {
+      "name": "spring.thymeleaf.prefix",
+      "defaultValue": "classpath:/templates/"
+    },
+    {
+      "name": "spring.thymeleaf.suffix",
+      "defaultValue": ".html"
+    },
+    {
       "name": "spring.web.locale-resolver",
       "defaultValue": "accept-header"
     },

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,26 +176,6 @@ class DataSourcePropertiesTests {
 		properties.afterPropertiesSet();
 		assertThat(properties.getPassword()).isNull();
 		assertThat(properties.determinePassword()).isNull();
-	}
-
-	@Test
-	@Deprecated
-	void determineCredentialsForSchemaScripts() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setSchemaUsername("foo");
-		properties.setSchemaPassword("bar");
-		assertThat(properties.getSchemaUsername()).isEqualTo("foo");
-		assertThat(properties.getSchemaPassword()).isEqualTo("bar");
-	}
-
-	@Test
-	@Deprecated
-	void determineCredentialsForDataScripts() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setDataUsername("foo");
-		properties.setDataPassword("bar");
-		assertThat(properties.getDataUsername()).isEqualTo("foo");
-		assertThat(properties.getDataPassword()).isEqualTo("bar");
 	}
 
 }

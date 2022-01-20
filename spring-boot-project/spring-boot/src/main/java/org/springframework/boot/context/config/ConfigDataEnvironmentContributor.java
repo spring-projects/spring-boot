@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -120,6 +121,9 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @return if the contributor is active
 	 */
 	boolean isActive(ConfigDataActivationContext activationContext) {
+		if (this.kind == Kind.UNBOUND_IMPORT) {
+			return false;
+		}
 		return this.properties == null || this.properties.isActive(activationContext);
 	}
 
@@ -223,11 +227,16 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	/**
 	 * Create a new {@link ConfigDataEnvironmentContributor} with bound
 	 * {@link ConfigDataProperties}.
-	 * @param binder the binder to use
+	 * @param contributors the contributors used for binding
+	 * @param activationContext the activation context
 	 * @return a new contributor instance
 	 */
-	ConfigDataEnvironmentContributor withBoundProperties(Binder binder) {
-		UseLegacyConfigProcessingException.throwIfRequested(binder);
+	ConfigDataEnvironmentContributor withBoundProperties(Iterable<ConfigDataEnvironmentContributor> contributors,
+			ConfigDataActivationContext activationContext) {
+		Iterable<ConfigurationPropertySource> sources = Collections.singleton(getConfigurationPropertySource());
+		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
+				contributors, activationContext, this, true);
+		Binder binder = new Binder(sources, placeholdersResolver, null, null, null);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		if (properties != null && this.configDataOptions.contains(ConfigData.Option.IGNORE_IMPORTS)) {
 			properties = properties.withoutImports();

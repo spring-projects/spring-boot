@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,23 +96,10 @@ public abstract class Packager {
 	 * @param source the source archive file to package
 	 */
 	protected Packager(File source) {
-		this(source, null);
-	}
-
-	/**
-	 * Create a new {@link Packager} instance.
-	 * @param source the source archive file to package
-	 * @param layoutFactory the layout factory to use or {@code null}
-	 * @deprecated since 2.3.10 for removal in 2.5 in favor of {@link #Packager(File)} and
-	 * {@link #setLayoutFactory(LayoutFactory)}
-	 */
-	@Deprecated
-	protected Packager(File source, LayoutFactory layoutFactory) {
 		Assert.notNull(source, "Source file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
 				() -> "Source must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
-		this.layoutFactory = layoutFactory;
 	}
 
 	/**

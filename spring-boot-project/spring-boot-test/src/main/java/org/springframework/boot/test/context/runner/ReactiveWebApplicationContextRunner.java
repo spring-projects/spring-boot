@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,11 @@
 
 package org.springframework.boot.test.context.runner;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
 
 /**
  * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a
@@ -61,29 +56,6 @@ public final class ReactiveWebApplicationContextRunner extends
 	private ReactiveWebApplicationContextRunner(
 			RunnerConfiguration<ConfigurableReactiveWebApplicationContext> configuration) {
 		super(configuration, ReactiveWebApplicationContextRunner::new);
-	}
-
-	@Deprecated
-	private ReactiveWebApplicationContextRunner(Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
-			boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
-			List<Configurations> configurations) {
-		super(contextFactory, allowBeanDefinitionOverriding, initializers, environmentProperties, systemProperties,
-				classLoader, parent, beanRegistrations, configurations);
-	}
-
-	@Override
-	@Deprecated
-	protected ReactiveWebApplicationContextRunner newInstance(
-			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory, boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
-			List<Configurations> configurations) {
-		return new ReactiveWebApplicationContextRunner(contextFactory, allowBeanDefinitionOverriding, initializers,
-				environmentProperties, systemProperties, classLoader, parent, beanRegistrations, configurations);
 	}
 
 }

@@ -33,10 +33,10 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet-jakartaee9") {
+	optional("io.undertow:undertow-servlet-jakarta") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
-	optional("io.undertow:undertow-websockets-jsr-jakartaee9") {
+	optional("io.undertow:undertow-websockets-jsr-jakarta") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	optional("jakarta.jms:jakarta.jms-api")
@@ -69,11 +69,13 @@ dependencies {
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.codehaus.groovy:groovy-templates")
 	optional("com.github.ben-manes.caffeine:caffeine")
+	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
 	optional("com.sendgrid:sendgrid-java") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("com.unboundid:unboundid-ldapsdk")
 	optional("com.zaxxer:HikariCP")
+	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
@@ -175,6 +177,10 @@ dependencies {
 		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
 		exclude group: "jakarta.mail", module: "jakarta.mail-api"
 	}
+	optional("org.thymeleaf:thymeleaf")
+	optional("org.thymeleaf:thymeleaf-spring6")
+	optional("org.thymeleaf.extras:thymeleaf-extras-java8time")
+	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

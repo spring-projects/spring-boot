@@ -30,7 +30,7 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.reactivex:rxjava-reactive-streams")
-	optional("io.undertow:undertow-servlet-jakartaee9") {
+	optional("io.undertow:undertow-servlet-jakarta") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	optional("javax.cache:cache-api")

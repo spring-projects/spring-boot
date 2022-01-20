@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
-import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -578,23 +577,6 @@ class WebFluxAutoConfigurationTests {
 					webSession.start();
 					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
 				})));
-	}
-
-	@Test
-	void sameSiteAttributesAreExclusive() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict",
-				"server.reactive.session.cookie.same-site:strict").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure()
-							.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
-				});
-	}
-
-	@Test
-	void deprecatedCustomSameSiteConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run(
-				assertExchangeWithSession((exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION"))
-						.isNotEmpty().allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,6 +85,15 @@ class SampleIntegrationTests {
 	void webSample() throws Exception {
 		this.cli.run("web.groovy");
 		assertThat(this.cli.getHttpOutput()).isEqualTo("World!");
+	}
+
+	@Test
+	void uiSample() throws Exception {
+		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
+		String result = this.cli.getHttpOutput();
+		assertThat(result).contains("Hello World");
+		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
+		assertThat(result).contains("container");
 	}
 
 	@Test

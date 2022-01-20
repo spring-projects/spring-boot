@@ -1,0 +1,11 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for building MVC web applications using Thymeleaf views"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.thymeleaf:thymeleaf-spring6")
+	api("org.thymeleaf.extras:thymeleaf-extras-java8time")
+}

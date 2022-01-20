@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	static {
 		Map<String, Object> properties = new HashMap<>();
+		properties.put("spring.thymeleaf.cache", "false");
 		properties.put("spring.freemarker.cache", "false");
 		properties.put("spring.groovy.template.cache", "false");
 		properties.put("spring.mustache.cache", "false");

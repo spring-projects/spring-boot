@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 package org.springframework.boot.autoconfigure.jms.artemis;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.api.core.client.ActiveMQClient;
 import org.apache.activemq.artemis.api.core.client.ServerLocator;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
-import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
-import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -139,18 +135,7 @@ class ArtemisConnectionFactoryFactory {
 		return connectionFactory;
 	}
 
-	@SuppressWarnings("deprecation")
 	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
-		// Fallback if the broker url is not set
-		if (!StringUtils.hasText(this.properties.getBrokerUrl()) && StringUtils.hasText(this.properties.getHost())) {
-			Map<String, Object> params = new HashMap<>();
-			params.put(TransportConstants.HOST_PROP_NAME, this.properties.getHost());
-			params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
-			TransportConfiguration transportConfiguration = new TransportConfiguration(
-					NettyConnectorFactory.class.getName(), params);
-			Constructor<T> constructor = factoryClass.getConstructor(boolean.class, TransportConfiguration[].class);
-			return constructor.newInstance(false, new TransportConfiguration[] { transportConfiguration });
-		}
 		String brokerUrl = StringUtils.hasText(this.properties.getBrokerUrl()) ? this.properties.getBrokerUrl()
 				: DEFAULT_BROKER_URL;
 		Constructor<T> constructor = factoryClass.getConstructor(String.class);

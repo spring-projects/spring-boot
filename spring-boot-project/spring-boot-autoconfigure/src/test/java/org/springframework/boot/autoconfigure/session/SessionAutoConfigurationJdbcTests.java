@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.session.FlushMode;
@@ -257,19 +256,6 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	}
 
 	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void whenTheUserDefinesTheirOwnJdbcSessionDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
-		this.contextRunner.withUserConfiguration(CustomJdbcSessionDataSourceInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=jdbc")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
-						.hasSingleBean(JdbcSessionDataSourceInitializer.class).hasBean("customInitializer"));
-	}
-
-	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredJdbcSessionInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -322,18 +308,6 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		@Bean
 		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
 			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
-		}
-
-	}
-
-	@Deprecated
-	@Configuration(proxyBeanMethods = false)
-	static class CustomJdbcSessionDataSourceInitializerConfiguration {
-
-		@Bean
-		JdbcSessionDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-				JdbcSessionProperties properties) {
-			return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

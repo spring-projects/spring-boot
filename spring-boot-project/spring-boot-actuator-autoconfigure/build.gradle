@@ -141,7 +141,7 @@ dependencies {
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.undertow:undertow-core")
-	testImplementation("io.undertow:undertow-servlet-jakartaee9") {
+	testImplementation("io.undertow:undertow-servlet-jakarta") {
 		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
 	}
 	testImplementation("jakarta.xml.bind:jakarta.xml.bind-api")
