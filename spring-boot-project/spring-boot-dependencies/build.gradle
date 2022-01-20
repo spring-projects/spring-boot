@@ -88,9 +88,6 @@ bom {
 		}
 	}
 	library("Caffeine", "2.9.3") {
-		prohibit("[3.0.0,)") {
-			because "it requires Java 11"
-		}
 		group("com.github.ben-manes.caffeine") {
 			modules = [
 				"caffeine",
@@ -178,9 +175,6 @@ bom {
 		}
 	}
 	library("Derby", "10.14.2.0") {
-		prohibit("[10.15,)") {
-			because "it requires Java 9"
-		}
 		group("org.apache.derby") {
 			modules = [
 				"derby",
@@ -254,9 +248,6 @@ bom {
 		}
 	}
 	library("Git Commit ID Plugin", "4.9.10") {
-		prohibit("[5.0.0,)") {
-			because "it requires Java 11"
-		}
 		group("pl.project13.maven") {
 			plugins = [
 				"git-commit-id-plugin"
@@ -366,9 +357,6 @@ bom {
 		}
 	}
 	library("HikariCP", "4.0.3") {
-		prohibit("[5.0.0,)") {
-			because "it requires Java 11"
-		}
 		group("com.zaxxer") {
 			modules = [
 				"HikariCP"
@@ -376,9 +364,6 @@ bom {
 		}
 	}
 	library("HSQLDB", "2.5.2") {
-		prohibit("[2.6.0,)") {
-			because "it requires Java 11"
-		}
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
