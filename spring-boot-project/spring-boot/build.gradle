@@ -118,6 +118,7 @@ dependencies {
 	testImplementation("mysql:mysql-connector-java")
 	testImplementation("net.sourceforge.jtds:jtds")
 	testImplementation("org.apache.derby:derby")
+	testImplementation("org.apache.derby:derbytools")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.eclipse.jetty:jetty-client")
 	testImplementation("org.eclipse.jetty.http2:http2-client")

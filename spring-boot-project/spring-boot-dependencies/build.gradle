@@ -174,11 +174,13 @@ bom {
 			]
 		}
 	}
-	library("Derby", "10.14.2.0") {
+	library("Derby", "10.15.2.0") {
 		group("org.apache.derby") {
 			modules = [
 				"derby",
-				"derbyclient"
+				"derbyclient",
+				"derbyshared",
+				"derbytools"
 			]
 		}
 	}

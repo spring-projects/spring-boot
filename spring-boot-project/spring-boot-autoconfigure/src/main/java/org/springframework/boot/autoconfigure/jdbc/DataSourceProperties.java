@@ -195,6 +195,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 			throw ex;
 		}
 		catch (Throwable ex) {
+			ex.printStackTrace();
 			return false;
 		}
 	}
