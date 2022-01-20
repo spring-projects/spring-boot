@@ -189,3 +189,8 @@ bom {
 dependencies {
 	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 }
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+	// Internal module so enforced platform dependencies are OK
+	suppressedValidationErrors.add('enforced-platform')
+}
