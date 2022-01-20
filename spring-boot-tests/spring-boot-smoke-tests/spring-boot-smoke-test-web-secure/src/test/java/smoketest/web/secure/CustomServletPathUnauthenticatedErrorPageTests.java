@@ -17,26 +17,25 @@
 package smoketest.web.secure;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Tests for error page when a stateless session creation policy is used.
+ * Tests for error page that permits access to all with a custom servlet path.
  *
- * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		classes = { AbstractErrorPageTests.TestConfiguration.class, NoSessionErrorPageTests.SecurityConfiguration.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { AbstractErrorPageTests.TestConfiguration.class,
+				CustomServletPathUnauthenticatedErrorPageTests.SecurityConfiguration.class,
 				SampleWebSecureApplication.class },
 		properties = { "server.error.include-message=always", "spring.security.user.name=username",
-				"spring.security.user.password=password" })
-class NoSessionErrorPageTests extends AbstractErrorPageTests {
+				"spring.security.user.password=password", "spring.mvc.servlet.path=/custom/servlet/path" })
+class CustomServletPathUnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {
 
-	NoSessionErrorPageTests() {
-		super("");
+	CustomServletPathUnauthenticatedErrorPageTests() {
+		super("/custom/servlet/path");
 	}
 
 	@org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods = false)
@@ -44,11 +43,11 @@ class NoSessionErrorPageTests extends AbstractErrorPageTests {
 
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-			http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-					.authorizeRequests((requests) -> {
-						requests.antMatchers("/public/**").permitAll();
-						requests.anyRequest().authenticated();
-					});
+			http.authorizeRequests((requests) -> {
+				requests.antMatchers("/custom/servlet/path/error").permitAll();
+				requests.antMatchers("/custom/servlet/path/public/**").permitAll();
+				requests.anyRequest().authenticated();
+			});
 			http.httpBasic();
 			return http.build();
 		}
