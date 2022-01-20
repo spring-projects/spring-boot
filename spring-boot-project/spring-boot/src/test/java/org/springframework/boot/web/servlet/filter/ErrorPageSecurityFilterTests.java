@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
@@ -116,6 +117,32 @@ class ErrorPageSecurityFilterTests {
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
 		verifyNoInteractions(this.privilegeEvaluator);
 		verify(this.filterChain).doFilter(this.request, this.response);
+	}
+
+	@Test
+	void whenThereIsAContextPathAndServletIsMappedToSlashContextPathIsNotPassedToEvaluator() throws Exception {
+		SecurityContext securityContext = mock(SecurityContext.class);
+		SecurityContextHolder.setContext(securityContext);
+		given(securityContext.getAuthentication()).willReturn(mock(Authentication.class));
+		this.request.setRequestURI("/example/error");
+		this.request.setContextPath("/example");
+		// Servlet mapped to /
+		this.request.setServletPath("/error");
+		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
+		verify(this.privilegeEvaluator).isAllowed(eq("/error"), any());
+	}
+
+	@Test
+	void whenThereIsAContextPathAndServletIsMappedToWildcardPathCorrectPathIsPassedToEvaluator() throws Exception {
+		SecurityContext securityContext = mock(SecurityContext.class);
+		SecurityContextHolder.setContext(securityContext);
+		given(securityContext.getAuthentication()).willReturn(mock(Authentication.class));
+		this.request.setRequestURI("/example/dispatcher/path/error");
+		this.request.setContextPath("/example");
+		// Servlet mapped to /dispatcher/path/*
+		this.request.setServletPath("/dispatcher/path");
+		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
+		verify(this.privilegeEvaluator).isAllowed(eq("/dispatcher/path/error"), any());
 	}
 
 }
