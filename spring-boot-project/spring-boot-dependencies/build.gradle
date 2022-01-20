@@ -314,7 +314,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "8.4.1") {
+	library("Flyway", "8.4.2") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
