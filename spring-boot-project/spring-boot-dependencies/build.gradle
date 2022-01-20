@@ -1533,7 +1533,7 @@ bom {
 			]
 		}
 	}
-	library("Yasson", "2.0.2") {
+	library("Yasson", "2.0.4") {
 		group("org.eclipse") {
 			modules = [
 				"yasson"
