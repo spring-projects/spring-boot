@@ -21,12 +21,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,24 +33,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-abstract class AbstractErrorPageTests {
+abstract class AbstractUnauthenticatedErrorPageTests {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 
 	private final String pathPrefix;
 
-	protected AbstractErrorPageTests(String pathPrefix) {
+	protected AbstractUnauthenticatedErrorPageTests(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
 	}
 
 	@Test
 	void testBadCredentials() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "wrongpassword")
-				.exchange("/test", HttpMethod.GET, null, JsonNode.class);
+				.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull();
+		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
 	}
 
 	@Test
@@ -62,7 +59,7 @@ abstract class AbstractErrorPageTests {
 				HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull();
+		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
 	}
 
 	@Test
@@ -89,7 +86,7 @@ abstract class AbstractErrorPageTests {
 				.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull();
+		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
 	}
 
 	@Test
@@ -106,28 +103,7 @@ abstract class AbstractErrorPageTests {
 		final ResponseEntity<String> response = this.testRestTemplate.withBasicAuth("username", "password")
 				.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		response.getBody();
 		assertThat(response.getBody()).isEqualTo("test");
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@RestController
-		static class TestController {
-
-			@GetMapping("/test")
-			String test() {
-				return "test";
-			}
-
-			@GetMapping("/fail")
-			String fail() {
-				throw new RuntimeException();
-			}
-
-		}
-
 	}
 
 }

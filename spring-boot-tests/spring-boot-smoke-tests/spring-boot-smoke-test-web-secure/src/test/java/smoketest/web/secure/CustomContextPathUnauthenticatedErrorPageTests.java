@@ -17,41 +17,21 @@
 package smoketest.web.secure;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Tests for error page that permits access to all.
+ * Tests for error page that permits access to all with a custom context path.
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { AbstractErrorPageTests.TestConfiguration.class,
 				UnauthenticatedErrorPageTests.SecurityConfiguration.class, SampleWebSecureApplication.class },
 		properties = { "server.error.include-message=always", "spring.security.user.name=username",
-				"spring.security.user.password=password" })
-class UnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {
+				"spring.security.user.password=password", "server.servlet.context-path=/example" })
+class CustomContextPathUnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {
 
-	UnauthenticatedErrorPageTests() {
+	CustomContextPathUnauthenticatedErrorPageTests() {
 		super("");
-	}
-
-	@org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods = false)
-	static class SecurityConfiguration {
-
-		@Bean
-		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> {
-				requests.antMatchers("/error").permitAll();
-				requests.antMatchers("/public/**").permitAll();
-				requests.anyRequest().authenticated();
-			});
-			http.httpBasic();
-			return http.build();
-		}
-
 	}
 
 }

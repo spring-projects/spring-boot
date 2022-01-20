@@ -18,12 +18,10 @@ package smoketest.web.secure;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Tests to ensure that the error page is accessible only to authorized users.
+ * Tests to ensure that the error page with a custom context path is accessible only to
+ * authorized users.
  *
  * @author Madhura Bhave
  */
@@ -31,27 +29,11 @@ import org.springframework.security.web.SecurityFilterChain;
 		classes = { AbstractErrorPageTests.TestConfiguration.class, ErrorPageTests.SecurityConfiguration.class,
 				SampleWebSecureApplication.class },
 		properties = { "server.error.include-message=always", "spring.security.user.name=username",
-				"spring.security.user.password=password" })
-class ErrorPageTests extends AbstractErrorPageTests {
+				"spring.security.user.password=password", "server.servlet.context-path=/example" })
+class CustomContextPathErrorPageTests extends AbstractErrorPageTests {
 
-	ErrorPageTests() {
+	CustomContextPathErrorPageTests() {
 		super("");
-	}
-
-	@org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods = false)
-	static class SecurityConfiguration {
-
-		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> {
-				requests.antMatchers("/public/**").permitAll();
-				requests.anyRequest().fullyAuthenticated();
-			});
-			http.httpBasic();
-			http.formLogin((form) -> form.loginPage("/login").permitAll());
-			return http.build();
-		}
-
 	}
 
 }
