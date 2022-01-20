@@ -17,6 +17,7 @@
 package org.springframework.boot.system;
 
 import java.io.Console;
+import java.io.PrintStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,7 +84,12 @@ public enum JavaVersion {
 	/**
 	 * Java 17.
 	 */
-	SEVENTEEN("17", Console.class, "charset");
+	SEVENTEEN("17", Console.class, "charset"),
+
+	/**
+	 * Java 18.
+	 */
+	EIGHTEEN("18", PrintStream.class, "charset");
 
 	private final String name;
 

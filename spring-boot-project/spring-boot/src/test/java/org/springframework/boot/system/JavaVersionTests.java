@@ -139,4 +139,10 @@ class JavaVersionTests {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SEVENTEEN);
 	}
 
+	@Test
+	@EnabledOnJre(JRE.JAVA_18)
+	void currentJavaVersionEighteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.EIGHTEEN);
+	}
+
 }
