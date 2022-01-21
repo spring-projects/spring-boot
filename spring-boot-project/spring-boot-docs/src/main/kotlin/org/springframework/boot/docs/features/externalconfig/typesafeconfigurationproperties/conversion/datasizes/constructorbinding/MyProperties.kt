@@ -29,8 +29,4 @@ class MyProperties(
 	@param:DataSizeUnit(DataUnit.MEGABYTES) @param:DefaultValue("2MB")
 	val bufferSize: DataSize,
 	@param:DefaultValue("512B") val sizeThreshold: DataSize
-) {
-	init {
-		sizeThreshold = sizeThreshold
-	}
-}
+)

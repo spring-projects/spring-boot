@@ -33,10 +33,10 @@ class MyControllerTests(
 	fun testExample() {
 		// @formatter:off
 		BDDMockito.given(
-			userVehicleService!!.getVehicleDetails("sboot")
+			userVehicleService.getVehicleDetails("sboot")
 		)
 			.willReturn(VehicleDetails("Honda", "Civic"))
-		webClient!!.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN).exchange()
+		webClient.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN).exchange()
 			.expectStatus().isOk
 			.expectBody(String::class.java).isEqualTo("Honda Civic")
 		// @formatter:on

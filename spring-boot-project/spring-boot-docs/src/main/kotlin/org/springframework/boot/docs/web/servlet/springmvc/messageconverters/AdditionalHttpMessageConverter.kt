@@ -24,7 +24,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException
 import java.io.IOException
 import kotlin.jvm.Throws
 
-internal open class AdditionalHttpMessageConverter :
+open class AdditionalHttpMessageConverter :
 	AbstractHttpMessageConverter<Any?>() {
 	override fun supports(clazz: Class<*>?): Boolean {
 		return false

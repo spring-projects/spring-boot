@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.servlet.springmvc.errorhandling.errorpageswithoutspringmvc
+package org.springframework.boot.docs.web.servlet.springmvc.errorhandling
 
-import org.springframework.web.filter.GenericFilterBean
-import javax.servlet.FilterChain
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
-
-class MyFilter : GenericFilterBean() {
-	override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-	}
-}
+class CustomException : RuntimeException()

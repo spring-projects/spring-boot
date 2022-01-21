@@ -37,9 +37,7 @@ class MyWebServiceClientTests(
 		server
 			.expect(RequestMatchers.payload(StringSource("<request/>")))
 			.andRespond(ResponseCreators.withPayload(StringSource("<response><status>200</status></response>")))
-		Assertions.assertThat<Response>(
-			someWebService!!.test()
-		)
+		Assertions.assertThat(this.someWebService.test())
 			.extracting(Function<Response, Int> { obj: Response -> obj.status })
 			.isEqualTo(200)
 		// @formatter:on

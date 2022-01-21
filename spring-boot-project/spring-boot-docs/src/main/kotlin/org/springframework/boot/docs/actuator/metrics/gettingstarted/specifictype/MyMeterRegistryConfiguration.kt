@@ -29,16 +29,17 @@ class MyMeterRegistryConfiguration {
 	fun graphiteMetricsNamingConvention(): MeterRegistryCustomizer<GraphiteMeterRegistry> {
 		return MeterRegistryCustomizer { registry: GraphiteMeterRegistry ->
 			registry.config().namingConvention(
-				NamingConvention { name: String?, type: Meter.Type? ->
+				NamingConvention { name: String?, type: Meter.Type?, baseUnit: String? ->
 					name(
 						name!!,
-						type!!
+						type!!,
+						baseUnit
 					)
 				})
 		}
 	}
 
-	private fun name(name: String, type: Meter.Type, baseUnit: String): String {
+	private fun name(name: String, type: Meter.Type, baseUnit: String?): String {
 		return  /**/NamingConvention.snakeCase.name(name, type, baseUnit)
 	}
 }
