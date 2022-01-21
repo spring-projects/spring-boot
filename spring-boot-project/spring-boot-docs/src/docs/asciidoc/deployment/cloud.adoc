@@ -310,25 +310,25 @@ There is a https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elasti
 
 
 [[deployment.cloud.boxfuse]]
-=== Boxfuse and Amazon Web Services
-https://boxfuse.com/[Boxfuse] works by turning your Spring Boot executable jar or war into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
-Boxfuse comes with deep integration for Spring Boot and uses the information from your Spring Boot configuration file to automatically configure ports and health check URLs.
-Boxfuse leverages this information both for the images it produces as well as for all the resources it provisions (instances, security groups, elastic load balancers, and so on).
+=== CloudCaptain and Amazon Web Services
+https://cloudcaptain.sh/[CloudCaptain] works by turning your Spring Boot executable jar or war into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
+CloudCaptain comes with deep integration for Spring Boot and uses the information from your Spring Boot configuration file to automatically configure ports and health check URLs.
+CloudCaptain leverages this information both for the images it produces as well as for all the resources it provisions (instances, security groups, elastic load balancers, and so on).
 
-Once you have created a https://console.boxfuse.com[Boxfuse account], connected it to your AWS account, installed the latest version of the Boxfuse Client, and ensured that the application has been built by Maven or Gradle (by using, for example, `mvn clean package`), you can deploy your Spring Boot application to AWS with a command similar to the following:
+Once you have created a https://console.cloudcaptain.sh[CloudCaptain account], connected it to your AWS account, installed the latest version of the CloudCaptain Client, and ensured that the application has been built by Maven or Gradle (by using, for example, `mvn clean package`), you can deploy your Spring Boot application to AWS with a command similar to the following:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ boxfuse run myapp-1.0.jar -env=prod
 ----
 
-See the https://boxfuse.com/docs/commandline/run.html[`boxfuse run` documentation] for more options.
-If there is a https://boxfuse.com/docs/commandline/#configuration[`boxfuse.conf`] file present in the current directory, it is considered.
+See the https://cloudcaptain.sh/docs/commandline/run.html[`boxfuse run` documentation] for more options.
+If there is a https://cloudcaptain.sh/docs/commandline/#configuration[`boxfuse.conf`] file present in the current directory, it is considered.
 
-TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup.
-If your executable jar or war contains an https://boxfuse.com/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the properties it contains.
+TIP: By default, CloudCaptain activates a Spring profile named `boxfuse` on startup.
+If your executable jar or war contains an https://cloudcaptain.sh/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] file, CloudCaptain bases its configuration on the properties it contains.
 
-At this point, `boxfuse` creates an image for your application, uploads it, and configures and starts the necessary resources on AWS, resulting in output similar to the following example:
+At this point, CloudCaptain creates an image for your application, uploads it, and configures and starts the necessary resources on AWS, resulting in output similar to the following example:
 
 [indent=0,subs="verbatim"]
 ----
@@ -353,7 +353,7 @@ At this point, `boxfuse` creates an image for your application, uploads it, and 
 
 Your application should now be up and running on AWS.
 
-See the blog post on https://boxfuse.com/blog/spring-boot-ec2.html[deploying Spring Boot apps on EC2] as well as the https://boxfuse.com/docs/payloads/springboot.html[documentation for the Boxfuse Spring Boot integration] to get started with a Maven build to run the app.
+See the blog post on https://cloudcaptain.sh/blog/spring-boot-ec2.html[deploying Spring Boot apps on EC2] as well as the https://cloudcaptain.sh/docs/payloads/springboot.html[documentation for the CloudCaptain Spring Boot integration] to get started with a Maven build to run the app.
 
 
 
