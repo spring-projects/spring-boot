@@ -46,9 +46,9 @@ class KotlinConventions {
 		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
 			project.getTasks().withType(KotlinCompile.class, (compile) -> {
 				KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
-				kotlinOptions.setApiVersion("1.3");
-				kotlinOptions.setLanguageVersion("1.3");
-				kotlinOptions.setAllWarningsAsErrors(true);
+				kotlinOptions.setApiVersion("1.6");
+				kotlinOptions.setLanguageVersion("1.6");
+				kotlinOptions.setAllWarningsAsErrors(false);
 				List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
 				freeCompilerArgs.add("-Xsuppress-version-warnings");
 				compile.getKotlinOptions().setFreeCompilerArgs(freeCompilerArgs);
