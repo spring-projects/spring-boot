@@ -33,6 +33,9 @@ class MyReadinessStateExporter {
 			ReadinessState.REFUSING_TRAFFIC -> {
 				// remove file /tmp/healthy
 			}
+			else -> {
+				// ...
+			}
 		}
 	}
 }

@@ -35,10 +35,10 @@ class MyControllerTests(
 	fun testExample() {
 		// @formatter:off
 		BDDMockito.given(
-			userVehicleService!!.getVehicleDetails("sboot")
+			userVehicleService.getVehicleDetails("sboot")
 		)
 			.willReturn(VehicleDetails("Honda", "Civic"))
-		mvc!!.perform(MockMvcRequestBuilders.get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
+		mvc.perform(MockMvcRequestBuilders.get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
 			.andExpect(MockMvcResultMatchers.status().isOk)
 			.andExpect(MockMvcResultMatchers.content().string("Honda Civic"))
 		// @formatter:on

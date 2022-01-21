@@ -35,5 +35,5 @@ class MyRabbitConfiguration {
 
 	/**/
 	private val customConnectionFactory: ConnectionFactory?
-		private get() =/**/null
+		get() = /**/ null
 }

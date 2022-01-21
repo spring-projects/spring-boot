@@ -26,8 +26,8 @@ import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionM
 class MyNeo4jConfiguration {
 	@Bean
 	fun reactiveTransactionManager(
-		driver: Driver?,
-		databaseNameProvider: ReactiveDatabaseSelectionProvider?
+		driver: Driver,
+		databaseNameProvider: ReactiveDatabaseSelectionProvider
 	): ReactiveNeo4jTransactionManager {
 		return ReactiveNeo4jTransactionManager(driver, databaseNameProvider)
 	}

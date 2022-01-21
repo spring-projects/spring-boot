@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean
 class MyMeterBinderConfiguration {
 	@Bean
 	fun queueSize(queue: Queue): MeterBinder {
-		return MeterBinder { registry: MeterRegistry? ->
+		return MeterBinder { registry: MeterRegistry ->
 			Gauge.builder(
 				"queueSize"
 			) { queue.size() }.register(registry)

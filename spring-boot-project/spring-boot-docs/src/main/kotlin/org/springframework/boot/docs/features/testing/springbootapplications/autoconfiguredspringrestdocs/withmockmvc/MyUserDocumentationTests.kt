@@ -32,7 +32,7 @@ class MyUserDocumentationTests(@Autowired val mvc: MockMvc) {
 	@Test
 	fun listUsers() {
 		// @formatter:off
-		mvc!!.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.TEXT_PLAIN))
+		mvc.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.TEXT_PLAIN))
 			.andExpect(MockMvcResultMatchers.status().isOk)
 			.andDo(MockMvcRestDocumentation.document("list-users"))
 		// @formatter:on

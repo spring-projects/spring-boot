@@ -28,7 +28,7 @@ class MyService(rsocketRequesterBuilder: RSocketRequester.Builder) {
 		rsocketRequester = rsocketRequesterBuilder.tcp("example.org", 9898)
 	}
 
-	fun someRSocketCall(name: String?): Mono<User> {
+	fun someRSocketCall(name: String): Mono<User> {
 		return rsocketRequester.route("user").data(name).retrieveMono(
 			User::class.java
 		)

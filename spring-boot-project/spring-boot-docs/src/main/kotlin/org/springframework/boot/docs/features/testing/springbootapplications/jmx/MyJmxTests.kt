@@ -32,7 +32,7 @@ class MyJmxTests(@Autowired val mBeanServer: MBeanServer) {
 
 	@Test
 	fun exampleTest() {
-		Assertions.assertThat(mBeanServer!!.domains).contains("java.lang")
+		Assertions.assertThat(mBeanServer.domains).contains("java.lang")
 		// ...
 	}
 

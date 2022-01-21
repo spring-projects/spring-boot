@@ -31,7 +31,7 @@ import java.time.Duration
 class MySpringBootTests(@Autowired val template: TestRestTemplate) {
 	@Test
 	fun testRequest() {
-		val headers = template!!.getForEntity(
+		val headers = template.getForEntity(
 			"/example",
 			String::class.java
 		).headers

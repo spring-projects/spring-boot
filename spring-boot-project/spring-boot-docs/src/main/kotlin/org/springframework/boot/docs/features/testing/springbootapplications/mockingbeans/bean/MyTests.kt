@@ -30,8 +30,8 @@ class MyTests(
 
 	@Test
 	fun exampleTest() {
-		BDDMockito.given(remoteService!!.value).willReturn("spring")
-		val reverse = reverser!!.reverseValue // Calls injected RemoteService
+		BDDMockito.given(remoteService.value).willReturn("spring")
+		val reverse = reverser.reverseValue // Calls injected RemoteService
 		Assertions.assertThat(reverse).isEqualTo("gnirps")
 	}
 }

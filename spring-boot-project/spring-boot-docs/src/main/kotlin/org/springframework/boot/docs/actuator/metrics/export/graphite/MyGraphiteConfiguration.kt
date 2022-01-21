@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration(proxyBeanMethods = false)
 class MyGraphiteConfiguration {
 	@Bean
-	fun graphiteMeterRegistry(config: GraphiteConfig?, clock: Clock?): GraphiteMeterRegistry {
+	fun graphiteMeterRegistry(config: GraphiteConfig, clock: Clock): GraphiteMeterRegistry {
 		return GraphiteMeterRegistry(config, clock,
 			HierarchicalNameMapper { id: Meter.Id, convention: NamingConvention ->
 				toHierarchicalName(

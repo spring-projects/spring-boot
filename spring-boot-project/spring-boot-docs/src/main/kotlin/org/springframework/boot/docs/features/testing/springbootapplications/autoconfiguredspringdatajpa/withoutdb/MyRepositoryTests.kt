@@ -29,8 +29,8 @@ class MyRepositoryTests(
 
 	@Test
 	fun testExample() {
-		entityManager!!.persist(User("sboot", "1234"))
-		val user = repository!!.findByUsername("sboot")
+		entityManager.persist(User("sboot", "1234"))
+		val user = repository.findByUsername("sboot")
 		Assertions.assertThat(user?.username).isEqualTo("sboot")
 		Assertions.assertThat(user?.employeeNumber).isEqualTo("1234")
 	}

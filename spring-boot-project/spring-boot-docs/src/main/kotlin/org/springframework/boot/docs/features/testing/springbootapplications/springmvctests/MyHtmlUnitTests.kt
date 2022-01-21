@@ -33,9 +33,9 @@ class MyHtmlUnitTests(
 	@Test
 	fun testExample() {
 		BDDMockito.given(
-			userVehicleService!!.getVehicleDetails("sboot")
+			userVehicleService.getVehicleDetails("sboot")
 		).willReturn(VehicleDetails("Honda", "Civic"))
-		val page = webClient!!.getPage<HtmlPage>("/sboot/vehicle.html")
+		val page = webClient.getPage<HtmlPage>("/sboot/vehicle.html")
 		Assertions.assertThat(page.body.textContent).isEqualTo("Honda Civic")
 	}
 }

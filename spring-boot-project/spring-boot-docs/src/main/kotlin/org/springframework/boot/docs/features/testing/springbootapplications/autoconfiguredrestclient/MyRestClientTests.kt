@@ -32,9 +32,9 @@ class MyRestClientTests(
 
 	@Test
 	fun getVehicleDetailsWhenResultIsSuccessShouldReturnDetails(): Unit {
-		server!!.expect(MockRestRequestMatchers.requestTo("/greet/details"))
+		server.expect(MockRestRequestMatchers.requestTo("/greet/details"))
 			.andRespond(MockRestResponseCreators.withSuccess("hello", MediaType.TEXT_PLAIN))
-		val greeting = service!!.callRestService()
+		val greeting = service.callRestService()
 		Assertions.assertThat(greeting).isEqualTo("hello")
 	}
 }

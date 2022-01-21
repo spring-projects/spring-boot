@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration(proxyBeanMethods = false)
 class MyJmxConfiguration {
 	@Bean
-	fun jmxMeterRegistry(config: JmxConfig?, clock: Clock?): JmxMeterRegistry {
+	fun jmxMeterRegistry(config: JmxConfig, clock: Clock): JmxMeterRegistry {
 		return JmxMeterRegistry(config, clock,
 			HierarchicalNameMapper { id: Meter.Id, convention: NamingConvention ->
 				toHierarchicalName(

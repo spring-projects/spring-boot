@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component
 @Component
 class MyBean(private val template: ElasticsearchRestTemplate) {
 	// @fold:on // ...
-	fun someMethod(id: String?): Boolean {
+	fun someMethod(id: String): Boolean {
 		return template.exists(id, User::class.java)
 	} // @fold:off
 }

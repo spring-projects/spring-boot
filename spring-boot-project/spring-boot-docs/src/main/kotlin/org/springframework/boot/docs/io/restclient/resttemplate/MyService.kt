@@ -28,7 +28,7 @@ class MyService(restTemplateBuilder: RestTemplateBuilder) {
 		restTemplate = restTemplateBuilder.build()
 	}
 
-	fun someRestCall(name: String?): Details {
+	fun someRestCall(name: String): Details {
 		return restTemplate.getForObject(
 			"/{name}/details",
 			Details::class.java, name

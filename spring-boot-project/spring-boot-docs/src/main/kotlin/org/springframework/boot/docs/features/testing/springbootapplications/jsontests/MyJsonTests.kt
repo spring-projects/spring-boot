@@ -28,7 +28,7 @@ class MyJsonTests(@Autowired val json: JacksonTester<VehicleDetails>) {
 	fun serialize() {
 		val details = VehicleDetails("Honda", "Civic")
 		// Assert against a `.json` file in the same package as the test
-		Assertions.assertThat(json!!.write(details)).isEqualToJson("expected.json")
+		Assertions.assertThat(json.write(details)).isEqualToJson("expected.json")
 		// Or use JSON path based assertions
 		Assertions.assertThat(json.write(details)).hasJsonPathStringValue("@.make")
 		Assertions.assertThat(json.write(details)).extractingJsonPathStringValue("@.make").isEqualTo("Honda")
@@ -38,7 +38,7 @@ class MyJsonTests(@Autowired val json: JacksonTester<VehicleDetails>) {
 	fun deserialize() {
 		val content = "{\"make\":\"Ford\",\"model\":\"Focus\"}"
 		Assertions.assertThat(
-			json!!.parse(content)
+			json.parse(content)
 		).isEqualTo(VehicleDetails("Ford", "Focus"))
 		Assertions.assertThat(json.parseObject(content).make).isEqualTo("Ford")
 	}

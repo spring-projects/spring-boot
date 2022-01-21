@@ -28,6 +28,6 @@ class MySecurityTests(@Autowired val mvc: MockMvc) {
 	@Test
 	@WithMockUser(roles = ["ADMIN"])
 	fun requestProtectedUrlWithUser() {
-		mvc!!.perform(MockMvcRequestBuilders.get("/"))
+		mvc.perform(MockMvcRequestBuilders.get("/"))
 	}
 }

@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.health.Status
 import org.springframework.context.annotation.Configuration
 
 @Configuration(proxyBeanMethods = false)
-class MyHealthMetricsExportConfiguration(registry: MeterRegistry?, healthEndpoint: HealthEndpoint) {
+class MyHealthMetricsExportConfiguration(registry: MeterRegistry, healthEndpoint: HealthEndpoint) {
 	init {
 		// This example presumes common tags (such as the app) are applied elsewhere
 		Gauge.builder(
