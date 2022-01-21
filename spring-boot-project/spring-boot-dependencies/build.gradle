@@ -1277,10 +1277,7 @@ bom {
 			]
 		}
 	}
-	library("Solr", "8.8.2") {
-		prohibit("8.9.0") {
-			because "it depends on an artifact that is not on Maven Central"
-		}
+	library("Solr", "8.11.1") {
 		group("org.apache.solr") {
 			modules = [
 				"solr-analysis-extras",
@@ -1289,8 +1286,12 @@ bom {
 				"solr-core",
 				"solr-dataimporthandler",
 				"solr-dataimporthandler-extras",
+				"solr-gcs-repository",
+				"solr-jaegertracer-configurator",
 				"solr-langid",
 				"solr-ltr",
+				"solr-prometheus-exporter",
+				"solr-s3-repository",
 				"solr-solrj" {
 					exclude group: "org.slf4j", module: "jcl-over-slf4j"
 				},
