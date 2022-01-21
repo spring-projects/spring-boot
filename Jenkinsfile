@@ -2,7 +2,7 @@ pipeline{
    work load
  agent { any { image 'maven:3.3.3' } }
     stages {
-        stage('build') {
+        stage('d') {
             steps {
                 sh 'mvn --version'
                 sh 'mvn --version'
