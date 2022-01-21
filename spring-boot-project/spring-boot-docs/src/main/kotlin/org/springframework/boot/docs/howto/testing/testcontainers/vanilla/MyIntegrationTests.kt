@@ -32,6 +32,6 @@ internal class MyIntegrationTests {
 
 	companion object {
 		@Container
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<>("neo4j:4.2") // ERROR: type expected
+		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:4.2")
 	}
 }

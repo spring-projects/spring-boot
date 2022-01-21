@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer.ExpressionInterceptUrlRegistry
 import org.springframework.security.web.SecurityFilterChain
 
@@ -28,7 +29,7 @@ class MySecurityConfiguration {
 	@Bean
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		http.requestMatcher(EndpointRequest.toAnyEndpoint())
-			.authorizeRequests { requests: ExpressionInterceptUrlRegistry ->
+			.authorizeRequests { requests: ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ->
 				requests.anyRequest().permitAll()
 			}
 		return http.build()

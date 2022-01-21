@@ -29,8 +29,7 @@ class MyController {
 	}
 
 	@GetMapping("/api/people")
-	@Timed(extraTags = ["region", "us-east-1"])
-	@Timed(value = "all.people", longTask = true)
+	@Timed(value = "all.people", longTask = true, extraTags = ["region", "us-east-1"])
 	fun listPeople(): List<Person>? {
 		return  /**/null
 	}

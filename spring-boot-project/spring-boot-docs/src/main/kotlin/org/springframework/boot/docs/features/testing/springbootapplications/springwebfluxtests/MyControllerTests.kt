@@ -23,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
 
 @WebFluxTest(UserVehicleController::class)
 class MyControllerTests(
@@ -38,7 +39,7 @@ class MyControllerTests(
 			.willReturn(VehicleDetails("Honda", "Civic"))
 		webClient.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN).exchange()
 			.expectStatus().isOk
-			.expectBody(String::class.java).isEqualTo("Honda Civic")
+			.expectBody<String>().isEqualTo("Honda Civic")
 		// @formatter:on
 	}
 }

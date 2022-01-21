@@ -34,7 +34,7 @@ internal class MyIntegrationTests {
 
 	companion object {
 		@Container
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<>("neo4j:4.2") // ERROR: type expected
+		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:4.2")
 		@DynamicPropertySource
 		fun neo4jProperties(registry: DynamicPropertyRegistry) {
 			registry.add("spring.neo4j.uri") { neo4j.getBoltUrl() }

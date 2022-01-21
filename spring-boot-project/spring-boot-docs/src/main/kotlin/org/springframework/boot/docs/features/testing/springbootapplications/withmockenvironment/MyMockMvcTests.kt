@@ -24,6 +24,8 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.reactive.server.expectBody
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,7 +44,7 @@ class MyMockMvcTests {
 			.get().uri("/")
 			.exchange()
 			.expectStatus().isOk
-			.expectBody(String::class.java).isEqualTo("Hello World")
+			.expectBody<String>().isEqualTo("Hello World")
 		// @formatter:on
 	}
 }
