@@ -32,6 +32,10 @@ import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
+import org.cache2k.Cache2kBuilder;
+import org.cache2k.extra.spring.SpringCache2kCacheManager;
+import org.cache2k.extra.spring.SpringCache2kDefaultCustomizer;
+import org.cache2k.extra.spring.SpringCache2kDefaultSupplier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -69,6 +73,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -551,6 +556,85 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	void cache2kCacheWithExplicitCaches() {
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo").run((context) -> {
+					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
+					assertThat(manager.getCacheNames()).containsOnly("foo");
+					Cache foo = manager.getCache("foo");
+					foo.get("1");
+					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
+				});
+	}
+
+	@Test
+	void cache2kDifferentCacheManagerName() {
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withBean(SpringCache2kDefaultSupplier.class, () -> () -> {
+					Cache2kBuilder<Object, Object> cache2kBuilder = Cache2kBuilder.forUnknownTypes()
+							.manager(org.cache2k.CacheManager.getInstance("separate"));
+					SpringCache2kDefaultSupplier.applySpringDefaults(cache2kBuilder);
+					return cache2kBuilder;
+				}).withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo").run((context) -> {
+					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
+					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("separate");
+				});
+	}
+
+	@Test
+	void cache2kCacheWithCustomizers() {
+		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
+				.withPropertyValues("spring.cache.type=cache2k")
+				.run(verifyCustomizers("allCacheManagerCustomizer", "cache2kCacheManagerCustomizer"));
+	}
+
+	@Test
+	void cache2kCacheWithExplicitCachesAndCustomizer() {
+		this.contextRunner.withUserConfiguration(Cache2kAddCacheWithCustomizerConfiguration.class)
+				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo,bar").run((context) -> {
+					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
+					assertThat(manager.getCacheNames()).containsExactlyInAnyOrder("foo", "bar", "viaCustomizer");
+					// check that default from customizer is applied
+					assertThat(manager.getCache("bar").get("any").get()).isEqualTo("defaultViaSupplier");
+					assertThat(manager.getCache("viaCustomizer").get("any").get()).isEqualTo("defaultViaSupplier");
+				});
+	}
+
+	@Test
+	void cache2kCacheWithDefaultsSupplierAndCustomizer() {
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withBean(SpringCache2kDefaultSupplier.class, () -> () -> {
+					Cache2kBuilder<Object, Object> cache2kBuilder = Cache2kBuilder.forUnknownTypes()
+							.manager(org.cache2k.CacheManager.getInstance("viaSupplier"));
+					SpringCache2kDefaultSupplier.applySpringDefaults(cache2kBuilder);
+					return cache2kBuilder;
+				})
+				.withBean(SpringCache2kDefaultCustomizer.class, () -> (b) -> b
+						.valueType(String.class)
+						.loader(key -> "viaCustomizer"))
+				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo").run((context) -> {
+					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
+					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("viaSupplier");
+					assertThat(manager.getCache("foo").get("any").get()).isEqualTo("viaCustomizer");
+				});
+	}
+
+	/**
+	 * Default cannot be changed in CacheManagerCustomizer, if cache names are present in the properties
+	 */
+	@Test
+	void cache2kCacheNamesAndCacheManagerDefaultsYieldsException() {
+		this.contextRunner.withUserConfiguration(Cache2kAddCacheAndDefaultsWithCustomizerConfiguration.class)
+				.withBean(SpringCache2kDefaultSupplier.class, () -> () ->
+						Cache2kBuilder.forUnknownTypes()
+								.manager(org.cache2k.CacheManager.getInstance("cache2kCacheNamesAndCacheManagerDefaults")))
+				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo,bar").run((context) -> {
+					assertThatCode(() -> getCacheManager(context, SpringCache2kCacheManager.class))
+							.getRootCause().isInstanceOf(IllegalStateException.class);
+				});
+	}
+
+	@Test
 	void caffeineCacheWithExplicitCaches() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cacheNames=foo").run((context) -> {
@@ -821,6 +905,38 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		@Bean
 		CacheResolver myCacheResolver() {
 			return mock(CacheResolver.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableCaching
+	static class Cache2kAddCacheWithCustomizerConfiguration {
+
+		@Bean
+		CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCustomizer() {
+			return (cacheManager) -> cacheManager.addCaches((b) -> b.name("viaCustomizer"));
+		}
+
+		@Bean
+		SpringCache2kDefaultSupplier cache2kDefaultConfiguration() {
+			return () -> SpringCache2kDefaultSupplier.supplyDefaultBuilder().valueType(String.class)
+					.loader((key) -> "defaultViaSupplier");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableCaching
+	static class Cache2kAddCacheAndDefaultsWithCustomizerConfiguration {
+
+		@Bean
+		CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCustomizer() {
+			return (cacheManager) -> cacheManager
+					.defaultSetup((b) -> b
+							.valueType(String.class)
+							.loader(key -> "defaultViaManagerCustomizer"))
+					.addCaches((b) -> b.name("viaCustomizer"));
 		}
 
 	}

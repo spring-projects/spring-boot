@@ -92,6 +92,8 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.aspectj:aspectjweaver")
+	optional("org.cache2k:cache2k-micrometer")
+	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
@@ -155,6 +157,7 @@ dependencies {
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.cache2k:cache2k-api")
 	testImplementation("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
@@ -176,6 +179,7 @@ dependencies {
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
+	testRuntimeOnly("org.cache2k:cache2k-core")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
