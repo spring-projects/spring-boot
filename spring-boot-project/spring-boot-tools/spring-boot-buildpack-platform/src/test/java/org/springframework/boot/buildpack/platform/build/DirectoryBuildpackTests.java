@@ -144,8 +144,9 @@ class DirectoryBuildpackTests {
 	}
 
 	private void writeBuildpackDescriptor() throws IOException {
-		File descriptor = new File(this.buildpackDir, "buildpack.toml");
-		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(descriptor.toPath()))) {
+		Path descriptor = Files.createFile(Paths.get(this.buildpackDir.getAbsolutePath(), "buildpack.toml"),
+				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-r--r--")));
+		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(descriptor))) {
 			writer.println("[buildpack]");
 			writer.println("id = \"example/buildpack1\"");
 			writer.println("version = \"0.0.1\"");
@@ -157,15 +158,16 @@ class DirectoryBuildpackTests {
 	}
 
 	private void writeScripts() throws IOException {
-		File binDirectory = new File(this.buildpackDir, "bin");
-		binDirectory.mkdirs();
-		Path detect = Files.createFile(Paths.get(binDirectory.getAbsolutePath(), "detect"),
+		Path binDirectory = Files.createDirectory(Paths.get(this.buildpackDir.getAbsolutePath(), "bin"),
+				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
+		binDirectory.toFile().mkdirs();
+		Path detect = Files.createFile(Paths.get(binDirectory.toString(), "detect"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--")));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(detect))) {
 			writer.println("#!/usr/bin/env bash");
 			writer.println("echo \"---> detect\"");
 		}
-		Path build = Files.createFile(Paths.get(binDirectory.getAbsolutePath(), "build"),
+		Path build = Files.createFile(Paths.get(binDirectory.toString(), "build"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--")));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(build))) {
 			writer.println("#!/usr/bin/env bash");
