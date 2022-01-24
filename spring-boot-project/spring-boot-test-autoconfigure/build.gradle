@@ -20,6 +20,11 @@ dependencies {
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")
+	optional("io.rest-assured:rest-assured") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "javax.activation", module: "activation"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
 	optional("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -46,6 +51,11 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
+	optional("org.springframework.restdocs:spring-restdocs-restassured") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "javax.activation", module: "activation"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
