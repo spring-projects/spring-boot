@@ -72,7 +72,7 @@ Gradle users can achieve the same result by using the https://plugins.gradle.org
 [source,gradle,indent=0,subs="verbatim"]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "2.2.4"
+		id "com.gorylenko.gradle-git-properties" version "2.3.2"
 	}
 ----
 
