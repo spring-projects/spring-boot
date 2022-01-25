@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,31 @@
 package org.springframework.boot.build.mavenplugin;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Properties;
+import java.util.function.BiConsumer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import io.spring.javaformat.formatter.FileEdit;
 import io.spring.javaformat.formatter.FileFormatter;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -41,6 +56,8 @@ import org.gradle.api.attributes.DocsType;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -50,8 +67,11 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -60,10 +80,15 @@ import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.test.IntegrationTestPlugin;
+import org.springframework.core.CollectionFactory;
+import org.springframework.util.Assert;
 
 /**
  * Plugin for building Spring Boot's Maven Plugin.
@@ -88,6 +113,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				generateHelpMojoTask);
 		addDocumentPluginGoalsTask(project, generatePluginDescriptorTask);
 		addPrepareMavenBinariesTask(project);
+		addExtractVersionPropertiesTask(project);
 	}
 
 	private void configurePomPackaging(Project project) {
@@ -240,6 +266,14 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		return input.replace("{{version}}", project.getVersion().toString());
 	}
 
+	private void addExtractVersionPropertiesTask(Project project) {
+		ExtractVersionProperties extractVersionProperties = project.getTasks().create("extractVersionProperties",
+				ExtractVersionProperties.class);
+		extractVersionProperties.setEffectiveBoms(project.getConfigurations().create("versionProperties"));
+		extractVersionProperties.getDestination().set(project.getLayout().getBuildDirectory().dir("generated-resources")
+				.map((dir) -> dir.file("extracted-versions.properties")));
+	}
+
 	public static class FormatHelpMojoSourceTask extends DefaultTask {
 
 		private Task generator;
@@ -356,6 +390,111 @@ public class MavenPluginPlugin implements Plugin<Project> {
 						throw new RuntimeException("Failed to copy artifact '" + result + "'", ex);
 					}
 				}
+			}
+		}
+
+	}
+
+	public static class ExtractVersionProperties extends DefaultTask {
+
+		private final RegularFileProperty destination;
+
+		private FileCollection effectiveBoms;
+
+		public ExtractVersionProperties() {
+			this.destination = getProject().getObjects().fileProperty();
+		}
+
+		@InputFiles
+		@PathSensitive(PathSensitivity.RELATIVE)
+		public FileCollection getEffectiveBoms() {
+			return this.effectiveBoms;
+		}
+
+		public void setEffectiveBoms(FileCollection effectiveBoms) {
+			this.effectiveBoms = effectiveBoms;
+		}
+
+		@OutputFile
+		public RegularFileProperty getDestination() {
+			return this.destination;
+		}
+
+		@TaskAction
+		public void extractVersionProperties() {
+			EffectiveBom effectiveBom = new EffectiveBom(this.effectiveBoms.getSingleFile());
+			Properties versions = extractVersionProperties(effectiveBom);
+			writeProperties(versions);
+		}
+
+		private void writeProperties(Properties versions) {
+			File outputFile = this.destination.getAsFile().get();
+			outputFile.getParentFile().mkdirs();
+			try (Writer writer = new FileWriter(outputFile)) {
+				versions.store(writer, null);
+			}
+			catch (IOException ex) {
+				throw new GradleException("Failed to write extracted version properties", ex);
+			}
+		}
+
+		private Properties extractVersionProperties(EffectiveBom effectiveBom) {
+			Properties versions = CollectionFactory.createSortedProperties(true);
+			versions.setProperty("project.version", effectiveBom.version());
+			effectiveBom.property("log4j2.version", versions::setProperty);
+			effectiveBom.property("maven-jar-plugin.version", versions::setProperty);
+			effectiveBom.property("maven-war-plugin.version", versions::setProperty);
+			effectiveBom.property("build-helper-maven-plugin.version", versions::setProperty);
+			effectiveBom.property("spring-framework.version", versions::setProperty);
+			effectiveBom.property("jakarta-servlet.version", versions::setProperty);
+			effectiveBom.property("kotlin.version", versions::setProperty);
+			return versions;
+		}
+
+	}
+
+	private static final class EffectiveBom {
+
+		private final Document document;
+
+		private final XPath xpath;
+
+		private EffectiveBom(File bomFile) {
+			this.document = loadDocument(bomFile);
+			this.xpath = XPathFactory.newInstance().newXPath();
+		}
+
+		private Document loadDocument(File bomFile) {
+			try {
+				try (InputStream inputStream = new FileInputStream(bomFile)) {
+					DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = builderFactory.newDocumentBuilder();
+					return builder.parse(inputStream);
+				}
+			}
+			catch (ParserConfigurationException | SAXException | IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		private String version() {
+			return get("version");
+		}
+
+		private void property(String name, BiConsumer<String, String> handler) {
+			handler.accept(name, get("properties/" + name));
+		}
+
+		private String get(String expression) {
+			try {
+				Node node = (Node) this.xpath.compile("/project/" + expression).evaluate(this.document,
+						XPathConstants.NODE);
+				String text = (node != null) ? node.getTextContent() : null;
+				Assert.hasLength(text, () -> "No result for expression " + expression);
+				return text;
+			}
+			catch (XPathExpressionException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 
