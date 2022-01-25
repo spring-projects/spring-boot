@@ -109,6 +109,10 @@ public class ErrorPageSecurityFilter implements Filter {
 		}
 	}
 
+	@Override
+	public void destroy() {
+	}
+
 	/**
 	 * {@link WebInvocationPrivilegeEvaluator} that always allows access.
 	 */
