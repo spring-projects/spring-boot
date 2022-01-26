@@ -24,7 +24,9 @@ import io.rsocket.core.RSocketServer;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.WebsocketRouteTransport;
 import reactor.netty.http.server.HttpServerRoutes;
+import reactor.netty.http.server.WebsocketServerSpec;
 
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server.Spec;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 
@@ -32,6 +34,7 @@ import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
  * {@link NettyRouteProvider} that configures an RSocket Websocket endpoint.
  *
  * @author Brian Clozel
+ * @author Leo Li
  */
 class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
@@ -41,11 +44,14 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final List<RSocketServerCustomizer> customizers;
 
-	RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor,
+	private final Spec spec;
+
+	RSocketWebSocketNettyRouteProvider(String mappingPath, Spec spec, SocketAcceptor socketAcceptor,
 			Stream<RSocketServerCustomizer> customizers) {
 		this.mappingPath = mappingPath;
 		this.socketAcceptor = socketAcceptor;
 		this.customizers = customizers.toList();
+		this.spec = spec;
 	}
 
 	@Override
@@ -53,7 +59,11 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 		RSocketServer server = RSocketServer.create(this.socketAcceptor);
 		this.customizers.forEach((customizer) -> customizer.customize(server));
 		ServerTransport.ConnectionAcceptor connectionAcceptor = server.asConnectionAcceptor();
-		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(connectionAcceptor));
+		WebsocketServerSpec.Builder build = (this.spec.getProtocols() == null) ? WebsocketServerSpec.builder()
+				: WebsocketServerSpec.builder().protocols(this.spec.getProtocols());
+		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(connectionAcceptor),
+				build.maxFramePayloadLength(this.spec.getMaxFramePayloadLength()).handlePing(this.spec.isHandlePing())
+						.compress(this.spec.isCompress()).build());
 	}
 
 }
