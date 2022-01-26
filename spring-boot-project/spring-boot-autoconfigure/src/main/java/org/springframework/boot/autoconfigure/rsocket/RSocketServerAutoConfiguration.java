@@ -72,7 +72,7 @@ public class RSocketServerAutoConfiguration {
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler, ObjectProvider<RSocketServerCustomizer> customizers) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder(), customizers.orderedStream());
+					properties.getServer().getSpec(), messageHandler.responder(), customizers.orderedStream());
 		}
 
 	}

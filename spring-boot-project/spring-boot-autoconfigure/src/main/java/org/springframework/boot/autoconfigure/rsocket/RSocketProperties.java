@@ -73,6 +73,8 @@ public class RSocketProperties {
 		@NestedConfigurationProperty
 		private Ssl ssl;
 
+		private Spec spec = new Spec();
+
 		public Integer getPort() {
 			return this.port;
 		}
@@ -119,6 +121,74 @@ public class RSocketProperties {
 
 		public void setSsl(Ssl ssl) {
 			this.ssl = ssl;
+		}
+
+		public Spec getSpec() {
+			return this.spec;
+		}
+
+		public void setSpec(Spec spec) {
+			this.spec = spec;
+		}
+
+		public static class Spec {
+
+			/**
+			 * Sub-protocol to use in websocket handshake signature. Null by default.
+			 */
+			private String protocols;
+
+			/**
+			 * Specifies a custom maximum allowable frame payload length. 65536 by
+			 * default.
+			 */
+			private int maxFramePayloadLength;
+
+			/**
+			 * Flag whether to proxy websocket ping frames or respond to them. False by
+			 * default.
+			 */
+			private boolean handlePing;
+
+			/**
+			 * Flag whether the websocket compression extension is enabled if the client
+			 * request presents websocket extensions headers. By default compression is
+			 * disabled.
+			 */
+			private boolean compress;
+
+			public String getProtocols() {
+				return this.protocols;
+			}
+
+			public void setProtocols(String protocols) {
+				this.protocols = protocols;
+			}
+
+			public int getMaxFramePayloadLength() {
+				return this.maxFramePayloadLength;
+			}
+
+			public void setMaxFramePayloadLength(int maxFramePayloadLength) {
+				this.maxFramePayloadLength = maxFramePayloadLength;
+			}
+
+			public boolean isHandlePing() {
+				return this.handlePing;
+			}
+
+			public void setHandlePing(boolean handlePing) {
+				this.handlePing = handlePing;
+			}
+
+			public boolean isCompress() {
+				return this.compress;
+			}
+
+			public void setCompress(boolean compress) {
+				this.compress = compress;
+			}
+
 		}
 
 	}
