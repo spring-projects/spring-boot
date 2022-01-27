@@ -32,7 +32,13 @@ public enum EndpointExposure {
 	/**
 	 * Exposed via a web endpoint.
 	 */
-	WEB("health");
+	WEB("health"),
+
+	/**
+	 * Exposed on Cloud Foundry via `/cloudfoundryapplication`.
+	 * @since 2.6.4
+	 */
+	CLOUD_FOUNDRY("*");
 
 	private final String[] defaultIncludes;
 

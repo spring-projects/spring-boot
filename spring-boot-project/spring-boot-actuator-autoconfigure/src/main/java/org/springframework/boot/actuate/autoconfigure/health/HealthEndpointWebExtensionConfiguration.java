@@ -65,7 +65,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnBean(HealthEndpoint.class)
-@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
+@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class,
+		exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
 class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
@@ -82,6 +83,7 @@ class HealthEndpointWebExtensionConfiguration {
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)
+	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class MvcAdditionalHealthEndpointPathsConfiguration {
 
 		@Bean
@@ -97,6 +99,7 @@ class HealthEndpointWebExtensionConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
+	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class JerseyAdditionalHealthEndpointPathsConfiguration {
 
 		@Bean
