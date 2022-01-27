@@ -54,7 +54,7 @@ public class QuartzEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(QuartzEndpoint.class)
 	@ConditionalOnMissingBean
-	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
+	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
 	public QuartzEndpointWebExtension quartzEndpointWebExtension(QuartzEndpoint endpoint) {
 		return new QuartzEndpointWebExtension(endpoint);
 	}
