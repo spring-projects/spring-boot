@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 class MyControllerTests(
 	@Autowired val mvc: MockMvc) {
 
+	@MockBean
 	lateinit var userVehicleService: UserVehicleService
 
 	@Test

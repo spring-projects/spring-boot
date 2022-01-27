@@ -29,6 +29,7 @@ import org.springframework.test.web.reactive.server.expectBody
 class MyControllerTests(
 	@Autowired val webClient: WebTestClient) {
 
+	@MockBean
 	lateinit var userVehicleService: UserVehicleService
 
 	@Test
