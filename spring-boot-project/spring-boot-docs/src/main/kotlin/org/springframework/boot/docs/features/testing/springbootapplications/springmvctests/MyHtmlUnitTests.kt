@@ -27,8 +27,9 @@ import org.springframework.boot.test.mock.mockito.MockBean
 
 @WebMvcTest(UserVehicleController::class)
 class MyHtmlUnitTests(
-	@Autowired val webClient: WebClient,
-	@MockBean val userVehicleService: UserVehicleService) {
+	@Autowired val webClient: WebClient) {
+
+	lateinit var userVehicleService: UserVehicleService
 
 	@Test
 	fun testExample() {

@@ -27,8 +27,9 @@ import org.springframework.test.web.reactive.server.expectBody
 
 @WebFluxTest(UserVehicleController::class)
 class MyControllerTests(
-	@Autowired val webClient: WebTestClient,
-	@MockBean val userVehicleService: UserVehicleService) {
+	@Autowired val webClient: WebTestClient) {
+
+	lateinit var userVehicleService: UserVehicleService
 
 	@Test
 	fun testExample() {
