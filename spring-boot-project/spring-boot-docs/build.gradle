@@ -444,10 +444,12 @@ repositories {
 compileKotlin {
 	kotlinOptions {
 		jvmTarget = "1.8"
+		allWarningsAsErrors = false
 	}
 }
 compileTestKotlin {
 	kotlinOptions {
 		jvmTarget = "1.8"
+		allWarningsAsErrors = false
 	}
 }
