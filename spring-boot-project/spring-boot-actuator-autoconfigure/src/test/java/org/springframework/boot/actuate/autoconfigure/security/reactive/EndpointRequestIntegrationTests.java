@@ -14,46 +14,45 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security.servlet;
+package org.springframework.boot.actuate.autoconfigure.security.reactive;
 
 import java.time.Duration;
 import java.util.Base64;
-import java.util.function.Supplier;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Abstract base class for {@link EndpointRequest} tests.
+ * Integration tests for {@link EndpointRequest}.
  *
- * @author Madhura Bhave
  * @author Chris Bono
  */
-abstract class AbstractEndpointRequestIntegrationTests {
+class EndpointRequestIntegrationTests {
 
 	@Test
 	void toEndpointShouldMatch() {
@@ -92,25 +91,30 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		});
 	}
 
-	protected final WebApplicationContextRunner getContextRunner() {
+	protected final ReactiveWebApplicationContextRunner getContextRunner() {
 		return createContextRunner().withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class).withConfiguration(
-						AutoConfigurations.of(JacksonAutoConfiguration.class, SecurityAutoConfiguration.class,
-								UserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
+						AutoConfigurations.of(JacksonAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class,
+								ReactiveUserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
 								WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
 
 	}
 
-	protected abstract WebApplicationContextRunner createContextRunner();
+	protected ReactiveWebApplicationContextRunner createContextRunner() {
+		return new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
+				.withUserConfiguration(WebEndpointConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class,
+						HttpMessageConvertersAutoConfiguration.class, WebFluxAutoConfiguration.class));
+	}
 
-	protected WebTestClient getWebTestClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+	protected WebTestClient getWebTestClient(AssertableReactiveWebApplicationContext context) {
+		int port = context.getSourceApplicationContext(AnnotationConfigReactiveWebServerApplicationContext.class)
 				.getWebServer().getPort();
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).responseTimeout(Duration.ofMinutes(5))
 				.build();
 	}
 
-	String getBasicAuth() {
+	private String getBasicAuth() {
 		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
@@ -130,11 +134,6 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		@Bean
 		TestEndpoint3 endpoint3() {
 			return new TestEndpoint3();
-		}
-
-		@Bean
-		TestServletEndpoint servletEndpoint() {
-			return new TestServletEndpoint();
 		}
 
 	}
@@ -173,12 +172,13 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	}
 
-	@ServletEndpoint(id = "se1")
-	static class TestServletEndpoint implements Supplier<EndpointServlet> {
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(WebEndpointProperties.class)
+	static class WebEndpointConfiguration {
 
-		@Override
-		public EndpointServlet get() {
-			return new EndpointServlet(ExampleServlet.class);
+		@Bean
+		TomcatReactiveWebServerFactory tomcat() {
+			return new TomcatReactiveWebServerFactory(0);
 		}
 
 	}
@@ -187,34 +187,20 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
-			return new WebSecurityConfigurerAdapter() {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+			// Required to allow POST calls
+			http.csrf().disable();
 
-				@Override
-				protected void configure(HttpSecurity http) throws Exception {
-					EndpointRequest.EndpointRequestMatcher postToEndpoint1 = EndpointRequest.to(TestEndpoint1.class)
-							.withHttpMethod(HttpMethod.POST);
-					http.csrf().ignoringRequestMatchers(postToEndpoint1);
-
-					http.authorizeRequests((requests) -> {
-						requests.requestMatchers(EndpointRequest.toLinks()).permitAll();
-						requests.requestMatchers(postToEndpoint1).authenticated();
-						requests.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll();
-						requests.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated();
-						requests.anyRequest().hasRole("ADMIN");
-					});
-					http.httpBasic();
-				}
-
-			};
-		}
-
-	}
-
-	static class ExampleServlet extends HttpServlet {
-
-		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+			http.authorizeExchange((exchanges) -> {
+				exchanges.matchers(EndpointRequest.toLinks()).permitAll();
+				exchanges.matchers(EndpointRequest.to(TestEndpoint1.class).withHttpMethod(HttpMethod.POST))
+						.authenticated();
+				exchanges.matchers(EndpointRequest.to(TestEndpoint1.class)).permitAll();
+				exchanges.matchers(EndpointRequest.toAnyEndpoint()).authenticated();
+				exchanges.anyExchange().hasRole("ADMIN");
+			});
+			http.httpBasic();
+			return http.build();
 		}
 
 	}

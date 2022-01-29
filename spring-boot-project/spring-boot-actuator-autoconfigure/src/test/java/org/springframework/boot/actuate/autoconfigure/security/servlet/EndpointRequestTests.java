@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
+import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Chris Bono
  */
 class EndpointRequestTests {
 
@@ -59,6 +61,14 @@ class EndpointRequestTests {
 		assertMatcher(matcher, "/actuator").matches("/actuator/bar");
 		assertMatcher(matcher, "/actuator").matches("/actuator/bar/baz");
 		assertMatcher(matcher, "/actuator").matches("/actuator");
+	}
+
+	@Test
+	void toAnyEndpointWithHttpMethodShouldRespectRequestMethod() {
+		EndpointRequest.EndpointRequestMatcher matcher = EndpointRequest.toAnyEndpoint()
+				.withHttpMethod(HttpMethod.POST);
+		assertMatcher(matcher, "/actuator").matches(HttpMethod.POST, "/actuator/foo");
+		assertMatcher(matcher, "/actuator").doesNotMatch(HttpMethod.GET, "/actuator/foo");
 	}
 
 	@Test
@@ -195,7 +205,7 @@ class EndpointRequestTests {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		RequestMatcher mockRequestMatcher = (request) -> false;
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints(""),
-				(pattern) -> mockRequestMatcher);
+				(pattern, method) -> mockRequestMatcher);
 		assertMatcher.doesNotMatch("/foo");
 		assertMatcher.doesNotMatch("/bar");
 	}
@@ -205,7 +215,7 @@ class EndpointRequestTests {
 		RequestMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcher mockRequestMatcher = (request) -> false;
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints("/actuator"),
-				(pattern) -> mockRequestMatcher);
+				(pattern, method) -> mockRequestMatcher);
 		assertMatcher.doesNotMatch("/actuator");
 	}
 
@@ -271,7 +281,11 @@ class EndpointRequestTests {
 		}
 
 		void matches(String servletPath) {
-			matches(mockRequest(servletPath));
+			matches(mockRequest(null, servletPath));
+		}
+
+		void matches(HttpMethod httpMethod, String servletPath) {
+			matches(mockRequest(httpMethod, servletPath));
 		}
 
 		private void matches(HttpServletRequest request) {
@@ -279,19 +293,26 @@ class EndpointRequestTests {
 		}
 
 		void doesNotMatch(String servletPath) {
-			doesNotMatch(mockRequest(servletPath));
+			doesNotMatch(mockRequest(null, servletPath));
+		}
+
+		void doesNotMatch(HttpMethod httpMethod, String servletPath) {
+			doesNotMatch(mockRequest(httpMethod, servletPath));
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
 			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
-		private MockHttpServletRequest mockRequest(String servletPath) {
+		private MockHttpServletRequest mockRequest(HttpMethod httpMethod, String servletPath) {
 			MockServletContext servletContext = new MockServletContext();
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);
+			}
+			if (httpMethod != null) {
+				request.setMethod(httpMethod.name());
 			}
 			return request;
 		}

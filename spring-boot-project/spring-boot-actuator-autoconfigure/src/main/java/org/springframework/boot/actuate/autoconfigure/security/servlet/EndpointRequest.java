@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ import org.springframework.boot.security.servlet.ApplicationContextRequestMatche
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.http.HttpMethod;
+import org.springframework.lang.Nullable;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -53,6 +55,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Chris Bono
  * @since 2.0.0
  */
 public final class EndpointRequest {
@@ -164,8 +167,8 @@ public final class EndpointRequest {
 		protected List<RequestMatcher> getLinksMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, String basePath) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, basePath));
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, basePath, "/"));
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath));
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath, "/"));
 			return linksMatchers;
 		}
 
@@ -174,7 +177,7 @@ public final class EndpointRequest {
 				return context.getBean(RequestMatcherProvider.class);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
-				return AntPathRequestMatcher::new;
+				return (pattern, method) -> new AntPathRequestMatcher(pattern, (method != null) ? method.name() : null);
 			}
 		}
 
@@ -191,38 +194,53 @@ public final class EndpointRequest {
 
 		private final boolean includeLinks;
 
+		@Nullable
+		private final HttpMethod httpMethod;
+
 		private EndpointRequestMatcher(boolean includeLinks) {
-			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
+			this(Collections.emptyList(), Collections.emptyList(), includeLinks, null);
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks, null);
 		}
 
 		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks, null);
 		}
 
-		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
+		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks,
+				@Nullable HttpMethod httpMethod) {
 			this.includes = includes;
 			this.excludes = excludes;
 			this.includeLinks = includeLinks;
+			this.httpMethod = httpMethod;
 		}
 
 		public EndpointRequestMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, null);
 		}
 
 		public EndpointRequestMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, null);
 		}
 
 		public EndpointRequestMatcher excludingLinks() {
-			return new EndpointRequestMatcher(this.includes, this.excludes, false);
+			return new EndpointRequestMatcher(this.includes, this.excludes, false, null);
+		}
+
+		/**
+		 * Restricts the matcher to only consider requests with a particular http method.
+		 * @param httpMethod the http method to include
+		 * @return a copy of the matcher further restricted to only match requests with
+		 * the specified http method
+		 */
+		public EndpointRequestMatcher withHttpMethod(HttpMethod httpMethod) {
+			return new EndpointRequestMatcher(this.includes, this.excludes, false, httpMethod);
 		}
 
 		@Override
@@ -236,7 +254,8 @@ public final class EndpointRequest {
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths);
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths,
+					this.httpMethod);
 			String basePath = pathMappedEndpoints.getBasePath();
 			if (this.includeLinks && StringUtils.hasText(basePath)) {
 				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
@@ -268,8 +287,8 @@ public final class EndpointRequest {
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
-				RequestMatcherProvider matcherProvider, Set<String> paths) {
-			return paths.stream().map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
+				RequestMatcherProvider matcherProvider, Set<String> paths, HttpMethod httpMethod) {
+			return paths.stream().map((path) -> requestMatcherFactory.antPath(matcherProvider, httpMethod, path, "/**"))
 					.collect(Collectors.toList());
 		}
 
@@ -299,12 +318,12 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
+		RequestMatcher antPath(RequestMatcherProvider matcherProvider, HttpMethod httpMethod, String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				pattern.append(part);
 			}
-			return matcherProvider.getRequestMatcher(pattern.toString());
+			return matcherProvider.getRequestMatcher(pattern.toString(), httpMethod);
 		}
 
 	}

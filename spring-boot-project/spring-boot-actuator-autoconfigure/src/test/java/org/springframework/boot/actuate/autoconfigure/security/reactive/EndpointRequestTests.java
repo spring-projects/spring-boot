@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Chris Bono
  */
 class EndpointRequestTests {
 
@@ -59,6 +61,13 @@ class EndpointRequestTests {
 		assertMatcher(matcher).matches("/actuator/foo");
 		assertMatcher(matcher).matches("/actuator/bar");
 		assertMatcher(matcher).matches("/actuator");
+	}
+
+	@Test
+	void toAnyEndpointWithHttpMethodShouldRespectRequestMethod() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().withHttpMethod(HttpMethod.POST);
+		assertMatcher(matcher, "/actuator").matches(HttpMethod.POST, "/actuator/foo");
+		assertMatcher(matcher, "/actuator").doesNotMatch(HttpMethod.GET, "/actuator/foo");
 	}
 
 	@Test
@@ -241,6 +250,12 @@ class EndpointRequestTests {
 			matches(exchange);
 		}
 
+		void matches(HttpMethod httpMethod, String path) {
+			ServerWebExchange exchange = webHandler().createExchange(
+					MockServerHttpRequest.method(httpMethod, path).build(), new MockServerHttpResponse());
+			matches(exchange);
+		}
+
 		private void matches(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
 					.as("Matches " + getRequestPath(exchange)).isTrue();
@@ -249,6 +264,12 @@ class EndpointRequestTests {
 		void doesNotMatch(String path) {
 			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(),
 					new MockServerHttpResponse());
+			doesNotMatch(exchange);
+		}
+
+		void doesNotMatch(HttpMethod httpMethod, String path) {
+			ServerWebExchange exchange = webHandler().createExchange(
+					MockServerHttpRequest.method(httpMethod, path).build(), new MockServerHttpResponse());
 			doesNotMatch(exchange);
 		}
 

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.function.Function;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.lang.Nullable;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -25,6 +27,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * {@link RequestMatcherProvider} that provides an {@link AntPathRequestMatcher}.
  *
  * @author Madhura Bhave
+ * @author Chris Bono
  * @since 2.1.8
  */
 public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
@@ -36,8 +39,9 @@ public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 	}
 
 	@Override
-	public RequestMatcher getRequestMatcher(String pattern) {
-		return new AntPathRequestMatcher(this.pathFactory.apply(pattern));
+	public RequestMatcher getRequestMatcher(String pattern, @Nullable HttpMethod httpMethod) {
+		return new AntPathRequestMatcher(this.pathFactory.apply(pattern),
+				(httpMethod != null) ? httpMethod.name() : null);
 	}
 
 }
