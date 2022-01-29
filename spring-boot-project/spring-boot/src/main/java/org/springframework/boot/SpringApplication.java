@@ -519,7 +519,8 @@ public class SpringApplication {
 
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
 		if (System.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME) == null) {
-			Boolean ignore = environment.getProperty("spring.beaninfo.ignore", Boolean.class, Boolean.TRUE);
+			Boolean ignore = environment.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME,
+					Boolean.class, Boolean.TRUE);
 			System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME, ignore.toString());
 		}
 	}
