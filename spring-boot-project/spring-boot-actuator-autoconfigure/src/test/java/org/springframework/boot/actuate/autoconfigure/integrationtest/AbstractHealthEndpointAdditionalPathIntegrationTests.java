@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.boot.test.context.runner.AbstractApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -75,7 +74,6 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 		this.runner.withPropertyValues("management.endpoint.health.group.live.include=diskSpace",
 				"management.server.port=0", "management.endpoint.health.group.live.additional-path=server:healthz",
 				"management.endpoint.health.group.live.show-components=always")
-				.withInitializer(new ConditionEvaluationReportLoggingListener())
 				.run(withWebTestClient(this::testResponse, "local.server.port"));
 	}
 
@@ -86,7 +84,6 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 						"management.server.port=0", "management.endpoint.health.group.live.include=diskSpace",
 						"management.endpoint.health.group.live.additional-path=server:healthz",
 						"management.endpoint.health.group.live.show-components=always")
-				.withInitializer(new ConditionEvaluationReportLoggingListener())
 				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
 						.exchange().expectStatus().isNotFound(), "local.server.port"));
 	}
@@ -97,7 +94,6 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 				"spring.main.cloud-platform=cloud_foundry", "management.endpoint.health.group.live.include=diskSpace",
 				"management.endpoint.health.group.live.additional-path=server:healthz",
 				"management.endpoint.health.group.live.show-components=always")
-				.withInitializer(new ConditionEvaluationReportLoggingListener())
 				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
 						.exchange().expectStatus().isNotFound(), "local.server.port"));
 	}
@@ -110,7 +106,6 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 						"management.endpoint.health.group.live.include=diskSpace",
 						"management.endpoint.health.group.live.additional-path=server:healthz",
 						"management.endpoint.health.group.live.show-components=always")
-				.withInitializer(new ConditionEvaluationReportLoggingListener())
 				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
 						.exchange().expectStatus().isNotFound(), "local.server.port"));
 	}
