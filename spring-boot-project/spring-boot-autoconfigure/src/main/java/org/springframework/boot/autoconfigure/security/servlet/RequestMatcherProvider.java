@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
@@ -23,6 +24,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * Spring Security.
  *
  * @author Madhura Bhave
+ * @author Chris Bono
  * @since 2.0.5
  */
 @FunctionalInterface
@@ -33,6 +35,17 @@ public interface RequestMatcherProvider {
 	 * @param pattern the request pattern
 	 * @return a request matcher
 	 */
-	RequestMatcher getRequestMatcher(String pattern);
+	default RequestMatcher getRequestMatcher(String pattern) {
+		return getRequestMatcher(pattern, null);
+	}
+
+	/**
+	 * Return the {@link RequestMatcher} to be used for the specified pattern and http
+	 * method.
+	 * @param pattern the request pattern
+	 * @param httpMethod the http method
+	 * @return a request matcher
+	 */
+	RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod);
 
 }
