@@ -24,6 +24,9 @@ To include devtools support, add the module dependency to your build, as shown i
 	}
 ----
 
+CAUTION: Devtools might cause classloading issues, in particular in multi-module projects.
+<<using#using.devtools.diagnosing-classloading-issues>> explains how to diagnose and solve them.
+
 NOTE: Developer tools are automatically disabled when running a fully packaged application.
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
 You can control this behavior by using the `spring.devtools.restart.enabled` system property.
@@ -37,6 +40,18 @@ TIP: Repackaged archives do not contain devtools by default.
 If you want to use a <<using#using.devtools.remote-applications,certain remote devtools feature>>, you need to include it.
 When using the Maven plugin, set the `excludeDevtools` property to `false`.
 When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
+
+
+
+[[using.devtools.diagnosing-classloading-issues]]
+=== Diagnosing Classloading Issues
+
+As described in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
+For most applications, this approach works well.
+However, it can sometimes cause classloading issues, in particular in multi-module projects.
+
+To diagnose whether the classloading issues are indeed caused by devtools and its two classloaders, <<using#using.devtools.restart.disable,try disabling restart>>.
+If this solves your problems, <<using#using.devtools.restart.customizing-the-classload,customize the restart classloader>> to include your entire project.
 
 
 
@@ -215,13 +230,12 @@ For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring
 [[using.devtools.restart.customizing-the-classload]]
 ==== Customizing the Restart Classloader
 As described earlier in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
-For most applications, this approach works well.
-However, it can sometimes cause classloading issues.
+If this causes issues, you might need to customize what gets loaded by which classloader.
 
 By default, any open project in your IDE is loaded with the "`restart`" classloader, and any regular `.jar` file is loaded with the "`base`" classloader.
-If you work on a multi-module project, and not every module is imported into your IDE, you may need to customize things.
-To do so, you can create a `META-INF/spring-devtools.properties` file.
+The same is true if you use `mvn spring-boot:run` or `gradle bootRun`: the project containing your `@SpringBootApplication` is loaded with the "`restart`" classloader, and everything else with the "`base`" classloader.
 
+You can instruct Spring Boot to load parts of your project with a different classloader by creating a `META-INF/spring-devtools.properties` file.
 The `spring-devtools.properties` file can contain properties prefixed with `restart.exclude` and `restart.include`.
 The `include` elements are items that should be pulled up into the "`restart`" classloader, and the `exclude` elements are items that should be pushed down into the "`base`" classloader.
 The value of the property is a regex pattern that is applied to the classpath, as shown in the following example:
