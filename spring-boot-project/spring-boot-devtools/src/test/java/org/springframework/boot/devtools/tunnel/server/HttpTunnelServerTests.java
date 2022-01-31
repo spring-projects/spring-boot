@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,8 @@ import static org.mockito.Mockito.verify;
 class HttpTunnelServerTests {
 
 	private static final int DEFAULT_LONG_POLL_TIMEOUT = 10000;
+
+	private static final int JOIN_TIMEOUT = 5000;
 
 	private static final byte[] NO_DATA = {};
 
@@ -130,7 +132,7 @@ class HttpTunnelServerTests {
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 		this.serverChannel.verifyReceived("hello");
 	}
 
@@ -143,7 +145,7 @@ class HttpTunnelServerTests {
 		System.out.println("sending");
 		this.serverChannel.send("hello");
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 		assertThat(this.servletResponse.getContentAsString()).isEqualTo("hello");
 		this.serverChannel.verifyReceived("hello");
 	}
@@ -153,7 +155,7 @@ class HttpTunnelServerTests {
 		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.handle(this.request, this.response);
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 		this.serverChannel.verifyReceived(NO_DATA);
 	}
 
@@ -176,7 +178,7 @@ class HttpTunnelServerTests {
 		this.serverChannel.send("=3");
 		h3.verifyReceived("=3", 3);
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 	}
 
 	@Test
@@ -185,7 +187,7 @@ class HttpTunnelServerTests {
 		MockHttpConnection h1 = new MockHttpConnection("1", 1);
 		this.server.handle(h1);
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 		assertThat(h1.getServletResponse().getStatus()).isEqualTo(410);
 	}
 
@@ -197,7 +199,7 @@ class HttpTunnelServerTests {
 		MockHttpConnection h2 = new MockHttpConnection("DISCONNECT", 1);
 		h2.getServletRequest().addHeader("Content-Type", "application/x-disconnect");
 		this.server.handle(h2);
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 		assertThat(h1.getServletResponse().getStatus()).isEqualTo(410);
 		assertThat(this.serverChannel.isOpen()).isFalse();
 	}
@@ -214,7 +216,7 @@ class HttpTunnelServerTests {
 		h1.waitForResponse();
 		assertThat(h1.getServletResponse().getStatus()).isEqualTo(429);
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 	}
 
 	@Test
@@ -228,7 +230,7 @@ class HttpTunnelServerTests {
 		this.server.handle(h2);
 		this.serverChannel.verifyReceived("1+2+3");
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 	}
 
 	@Test
@@ -245,7 +247,7 @@ class HttpTunnelServerTests {
 		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h2.getServletResponse()::getStatus,
 				(status) -> status == 204);
 		this.serverChannel.disconnect();
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 	}
 
 	@Test
@@ -256,7 +258,7 @@ class HttpTunnelServerTests {
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
 		this.serverChannel.send("hello");
-		this.server.getServerThread().join();
+		this.server.getServerThread().join(JOIN_TIMEOUT);
 		assertThat(this.serverChannel.isOpen()).isFalse();
 	}
 
