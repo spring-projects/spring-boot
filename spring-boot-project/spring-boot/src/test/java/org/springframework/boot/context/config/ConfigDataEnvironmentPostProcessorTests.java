@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ConfigDataEnvironmentPostProcessor}.
@@ -49,7 +48,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Nguyen Bao Sach
- * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
@@ -125,7 +123,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 				.getConfigDataEnvironment(any(), any(), any());
 		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		verifyNoInteractions(this.configDataEnvironment);
+		then(this.configDataEnvironment).shouldHaveNoInteractions();
 		then(legacyListener).should().addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
 		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
@@ -139,7 +137,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 				.getConfigDataEnvironment(any(), any(), any());
 		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		verifyNoInteractions(this.configDataEnvironment);
+		then(this.configDataEnvironment).shouldHaveNoInteractions();
 		then(legacyListener).should().addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import static org.mockito.BDDMockito.then;
  * Test {@link SpyBean @SpyBean} on a test class can be used to replace existing beans.
  *
  * @author Phillip Webb
- * @author Yanming Zhou
  */
 @ExtendWith(SpringExtension.class)
 @SpyBean(SimpleExampleService.class)

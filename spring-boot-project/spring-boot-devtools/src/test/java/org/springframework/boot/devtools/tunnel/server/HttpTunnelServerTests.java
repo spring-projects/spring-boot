@@ -58,7 +58,6 @@ import static org.mockito.Mockito.never;
  * Tests for {@link HttpTunnelServer}.
  *
  * @author Phillip Webb
- * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class HttpTunnelServerTests {

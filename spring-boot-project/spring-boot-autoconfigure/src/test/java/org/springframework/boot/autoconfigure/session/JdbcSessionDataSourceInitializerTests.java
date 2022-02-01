@@ -30,7 +30,6 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link JdbcSessionDataSourceInitializer}.
  *
  * @author Stephane Nicoll
- * @author Yanming Zhou
  */
 class JdbcSessionDataSourceInitializerTests {
 
