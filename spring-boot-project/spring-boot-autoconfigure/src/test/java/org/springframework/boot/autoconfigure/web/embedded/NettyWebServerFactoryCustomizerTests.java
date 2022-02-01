@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link NettyWebServerFactoryCustomizer}.
@@ -75,14 +75,14 @@ class NettyWebServerFactoryCustomizerTests {
 		this.environment.setProperty("DYNO", "-");
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
 	void defaultUseForwardHeaders() {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class NettyWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class NettyWebServerFactoryCustomizerTests {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ class NettyWebServerFactoryCustomizerTests {
 		nettyProperties.setMaxInitialLineLength(DataSize.ofKilobytes(32));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory, times(1)).addServerCustomizers(this.customizerCaptor.capture());
+		then(factory).should().addServerCustomizers(this.customizerCaptor.capture());
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getValue();
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		HttpRequestDecoderSpec decoder = httpServer.configuration().decoder();
@@ -133,10 +133,10 @@ class NettyWebServerFactoryCustomizerTests {
 
 	private void verifyConnectionTimeout(NettyReactiveWebServerFactory factory, Integer expected) {
 		if (expected == null) {
-			verify(factory, never()).addServerCustomizers(any(NettyServerCustomizer.class));
+			then(factory).should(never()).addServerCustomizers(any(NettyServerCustomizer.class));
 			return;
 		}
-		verify(factory, times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Map<ChannelOption<?>, ?> options = httpServer.configuration().options();

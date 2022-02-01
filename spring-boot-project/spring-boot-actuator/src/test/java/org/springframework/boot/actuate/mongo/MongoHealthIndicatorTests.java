@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
@@ -46,8 +46,8 @@ class MongoHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("2.6.4");
-		verify(commandResult).getString("version");
-		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
+		then(commandResult).should().getString("version");
+		then(mongoTemplate).should().executeCommand("{ buildInfo: 1 }");
 	}
 
 	@Test
@@ -58,7 +58,7 @@ class MongoHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
+		then(mongoTemplate).should().executeCommand("{ buildInfo: 1 }");
 	}
 
 }

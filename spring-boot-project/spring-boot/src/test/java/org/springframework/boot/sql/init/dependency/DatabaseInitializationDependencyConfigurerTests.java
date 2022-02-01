@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DatabaseInitializationDependencyConfigurer}.
@@ -132,7 +132,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 					assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName()))
 							.isEqualTo(MockDatabaseInitializerDetector.class.getName());
 					assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
-					verify(MockDatabaseInitializerDetector.instance).detectionComplete(context.getBeanFactory(),
+					then(MockDatabaseInitializerDetector.instance).should().detectionComplete(context.getBeanFactory(),
 							Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
 				});

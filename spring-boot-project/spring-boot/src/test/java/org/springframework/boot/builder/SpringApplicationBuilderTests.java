@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringApplicationBuilder}.
@@ -133,7 +133,8 @@ class SpringApplicationBuilderTests {
 				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		application.parent(ExampleConfig.class);
 		this.context = application.run("foo.bar=baz");
-		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
+		then(((SpyApplicationContext) this.context).getApplicationContext()).should()
+				.setParent(any(ApplicationContext.class));
 		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 		assertThat(this.context.getParent().getBean(ApplicationArguments.class).getNonOptionArgs())
 				.contains("foo.bar=baz");
@@ -146,7 +147,8 @@ class SpringApplicationBuilderTests {
 				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		application.parent(ExampleConfig.class);
 		this.context = application.build("a=alpha").run("b=bravo");
-		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
+		then(((SpyApplicationContext) this.context).getApplicationContext()).should()
+				.setParent(any(ApplicationContext.class));
 		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 		assertThat(this.context.getParent().getBean(ApplicationArguments.class).getNonOptionArgs()).contains("a=alpha");
 		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs()).contains("b=bravo");
@@ -159,7 +161,8 @@ class SpringApplicationBuilderTests {
 				.registerShutdownHook(true);
 		application.parent(ExampleConfig.class);
 		this.context = application.run();
-		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
+		then(((SpyApplicationContext) this.context).getApplicationContext()).should()
+				.setParent(any(ApplicationContext.class));
 		assertThat(SpringApplicationShutdownHookInstance.get()).registeredApplicationContext(this.context);
 	}
 
@@ -190,7 +193,8 @@ class SpringApplicationBuilderTests {
 				.child(ChildConfig.class);
 		application.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		this.context = application.run();
-		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
+		then(((SpyApplicationContext) this.context).getApplicationContext()).should()
+				.setParent(any(ApplicationContext.class));
 		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 	}
 
@@ -247,7 +251,8 @@ class SpringApplicationBuilderTests {
 		application.parent(ExampleConfig.class);
 		application.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		this.context = application.run();
-		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
+		then(((SpyApplicationContext) this.context).getApplicationContext()).should()
+				.setParent(any(ApplicationContext.class));
 	}
 
 	@Test

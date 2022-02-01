@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Integration tests for {@link CassandraAutoConfiguration}.
@@ -61,7 +61,7 @@ class CassandraAutoConfigurationIntegrationTests {
 			context.getBean(CqlSession.class);
 			DriverConfigLoader driverConfigLoader = context.getBean(DriverConfigLoader.class);
 			context.close();
-			verify(driverConfigLoader).close();
+			then(driverConfigLoader).should().close();
 		});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,9 +75,8 @@ import org.springframework.util.MultiValueMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link QuartzEndpoint}.
@@ -118,9 +117,9 @@ class QuartzEndpointTests {
 		QuartzReport quartzReport = this.endpoint.quartzReport();
 		assertThat(quartzReport.getJobs().getGroups()).containsOnly("jobSamples", "DEFAULT");
 		assertThat(quartzReport.getTriggers().getGroups()).containsOnly("triggerSamples");
-		verify(this.scheduler).getJobGroupNames();
-		verify(this.scheduler).getTriggerGroupNames();
-		verifyNoMoreInteractions(this.scheduler);
+		then(this.scheduler).should().getJobGroupNames();
+		then(this.scheduler).should().getTriggerGroupNames();
+		then(this.scheduler).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -669,9 +668,9 @@ class QuartzEndpointTests {
 		given(sanitizer.sanitize("secret", "value")).willReturn("----");
 		QuartzJobDetails jobDetails = new QuartzEndpoint(this.scheduler, sanitizer).quartzJob("samples", "hello");
 		assertThat(jobDetails.getData()).containsOnly(entry("test", "value"), entry("secret", "----"));
-		verify(sanitizer).sanitize("test", "value");
-		verify(sanitizer).sanitize("secret", "value");
-		verifyNoMoreInteractions(sanitizer);
+		then(sanitizer).should().sanitize("test", "value");
+		then(sanitizer).should().sanitize("secret", "value");
+		then(sanitizer).shouldHaveNoMoreInteractions();
 	}
 
 	private void mockJobs(JobDetail... jobs) throws SchedulerException {

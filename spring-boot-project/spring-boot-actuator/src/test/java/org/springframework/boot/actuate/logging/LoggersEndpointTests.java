@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import org.springframework.boot.logging.LoggingSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LoggersEndpoint}.
@@ -120,25 +120,25 @@ class LoggersEndpointTests {
 	@Test
 	void configureLogLevelShouldSetLevelOnLoggingSystem() {
 		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", LogLevel.DEBUG);
-		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
+		then(this.loggingSystem).should().setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
 	void configureLogLevelWithNullSetsLevelOnLoggingSystemToNull() {
 		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", null);
-		verify(this.loggingSystem).setLogLevel("ROOT", null);
+		then(this.loggingSystem).should().setLogLevel("ROOT", null);
 	}
 
 	@Test
 	void configureLogLevelInLoggerGroupShouldSetLevelOnLoggingSystem() {
 		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", LogLevel.DEBUG);
-		verify(this.loggingSystem).setLogLevel("test.member", LogLevel.DEBUG);
+		then(this.loggingSystem).should().setLogLevel("test.member", LogLevel.DEBUG);
 	}
 
 	@Test
 	void configureLogLevelWithNullInLoggerGroupShouldSetLevelOnLoggingSystem() {
 		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", null);
-		verify(this.loggingSystem).setLogLevel("test.member", null);
+		then(this.loggingSystem).should().setLogLevel("test.member", null);
 	}
 
 }

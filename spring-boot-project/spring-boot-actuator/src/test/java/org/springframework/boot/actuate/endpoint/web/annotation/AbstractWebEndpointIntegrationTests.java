@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Abstract base class for web endpoint integration tests.
@@ -188,7 +188,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	void writeOperationWithVoidResponse() {
 		load(VoidWriteResponseEndpointConfiguration.class, (context, client) -> {
 			client.post().uri("/voidwrite").exchange().expectStatus().isNoContent().expectBody().isEmpty();
-			verify(context.getBean(EndpointDelegate.class)).write();
+			then(context.getBean(EndpointDelegate.class)).should().write();
 		});
 	}
 
@@ -202,7 +202,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	void deleteOperationWithVoidResponse() {
 		load(VoidDeleteResponseEndpointConfiguration.class, (context, client) -> {
 			client.delete().uri("/voiddelete").exchange().expectStatus().isNoContent().expectBody().isEmpty();
-			verify(context.getBean(EndpointDelegate.class)).delete();
+			then(context.getBean(EndpointDelegate.class)).should().delete();
 		});
 	}
 
@@ -212,7 +212,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
 			client.post().uri("/test").bodyValue(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
-			verify(context.getBean(EndpointDelegate.class)).write("one", null);
+			then(context.getBean(EndpointDelegate.class)).should().write("one", null);
 		});
 	}
 
@@ -221,7 +221,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		load(TestEndpointConfiguration.class, (context, client) -> {
 			client.post().uri("/test").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent()
 					.expectBody().isEmpty();
-			verify(context.getBean(EndpointDelegate.class)).write(null, null);
+			then(context.getBean(EndpointDelegate.class)).should().write(null, null);
 		});
 	}
 

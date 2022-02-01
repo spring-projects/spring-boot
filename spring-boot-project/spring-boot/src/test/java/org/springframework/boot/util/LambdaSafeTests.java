@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link LambdaSafe}.
@@ -61,7 +60,7 @@ class LambdaSafeTests {
 		NonGenericCallback callbackInstance = mock(NonGenericCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(NonGenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
@@ -70,7 +69,7 @@ class LambdaSafeTests {
 		StringCallback callbackInstance = mock(StringCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
@@ -79,7 +78,7 @@ class LambdaSafeTests {
 		StringBuilderCallback callbackInstance = mock(StringBuilderCallback.class);
 		StringBuilder argument = new StringBuilder("foo");
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
@@ -88,7 +87,7 @@ class LambdaSafeTests {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
-		verifyNoInteractions(callbackInstance);
+		then(callbackInstance).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -151,7 +150,7 @@ class LambdaSafeTests {
 		given(callbackInstance.handle(any(StringBuilder.class))).willReturn(123);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
 				.invokeAnd((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 		assertThat(result.hasResult()).isTrue();
 		assertThat(result.get()).isEqualTo(123);
 	}
@@ -164,7 +163,7 @@ class LambdaSafeTests {
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
 				.invokeAnd((c) -> c.handle(argument));
 		assertThat(result.hasResult()).isFalse();
-		verifyNoInteractions(callbackInstance);
+		then(callbackInstance).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -199,7 +198,7 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callbacks(NonGenericCallback.class, Collections.singleton(callbackInstance), argument)
 				.invoke((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
@@ -209,7 +208,7 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
 				.invoke((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
@@ -219,7 +218,7 @@ class LambdaSafeTests {
 		StringBuilder argument = new StringBuilder("foo");
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
 				.invoke((c) -> c.handle(argument));
-		verify(callbackInstance).handle(argument);
+		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
@@ -229,7 +228,7 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
 				.invoke((c) -> c.handle(null));
-		verifyNoInteractions(callbackInstance);
+		then(callbackInstance).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -365,7 +364,7 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withFilter(Filter.allowAll())
 				.invoke((c) -> c.handle(null));
-		verify(callbackInstance).handle(null);
+		then(callbackInstance).should().handle(null);
 	}
 
 	@Test
@@ -377,7 +376,8 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withLogger(logger)
 				.invoke((c) -> c.handle(argument));
-		verify(logger).debug(contains("Non-matching CharSequence type for callback LambdaSafeTests.GenericCallback"),
+		then(logger).should().debug(
+				contains("Non-matching CharSequence type for callback LambdaSafeTests.GenericCallback"),
 				any(Throwable.class));
 	}
 

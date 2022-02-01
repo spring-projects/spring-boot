@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,8 @@ import org.springframework.web.servlet.FrameworkServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletWebServerFactoryAutoConfiguration}.
@@ -176,7 +175,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
 			JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
 			assertThat(factory.getServerCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(Server.class));
+			then(customizer).should().customize(any(Server.class));
 		});
 	}
 
@@ -207,7 +206,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			UndertowDeploymentInfoCustomizer customizer = context.getBean("deploymentInfoCustomizer",
 					UndertowDeploymentInfoCustomizer.class);
 			assertThat(factory.getDeploymentInfoCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(DeploymentInfo.class));
+			then(customizer).should().customize(any(DeploymentInfo.class));
 		});
 	}
 
@@ -224,7 +223,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			UndertowBuilderCustomizer customizer = context.getBean("builderCustomizer",
 					UndertowBuilderCustomizer.class);
 			assertThat(factory.getBuilderCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(Builder.class));
+			then(customizer).should().customize(any(Builder.class));
 		});
 	}
 
@@ -265,7 +264,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
 					TomcatConnectorCustomizer.class);
 			assertThat(factory.getTomcatConnectorCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(Connector.class));
+			then(customizer).should().customize(any(Connector.class));
 		});
 	}
 
@@ -281,7 +280,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
 					TomcatConnectorCustomizer.class);
 			assertThat(factory.getTomcatConnectorCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(Connector.class));
+			then(customizer).should().customize(any(Connector.class));
 		});
 	}
 
@@ -296,7 +295,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
 			assertThat(factory.getTomcatContextCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(Context.class));
+			then(customizer).should().customize(any(Context.class));
 		});
 	}
 
@@ -311,7 +310,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
 			assertThat(factory.getTomcatContextCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any(Context.class));
+			then(customizer).should().customize(any(Context.class));
 		});
 	}
 
@@ -327,7 +326,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
 					TomcatProtocolHandlerCustomizer.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any());
+			then(customizer).should().customize(any());
 		});
 	}
 
@@ -343,7 +342,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
 					TomcatProtocolHandlerCustomizer.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).contains(customizer);
-			verify(customizer, times(1)).customize(any());
+			then(customizer).should().customize(any());
 		});
 	}
 
@@ -377,7 +376,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		MockServletWebServerFactory factory = context.getBean(MockServletWebServerFactory.class);
 		Servlet servlet = context.getBean(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
 				Servlet.class);
-		verify(factory.getServletContext()).addServlet("dispatcherServlet", servlet);
+		then(factory.getServletContext()).should().addServlet("dispatcherServlet", servlet);
 	}
 
 	@Configuration(proxyBeanMethods = false)

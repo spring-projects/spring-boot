@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DependencyManagementArtifactCoordinatesResolver}.
@@ -49,7 +49,7 @@ class DependencyManagementArtifactCoordinatesResolverTests {
 	@Test
 	void getGroupIdForBootArtifact() {
 		assertThat(this.resolver.getGroupId("spring-boot-something")).isEqualTo("org.springframework.boot");
-		verify(this.dependencyManagement, never()).find(anyString());
+		then(this.dependencyManagement).should(never()).find(anyString());
 	}
 
 	@Test

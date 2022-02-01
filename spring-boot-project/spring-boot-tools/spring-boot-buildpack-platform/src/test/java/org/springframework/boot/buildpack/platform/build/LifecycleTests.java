@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Lifecycle}.
@@ -149,7 +149,7 @@ class LifecycleTests {
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-clean-cache.json"));
 		VolumeName name = VolumeName.of("pack-cache-b35197ac41ea.build");
-		verify(this.docker.volume()).delete(name, true);
+		then(this.docker.volume()).should().delete(name, true);
 	}
 
 	@Test
@@ -184,8 +184,8 @@ class LifecycleTests {
 	@Test
 	void closeClearsVolumes() throws Exception {
 		createLifecycle().close();
-		verify(this.docker.volume()).delete(VolumeName.of("pack-layers-aaaaaaaaaa"), true);
-		verify(this.docker.volume()).delete(VolumeName.of("pack-app-aaaaaaaaaa"), true);
+		then(this.docker.volume()).should().delete(VolumeName.of("pack-layers-aaaaaaaaaa"), true);
+		then(this.docker.volume()).should().delete(VolumeName.of("pack-app-aaaaaaaaaa"), true);
 	}
 
 	private DockerApi mockDockerApi() {
@@ -256,9 +256,9 @@ class LifecycleTests {
 
 	private void assertPhaseWasRun(String name, IOConsumer<ContainerConfig> configConsumer) throws IOException {
 		ContainerReference containerReference = ContainerReference.of("cnb-lifecycle-" + name);
-		verify(this.docker.container()).start(containerReference);
-		verify(this.docker.container()).logs(eq(containerReference), any());
-		verify(this.docker.container()).remove(containerReference, true);
+		then(this.docker.container()).should().start(containerReference);
+		then(this.docker.container()).should().logs(eq(containerReference), any());
+		then(this.docker.container()).should().remove(containerReference, true);
 		configConsumer.accept(this.configs.get(containerReference.toString()));
 	}
 

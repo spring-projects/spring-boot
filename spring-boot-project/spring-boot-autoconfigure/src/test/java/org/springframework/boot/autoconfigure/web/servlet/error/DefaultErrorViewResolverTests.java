@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link DefaultErrorViewResolver}.
@@ -108,9 +107,9 @@ class DefaultErrorViewResolverTests {
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
-		verify(this.templateAvailabilityProvider).isTemplateAvailable(eq("error/404"), any(Environment.class),
+		then(this.templateAvailabilityProvider).should().isTemplateAvailable(eq("error/404"), any(Environment.class),
 				any(ClassLoader.class), any(ResourceLoader.class));
-		verifyNoMoreInteractions(this.templateAvailabilityProvider);
+		then(this.templateAvailabilityProvider).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -177,7 +176,7 @@ class DefaultErrorViewResolverTests {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
 				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
-		verifyNoMoreInteractions(this.templateAvailabilityProvider);
+		then(this.templateAvailabilityProvider).shouldHaveNoMoreInteractions();
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);

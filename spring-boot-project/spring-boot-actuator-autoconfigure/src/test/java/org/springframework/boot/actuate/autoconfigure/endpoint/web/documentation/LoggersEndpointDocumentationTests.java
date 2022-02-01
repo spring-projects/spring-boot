@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -114,7 +114,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 				.andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("loggers/set", requestFields(fieldWithPath("configuredLevel")
 						.description("Level for the logger. May be omitted to clear the level.").optional())));
-		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
+		then(this.loggingSystem).should().setLogLevel("com.example", LogLevel.DEBUG);
 	}
 
 	@Test
@@ -127,8 +127,8 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 								requestFields(fieldWithPath("configuredLevel").description(
 										"Level for the logger group. May be omitted to clear the level of the loggers.")
 										.optional())));
-		verify(this.loggingSystem).setLogLevel("test.member1", LogLevel.DEBUG);
-		verify(this.loggingSystem).setLogLevel("test.member2", LogLevel.DEBUG);
+		then(this.loggingSystem).should().setLogLevel("test.member1", LogLevel.DEBUG);
+		then(this.loggingSystem).should().setLogLevel("test.member2", LogLevel.DEBUG);
 		resetLogger();
 	}
 
@@ -142,7 +142,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 		this.mockMvc
 				.perform(post("/actuator/loggers/com.example").content("{}").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent()).andDo(MockMvcRestDocumentation.document("loggers/clear"));
-		verify(this.loggingSystem).setLogLevel("com.example", null);
+		then(this.loggingSystem).should().setLogLevel("com.example", null);
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,10 +59,10 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LocalDevToolsAutoConfiguration}.
@@ -134,7 +134,7 @@ class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		this.context.publishEvent(new ContextRefreshedEvent(this.context));
-		verify(server).triggerReload();
+		then(server).should().triggerReload();
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class LocalDevToolsAutoConfigurationTests {
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), false);
 		this.context.publishEvent(event);
-		verify(server).triggerReload();
+		then(server).should().triggerReload();
 	}
 
 	@Test
@@ -154,7 +154,7 @@ class LocalDevToolsAutoConfigurationTests {
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), true);
 		this.context.publishEvent(event);
-		verify(server, never()).triggerReload();
+		then(server).should(never()).triggerReload();
 	}
 
 	@Test
@@ -171,7 +171,7 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class));
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), true);
 		this.context.publishEvent(event);
-		verify(restarter).restart(any(FailureHandler.class));
+		then(restarter).should().restart(any(FailureHandler.class));
 	}
 
 	@Test
@@ -179,7 +179,7 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class));
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), false);
 		this.context.publishEvent(event);
-		verify(restarter, never()).restart();
+		then(restarter).should(never()).restart();
 	}
 
 	@Test

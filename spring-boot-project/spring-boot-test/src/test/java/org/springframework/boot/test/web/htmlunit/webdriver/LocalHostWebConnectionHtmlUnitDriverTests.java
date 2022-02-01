@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LocalHostWebConnectionHtmlUnitDriver}.
@@ -91,7 +91,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(any(WebWindow.class), requestToUrl(new URL("http://localhost:8080/test")));
+		then(this.webClient).should().getPage(any(WebWindow.class),
+				requestToUrl(new URL("http://localhost:8080/test")));
 	}
 
 	@Test
@@ -100,7 +101,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		environment.setProperty("local.server.port", "8181");
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(any(WebWindow.class), requestToUrl(new URL("http://localhost:8181/test")));
+		then(this.webClient).should().getPage(any(WebWindow.class),
+				requestToUrl(new URL("http://localhost:8181/test")));
 	}
 
 	private WebRequest requestToUrl(URL url) {

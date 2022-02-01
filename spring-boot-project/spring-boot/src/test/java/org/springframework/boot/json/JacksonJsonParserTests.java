@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JacksonJsonParser}.
@@ -45,7 +45,7 @@ class JacksonJsonParserTests extends AbstractJsonParserTests {
 	void instanceWithSpecificObjectMapper() throws IOException {
 		ObjectMapper objectMapper = spy(new ObjectMapper());
 		new JacksonJsonParser(objectMapper).parseMap("{}");
-		verify(objectMapper).readValue(eq("{}"), any(TypeReference.class));
+		then(objectMapper).should().readValue(eq("{}"), any(TypeReference.class));
 	}
 
 }
