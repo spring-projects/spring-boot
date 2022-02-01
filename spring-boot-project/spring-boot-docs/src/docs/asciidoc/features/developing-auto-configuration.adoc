@@ -143,7 +143,9 @@ This condition will not match for applications that are run with an embedded ser
 ==== SpEL Expression Conditions
 The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {spring-framework-docs}/core.html#expressions[SpEL expression].
 
-NOTE: Referencing a bean in the expression will cause that bean to be initialized very early in context refresh processing. As a result, the bean will load with default property values.
+NOTE: Referencing a bean in the expression will cause that bean to be initialized very early in context refresh processing.
+As a result, the bean won't be eligible for post-processing (such as configuration properties binding) and its state may be incomplete.
+
 
 
 [[features.developing-auto-configuration.testing]]
