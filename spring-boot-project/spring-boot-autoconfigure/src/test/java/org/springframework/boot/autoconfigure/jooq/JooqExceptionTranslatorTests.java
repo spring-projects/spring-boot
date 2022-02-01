@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link JooqExceptionTranslator}
@@ -54,7 +54,7 @@ class JooqExceptionTranslatorTests {
 		given(context.sqlException()).willReturn(sqlException);
 		this.exceptionTranslator.exception(context);
 		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
-		verify(context).exception(captor.capture());
+		then(context).should().exception(captor.capture());
 		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
 	}
 
@@ -66,7 +66,7 @@ class JooqExceptionTranslatorTests {
 		given(configuration.dialect()).willReturn(SQLDialect.POSTGRES);
 		given(context.sqlException()).willReturn(new SQLException(null, null, 123456789));
 		this.exceptionTranslator.exception(context);
-		verify(context, times(0)).exception(any());
+		then(context).should(never()).exception(any());
 	}
 
 	static Object[] exceptionTranslation() {

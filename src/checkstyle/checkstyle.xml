@@ -48,7 +48,7 @@
 		</module>
  		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
  			<property name="maximum" value="0"/>
-			<property name="format" value="org\.mockito\.(Mockito|BDDMockito)\.(when|doThrow|doAnswer)" />
+			<property name="format" value="org\.mockito\.(Mockito|BDDMockito)\.(when|doThrow|doAnswer|doReturn|verify|verifyNoInteractions|verifyNoMoreInteractions)" />
 			<property name="message"
 				value="Please use BDD-style (given, when, then) using BDDMockito imports." />
 			<property name="ignoreComments" value="true" />

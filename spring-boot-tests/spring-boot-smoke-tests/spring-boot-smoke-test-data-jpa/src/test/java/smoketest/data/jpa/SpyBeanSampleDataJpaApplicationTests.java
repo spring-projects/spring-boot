@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,7 +58,7 @@ class SpyBeanSampleDataJpaApplicationTests {
 	@Test
 	void testHome() throws Exception {
 		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Bath"));
-		verify(this.repository).findByNameAndCountryAllIgnoringCase("Bath", "UK");
+		then(this.repository).should().findByNameAndCountryAllIgnoringCase("Bath", "UK");
 	}
 
 }

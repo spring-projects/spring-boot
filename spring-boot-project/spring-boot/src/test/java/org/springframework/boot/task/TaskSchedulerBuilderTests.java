@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link TaskSchedulerBuilder}.
@@ -83,15 +82,15 @@ class TaskSchedulerBuilderTests {
 	void customizersShouldApply() {
 		TaskSchedulerCustomizer customizer = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer).build();
-		verify(customizer).customize(scheduler);
+		then(customizer).should().customize(scheduler);
 	}
 
 	@Test
 	void customizersShouldBeAppliedLast() {
 		ThreadPoolTaskScheduler scheduler = spy(new ThreadPoolTaskScheduler());
 		this.builder.poolSize(4).threadNamePrefix("test-").additionalCustomizers((taskScheduler) -> {
-			verify(taskScheduler).setPoolSize(4);
-			verify(taskScheduler).setThreadNamePrefix("test-");
+			then(taskScheduler).should().setPoolSize(4);
+			then(taskScheduler).should().setThreadNamePrefix("test-");
 		});
 		this.builder.configure(scheduler);
 	}
@@ -102,8 +101,8 @@ class TaskSchedulerBuilderTests {
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyNoInteractions(customizer1);
-		verify(customizer2).customize(scheduler);
+		then(customizer1).shouldHaveNoInteractions();
+		then(customizer2).should().customize(scheduler);
 	}
 
 	@Test
@@ -126,8 +125,8 @@ class TaskSchedulerBuilderTests {
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1).additionalCustomizers(customizer2)
 				.build();
-		verify(customizer1).customize(scheduler);
-		verify(customizer2).customize(scheduler);
+		then(customizer1).should().customize(scheduler);
+		then(customizer2).should().customize(scheduler);
 	}
 
 }

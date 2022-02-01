@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DataSourceHealthIndicator}.
@@ -106,7 +106,7 @@ class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getDetails().get("database")).isNotNull();
-		verify(connection, times(2)).close();
+		then(connection).should(times(2)).close();
 	}
 
 	@Test

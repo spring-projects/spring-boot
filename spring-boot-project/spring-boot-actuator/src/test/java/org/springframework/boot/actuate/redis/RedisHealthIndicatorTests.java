@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RedisHealthIndicator}.
@@ -77,7 +77,7 @@ class RedisHealthIndicatorTests {
 		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_fail")).isEqualTo(0L);
-		verify(redisConnectionFactory, atLeastOnce()).getConnection();
+		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class RedisHealthIndicatorTests {
 		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_fail")).isEqualTo(0L);
-		verify(redisConnectionFactory, atLeastOnce()).getConnection();
+		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class RedisHealthIndicatorTests {
 		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_up")).isEqualTo(3L);
 		assertThat(health.getDetails().get("slots_fail")).isEqualTo(1L);
-		verify(redisConnectionFactory, atLeastOnce()).getConnection();
+		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 
 	private RedisHealthIndicator createHealthIndicator(RedisConnection redisConnection) {

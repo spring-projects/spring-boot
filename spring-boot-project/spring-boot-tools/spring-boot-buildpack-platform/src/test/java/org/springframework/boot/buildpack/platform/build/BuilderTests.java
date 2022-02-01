@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,11 +47,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link Builder}.
@@ -97,11 +96,13 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(), isNull());
-		verify(docker.image()).pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull());
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
-		verifyNoMoreInteractions(docker.image());
+		then(docker.image()).should().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				isNull());
+		then(docker.image()).should().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+				isNull());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -125,15 +126,15 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+		then(docker.image()).should().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
 				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		verify(docker.image()).pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+		then(docker.image()).should().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
 				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		verify(docker.image()).push(eq(request.getName()), any(),
+		then(docker.image()).should().push(eq(request.getName()), any(),
 				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
-		verifyNoMoreInteractions(docker.image());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -152,8 +153,8 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 	}
 
 	@Test
@@ -173,8 +174,8 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 	}
 
 	@Test
@@ -193,8 +194,8 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 	}
 
 	@Test
@@ -217,10 +218,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
-		verify(docker.image(), never()).pull(any(), any());
-		verify(docker.image(), times(2)).inspect(any());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).should(never()).pull(any(), any());
+		then(docker.image()).should(times(2)).inspect(any());
 	}
 
 	@Test
@@ -243,10 +244,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
-		verify(docker.image(), times(2)).pull(any(), any(), isNull());
-		verify(docker.image(), never()).inspect(any());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).should(times(2)).pull(any(), any(), isNull());
+		then(docker.image()).should(never()).inspect(any());
 	}
 
 	@Test
@@ -271,10 +272,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
-		verify(docker.image(), times(2)).inspect(any());
-		verify(docker.image(), times(2)).pull(any(), any(), isNull());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).should(times(2)).inspect(any());
+		then(docker.image()).should(times(2)).pull(any(), any(), isNull());
 	}
 
 	@Test
@@ -293,10 +294,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		assertThat(out.toString()).contains("Successfully created image tag 'docker.io/library/my-application:1.2.3'");
-		verify(docker.image()).tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
+		then(docker.image()).should().tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 	}
 
 	@Test
@@ -321,19 +322,19 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		assertThat(out.toString()).contains("Successfully created image tag 'docker.io/library/my-application:1.2.3'");
 
-		verify(docker.image()).pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+		then(docker.image()).should().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
 				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		verify(docker.image()).pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+		then(docker.image()).should().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
 				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		verify(docker.image()).push(eq(request.getName()), any(),
+		then(docker.image()).should().push(eq(request.getName()), any(),
 				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
-		verify(docker.image()).tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
-		verify(docker.image()).push(eq(ImageReference.of("my-application:1.2.3")), any(),
+		then(docker.image()).should().tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
+		then(docker.image()).should().push(eq(ImageReference.of("my-application:1.2.3")), any(),
 				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		verify(docker.image()).load(archive.capture(), any());
-		verify(docker.image()).remove(archive.getValue().getTag(), true);
-		verifyNoMoreInteractions(docker.image());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).shouldHaveNoMoreInteractions();
 	}
 
 	@Test

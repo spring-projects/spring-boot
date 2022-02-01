@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import org.springframework.core.convert.support.GenericConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link BindConverter}.
@@ -63,7 +63,7 @@ class BindConverterTests {
 	@Test
 	void createWhenPropertyEditorInitializerIsNotNullShouldUseToInitialize() {
 		BindConverter.get(null, this.propertyEditorInitializer);
-		verify(this.propertyEditorInitializer).accept(any(PropertyEditorRegistry.class));
+		then(this.propertyEditorInitializer).should().accept(any(PropertyEditorRegistry.class));
 	}
 
 	@Test

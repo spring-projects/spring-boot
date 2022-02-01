@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,10 +157,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Base for testing classes that extends {@link AbstractServletWebServerFactory}.
@@ -381,7 +381,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		InOrder ordered = inOrder((Object[]) initializers);
 		for (ServletContextInitializer initializer : initializers) {
-			ordered.verify(initializer).onStartup(any(ServletContext.class));
+			then(initializer).should(ordered).onStartup(any(ServletContext.class));
 		}
 	}
 
@@ -649,8 +649,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		HttpClient httpClient = this.httpClientBuilder.get().setSSLSocketFactory(socketFactory).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
-		verify(sslStoreProvider, atLeastOnce()).getKeyStore();
-		verify(sslStoreProvider, atLeastOnce()).getTrustStore();
+		then(sslStoreProvider).should(atLeastOnce()).getKeyStore();
+		then(sslStoreProvider).should(atLeastOnce()).getTrustStore();
 	}
 
 	@Test
@@ -1094,7 +1094,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = getFactory().getWebServer((servletContext) -> servletContext.addListener(listener));
 		this.webServer.start();
 		this.webServer.stop();
-		verify(listener).contextDestroyed(any(ServletContextEvent.class));
+		then(listener).should().contextDestroyed(any(ServletContextEvent.class));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test {@link MockBean @MockBean} when mixed with Spring AOP.
@@ -60,9 +60,9 @@ class MockBeanWithAopProxyTests {
 		given(this.dateService.getDate(false)).willReturn(2L);
 		Long d2 = this.dateService.getDate(false);
 		assertThat(d2).isEqualTo(2L);
-		verify(this.dateService, times(2)).getDate(false);
-		verify(this.dateService, times(2)).getDate(eq(false));
-		verify(this.dateService, times(2)).getDate(anyBoolean());
+		then(this.dateService).should(times(2)).getDate(false);
+		then(this.dateService).should(times(2)).getDate(eq(false));
+		then(this.dateService).should(times(2)).getDate(anyBoolean());
 	}
 
 	@Configuration(proxyBeanMethods = false)

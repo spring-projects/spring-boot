@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link DelegatingLoggingSystemFactory}.
@@ -58,9 +57,9 @@ class DelegatingLoggingSystemFactoryTests {
 		given(delegates.get(1).getLoggingSystem(this.classLoader)).willReturn(result);
 		DelegatingLoggingSystemFactory factory = new DelegatingLoggingSystemFactory((cl) -> delegates);
 		assertThat(factory.getLoggingSystem(this.classLoader)).isSameAs(result);
-		verify(delegates.get(0)).getLoggingSystem(this.classLoader);
-		verify(delegates.get(1)).getLoggingSystem(this.classLoader);
-		verifyNoInteractions(delegates.get(2));
+		then(delegates.get(0)).should().getLoggingSystem(this.classLoader);
+		then(delegates.get(1)).should().getLoggingSystem(this.classLoader);
+		then(delegates.get(2)).shouldHaveNoInteractions();
 	}
 
 }

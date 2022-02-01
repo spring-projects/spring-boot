@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,8 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link QuartzDataSourceScriptDatabaseInitializer}.
@@ -46,7 +45,7 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 				properties);
 		assertThat(settings.getSchemaLocations())
 				.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
-		verifyNoInteractions(dataSource);
+		then(dataSource).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -58,7 +57,7 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 				mock(DataSource.class), properties);
 		ResourceDatabasePopulator populator = mock(ResourceDatabasePopulator.class);
 		initializer.customize(populator);
-		verify(populator).setCommentPrefixes("##", "--");
+		then(populator).should().setCommentPrefixes("##", "--");
 	}
 
 }

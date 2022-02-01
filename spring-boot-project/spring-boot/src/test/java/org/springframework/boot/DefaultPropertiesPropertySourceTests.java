@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link DefaultPropertiesPropertySource}.
@@ -84,19 +83,19 @@ class DefaultPropertiesPropertySourceTests {
 	@Test
 	void ifNotEmptyWhenNullDoesNotCallAction() {
 		DefaultPropertiesPropertySource.ifNotEmpty(null, this.action);
-		verifyNoInteractions(this.action);
+		then(this.action).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void ifNotEmptyWhenEmptyDoesNotCallAction() {
 		DefaultPropertiesPropertySource.ifNotEmpty(Collections.emptyMap(), this.action);
-		verifyNoInteractions(this.action);
+		then(this.action).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void ifNotEmptyHasValueCallsAction() {
 		DefaultPropertiesPropertySource.ifNotEmpty(Collections.singletonMap("spring", "boot"), this.action);
-		verify(this.action).accept(this.captor.capture());
+		then(this.action).should().accept(this.captor.capture());
 		assertThat(this.captor.getValue().getProperty("spring")).isEqualTo("boot");
 	}
 
