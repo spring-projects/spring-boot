@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link TestEntityManager}.
@@ -72,7 +72,7 @@ class TestEntityManagerTests {
 		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.persistAndGetId(entity);
-		verify(this.entityManager).persist(entity);
+		then(this.entityManager).should().persist(entity);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -83,7 +83,7 @@ class TestEntityManagerTests {
 		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.persistAndGetId(entity, Integer.class);
-		verify(this.entityManager).persist(entity);
+		then(this.entityManager).should().persist(entity);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -92,7 +92,7 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity result = this.testEntityManager.persist(entity);
-		verify(this.entityManager).persist(entity);
+		then(this.entityManager).should().persist(entity);
 		assertThat(result).isSameAs(entity);
 	}
 
@@ -101,8 +101,8 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity result = this.testEntityManager.persistAndFlush(entity);
-		verify(this.entityManager).persist(entity);
-		verify(this.entityManager).flush();
+		then(this.entityManager).should().persist(entity);
+		then(this.entityManager).should().flush();
 		assertThat(result).isSameAs(entity);
 	}
 
@@ -115,8 +115,8 @@ class TestEntityManagerTests {
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		given(this.entityManager.find(TestEntity.class, 123)).willReturn(found);
 		TestEntity result = this.testEntityManager.persistFlushFind(entity);
-		verify(this.entityManager).persist(entity);
-		verify(this.entityManager).flush();
+		then(this.entityManager).should().persist(entity);
+		then(this.entityManager).should().flush();
 		assertThat(result).isSameAs(found);
 	}
 
@@ -126,7 +126,7 @@ class TestEntityManagerTests {
 		TestEntity entity = new TestEntity();
 		given(this.entityManager.merge(entity)).willReturn(entity);
 		TestEntity result = this.testEntityManager.merge(entity);
-		verify(this.entityManager).merge(entity);
+		then(this.entityManager).should().merge(entity);
 		assertThat(result).isSameAs(entity);
 	}
 
@@ -135,7 +135,7 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.remove(entity);
-		verify(this.entityManager).remove(entity);
+		then(this.entityManager).should().remove(entity);
 	}
 
 	@Test
@@ -151,7 +151,7 @@ class TestEntityManagerTests {
 	void flushShouldFlush() {
 		bindEntityManager();
 		this.testEntityManager.flush();
-		verify(this.entityManager).flush();
+		then(this.entityManager).should().flush();
 	}
 
 	@Test
@@ -159,14 +159,14 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.refresh(entity);
-		verify(this.entityManager).refresh(entity);
+		then(this.entityManager).should().refresh(entity);
 	}
 
 	@Test
 	void clearShouldClear() {
 		bindEntityManager();
 		this.testEntityManager.clear();
-		verify(this.entityManager).clear();
+		then(this.entityManager).should().clear();
 	}
 
 	@Test
@@ -174,7 +174,7 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.detach(entity);
-		verify(this.entityManager).detach(entity);
+		then(this.entityManager).should().detach(entity);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link OptionalLiveReloadServer}.
@@ -46,7 +46,7 @@ class OptionalLiveReloadServerTests {
 		willThrow(new RuntimeException("Error")).given(delegate).start();
 		server.startServer();
 		server.triggerReload();
-		verify(delegate, never()).triggerReload();
+		then(delegate).should(never()).triggerReload();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,14 +126,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link SpringApplication}.
@@ -272,7 +271,7 @@ class SpringApplicationTests {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.main.banner-mode=log");
-		verify(application, atLeastOnce()).setBannerMode(Banner.Mode.LOG);
+		then(application).should(atLeastOnce()).setBannerMode(Banner.Mode.LOG);
 		assertThat(output).contains("o.s.b.SpringApplication");
 	}
 
@@ -388,15 +387,16 @@ class SpringApplicationTests {
 		application.addListeners(listener);
 		this.context = application.run();
 		InOrder inOrder = Mockito.inOrder(listener);
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartingEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(argThat(isAvailabilityChangeEventWithState(LivenessState.CORRECT)));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
-		inOrder.verify(listener)
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationStartingEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationPreparedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ContextRefreshedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		then(listener).should(inOrder)
+				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(LivenessState.CORRECT)));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should(inOrder)
 				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(ReadinessState.ACCEPTING_TRAFFIC)));
 		inOrder.verifyNoMoreInteractions();
 	}
@@ -466,7 +466,7 @@ class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		this.context = application.run();
-		verify(application.getLoader()).setEnvironment(environment);
+		then(application.getLoader()).should().setEnvironment(environment);
 	}
 
 	@Test
@@ -476,7 +476,7 @@ class SpringApplicationTests {
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
 		application.setResourceLoader(resourceLoader);
 		this.context = application.run();
-		verify(application.getLoader()).setResourceLoader(resourceLoader);
+		then(application.getLoader()).should().setResourceLoader(resourceLoader);
 	}
 
 	@Test
@@ -484,7 +484,7 @@ class SpringApplicationTests {
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
 		TestSpringApplication application = new TestSpringApplication(resourceLoader, ExampleWebConfig.class);
 		this.context = application.run();
-		verify(application.getLoader()).setResourceLoader(resourceLoader);
+		then(application.getLoader()).should().setResourceLoader(resourceLoader);
 	}
 
 	@Test
@@ -493,7 +493,7 @@ class SpringApplicationTests {
 		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
-		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
+		then(application.getLoader()).should().setBeanNameGenerator(beanNameGenerator);
 		Object actualGenerator = this.context.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
 		assertThat(actualGenerator).isSameAs(beanNameGenerator);
 	}
@@ -505,7 +505,7 @@ class SpringApplicationTests {
 		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
-		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
+		then(application.getLoader()).should().setBeanNameGenerator(beanNameGenerator);
 		Object actualGenerator = this.context.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
 		assertThat(actualGenerator).isSameAs(beanNameGenerator);
 	}
@@ -682,9 +682,9 @@ class SpringApplicationTests {
 		willThrow(failure).given(runner).run(isA(ApplicationArguments.class));
 		application.addInitializers((context) -> context.getBeanFactory().registerSingleton("runner", runner));
 		assertThatIllegalStateException().isThrownBy(application::run).withCause(failure);
-		verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
-		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
-		verify(listener, never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should().onApplicationEvent(isA(ApplicationStartedEvent.class));
+		then(listener).should().onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
 	}
 
 	@Test
@@ -699,9 +699,9 @@ class SpringApplicationTests {
 		willThrow(failure).given(runner).run();
 		application.addInitializers((context) -> context.getBeanFactory().registerSingleton("runner", runner));
 		assertThatIllegalStateException().isThrownBy(application::run).withCause(failure);
-		verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
-		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
-		verify(listener, never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should().onApplicationEvent(isA(ApplicationStartedEvent.class));
+		then(listener).should().onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationReadyEvent.class));
 	}
 
 	@Test
@@ -714,8 +714,8 @@ class SpringApplicationTests {
 		RuntimeException failure = new RuntimeException();
 		willThrow(failure).given(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(application::run).isEqualTo(failure);
-		verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
-		verify(listener, never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).should().onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
 	}
 
 	@Test
@@ -730,8 +730,8 @@ class SpringApplicationTests {
 		ExitStatusException failure = new ExitStatusException();
 		willThrow(failure).given(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(application::run);
-		verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
-		verify(listener, never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).should().onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
 		assertThat(exitCodeListener.getExitCode()).isEqualTo(11);
 		assertThat(output).contains("Application run failed");
 	}
@@ -804,7 +804,7 @@ class SpringApplicationTests {
 		application.addListeners(listener);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		assertThatIllegalStateException().isThrownBy(application::run);
-		verify(handler).registerExitCode(11);
+		then(handler).should().registerExitCode(11);
 		assertThat(listener.getExitCode()).isEqualTo(11);
 	}
 
@@ -823,7 +823,7 @@ class SpringApplicationTests {
 		application.addListeners(listener);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		assertThatIllegalStateException().isThrownBy(application::run);
-		verify(handler).registerExitCode(11);
+		then(handler).should().registerExitCode(11);
 		assertThat(listener.getExitCode()).isEqualTo(11);
 	}
 
@@ -843,7 +843,7 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(application::run);
 		ArgumentCaptor<RuntimeException> exceptionCaptor = ArgumentCaptor.forClass(RuntimeException.class);
-		verify(handler).registerLoggedException(exceptionCaptor.capture());
+		then(handler).should().registerLoggedException(exceptionCaptor.capture());
 		assertThat(exceptionCaptor.getValue()).hasCauseInstanceOf(RefreshFailureException.class);
 		assertThat(output).doesNotContain("NullPointerException");
 	}
@@ -927,11 +927,12 @@ class SpringApplicationTests {
 		ApplicationListener<ApplicationEvent> listener = this.context.getBean("testApplicationListener",
 				ApplicationListener.class);
 		InOrder inOrder = Mockito.inOrder(listener);
-		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(argThat(isAvailabilityChangeEventWithState(LivenessState.CORRECT)));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
-		inOrder.verify(listener)
+		then(listener).should(inOrder).onApplicationEvent(isA(ContextRefreshedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		then(listener).should(inOrder)
+				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(LivenessState.CORRECT)));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should(inOrder)
 				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(ReadinessState.ACCEPTING_TRAFFIC)));
 		inOrder.verifyNoMoreInteractions();
 	}
@@ -959,11 +960,11 @@ class SpringApplicationTests {
 
 	private void verifyRegisteredListenerFailedFromApplicationEvents(ApplicationListener<ApplicationEvent> listener) {
 		InOrder inOrder = Mockito.inOrder(listener);
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartingEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationStartingEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationPreparedEvent.class));
+		then(listener).should(inOrder).onApplicationEvent(isA(ApplicationFailedEvent.class));
 		inOrder.verifyNoMoreInteractions();
 	}
 
@@ -974,8 +975,8 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.addInitializers((applicationContext) -> applicationContext.addApplicationListener(listener));
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(application::run);
-		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
-		verifyNoMoreInteractions(listener);
+		then(listener).should().onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).shouldHaveNoMoreInteractions();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -986,8 +987,8 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addInitializers((applicationContext) -> applicationContext.addApplicationListener(listener));
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
-		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
-		verifyNoMoreInteractions(listener);
+		then(listener).should().onApplicationEvent(isA(ApplicationFailedEvent.class));
+		then(listener).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -1168,12 +1169,12 @@ class SpringApplicationTests {
 		application.setApplicationStartup(applicationStartup);
 		this.context = application.run();
 		assertThat(this.context.getBean(ApplicationStartup.class)).isEqualTo(applicationStartup);
-		verify(applicationStartup).start("spring.boot.application.starting");
-		verify(applicationStartup).start("spring.boot.application.environment-prepared");
-		verify(applicationStartup).start("spring.boot.application.context-prepared");
-		verify(applicationStartup).start("spring.boot.application.context-loaded");
-		verify(applicationStartup).start("spring.boot.application.started");
-		verify(applicationStartup).start("spring.boot.application.ready");
+		then(applicationStartup).should().start("spring.boot.application.starting");
+		then(applicationStartup).should().start("spring.boot.application.environment-prepared");
+		then(applicationStartup).should().start("spring.boot.application.context-prepared");
+		then(applicationStartup).should().start("spring.boot.application.context-loaded");
+		then(applicationStartup).should().start("spring.boot.application.started");
+		then(applicationStartup).should().start("spring.boot.application.ready");
 		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
 				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
 		long endCount = mockingDetails(startupStep).getInvocations().stream()
@@ -1192,9 +1193,9 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setApplicationStartup(applicationStartup);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
-		verify(applicationStartup).start("spring.boot.application.starting");
-		verify(applicationStartup).start("spring.boot.application.environment-prepared");
-		verify(applicationStartup).start("spring.boot.application.failed");
+		then(applicationStartup).should().start("spring.boot.application.starting");
+		then(applicationStartup).should().start("spring.boot.application.environment-prepared");
+		then(applicationStartup).should().start("spring.boot.application.failed");
 		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
 				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
 		long endCount = mockingDetails(startupStep).getInvocations().stream()

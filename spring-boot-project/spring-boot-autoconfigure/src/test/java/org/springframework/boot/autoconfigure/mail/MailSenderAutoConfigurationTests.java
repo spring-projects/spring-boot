@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MailSenderAutoConfiguration}.
@@ -223,7 +222,7 @@ class MailSenderAutoConfigurationTests {
 				.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:true").run((context) -> {
 					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					verify(mailSender, times(1)).testConnection();
+					then(mailSender).should().testConnection();
 				});
 	}
 
@@ -234,7 +233,7 @@ class MailSenderAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					verify(mailSender, never()).testConnection();
+					then(mailSender).should(never()).testConnection();
 				});
 	}
 

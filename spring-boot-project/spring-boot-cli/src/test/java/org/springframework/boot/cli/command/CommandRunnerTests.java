@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CommandRunner}.
@@ -101,7 +101,7 @@ class CommandRunnerTests {
 	@Test
 	void runCommand() throws Exception {
 		this.commandRunner.run("command", "--arg1", "arg2");
-		verify(this.regularCommand).run("--arg1", "arg2");
+		then(this.regularCommand).should().run("--arg1", "arg2");
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class CommandRunnerTests {
 	@Test
 	void appArguments() throws Exception {
 		this.commandRunner.runAndHandleErrors("command", "--", "--debug", "bar");
-		verify(this.regularCommand).run("--", "--debug", "bar");
+		then(this.regularCommand).should().run("--", "--debug", "bar");
 		// When handled by the command itself it shouldn't cause the system property to be
 		// set
 		assertThat(System.getProperty("debug")).isNull();
@@ -166,7 +166,7 @@ class CommandRunnerTests {
 	@Test
 	void help() throws Exception {
 		this.commandRunner.run("help", "command");
-		verify(this.regularCommand).getHelp();
+		then(this.regularCommand).should().getHelp();
 	}
 
 	@Test

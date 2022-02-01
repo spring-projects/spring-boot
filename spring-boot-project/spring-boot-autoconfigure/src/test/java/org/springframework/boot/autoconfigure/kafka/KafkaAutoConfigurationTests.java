@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,9 +76,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link KafkaAutoConfiguration}.
@@ -333,10 +333,10 @@ class KafkaAutoConfigurationTests {
 							.asProperties();
 					assertThat((List<String>) configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.containsExactly("localhost:9092", "localhost:9093");
-					verify(context.getBean("&firstStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class), never())
-							.setAutoStartup(false);
-					verify(context.getBean("&secondStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class),
-							never()).setAutoStartup(false);
+					then(context.getBean("&firstStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class))
+							.should(never()).setAutoStartup(false);
+					then(context.getBean("&secondStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class))
+							.should(never()).setAutoStartup(false);
 				});
 	}
 

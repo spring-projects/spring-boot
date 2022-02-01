@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JooqProperties}.
@@ -59,7 +59,7 @@ class JooqPropertiesTests {
 		DataSource dataSource = mockStandaloneDataSource();
 		SQLDialect sqlDialect = properties.determineSqlDialect(dataSource);
 		assertThat(sqlDialect).isEqualTo(SQLDialect.POSTGRES);
-		verify(dataSource, never()).getConnection();
+		then(dataSource).should(never()).getConnection();
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,8 @@ import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link RabbitStreamConfiguration}.
@@ -61,7 +60,7 @@ class RabbitStreamConfigurationTests {
 					assertThat(listenerContainer).extracting("consumerCustomizer").isNotNull();
 					assertThat(context.getBean(StreamRabbitListenerContainerFactory.class))
 							.extracting("nativeListener", InstanceOfAssertFactories.BOOLEAN).isFalse();
-					verify(context.getBean(ContainerCustomizer.class)).configure(listenerContainer);
+					then(context.getBean(ContainerCustomizer.class)).should().configure(listenerContainer);
 					assertThat(context).hasSingleBean(Environment.class);
 				});
 	}
@@ -99,12 +98,12 @@ class RabbitStreamConfigurationTests {
 		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
 		RabbitProperties properties = new RabbitProperties();
 		RabbitStreamConfiguration.configure(builder, properties);
-		verify(builder).port(5552);
-		verify(builder).host("localhost");
-		verify(builder).lazyInitialization(true);
-		verify(builder).username("guest");
-		verify(builder).password("guest");
-		verifyNoMoreInteractions(builder);
+		then(builder).should().port(5552);
+		then(builder).should().host("localhost");
+		then(builder).should().lazyInitialization(true);
+		then(builder).should().username("guest");
+		then(builder).should().password("guest");
+		then(builder).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
@@ -113,7 +112,7 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setPort(5553);
 		RabbitStreamConfiguration.configure(builder, properties);
-		verify(builder).port(5553);
+		then(builder).should().port(5553);
 	}
 
 	@Test
@@ -122,7 +121,7 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setHost("stream.rabbit.example.com");
 		RabbitStreamConfiguration.configure(builder, properties);
-		verify(builder).host("stream.rabbit.example.com");
+		then(builder).should().host("stream.rabbit.example.com");
 	}
 
 	@Test
@@ -132,8 +131,8 @@ class RabbitStreamConfigurationTests {
 		properties.setUsername("alice");
 		properties.setPassword("secret");
 		RabbitStreamConfiguration.configure(builder, properties);
-		verify(builder).username("alice");
-		verify(builder).password("secret");
+		then(builder).should().username("alice");
+		then(builder).should().password("secret");
 	}
 
 	@Test
@@ -145,8 +144,8 @@ class RabbitStreamConfigurationTests {
 		properties.getStream().setUsername("bob");
 		properties.getStream().setPassword("confidential");
 		RabbitStreamConfiguration.configure(builder, properties);
-		verify(builder).username("bob");
-		verify(builder).password("confidential");
+		then(builder).should().username("bob");
+		then(builder).should().password("confidential");
 	}
 
 	@Configuration(proxyBeanMethods = false)

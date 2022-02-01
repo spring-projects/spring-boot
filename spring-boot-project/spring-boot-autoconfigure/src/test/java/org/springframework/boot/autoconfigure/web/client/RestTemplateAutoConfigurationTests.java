@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link RestTemplateAutoConfiguration}
@@ -115,7 +114,7 @@ class RestTemplateAutoConfigurationTests {
 					assertThat(context).hasSingleBean(RestTemplate.class);
 					RestTemplate restTemplate = context.getBean(RestTemplate.class);
 					RestTemplateCustomizer customizer = context.getBean(RestTemplateCustomizer.class);
-					verify(customizer).customize(restTemplate);
+					then(customizer).should().customize(restTemplate);
 				});
 	}
 
@@ -128,7 +127,7 @@ class RestTemplateAutoConfigurationTests {
 					assertThat(restTemplate.getMessageConverters()).hasSize(1);
 					assertThat(restTemplate.getMessageConverters().get(0))
 							.isInstanceOf(CustomHttpMessageConverter.class);
-					verifyNoInteractions(context.getBean(RestTemplateCustomizer.class));
+					then(context.getBean(RestTemplateCustomizer.class)).shouldHaveNoInteractions();
 				});
 	}
 
@@ -143,7 +142,7 @@ class RestTemplateAutoConfigurationTests {
 					assertThat(restTemplate.getMessageConverters().get(0))
 							.isInstanceOf(CustomHttpMessageConverter.class);
 					RestTemplateCustomizer customizer = context.getBean(RestTemplateCustomizer.class);
-					verify(customizer).customize(restTemplate);
+					then(customizer).should().customize(restTemplate);
 				});
 	}
 

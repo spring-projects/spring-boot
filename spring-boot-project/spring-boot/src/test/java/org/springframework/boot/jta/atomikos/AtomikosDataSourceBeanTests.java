@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package org.springframework.boot.jta.atomikos;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AtomikosDataSourceBean}.
@@ -36,10 +36,10 @@ class AtomikosDataSourceBeanTests {
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
 		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
-		verify(bean).init();
-		verify(bean, never()).close();
+		then(bean).should().init();
+		then(bean).should(never()).close();
 		bean.destroy();
-		verify(bean).close();
+		then(bean).should().close();
 	}
 
 	static class MockAtomikosDataSourceBean extends AtomikosDataSourceBean {

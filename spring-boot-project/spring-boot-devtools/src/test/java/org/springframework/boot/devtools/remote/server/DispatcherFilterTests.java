@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link DispatcherFilter}.
@@ -83,8 +82,8 @@ class DispatcherFilterTests {
 		ServletRequest request = mock(ServletRequest.class);
 		ServletResponse response = mock(ServletResponse.class);
 		this.filter.doFilter(request, response, this.chain);
-		verifyNoInteractions(this.dispatcher);
-		verify(this.chain).doFilter(request, response);
+		then(this.dispatcher).shouldHaveNoInteractions();
+		then(this.chain).should().doFilter(request, response);
 	}
 
 	@Test
@@ -92,7 +91,7 @@ class DispatcherFilterTests {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/hello");
 		HttpServletResponse response = new MockHttpServletResponse();
 		this.filter.doFilter(request, response, this.chain);
-		verify(this.chain).doFilter(request, response);
+		then(this.chain).should().doFilter(request, response);
 	}
 
 	@Test
@@ -101,8 +100,8 @@ class DispatcherFilterTests {
 		HttpServletResponse response = new MockHttpServletResponse();
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));
 		this.filter.doFilter(request, response, this.chain);
-		verifyNoInteractions(this.chain);
-		verify(this.dispatcher).handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
+		then(this.chain).shouldHaveNoInteractions();
+		then(this.dispatcher).should().handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
 		ServerHttpRequest dispatcherRequest = this.serverRequestCaptor.getValue();
 		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;
 		ServerHttpResponse dispatcherResponse = this.serverResponseCaptor.getValue();
