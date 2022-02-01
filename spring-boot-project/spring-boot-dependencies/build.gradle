@@ -1127,22 +1127,8 @@ bom {
 			]
 		}
 	}
-	library("RxJava", "1.3.8") {
-		group("io.reactivex") {
-			modules = [
-				"rxjava"
-			]
-		}
-	}
-	library("RxJava Adapter", "1.2.1") {
-		group("io.reactivex") {
-			modules = [
-				"rxjava-reactive-streams"
-			]
-		}
-	}
-	library("RxJava2", "2.2.21") {
-		group("io.reactivex.rxjava2") {
+	library("RxJava3", "3.1.3") {
+		group("io.reactivex.rxjava3") {
 			modules = [
 				"rxjava"
 			]
