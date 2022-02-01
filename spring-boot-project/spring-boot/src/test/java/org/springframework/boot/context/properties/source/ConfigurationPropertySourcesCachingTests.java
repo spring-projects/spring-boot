@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
 /**
@@ -62,8 +62,8 @@ class ConfigurationPropertySourcesCachingTests {
 	@Test
 	void enableDelegatesToCachingConfigurationPropertySources() {
 		this.caching.enable();
-		verify(getCaching(0)).enable();
-		verify(getCaching(2)).enable();
+		then(getCaching(0)).should().enable();
+		then(getCaching(2)).should().enable();
 	}
 
 	@Test
@@ -74,8 +74,8 @@ class ConfigurationPropertySourcesCachingTests {
 	@Test
 	void disableDelegatesToCachingConfigurationPropertySources() {
 		this.caching.disable();
-		verify(getCaching(0)).disable();
-		verify(getCaching(2)).disable();
+		then(getCaching(0)).should().disable();
+		then(getCaching(2)).should().disable();
 	}
 
 	@Test
@@ -87,8 +87,8 @@ class ConfigurationPropertySourcesCachingTests {
 	void setTimeToLiveDelegatesToCachingConfigurationPropertySources() {
 		Duration ttl = Duration.ofDays(1);
 		this.caching.setTimeToLive(ttl);
-		verify(getCaching(0)).setTimeToLive(ttl);
-		verify(getCaching(2)).setTimeToLive(ttl);
+		then(getCaching(0)).should().setTimeToLive(ttl);
+		then(getCaching(2)).should().setTimeToLive(ttl);
 	}
 
 	@Test
@@ -99,8 +99,8 @@ class ConfigurationPropertySourcesCachingTests {
 	@Test
 	void clearDelegatesToCachingConfigurationPropertySources() {
 		this.caching.clear();
-		verify(getCaching(0)).clear();
-		verify(getCaching(2)).clear();
+		then(getCaching(0)).should().clear();
+		then(getCaching(2)).should().clear();
 	}
 
 	@Test

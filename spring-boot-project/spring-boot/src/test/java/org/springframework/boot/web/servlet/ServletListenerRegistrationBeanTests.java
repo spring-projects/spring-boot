@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletListenerRegistrationBean}.
@@ -50,7 +50,7 @@ class ServletListenerRegistrationBeanTests {
 		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addListener(this.listener);
+		then(this.servletContext).should().addListener(this.listener);
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class ServletListenerRegistrationBeanTests {
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, never()).addListener(any(ServletContextListener.class));
+		then(this.servletContext).should(never()).addListener(any(ServletContextListener.class));
 	}
 
 	@Test

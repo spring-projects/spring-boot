@@ -47,8 +47,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConfigDataEnvironmentContributors}.
@@ -185,7 +185,7 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		verify(this.importer).resolveAndLoad(any(), this.locationResolverContext.capture(), any(), any());
+		then(this.importer).should().resolveAndLoad(any(), this.locationResolverContext.capture(), any(), any());
 		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
 		assertThat(context.getBinder().bind("test", String.class).get()).isEqualTo("springboot");
 	}
@@ -212,7 +212,8 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		verify(this.importer).resolveAndLoad(any(), this.locationResolverContext.capture(), any(), eq(secondLocations));
+		then(this.importer).should().resolveAndLoad(any(), this.locationResolverContext.capture(), any(),
+				eq(secondLocations));
 		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
 		assertThat(context.getParent()).hasToString("a");
 	}
@@ -235,7 +236,7 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		verify(this.importer).resolveAndLoad(any(), this.locationResolverContext.capture(), any(), any());
+		then(this.importer).should().resolveAndLoad(any(), this.locationResolverContext.capture(), any(), any());
 		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
 		assertThat(context.getBootstrapContext()).isSameAs(this.bootstrapContext);
 	}
@@ -258,7 +259,7 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		verify(this.importer).resolveAndLoad(any(), any(), this.loaderContext.capture(), any());
+		then(this.importer).should().resolveAndLoad(any(), any(), this.loaderContext.capture(), any());
 		ConfigDataLoaderContext context = this.loaderContext.getValue();
 		assertThat(context.getBootstrapContext()).isSameAs(this.bootstrapContext);
 	}

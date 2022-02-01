@@ -38,10 +38,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ErrorPageSecurityFilter}.
@@ -78,7 +77,7 @@ class ErrorPageSecurityFilterTests {
 	void whenAccessIsAllowedShouldContinueDownFilterChain() throws Exception {
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(true);
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verify(this.filterChain).doFilter(this.request, this.response);
+		then(this.filterChain).should().doFilter(this.request, this.response);
 	}
 
 	@Test
@@ -86,7 +85,7 @@ class ErrorPageSecurityFilterTests {
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(false);
 		this.request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, 403);
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verifyNoInteractions(this.filterChain);
+		then(this.filterChain).shouldHaveNoInteractions();
 		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
@@ -97,7 +96,7 @@ class ErrorPageSecurityFilterTests {
 		SecurityContextHolder.setContext(securityContext);
 		given(securityContext.getAuthentication()).willReturn(mock(Authentication.class));
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verifyNoInteractions(this.filterChain);
+		then(this.filterChain).shouldHaveNoInteractions();
 		assertThat(this.response.getStatus()).isEqualTo(401);
 	}
 
@@ -107,7 +106,7 @@ class ErrorPageSecurityFilterTests {
 		willThrow(NoSuchBeanDefinitionException.class).given(context).getBean(WebInvocationPrivilegeEvaluator.class);
 		ErrorPageSecurityFilter securityFilter = new ErrorPageSecurityFilter(context);
 		securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verify(this.filterChain).doFilter(this.request, this.response);
+		then(this.filterChain).should().doFilter(this.request, this.response);
 	}
 
 	@Test
@@ -115,8 +114,8 @@ class ErrorPageSecurityFilterTests {
 		this.request.setDispatcherType(DispatcherType.REQUEST);
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(false);
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verifyNoInteractions(this.privilegeEvaluator);
-		verify(this.filterChain).doFilter(this.request, this.response);
+		then(this.privilegeEvaluator).shouldHaveNoInteractions();
+		then(this.filterChain).should().doFilter(this.request, this.response);
 	}
 
 	@Test
@@ -129,7 +128,7 @@ class ErrorPageSecurityFilterTests {
 		// Servlet mapped to /
 		this.request.setServletPath("/error");
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verify(this.privilegeEvaluator).isAllowed(eq("/error"), any());
+		then(this.privilegeEvaluator).should().isAllowed(eq("/error"), any());
 	}
 
 	@Test
@@ -142,7 +141,7 @@ class ErrorPageSecurityFilterTests {
 		// Servlet mapped to /dispatcher/path/*
 		this.request.setServletPath("/dispatcher/path");
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
-		verify(this.privilegeEvaluator).isAllowed(eq("/dispatcher/path/error"), any());
+		then(this.privilegeEvaluator).should().isAllowed(eq("/dispatcher/path/error"), any());
 	}
 
 }

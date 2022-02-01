@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.springframework.mock.env.MockPropertySource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link InvalidConfigDataPropertyException}.
@@ -162,7 +162,7 @@ class InvalidConfigDataPropertyExceptionTests {
 		propertySource.setProperty("spring.profiles", "a");
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
 		InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
-		verify(this.logger).warn("Property 'spring.profiles' is invalid and should be replaced with "
+		then(this.logger).should().warn("Property 'spring.profiles' is invalid and should be replaced with "
 				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles\" from property source \"mockProperties\"]");
 	}
 
@@ -172,7 +172,7 @@ class InvalidConfigDataPropertyExceptionTests {
 		propertySource.setProperty("spring.profiles[0]", "a");
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
 		InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
-		verify(this.logger).warn("Property 'spring.profiles[0]' is invalid and should be replaced with "
+		then(this.logger).should().warn("Property 'spring.profiles[0]' is invalid and should be replaced with "
 				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles[0]\" from property source \"mockProperties\"]");
 	}
 

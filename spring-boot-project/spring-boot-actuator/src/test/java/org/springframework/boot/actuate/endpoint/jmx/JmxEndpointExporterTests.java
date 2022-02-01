@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JmxEndpointExporter}.
@@ -112,7 +112,7 @@ class JmxEndpointExporterTests {
 	void afterPropertiesSetShouldRegisterMBeans() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
-		verify(this.mBeanServer).registerMBean(this.objectCaptor.capture(), this.objectNameCaptor.capture());
+		then(this.mBeanServer).should().registerMBean(this.objectCaptor.capture(), this.objectNameCaptor.capture());
 		assertThat(this.objectCaptor.getValue()).isInstanceOf(EndpointMBean.class);
 		assertThat(this.objectNameCaptor.getValue().getKeyProperty("name")).isEqualTo("test");
 	}
@@ -121,7 +121,7 @@ class JmxEndpointExporterTests {
 	void registerShouldUseObjectNameFactory() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
-		verify(this.objectNameFactory).getObjectName(any(ExposableJmxEndpoint.class));
+		then(this.objectNameFactory).should().getObjectName(any(ExposableJmxEndpoint.class));
 	}
 
 	@Test
@@ -147,7 +147,7 @@ class JmxEndpointExporterTests {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		this.exporter.destroy();
-		verify(this.mBeanServer).unregisterMBean(this.objectNameCaptor.capture());
+		then(this.mBeanServer).should().unregisterMBean(this.objectNameCaptor.capture());
 		assertThat(this.objectNameCaptor.getValue().getKeyProperty("name")).isEqualTo("test");
 	}
 

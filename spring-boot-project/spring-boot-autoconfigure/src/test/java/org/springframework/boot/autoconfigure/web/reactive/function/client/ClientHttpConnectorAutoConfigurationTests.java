@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClientHttpConnectorAutoConfiguration}
@@ -94,7 +93,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
 			WebClient.Builder builder = mock(WebClient.Builder.class);
 			clientCustomizer.customize(builder);
-			verify(builder, times(1)).clientConnector(any(ReactorClientHttpConnector.class));
+			then(builder).should().clientConnector(any(ReactorClientHttpConnector.class));
 		});
 	}
 
@@ -106,7 +105,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
 			WebClient.Builder builder = mock(WebClient.Builder.class);
 			clientCustomizer.customize(builder);
-			verify(builder, times(1)).clientConnector(any(ClientHttpConnector.class));
+			then(builder).should().clientConnector(any(ClientHttpConnector.class));
 		});
 	}
 

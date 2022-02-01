@@ -39,8 +39,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ElasticsearchRestClientAutoConfiguration}.
@@ -257,7 +257,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Sniffer.class);
 			Sniffer sniffer = context.getBean(Sniffer.class);
 			assertThat(sniffer).isSameAs(customSniffer);
-			verifyNoInteractions(customSniffer);
+			then(customSniffer).shouldHaveNoInteractions();
 		});
 	}
 

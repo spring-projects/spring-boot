@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebServer}s driving {@link ServletContextListener}s correctly
@@ -77,7 +77,7 @@ class ServletWebServerServletContextListenerTests {
 				ServletContextListenerBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = context.getBean("servletContextListener",
 				ServletContextListener.class);
-		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
+		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
 
@@ -86,7 +86,7 @@ class ServletWebServerServletContextListenerTests {
 				ServletListenerRegistrationBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = (ServletContextListener) context
 				.getBean("registration", ServletListenerRegistrationBean.class).getListener();
-		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
+		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
 

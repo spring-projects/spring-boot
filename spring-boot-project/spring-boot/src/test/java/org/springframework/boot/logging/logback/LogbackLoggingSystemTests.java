@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,9 +67,9 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.contentOf;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LogbackLoggingSystem}.
@@ -539,12 +539,12 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, null, null);
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
-		verify(listener, times(1)).onReset(loggerContext);
+		then(listener).should().onReset(loggerContext);
 		this.loggingSystem.cleanUp();
 		loggerContext.addListener(listener);
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
-		verify(listener, times(2)).onReset(loggerContext);
+		then(listener).should(times(2)).onReset(loggerContext);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConversionServiceParameterValueMapper}.
@@ -47,7 +47,7 @@ class ConversionServiceParameterValueMapperTests {
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		Object mapped = mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123");
 		assertThat(mapped).isEqualTo(123);
-		verify(conversionService).convert("123", Integer.class);
+		then(conversionService).should().convert("123", Integer.class);
 	}
 
 	@Test

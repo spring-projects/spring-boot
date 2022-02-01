@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link FlywayAutoConfiguration} with Flyway 7.x.
@@ -70,8 +70,8 @@ class Flyway7xAutoConfigurationTests {
 					assertThat(flyway.getConfiguration().getCallbacks()).hasSize(2);
 					assertThat(flyway.getConfiguration().getCallbacks()).containsExactlyInAnyOrder(callbackTwo,
 							callbackOne);
-					verify(callbackOne, atLeastOnce()).handle(any(Event.class), any(Context.class));
-					verify(callbackTwo, atLeastOnce()).handle(any(Event.class), any(Context.class));
+					then(callbackOne).should(atLeastOnce()).handle(any(Event.class), any(Context.class));
+					then(callbackTwo).should(atLeastOnce()).handle(any(Event.class), any(Context.class));
 				});
 	}
 

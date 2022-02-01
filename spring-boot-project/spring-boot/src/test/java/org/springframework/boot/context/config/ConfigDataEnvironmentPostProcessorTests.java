@@ -36,9 +36,9 @@ import org.springframework.core.io.ResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConfigDataEnvironmentPostProcessor}.
@@ -71,8 +71,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	void postProcessEnvironmentWhenNoLoaderCreatesDefaultLoaderInstance() {
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
-		verify(this.configDataEnvironment).processAndApply();
+		then(this.postProcessor).should().getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
+		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.resourceLoaderCaptor.getValue()).isInstanceOf(DefaultResourceLoader.class);
 	}
 
@@ -82,8 +82,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.application.setResourceLoader(resourceLoader);
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
-		verify(this.configDataEnvironment).processAndApply();
+		then(this.postProcessor).should().getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
+		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.resourceLoaderCaptor.getValue()).isSameAs(resourceLoader);
 	}
 
@@ -92,8 +92,9 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.application.setAdditionalProfiles("dev");
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		verify(this.postProcessor).getConfigDataEnvironment(any(), any(), this.additionalProfilesCaptor.capture());
-		verify(this.configDataEnvironment).processAndApply();
+		then(this.postProcessor).should().getConfigDataEnvironment(any(), any(),
+				this.additionalProfilesCaptor.capture());
+		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.additionalProfilesCaptor.getValue()).containsExactly("dev");
 	}
 
@@ -101,8 +102,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	void postProcessEnvironmentWhenNoActiveProfiles() {
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
-		verify(this.configDataEnvironment).processAndApply();
+		then(this.postProcessor).should().getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
+		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import org.springframework.data.redis.connection.ReactiveServerCommands;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RedisReactiveHealthIndicator}.
@@ -63,7 +63,7 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails()).containsOnlyKeys("version");
 			assertThat(h.getDetails().get("version")).isEqualTo("2.8.9");
 		}).verifyComplete();
-		verify(redisConnection).closeLater();
+		then(redisConnection).should().closeLater();
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails().get("slots_up")).isEqualTo(4L);
 			assertThat(h.getDetails().get("slots_fail")).isEqualTo(0L);
 		}).verifyComplete();
-		verify(redisConnectionFactory.getReactiveConnection()).closeLater();
+		then(redisConnectionFactory.getReactiveConnection()).should().closeLater();
 	}
 
 	@Test
@@ -115,7 +115,7 @@ class RedisReactiveHealthIndicatorTests {
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
-		verify(redisConnection).closeLater();
+		then(redisConnection).should().closeLater();
 	}
 
 	@Test
