@@ -94,8 +94,7 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		then(this.webClient).should().getPage(isNull(),
-				requestToUrl(new URL("http://localhost:8080/test")));
+		then(this.webClient).should().getPage(isNull(), requestToUrl(new URL("http://localhost:8080/test")));
 	}
 
 	@Test
@@ -104,8 +103,7 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		environment.setProperty("local.server.port", "8181");
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		then(this.webClient).should().getPage(isNull(),
-				requestToUrl(new URL("http://localhost:8181/test")));
+		then(this.webClient).should().getPage(isNull(), requestToUrl(new URL("http://localhost:8181/test")));
 	}
 
 	private WebRequest requestToUrl(URL url) {
