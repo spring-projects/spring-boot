@@ -42,6 +42,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.GraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.ThreadLocalAccessor;
@@ -51,10 +52,12 @@ import org.springframework.graphql.web.webmvc.GraphQlHttpHandler;
 import org.springframework.graphql.web.webmvc.GraphQlWebSocketHandler;
 import org.springframework.graphql.web.webmvc.GraphiQlHandler;
 import org.springframework.graphql.web.webmvc.SchemaHandler;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -62,6 +65,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
+import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
@@ -102,32 +106,31 @@ public class GraphQlWebMvcAutoConfiguration {
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler handler, GraphQlSource graphQlSource,
-			GraphQlProperties properties, ResourceLoader resourceLoader) {
-
-		String graphQLPath = properties.getPath();
-		if (logger.isInfoEnabled()) {
-			logger.info("GraphQL endpoint HTTP POST " + graphQLPath);
-		}
-
-		RouterFunctions.Builder builder = RouterFunctions.route()
-				.GET(graphQLPath,
-						(request) -> ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED)
-								.headers((headers) -> headers.setAllow(Collections.singleton(HttpMethod.POST))).build())
-				.POST(graphQLPath, RequestPredicates.contentType(MediaType.APPLICATION_JSON)
-						.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::handleRequest);
-
+	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
+			GraphQlSource graphQlSource, GraphQlProperties properties, ResourceLoader resourceLoader) {
+		String path = properties.getPath();
+		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		RouterFunctions.Builder builder = RouterFunctions.route();
+		builder = builder.GET(path, this::onlyAllowPost);
+		builder = builder.POST(path, RequestPredicates.contentType(MediaType.APPLICATION_JSON)
+				.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), httpHandler::handleRequest);
 		if (properties.getGraphiql().isEnabled()) {
-			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(graphQLPath, properties.getWebsocket().getPath());
+			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);
 		}
-
 		if (properties.getSchema().getPrinter().isEnabled()) {
 			SchemaHandler schemaHandler = new SchemaHandler(graphQlSource);
-			builder = builder.GET(graphQLPath + "/schema", schemaHandler::handleRequest);
+			builder = builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
-
 		return builder.build();
+	}
+
+	private ServerResponse onlyAllowPost(ServerRequest request) {
+		return ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED).headers(this::onlyAllowPost).build();
+	}
+
+	private void onlyAllowPost(HttpHeaders headers) {
+		headers.setAllow(Collections.singleton(HttpMethod.POST));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -161,25 +164,29 @@ public class GraphQlWebMvcAutoConfiguration {
 		@ConditionalOnMissingBean
 		public GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
 				GraphQlProperties properties, HttpMessageConverters converters) {
-
 			return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(converters),
 					properties.getWebsocket().getConnectionInitTimeout());
 		}
 
-		@SuppressWarnings("unchecked")
-		private static GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
-			return converters.getConverters().stream()
-					.filter((candidate) -> candidate.canRead(Map.class, MediaType.APPLICATION_JSON)).findFirst()
-					.map((converter) -> (GenericHttpMessageConverter<Object>) converter)
+		private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
+			return converters.getConverters().stream().filter(this::canReadJsonMap).findFirst()
+					.map(this::asGenericHttpMessageConverter)
 					.orElseThrow(() -> new IllegalStateException("No JSON converter"));
+		}
+
+		private boolean canReadJsonMap(HttpMessageConverter<?> candidate) {
+			return candidate.canRead(Map.class, MediaType.APPLICATION_JSON);
+		}
+
+		@SuppressWarnings("unchecked")
+		private GenericHttpMessageConverter<Object> asGenericHttpMessageConverter(HttpMessageConverter<?> converter) {
+			return (GenericHttpMessageConverter<Object>) converter;
 		}
 
 		@Bean
 		public HandlerMapping graphQlWebSocketMapping(GraphQlWebSocketHandler handler, GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
-			if (logger.isInfoEnabled()) {
-				logger.info("GraphQL endpoint WebSocket " + path);
-			}
+			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
 			WebSocketHandlerMapping mapping = new WebSocketHandlerMapping();
 			mapping.setWebSocketUpgradeMatch(true);
 			mapping.setUrlMap(Collections.singletonMap(path,

@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.data;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import graphql.GraphQL;
 
@@ -31,6 +29,7 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.ReactiveQuerydslPredicateExecutor;
 import org.springframework.graphql.data.query.QuerydslDataFetcher;
 import org.springframework.graphql.execution.GraphQlSource;
@@ -54,16 +53,9 @@ public class GraphQlReactiveQuerydslAutoConfiguration {
 
 	@Bean
 	public GraphQlSourceBuilderCustomizer reactiveQuerydslRegistrar(
-			ObjectProvider<ReactiveQuerydslPredicateExecutor<?>> executorsProvider) {
-
-		return (builder) -> {
-			List<ReactiveQuerydslPredicateExecutor<?>> executors = executorsProvider.stream()
-					.collect(Collectors.toList());
-			if (!executors.isEmpty()) {
-				builder.configureRuntimeWiring(
-						QuerydslDataFetcher.autoRegistrationConfigurer(Collections.emptyList(), executors));
-			}
-		};
+			ObjectProvider<ReactiveQuerydslPredicateExecutor<?>> reactiveExecutors) {
+		return new GraphQlQuerydslSourceBuilderCustomizer<>(QuerydslDataFetcher::autoRegistrationConfigurer,
+				(ObjectProvider<QuerydslPredicateExecutor<?>>) null, reactiveExecutors);
 	}
 
 }

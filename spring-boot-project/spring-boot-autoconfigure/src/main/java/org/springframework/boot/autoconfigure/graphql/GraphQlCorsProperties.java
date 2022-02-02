@@ -24,7 +24,6 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -73,7 +72,6 @@ public class GraphQlCorsProperties {
 	/**
 	 * Whether credentials are supported. When not set, credentials are not supported.
 	 */
-	@Nullable
 	private Boolean allowCredentials;
 
 	/**
@@ -123,7 +121,6 @@ public class GraphQlCorsProperties {
 		this.exposedHeaders = exposedHeaders;
 	}
 
-	@Nullable
 	public Boolean getAllowCredentials() {
 		return this.allowCredentials;
 	}
@@ -140,7 +137,6 @@ public class GraphQlCorsProperties {
 		this.maxAge = maxAge;
 	}
 
-	@Nullable
 	public CorsConfiguration toCorsConfiguration() {
 		if (CollectionUtils.isEmpty(this.allowedOrigins) && CollectionUtils.isEmpty(this.allowedOriginPatterns)) {
 			return null;

@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.data;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import graphql.GraphQL;
 
@@ -31,6 +29,7 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.graphql.data.query.QueryByExampleDataFetcher;
 import org.springframework.graphql.execution.GraphQlSource;
@@ -53,15 +52,9 @@ public class GraphQlReactiveQueryByExampleAutoConfiguration {
 
 	@Bean
 	public GraphQlSourceBuilderCustomizer reactiveQueryByExampleRegistrar(
-			ObjectProvider<ReactiveQueryByExampleExecutor<?>> executorsProvider) {
-
-		return (builder) -> {
-			List<ReactiveQueryByExampleExecutor<?>> executors = executorsProvider.stream().collect(Collectors.toList());
-			if (!executors.isEmpty()) {
-				builder.configureRuntimeWiring(
-						QueryByExampleDataFetcher.autoRegistrationConfigurer(Collections.emptyList(), executors));
-			}
-		};
+			ObjectProvider<ReactiveQueryByExampleExecutor<?>> reactiveExecutors) {
+		return new GraphQlQuerydslSourceBuilderCustomizer<>(QueryByExampleDataFetcher::autoRegistrationConfigurer,
+				(ObjectProvider<QueryByExampleExecutor<?>>) null, reactiveExecutors);
 	}
 
 }

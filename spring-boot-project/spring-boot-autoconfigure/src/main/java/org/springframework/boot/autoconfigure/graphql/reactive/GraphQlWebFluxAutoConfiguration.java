@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import graphql.GraphQL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -38,6 +39,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.GraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.web.WebGraphQlHandler;
@@ -46,6 +48,7 @@ import org.springframework.graphql.web.webflux.GraphQlHttpHandler;
 import org.springframework.graphql.web.webflux.GraphQlWebSocketHandler;
 import org.springframework.graphql.web.webflux.GraphiQlHandler;
 import org.springframework.graphql.web.webflux.SchemaHandler;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,8 +57,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.server.support.WebSocketUpgradeHandlerPredicate;
@@ -78,6 +83,9 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @EnableConfigurationProperties(GraphQlCorsProperties.class)
 public class GraphQlWebFluxAutoConfiguration {
 
+	private static final RequestPredicate ACCEPT_JSON_CONTENT = accept(MediaType.APPLICATION_JSON)
+			.and(contentType(MediaType.APPLICATION_JSON));
+
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 
 	@Bean
@@ -95,32 +103,30 @@ public class GraphQlWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> graphQlEndpoint(GraphQlHttpHandler handler, GraphQlSource graphQlSource,
+	public RouterFunction<ServerResponse> graphQlEndpoint(GraphQlHttpHandler httpHandler, GraphQlSource graphQlSource,
 			GraphQlProperties properties, ResourceLoader resourceLoader) {
-
-		String graphQLPath = properties.getPath();
-		if (logger.isInfoEnabled()) {
-			logger.info("GraphQL endpoint HTTP POST " + graphQLPath);
-		}
-
-		RouterFunctions.Builder builder = RouterFunctions.route()
-				.GET(graphQLPath,
-						(request) -> ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED)
-								.headers((headers) -> headers.setAllow(Collections.singleton(HttpMethod.POST))).build())
-				.POST(graphQLPath, accept(MediaType.APPLICATION_JSON).and(contentType(MediaType.APPLICATION_JSON)),
-						handler::handleRequest);
-
+		String path = properties.getPath();
+		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		RouterFunctions.Builder builder = RouterFunctions.route();
+		builder = builder.GET(path, this::onlyAllowPost);
+		builder = builder.POST(path, ACCEPT_JSON_CONTENT, httpHandler::handleRequest);
 		if (properties.getGraphiql().isEnabled()) {
-			GraphiQlHandler graphiQlHandler = new GraphiQlHandler(graphQLPath, properties.getWebsocket().getPath());
-			builder = builder.GET(properties.getGraphiql().getPath(), graphiQlHandler::handleRequest);
+			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
+			builder = builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);
 		}
-
 		if (properties.getSchema().getPrinter().isEnabled()) {
 			SchemaHandler schemaHandler = new SchemaHandler(graphQlSource);
-			builder = builder.GET(graphQLPath + "/schema", schemaHandler::handleRequest);
+			builder = builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
-
 		return builder.build();
+	}
+
+	private Mono<ServerResponse> onlyAllowPost(ServerRequest request) {
+		return ServerResponse.status(HttpStatus.METHOD_NOT_ALLOWED).headers(this::onlyAllowPost).build();
+	}
+
+	private void onlyAllowPost(HttpHeaders headers) {
+		headers.setAllow(Collections.singleton(HttpMethod.POST));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -161,9 +167,7 @@ public class GraphQlWebFluxAutoConfiguration {
 		public HandlerMapping graphQlWebSocketEndpoint(GraphQlWebSocketHandler graphQlWebSocketHandler,
 				GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
-			if (logger.isInfoEnabled()) {
-				logger.info("GraphQL endpoint WebSocket " + path);
-			}
+			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
 			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 			mapping.setHandlerPredicate(new WebSocketUpgradeHandlerPredicate());
 			mapping.setUrlMap(Collections.singletonMap(path, graphQlWebSocketHandler));
