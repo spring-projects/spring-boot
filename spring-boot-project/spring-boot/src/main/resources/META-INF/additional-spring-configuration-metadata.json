@@ -227,43 +227,58 @@
     {
       "name": "spring.banner.image.bitdepth",
       "type": "java.lang.Integer",
-      "description": "Bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
-      "defaultValue": 4
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.height",
       "type": "java.lang.Integer",
-      "description": "Height of the banner image in chars (default based on image height)."
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.invert",
       "type": "java.lang.Boolean",
-      "description": "Whether images should be inverted for dark terminal themes.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.location",
       "type": "org.springframework.core.io.Resource",
-      "description": "Banner image file location (jpg or png can also be used).",
-      "defaultValue": "classpath:banner.gif"
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.margin",
       "type": "java.lang.Integer",
-      "description": "Left hand image margin in chars.",
-      "defaultValue": 2
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.pixelmode",
       "type": "org.springframework.boot.ImageBanner$PixelMode",
-      "description": "Pixel mode to use when rendering the image.",
-      "defaultValue": "TEXT"
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.width",
       "type": "java.lang.Integer",
-      "description": "Width of the banner image in chars.",
-      "defaultValue": 76
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.location",

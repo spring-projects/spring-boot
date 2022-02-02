@@ -108,8 +108,6 @@ TIP: If you want to disable lazy initialization for certain beans while using la
 === Customizing the Banner
 The banner that is printed on start up can be changed by adding a `banner.txt` file to your classpath or by setting the configprop:spring.banner.location[] property to the location of such a file.
 If the file has an encoding other than UTF-8, you can set `spring.banner.charset`.
-In addition to a text file, you can also add a `banner.gif`, `banner.jpg`, or `banner.png` image file to your classpath or set the configprop:spring.banner.image.location[] property.
-Images are converted into an ASCII art representation and printed above any text banner.
 
 Inside your `banner.txt` file, you can use any of the following placeholders:
 
