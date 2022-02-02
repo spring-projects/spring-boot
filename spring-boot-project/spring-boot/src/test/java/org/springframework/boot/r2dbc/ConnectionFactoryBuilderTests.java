@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 import io.r2dbc.h2.H2ConnectionFactoryMetadata;
 import io.r2dbc.pool.ConnectionPool;
@@ -35,7 +36,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder.PoolingAwareOptionsCapableWrapper;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -198,9 +201,13 @@ class ConnectionFactoryBuilderTests {
 		assertThat(configuration).extracting(expectedOption.property).isEqualTo(expectedOption.value);
 	}
 
+	private static Iterable<Arguments> poolingConnectionProviderOptions() {
+		return extractPoolingConnectionProviderOptions((field) -> Option.class.equals(field.getType()));
+	}
+
 	@ParameterizedTest
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@MethodSource("poolingConnectionProviderOptions")
+	@MethodSource("primitivePoolingConnectionProviderOptions")
 	void stringlyTypedOptionIsMappedWhenCreatingPoolConfiguration(Option option) {
 		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID();
 		ExpectedOption expectedOption = ExpectedOption.get(option);
@@ -213,11 +220,21 @@ class ConnectionFactoryBuilderTests {
 		assertThat(configuration).extracting(expectedOption.property).isEqualTo(expectedOption.value);
 	}
 
-	private static Iterable<Arguments> poolingConnectionProviderOptions() {
+	private static Iterable<Arguments> primitivePoolingConnectionProviderOptions() {
+		return extractPoolingConnectionProviderOptions((field) -> {
+			ResolvableType type = ResolvableType.forField(field);
+			if (!type.toClass().equals(Option.class)) {
+				return false;
+			}
+			Class<?> valueType = type.as(Option.class).getGenerics()[0].toClass();
+			return valueType.getPackage().getName().equals("java.lang");
+		});
+	}
+
+	private static Iterable<Arguments> extractPoolingConnectionProviderOptions(FieldFilter filter) {
 		List<Arguments> arguments = new ArrayList<>();
 		ReflectionUtils.doWithFields(PoolingConnectionFactoryProvider.class,
-				(field) -> arguments.add(Arguments.of(ReflectionUtils.getField(field, null))),
-				(field) -> Option.class.equals(field.getType()));
+				(field) -> arguments.add(Arguments.of(ReflectionUtils.getField(field, null))), filter);
 		return arguments;
 	}
 
@@ -249,6 +266,10 @@ class ConnectionFactoryBuilderTests {
 				"maxCreateConnectionTime"),
 
 		POOL_NAME(PoolingConnectionFactoryProvider.POOL_NAME, "testPool", "name"),
+
+		POST_ALLOCATE(PoolingConnectionFactoryProvider.POST_ALLOCATE, mock(Function.class), "postAllocate"),
+
+		PRE_RELEASE(PoolingConnectionFactoryProvider.PRE_RELEASE, mock(Function.class), "preRelease"),
 
 		REGISTER_JMX(PoolingConnectionFactoryProvider.REGISTER_JMX, true, "registerJmx"),
 
