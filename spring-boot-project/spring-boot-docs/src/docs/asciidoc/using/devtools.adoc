@@ -45,7 +45,6 @@ When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executa
 
 [[using.devtools.diagnosing-classloading-issues]]
 === Diagnosing Classloading Issues
-
 As described in the <<using#using-spring-boot-restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
 For most applications, this approach works well.
 However, it can sometimes cause classloading issues, in particular in multi-module projects.
