@@ -39,7 +39,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.graphql.GraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
@@ -132,9 +131,7 @@ public class GraphQlAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public AnnotatedControllerConfigurer annotatedControllerConfigurer() {
-		AnnotatedControllerConfigurer annotatedControllerConfigurer = new AnnotatedControllerConfigurer();
-		annotatedControllerConfigurer.setConversionService(new DefaultFormattingConversionService());
-		return annotatedControllerConfigurer;
+		return new AnnotatedControllerConfigurer();
 	}
 
 	private <T> List<T> toList(ObjectProvider<T> provider) {
