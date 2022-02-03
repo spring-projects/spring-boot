@@ -11,10 +11,7 @@ The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConv
 
 The following code shows a typical example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/restclient/resttemplate/MyService.java[]
-----
+include::code:MyService[]
 
 TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
 For example, to add BASIC auth support, you can use `builder.basicAuthentication("user", "password").build()`.
@@ -33,20 +30,14 @@ All such beans are automatically registered with the auto-configured `RestTempla
 
 The following example shows a customizer that configures the use of a proxy for all hosts except `192.168.0.5`:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/restclient/resttemplate/customization/MyRestTemplateCustomizer.java[]
-----
+include::code:MyRestTemplateCustomizer[]
 
 Finally, you can define your own `RestTemplateBuilder` bean.
 Doing so will replace the auto-configured builder.
 If you want any `RestTemplateCustomizer` beans to be applied to your custom builder, as the auto-configuration would have done, configure it using a `RestTemplateBuilderConfigurer`.
 The following example exposes a `RestTemplateBuilder` that matches what Spring Boot's auto-configuration would have done, except that custom connect and read timeouts are also specified:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/restclient/resttemplate/customization/MyRestTemplateBuilderConfiguration.java[]
-----
+include::code:MyRestTemplateBuilderConfiguration[]
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
 In addition to replacing the auto-configured builder, this also prevents any `RestTemplateCustomizer` beans from being used.
@@ -65,10 +56,7 @@ Spring Boot is configuring that builder to share HTTP resources, reflect codecs 
 
 The following code shows a typical example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/restclient/webclient/MyService.java[]
-----
+include::code:MyService[]
 
 
 

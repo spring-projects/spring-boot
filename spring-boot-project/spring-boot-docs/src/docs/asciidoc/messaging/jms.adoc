@@ -140,10 +140,7 @@ You can use the configprop:spring.jms.jndi-name[] property if you need to specif
 === Sending a Message
 Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/messaging/jms/sending/MyBean.java[]
-----
+include::code:MyBean[]
 
 NOTE: {spring-framework-api}/jms/core/JmsMessagingTemplate.html[`JmsMessagingTemplate`] can be injected in a similar manner.
 If a `DestinationResolver` or a `MessageConverter` bean is defined, it is associated automatically to the auto-configured `JmsTemplate`.
@@ -165,10 +162,7 @@ This also includes sending response messages that have been performed on the sam
 
 The following component creates a listener endpoint on the `someQueue` destination:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/messaging/jms/receiving/MyBean.java[]
-----
+include::code:MyBean[]
 
 TIP: See {spring-framework-api}/jms/annotation/EnableJms.html[the Javadoc of `@EnableJms`] for more details.
 
@@ -176,14 +170,8 @@ If you need to create more `JmsListenerContainerFactory` instances or if you wan
 
 For instance, the following example exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/messaging/jms/receiving/custom/MyJmsConfiguration.java[]
-----
+include::code:custom/MyJmsConfiguration[]
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/messaging/jms/receiving/custom/MyBean.java[]
-----
+include::code:custom/MyBean[]

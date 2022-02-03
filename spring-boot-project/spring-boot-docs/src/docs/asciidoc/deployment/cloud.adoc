@@ -93,10 +93,7 @@ Process-scoped environment variables are language agnostic.
 
 Environment variables do not always make for the easiest API, so Spring Boot automatically extracts them and flattens the data into properties that can be accessed through Spring's `Environment` abstraction, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/deployment/cloud/cloudfoundry/bindingtoservices/MyBean.java[]
-----
+include::code:MyBean[]
 
 All Cloud Foundry properties are prefixed with `vcap`.
 You can use `vcap` properties to access application information (such as the public URL of the application) and service information (such as database credentials).

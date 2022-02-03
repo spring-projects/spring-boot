@@ -3,10 +3,7 @@
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/MyApplication.java[]
-----
+include::code:MyApplication[]
 
 When your application starts, you should see something similar to the following output:
 
@@ -165,10 +162,7 @@ This will initialize the `application.*` banner variables before building the cl
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/customizingspringapplication/MyApplication.java[]
-----
+include::code:MyApplication[]
 
 NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
 In most cases, these are references to `@Configuration` classes, but they could also be direct references `@Component` classes.
@@ -186,10 +180,7 @@ If you need to build an `ApplicationContext` hierarchy (multiple contexts with a
 
 The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/fluentbuilderapi/MyApplication.java[tag=*]
-----
+include::code:MyApplication[tag=*]
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
 For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
@@ -240,17 +231,11 @@ More often, applications will want to listen to state updates or update the stat
 
 For example, we can export the "Readiness" state of the application to a file so that a Kubernetes "exec Probe" can look at this file:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/applicationavailability/managing/MyReadinessStateExporter.java[]
-----
+include::code:MyReadinessStateExporter[]
 
 We can also update the state of the application, when the application breaks and cannot recover:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/applicationavailability/managing/MyLocalCacheVerifier.java[]
-----
+include::code:MyLocalCacheVerifier[]
 
 Spring Boot provides <<actuator#actuator.endpoints.kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
 You can get more guidance about <<deployment#deployment.cloud.kubernetes,deploying Spring Boot applications on Kubernetes in the dedicated section>>.
@@ -332,10 +317,7 @@ TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NON
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/applicationarguments/MyBean.java[]
-----
+include::code:MyBean[]
 
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
 This lets you also inject single application arguments by using the `@Value` annotation.
@@ -353,10 +335,7 @@ NOTE: This contract is well suited for tasks that should run after application s
 The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/commandlinerunner/MyCommandLineRunner.java[]
-----
+include::code:MyCommandLineRunner[]
 
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
 
@@ -370,10 +349,7 @@ All the standard Spring lifecycle callbacks (such as the `DisposableBean` interf
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator` interface if they wish to return a specific exit code when `SpringApplication.exit()` is called.
 This exit code can then be passed to `System.exit()` to return it as a status code, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/applicationexit/MyApplication.java[]
-----
+include::code:MyApplication[]
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
 When such an exception is encountered, Spring Boot returns the exit code provided by the implemented `getExitCode()` method.
@@ -401,10 +377,7 @@ This data can be collected for profiling purposes, or just to have a better unde
 You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
 For example, to use the `BufferingApplicationStartup`, you could write:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/springapplication/startuptracking/MyApplication.java[]
-----
+include::code:MyApplication[]
 
 The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.
 It adds Spring-specific startup events to a Java Flight Recorder session and is meant for profiling applications and correlating their Spring context lifecycle with JVM events (such as allocations, GCs, class loading...).

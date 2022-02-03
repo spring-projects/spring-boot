@@ -47,7 +47,4 @@ If you expect the Cloud Foundry endpoints to always be available at `/cloudfound
 The configuration differs, depending on the web server in use.
 For Tomcat, you can add the following configuration:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/cloudfoundry/customcontextpath/MyCloudFoundryConfiguration.java[]
-----
+include::code:MyCloudFoundryConfiguration[]

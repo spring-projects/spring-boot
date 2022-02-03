@@ -54,10 +54,7 @@ Typically, however, applications will not implement `DataFetcher` directly and w
 Spring Boot will automatically detect `@Controller` classes with annotated handler methods and register those as `DataFetcher`s.
 Here's a sample implementation for our greeting query with a `@Controller` class:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/graphql/runtimewiring/GreetingController.java[]
-----
+include::code:GreetingController[]
 
 
 

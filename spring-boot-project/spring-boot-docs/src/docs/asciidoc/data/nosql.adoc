@@ -36,10 +36,7 @@ You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate
 By default, the instance tries to connect to a Redis server at `localhost:6379`.
 The following listing shows an example of such a bean:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/redis/connecting/MyBean.java[]
-----
+include::code:MyBean[]
 
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
 `ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
@@ -65,10 +62,7 @@ To access MongoDB databases, you can inject an auto-configured `org.springframew
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/mongodb/connecting/MyBean.java[]
-----
+include::code:MyBean[]
 
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
 
@@ -119,10 +113,7 @@ The auto-configuration configures this factory automatically if Netty is availab
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/mongodb/template/MyBean.java[]
-----
+include::code:MyBean[]
 
 See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
 
@@ -136,10 +127,7 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/mongodb/repositories/CityRepository.java[]
-----
+include::code:CityRepository[]
 
 TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
 
@@ -181,10 +169,7 @@ To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Dr
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
 The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/neo4j/connecting/MyBean.java[]
-----
+include::code:MyBean[]
 
 You can configure various aspects of the driver using `spring.neo4j.*` properties.
 The following example shows how to configure the uri and credentials to use:
@@ -213,10 +198,7 @@ For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}[refe
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/neo4j/repositories/CityRepository.java[]
-----
+include::code:CityRepository[]
 
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
 Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
@@ -229,10 +211,7 @@ You can customize the locations to look for repositories and entities by using `
 In an application using the reactive style, a `ReactiveTransactionManager` is not auto-configured.
 To enable transaction management, the following bean must be defined in your configuration:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/neo4j/repositories/MyNeo4jConfiguration.java[]
-----
+include::code:MyNeo4jConfiguration[]
 ====
 
 
@@ -250,10 +229,7 @@ You can inject an auto-configured `SolrClient` instance as you would any other S
 By default, the instance tries to connect to a server at `http://localhost:8983/solr`.
 The following example shows how to inject a Solr bean:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/solr/connecting/MyBean.java[]
-----
+include::code:MyBean[]
 
 If you add your own `@Bean` of type `SolrClient`, it replaces the default.
 
@@ -342,10 +318,7 @@ With this configuration in place, an
 `ElasticsearchRestTemplate` can be injected like any other Spring bean,
 as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/elasticsearch/connectingusingspringdata/MyBean.java[]
-----
+include::code:MyBean[]
 
 In the presence of `spring-data-elasticsearch` and the required dependencies for using a `WebClient` (typically `spring-boot-starter-webflux`), Spring Boot can also auto-configure a <<features#data.nosql.elasticsearch.connecting-using-rest.webclient,ReactiveElasticsearchClient>> and a `ReactiveElasticsearchTemplate` as beans.
 They are the reactive equivalent of the other REST clients.
@@ -435,10 +408,7 @@ NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep
 
 The following code listing shows how to inject a Cassandra bean:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/cassandra/connecting/MyBean.java[]
-----
+include::code:MyBean[]
 
 If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default.
 
@@ -514,10 +484,7 @@ This happens when a `Cluster` is available, as described above, and a bucket nam
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/couchbase/repositories/MyBean.java[]
-----
+include::code:MyBean[]
 
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
 
@@ -528,10 +495,7 @@ There are a few beans that you can define in your own configuration to override 
 To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/couchbase/repositories/MyCouchbaseConfiguration.java[]
-----
+include::code:MyCouchbaseConfiguration[]
 
 
 
@@ -575,10 +539,7 @@ For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/data/nosql/ldap/repositories/MyBean.java[]
-----
+include::code:MyBean[]
 
 
 

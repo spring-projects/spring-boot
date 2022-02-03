@@ -78,10 +78,7 @@ Each implementation should be registered in `META-INF/spring.factories`, as show
 The implementation can load arbitrary files and add them to the `Environment`.
 For instance, the following example loads a YAML configuration file from the classpath:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/howto/application/customizetheenvironmentorapplicationcontext/MyEnvironmentPostProcessor.java[]
-----
+include::code:MyEnvironmentPostProcessor[]
 
 TIP: The `Environment` has already been prepared with all the usual property sources that Spring Boot loads by default.
 It is therefore possible to get the location of the file from the environment.
