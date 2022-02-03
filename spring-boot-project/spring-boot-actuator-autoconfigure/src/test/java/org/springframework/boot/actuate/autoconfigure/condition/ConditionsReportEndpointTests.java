@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import jakarta.annotation.PostConstruct;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;

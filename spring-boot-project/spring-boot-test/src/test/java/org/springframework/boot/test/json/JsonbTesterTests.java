@@ -20,7 +20,6 @@ import java.util.List;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;

@@ -20,7 +20,6 @@ import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

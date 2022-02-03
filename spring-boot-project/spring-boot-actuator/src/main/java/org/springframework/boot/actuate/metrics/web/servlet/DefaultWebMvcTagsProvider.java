@@ -19,11 +19,10 @@ package org.springframework.boot.actuate.metrics.web.servlet;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Default implementation of {@link WebMvcTagsProvider}.

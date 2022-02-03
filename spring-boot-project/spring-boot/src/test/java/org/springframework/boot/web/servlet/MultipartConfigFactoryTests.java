@@ -17,7 +17,6 @@
 package org.springframework.boot.web.servlet;
 
 import jakarta.servlet.MultipartConfigElement;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.util.unit.DataSize;

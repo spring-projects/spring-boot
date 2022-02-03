@@ -20,7 +20,6 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
 import smoketest.jpa.domain.Note;
 
 import org.springframework.stereotype.Repository;

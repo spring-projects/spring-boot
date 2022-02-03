@@ -21,7 +21,6 @@ import java.io.IOException;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 import jakarta.jms.Session;
-
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 

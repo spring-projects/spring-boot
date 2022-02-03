@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

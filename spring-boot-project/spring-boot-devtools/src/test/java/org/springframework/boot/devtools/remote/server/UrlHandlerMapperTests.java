@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.remote.server;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.server.ServerHttpRequest;

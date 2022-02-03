@@ -34,10 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import jakarta.servlet.ServletContainerInitializer;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -59,6 +55,9 @@ import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie.SameSite;

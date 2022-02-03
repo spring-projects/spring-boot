@@ -16,7 +16,7 @@
 
 package smoketest.testng;
 
-import org.testng.annotations.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,8 +25,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.annotations.Test;
 
 /**
  * Basic integration tests for demo application.

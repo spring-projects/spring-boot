@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

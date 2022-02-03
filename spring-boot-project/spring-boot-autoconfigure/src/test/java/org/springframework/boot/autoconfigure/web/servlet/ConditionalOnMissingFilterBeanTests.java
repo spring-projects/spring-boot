@@ -24,7 +24,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

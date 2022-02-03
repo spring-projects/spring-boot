@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotNull;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.i18n.LocaleContextHolder;

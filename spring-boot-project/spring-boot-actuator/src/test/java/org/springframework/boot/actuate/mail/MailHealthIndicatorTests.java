@@ -26,7 +26,6 @@ import jakarta.mail.Provider.Type;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.URLName;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

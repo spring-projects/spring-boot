@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
-import jakarta.validation.Validator;
-
 import com.couchbase.client.java.Bucket;
+import jakarta.validation.Validator;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

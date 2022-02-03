@@ -17,7 +17,6 @@
 package smoketest.web.thymeleaf.mvc;
 
 import jakarta.validation.Valid;
-
 import smoketest.web.thymeleaf.Message;
 import smoketest.web.thymeleaf.MessageRepository;
 

@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.jupiter.api.Test;
 

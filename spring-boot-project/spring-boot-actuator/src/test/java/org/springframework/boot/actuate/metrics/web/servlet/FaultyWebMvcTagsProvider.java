@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.metrics.web.servlet;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.micrometer.core.instrument.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import io.micrometer.core.instrument.Tag;
 
 /**
  * {@link WebMvcTagsProvider} used for testing that can be configured to fail when getting

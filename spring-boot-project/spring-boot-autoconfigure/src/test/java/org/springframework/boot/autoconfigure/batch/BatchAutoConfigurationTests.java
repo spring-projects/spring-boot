@@ -22,7 +22,6 @@ import java.util.Collections;
 import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManagerFactory;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

@@ -20,7 +20,6 @@ import java.util.Locale;
 
 import jakarta.validation.MessageInterpolator;
 import jakarta.validation.MessageInterpolator.Context;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.support.StaticMessageSource;

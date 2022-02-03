@@ -30,14 +30,13 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Synchronization;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
-
-import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;

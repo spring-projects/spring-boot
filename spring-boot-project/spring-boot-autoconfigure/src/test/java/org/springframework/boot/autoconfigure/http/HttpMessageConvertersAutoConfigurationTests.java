@@ -18,10 +18,9 @@ package org.springframework.boot.autoconfigure.http;
 
 import java.nio.charset.StandardCharsets;
 
-import jakarta.json.bind.Jsonb;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;

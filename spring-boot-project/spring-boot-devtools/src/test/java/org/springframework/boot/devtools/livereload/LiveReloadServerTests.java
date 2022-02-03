@@ -42,7 +42,6 @@ import jakarta.websocket.ClientEndpointConfig.Configurator;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.WebSocketContainer;
-
 import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;

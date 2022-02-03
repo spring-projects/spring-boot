@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jsonb;
 
 import jakarta.json.bind.Jsonb;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;

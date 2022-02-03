@@ -24,7 +24,6 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import jakarta.servlet.ServletContainerInitializer;
-
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.WebAppContext;

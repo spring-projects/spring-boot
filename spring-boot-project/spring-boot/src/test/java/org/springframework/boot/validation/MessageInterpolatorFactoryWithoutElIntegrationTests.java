@@ -19,7 +19,6 @@ package org.springframework.boot.validation;
 import jakarta.validation.MessageInterpolator;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidationException;
-
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.jupiter.api.Test;
 

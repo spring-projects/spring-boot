@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import jakarta.servlet.http.Cookie;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Cookie.SameSite;

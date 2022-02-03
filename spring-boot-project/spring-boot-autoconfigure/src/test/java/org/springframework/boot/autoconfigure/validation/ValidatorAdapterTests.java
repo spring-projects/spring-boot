@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.validation;
 import java.util.HashMap;
 
 import jakarta.validation.constraints.Min;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.FilteredClassLoader;

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.Filter;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.FilteredClassLoader;

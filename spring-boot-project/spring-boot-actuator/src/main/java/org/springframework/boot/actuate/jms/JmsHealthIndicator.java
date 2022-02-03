@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

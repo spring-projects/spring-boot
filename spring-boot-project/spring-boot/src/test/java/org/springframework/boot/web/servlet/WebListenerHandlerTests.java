@@ -21,7 +21,6 @@ import java.io.IOException;
 import jakarta.servlet.ServletContextAttributeEvent;
 import jakarta.servlet.ServletContextAttributeListener;
 import jakarta.servlet.annotation.WebListener;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;

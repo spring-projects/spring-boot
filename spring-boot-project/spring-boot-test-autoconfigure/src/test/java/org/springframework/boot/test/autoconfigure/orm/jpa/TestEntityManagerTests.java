@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.orm.jpa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnitUtil;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

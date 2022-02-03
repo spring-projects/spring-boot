@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Provides {@link Tag Tags} for Spring MVC-based request handling.

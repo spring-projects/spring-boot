@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import jakarta.persistence.EntityManager;
-
 import org.hibernate.engine.spi.SessionImplementor;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

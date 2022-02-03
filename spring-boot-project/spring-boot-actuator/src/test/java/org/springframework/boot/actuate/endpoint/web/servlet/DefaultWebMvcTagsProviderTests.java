@@ -23,10 +23,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import io.micrometer.core.instrument.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import io.micrometer.core.instrument.Tag;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;

@@ -18,9 +18,8 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.LinkedHashMap;
 
-import jakarta.servlet.DispatcherType;
-
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+import jakarta.servlet.DispatcherType;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

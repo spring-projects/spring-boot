@@ -19,10 +19,9 @@ package org.springframework.boot.test.autoconfigure.json;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import jakarta.json.bind.Jsonb;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import jakarta.json.bind.Jsonb;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;

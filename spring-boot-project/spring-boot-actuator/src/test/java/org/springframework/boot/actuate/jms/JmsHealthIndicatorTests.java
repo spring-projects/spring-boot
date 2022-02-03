@@ -20,7 +20,6 @@ import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ConnectionMetaData;
 import jakarta.jms.JMSException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

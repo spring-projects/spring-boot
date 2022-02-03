@@ -25,7 +25,6 @@ import java.util.UUID;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
-
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.SimpleString;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;

@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManagerFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

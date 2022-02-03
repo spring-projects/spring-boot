@@ -28,7 +28,6 @@ import jakarta.servlet.GenericServlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;

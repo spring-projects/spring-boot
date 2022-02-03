@@ -17,7 +17,6 @@
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
 import jakarta.validation.ConstraintViolationException;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -23,9 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import groovy.text.markup.MarkupTemplateEngine;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

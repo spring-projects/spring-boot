@@ -31,12 +31,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
-import jakarta.servlet.ServletRegistration.Dynamic;
-
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletContainer;
+import jakarta.servlet.ServletRegistration.Dynamic;
 import org.apache.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;

@@ -19,9 +19,8 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
-import jakarta.servlet.Servlet;
-
 import groovy.text.markup.MarkupTemplateEngine;
+import jakarta.servlet.Servlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

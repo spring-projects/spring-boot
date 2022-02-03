@@ -16,14 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import io.undertow.Undertow.Builder;
+import io.undertow.servlet.api.DeploymentInfo;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import io.undertow.Undertow.Builder;
-import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;

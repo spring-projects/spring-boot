@@ -20,7 +20,6 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.RootBeanDefinition;

@@ -17,7 +17,6 @@
 package org.springframework.boot.web.servlet.context;
 
 import jakarta.servlet.Servlet;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;

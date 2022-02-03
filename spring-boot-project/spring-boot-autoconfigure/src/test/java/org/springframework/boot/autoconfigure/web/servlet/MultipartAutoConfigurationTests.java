@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.net.URI;
 
 import jakarta.servlet.MultipartConfigElement;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

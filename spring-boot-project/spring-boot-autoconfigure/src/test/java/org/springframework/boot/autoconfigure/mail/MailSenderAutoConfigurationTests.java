@@ -21,7 +21,6 @@ import java.util.Properties;
 import javax.naming.Context;
 
 import jakarta.mail.Session;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

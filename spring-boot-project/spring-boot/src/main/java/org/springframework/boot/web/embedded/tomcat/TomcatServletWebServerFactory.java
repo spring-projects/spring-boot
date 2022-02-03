@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;

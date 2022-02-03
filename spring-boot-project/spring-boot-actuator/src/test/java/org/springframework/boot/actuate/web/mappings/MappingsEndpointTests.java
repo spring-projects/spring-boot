@@ -26,7 +26,6 @@ import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings;

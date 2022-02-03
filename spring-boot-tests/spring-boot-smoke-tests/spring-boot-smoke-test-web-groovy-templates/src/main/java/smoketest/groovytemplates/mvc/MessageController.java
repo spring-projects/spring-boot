@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.validation.Valid;
-
 import smoketest.groovytemplates.Message;
 import smoketest.groovytemplates.MessageRepository;
 

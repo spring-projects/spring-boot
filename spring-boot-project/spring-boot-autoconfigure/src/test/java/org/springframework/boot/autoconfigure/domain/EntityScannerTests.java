@@ -21,7 +21,6 @@ import java.util.Set;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 

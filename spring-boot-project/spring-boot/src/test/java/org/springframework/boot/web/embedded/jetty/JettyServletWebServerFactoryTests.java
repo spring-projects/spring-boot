@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletRegistration.Dynamic;
-
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

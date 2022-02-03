@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 
 import jakarta.jms.ConnectionFactory;
 import jakarta.transaction.TransactionManager;
-
 import org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;

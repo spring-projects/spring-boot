@@ -24,7 +24,6 @@ import jakarta.servlet.GenericServlet;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

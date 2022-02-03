@@ -17,7 +17,6 @@
 package org.springframework.boot.web.servlet;
 
 import jakarta.servlet.Filter;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

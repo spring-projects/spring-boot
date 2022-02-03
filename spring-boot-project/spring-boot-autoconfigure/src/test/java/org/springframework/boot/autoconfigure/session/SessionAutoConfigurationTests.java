@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.Collections;
 
 import jakarta.servlet.DispatcherType;
-
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
