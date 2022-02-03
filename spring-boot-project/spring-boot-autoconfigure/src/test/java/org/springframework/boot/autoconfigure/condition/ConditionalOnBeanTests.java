@@ -583,7 +583,7 @@ class ConditionalOnBeanTests {
 	static class TypeArgumentsConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnBean(value = ExampleBean.class)
+		@ConditionalOnBean(ExampleBean.class)
 		ExampleBean<String> genericStringWithValueExampleBean() {
 			return new ExampleBean<>("genericStringWithValueExampleBean");
 		}

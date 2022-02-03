@@ -829,7 +829,7 @@ class ConditionalOnMissingBeanTests {
 	static class TypeArgumentsConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class)
+		@ConditionalOnMissingBean(ExampleBean.class)
 		ExampleBean<String> genericStringWithValueExampleBean() {
 			return new ExampleBean<>("genericStringWithValueExampleBean");
 		}

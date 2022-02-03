@@ -210,16 +210,15 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		Set<String> result = null;
 		for (Class<?> ignoredType : ignoredTypes) {
 			ResolvableType ignoredResolvableType = ResolvableType.forClass(ignoredType);
-			Collection<String> ignoredNames = getBeanNamesForType(considerHierarchy, beanFactory,
-					ignoredResolvableType, parameterizedContainers);
+			Collection<String> ignoredNames = getBeanNamesForType(considerHierarchy, beanFactory, ignoredResolvableType,
+					parameterizedContainers);
 			result = addAll(result, ignoredNames);
 		}
 		return (result != null) ? result : Collections.emptySet();
 	}
 
-	private Set<String> getBeanNamesForType(boolean considerHierarchy,
-			ListableBeanFactory beanFactory, ResolvableType type, Set<Class<?>> parameterizedContainers)
-			throws LinkageError {
+	private Set<String> getBeanNamesForType(boolean considerHierarchy, ListableBeanFactory beanFactory,
+			ResolvableType type, Set<Class<?>> parameterizedContainers) throws LinkageError {
 		try {
 			return getBeanNamesForType(beanFactory, considerHierarchy, type, parameterizedContainers);
 		}
@@ -475,7 +474,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			for (String type : types) {
 				try {
 					Class<?> typeClass = resolve(type, this.classLoader);
-					ResolvableType resolvableType = typeClass.getTypeParameters().length != 0
+					ResolvableType resolvableType = (typeClass.getTypeParameters().length != 0)
 							? ResolvableType.forRawClass(typeClass) : ResolvableType.forClass(typeClass);
 					resolved.add(resolvableType);
 				}
