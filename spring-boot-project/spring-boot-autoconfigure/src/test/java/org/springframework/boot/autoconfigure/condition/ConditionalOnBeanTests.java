@@ -592,20 +592,9 @@ class ConditionalOnBeanTests {
 	static class GenericWithStringTypeArgumentsConfig {
 
 		@Bean
-		@ConditionalOnBean(typeArguments = String.class)
+		@ConditionalOnBean
 		ExampleBean<String> genericStringTypeArgumentsExampleBean() {
 			return new ExampleBean<>("genericStringTypeArgumentsExampleBean");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class GenericWithStringTypeArgumentNamesConfig {
-
-		@Bean
-		@ConditionalOnBean(typeArgumentNames = "java.lang.String")
-		ExampleBean<String> genericStringNameExampleBean() {
-			return new ExampleBean<>("genericStringNameExampleBean");
 		}
 
 	}
@@ -624,7 +613,7 @@ class ConditionalOnBeanTests {
 	static class GenericWithIntegerTypeArgumentsConfig {
 
 		@Bean
-		@ConditionalOnBean(typeArguments = Integer.class)
+		@ConditionalOnBean
 		ExampleBean<Integer> genericIntegerTypeArgumentsExampleBean() {
 			return new ExampleBean<>(1_000);
 		}
@@ -643,10 +632,21 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class GenericWithStringTypeArgumentNamesConfig {
+
+		@Bean
+		@ConditionalOnBean(value = ExampleBean.class, typeArgumentNames = "java.lang.String")
+		ExampleBean<String> genericStringNameExampleBean() {
+			return new ExampleBean<>("genericStringNameExampleBean");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TypeArgumentsConditionWithParameterizedContainerConfig {
 
 		@Bean
-		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class, typeArguments = String.class)
+		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
 		TestParameterizedContainer<ExampleBean<String>> parameterizedContainerGenericExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
