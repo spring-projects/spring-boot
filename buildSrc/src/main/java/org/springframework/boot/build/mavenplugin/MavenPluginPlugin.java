@@ -38,6 +38,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import io.spring.javaformat.config.IndentationStyle;
+import io.spring.javaformat.config.JavaBaseline;
+import io.spring.javaformat.config.JavaFormatConfig;
 import io.spring.javaformat.formatter.FileEdit;
 import io.spring.javaformat.formatter.FileFormatter;
 import org.gradle.api.DefaultTask;
@@ -97,6 +100,20 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 public class MavenPluginPlugin implements Plugin<Project> {
+
+	private static final JavaFormatConfig FORMATTER_CONFIG = new JavaFormatConfig() {
+
+		@Override
+		public JavaBaseline getJavaBaseline() {
+			return JavaBaseline.V8;
+		}
+
+		@Override
+		public IndentationStyle getIndentationStyle() {
+			return IndentationStyle.TABS;
+		}
+
+	};
 
 	@Override
 	public void apply(Project project) {
@@ -297,7 +314,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		@TaskAction
 		void syncAndFormat() {
-			FileFormatter formatter = new FileFormatter();
+			FileFormatter formatter = new FileFormatter(FORMATTER_CONFIG);
 			for (File output : this.generator.getOutputs().getFiles()) {
 				formatter.formatFiles(getProject().fileTree(output), StandardCharsets.UTF_8)
 						.forEach((edit) -> save(output, edit));
