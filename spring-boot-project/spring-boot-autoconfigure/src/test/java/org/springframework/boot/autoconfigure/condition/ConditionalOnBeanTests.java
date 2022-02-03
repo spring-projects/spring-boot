@@ -237,21 +237,6 @@ class ConditionalOnBeanTests {
 	}
 
 	@Test
-	void genericWhenTypeArgumentNameNotMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithIntegerConfig.class, GenericWithStringTypeArgumentNamesConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("genericIntegerExampleBean")));
-	}
-
-	@Test
-	void genericWhenTypeArgumentNameMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithStringConfig.class, GenericWithStringTypeArgumentNamesConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("genericStringExampleBean", "genericStringNameExampleBean")));
-	}
-
-	@Test
 	void genericWhenTypeArgumentWithValueMatches() {
 		this.contextRunner
 				.withUserConfiguration(GenericWithStringConfig.class, TypeArgumentsConditionWithValueConfig.class)
@@ -291,32 +276,6 @@ class ConditionalOnBeanTests {
 						TypeArgumentsConditionWithParameterizedContainerConfig.class)
 				.run((context) -> assertThat(context).satisfies(
 						exampleBeanRequirement("customExampleBean", "parameterizedContainerGenericExampleBean")));
-	}
-
-	@Test
-	void parameterizedContainerGenericWithValueWhenTypeArgumentNotMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithIntegerConfig.class,
-						TypeArgumentsConditionWithParameterizedContainerAndValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("genericIntegerExampleBean")));
-	}
-
-	@Test
-	void parameterizedContainerGenericWithValueWhenTypeArgumentMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithStringConfig.class,
-						TypeArgumentsConditionWithParameterizedContainerAndValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("genericStringExampleBean",
-						"parameterizedContainerGenericWithValueExampleBean")));
-	}
-
-	@Test
-	void parameterizedContainerGenericWithValueWhenSubclassTypeArgumentMatches() {
-		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class,
-						TypeArgumentsConditionWithParameterizedContainerAndValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean",
-						"parameterizedContainerGenericWithValueExampleBean")));
 	}
 
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
@@ -624,20 +583,9 @@ class ConditionalOnBeanTests {
 	static class TypeArgumentsConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnBean(value = ExampleBean.class, typeArguments = String.class)
+		@ConditionalOnBean(value = ExampleBean.class)
 		ExampleBean<String> genericStringWithValueExampleBean() {
 			return new ExampleBean<>("genericStringWithValueExampleBean");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class GenericWithStringTypeArgumentNamesConfig {
-
-		@Bean
-		@ConditionalOnBean(value = ExampleBean.class, typeArgumentNames = "java.lang.String")
-		ExampleBean<String> genericStringNameExampleBean() {
-			return new ExampleBean<>("genericStringNameExampleBean");
 		}
 
 	}
@@ -648,18 +596,6 @@ class ConditionalOnBeanTests {
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
 		TestParameterizedContainer<ExampleBean<String>> parameterizedContainerGenericExampleBean() {
-			return new TestParameterizedContainer<>();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TypeArgumentsConditionWithParameterizedContainerAndValueConfig {
-
-		@Bean
-		@ConditionalOnBean(value = ExampleBean.class, parameterizedContainer = TestParameterizedContainer.class,
-				typeArguments = String.class)
-		TestParameterizedContainer<ExampleBean<String>> parameterizedContainerGenericWithValueExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 

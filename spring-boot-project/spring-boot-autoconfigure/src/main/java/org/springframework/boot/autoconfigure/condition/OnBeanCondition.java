@@ -430,7 +430,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			this.ignoredTypes = resolveWhenPossible(extract(attributes, "ignored", "ignoredType"));
 			this.parameterizedContainers = resolveWhenPossible(extract(attributes, "parameterizedContainer"));
 			this.strategy = annotation.getValue("search", SearchStrategy.class).orElse(null);
-			Set<ResolvableType> types = resolveTypes(extractTypes(attributes), extractTypeArguments(attributes));
+			Set<ResolvableType> types = resolveTypes(extractTypes(attributes));
 			BeanTypeDeductionException deductionException = null;
 			if (types.isEmpty() && this.names.isEmpty()) {
 				try {
@@ -446,10 +446,6 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		protected Set<String> extractTypes(MultiValueMap<String, Object> attributes) {
 			return extract(attributes, "value", "type");
-		}
-
-		protected Set<String> extractTypeArguments(MultiValueMap<String, Object> attributes) {
-			return extract(attributes, "typeArguments", "typeArgumentNames");
 		}
 
 		private Set<String> extract(MultiValueMap<String, Object> attributes, String... attributeNames) {
@@ -471,29 +467,23 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return result.isEmpty() ? Collections.emptySet() : result;
 		}
 
-		private Set<ResolvableType> resolveTypes(Set<String> types, Set<String> typeAttributes) {
+		private Set<ResolvableType> resolveTypes(Set<String> types) {
 			if (types.isEmpty()) {
 				return Collections.emptySet();
 			}
 			Set<ResolvableType> resolved = new LinkedHashSet<>(types.size());
-			Set<ResolvableType> resolvedTypeAttributes = resolveTypes(typeAttributes, Collections.emptySet());
 			for (String type : types) {
 				try {
 					Class<?> typeClass = resolve(type, this.classLoader);
-					resolved.add(resolveType(typeClass, resolvedTypeAttributes));
+					ResolvableType resolvableType = typeClass.getTypeParameters().length != 0
+							? ResolvableType.forRawClass(typeClass) : ResolvableType.forClass(typeClass);
+					resolved.add(resolvableType);
 				}
 				catch (ClassNotFoundException | NoClassDefFoundError ex) {
 					resolved.add(ResolvableType.NONE);
 				}
 			}
 			return resolved;
-		}
-
-		private ResolvableType resolveType(Class<?> typeClass, Set<ResolvableType> typeAttributes) {
-			if (typeAttributes.isEmpty()) {
-				return ResolvableType.forClass(typeClass);
-			}
-			return ResolvableType.forClassWithGenerics(typeClass, typeAttributes.toArray(new ResolvableType[0]));
 		}
 
 		private void merge(Set<String> result, String... additional) {
