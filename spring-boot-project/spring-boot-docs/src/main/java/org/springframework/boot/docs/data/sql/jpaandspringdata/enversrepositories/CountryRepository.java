@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.devtools.restart.disable;
+package org.springframework.boot.docs.data.sql.jpaandspringdata.enversrepositories;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.docs.data.sql.jpaandspringdata.entityclasses.Country;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.history.RevisionRepository;
 
-@SpringBootApplication
-public class MyApplication {
+public interface CountryRepository extends RevisionRepository<Country, Long, Integer>, Repository<Country, Long> {
 
-	public static void main(String[] args) {
-		System.setProperty("spring.devtools.restart.enabled", "false");
-		SpringApplication.run(MyApplication.class, args);
-	}
+	Page<Country> findAll(Pageable pageable);
 
 }

@@ -482,7 +482,7 @@ You can use this to invoke a write operation that takes `String name` and `int c
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/actuator/endpoints/implementingcustom/MyEndpoint.java[tag=write]
+include::{docs-java}/actuator/endpoints/implementingcustom/input/../MyEndpoint.java[tag=write]
 ----
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.

@@ -56,7 +56,7 @@ Here's a sample implementation for our greeting query with a `@Controller` class
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/web/graphql/GreetingController.java[]
+include::{docs-java}/web/graphql/runtimewiring/GreetingController.java[]
 ----
 
 

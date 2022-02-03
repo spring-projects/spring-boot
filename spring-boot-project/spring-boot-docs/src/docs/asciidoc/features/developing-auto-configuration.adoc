@@ -205,7 +205,7 @@ In the following example, we assert that if `MyService` is not present, the auto
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-classloader]
+include::{docs-java}/features/developingautoconfiguration/testing/overridingclasspath/../MyServiceAutoConfigurationTests.java[tag=test-classloader]
 ----
 
 
