@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -46,8 +45,7 @@ public class MyJsonComponent {
 	public static class Deserializer extends JsonDeserializer<MyObject> {
 
 		@Override
-		public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt)
-				throws IOException, JsonProcessingException {
+		public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
 			ObjectCodec codec = jsonParser.getCodec();
 			JsonNode tree = codec.readTree(jsonParser);
 			String name = tree.get("name").textValue();

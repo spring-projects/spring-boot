@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.cli.usingthecli.run.customdependencymanagement.single;
+package org.springframework.boot.docs.cli.usingthecli.run.customdependencymanagement.single
 
-import org.springframework.boot.groovy.DependencyManagementBom;
+import org.springframework.boot.groovy.DependencyManagementBom
 
 // tag::code[]
 @DependencyManagementBom("com.example.custom-bom:1.0.0")
