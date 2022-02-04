@@ -1182,7 +1182,6 @@ bom {
 				"spring-boot-starter-jetty",
 				"spring-boot-starter-jooq",
 				"spring-boot-starter-json",
-				"spring-boot-starter-jta-atomikos",
 				"spring-boot-starter-log4j2",
 				"spring-boot-starter-logging",
 				"spring-boot-starter-mail",
