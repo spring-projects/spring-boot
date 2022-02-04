@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,7 +227,7 @@ class BatchAutoConfigurationTests {
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
+						"spring.batch.jdbc.schema:classpath:batch/custom-schema.sql",
 						"spring.batch.jdbc.tablePrefix:PREFIX_")
 				.run(assertCustomTablePrefix());
 	}
@@ -239,8 +239,7 @@ class BatchAutoConfigurationTests {
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
-						"spring.batch.tablePrefix:PREFIX_")
+						"spring.batch.schema:classpath:batch/custom-schema.sql", "spring.batch.tablePrefix:PREFIX_")
 				.run(assertCustomTablePrefix());
 	}
 
