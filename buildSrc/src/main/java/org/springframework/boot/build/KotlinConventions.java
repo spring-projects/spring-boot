@@ -43,17 +43,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 class KotlinConventions {
 
 	void apply(Project project) {
-		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
-			project.getTasks().withType(KotlinCompile.class, (compile) -> {
-				KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
-				kotlinOptions.setApiVersion("1.6");
-				kotlinOptions.setLanguageVersion("1.6");
-				kotlinOptions.setAllWarningsAsErrors(true);
-				List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
-				freeCompilerArgs.add("-Xsuppress-version-warnings");
-				compile.getKotlinOptions().setFreeCompilerArgs(freeCompilerArgs);
-			});
-		});
+		project.getPlugins().withId("org.jetbrains.kotlin.jvm",
+				(plugin) -> project.getTasks().withType(KotlinCompile.class, this::configure));
+	}
+
+	private void configure(KotlinCompile compile) {
+		KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
+		kotlinOptions.setApiVersion("1.6");
+		kotlinOptions.setLanguageVersion("1.6");
+		kotlinOptions.setJvmTarget("1.8");
+		kotlinOptions.setAllWarningsAsErrors(true);
+		List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
+		freeCompilerArgs.add("-Xsuppress-version-warnings");
+		compile.getKotlinOptions().setFreeCompilerArgs(freeCompilerArgs);
 	}
 
 }
