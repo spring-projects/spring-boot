@@ -233,7 +233,7 @@ class BatchAutoConfigurationTests {
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
+						"spring.batch.jdbc.schema:classpath:batch/custom-schema.sql",
 						"spring.batch.jdbc.tablePrefix:PREFIX_")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);

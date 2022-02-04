@@ -73,7 +73,7 @@ class BatchAutoConfigurationWithoutJpaTests {
 	void jdbcWithCustomPrefix() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
+						"spring.batch.jdbc.schema:classpath:batch/custom-schema.sql",
 						"spring.batch.jdbc.tablePrefix:PREFIX_")
 				.run((context) -> {
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
