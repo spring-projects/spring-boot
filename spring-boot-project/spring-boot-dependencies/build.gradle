@@ -399,7 +399,7 @@ bom {
 			]
 		}
 	}
-	library("H2", "1.4.200") {
+	library("H2", "2.1.210") {
 		group("com.h2database") {
 			modules = [
 				"h2"
