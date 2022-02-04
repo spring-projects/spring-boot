@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.features.testing.springbootapplications.springmvctests
 
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -27,22 +27,18 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @WebMvcTest(UserVehicleController::class)
-class MyControllerTests(
-	@Autowired val mvc: MockMvc) {
+class MyControllerTests(@Autowired val mvc: MockMvc) {
 
 	@MockBean
 	lateinit var userVehicleService: UserVehicleService
 
 	@Test
 	fun testExample() {
-		// @formatter:off
-		BDDMockito.given(
-			userVehicleService.getVehicleDetails("sboot")
-		)
+		given(userVehicleService.getVehicleDetails("sboot"))
 			.willReturn(VehicleDetails("Honda", "Civic"))
 		mvc.perform(MockMvcRequestBuilders.get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
 			.andExpect(MockMvcResultMatchers.status().isOk)
 			.andExpect(MockMvcResultMatchers.content().string("Honda Civic"))
-		// @formatter:on
 	}
+
 }

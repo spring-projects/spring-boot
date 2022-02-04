@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.features.testing.springbootapplications.springwebfluxtests
 
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -26,22 +26,18 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 
 @WebFluxTest(UserVehicleController::class)
-class MyControllerTests(
-	@Autowired val webClient: WebTestClient) {
+class MyControllerTests(@Autowired val webClient: WebTestClient) {
 
 	@MockBean
 	lateinit var userVehicleService: UserVehicleService
 
 	@Test
 	fun testExample() {
-		// @formatter:off
-		BDDMockito.given(
-			userVehicleService.getVehicleDetails("sboot")
-		)
+		given(userVehicleService.getVehicleDetails("sboot"))
 			.willReturn(VehicleDetails("Honda", "Civic"))
 		webClient.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN).exchange()
 			.expectStatus().isOk
 			.expectBody<String>().isEqualTo("Honda Civic")
-		// @formatter:on
 	}
+
 }

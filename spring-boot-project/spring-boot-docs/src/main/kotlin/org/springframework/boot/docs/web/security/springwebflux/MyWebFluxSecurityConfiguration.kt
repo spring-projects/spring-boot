@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.security.springwebflux
+package org.springframework.boot.docs.web.security.springwebflux
 
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.web.server.ServerHttpSecurity
-import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec
 import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration(proxyBeanMethods = false)
 class MyWebFluxSecurityConfiguration {
+
 	@Bean
 	fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
-		http.authorizeExchange { spec: AuthorizeExchangeSpec ->
-			spec.matchers(
-				PathRequest.toStaticResources()
-					.atCommonLocations()
-			).permitAll()
+		http.authorizeExchange { spec ->
+			spec.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 			spec.pathMatchers("/foo", "/bar").authenticated()
 		}
 		http.formLogin()
 		return http.build()
 	}
+
 }

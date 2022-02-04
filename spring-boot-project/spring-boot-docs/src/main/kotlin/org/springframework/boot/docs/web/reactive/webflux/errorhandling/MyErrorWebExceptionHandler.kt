@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,24 +29,13 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 
+@Suppress("UNUSED_PARAMETER")
 @Component
-class MyErrorWebExceptionHandler(
-	errorAttributes: ErrorAttributes?, resources: WebProperties.Resources?,
-	applicationContext: ApplicationContext?
-) :
-	AbstractErrorWebExceptionHandler(errorAttributes, resources, applicationContext) {
+class MyErrorWebExceptionHandler(errorAttributes: ErrorAttributes?, resources: WebProperties.Resources?,
+	applicationContext: ApplicationContext?) : AbstractErrorWebExceptionHandler(errorAttributes, resources, applicationContext) {
+
 	override fun getRoutingFunction(errorAttributes: ErrorAttributes): RouterFunction<ServerResponse> {
-		return RouterFunctions.route(
-			{ request: ServerRequest ->
-				acceptsXml(
-					request
-				)
-			}
-		) { request: ServerRequest? ->
-			handleErrorAsXml(
-				request
-			)
-		}
+		return RouterFunctions.route(this::acceptsXml, this::handleErrorAsXml)
 	}
 
 	private fun acceptsXml(request: ServerRequest): Boolean {
@@ -58,4 +47,6 @@ class MyErrorWebExceptionHandler(
 		// ... additional builder calls
 		return builder.build()
 	}
+
 }
+

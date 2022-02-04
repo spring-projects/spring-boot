@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,11 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration(proxyBeanMethods = false)
 class MyHealthMetricsExportConfiguration(registry: MeterRegistry, healthEndpoint: HealthEndpoint) {
+
 	init {
 		// This example presumes common tags (such as the app) are applied elsewhere
-		Gauge.builder(
-			"health", healthEndpoint
-		) { health: HealthEndpoint ->
-			getStatusCode(health)
-				.toDouble()
+		Gauge.builder("health", healthEndpoint) { health ->
+			getStatusCode(health).toDouble()
 		}.strongReference(true).register(registry)
 	}
 
@@ -42,8 +40,10 @@ class MyHealthMetricsExportConfiguration(registry: MeterRegistry, healthEndpoint
 		if (Status.OUT_OF_SERVICE == status) {
 			return 2
 		}
-		return if (Status.DOWN == status) {
-			1
-		} else 0
+		if (Status.DOWN == status) {
+			return 1
+		}
+		return 0
 	}
+
 }

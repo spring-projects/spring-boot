@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.security.oauth2.client
+package org.springframework.boot.docs.web.security.oauth2.client
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,10 +23,12 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration(proxyBeanMethods = false)
 class MyOAuthClientConfiguration {
+
 	@Bean
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		http.authorizeRequests().anyRequest().authenticated()
 		http.oauth2Login().redirectionEndpoint().baseUri("custom-callback")
 		return http.build()
 	}
+
 }

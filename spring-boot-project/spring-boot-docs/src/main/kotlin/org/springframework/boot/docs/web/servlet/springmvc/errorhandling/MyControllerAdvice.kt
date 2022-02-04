@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,9 @@ import javax.servlet.http.HttpServletRequest
 
 @ControllerAdvice(basePackageClasses = [SomeController::class])
 class MyControllerAdvice : ResponseEntityExceptionHandler() {
+
 	@ResponseBody
-	@ExceptionHandler(
-		MyException::class
-	)
+	@ExceptionHandler(MyException::class)
 	fun handleControllerException(request: HttpServletRequest, ex: Throwable): ResponseEntity<*> {
 		val status = getStatus(request)
 		return ResponseEntity(MyErrorBody(status.value(), ex.message), status)
@@ -41,4 +40,5 @@ class MyControllerAdvice : ResponseEntityExceptionHandler() {
 		val status = HttpStatus.resolve(code)
 		return status ?: HttpStatus.INTERNAL_SERVER_ERROR
 	}
+
 }

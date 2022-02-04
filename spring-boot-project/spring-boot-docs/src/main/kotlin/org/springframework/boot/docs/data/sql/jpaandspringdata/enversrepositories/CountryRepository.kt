@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.data.sql.jpaandspringdata.repositories
+package org.springframework.boot.docs.data.sql.jpaandspringdata.enversrepositories
 
 import org.springframework.boot.docs.data.sql.jpaandspringdata.entityclasses.Country
 import org.springframework.data.domain.Page
@@ -23,7 +23,9 @@ import org.springframework.data.repository.Repository
 import org.springframework.data.repository.history.RevisionRepository
 
 interface CountryRepository :
-	RevisionRepository<Country?, Long?, Int>,
-	Repository<Country?, Long?> {
+		RevisionRepository<Country?, Long?, Int>,
+		Repository<Country?, Long?> {
+
 	fun findAll(pageable: Pageable?): Page<Country?>?
+
 }

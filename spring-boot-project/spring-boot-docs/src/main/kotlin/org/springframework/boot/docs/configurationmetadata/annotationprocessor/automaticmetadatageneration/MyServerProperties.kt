@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "my.server")
 class MyServerProperties(
+
 	/**
 	 * Name of the server.
 	 */
 	var name: String,
+
 	/**
 	 * IP address to listen to.
 	 */
 	var ip: String = "127.0.0.1",
+
 	/**
 	 * Port to listen to.
 	 */
-	var port: Int = 9797) {
-}
+	var port: Int = 9797)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
+@Suppress("UNUSED_PARAMETER")
 @Service
 class MyService(restTemplateBuilder: RestTemplateBuilder) {
+
 	private val restTemplate: RestTemplate
 
 	init {
@@ -32,6 +34,7 @@ class MyService(restTemplateBuilder: RestTemplateBuilder) {
 		return restTemplate.getForObject(
 			"/{name}/details",
 			Details::class.java, name
-		)
+		)!!
 	}
+
 }

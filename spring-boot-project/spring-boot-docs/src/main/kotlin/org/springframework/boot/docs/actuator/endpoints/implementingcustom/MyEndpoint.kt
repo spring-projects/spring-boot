@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,20 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation
 
 @Endpoint(id = "custom")
+@Suppress("UNUSED_PARAMETER")
 class MyEndpoint {
-	// tag::read[]
-	@get:ReadOperation
-	val data: CustomData
-		get() = CustomData("test", 5)
 
+	// tag::read[]
+	@ReadOperation
+	fun getData(): CustomData {
+		return CustomData("test", 5)
+	}
 	// end::read[]
+
 	// tag::write[]
 	@WriteOperation
 	fun updateData(name: String?, counter: Int) {
 		// injects "test" and 42
-	} // end::write[]
+	}
+	// end::write[]
 }

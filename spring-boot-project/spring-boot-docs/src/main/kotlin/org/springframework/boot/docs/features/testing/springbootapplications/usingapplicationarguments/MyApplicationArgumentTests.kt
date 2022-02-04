@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.usingapplicationarguments
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
@@ -24,9 +24,11 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest(args = ["--app.test=one"])
 class MyApplicationArgumentTests {
+
 	@Test
 	fun applicationArgumentsPopulated(@Autowired args: ApplicationArguments) {
-		Assertions.assertThat(args.optionNames).containsOnly("app.test")
-		Assertions.assertThat(args.getOptionValues("app.test")).containsOnly("one")
+		assertThat(args.optionNames).containsOnly("app.test")
+		assertThat(args.getOptionValues("app.test")).containsOnly("one")
 	}
+
 }

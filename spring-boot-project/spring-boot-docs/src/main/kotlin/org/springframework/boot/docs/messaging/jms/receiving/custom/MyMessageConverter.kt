@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import org.springframework.jms.support.converter.MessageConverter
 import javax.jms.Message
 import javax.jms.Session
 
-
 internal class MyMessageConverter : MessageConverter {
+
 	override fun toMessage(`object`: Any, session: Session): Message? {
 		return null
 	}
@@ -29,4 +29,5 @@ internal class MyMessageConverter : MessageConverter {
 	override fun fromMessage(message: Message): Any? {
 		return null
 	}
+
 }

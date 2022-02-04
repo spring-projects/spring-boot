@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdatajpa.withoutdb
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 
 @DataJpaTest
-class MyRepositoryTests(
-	@Autowired val entityManager: TestEntityManager,
-	@Autowired val repository: UserRepository) {
+class MyRepositoryTests(@Autowired val entityManager: TestEntityManager, @Autowired val repository: UserRepository) {
 
 	@Test
 	fun testExample() {
 		entityManager.persist(User("sboot", "1234"))
 		val user = repository.findByUsername("sboot")
-		Assertions.assertThat(user?.username).isEqualTo("sboot")
-		Assertions.assertThat(user?.employeeNumber).isEqualTo("1234")
+		assertThat(user?.username).isEqualTo("sboot")
+		assertThat(user?.employeeNumber).isEqualTo("1234")
 	}
+
 }

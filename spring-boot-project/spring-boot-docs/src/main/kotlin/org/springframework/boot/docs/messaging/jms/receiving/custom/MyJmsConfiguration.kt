@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,18 @@ import javax.jms.ConnectionFactory
 
 @Configuration(proxyBeanMethods = false)
 class MyJmsConfiguration {
+
 	@Bean
 	fun myFactory(configurer: DefaultJmsListenerContainerFactoryConfigurer): DefaultJmsListenerContainerFactory {
 		val factory = DefaultJmsListenerContainerFactory()
-		val connectionFactory = customConnectionFactory
+		val connectionFactory = getCustomConnectionFactory()
 		configurer.configure(factory, connectionFactory)
 		factory.setMessageConverter(MyMessageConverter())
 		return factory
 	}
 
-	private val customConnectionFactory: ConnectionFactory?
-		get() =null
+	fun getCustomConnectionFactory() : ConnectionFactory? {
+		return /**/ null
+	}
+
 }

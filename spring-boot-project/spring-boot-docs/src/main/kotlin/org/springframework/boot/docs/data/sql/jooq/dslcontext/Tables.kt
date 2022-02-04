@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,16 @@ import org.jooq.Table
 import org.jooq.TableField
 import org.jooq.impl.TableImpl
 import org.jooq.impl.TableRecordImpl
-import java.util.*
+import java.util.GregorianCalendar
 
 object Tables {
+
 	val AUTHOR: TAuthor? = null
 
 	abstract class TAuthor(name: Name?) : TableImpl<TAuthorRecord?>(name) {
 		val DATE_OF_BIRTH: TableField<TAuthorRecord, GregorianCalendar>? = null
 	}
 
-	abstract class TAuthorRecord(table: Table<TAuthorRecord?>?) :
-		TableRecordImpl<TAuthorRecord?>(table)
+	abstract class TAuthorRecord(table: Table<TAuthorRecord?>?) : TableRecordImpl<TAuthorRecord?>(table)
+
 }

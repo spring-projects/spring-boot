@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredwebservices.client
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest
@@ -24,22 +24,16 @@ import org.springframework.ws.test.client.MockWebServiceServer
 import org.springframework.ws.test.client.RequestMatchers
 import org.springframework.ws.test.client.ResponseCreators
 import org.springframework.xml.transform.StringSource
-import java.util.function.Function
 
 @WebServiceClientTest(SomeWebService::class)
-class MyWebServiceClientTests(
-	@Autowired val server: MockWebServiceServer,
-	@Autowired val someWebService: SomeWebService) {
+class MyWebServiceClientTests(@Autowired val server: MockWebServiceServer, @Autowired val someWebService: SomeWebService) {
 
 	@Test
 	fun mockServerCall() {
-		// @formatter:off
 		server
 			.expect(RequestMatchers.payload(StringSource("<request/>")))
 			.andRespond(ResponseCreators.withPayload(StringSource("<response><status>200</status></response>")))
-		Assertions.assertThat(this.someWebService.test())
-			.extracting(Function<Response, Int> { obj: Response -> obj.status })
-			.isEqualTo(200)
-		// @formatter:on
+		assertThat(this.someWebService.test()).extracting(Response::status).isEqualTo(200)
 	}
+
 }

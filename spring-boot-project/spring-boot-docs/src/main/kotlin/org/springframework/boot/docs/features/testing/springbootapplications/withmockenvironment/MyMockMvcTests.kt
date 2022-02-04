@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.reactive.server.expectBody
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class MyMockMvcTests {
+
 	@Test
 	fun testWithMockMvc(@Autowired mvc: MockMvc) {
 		mvc.perform(MockMvcRequestBuilders.get("/")).andExpect(MockMvcResultMatchers.status().isOk)
@@ -37,14 +37,14 @@ class MyMockMvcTests {
 	}
 
 	// If Spring WebFlux is on the classpath, you can drive MVC tests with a WebTestClient
+
 	@Test
 	fun testWithWebTestClient(@Autowired webClient: WebTestClient) {
-		// @formatter:off
 		webClient
 			.get().uri("/")
 			.exchange()
 			.expectStatus().isOk
 			.expectBody<String>().isEqualTo("Hello World")
-		// @formatter:on
 	}
+
 }

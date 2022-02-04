@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,22 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @SpringBootTest
 @Testcontainers
 internal class MyIntegrationTests {
+
 	@Test
 	fun myTest() {
 		// ...
 	}
 
 	companion object {
+
 		@Container
 		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:4.2")
+
 		@DynamicPropertySource
 		fun neo4jProperties(registry: DynamicPropertyRegistry) {
-			registry.add("spring.neo4j.uri") { neo4j.getBoltUrl() }
+			registry.add("spring.neo4j.uri") { neo4j.boltUrl }
 		}
+
 	}
+
 }

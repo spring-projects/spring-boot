@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,13 @@ class MyBean(private val driver: Driver) {
 	// @fold:on // ...
 	fun someMethod(message: String?): String {
 		driver.session().use { session ->
-			return session.writeTransaction { transaction: Transaction ->
-				transaction
-					.run(
-						"CREATE (a:Greeting) SET a.message = \$message RETURN a.message + ', from node ' + id(a)",
-						Values.parameters("message", message)
-					)
-					.single()[0].asString()
+			return@someMethod session.writeTransaction { transaction: Transaction ->
+				transaction.run(
+					"CREATE (a:Greeting) SET a.message = \$message RETURN a.message + ', from node ' + id(a)",
+					Values.parameters("message", message)
+				).single()[0].asString()
 			}
 		}
-	} // @fold:off
+	}
+	// @fold:off
 }

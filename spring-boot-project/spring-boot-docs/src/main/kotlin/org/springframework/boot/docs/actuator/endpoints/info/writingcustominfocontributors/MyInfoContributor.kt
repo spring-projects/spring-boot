@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package org.springframework.boot.docs.actuator.endpoints.info.writingcustominfoc
 import org.springframework.boot.actuate.info.Info
 import org.springframework.boot.actuate.info.InfoContributor
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Collections
 
 @Component
 class MyInfoContributor : InfoContributor {
+
 	override fun contribute(builder: Info.Builder) {
 		builder.withDetail("example", Collections.singletonMap("key", "value"))
 	}
+
 }

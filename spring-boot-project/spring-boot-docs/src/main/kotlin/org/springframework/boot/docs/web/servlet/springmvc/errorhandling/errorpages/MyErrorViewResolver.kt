@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,15 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 
 class MyErrorViewResolver : ErrorViewResolver {
-	override fun resolveErrorView(
-		request: HttpServletRequest,
-		status: HttpStatus,
-		model: Map<String, Any>
-	): ModelAndView? {
+
+	override fun resolveErrorView(request: HttpServletRequest, status: HttpStatus,
+			model: Map<String, Any>): ModelAndView? {
 		// Use the request or status to optionally return a ModelAndView
 		if (status == HttpStatus.INSUFFICIENT_STORAGE) {
 			// We could add custom model values here
-			ModelAndView("myview")
+			return ModelAndView("myview")
 		}
 		return null
 	}
+
 }

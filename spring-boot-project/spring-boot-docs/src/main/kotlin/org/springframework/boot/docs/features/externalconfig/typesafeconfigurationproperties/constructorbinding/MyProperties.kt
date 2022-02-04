@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import java.net.InetAddress
 
 @ConstructorBinding
 @ConfigurationProperties("my.service")
-class MyProperties(val enabled: Boolean, val remoteAddress: InetAddress, val security: Security) {
+class MyProperties(val enabled: Boolean, val remoteAddress: InetAddress,
+		val security: Security) {
 
-	class Security(
-		val username: String, val password: String,
-		@param:DefaultValue("USER") val roles: List<String>
-	)
+	class Security(val username: String, val password: String,
+			@param:DefaultValue("USER") val roles: List<String>)
+
 }

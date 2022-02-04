@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import org.springframework.boot.logging.LogLevel
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 
+@Suppress("UNUSED_ANONYMOUS_PARAMETER")
 class MyConditionEvaluationReportingTests {
+
 	@Test
 	fun autoConfigTest() {
-		// @formatter:off
 		ApplicationContextRunner()
 			.withInitializer(ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 			.run { context: AssertableApplicationContext? -> }
-		// @formatter:on
 	}
+
 }

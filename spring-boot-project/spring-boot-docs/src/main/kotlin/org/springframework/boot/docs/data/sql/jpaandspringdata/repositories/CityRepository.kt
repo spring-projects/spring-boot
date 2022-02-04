@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.Repository
 
-interface CityRepository :
-	Repository<City?, Long?> {
+interface CityRepository : Repository<City?, Long?> {
+
 	fun findAll(pageable: Pageable?): Page<City?>?
+
 	fun findByNameAndStateAllIgnoringCase(name: String?, state: String?): City?
+
 }

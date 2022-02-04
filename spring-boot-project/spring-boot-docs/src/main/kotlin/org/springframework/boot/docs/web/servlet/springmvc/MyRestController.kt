@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,17 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc
 
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
 @RequestMapping("/users")
 class MyRestController(private val userRepository: UserRepository, private val customerRepository: CustomerRepository) {
+
 	@GetMapping("/{user}")
 	fun getUser(@PathVariable userId: Long): User {
 		return userRepository.findById(userId).get()
@@ -29,15 +34,13 @@ class MyRestController(private val userRepository: UserRepository, private val c
 
 	@GetMapping("/{user}/customers")
 	fun getUserCustomers(@PathVariable userId: Long): List<Customer> {
-		return userRepository.findById(userId).map { user: User? ->
-			customerRepository.findByUser(
-				user
-			)
-		}.get()
+		return userRepository.findById(userId).map(customerRepository::findByUser).get()
 	}
 
 	@DeleteMapping("/{user}")
 	fun deleteUser(@PathVariable userId: Long) {
 		userRepository.deleteById(userId)
 	}
+
 }
+

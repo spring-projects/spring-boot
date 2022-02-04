@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.jmx
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,7 +32,7 @@ class MyJmxTests(@Autowired val mBeanServer: MBeanServer) {
 
 	@Test
 	fun exampleTest() {
-		Assertions.assertThat(mBeanServer.domains).contains("java.lang")
+		assertThat(mBeanServer.domains).contains("java.lang")
 		// ...
 	}
 

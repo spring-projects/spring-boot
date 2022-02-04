@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.io.IOException
 import kotlin.jvm.Throws
 
 class MyBuildTool {
+
 	@Throws(IOException::class)
 	fun build() {
 		val sourceJarFile: File? =  /**/null
@@ -36,13 +37,14 @@ class MyBuildTool {
 	@Throws(IOException::class)
 	private fun getLibraries(callback: LibraryCallback) {
 		// Build system specific implementation, callback for each dependency
-		for (nestedJar in compileScopeJars!!) {
+		for (nestedJar in getCompileScopeJars()!!) {
 			callback.library(Library(nestedJar, LibraryScope.COMPILE))
 		}
 		// ...
 	}
 
-	/**/
-	private val compileScopeJars: List<File>?
-		get() =/**/null
+	private fun getCompileScopeJars(): List<File?>? {
+		return  /**/ null
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder
 
 class MyApplication {
 	fun hierarchyWithDisabledBanner(args: Array<String?>) {
-		// @formatter:off
 		// tag::code[]
 		SpringApplicationBuilder()
 			.sources(Parent::class.java)
@@ -29,9 +28,10 @@ class MyApplication {
 			.bannerMode(Banner.Mode.OFF)
 			.run(*args)
 		// end::code[]
-		// @formatter:on
 	}
 
 	internal class Parent
+
 	internal class Application
+
 }

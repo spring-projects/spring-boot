@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,24 @@ import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.IOException
-import javax.servlet.*
+import java.util.Collections.emptySet
+import javax.servlet.GenericServlet
+import javax.servlet.Servlet
+import javax.servlet.ServletContainerInitializer
+import javax.servlet.ServletContext
+import javax.servlet.ServletException
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
 import kotlin.jvm.Throws
 
+@Suppress("UNUSED_ANONYMOUS_PARAMETER")
 @Configuration(proxyBeanMethods = false)
 class MyCloudFoundryConfiguration {
+
 	@Bean
 	fun servletWebServerFactory(): TomcatServletWebServerFactory {
 		return object : TomcatServletWebServerFactory() {
+
 			override fun prepareContext(host: Host, initializers: Array<ServletContextInitializer>) {
 				super.prepareContext(host, initializers)
 				val child = StandardContext()
@@ -42,17 +52,20 @@ class MyCloudFoundryConfiguration {
 				child.crossContext = true
 				host.addChild(child)
 			}
+
 		}
 	}
 
 	private fun getServletContextInitializer(contextPath: String): ServletContainerInitializer {
 		return ServletContainerInitializer { classes: Set<Class<*>?>?, context: ServletContext ->
 			val servlet: Servlet = object : GenericServlet() {
+
 				@Throws(ServletException::class, IOException::class)
 				override fun service(req: ServletRequest, res: ServletResponse) {
-					val context = req.servletContext.getContext(contextPath)
-					context.getRequestDispatcher("/cloudfoundryapplication").forward(req, res)
+					val servletContext = req.servletContext.getContext(contextPath)
+					servletContext.getRequestDispatcher("/cloudfoundryapplication").forward(req, res)
 				}
+
 			}
 			context.addServlet("cloudfoundry", servlet).addMapping("/*")
 		}

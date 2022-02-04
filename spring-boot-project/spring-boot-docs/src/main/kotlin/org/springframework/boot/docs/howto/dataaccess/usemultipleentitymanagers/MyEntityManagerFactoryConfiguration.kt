@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import javax.sql.DataSource
 
+@Suppress("UNUSED_PARAMETER")
 @Configuration(proxyBeanMethods = false)
 class MyEntityManagerFactoryConfiguration {
+
 	@Bean
 	@ConfigurationProperties("app.jpa.first")
 	fun firstJpaProperties(): JpaProperties {
@@ -52,4 +54,5 @@ class MyEntityManagerFactoryConfiguration {
 		// ... map JPA properties as needed
 		return HibernateJpaVendorAdapter()
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,18 @@
 
 package org.springframework.boot.docs.features.testing.utilities.testpropertyvalues
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.mock.env.MockEnvironment
 
 class MyEnvironmentTests {
+
 	@Test
 	fun testPropertySources() {
 		val environment = MockEnvironment()
 		TestPropertyValues.of("org=Spring", "name=Boot").applyTo(environment)
-		Assertions.assertThat(environment.getProperty("name")).isEqualTo("Boot")
+		assertThat(environment.getProperty("name")).isEqualTo("Boot")
 	}
+
 }

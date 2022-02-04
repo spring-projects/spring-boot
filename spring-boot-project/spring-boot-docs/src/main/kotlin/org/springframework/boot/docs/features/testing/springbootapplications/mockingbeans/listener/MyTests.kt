@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.docs.features.testing.springbootapplications.mockingbeans.listener
 
 import org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener
 import org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestExecutionListeners
-
 
 @ContextConfiguration(classes = [MyConfig::class])
 @TestExecutionListeners(

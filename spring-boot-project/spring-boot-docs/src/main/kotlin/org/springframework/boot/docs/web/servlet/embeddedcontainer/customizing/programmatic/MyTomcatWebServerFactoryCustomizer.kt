@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,16 @@
 
 package org.springframework.boot.docs.web.servlet.embeddedcontainer.customizing.programmatic
 
-import org.apache.catalina.connector.Connector
-import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class MyTomcatWebServerFactoryCustomizer :
-	WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+class MyTomcatWebServerFactoryCustomizer : WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
 	override fun customize(server: TomcatServletWebServerFactory) {
-		server.addConnectorCustomizers(TomcatConnectorCustomizer { connector: Connector ->
-			connector.asyncTimeout = Duration.ofSeconds(20).toMillis()
-		})
+		server.addConnectorCustomizers({ connector -> connector.asyncTimeout = Duration.ofSeconds(20).toMillis() })
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.springframework.http.converter.HttpMessageNotWritableException
 import java.io.IOException
 import kotlin.jvm.Throws
 
-open class AdditionalHttpMessageConverter :
-	AbstractHttpMessageConverter<Any?>() {
+open class AdditionalHttpMessageConverter : AbstractHttpMessageConverter<Any?>() {
+
 	override fun supports(clazz: Class<*>?): Boolean {
 		return false
 	}
@@ -38,4 +38,5 @@ open class AdditionalHttpMessageConverter :
 	@Throws(IOException::class, HttpMessageNotWritableException::class)
 	override fun writeInternal(t: Any?, outputMessage: HttpOutputMessage) {
 	}
+
 }

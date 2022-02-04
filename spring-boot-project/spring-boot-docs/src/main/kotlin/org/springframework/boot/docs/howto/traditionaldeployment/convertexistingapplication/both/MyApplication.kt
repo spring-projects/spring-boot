@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 @SpringBootApplication
 class MyApplication : SpringBootServletInitializer() {
+
 	override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
 		return customizerBuilder(builder)
 	}
 
 	companion object {
+
 		@JvmStatic
 		fun main(args: Array<String>) {
 			customizerBuilder(SpringApplicationBuilder()).run(*args)
@@ -36,5 +38,7 @@ class MyApplication : SpringBootServletInitializer() {
 		private fun customizerBuilder(builder: SpringApplicationBuilder): SpringApplicationBuilder {
 			return builder.sources(MyApplication::class.java).bannerMode(Banner.Mode.OFF)
 		}
+
 	}
+
 }

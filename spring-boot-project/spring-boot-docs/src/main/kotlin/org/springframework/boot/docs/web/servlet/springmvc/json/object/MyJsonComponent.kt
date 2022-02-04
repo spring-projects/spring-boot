@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import kotlin.jvm.Throws
 
 @JsonComponent
 class MyJsonComponent {
+
 	class Serializer : JsonObjectSerializer<MyObject>() {
 		@Throws(IOException::class)
 		override fun serializeObject(value: MyObject, jgen: JsonGenerator, provider: SerializerProvider) {
@@ -40,13 +41,12 @@ class MyJsonComponent {
 
 	class Deserializer : JsonObjectDeserializer<MyObject>() {
 		@Throws(IOException::class)
-		override fun deserializeObject(
-			jsonParser: JsonParser, context: DeserializationContext, codec: ObjectCodec,
-			tree: JsonNode
-		): MyObject {
+		override fun deserializeObject(jsonParser: JsonParser, context: DeserializationContext,
+				codec: ObjectCodec, tree: JsonNode): MyObject {
 			val name = nullSafeValue(tree["name"], String::class.java)
 			val age = nullSafeValue(tree["age"], Int::class.java)
 			return MyObject(name, age)
 		}
 	}
+
 }

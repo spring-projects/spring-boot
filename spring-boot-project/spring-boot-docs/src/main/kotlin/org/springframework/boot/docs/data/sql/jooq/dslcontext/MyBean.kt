@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,17 @@ package org.springframework.boot.docs.data.sql.jooq.dslcontext
 
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.GregorianCalendar
 
 @Component
 class MyBean(private val create: DSLContext) {
+
 	// tag::method[]
 	fun authorsBornAfter1980(): List<GregorianCalendar> {
-		// @formatter:off
 		return create.selectFrom<Tables.TAuthorRecord>(Tables.AUTHOR)
 			.where(Tables.AUTHOR?.DATE_OF_BIRTH?.greaterThan(GregorianCalendar(1980, 0, 1)))
 			.fetch(Tables.AUTHOR?.DATE_OF_BIRTH)
-		// @formatter:on
-	} // end::method[]
+	}
+	// end::method[]
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate
 import kotlin.jvm.Throws
 
 class MyRestTemplateCustomizer : RestTemplateCustomizer {
+
 	override fun customize(restTemplate: RestTemplate) {
 		val routePlanner: HttpRoutePlanner = CustomRoutePlanner(HttpHost("proxy.example.com"))
 		val httpClient: HttpClient = HttpClientBuilder.create().setRoutePlanner(routePlanner).build()
@@ -37,11 +38,15 @@ class MyRestTemplateCustomizer : RestTemplateCustomizer {
 	}
 
 	internal class CustomRoutePlanner(proxy: HttpHost?) : DefaultProxyRoutePlanner(proxy) {
+
 		@Throws(HttpException::class)
 		public override fun determineProxy(target: HttpHost, request: HttpRequest, context: HttpContext): HttpHost? {
-			return if (target.hostName == "192.168.0.5") {
-				null
-			} else super.determineProxy(target, request, context)
+			if (target.hostName == "192.168.0.5") {
+				return null
+			}
+			return  super.determineProxy(target, request, context)
 		}
+
 	}
+
 }

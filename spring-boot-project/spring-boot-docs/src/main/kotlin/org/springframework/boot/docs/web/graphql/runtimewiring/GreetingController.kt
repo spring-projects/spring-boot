@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.format.group
+package org.springframework.boot.docs.web.graphql.runtimewiring;
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty
+import org.springframework.graphql.data.method.annotation.Argument
+import org.springframework.graphql.data.method.annotation.QueryMapping
+import org.springframework.stereotype.Controller
 
-@ConfigurationProperties("my.app")
-class MyProperties(val name: String?) {
-	var target: String? = null
-		@Deprecated("") @DeprecatedConfigurationProperty(replacement = "my.app.name") get
-		@Deprecated("") set
+@Controller
+class GreetingController {
+
+	@QueryMapping
+	fun greeting(@Argument name: String): String {
+		return "Hello, $name!"
+	}
+
 }

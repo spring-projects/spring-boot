@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,18 @@ package org.springframework.boot.docs.web.servlet.springmvc.json
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
 import org.springframework.boot.jackson.JsonComponent
 import java.io.IOException
 import kotlin.jvm.Throws
 
 @JsonComponent
 class MyJsonComponent {
+
 	class Serializer : JsonSerializer<MyObject>() {
 		@Throws(IOException::class)
 		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializerProvider) {
@@ -44,4 +49,5 @@ class MyJsonComponent {
 			return MyObject(name, age)
 		}
 	}
+
 }

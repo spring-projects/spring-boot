@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.testing.utilities.testresttemplate
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,21 +29,22 @@ import java.time.Duration
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MySpringBootTests(@Autowired val template: TestRestTemplate) {
+
 	@Test
 	fun testRequest() {
-		val headers = template.getForEntity(
-			"/example",
-			String::class.java
-		).headers
-		Assertions.assertThat(headers.location).hasHost("other.example.com")
+		val headers = template.getForEntity("/example", String::class.java).headers
+		assertThat(headers.location).hasHost("other.example.com")
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
 	internal class RestTemplateBuilderConfiguration {
+
 		@Bean
 		fun restTemplateBuilder(): RestTemplateBuilder {
 			return RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(1))
 				.setReadTimeout(Duration.ofSeconds(1))
 		}
+
 	}
+
 }

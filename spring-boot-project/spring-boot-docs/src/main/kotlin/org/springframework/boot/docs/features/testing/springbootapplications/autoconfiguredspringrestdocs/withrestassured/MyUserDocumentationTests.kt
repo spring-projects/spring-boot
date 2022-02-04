@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,15 @@ import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs
 class MyUserDocumentationTests {
+
 	@Test
 	fun listUsers(@Autowired documentationSpec: RequestSpecification?, @LocalServerPort port: Int) {
-		// @formatter:off
 		RestAssured.given(documentationSpec)
 			.filter(RestAssuredRestDocumentation.document("list-users"))
 			.`when`()
 			.port(port)["/"]
 			.then().assertThat()
 			.statusCode(Matchers.`is`(200))
-		// @formatter:on
 	}
+
 }

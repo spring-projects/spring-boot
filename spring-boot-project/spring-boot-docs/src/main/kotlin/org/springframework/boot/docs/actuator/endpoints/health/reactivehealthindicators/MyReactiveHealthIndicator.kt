@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,18 @@ import reactor.core.publisher.Mono
 
 @Component
 class MyReactiveHealthIndicator : ReactiveHealthIndicator {
+
 	override fun health(): Mono<Health> {
 		// @formatter:off
 		return doHealthCheck()!!.onErrorResume { exception: Throwable? ->
-			Mono.just(
-				Health.Builder().down(exception).build()
-			)
+			Mono.just(Health.Builder().down(exception).build())
 		}
 		// @formatter:on
 	}
 
 	private fun doHealthCheck(): Mono<Health>? {
 		// perform some specific health check
-		return  /**/null
+		return  /**/ null
 	}
+
 }
