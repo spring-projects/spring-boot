@@ -62,7 +62,7 @@ For example, you can customize your security configuration by adding something l
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/security/springwebflux/MyWebFluxSecurityConfiguration.java[]
+include::{docs-java}/web/security/springwebflux/MyWebFluxSecurityConfiguration.java[]
 ----
 
 
@@ -141,7 +141,7 @@ For example, for servlet applications, you can add your own `SecurityFilterChain
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/security/oauth2/client/MyOAuthClientConfiguration.java[]
+include::{docs-java}/web/security/oauth2/client/MyOAuthClientConfiguration.java[]
 ----
 
 TIP: Spring Boot auto-configures an `InMemoryOAuth2AuthorizedClientService` which is used by Spring Security for the management of client registrations.

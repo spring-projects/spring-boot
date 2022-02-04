@@ -180,7 +180,7 @@ If you need to _completely_ disable restart support (for example, because it doe
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/devtools/restart/disable/MyApplication.java[]
+include::{docs-java}/using/devtools/restart/disable/MyApplication.java[]
 ----
 
 

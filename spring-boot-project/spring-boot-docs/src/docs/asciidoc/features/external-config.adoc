@@ -1164,7 +1164,7 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/MyProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validation/MyProperties.java[]
 ----
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
@@ -1174,7 +1174,7 @@ The following example builds on the preceding `MyProperties` example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/nested/MyProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validation/nested/MyProperties.java[]
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.

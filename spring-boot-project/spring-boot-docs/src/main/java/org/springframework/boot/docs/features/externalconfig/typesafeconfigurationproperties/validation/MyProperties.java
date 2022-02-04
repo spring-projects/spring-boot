@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.validate;
+package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.validation;
 
 import java.net.InetAddress;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.validate.nested;
+package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.validation.nested;
 
 import java.net.InetAddress;
 

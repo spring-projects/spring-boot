@@ -210,7 +210,7 @@ The following example shows how to handle that situation:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/configurationmetadata/format/group/MyProperties.java[]
+include::{docs-java}/configurationmetadata/format/property/MyProperties.java[]
 ----
 
 NOTE: There is no way to set a `level`.
