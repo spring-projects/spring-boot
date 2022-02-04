@@ -1153,7 +1153,6 @@ bom {
 				"spring-boot-loader-tools",
 				"spring-boot-properties-migrator",
 				"spring-boot-starter",
-				"spring-boot-starter-activemq",
 				"spring-boot-starter-actuator",
 				"spring-boot-starter-amqp",
 				"spring-boot-starter-aop",
