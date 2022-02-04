@@ -51,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
- * @author Uladzislau Seuruk
  */
 class ConditionalOnBeanTests {
 
@@ -227,57 +226,6 @@ class ConditionalOnBeanTests {
 						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
-	@Test
-	void genericWhenTypeArgumentMatches() {
-		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class, GenericWithStringTypeArgumentsConfig.class,
-						GenericWithIntegerTypeArgumentsConfig.class)
-				.run((context) -> assertThat(context).satisfies(
-						exampleBeanRequirement("customExampleBean", "genericStringTypeArgumentsExampleBean")));
-	}
-
-	@Test
-	void genericWhenTypeArgumentWithValueMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithStringConfig.class, TypeArgumentsConditionWithValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(
-						exampleBeanRequirement("genericStringExampleBean", "genericStringWithValueExampleBean")));
-	}
-
-	@Test
-	void genericWithValueWhenSubclassTypeArgumentMatches() {
-		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class, TypeArgumentsConditionWithValueConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "genericStringWithValueExampleBean")));
-	}
-
-	@Test
-	void parameterizedContainerGenericWhenTypeArgumentNotMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithIntegerConfig.class,
-						TypeArgumentsConditionWithParameterizedContainerConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("genericIntegerExampleBean")));
-	}
-
-	@Test
-	void parameterizedContainerGenericWhenTypeArgumentMatches() {
-		this.contextRunner
-				.withUserConfiguration(GenericWithStringConfig.class,
-						TypeArgumentsConditionWithParameterizedContainerConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("genericStringExampleBean",
-						"parameterizedContainerGenericExampleBean")));
-	}
-
-	@Test
-	void parameterizedContainerGenericWhenSubclassTypeArgumentMatches() {
-		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class,
-						TypeArgumentsConditionWithParameterizedContainerConfig.class)
-				.run((context) -> assertThat(context).satisfies(
-						exampleBeanRequirement("customExampleBean", "parameterizedContainerGenericExampleBean")));
-	}
-
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
 		return (context) -> {
 			String[] beans = context.getBeanNamesForType(ExampleBean.class);
@@ -415,11 +363,11 @@ class ConditionalOnBeanTests {
 
 	}
 
-	static class ExampleFactoryBean implements FactoryBean<ExampleBean<String>> {
+	static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
 
 		@Override
-		public ExampleBean<String> getObject() {
-			return new ExampleBean<>("fromFactory");
+		public ExampleBean getObject() {
+			return new ExampleBean("fromFactory");
 		}
 
 		@Override
@@ -537,87 +485,23 @@ class ConditionalOnBeanTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	static class GenericWithStringConfig {
-
-		@Bean
-		ExampleBean<String> genericStringExampleBean() {
-			return new ExampleBean<>("genericStringExampleBean");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class GenericWithStringTypeArgumentsConfig {
-
-		@Bean
-		@ConditionalOnBean
-		ExampleBean<String> genericStringTypeArgumentsExampleBean() {
-			return new ExampleBean<>("genericStringTypeArgumentsExampleBean");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class GenericWithIntegerConfig {
-
-		@Bean
-		ExampleBean<Integer> genericIntegerExampleBean() {
-			return new ExampleBean<>(1_000);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class GenericWithIntegerTypeArgumentsConfig {
-
-		@Bean
-		@ConditionalOnBean
-		ExampleBean<Integer> genericIntegerTypeArgumentsExampleBean() {
-			return new ExampleBean<>(1_000);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TypeArgumentsConditionWithValueConfig {
-
-		@Bean
-		@ConditionalOnBean(ExampleBean.class)
-		ExampleBean<String> genericStringWithValueExampleBean() {
-			return new ExampleBean<>("genericStringWithValueExampleBean");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TypeArgumentsConditionWithParameterizedContainerConfig {
-
-		@Bean
-		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
-		TestParameterizedContainer<ExampleBean<String>> parameterizedContainerGenericExampleBean() {
-			return new TestParameterizedContainer<>();
-		}
-
-	}
-
 	@TestAnnotation
-	static class ExampleBean<T> {
+	static class ExampleBean {
 
-		private final T value;
+		private String value;
 
-		ExampleBean(T value) {
+		ExampleBean(String value) {
 			this.value = value;
 		}
 
 		@Override
 		public String toString() {
-			return String.valueOf(this.value);
+			return this.value;
 		}
 
 	}
 
-	static class CustomExampleBean extends ExampleBean<String> {
+	static class CustomExampleBean extends ExampleBean {
 
 		CustomExampleBean() {
 			super("custom subclass");
@@ -625,7 +509,7 @@ class ConditionalOnBeanTests {
 
 	}
 
-	static class OtherExampleBean extends ExampleBean<String> {
+	static class OtherExampleBean extends ExampleBean {
 
 		OtherExampleBean() {
 			super("other subclass");
