@@ -34,7 +34,8 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnMissingBean @ConditionalOnMissingBean} with generic bean return type.
+ * Tests for {@link ConditionalOnMissingBean @ConditionalOnMissingBean} with generic bean
+ * return type.
  *
  * @author Uladzislau Seuruk
  */
