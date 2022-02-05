@@ -19,6 +19,7 @@
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 :docs-java: {docdir}/../main/java/org/springframework/boot/docs
+:docs-kotlin: {docdir}/../main/kotlin/org/springframework/boot/docs
 :docs-groovy: {docdir}/../main/groovy/org/springframework/boot/docs
 :docs-resources: ../../main/resources
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
