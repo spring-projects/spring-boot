@@ -377,6 +377,11 @@ public class RedisProperties {
 		 */
 		private String password;
 
+		/**
+		 * Login username for authenticating with sentinel(s).
+		 */
+		private String username;
+
 		public String getMaster() {
 			return this.master;
 		}
@@ -399,6 +404,14 @@ public class RedisProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
 		}
 
 	}
