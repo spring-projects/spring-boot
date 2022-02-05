@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docs.messaging.jms.receiving.custom
 
+import jakarta.jms.Message
+import jakarta.jms.Session
 import org.springframework.jms.support.converter.MessageConverter
-import javax.jms.Message
-import javax.jms.Session
 
 internal class MyMessageConverter : MessageConverter {
 

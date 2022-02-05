@@ -22,7 +22,6 @@ import org.springframework.boot.loader.tools.LibraryScope
 import org.springframework.boot.loader.tools.Repackager
 import java.io.File
 import java.io.IOException
-import kotlin.jvm.Throws
 
 class MyBuildTool {
 

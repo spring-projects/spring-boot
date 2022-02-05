@@ -17,13 +17,10 @@
 package org.springframework.boot.docs.howto.webserver.enablemultipleconnectorsintomcat
 
 import org.apache.catalina.connector.Connector
-import org.apache.coyote.http11.Http11NioProtocol
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.util.ResourceUtils
-import java.io.IOException
 
 @Configuration(proxyBeanMethods = false)
 class MyTomcatConfiguration {
@@ -31,31 +28,14 @@ class MyTomcatConfiguration {
 	@Bean
 	fun sslConnectorCustomizer(): WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 		return WebServerFactoryCustomizer { tomcat: TomcatServletWebServerFactory ->
-			tomcat.addAdditionalTomcatConnectors(
-				createSslConnector()
-			)
+			tomcat.addAdditionalTomcatConnectors(createConnectorConnector())
 		}
 	}
 
-	private fun createSslConnector(): Connector {
+	private fun createConnectorConnector(): Connector {
 		val connector = Connector("org.apache.coyote.http11.Http11NioProtocol")
-		val protocol = connector.protocolHandler as Http11NioProtocol
-		return try {
-			val keystore = ResourceUtils.getURL("keystore")
-			val truststore = ResourceUtils.getURL("truststore")
-			connector.scheme = "https"
-			connector.secure = true
-			connector.port = 8443
-			protocol.isSSLEnabled = true
-			protocol.keystoreFile = keystore.toString()
-			protocol.keystorePass = "changeit"
-			protocol.truststoreFile = truststore.toString()
-			protocol.truststorePass = "changeit"
-			protocol.keyAlias = "apitester"
-			connector
-		} catch (ex: IOException) {
-			throw IllegalStateException("Fail to create ssl connector", ex)
-		}
+		connector.port = 8080
+		return connector
 	}
 
 }

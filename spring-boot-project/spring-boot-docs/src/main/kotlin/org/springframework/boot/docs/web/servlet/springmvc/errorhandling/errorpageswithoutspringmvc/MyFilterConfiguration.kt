@@ -16,11 +16,11 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.errorhandling.errorpageswithoutspringmvc
 
+import jakarta.servlet.DispatcherType
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.util.EnumSet
-import javax.servlet.DispatcherType
 
 @Configuration(proxyBeanMethods = false)
 class MyFilterConfiguration {

@@ -27,7 +27,6 @@ import org.apache.http.protocol.HttpContext
 import org.springframework.boot.web.client.RestTemplateCustomizer
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestTemplate
-import kotlin.jvm.Throws
 
 class MyRestTemplateCustomizer : RestTemplateCustomizer {
 

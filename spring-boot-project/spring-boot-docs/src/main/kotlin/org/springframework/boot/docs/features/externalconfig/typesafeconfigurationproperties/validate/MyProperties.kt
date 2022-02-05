@@ -16,10 +16,10 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.validate
 
+import jakarta.validation.constraints.NotNull
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
 import java.net.InetAddress
-import javax.validation.constraints.NotNull
 
 @ConfigurationProperties("my.service")
 @Validated

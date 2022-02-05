@@ -18,7 +18,7 @@ package org.springframework.boot.docs.features.testing.springbootapplications.au
 
 import org.springframework.boot.test.autoconfigure.restdocs.RestDocsRestAssuredConfigurationCustomizer
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer
 import org.springframework.restdocs.templates.TemplateFormats
 
 @TestConfiguration(proxyBeanMethods = false)
