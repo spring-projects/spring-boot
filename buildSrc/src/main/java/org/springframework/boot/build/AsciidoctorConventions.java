@@ -108,7 +108,7 @@ class AsciidoctorConventions {
 			project.getConfigurations().matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
 					.all((dependencyManagement) -> configuration.extendsFrom(dependencyManagement));
 			configuration.getDependencies().add(project.getDependencies()
-					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.2"));
+					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.3"));
 			configuration.getDependencies()
 					.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
 		});
