@@ -80,7 +80,6 @@ dependencies {
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
 	implementation("io.projectreactor.netty:reactor-netty-http")
-	implementation("io.r2dbc:r2dbc-postgresql")
 	implementation("io.undertow:undertow-core")
 	implementation("jakarta.annotation:jakarta.annotation-api")
 	implementation("jakarta.jms:jakarta.jms-api")
@@ -115,6 +114,7 @@ dependencies {
 	}
 	implementation("org.mockito:mockito-core")
 	implementation("org.mongodb:mongodb-driver-sync")
+	implementation("org.postgresql:r2dbc-postgresql")
 	implementation("org.quartz-scheduler:quartz")
 	implementation("org.slf4j:jul-to-slf4j")
 	implementation("org.springframework:spring-jdbc")

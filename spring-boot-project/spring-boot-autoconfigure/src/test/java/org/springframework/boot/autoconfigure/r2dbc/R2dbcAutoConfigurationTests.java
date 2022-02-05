@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class R2dbcAutoConfigurationTests {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
 							.hasSingleBean(R2dbcProperties.class);
 					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
-					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ZERO);
+					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ofNanos(-1));
 				});
 	}
 
@@ -156,8 +156,9 @@ class R2dbcAutoConfigurationTests {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).doesNotHaveBean(ConnectionPool.class);
 					ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
 					assertThat(connectionFactory).asInstanceOf(type(OptionsCapableConnectionFactory.class))
-							.extracting(OptionsCapableConnectionFactory::getOptions).satisfies((options) -> assertThat(
-									options.getRequiredValue(Option.<Boolean>valueOf("customized"))).isTrue());
+							.extracting(OptionsCapableConnectionFactory::getOptions)
+							.satisfies((options) -> assertThat(options.getRequiredValue(Option.valueOf("customized")))
+									.isEqualTo(Boolean.TRUE));
 				});
 	}
 
@@ -169,8 +170,9 @@ class R2dbcAutoConfigurationTests {
 					ConnectionFactory pool = context.getBean(ConnectionFactory.class);
 					ConnectionFactory connectionFactory = ((ConnectionPool) pool).unwrap();
 					assertThat(connectionFactory).asInstanceOf(type(OptionsCapableConnectionFactory.class))
-							.extracting(OptionsCapableConnectionFactory::getOptions).satisfies((options) -> assertThat(
-									options.getRequiredValue(Option.<Boolean>valueOf("customized"))).isTrue());
+							.extracting(OptionsCapableConnectionFactory::getOptions)
+							.satisfies((options) -> assertThat(options.getRequiredValue(Option.valueOf("customized")))
+									.isEqualTo(Boolean.TRUE));
 				});
 	}
 

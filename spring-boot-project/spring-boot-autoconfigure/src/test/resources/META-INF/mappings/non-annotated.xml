@@ -10,8 +10,8 @@
 				<column name="id"/>
 				<generated-value strategy="IDENTITY"/>
 			</id>
-			<basic name="value">
-				<column name="value"/>
+			<basic name="item">
+				<column name="item"/>
 			</basic>
 		</attributes>
 	</entity>

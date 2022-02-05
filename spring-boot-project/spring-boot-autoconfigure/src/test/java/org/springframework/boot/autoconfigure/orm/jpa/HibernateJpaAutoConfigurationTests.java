@@ -288,7 +288,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 					EntityManager em = context.getBean(EntityManagerFactory.class).createEntityManager();
 					NonAnnotatedEntity found = em.find(NonAnnotatedEntity.class, 2000L);
 					assertThat(found).isNotNull();
-					assertThat(found.getValue()).isEqualTo("Test");
+					assertThat(found.getItem()).isEqualTo("Test");
 				});
 	}
 
