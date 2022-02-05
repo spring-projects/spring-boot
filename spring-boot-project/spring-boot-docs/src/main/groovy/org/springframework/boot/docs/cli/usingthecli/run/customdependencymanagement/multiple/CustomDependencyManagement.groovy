@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.cli.usingthecli.run.customdependencymanagement.multiple;
+package org.springframework.boot.docs.cli.usingthecli.run.customdependencymanagement.multiple
 
-import org.springframework.boot.groovy.DependencyManagementBom;
+import org.springframework.boot.groovy.DependencyManagementBom
 
 // tag::code[]
 @DependencyManagementBom([
