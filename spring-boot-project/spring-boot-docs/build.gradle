@@ -4,6 +4,7 @@ plugins {
 	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id 'org.jetbrains.kotlin.jvm'
 }
 
 description = "Spring Boot Docs"
@@ -103,6 +104,7 @@ dependencies {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jooq:jooq") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
@@ -317,6 +319,9 @@ syncDocumentationSourceForAsciidoctor {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
@@ -338,6 +343,9 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
@@ -358,6 +366,9 @@ syncDocumentationSourceForAsciidoctorPdf {
 	}
 	from("src/test/java") {
 		into "test/java"
+	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
 	}
 	from("src/main/groovy") {
 		into "main/groovy"
