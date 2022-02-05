@@ -49,8 +49,8 @@ class KotlinConventions {
 
 	private void configure(KotlinCompile compile) {
 		KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
-		kotlinOptions.setApiVersion("1.6");
-		kotlinOptions.setLanguageVersion("1.6");
+		kotlinOptions.setApiVersion("1.3");
+		kotlinOptions.setLanguageVersion("1.3");
 		kotlinOptions.setJvmTarget("1.8");
 		kotlinOptions.setAllWarningsAsErrors(true);
 		List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
