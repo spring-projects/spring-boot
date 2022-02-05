@@ -99,6 +99,7 @@ abstract class RedisConnectionConfiguration {
 			if (this.properties.getPassword() != null) {
 				config.setPassword(RedisPassword.of(this.properties.getPassword()));
 			}
+			config.setSentinelUsername(sentinelProperties.getUsername());
 			if (sentinelProperties.getPassword() != null) {
 				config.setSentinelPassword(RedisPassword.of(sentinelProperties.getPassword()));
 			}

@@ -315,6 +315,25 @@ class RedisAutoConfigurationTests {
 					assertThat(getUserName(connectionFactory)).isNull();
 					assertThat(connectionFactory.getPassword()).isEqualTo("password");
 					RedisSentinelConfiguration sentinelConfiguration = connectionFactory.getSentinelConfiguration();
+					assertThat(sentinelConfiguration.getSentinelUsername()).isNull();
+					assertThat(new String(sentinelConfiguration.getSentinelPassword().get())).isEqualTo("secret");
+					Set<RedisNode> sentinels = sentinelConfiguration.getSentinels();
+					assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
+							.contains("127.0.0.1:26379", "127.0.0.1:26380");
+				});
+	}
+
+	@Test
+	void testRedisConfigurationWithSentinelAuthenticationAndDataNodeAuthentication() {
+		this.contextRunner.withPropertyValues("spring.redis.username=username", "spring.redis.password=password",
+				"spring.redis.sentinel.username=sentinel", "spring.redis.sentinel.password=secret",
+				"spring.redis.sentinel.master:mymaster",
+				"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380").run((context) -> {
+					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+					assertThat(getUserName(connectionFactory)).isEqualTo("username");
+					assertThat(connectionFactory.getPassword()).isEqualTo("password");
+					RedisSentinelConfiguration sentinelConfiguration = connectionFactory.getSentinelConfiguration();
+					assertThat(sentinelConfiguration.getSentinelUsername()).isEqualTo("sentinel");
 					assertThat(new String(sentinelConfiguration.getSentinelPassword().get())).isEqualTo("secret");
 					Set<RedisNode> sentinels = sentinelConfiguration.getSentinels();
 					assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
