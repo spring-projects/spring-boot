@@ -65,17 +65,11 @@ Spring Boot also adds any auto-configured registries to the global static compos
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/gettingstarted/commontags/MyMeterRegistryConfiguration.java[]
-----
+include::code:commontags/MyMeterRegistryConfiguration[]
 
 You can apply customizations to particular registry implementations by being more specific about the generic type:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/gettingstarted/specifictype/MyMeterRegistryConfiguration.java[]
-----
+include::code:specifictype/MyMeterRegistryConfiguration[]
 
 Spring Boot also <<actuator#actuator.metrics.supported,configures built-in instrumentation>> that you can control through configuration or dedicated annotation markers.
 
@@ -308,10 +302,7 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 To take control over this behavior, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/export/graphite/MyGraphiteConfiguration.java[]
-----
+include::code:MyGraphiteConfiguration[]
 ====
 
 
@@ -384,10 +375,7 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 To take control over this behavior, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/export/jmx/MyJmxConfiguration.java[]
-----
+include::code:MyJmxConfiguration[]
 ====
 
 
@@ -938,10 +926,7 @@ Each metric is tagged with the following information by default:
 
 To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as the following example shows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/supported/mongodb/command/MyCommandTagsProviderConfiguration.java[]
-----
+include::code:MyCommandTagsProviderConfiguration[]
 
 To disable the auto-configured command metrics, set the following property:
 
@@ -979,10 +964,7 @@ Each metric is tagged with the following information by default:
 
 To replace the default metric tags, define a `MongoConnectionPoolTagsProvider` bean:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/supported/mongodb/connectionpool/MyConnectionPoolTagsProviderConfiguration.java[]
-----
+include::code:MyConnectionPoolTagsProviderConfiguration[]
 
 To disable the auto-configured connection pool metrics, set the following property:
 
@@ -1011,24 +993,15 @@ If supported, you can use the annotation at either the class level or the method
 
 For example, the following code shows how you can use the annotation to instrument all request mappings in a `@RestController`:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/supported/timedannotation/all/MyController.java[]
-----
+include::code:all/MyController[]
 
 If you want only to instrument a single mapping, you can use the annotation on the method instead of the class:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/supported/timedannotation/single/MyController.java[]
-----
+include::code:single/MyController[]
 
 You can also combine class-level and method-level annotations if you want to change the timing details for a specific method:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/supported/timedannotation/change/MyController.java[]
-----
+include::code:change/MyController[]
 
 NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
 Long task timers require a separate metric name and can be stacked with a short task timer.
@@ -1046,17 +1019,11 @@ For more detail, see the {lettuce-docs}#command.latency.metrics.micrometer[Micro
 === Registering Custom Metrics
 To register custom metrics, inject `MeterRegistry` into your component:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/registeringcustom/MyBean.java[]
-----
+include::code:MyBean[]
 
 If your metrics depend on other beans, we recommend that you use a `MeterBinder` to register them:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/registeringcustom/MyMeterBinderConfiguration.java[]
-----
+include::code:MyMeterBinderConfiguration[]
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
 A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications.
@@ -1071,10 +1038,7 @@ If you need to apply customizations to specific `Meter` instances, you can use t
 
 For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/metrics/customizing/MyMetricsFilterConfiguration.java[]
-----
+include::code:MyMetricsFilterConfiguration[]
 
 NOTE: By default, all `MeterFilter` beans are automatically bound to the Spring-managed `MeterRegistry`.
 Make sure to register your metrics by using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.

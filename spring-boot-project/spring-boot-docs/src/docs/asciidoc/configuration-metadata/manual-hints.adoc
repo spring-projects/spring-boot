@@ -18,10 +18,7 @@ The special `.keys` and `.values` suffixes must refer to the keys and the values
 
 Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/configurationmetadata/manualhints/valuehint/MyProperties.java[]
-----
+include::code:MyProperties[]
 
 The magic values are (in this example) are `sample1` and `sample2`.
 In order to offer additional content assistance for the keys, you could add the following JSON to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:

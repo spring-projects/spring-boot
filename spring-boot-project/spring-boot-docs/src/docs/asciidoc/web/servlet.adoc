@@ -10,10 +10,7 @@ Methods in your controller are mapped to HTTP by using `@RequestMapping` annotat
 
 The following code shows a typical `@RestController` that serves JSON data:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/MyRestController.java[]
-----
+include::code:MyRestController[]
 
 Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
 There are also several guides that cover Spring MVC available at https://spring.io/guides.
@@ -60,10 +57,7 @@ By default, strings are encoded in `UTF-8`.
 
 If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/messageconverters/MyHttpMessageConvertersConfiguration.java[]
-----
+include::code:MyHttpMessageConvertersConfiguration[]
 
 Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
 You can also override default converters in the same way.
@@ -78,10 +72,7 @@ Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/Ja
 You can use the `@JsonComponent` annotation directly on `JsonSerializer`, `JsonDeserializer` or `KeyDeserializer` implementations.
 You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/json/MyJsonComponent.java[]
-----
+include::code:MyJsonComponent[]
 
 All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
 Because `@JsonComponent` is meta-annotated with `@Component`, the usual component-scanning rules apply.
@@ -91,10 +82,7 @@ See {spring-boot-module-api}/jackson/JsonObjectSerializer.html[`JsonObjectSerial
 
 The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDeserializer` as follows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/json/object/MyJsonComponent.java[]
-----
+include::code:object/MyJsonComponent[]
 
 
 
@@ -340,20 +328,14 @@ To do so, extend `BasicErrorController`, add a public method with a `@RequestMap
 
 You can also define a class annotated with `@ControllerAdvice` to customize the JSON document to return for a particular controller and/or exception type, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/errorhandling/MyControllerAdvice.java[]
-----
+include::code:MyControllerAdvice[]
 
 In the preceding example, if `YourException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/errorhandling/MyController.java[]
-----
+include::code:MyController[]
 
 
 
@@ -395,10 +377,7 @@ To map all `5xx` errors by using a FreeMarker template, your directory structure
 
 For more complex mappings, you can also add beans that implement the `ErrorViewResolver` interface, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/errorhandling/errorpages/MyErrorViewResolver.java[]
-----
+include::code:MyErrorViewResolver[]
 
 You can also use regular Spring MVC features such as {spring-framework-docs}/web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}/web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
 The `ErrorController` then picks up any unhandled exceptions.
@@ -410,17 +389,11 @@ The `ErrorController` then picks up any unhandled exceptions.
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/errorhandling/errorpageswithoutspringmvc/MyErrorPagesConfiguration.java[]
-----
+include::code:MyErrorPagesConfiguration[]
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/errorhandling/errorpageswithoutspringmvc/MyFilterConfiguration.java[]
-----
+include::code:MyFilterConfiguration[]
 
 Note that the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type.
 
@@ -449,10 +422,7 @@ As of version 4.2, Spring MVC {spring-framework-docs}/web.html#mvc-cors[supports
 Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
 {spring-framework-docs}/web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/springmvc/cors/MyCorsConfiguration.java[]
-----
+include::code:MyCorsConfiguration[]
 
 
 
@@ -572,10 +542,7 @@ The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `SameSite` va
 There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
 For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/embeddedcontainer/customizing/samesite/MySameSiteConfiguration.java[]
-----
+include::code:MySameSiteConfiguration[]
 
 
 
@@ -585,18 +552,12 @@ If you need to programmatically configure your embedded servlet container, you c
 `WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/embeddedcontainer/customizing/programmatic/MyWebServerFactoryCustomizer.java[]
-----
+include::code:MyWebServerFactoryCustomizer[]
 
 `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
 The following example shows how to customize `TomcatServletWebServerFactory` that provides access to Tomcat-specific configuration options:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/embeddedcontainer/customizing/programmatic/MyTomcatWebServerFactoryCustomizer.java[]
-----
+include::code:MyTomcatWebServerFactoryCustomizer[]
 
 
 

@@ -67,7 +67,4 @@ To export these, you will need to convert these states to some set of numbers so
 
 The following example shows one way to write such an exporter:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/howto/actuator/maphealthindicatorstometrics/MyHealthMetricsExportConfiguration.java[]
-----
+include::code:MyHealthMetricsExportConfiguration[]

@@ -328,10 +328,7 @@ If you wish to configure custom security for HTTP endpoints (for example, to all
 
 A typical Spring Security configuration might look something like the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/security/typical/MySecurityConfiguration.java[]
-----
+include::code:typical/MySecurityConfiguration[]
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
@@ -351,10 +348,7 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints, as the following example shows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/security/exposeall/MySecurityConfiguration.java[]
-----
+include::code:exposeall/MySecurityConfiguration[]
 
 NOTE: In both of the preceding examples, the configuration applies only to the actuator endpoints.
 Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.
@@ -442,10 +436,7 @@ Endpoints can be exposed over HTTP by using Spring MVC, or Spring WebFlux.
 
 The following example exposes a read operation that returns a custom object:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/implementingcustom/MyEndpoint.java[tag=read]
-----
+include::code:MyEndpoint[tag=read]
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
 These endpoints are restricted to their respective technologies.
@@ -479,10 +470,7 @@ Consider the following JSON request body:
 
 You can use this to invoke a write operation that takes `String name` and `int counter` parameters, as the following example shows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/implementingcustom/input/../MyEndpoint.java[tag=write]
-----
+include::code:../MyEndpoint[tag=write]
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
 In particular, declaring a single parameter with a `CustomData` type that defines a `name` and `counter` properties is not supported.
@@ -755,10 +743,7 @@ You need to provide an implementation of the `health()` method and return a `Hea
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/health/writingcustomhealthindicators/MyHealthIndicator.java[]
-----
+include::code:MyHealthIndicator[]
 
 NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the `HealthIndicator` suffix, if it exists.
 In the preceding example, the health information is available in an entry named `my`.
@@ -833,10 +818,7 @@ If you need to register a regular `HealthContributor`, you should wrap it with `
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/health/reactivehealthindicators/MyReactiveHealthIndicator.java[]
-----
+include::code:MyReactiveHealthIndicator[]
 
 TIP: To handle the error automatically, consider extending from `AbstractReactiveHealthIndicator`.
 
@@ -1279,10 +1261,7 @@ To provide custom application information, you can register Spring beans that im
 
 The following example contributes an `example` entry with a single value:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/actuator/endpoints/info/writingcustominfocontributors/MyInfoContributor.java[]
-----
+include::code:MyInfoContributor[]
 
 If you reach the `info` endpoint, you should see a response that contains the following additional entry:
 

@@ -60,10 +60,7 @@ Spring Boot provides convenience methods that can be used to override access rul
 
 For example, you can customize your security configuration by adding something like:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/security/springwebflux/MyWebFluxSecurityConfiguration.java[]
-----
+include::code:MyWebFluxSecurityConfiguration[]
 
 
 
@@ -139,10 +136,7 @@ By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes U
 If you want to customize the `redirect-uri` to use a different pattern, you need to provide configuration to process that custom pattern.
 For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/security/oauth2/client/MyOAuthClientConfiguration.java[]
-----
+include::code:MyOAuthClientConfiguration[]
 
 TIP: Spring Boot auto-configures an `InMemoryOAuth2AuthorizedClientService` which is used by Spring Security for the management of client registrations.
 The `InMemoryOAuth2AuthorizedClientService` has limited capabilities and we recommend using it only for development environments.

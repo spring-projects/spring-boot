@@ -9,10 +9,7 @@ NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section]
 
 In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/caching/MyMathService.java[]
-----
+include::code:MyMathService[]
 
 This example demonstrates the use of caching on a potentially costly operation.
 Before invoking `computePiDecimal`, the abstraction looks for an entry in the `piDecimals` cache that matches the `i` argument.
@@ -57,10 +54,7 @@ If you add dependencies manually, you must include `spring-context-support` in o
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
 The following example sets a flag to say that `null` values should not be passed down to the underlying map:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/caching/provider/MyCacheManagerConfiguration.java[]
-----
+include::code:MyCacheManagerConfiguration[]
 
 NOTE: In the preceding example, an auto-configured `ConcurrentMapCacheManager` is expected.
 If that is not the case (either you provided your own config or a different cache provider was auto-configured), the customizer is not invoked at all.
@@ -135,10 +129,7 @@ For instance, the following configuration creates `cache1` and `cache2` caches w
 If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
 The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
-----
+include::code:MyCouchbaseCacheManagerConfiguration[]
 
 
 
@@ -166,10 +157,7 @@ This can be useful if you need to customize the default serialization strategy.
 If you need more control over the configuration, consider registering a `RedisCacheManagerBuilderCustomizer` bean.
 The following example shows a customizer that configures a specific time to live for `cache1` and `cache2`:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/io/caching/provider/redis/MyRedisCacheManagerConfiguration.java[]
-----
+include::code:MyRedisCacheManagerConfiguration[]
 
 
 
