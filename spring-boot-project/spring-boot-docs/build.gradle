@@ -40,6 +40,11 @@ plugins.withType(EclipsePlugin) {
 	}
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) { 
+	kotlinOptions.apiVersion = '1.6'
+	kotlinOptions.languageVersion = '1.6'
+}
+
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
