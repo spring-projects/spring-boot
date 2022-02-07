@@ -1,4 +1,4 @@
-[[executable-jar.launching]]
+[[appendix.executable-jar.launching]]
 == Launching Executable Jars
 The `org.springframework.boot.loader.Launcher` class is a special bootstrap class that is used as an executable jar's main entry point.
 It is the actual `Main-Class` in your jar file, and it is used to setup an appropriate `URLClassLoader` and ultimately call your `main()` method.
@@ -13,7 +13,7 @@ You can add additional locations by setting an environment variable called `LOAD
 
 
 
-[[executable-jar.launching.manifest]]
+[[appendix.executable-jar.launching.manifest]]
 === Launcher Manifest
 You need to specify an appropriate `Launcher` as the `Main-Class` attribute of `META-INF/MANIFEST.MF`.
 The actual class that you want to launch (that is, the class that contains a `main` method) should be specified in the `Start-Class` attribute.

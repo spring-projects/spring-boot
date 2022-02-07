@@ -300,6 +300,6 @@ There is not (and technically cannot be) an exhaustive list of all supported pro
 
 A running application with the Actuator features has a `configprops` endpoint that shows all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<application-properties#application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
+The appendix includes an <<application-properties#appendix.application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
 The definitive list comes from searching the source code for `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of `Binder`.
 For more about the exact ordering of loading properties, see "<<features#features.external-config>>".

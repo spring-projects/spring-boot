@@ -1,4 +1,4 @@
-[[executable-jar.alternatives]]
+[[appendix.executable-jar.alternatives]]
 == Alternative Single Jar Solutions
 If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the following alternatives:
 

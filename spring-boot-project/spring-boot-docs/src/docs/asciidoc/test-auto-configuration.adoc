@@ -1,5 +1,5 @@
 [appendix]
-[[test-auto-configuration]]
+[[appendix.test-auto-configuration]]
 = Test Auto-configuration Annotations
 include::attributes.adoc[]
 

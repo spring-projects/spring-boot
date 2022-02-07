@@ -411,7 +411,7 @@ You can customize this behavior using the configprop:spring.kafka.streams.auto-s
 
 [[features.messaging.kafka.additional-properties]]
 ==== Additional Kafka Properties
-The properties supported by auto configuration are shown in <<application-properties#application-properties>>.
+The properties supported by auto configuration are shown in <<application-properties#appendix.application-properties>>.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
 Refer to the Apache Kafka documentation for details.
 
