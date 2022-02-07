@@ -126,7 +126,7 @@ data class KotlinExampleProperties(
 }
 ----
 
-TIP: To generate <<configuration-metadata#configuration-metadata.annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
+TIP: To generate <<configuration-metadata#appendix.configuration-metadata.annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
 
 

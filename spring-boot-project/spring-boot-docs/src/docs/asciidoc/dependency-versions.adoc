@@ -1,5 +1,5 @@
 [appendix]
-[[dependency-versions]]
+[[appendix.dependency-versions]]
 = Dependency Versions
 include::attributes.adoc[]
 

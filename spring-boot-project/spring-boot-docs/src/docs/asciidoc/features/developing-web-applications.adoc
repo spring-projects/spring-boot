@@ -337,7 +337,7 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
 
 There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
-See the <<application-properties#application-properties.server, "`Server Properties`">> section of the Appendix.
+See the <<application-properties#appendix.application-properties.server, "`Server Properties`">> section of the Appendix.
 
 To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
