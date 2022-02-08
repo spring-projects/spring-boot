@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,15 @@ public class LogUpdateEvent extends UpdateEvent {
 		if (header == null) {
 			return null;
 		}
-		StreamType streamType = StreamType.values()[header[0]];
+
+		// First byte denotes stream type. 0 = stdin, 1 = stdout, 2 = stderr
+		byte streamTypeId = header[0];
+		if (streamTypeId < 0 || streamTypeId >= StreamType.values().length) {
+			// Stream type is out of bounds, ignore this event. See gh-29307
+			return null;
+		}
+
+		StreamType streamType = StreamType.values()[streamTypeId];
 		long size = 0;
 		for (int i = 0; i < 4; i++) {
 			size = (size << 8) + (header[i + 4] & 0xff);
