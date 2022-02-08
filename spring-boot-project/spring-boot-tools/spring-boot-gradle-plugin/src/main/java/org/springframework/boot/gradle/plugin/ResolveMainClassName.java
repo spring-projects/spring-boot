@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
@@ -88,7 +89,17 @@ public class ResolveMainClassName extends DefaultTask {
 	 * @param classpath the classpath
 	 */
 	public void setClasspath(FileCollection classpath) {
-		this.classpath = classpath;
+		setClasspath((Object) classpath);
+	}
+
+	/**
+	 * Sets the classpath to include in the archive. The given {@code classpath} is
+	 * evaluated as per {@link Project#files(Object...)}.
+	 * @param classpath the classpath
+	 * @since 2.5.9
+	 */
+	public void setClasspath(Object classpath) {
+		this.classpath = getProject().files(classpath);
 	}
 
 	/**
@@ -144,7 +155,7 @@ public class ResolveMainClassName extends DefaultTask {
 	}
 
 	static TaskProvider<ResolveMainClassName> registerForTask(String taskName, Project project,
-			FileCollection classpath) {
+			Callable<FileCollection> classpath) {
 		TaskProvider<ResolveMainClassName> resolveMainClassNameProvider = project.getTasks()
 				.register(taskName + "MainClassName", ResolveMainClassName.class, (resolveMainClassName) -> {
 					ExtensionContainer extensions = project.getExtensions();
