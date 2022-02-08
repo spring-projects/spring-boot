@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -105,7 +106,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		FileCollection classpath = mainSourceSet.getRuntimeClasspath()
+		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
 				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
 				.registerForTask(SpringBootPlugin.BOOT_JAR_TASK_NAME, project, classpath);
@@ -137,7 +138,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
-		FileCollection classpath = javaPluginConvention(project).getSourceSets()
+		Callable<FileCollection> classpath = () -> javaPluginConvention(project).getSourceSets()
 				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
 				classpath);
