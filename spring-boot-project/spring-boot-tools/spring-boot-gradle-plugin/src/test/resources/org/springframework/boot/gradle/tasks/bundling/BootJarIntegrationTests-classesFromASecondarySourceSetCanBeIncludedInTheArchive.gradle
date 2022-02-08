@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceSets {
+	secondary
+	main {
+		runtimeClasspath += secondary.output
+	}
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+}

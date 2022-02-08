@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,16 @@ class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("standard.jar").doesNotContain("starter.jar");
+	}
+
+	@TestTemplate
+	void classesFromASecondarySourceSetCanBeOnTheClasspath() throws IOException {
+		File output = new File(this.gradleBuild.getProjectDir(), "src/secondary/java/com/example/bootrun/main");
+		output.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootrun/main"), output);
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
 	}
 
 	private void copyMainClassApplication() throws IOException {
