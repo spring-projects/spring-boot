@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -460,6 +460,30 @@ abstract class AbstractBootArchiveIntegrationTests {
 		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
 		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertExtractedLayers(layerNames, indexedLayers);
+	}
+
+	@TestTemplate
+	void classesFromASecondarySourceSetCanBeIncludedInTheArchive() throws IOException {
+		writeMainClass();
+		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/secondary/java/example");
+		examplePackage.mkdirs();
+		File main = new File(examplePackage, "Secondary.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(main))) {
+			writer.println("package example;");
+			writer.println();
+			writer.println("public class Secondary {}");
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		BuildResult build = this.gradleBuild.build(this.taskName);
+		assertThat(build.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			Stream<String> classesEntryNames = jarFile.stream().filter((entry) -> !entry.isDirectory())
+					.map(JarEntry::getName).filter((name) -> name.startsWith(this.classesPath));
+			assertThat(classesEntryNames).containsExactly(this.classesPath + "example/Main.class",
+					this.classesPath + "example/Secondary.class");
+		}
 	}
 
 	private void copyMainClassApplication() throws IOException {
