@@ -20,6 +20,7 @@
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType|JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-docs[\\/].*jooq" checks="AvoidStaticImport" />
+	<suppress files="[\\/]spring-boot-docs[\\/].*MyRoutingConfiguration\.java" checks="AvoidStaticImport"/>
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" id="mainCodeIllegalImportCheck" />
