@@ -12,7 +12,7 @@ Explicit build support is provided for the following build tools:
 | 3.5+
 
 | Gradle
-| 7.x (7.3 or later)
+| 7.x (7.4 or later)
 |===
 
 

@@ -131,6 +131,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		});
 	}
 
+	@SuppressWarnings("deprecation")
 	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
 		LazyPublishArtifact artifact = new LazyPublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);

@@ -106,6 +106,7 @@ class WarPluginAction implements PluginApplicationAction {
 				.configure((buildImage) -> buildImage.getArchiveFile().set(bootWar.get().getArchiveFile()));
 	}
 
+	@SuppressWarnings("deprecation")
 	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {
 		LazyPublishArtifact artifact = new LazyPublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
