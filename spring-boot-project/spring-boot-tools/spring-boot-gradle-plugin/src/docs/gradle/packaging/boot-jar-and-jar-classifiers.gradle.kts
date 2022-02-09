@@ -7,11 +7,11 @@ plugins {
 
 // tag::classifiers[]
 tasks.getByName<BootJar>("bootJar") {
-	classifier = "boot"
+	archiveClassifier.set("boot")
 }
 
 tasks.getByName<Jar>("jar") {
-	classifier = ""
+	archiveClassifier.set("")
 }
 // end::classifiers[]
 
