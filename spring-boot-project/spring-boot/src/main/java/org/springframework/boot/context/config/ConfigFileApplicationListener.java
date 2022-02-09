@@ -307,7 +307,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private Map<Profile, MutablePropertySources> loaded;
 
-		private Map<DocumentsCacheKey, List<Document>> loadDocumentsCache = new HashMap<>();
+		private final Map<DocumentsCacheKey, List<Document>> loadDocumentsCache = new HashMap<>();
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
@@ -882,7 +882,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private final PropertySource<?> propertySource;
 
-		private String[] profiles;
+		private final String[] profiles;
 
 		private final Set<Profile> activeProfiles;
 

@@ -297,7 +297,7 @@ public class ImageBanner implements Banner {
 		 */
 		BLOCK(' ', '\u2591', '\u2592', '\u2593', '\u2588');
 
-		private char[] pixels;
+		private final char[] pixels;
 
 		PixelMode(char... pixels) {
 			this.pixels = pixels;

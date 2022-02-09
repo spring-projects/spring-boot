@@ -37,7 +37,7 @@ public class GsonJsonParser extends AbstractJsonParser {
 
 	private static final TypeToken<?> LIST_TYPE = new ListTypeToken();
 
-	private Gson gson = new GsonBuilder().create();
+	private final Gson gson = new GsonBuilder().create();
 
 	@Override
 	public Map<String, Object> parseMap(String json) {

@@ -134,7 +134,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private Set<String> tldSkipPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SKIP);
 
-	private Set<String> tldScanPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SCAN);
+	private final Set<String> tldScanPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SCAN);
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
 

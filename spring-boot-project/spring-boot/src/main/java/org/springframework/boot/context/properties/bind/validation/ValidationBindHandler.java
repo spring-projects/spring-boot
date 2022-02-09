@@ -147,7 +147,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 		private final ConfigurationPropertyName name;
 
-		private Object target;
+		private final Object target;
 
 		protected ValidationResult(ConfigurationPropertyName name, Object target) {
 			super(null);

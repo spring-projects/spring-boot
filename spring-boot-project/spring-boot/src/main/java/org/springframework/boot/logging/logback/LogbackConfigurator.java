@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
  */
 class LogbackConfigurator {
 
-	private LoggerContext context;
+	private final LoggerContext context;
 
 	LogbackConfigurator(LoggerContext context) {
 		Assert.notNull(context, "Context must not be null");

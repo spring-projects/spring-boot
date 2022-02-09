@@ -202,7 +202,7 @@ public class SpringApplication {
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
-	private Set<Class<?>> primarySources;
+	private final Set<Class<?>> primarySources;
 
 	private Set<String> sources = new LinkedHashSet<>();
 
@@ -236,7 +236,7 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private List<Bootstrapper> bootstrappers;
+	private final List<Bootstrapper> bootstrappers;
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 
