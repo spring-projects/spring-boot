@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+
+import org.springframework.util.StreamUtils;
 
 /**
  * An update event used to provide log updates.
@@ -80,6 +82,16 @@ public class LogUpdateEvent extends UpdateEvent {
 				consumer.accept(event);
 			}
 		}
+		catch (IllegalStateException ex) {
+			// Parsing has failed, abort further parsing
+			LogUpdateEvent abortedEvent = new LogUpdateEvent(StreamType.STD_ERR,
+					ex.getMessage().getBytes(StandardCharsets.UTF_8));
+			consumer.accept(abortedEvent);
+
+			// At this point, the inputStream is burned, consume it fully to prevent
+			// further processing
+			StreamUtils.drain(inputStream);
+		}
 		finally {
 			inputStream.close();
 		}
@@ -90,12 +102,21 @@ public class LogUpdateEvent extends UpdateEvent {
 		if (header == null) {
 			return null;
 		}
-		StreamType streamType = StreamType.values()[header[0]];
+
+		// First byte denotes stream type. 0 = stdin, 1 = stdout, 2 = stderr
+		byte streamTypeId = header[0];
+		if (streamTypeId < 0 || streamTypeId >= StreamType.values().length) {
+			throw new IllegalStateException("Stream type is out of bounds. Must be >= 0 and < "
+					+ StreamType.values().length + ", but was " + streamTypeId + ". Will abort parsing.");
+		}
+
 		long size = 0;
 		for (int i = 0; i < 4; i++) {
 			size = (size << 8) + (header[i + 4] & 0xff);
 		}
 		byte[] payload = read(inputStream, size);
+
+		StreamType streamType = StreamType.values()[streamTypeId];
 		return new LogUpdateEvent(streamType, payload);
 	}
 
