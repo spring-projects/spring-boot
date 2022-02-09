@@ -281,7 +281,7 @@ public final class ConfigData {
 		 * profile specific sibling imports.
 		 * @since 2.4.5
 		 */
-		PROFILE_SPECIFIC;
+		PROFILE_SPECIFIC
 
 	}
 

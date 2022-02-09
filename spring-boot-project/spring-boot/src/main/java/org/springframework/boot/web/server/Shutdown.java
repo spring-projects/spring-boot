@@ -33,6 +33,6 @@ public enum Shutdown {
 	/**
 	 * The {@link WebServer} should shut down immediately.
 	 */
-	IMMEDIATE;
+	IMMEDIATE
 
 }
