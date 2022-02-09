@@ -1,4 +1,4 @@
-[[auto-configuration-classes.actuator]]
+[[appendix.auto-configuration-classes.actuator]]
 == spring-boot-actuator-autoconfigure
 The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 

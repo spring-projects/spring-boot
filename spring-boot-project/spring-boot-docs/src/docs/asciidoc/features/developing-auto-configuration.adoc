@@ -243,7 +243,7 @@ Here are some rules we follow internally to make sure descriptions are consisten
 * Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
 
-Make sure to <<configuration-metadata#configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
+Make sure to <<configuration-metadata#appendix.configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
 You may want to review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make sure your keys are properly documented.
 Using your own starter in a compatible IDE is also a good idea to validate that quality of the metadata.
 
