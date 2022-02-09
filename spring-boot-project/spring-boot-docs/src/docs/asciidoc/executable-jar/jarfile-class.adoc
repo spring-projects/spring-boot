@@ -1,4 +1,4 @@
-[[executable-jar.jarfile-class]]
+[[appendix.executable-jar.jarfile-class]]
 == Spring Boot's "`JarFile`" Class
 The core class used to support loading nested jars is `org.springframework.boot.loader.jar.JarFile`.
 It lets you load jar content from a standard jar file or from nested child jar data.
@@ -25,7 +25,7 @@ We do not need to unpack the archive, and we do not need to read all entry data 
 
 
 
-[[executable-jar.jarfile-class.compatibility]]
+[[appendix.executable-jar.jarfile-class.compatibility]]
 === Compatibility with the Standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.

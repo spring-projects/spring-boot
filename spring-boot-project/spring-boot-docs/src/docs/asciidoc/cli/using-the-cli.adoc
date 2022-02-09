@@ -146,7 +146,7 @@ Doing so consults Spring Boot's default dependency metadata to deduce the artifa
 
 NOTE: The default metadata is tied to the version of the CLI that you use.
 It changes only when you move to a new version of the CLI, putting you in control of when the versions of your dependencies may change.
-A table showing the dependencies and their versions that are included in the default metadata can be found in the <<dependency-versions#dependency-versions,appendix>>.
+A table showing the dependencies and their versions that are included in the default metadata can be found in the <<dependency-versions#appendix.dependency-versions,appendix>>.
 
 
 

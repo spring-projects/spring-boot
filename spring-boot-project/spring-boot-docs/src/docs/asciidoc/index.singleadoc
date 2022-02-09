@@ -37,14 +37,14 @@ include::howto.adoc[leveloffset=+1]
 [[appendix]]
 == Appendices
 
-include::application-properties.adoc[leveloffset=+1]
+include::application-properties.adoc[leveloffset=+2]
 
-include::configuration-metadata.adoc[leveloffset=+1]
+include::configuration-metadata.adoc[leveloffset=+2]
 
-include::auto-configuration-classes.adoc[leveloffset=+1]
+include::auto-configuration-classes.adoc[leveloffset=+2]
 
-include::test-auto-configuration.adoc[leveloffset=+1]
+include::test-auto-configuration.adoc[leveloffset=+2]
 
-include::executable-jar.adoc[leveloffset=+1]
+include::executable-jar.adoc[leveloffset=+2]
 
-include::dependency-versions.adoc[leveloffset=+1]
+include::dependency-versions.adoc[leveloffset=+2]

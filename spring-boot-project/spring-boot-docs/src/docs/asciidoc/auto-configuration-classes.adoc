@@ -1,5 +1,5 @@
 [appendix]
-[[auto-configuration-classes]]
+[[appendix.auto-configuration-classes]]
 = Auto-configuration Classes
 include::attributes.adoc[]
 

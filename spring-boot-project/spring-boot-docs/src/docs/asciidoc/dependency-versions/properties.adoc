@@ -1,4 +1,4 @@
-[[dependency-versions.properties]]
+[[appendix.dependency-versions.properties]]
 == Version Properties
 
 The following table provides all properties that can be used to override the versions managed by Spring Boot.
