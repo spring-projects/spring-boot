@@ -1,4 +1,4 @@
-[[executable-jar.property-launcher]]
+[[appendix.executable-jar.property-launcher]]
 == PropertiesLauncher Features
 `PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
 The following table describes these properties:

@@ -1,4 +1,4 @@
-[[executable-jar.nested-jars]]
+[[appendix.executable-jar.nested-jars]]
 == Nested JARs
 Java does not provide any standard way to load nested jar files (that is, jar files that are themselves contained within a jar).
 This can be problematic if you need to distribute a self-contained application that can be run from the command line without unpacking.
@@ -11,7 +11,7 @@ Spring Boot takes a different approach and lets you actually nest jars directly.
 
 
 
-[[executable-jar.nested-jars.jar-structure]]
+[[appendix.executable-jar.nested-jars.jar-structure]]
 === The Executable Jar File Structure
 Spring Boot Loader-compatible jar files should be structured in the following way:
 
@@ -41,7 +41,7 @@ Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 
 
-[[executable-jar.nested-jars.war-structure]]
+[[appendix.executable-jar.nested-jars.war-structure]]
 === The Executable War File Structure
 Spring Boot Loader-compatible war files should be structured in the following way:
 
@@ -75,7 +75,7 @@ Any dependencies that are required when running embedded but are not required wh
 
 
 
-[[executable-jar.nested-jars.index-files]]
+[[appendix.executable-jar.nested-jars.index-files]]
 === Index Files
 Spring Boot Loader-compatible jar and war archives can include additional index files under the `BOOT-INF/` directory.
 A `classpath.idx` file can be provided for both jars and wars, and it provides the ordering that jars should be added to the classpath.
@@ -86,7 +86,7 @@ These files, however, are _not_ parsed internally as YAML and they must be writt
 
 
 
-[[executable-jar.nested-jars.classpath-index]]
+[[appendix.executable-jar.nested-jars.classpath-index]]
 === Classpath Index
 The classpath index file can be provided in `BOOT-INF/classpath.idx`.
 It provides a list of jar names (including the directory) in the order that they should be added to the classpath.
@@ -118,7 +118,7 @@ The index file would look like this:
 
 
 
-[[executable-jar.nested-jars.layer-index]]
+[[appendix.executable-jar.nested-jars.layer-index]]
 === Layer Index
 The layers index file can be provided in `BOOT-INF/layers.idx`.
 It provides a list of layers and the parts of the jar that should be contained within them.

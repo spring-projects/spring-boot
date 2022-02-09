@@ -1,5 +1,5 @@
 [appendix]
-[[configuration-metadata]]
+[[appendix.configuration-metadata]]
 = Configuration Metadata
 include::attributes.adoc[]
 
@@ -9,7 +9,7 @@ Spring Boot jars include metadata files that provide details of all supported co
 The files are designed to let IDE developers offer contextual help and "`code completion`" as users are working with `application.properties` or `application.yml` files.
 
 The majority of the metadata file is generated automatically at compile time by processing all items annotated with `@ConfigurationProperties`.
-However, it is possible to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,write part of the metadata manually>> for corner cases or more advanced use cases.
+However, it is possible to <<configuration-metadata#appendix.configuration-metadata.annotation-processor.adding-additional-metadata,write part of the metadata manually>> for corner cases or more advanced use cases.
 
 
 

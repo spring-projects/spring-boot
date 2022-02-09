@@ -307,7 +307,7 @@ To test that object JSON serialization and deserialization is working as expecte
 * `Gson`
 * `Jsonb`
 
-TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 If you need to configure elements of the auto-configuration, you can use the `@AutoConfigureJsonTesters` annotation.
 
@@ -336,7 +336,7 @@ To test whether Spring MVC controllers are working as expected, use the `@WebMvc
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as the Jackson `Module`, you can import additional configuration classes by using `@Import` on your test.
 
@@ -378,7 +378,7 @@ To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controlle
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
 
@@ -411,7 +411,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Cassandra with Spring Boot, see "<<data#data.nosql.cassandra>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
@@ -430,7 +430,7 @@ This can be disabled using the `showSql()` attribute of the annotation.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 By default, data JPA tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -462,7 +462,7 @@ By default, it configures an in-memory embedded database and a `JdbcTemplate`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JdbcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 By default, JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -482,7 +482,7 @@ By default, it configures an in-memory embedded database, a `JdbcTemplate`, and 
 Only `AbstractJdbcConfiguration` sub-classes are scanned when the `@DataJdbcTest` annotation is used, regular `@Component` and `@ConfigurationProperties` beans are not scanned.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 By default, Data JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -502,7 +502,7 @@ If you want to replace it with an in-memory database, you can use `@AutoConfigur
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
@@ -522,7 +522,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using MongoDB with Spring Boot, see "<<data#data.nosql.mongodb>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following class shows the `@DataMongoTest` annotation in use:
 
@@ -543,7 +543,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Neo4J with Spring Boot, see "<<data#data.nosql.neo4j>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
@@ -568,7 +568,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Redis with Spring Boot, see "<<data#data.nosql.redis>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataRedisTest` annotation in use:
 
@@ -584,7 +584,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using LDAP with Spring Boot, see "<<data#data.nosql.ldap>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataLdapTest` annotation in use:
 
@@ -604,7 +604,7 @@ By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `R
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@RestClientTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
@@ -684,7 +684,7 @@ By default, it configures a mock `WebServiceServer` bean and automatically custo
 (For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
 
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@WebServiceClientTest` annotation in use:
 

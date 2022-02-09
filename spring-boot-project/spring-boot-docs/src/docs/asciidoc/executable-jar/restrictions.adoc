@@ -1,10 +1,10 @@
-[[executable-jar.restrictions]]
+[[appendix.executable-jar.restrictions]]
 == Executable Jar Restrictions
 You need to consider the following restrictions when working with a Spring Boot Loader packaged application:
 
 
 
-[[executable-jar-zip-entry-compression]]
+[[appendix.executable-jar-zip-entry-compression]]
 * Zip entry compression:
 The `ZipEntry` for a nested jar must be saved by using the `ZipEntry.STORED` method.
 This is required so that we can seek directly to individual content within the nested jar.
@@ -12,7 +12,7 @@ The content of the nested jar file itself can still be compressed, as can any ot
 
 
 
-[[executable-jar-system-classloader]]
+[[appendix.executable-jar-system-classloader]]
 * System classLoader:
 Launched applications should use `Thread.getContextClassLoader()` when loading classes (most libraries and frameworks do so by default).
 Trying to load nested jar classes with `ClassLoader.getSystemClassLoader()` fails.
