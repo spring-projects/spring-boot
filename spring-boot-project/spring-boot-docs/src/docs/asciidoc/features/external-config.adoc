@@ -803,7 +803,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/usi
 ----
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
-See the <<configuration-metadata#configuration-metadata,appendix>> for details.
+See the <<configuration-metadata#appendix.configuration-metadata,appendix>> for details.
 
 
 
@@ -1201,7 +1201,7 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 | Limited (see <<features#features.external-config.typesafe-configuration-properties.vs-value-annotation.note,note below>>)
 
-| <<configuration-metadata#configuration-metadata,Meta-data support>>
+| <<configuration-metadata#appendix.configuration-metadata,Meta-data support>>
 | Yes
 | No
 

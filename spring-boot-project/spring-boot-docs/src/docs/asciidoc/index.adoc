@@ -30,9 +30,9 @@ The reference documentation consists of the following sections:
 The reference documentation has the following appendices:
 
 [horizontal]
-<<application-properties#application-properties,Application Properties>> :: Common application properties that you can use to configure your application.
-<<configuration-metadata#configuration-metadata,Configuration Metadata>> :: Metadata that you can use to describe configuration properties.
-<<auto-configuration-classes#auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
-<<test-auto-configuration#test-auto-configuration,Test Auto-configuration Annotations>> :: Test auto-configuration annotations that you can use to test slices of your application.
-<<executable-jar#executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
-<<dependency-versions#dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.
+<<application-properties#appendix.application-properties,Application Properties>> :: Common application properties that you can use to configure your application.
+<<configuration-metadata#appendix.configuration-metadata,Configuration Metadata>> :: Metadata that you can use to describe configuration properties.
+<<auto-configuration-classes#appendix.auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
+<<test-auto-configuration#appendix.test-auto-configuration,Test Auto-configuration Annotations>> :: Test auto-configuration annotations that you can use to test slices of your application.
+<<executable-jar#appendix.executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
+<<dependency-versions#appendix.dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.

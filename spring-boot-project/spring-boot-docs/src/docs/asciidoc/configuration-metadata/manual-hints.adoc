@@ -1,4 +1,4 @@
-[[configuration-metadata.manual-hints]]
+[[appendix.configuration-metadata.manual-hints]]
 == Providing Manual Hints
 To improve the user experience and further assist the user in configuring a given property, you can provide additional metadata that:
 
@@ -7,10 +7,10 @@ To improve the user experience and further assist the user in configuring a give
 
 
 
-[[configuration-metadata.manual-hints.value-hint]]
+[[appendix.configuration-metadata.manual-hints.value-hint]]
 === Value Hint
 The `name` attribute of each hint refers to the `name` of a property.
-In the <<configuration-metadata#configuration-metadata.format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
+In the <<configuration-metadata#appendix.configuration-metadata.format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
 Each value may have a description as well.
 
 If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
@@ -24,7 +24,7 @@ include::{docs-java}/configurationmetadata/manualhints/valuehint/MyProperties.ja
 ----
 
 The magic values are (in this example) are `sample1` and `sample2`.
-In order to offer additional content assistance for the keys, you could add the following JSON to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
+In order to offer additional content assistance for the keys, you could add the following JSON to <<configuration-metadata#appendix.configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
 
 [source,json,indent=0,subs="verbatim"]
 ----
@@ -48,7 +48,7 @@ If your IDE supports it, this is by far the most effective approach to auto-comp
 
 
 
-[[configuration-metadata.manual-hints.value-providers]]
+[[appendix.configuration-metadata.manual-hints.value-providers]]
 === Value Providers
 Providers are a powerful way to attach semantics to a property.
 In this section, we define the official providers that you can use for your own hints.
@@ -92,7 +92,7 @@ If no provider for a given property is supported, no special content assistance 
 
 
 
-[[configuration-metadata.manual-hints.value-providers.any]]
+[[appendix.configuration-metadata.manual-hints.value-providers.any]]
 ==== Any
 The special **any** provider value permits any additional values to be provided.
 Regular value validation based on the property type should be applied if this is supported.
@@ -127,7 +127,7 @@ Note that, in the preceding example, any other value is also allowed.
 
 
 
-[[configuration-metadata.manual-hints.value-providers.class-reference]]
+[[appendix.configuration-metadata.manual-hints.value-providers.class-reference]]
 ==== Class Reference
 The **class-reference** provider auto-completes classes available in the project.
 This provider supports the following parameters:
@@ -171,7 +171,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 
 
 
-[[configuration-metadata.manual-hints.value-providers.handle-as]]
+[[appendix.configuration-metadata.manual-hints.value-providers.handle-as]]
 ==== Handle As
 The **handle-as** provider lets you substitute the type of the property to a more high-level type.
 This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
@@ -221,7 +221,7 @@ It is actually used internally as a `org.springframework.core.io.Resource` but c
 
 
 
-[[configuration-metadata.manual-hints.value-providers.logger-name]]
+[[appendix.configuration-metadata.manual-hints.value-providers.logger-name]]
 ==== Logger Name
 The **logger-name** provider auto-completes valid logger names and <<features#features.logging.log-groups,logger groups>>.
 Typically, package and class names available in the current project can be auto-completed.
@@ -308,7 +308,7 @@ As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints
 
 
 
-[[configuration-metadata.manual-hints.value-providers.spring-bean-reference]]
+[[appendix.configuration-metadata.manual-hints.value-providers.spring-bean-reference]]
 ==== Spring Bean Reference
 The **spring-bean-reference** provider auto-completes the beans that are defined in the configuration of the current project.
 This provider supports the following parameters:
@@ -348,7 +348,7 @@ If you provide that hint, you still need to transform the bean name into an actu
 
 
 
-[[configuration-metadata.manual-hints.value-providers.spring-profile-name]]
+[[appendix.configuration-metadata.manual-hints.value-providers.spring-profile-name]]
 ==== Spring Profile Name
 The **spring-profile-name** provider auto-completes the Spring profiles that are defined in the configuration of the current project.
 
