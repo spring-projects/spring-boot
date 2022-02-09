@@ -699,7 +699,7 @@ By default, it configures a `MockWebServiceClient` bean that can be used to call
 (For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
 
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@WebServiceServerTest` annotation in use:
 

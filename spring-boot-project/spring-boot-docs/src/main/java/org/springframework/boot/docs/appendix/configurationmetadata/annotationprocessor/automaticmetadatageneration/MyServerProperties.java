@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.annotationprocessor.automaticmetadatageneration;
+package org.springframework.boot.docs.appendix.configurationmetadata.annotationprocessor.automaticmetadatageneration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
