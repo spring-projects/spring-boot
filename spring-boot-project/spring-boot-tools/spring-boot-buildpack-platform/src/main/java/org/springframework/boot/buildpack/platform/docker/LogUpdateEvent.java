@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import org.springframework.util.StreamUtils;
+
 /**
  * An update event used to provide log updates.
  *
@@ -76,20 +78,19 @@ public class LogUpdateEvent extends UpdateEvent {
 	static void readAll(InputStream inputStream, Consumer<LogUpdateEvent> consumer) throws IOException {
 		try {
 			LogUpdateEvent event;
-			do {
-				try {
-					event = LogUpdateEvent.read(inputStream);
-					if (event != null) {
-						consumer.accept(event);
-					}
-				}
-				catch (IllegalStateException e) {
-					// If parsing the event failed, convert exception into a stdErr event
-					event = new LogUpdateEvent(StreamType.STD_ERR, e.getMessage().getBytes(StandardCharsets.UTF_8));
-					consumer.accept(event);
-				}
+			while ((event = LogUpdateEvent.read(inputStream)) != null) {
+				consumer.accept(event);
 			}
-			while (event != null);
+		}
+		catch (IllegalStateException ex) {
+			// Parsing has failed, abort further parsing
+			LogUpdateEvent abortedEvent = new LogUpdateEvent(StreamType.STD_ERR,
+					ex.getMessage().getBytes(StandardCharsets.UTF_8));
+			consumer.accept(abortedEvent);
+
+			// At this point, the inputStream is burned, consume it fully to prevent
+			// further processing
+			StreamUtils.drain(inputStream);
 		}
 		finally {
 			inputStream.close();
@@ -104,11 +105,9 @@ public class LogUpdateEvent extends UpdateEvent {
 
 		// First byte denotes stream type. 0 = stdin, 1 = stdout, 2 = stderr
 		byte streamTypeId = header[0];
-		boolean illegalStreamType = false;
 		if (streamTypeId < 0 || streamTypeId >= StreamType.values().length) {
-			// Don't throw exception right here, otherwise the stream is not advanced
-			// correctly, and subsequent reads start from a wrong position
-			illegalStreamType = true;
+			throw new IllegalStateException("Stream type is out of bounds. Must be >= 0 and < "
+					+ StreamType.values().length + ", but was " + streamTypeId + ". Will abort parsing.");
 		}
 
 		long size = 0;
@@ -116,13 +115,6 @@ public class LogUpdateEvent extends UpdateEvent {
 			size = (size << 8) + (header[i + 4] & 0xff);
 		}
 		byte[] payload = read(inputStream, size);
-
-		if (illegalStreamType) {
-			// At this point the stream has been advanved correctly and it is safe to
-			// throw exceptions
-			throw new IllegalStateException("Stream type is out of bounds. Must be >= 0 and < "
-					+ StreamType.values().length + ", but was " + streamTypeId);
-		}
 
 		StreamType streamType = StreamType.values()[streamTypeId];
 		return new LogUpdateEvent(streamType, payload);
