@@ -177,7 +177,7 @@ public final class AnsiColors {
 			double deltaA = this.a - other.a;
 			double deltaB = this.b - other.b;
 			double deltaH = Math.sqrt(Math.max(0.0, deltaA * deltaA + deltaB * deltaB - deltaC * deltaC));
-			return Math.sqrt(Math.max(0.0, Math.pow((this.l - other.l) / (1.0), 2)
+			return Math.sqrt(Math.max(0.0, Math.pow((this.l - other.l), 2)
 					+ Math.pow(deltaC / (1 + 0.045 * c1), 2) + Math.pow(deltaH / (1 + 0.015 * c1), 2.0)));
 		}
 
