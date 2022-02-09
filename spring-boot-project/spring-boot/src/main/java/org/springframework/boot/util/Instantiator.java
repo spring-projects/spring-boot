@@ -111,7 +111,7 @@ public class Instantiator<T> {
 	 */
 	public List<T> instantiateTypes(Collection<Class<?>> types) {
 		Assert.notNull(types, "Types must not be null");
-		return instantiate(types.stream().map((type) -> TypeSupplier.forType(type)));
+		return instantiate(types.stream().map(TypeSupplier::forType));
 	}
 
 	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {

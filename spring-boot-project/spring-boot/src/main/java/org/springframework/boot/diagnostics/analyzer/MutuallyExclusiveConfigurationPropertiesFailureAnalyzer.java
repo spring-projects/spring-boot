@@ -18,6 +18,7 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -85,7 +86,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 	private void appendDetails(StringBuilder message, MutuallyExclusiveConfigurationPropertiesException cause,
 			List<Descriptor> descriptors) {
-		descriptors.sort((d1, d2) -> d1.propertyName.compareTo(d2.propertyName));
+		descriptors.sort(Comparator.comparing(d -> d.propertyName));
 		message.append(String.format("The following configuration properties are mutually exclusive:%n%n"));
 		sortedStrings(cause.getMutuallyExclusiveNames())
 				.forEach((name) -> message.append(String.format("\t%s%n", name)));

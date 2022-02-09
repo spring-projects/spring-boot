@@ -32,7 +32,7 @@ class IncompatibleConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<I
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, IncompatibleConfigurationException cause) {
 		String action = String.format("Review the docs for %s and change the configured values.",
-				cause.getIncompatibleKeys().stream().collect(Collectors.joining(", ")));
+				String.join(", ", cause.getIncompatibleKeys()));
 		return new FailureAnalysis(cause.getMessage(), action, cause);
 	}
 

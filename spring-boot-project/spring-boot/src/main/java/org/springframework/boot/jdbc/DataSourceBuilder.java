@@ -399,7 +399,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 			MappedDataSourceProperties<T> result = null;
 			result = lookup(classLoader, dataSourceType, result,
 					"org.springframework.jdbc.datasource.SimpleDriverDataSource",
-					() -> new SimpleDataSourceProperties());
+					SimpleDataSourceProperties::new);
 			result = lookup(classLoader, dataSourceType, result, "oracle.jdbc.datasource.OracleDataSource",
 					OracleDataSourceProperties::new);
 			result = lookup(classLoader, dataSourceType, result, "org.h2.jdbcx.JdbcDataSource",
