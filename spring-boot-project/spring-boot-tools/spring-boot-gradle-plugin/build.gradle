@@ -69,6 +69,10 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 }
 
+tasks.named('test') {
+	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
+}
+
 asciidoctor {
 	sources {
 		include "index.adoc"
