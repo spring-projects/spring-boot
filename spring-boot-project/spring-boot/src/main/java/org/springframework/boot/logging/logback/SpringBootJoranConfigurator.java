@@ -32,7 +32,7 @@ import org.springframework.core.env.Environment;
  */
 class SpringBootJoranConfigurator extends JoranConfigurator {
 
-	private LoggingInitializationContext initializationContext;
+	private final LoggingInitializationContext initializationContext;
 
 	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
 		this.initializationContext = initializationContext;

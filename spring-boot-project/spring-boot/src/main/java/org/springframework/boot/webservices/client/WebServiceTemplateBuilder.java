@@ -509,7 +509,7 @@ public class WebServiceTemplateBuilder {
 
 		private final boolean onlyAdditional;
 
-		private Set<WebServiceMessageSender> messageSenders;
+		private final Set<WebServiceMessageSender> messageSenders;
 
 		private WebServiceMessageSenders() {
 			this(true, Collections.emptySet());

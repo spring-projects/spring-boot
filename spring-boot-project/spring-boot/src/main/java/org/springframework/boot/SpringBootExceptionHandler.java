@@ -40,7 +40,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 		LOG_CONFIGURATION_MESSAGES = Collections.unmodifiableSet(messages);
 	}
 
-	private static LoggedExceptionHandlerThreadLocal handler = new LoggedExceptionHandlerThreadLocal();
+	private static final LoggedExceptionHandlerThreadLocal HANDLER = new LoggedExceptionHandlerThreadLocal();
 
 	private final UncaughtExceptionHandler parent;
 
@@ -111,7 +111,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	static SpringBootExceptionHandler forCurrentThread() {
-		return handler.get();
+		return HANDLER.get();
 	}
 
 	/**

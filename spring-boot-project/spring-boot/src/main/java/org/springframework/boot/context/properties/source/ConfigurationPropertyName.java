@@ -59,7 +59,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(Elements.EMPTY);
 
-	private Elements elements;
+	private final Elements elements;
 
 	private final CharSequence[] uniformElements;
 

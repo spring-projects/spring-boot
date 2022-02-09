@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  */
 public class BoundConfigurationProperties {
 
-	private Map<ConfigurationPropertyName, ConfigurationProperty> properties = new LinkedHashMap<>();
+	private final Map<ConfigurationPropertyName, ConfigurationProperty> properties = new LinkedHashMap<>();
 
 	/**
 	 * The bean name that this class is registered with.

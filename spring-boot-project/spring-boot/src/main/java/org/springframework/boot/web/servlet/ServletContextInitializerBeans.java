@@ -73,7 +73,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 
 	private final List<Class<? extends ServletContextInitializer>> initializerTypes;
 
-	private List<ServletContextInitializer> sortedList;
+	private final List<ServletContextInitializer> sortedList;
 
 	@SafeVarargs
 	@SuppressWarnings("varargs")

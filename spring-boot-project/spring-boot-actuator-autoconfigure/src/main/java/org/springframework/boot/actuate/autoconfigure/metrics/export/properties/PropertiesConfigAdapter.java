@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class PropertiesConfigAdapter<T> {
 
-	private T properties;
+	private final T properties;
 
 	/**
 	 * Create a new {@link PropertiesConfigAdapter} instance.
