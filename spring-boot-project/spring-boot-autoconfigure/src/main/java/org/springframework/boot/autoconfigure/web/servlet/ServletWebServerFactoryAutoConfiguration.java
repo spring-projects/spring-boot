@@ -87,30 +87,32 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
+	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	static class ForwardedHeaderFilterConfiguration {
 
 		@Bean
 		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
-		public FilterRegistrationBean<ForwardedHeaderFilter> tomcatForwardedHeaderFilter(
-				ServerProperties serverProperties) {
-			return createForwardedHeaderFilter(serverProperties.getTomcat().isUseRelativeRedirects());
+		ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
+			return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());
 		}
 
 		@Bean
-		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
-		public FilterRegistrationBean<ForwardedHeaderFilter> defaultForwardedHeaderFilter() {
-			return createForwardedHeaderFilter(false);
-		}
-
-		private FilterRegistrationBean<ForwardedHeaderFilter> createForwardedHeaderFilter(boolean relativeRedirects) {
+		FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
+				ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
 			ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
-			filter.setRelativeRedirects(relativeRedirects);
+			customizerProvider.ifAvailable((customizer) -> customizer.customize(filter));
 			FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
 			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
 			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return registration;
 		}
+
+	}
+
+	interface ForwardedHeaderFilterCustomizer {
+
+		void customize(ForwardedHeaderFilter filter);
 
 	}
 
