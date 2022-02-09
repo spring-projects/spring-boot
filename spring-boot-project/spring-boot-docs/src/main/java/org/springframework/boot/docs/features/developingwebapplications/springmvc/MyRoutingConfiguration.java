@@ -23,8 +23,6 @@ import org.springframework.web.servlet.function.RequestPredicate;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
 
-import static org.springframework.web.servlet.function.RequestPredicates.DELETE;
-import static org.springframework.web.servlet.function.RequestPredicates.GET;
 import static org.springframework.web.servlet.function.RequestPredicates.accept;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 
@@ -36,10 +34,11 @@ public class MyRoutingConfiguration {
 	@Bean
 	public RouterFunction<ServerResponse> routerFunction(MyUserHandler userHandler) {
 		// @formatter:off
-		return route(
-				GET("/{user}").and(ACCEPT_JSON), userHandler::getUser).andRoute(
-				GET("/{user}/customers").and(ACCEPT_JSON), userHandler::getUserCustomers).andRoute(
-				DELETE("/{user}").and(ACCEPT_JSON), userHandler::deleteUser);
+		return route()
+				.GET("/{user}", ACCEPT_JSON, userHandler::getUser)
+				.GET("/{user}/customers", ACCEPT_JSON, userHandler::getUserCustomers)
+				.DELETE("/{user}", ACCEPT_JSON, userHandler::deleteUser)
+				.build();
 		// @formatter:on
 	}
 

@@ -23,8 +23,6 @@ import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -36,10 +34,11 @@ public class MyRoutingConfiguration {
 	@Bean
 	public RouterFunction<ServerResponse> monoRouterFunction(MyUserHandler userHandler) {
 		// @formatter:off
-		return route(
-				GET("/{user}").and(ACCEPT_JSON), userHandler::getUser).andRoute(
-				GET("/{user}/customers").and(ACCEPT_JSON), userHandler::getUserCustomers).andRoute(
-				DELETE("/{user}").and(ACCEPT_JSON), userHandler::deleteUser);
+		return route()
+				.GET("/{user}", ACCEPT_JSON, userHandler::getUser)
+				.GET("/{user}/customers", ACCEPT_JSON, userHandler::getUserCustomers)
+				.DELETE("/{user}", ACCEPT_JSON, userHandler::deleteUser)
+				.build();
 		// @formatter:on
 	}
 
