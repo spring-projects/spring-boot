@@ -22,7 +22,7 @@ The following code shows a typical `@RestController` that serves JSON data:
 include::{docs-java}/features/developingwebapplications/springmvc/MyRestController.java[]
 ----
 
-"WebMvc.fn", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
+"`WebMvc.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
