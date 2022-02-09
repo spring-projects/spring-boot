@@ -5,11 +5,11 @@ plugins {
 
 // tag::classifiers[]
 bootJar {
-	classifier = 'boot'
+	archiveClassifier = 'boot'
 }
 
 jar {
-	classifier = ''
+	archiveClassifier = ''
 }
 // end::classifiers[]
 
