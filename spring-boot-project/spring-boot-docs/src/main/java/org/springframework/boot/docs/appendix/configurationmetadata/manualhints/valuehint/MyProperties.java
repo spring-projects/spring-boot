@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.manualhints.valuehint;
+package org.springframework.boot.docs.appendix.configurationmetadata.manualhints.valuehint;
 
 import java.util.Map;
 

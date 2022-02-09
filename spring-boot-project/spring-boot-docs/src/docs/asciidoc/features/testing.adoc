@@ -444,7 +444,7 @@ This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComp
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@GraphQlTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@GraphQlTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
 
@@ -752,7 +752,7 @@ By default, it configures a `MockWebServiceClient` bean that can be used to call
 (For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
 
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@WebServiceServerTest` annotation in use:
 
