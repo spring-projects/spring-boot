@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.test.rsocket.server;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,24 +27,23 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LocalServerPort @LocalServerPort}.
+ * Tests for {@link LocalRSocketServerPort @LocalRSocketServerPort}.
  *
- * @author Anand Shah
- * @author Phillip Webb
+ * @author Verónica Vásquez
+ * @author Eddú Meléndez
  */
-@Deprecated
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(properties = "local.server.port=8181")
-class LocalServerPortTests {
+@TestPropertySource(properties = "local.rsocket.server.port=8181")
+class LocalRSocketServerPortTests {
 
-	@Value("${local.server.port}")
+	@Value("${local.rsocket.server.port}")
 	private String fromValue;
 
-	@LocalServerPort
+	@LocalRSocketServerPort
 	private String fromAnnotation;
 
 	@Test
-	void testLocalServerPortAnnotation() {
+	void testLocalRSocketServerPortAnnotation() {
 		assertThat(this.fromAnnotation).isNotNull().isEqualTo(this.fromValue);
 	}
 

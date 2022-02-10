@@ -39,7 +39,6 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -147,7 +146,6 @@ class WebSocketMessagingAutoConfigurationTests {
 	private Object performStompSubscription(String topic) throws Throwable {
 		TestPropertyValues.of("server.port:0", "spring.jackson.serialization.indent-output:true").applyTo(this.context);
 		this.context.register(WebSocketMessagingConfiguration.class);
-		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		WebSocketStompClient stompClient = new WebSocketStompClient(this.sockJsClient);
 		final AtomicReference<Throwable> failure = new AtomicReference<>();
@@ -194,8 +192,7 @@ class WebSocketMessagingAutoConfigurationTests {
 		};
 
 		stompClient.setMessageConverter(new SimpleMessageConverter());
-		stompClient.connect("ws://localhost:{port}/messaging", handler,
-				this.context.getEnvironment().getProperty("local.server.port"));
+		stompClient.connect("ws://localhost:{port}/messaging", handler, this.context.getWebServer().getPort());
 
 		if (!latch.await(30, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {

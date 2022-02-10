@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.test.web.server;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Anand Shah
  * @author Phillip Webb
  */
-@Deprecated
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "local.server.port=8181")
 class LocalServerPortTests {
