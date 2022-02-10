@@ -22,13 +22,27 @@ The following code shows a typical `@RestController` that serves JSON data:
 include::{docs-java}/features/developingwebapplications/springmvc/MyRestController.java[]
 ----
 
+"`WebMvc.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/developingwebapplications/springmvc/MyRoutingConfiguration.java[]
+----
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/developingwebapplications/springmvc/MyUserHandler.java[]
+----
+
 Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
 There are also several guides that cover Spring MVC available at https://spring.io/guides.
 
-
+TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
+Beans can be ordered if you need to apply a precedence.
 
 [[features.developing-web-applications.spring-mvc.auto-configuration]]
 ==== Spring MVC Auto-configuration
+
 Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
