@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,16 @@ class CacheMetricsAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withUserConfiguration(CachingConfiguration.class).withConfiguration(
 					AutoConfigurations.of(CacheAutoConfiguration.class, CacheMetricsAutoConfiguration.class));
+
+	@Test
+	void autoConfiguredCache2kIsInstrumented() {
+		this.contextRunner.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cache-names=cache1,cache2")
+				.run((context) -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.get("cache.gets").tags("name", "cache1").tags("cacheManager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache2").tags("cacheManager", "cacheManager").meter();
+				});
+	}
 
 	@Test
 	void autoConfiguredCacheManagerIsInstrumented() {

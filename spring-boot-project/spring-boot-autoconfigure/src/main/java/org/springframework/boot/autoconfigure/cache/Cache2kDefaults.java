@@ -16,59 +16,17 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import org.cache2k.Cache2kBuilder;
+
 /**
- * Supported cache types (defined in order of precedence).
+ * Default configuration for cache2k when Spring boot auto configuration is creating the
+ * Cache Manager.
  *
- * @author Stephane Nicoll
- * @author Phillip Webb
- * @author Eddú Meléndez
- * @since 1.3.0
+ * @author Jens Wilke
+ * @since 2.7.0
  */
-public enum CacheType {
+public interface Cache2kDefaults {
 
-	/**
-	 * Generic caching using 'Cache' beans from the context.
-	 */
-	GENERIC,
-
-	/**
-	 * JCache (JSR-107) backed caching.
-	 */
-	JCACHE,
-
-	/**
-	 * Hazelcast backed caching.
-	 */
-	HAZELCAST,
-
-	/**
-	 * Couchbase backed caching.
-	 */
-	COUCHBASE,
-
-	/**
-	 * Redis backed caching.
-	 */
-	REDIS,
-
-	/**
-	 * Cache2k backed caching.
-	 */
-	CACHE2K,
-
-	/**
-	 * Caffeine backed caching.
-	 */
-	CAFFEINE,
-
-	/**
-	 * Simple in-memory caching.
-	 */
-	SIMPLE,
-
-	/**
-	 * No caching.
-	 */
-	NONE
+	void customize(Cache2kBuilder<?, ?> builder);
 
 }
