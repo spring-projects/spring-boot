@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,12 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJava17()) {
-			return Arrays.asList("7.2", "7.3.3");
+			return Arrays.asList("7.2", "7.3.3", "7.4");
 		}
 		if (isJava16()) {
-			return Arrays.asList("7.0.2", "7.1", "7.2", "7.3.3");
+			return Arrays.asList("7.0.2", "7.1", "7.2", "7.3.3", "7.4");
 		}
-		return Arrays.asList("6.8.3", GradleVersion.current().getVersion(), "7.0.2", "7.1.1", "7.2", "7.3.3");
+		return Arrays.asList("6.8.3", GradleVersion.current().getVersion(), "7.0.2", "7.1.1", "7.2", "7.3.3", "7.4");
 	}
 
 	public static String currentOrMinimumCompatible() {
