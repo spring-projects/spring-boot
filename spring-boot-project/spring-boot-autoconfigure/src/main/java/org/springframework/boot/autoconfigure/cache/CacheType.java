@@ -62,6 +62,11 @@ public enum CacheType {
 	REDIS,
 
 	/**
+	 * Cache2k backed caching.
+	 */
+	CACHE2K,
+
+	/**
 	 * Caffeine backed caching.
 	 */
 	CAFFEINE,
