@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.reactive.webflux;
+package org.springframework.boot.docs.web.servlet.springmvc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.server.RequestPredicate;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.servlet.function.RequestPredicate;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.servlet.function.RequestPredicates.accept;
+import static org.springframework.web.servlet.function.RouterFunctions.route;
 
 @Configuration(proxyBeanMethods = false)
 public class MyRoutingConfiguration {
@@ -32,7 +32,7 @@ public class MyRoutingConfiguration {
 	private static final RequestPredicate ACCEPT_JSON = accept(MediaType.APPLICATION_JSON);
 
 	@Bean
-	public RouterFunction<ServerResponse> monoRouterFunction(MyUserHandler userHandler) {
+	public RouterFunction<ServerResponse> routerFunction(MyUserHandler userHandler) {
 		// @formatter:off
 		return route()
 				.GET("/{user}", ACCEPT_JSON, userHandler::getUser)
