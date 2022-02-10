@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,6 +197,15 @@ class RandomAccessDataFileTests {
 		this.inputStream.skip(256);
 		long amountSkipped = this.inputStream.skip(1);
 		assertThat(amountSkipped).isEqualTo(0L);
+	}
+
+	@Test
+	void inputStreamAvailable() throws Exception {
+		assertThat(this.inputStream.available()).isEqualTo(256);
+		this.inputStream.skip(56);
+		assertThat(this.inputStream.available()).isEqualTo(200);
+		this.inputStream.skip(200);
+		assertThat(this.inputStream.available()).isEqualTo(0);
 	}
 
 	@Test
