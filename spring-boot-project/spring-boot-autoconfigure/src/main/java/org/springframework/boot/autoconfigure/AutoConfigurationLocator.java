@@ -36,25 +36,22 @@ public class AutoConfigurationLocator {
 
 	public List<String> locate(Class<?> annotation, ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
-
-		ClassLoader classLoaderToUse = classLoader;
-		if (classLoaderToUse == null) {
-			classLoaderToUse = AutoConfigurationLocator.class.getClassLoader();
-		}
-
-		String annotationName = annotation.getName();
-		String location = LOCATION + annotationName;
-
+		ClassLoader classLoaderToUse = decideClassloader(classLoader);
+		String location = LOCATION + annotation.getName();
 		Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
-
 		List<String> autoConfigurations = new ArrayList<>();
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
-
 			autoConfigurations.addAll(readAutoConfigurations(url));
 		}
-
 		return autoConfigurations;
+	}
+
+	private ClassLoader decideClassloader(ClassLoader classLoader) {
+		if (classLoader == null) {
+			return AutoConfigurationLocator.class.getClassLoader();
+		}
+		return classLoader;
 	}
 
 	private Enumeration<URL> findUrlsInClasspath(ClassLoader classLoader, String location) {
@@ -69,23 +66,17 @@ public class AutoConfigurationLocator {
 
 	private List<String> readAutoConfigurations(URL url) {
 		List<String> autoConfigurations = new ArrayList<>();
-
-		// Read file line by line, ignore comments and empty lines
-		// A comment can be put after a valid class name
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = stripComment(line);
 				line = line.trim();
-
 				if (line.isEmpty()) {
 					continue;
 				}
-
 				autoConfigurations.add(line);
 			}
-
 			return autoConfigurations;
 		}
 		catch (IOException ex) {
@@ -98,8 +89,6 @@ public class AutoConfigurationLocator {
 		if (hash == -1) {
 			return line;
 		}
-
-		// This will return an empty string if the line starts with a comment symbol
 		return line.substring(0, hash);
 	}
 
