@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  * @since 1.3.0
  * @see EnableAutoConfiguration
  */
@@ -175,14 +176,10 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		// Load legacy autoconfigurations from spring.factories
-		List<String> legacyConfigurations = SpringFactoriesLoader
-				.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
-
-		// Load autoconfigurations from AutoConfiguration file
-		List<String> configurations = new ArrayList<>(legacyConfigurations);
+		List<String> configurations = new ArrayList<>();
+		configurations.addAll(
+				SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));
 		configurations.addAll(new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getBeanClassLoader()));
-
 		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
 				+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
