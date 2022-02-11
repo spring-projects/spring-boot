@@ -34,6 +34,8 @@ The file should list your configuration classes, as shown in the following examp
     com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 ----
 
+TIP: You can use comments via `#` in this file.
+
 NOTE: Auto-configurations must be loaded that way _only_.
 Make sure that they are defined in a specific package space and that they are never the target of component scanning.
 Furthermore, auto-configuration classes should not enable component scanning to find additional components.
