@@ -65,6 +65,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.http.MediaType;
@@ -122,7 +123,7 @@ public class ErrorMvcAutoConfiguration {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, WebMvcProperties.class })
 	static class DefaultErrorViewResolverConfiguration {
 
@@ -144,7 +145,7 @@ public class ErrorMvcAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {

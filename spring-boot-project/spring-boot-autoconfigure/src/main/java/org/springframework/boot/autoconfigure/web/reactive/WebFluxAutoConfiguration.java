@@ -49,6 +49,7 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -114,7 +115,7 @@ public class WebFluxAutoConfiguration {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	public static class WelcomePageConfiguration {
 
 		@Bean
@@ -135,7 +136,7 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })
 	@Order(0)
@@ -234,7 +235,7 @@ public class WebFluxAutoConfiguration {
 	/**
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, ServerProperties.class })
 	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
@@ -319,7 +320,7 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnEnabledResourceChain
 	static class ResourceChainCustomizerConfiguration {
 

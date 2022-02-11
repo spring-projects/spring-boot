@@ -46,6 +46,7 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Time
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.util.ResourceUtils;
 
@@ -122,7 +123,7 @@ public class CouchbaseAutoConfiguration {
 		return store;
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonConfiguration {
 

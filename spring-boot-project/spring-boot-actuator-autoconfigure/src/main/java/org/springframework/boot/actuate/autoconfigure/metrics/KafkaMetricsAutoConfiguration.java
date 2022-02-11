@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.kafka.DefaultKafkaProducerFactoryC
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.autoconfigure.kafka.StreamsBuilderFactoryBeanCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -71,7 +72,7 @@ public class KafkaMetricsAutoConfiguration {
 		factory.addListener(new MicrometerProducerListener<>(meterRegistry));
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ KafkaStreamsMetrics.class, StreamsBuilderFactoryBean.class })
 	static class KafkaStreamsMetricsConfiguration {
 

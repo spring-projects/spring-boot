@@ -62,6 +62,7 @@ import org.springframework.boot.web.servlet.DynamicRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
@@ -183,7 +184,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
 	static class JacksonResourceConfigCustomizer {
@@ -196,7 +197,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			};
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass({ JaxbAnnotationIntrospector.class, XmlElement.class })
 		static class JaxbObjectMapperCustomizer {
 

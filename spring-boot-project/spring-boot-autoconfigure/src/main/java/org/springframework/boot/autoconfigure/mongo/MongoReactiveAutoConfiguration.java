@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -61,7 +62,7 @@ public class MongoReactiveAutoConfiguration {
 		return factory.createMongoClient(settings);
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(MongoClientSettings.class)
 	static class MongoClientSettingsConfiguration {
 
@@ -78,7 +79,7 @@ public class MongoReactiveAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ SocketChannel.class, NioEventLoopGroup.class })
 	static class NettyDriverConfiguration {
 

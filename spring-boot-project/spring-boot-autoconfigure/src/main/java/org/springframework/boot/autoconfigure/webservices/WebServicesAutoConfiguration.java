@@ -43,6 +43,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -89,7 +90,7 @@ public class WebServicesAutoConfiguration {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWs
 	protected static class WsConfiguration {
 

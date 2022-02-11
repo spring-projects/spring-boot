@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -54,7 +55,7 @@ public class MappingsEndpointAutoConfiguration {
 				applicationContext);
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class ServletWebConfiguration {
 
@@ -68,7 +69,7 @@ public class MappingsEndpointAutoConfiguration {
 			return new FiltersMappingDescriptionProvider();
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(DispatcherServlet.class)
 		@ConditionalOnBean(DispatcherServlet.class)
 		static class SpringMvcConfiguration {
@@ -82,7 +83,7 @@ public class MappingsEndpointAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnClass(DispatcherHandler.class)
 	@ConditionalOnBean(DispatcherHandler.class)

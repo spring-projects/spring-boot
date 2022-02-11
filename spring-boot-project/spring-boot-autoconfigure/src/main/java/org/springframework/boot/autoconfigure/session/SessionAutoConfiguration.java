@@ -54,6 +54,7 @@ import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
@@ -89,7 +90,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @AutoConfigureBefore({ HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class })
 public class SessionAutoConfiguration {
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class, SessionRepositoryFilterConfiguration.class })
 	static class ServletSessionConfiguration {
@@ -112,7 +113,7 @@ public class SessionAutoConfiguration {
 			return cookieSerializer;
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(RememberMeServices.class)
 		static class RememberMeServicesConfiguration {
 
@@ -124,7 +125,7 @@ public class SessionAutoConfiguration {
 
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
 		@Import({ ServletSessionRepositoryImplementationValidator.class,
 				ServletSessionConfigurationImportSelector.class })
@@ -134,12 +135,12 @@ public class SessionAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 		@Import({ ReactiveSessionRepositoryImplementationValidator.class,
 				ReactiveSessionConfigurationImportSelector.class })

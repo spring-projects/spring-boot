@@ -64,6 +64,7 @@ import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
@@ -182,7 +183,7 @@ public class WebMvcAutoConfiguration {
 	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
 	// on the classpath
 	@SuppressWarnings("deprecation")
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, WebProperties.class })
 	@Order(0)
@@ -383,7 +384,7 @@ public class WebMvcAutoConfiguration {
 	/**
 	 * Configuration equivalent to {@code @EnableWebMvc}.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebProperties.class)
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
@@ -601,7 +602,7 @@ public class WebMvcAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnEnabledResourceChain
 	static class ResourceChainCustomizerConfiguration {
 

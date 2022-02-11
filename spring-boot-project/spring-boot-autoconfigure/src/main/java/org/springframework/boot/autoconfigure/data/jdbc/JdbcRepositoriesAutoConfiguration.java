@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
@@ -52,14 +53,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 @AutoConfigureAfter({ JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })
 public class JdbcRepositoriesAutoConfiguration {
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JdbcRepositoryConfigExtension.class)
 	@Import(JdbcRepositoriesRegistrar.class)
 	static class JdbcRepositoriesConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(AbstractJdbcConfiguration.class)
 	static class SpringBootJdbcConfiguration extends AbstractJdbcConfiguration {
 

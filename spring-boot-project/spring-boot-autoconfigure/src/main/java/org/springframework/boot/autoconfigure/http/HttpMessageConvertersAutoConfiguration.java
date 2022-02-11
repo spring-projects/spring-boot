@@ -35,6 +35,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -70,7 +71,7 @@ public class HttpMessageConvertersAutoConfiguration {
 		return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(StringHttpMessageConverter.class)
 	protected static class StringHttpMessageConverterConfiguration {
 

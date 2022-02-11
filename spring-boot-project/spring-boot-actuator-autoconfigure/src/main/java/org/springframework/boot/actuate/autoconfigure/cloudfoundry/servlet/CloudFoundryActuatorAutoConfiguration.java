@@ -58,6 +58,7 @@ import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -160,7 +161,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	 * interceptor.
 	 */
 	@ConditionalOnClass({ WebSecurityCustomizer.class, WebSecurity.class })
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
 		@Bean

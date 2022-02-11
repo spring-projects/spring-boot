@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -58,7 +59,7 @@ public class WebClientAutoConfiguration {
 		return builder;
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CodecCustomizer.class)
 	protected static class WebClientCodecsConfiguration {
 

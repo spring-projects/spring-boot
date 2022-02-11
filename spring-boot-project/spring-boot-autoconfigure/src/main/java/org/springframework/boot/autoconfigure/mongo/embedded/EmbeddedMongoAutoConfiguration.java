@@ -65,6 +65,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -195,7 +196,7 @@ public class EmbeddedMongoAutoConfiguration {
 		return (Map<String, Object>) propertySource.getSource();
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Logger.class)
 	@ConditionalOnMissingBean(RuntimeConfig.class)
 	static class RuntimeConfigConfiguration {

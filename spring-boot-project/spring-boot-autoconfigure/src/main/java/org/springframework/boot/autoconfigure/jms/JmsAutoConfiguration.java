@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.jms.JmsProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsMessageOperations;
 import org.springframework.jms.core.JmsMessagingTemplate;
@@ -55,7 +56,7 @@ import org.springframework.jms.support.destination.DestinationResolver;
 @Import(JmsAnnotationDrivenConfiguration.class)
 public class JmsAutoConfiguration {
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JmsTemplateConfiguration {
 
 		private final JmsProperties properties;
@@ -100,7 +101,7 @@ public class JmsAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JmsMessagingTemplate.class)
 	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {

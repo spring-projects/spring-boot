@@ -45,6 +45,7 @@ import org.springframework.boot.context.properties.source.MutuallyExclusiveConfi
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.integration.config.EnableIntegration;
@@ -114,7 +115,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Basic Spring Integration configuration.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
 
@@ -164,7 +165,7 @@ public class IntegrationAutoConfiguration {
 	 * Expose a standard {@link ThreadPoolTaskScheduler} if the user has not enabled task
 	 * scheduling explicitly.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(TaskSchedulerBuilder.class)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
 	protected static class IntegrationTaskSchedulerConfiguration {
@@ -179,7 +180,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Spring Integration JMX configuration.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
@@ -203,13 +204,13 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration management configuration.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EnableIntegrationManagement.class)
 	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
 			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 	protected static class IntegrationManagementConfiguration {
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@EnableIntegrationManagement(
 				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
 		protected static class EnableIntegrationManagementConfiguration {
@@ -221,7 +222,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration component scan configuration.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanConfiguration {
@@ -231,7 +232,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration JDBC configuration.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JdbcMessageStore.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@Conditional(OnIntegrationDatasourceInitializationCondition.class)
@@ -251,7 +252,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration RSocket configuration.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, io.rsocket.RSocket.class })
 	@Conditional(IntegrationRSocketConfiguration.AnyRSocketChannelAdapterAvailable.class)
 	protected static class IntegrationRSocketConfiguration {
@@ -278,7 +279,7 @@ public class IntegrationAutoConfiguration {
 
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(TcpServerTransport.class)
 		@AutoConfigureBefore(RSocketMessagingAutoConfiguration.class)
 		protected static class IntegrationRSocketServerConfiguration {
@@ -302,7 +303,7 @@ public class IntegrationAutoConfiguration {
 
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		protected static class IntegrationRSocketClientConfiguration {
 
 			@Bean

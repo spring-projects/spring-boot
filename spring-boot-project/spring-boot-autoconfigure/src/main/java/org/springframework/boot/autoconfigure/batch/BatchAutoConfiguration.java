@@ -102,7 +102,7 @@ public class BatchAutoConfiguration {
 		return factory;
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnClass(DatabasePopulator.class)
 	@Conditional(OnBatchDatasourceInitializationCondition.class)

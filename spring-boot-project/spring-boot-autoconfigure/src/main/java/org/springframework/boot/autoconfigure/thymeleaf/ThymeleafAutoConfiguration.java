@@ -57,6 +57,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
@@ -82,7 +83,7 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
 public class ThymeleafAutoConfiguration {
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	static class DefaultTemplateResolverConfiguration {
 
@@ -130,7 +131,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ThymeleafDefaultConfiguration {
 
 		@Bean
@@ -147,7 +148,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebMvcConfiguration {
@@ -162,7 +163,7 @@ public class ThymeleafAutoConfiguration {
 			return registration;
 		}
 
-		@AutoConfiguration
+		@Configuration(proxyBeanMethods = false)
 		static class ThymeleafViewResolverConfiguration {
 
 			@Bean
@@ -199,7 +200,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafReactiveConfiguration {
@@ -218,7 +219,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebFluxConfiguration {
@@ -255,7 +256,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LayoutDialect.class)
 	static class ThymeleafWebLayoutConfiguration {
 
@@ -267,7 +268,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DataAttributeDialect.class)
 	static class DataAttributeDialectConfiguration {
 
@@ -279,7 +280,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ SpringSecurityDialect.class, CsrfToken.class })
 	static class ThymeleafSecurityDialectConfiguration {
 
@@ -291,7 +292,7 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Java8TimeDialect.class)
 	static class ThymeleafJava8TimeDialect {
 

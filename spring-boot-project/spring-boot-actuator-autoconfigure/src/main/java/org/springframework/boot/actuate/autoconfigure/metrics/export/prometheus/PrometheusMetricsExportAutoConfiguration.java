@@ -48,6 +48,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
@@ -87,7 +88,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 		return new CollectorRegistry(true);
 	}
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnAvailableEndpoint(endpoint = PrometheusScrapeEndpoint.class)
 	public static class PrometheusScrapeEndpointConfiguration {
 
@@ -103,7 +104,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 	 * Configuration for <a href="https://github.com/prometheus/pushgateway">Prometheus
 	 * Pushgateway</a>.
 	 */
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(PushGateway.class)
 	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled")
 	public static class PrometheusPushGatewayConfiguration {

@@ -41,6 +41,7 @@ import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -64,7 +65,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 public class RSocketServerAutoConfiguration {
 
 	@Conditional(OnRSocketWebServerCondition.class)
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	static class WebFluxServerConfiguration {
 
 		@Bean
@@ -79,7 +80,7 @@ public class RSocketServerAutoConfiguration {
 
 	@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port")
 	@ConditionalOnClass(ReactorResourceFactory.class)
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	static class EmbeddedServerConfiguration {
 
 		@Bean

@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Auto configuration for WebSocket reactive server in Tomcat, Jetty or Undertow. Requires
@@ -47,7 +48,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfigureBefore(ReactiveWebServerFactoryAutoConfiguration.class)
 public class WebSocketReactiveAutoConfiguration {
 
-	@AutoConfiguration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Tomcat.class, WsSci.class })
 	static class TomcatWebSocketConfiguration {
 
