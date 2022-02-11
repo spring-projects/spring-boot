@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,8 +175,14 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),
-				getBeanClassLoader());
+		// Load legacy autoconfigurations from spring.factories
+		List<String> legacyConfigurations = SpringFactoriesLoader
+				.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
+
+		// Load autoconfigurations from AutoConfiguration file
+		List<String> configurations = new ArrayList<>(legacyConfigurations);
+		configurations.addAll(new AutoConfigurationLocator().locate(AutoConfiguration.class, getBeanClassLoader()));
+
 		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
 				+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
