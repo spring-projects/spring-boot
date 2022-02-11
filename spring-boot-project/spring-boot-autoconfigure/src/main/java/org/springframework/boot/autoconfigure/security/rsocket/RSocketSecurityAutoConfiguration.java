@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.rsocket;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessageHandlerCustomizer;
@@ -35,7 +36,7 @@ import org.springframework.security.rsocket.core.SecuritySocketAcceptorIntercept
  * @author Guirong Hu
  * @since 2.2.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableRSocketSecurity
 @ConditionalOnClass(SecuritySocketAcceptorInterceptor.class)
 public class RSocketSecurityAutoConfiguration {
