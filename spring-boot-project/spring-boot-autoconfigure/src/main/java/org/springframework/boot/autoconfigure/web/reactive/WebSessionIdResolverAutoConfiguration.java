@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -28,7 +29,6 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseCookie.ResponseCookieBuilder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
@@ -43,7 +43,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Weix Sun
  * @since 2.6.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ WebSessionManager.class, Mono.class })
 @EnableConfigurationProperties({ WebFluxProperties.class, ServerProperties.class })

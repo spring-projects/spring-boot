@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -37,7 +38,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
@@ -52,7 +52,7 @@ import org.springframework.core.type.MethodMetadata;
 @AutoConfigureAfter(R2dbcAutoConfiguration.class)
 @ConditionalOnClass(ConnectionFactory.class)
 @Conditional({ OnEnabledDevToolsCondition.class, DevToolsConnectionFactoryCondition.class })
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 public class DevToolsR2dbcAutoConfiguration {
 
 	@Bean

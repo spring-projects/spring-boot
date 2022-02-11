@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -85,7 +86,7 @@ import org.springframework.util.Assert;
  * @author Chris Bono
  * @since 1.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
 @ConditionalOnClass({ MongoClientSettings.class, MongodStarter.class })

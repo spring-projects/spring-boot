@@ -22,12 +22,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointEx
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpointWebExtension;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
@@ -37,7 +37,7 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnAvailableEndpoint(endpoint = EnvironmentEndpoint.class)
 @EnableConfigurationProperties(EnvironmentEndpointProperties.class)
 public class EnvironmentEndpointAutoConfiguration {

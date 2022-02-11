@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHe
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -31,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRestClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 
 /**
@@ -42,7 +42,7 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
  * @author Aleksander Lech
  * @since 2.3.2
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass({ ReactiveElasticsearchClient.class, Flux.class })
 @ConditionalOnBean(ReactiveElasticsearchClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")

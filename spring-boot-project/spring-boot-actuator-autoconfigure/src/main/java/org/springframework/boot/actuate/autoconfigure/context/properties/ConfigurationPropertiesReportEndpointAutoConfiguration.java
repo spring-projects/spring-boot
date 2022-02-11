@@ -22,12 +22,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointEx
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Chris Bono
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnAvailableEndpoint(endpoint = ConfigurationPropertiesReportEndpoint.class)
 @EnableConfigurationProperties(ConfigurationPropertiesReportEndpointProperties.class)
 public class ConfigurationPropertiesReportEndpointAutoConfiguration {

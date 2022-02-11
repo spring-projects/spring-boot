@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.metrics.web.jetty.JettyConnectionMetricsBinder;
 import org.springframework.boot.actuate.metrics.web.jetty.JettyServerThreadPoolMetricsBinder;
 import org.springframework.boot.actuate.metrics.web.jetty.JettySslHandshakeMetricsBinder;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -34,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Jetty metrics.
@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Chris Bono
  * @since 2.1.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class })
 @ConditionalOnBean(MeterRegistry.class)
