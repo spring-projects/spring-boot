@@ -212,7 +212,7 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	private List<String> getAutoConfigurationClassNames() {
-		return new AutoConfigurationLocator().locate(AutoConfiguration.class, getClass().getClassLoader());
+		return new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getClass().getClassLoader());
 	}
 
 	private class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {

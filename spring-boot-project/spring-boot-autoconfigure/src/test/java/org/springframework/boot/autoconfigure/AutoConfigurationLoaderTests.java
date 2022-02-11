@@ -27,18 +27,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AutoConfigurationLocatorTest {
+class AutoConfigurationLoaderTests {
 
-	private AutoConfigurationLocator sut;
+	private AutoConfigurationLoader sut;
 
 	@BeforeEach
 	void setUp() {
-		this.sut = new AutoConfigurationLocator();
+		this.sut = new AutoConfigurationLoader();
 	}
 
 	@Test
 	void locate() {
-		List<String> classNames = this.sut.locate(TestAutoConfiguration.class, null);
+		List<String> classNames = this.sut.loadNames(TestAutoConfiguration.class, null);
 
 		assertThat(classNames).containsExactly("class1", "class2", "class3");
 	}

@@ -28,13 +28,13 @@ import java.util.List;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
 
-public class AutoConfigurationLocator {
+public class AutoConfigurationLoader {
 
 	private static final String LOCATION = "META-INF/springboot/";
 
 	private static final String COMMENT_START = "#";
 
-	public List<String> locate(Class<?> annotation, ClassLoader classLoader) {
+	public List<String> loadNames(Class<?> annotation, ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
 		ClassLoader classLoaderToUse = decideClassloader(classLoader);
 		String location = LOCATION + annotation.getName();
@@ -49,7 +49,7 @@ public class AutoConfigurationLocator {
 
 	private ClassLoader decideClassloader(ClassLoader classLoader) {
 		if (classLoader == null) {
-			return AutoConfigurationLocator.class.getClassLoader();
+			return AutoConfigurationLoader.class.getClassLoader();
 		}
 		return classLoader;
 	}

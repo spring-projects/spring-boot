@@ -181,7 +181,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		// Load autoconfigurations from AutoConfiguration file
 		List<String> configurations = new ArrayList<>(legacyConfigurations);
-		configurations.addAll(new AutoConfigurationLocator().locate(AutoConfiguration.class, getBeanClassLoader()));
+		configurations.addAll(new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getBeanClassLoader()));
 
 		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
 				+ "are using a custom packaging, make sure that file is correct.");
