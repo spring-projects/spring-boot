@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		mappings.add("otg", "application/vnd.oasis.opendocument.graphics-template");
 		mappings.add("oth", "application/vnd.oasis.opendocument.text-web");
 		mappings.add("otp", "application/vnd.oasis.opendocument.presentation-template");
-		mappings.add("ots", "application/vnd.oasis.opendocument.spreadsheet-template ");
+		mappings.add("ots", "application/vnd.oasis.opendocument.spreadsheet-template");
 		mappings.add("ott", "application/vnd.oasis.opendocument.text-template");
 		mappings.add("ogx", "application/ogg");
 		mappings.add("ogv", "video/ogg");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
@@ -133,6 +134,13 @@ class MimeMappingsTests {
 		}
 		mappings.remove("foo");
 		assertThat(unmodifiable.get("foo")).isNull();
+	}
+
+	@Test
+	void mimeTypesInDefaultMappingsAreCorrectlyStructured() {
+		String regName = "[A-Za-z0-9!#$&.+\\-^_]{1,127}";
+		Pattern pattern = Pattern.compile("^" + regName + "\\/" + regName + "$");
+		assertThat(MimeMappings.DEFAULT).allSatisfy((mapping) -> assertThat(mapping.getMimeType()).matches(pattern));
 	}
 
 }
