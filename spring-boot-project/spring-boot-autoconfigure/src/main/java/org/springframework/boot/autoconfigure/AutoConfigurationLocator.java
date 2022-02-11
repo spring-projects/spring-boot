@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.springframework.core.io.UrlResource;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 public class AutoConfigurationLocator {
@@ -35,7 +34,7 @@ public class AutoConfigurationLocator {
 
 	private static final String COMMENT_START = "#";
 
-	public List<String> locate(Class<?> annotation, @Nullable ClassLoader classLoader) {
+	public List<String> locate(Class<?> annotation, ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
 
 		ClassLoader classLoaderToUse = classLoader;
