@@ -83,6 +83,7 @@ class ConventionsPluginTests {
 		try (JarFile jar = new JarFile(file)) {
 			assertThatLicenseIsPresent(jar);
 			assertThatNoticeIsPresent(jar);
+			assertThatSpringBootPropertiesIsPresent(jar);
 			Attributes mainAttributes = jar.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Implementation-Title"))
 					.isEqualTo("Test project for manifest customization");
@@ -112,6 +113,7 @@ class ConventionsPluginTests {
 		try (JarFile jar = new JarFile(file)) {
 			assertThatLicenseIsPresent(jar);
 			assertThatNoticeIsPresent(jar);
+			assertThatSpringBootPropertiesIsPresent(jar);
 			Attributes mainAttributes = jar.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Implementation-Title"))
 					.isEqualTo("Source for " + this.projectDir.getName());
@@ -141,6 +143,7 @@ class ConventionsPluginTests {
 		try (JarFile jar = new JarFile(file)) {
 			assertThatLicenseIsPresent(jar);
 			assertThatNoticeIsPresent(jar);
+			assertThatSpringBootPropertiesIsPresent(jar);
 			Attributes mainAttributes = jar.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Implementation-Title"))
 					.isEqualTo("Javadoc for " + this.projectDir.getName());
@@ -163,6 +166,13 @@ class ConventionsPluginTests {
 		String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(notice)));
 		// Test that variables were replaced
 		assertThat(noticeContent).doesNotContain("${");
+	}
+
+	private void assertThatSpringBootPropertiesIsPresent(JarFile jar) throws IOException {
+		JarEntry properties = jar.getJarEntry("META-INF/spring-boot.properties");
+		assertThat(properties).isNotNull();
+		String content = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(properties)));
+		assertThat(content).contains("version=");
 	}
 
 	@Test

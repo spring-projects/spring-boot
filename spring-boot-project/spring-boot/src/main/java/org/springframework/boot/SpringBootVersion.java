@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,22 @@
 
 package org.springframework.boot;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.security.CodeSource;
-import java.util.jar.Attributes;
-import java.util.jar.Attributes.Name;
-import java.util.jar.JarFile;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
- * Class that exposes the Spring Boot version. Fetches the
- * {@link Name#IMPLEMENTATION_VERSION Implementation-Version} manifest attribute from the
- * jar file via {@link Package#getImplementationVersion()}, falling back to locating the
- * jar file that contains this class and reading the {@code Implementation-Version}
- * attribute from its manifest.
- * <p>
- * This class might not be able to determine the Spring Boot version in all environments.
- * Consider using a reflection-based check instead: For example, checking for the presence
- * of a specific Spring Boot method that you intend to call.
+ * Exposes the Spring Boot version.
+ *
+ * The version information is read from a file that is stored in the Spring Boot library.
+ * If the version information cannot be read from the file, consider using a
+ * reflection-based check instead (for example, checking for the presence of a specific
+ * Spring Boot method that you intend to call).
  *
  * @author Drummond Dawson
  * @author Hendrig Sellik
  * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 1.3.0
  */
 public final class SpringBootVersion {
@@ -51,38 +43,21 @@ public final class SpringBootVersion {
 	 * Return the full version string of the present Spring Boot codebase, or {@code null}
 	 * if it cannot be determined.
 	 * @return the version of Spring Boot or {@code null}
-	 * @see Package#getImplementationVersion()
 	 */
 	public static String getVersion() {
-		return determineSpringBootVersion();
-	}
-
-	private static String determineSpringBootVersion() {
-		String implementationVersion = SpringBootVersion.class.getPackage().getImplementationVersion();
-		if (implementationVersion != null) {
-			return implementationVersion;
-		}
-		CodeSource codeSource = SpringBootVersion.class.getProtectionDomain().getCodeSource();
-		if (codeSource == null) {
-			return null;
-		}
-		URL codeSourceLocation = codeSource.getLocation();
-		try {
-			URLConnection connection = codeSourceLocation.openConnection();
-			if (connection instanceof JarURLConnection) {
-				return getImplementationVersion(((JarURLConnection) connection).getJarFile());
+		InputStream input = SpringBootVersion.class.getClassLoader()
+				.getResourceAsStream("META-INF/spring-boot.properties");
+		if (input != null) {
+			try {
+				Properties properties = new Properties();
+				properties.load(input);
+				return properties.getProperty("version");
 			}
-			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
-				return getImplementationVersion(jarFile);
+			catch (IOException ex) {
+				// fall through
 			}
 		}
-		catch (Exception ex) {
-			return null;
-		}
-	}
-
-	private static String getImplementationVersion(JarFile jarFile) throws IOException {
-		return jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+		return null;
 	}
 
 }
