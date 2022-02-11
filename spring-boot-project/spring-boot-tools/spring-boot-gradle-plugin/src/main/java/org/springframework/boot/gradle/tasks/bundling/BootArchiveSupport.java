@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -180,6 +180,15 @@ class BootArchiveSupport {
 
 	void moveModuleInfoToRoot(CopySpec spec) {
 		spec.filesMatching("module-info.class", BootArchiveSupport::moveToRoot);
+	}
+
+	void moveMetaInfToRoot(CopySpec spec) {
+		spec.eachFile((file) -> {
+			String path = file.getRelativeSourcePath().getPathString();
+			if (path.startsWith("META-INF/") && !path.equals("META-INF/aop.xml") && !path.endsWith(".kotlin_module")) {
+				moveToRoot(file);
+			}
+		});
 	}
 
 	private static void moveToRoot(FileCopyDetails details) {
