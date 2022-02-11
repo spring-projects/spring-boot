@@ -1050,6 +1050,7 @@ bom {
 	library("Liquibase", "4.3.5") {
 		group("org.liquibase") {
 			modules = [
+				"liquibase-cdi",
 				"liquibase-core"
 			]
 			plugins = [
