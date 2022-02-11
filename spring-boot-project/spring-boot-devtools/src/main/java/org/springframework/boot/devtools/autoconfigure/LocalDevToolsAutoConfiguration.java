@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -57,7 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Vladimir Tsanev
  * @since 1.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnInitializedRestarter
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class LocalDevToolsAutoConfiguration {
