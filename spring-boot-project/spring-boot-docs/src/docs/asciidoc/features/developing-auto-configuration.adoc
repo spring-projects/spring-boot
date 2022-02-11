@@ -12,25 +12,26 @@ TIP: A https://github.com/snicoll-demos/spring-boot-master-auto-configuration[de
 
 [[features.developing-auto-configuration.understanding-auto-configured-beans]]
 === Understanding Auto-configured Beans
-Under the hood, auto-configuration is implemented with standard `@Configuration` classes.
+Under the hood, auto-configuration is implemented with `@AutoConfiguration` classes.
+A `@AutoConfiguration` class is a standard `@Configuration` class.
 Additional `@Conditional` annotations are used to constrain when the auto-configuration should apply.
 Usually, auto-configuration classes use `@ConditionalOnClass` and `@ConditionalOnMissingBean` annotations.
 This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own `@Configuration`.
 
-You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@Configuration` classes that Spring provides (see the {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories[`META-INF/spring.factories`] file).
+You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@AutoConfiguration` classes that Spring provides (see the {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/springboot/org.springframework.boot.autoconfigure.AutoConfiguration[`META-INF/springboot/org.springframework.boot.autoconfigure.AutoConfiguration`] file).
 
 
 
 [[features.developing-auto-configuration.locating-auto-configuration-candidates]]
 === Locating Auto-configuration Candidates
-Spring Boot checks for the presence of a `META-INF/spring.factories` file within your published jar.
-The file should list your configuration classes under the `EnableAutoConfiguration` key, as shown in the following example:
+
+Spring Boot checks for the presence of a `META-INF/springboot/org.springframework.boot.autoconfigure.AutoConfiguration` file within your published jar.
+The file should list your configuration classes, as shown in the following example:
 
 [indent=0]
 ----
-	org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-	com.mycorp.libx.autoconfigure.LibXAutoConfiguration,\
-	com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
+    com.mycorp.libx.autoconfigure.LibXAutoConfiguration
+    com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 ----
 
 NOTE: Auto-configurations must be loaded that way _only_.
