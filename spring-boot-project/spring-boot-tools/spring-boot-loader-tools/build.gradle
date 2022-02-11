@@ -41,6 +41,7 @@ task reproducibleLoaderJar(type: Jar) {
 		zipTree(configurations.loader.incoming.files.singleFile).matching {
 			exclude "META-INF/LICENSE.txt"
 			exclude "META-INF/NOTICE.txt"
+			exclude "META-INF/spring-boot.properties"
 		}
 	}
 	reproducibleFileOrder = true
@@ -55,6 +56,7 @@ task reproducibleJarModeLayerToolsJar(type: Jar) {
 		zipTree(configurations.jarmode.incoming.files.singleFile).matching {
 			exclude "META-INF/LICENSE.txt"
 			exclude "META-INF/NOTICE.txt"
+			exclude "META-INF/spring-boot.properties"
 		}
 	}
 	reproducibleFileOrder = true

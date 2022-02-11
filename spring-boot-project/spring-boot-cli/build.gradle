@@ -116,6 +116,7 @@ task fullJar(type: Jar) {
 		zipTree(configurations.loader.singleFile).matching {
 			exclude "META-INF/LICENSE.txt"
 			exclude "META-INF/NOTICE.txt"
+			exclude "META-INF/spring-boot.properties"
 		}
 	}
 	manifest {
