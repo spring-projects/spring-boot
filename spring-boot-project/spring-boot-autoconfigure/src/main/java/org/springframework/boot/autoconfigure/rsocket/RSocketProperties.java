@@ -134,7 +134,7 @@ public class RSocketProperties {
 		public static class Spec {
 
 			/**
-			 * Sub-protocol to use in websocket handshake signature. Null by default.
+			 * Sub-protocol to use in websocket handshake signature.
 			 */
 			private String protocols;
 
@@ -142,18 +142,16 @@ public class RSocketProperties {
 			 * Specifies a custom maximum allowable frame payload length. 65536 by
 			 * default.
 			 */
-			private int maxFramePayloadLength;
+			private int maxFramePayloadLength = 65536;
 
 			/**
-			 * Flag whether to proxy websocket ping frames or respond to them. False by
-			 * default.
+			 * Flag whether to proxy websocket ping frames or respond to them.
 			 */
 			private boolean handlePing;
 
 			/**
 			 * Flag whether the websocket compression extension is enabled if the client
-			 * request presents websocket extensions headers. By default compression is
-			 * disabled.
+			 * request presents websocket extensions headers.
 			 */
 			private boolean compress;
 

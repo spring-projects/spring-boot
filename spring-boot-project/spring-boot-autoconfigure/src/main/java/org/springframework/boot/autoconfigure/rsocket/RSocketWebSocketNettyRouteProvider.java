@@ -45,23 +45,14 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final List<RSocketServerCustomizer> customizers;
 
-	private final String protocols;
-
-	private final int maxFramePayloadLength;
-
-	private final boolean handlePing;
-
-	private final boolean compress;
+	private final Spec spec;
 
 	RSocketWebSocketNettyRouteProvider(String mappingPath, Spec spec, SocketAcceptor socketAcceptor,
 			Stream<RSocketServerCustomizer> customizers) {
 		this.mappingPath = mappingPath;
 		this.socketAcceptor = socketAcceptor;
 		this.customizers = customizers.collect(Collectors.toList());
-		this.protocols = spec.getProtocols();
-		this.maxFramePayloadLength = (spec.getMaxFramePayloadLength() <= 0) ? 65536 : spec.getMaxFramePayloadLength();
-		this.handlePing = spec.isHandlePing();
-		this.compress = spec.isCompress();
+		this.spec = spec;
 	}
 
 	@Override
@@ -69,11 +60,11 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 		RSocketServer server = RSocketServer.create(this.socketAcceptor);
 		this.customizers.forEach((customizer) -> customizer.customize(server));
 		ServerTransport.ConnectionAcceptor connectionAcceptor = server.asConnectionAcceptor();
-		WebsocketServerSpec.Builder build = (this.protocols == null) ? WebsocketServerSpec.builder()
-				: WebsocketServerSpec.builder().protocols(this.protocols);
+		WebsocketServerSpec.Builder build = (this.spec.getProtocols() == null) ? WebsocketServerSpec.builder()
+				: WebsocketServerSpec.builder().protocols(this.spec.getProtocols());
 		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(connectionAcceptor),
-				build.maxFramePayloadLength(this.maxFramePayloadLength).handlePing(this.handlePing)
-						.compress(this.compress).build());
+				build.maxFramePayloadLength(this.spec.getMaxFramePayloadLength()).handlePing(this.spec.isHandlePing())
+						.compress(this.spec.isCompress()).build());
 	}
 
 }
