@@ -23,8 +23,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
+/**
+ * Auto-configuration classes are regular Spring {@link Configuration @Configuration}
+ * beans. They are located using the {@link AutoConfigurationLoader} and the
+ * {@link SpringFactoriesLoader} mechanism (keyed against this class). Generally
+ * auto-configuration beans are {@link Conditional @Conditional} beans (most often using
+ * {@link ConditionalOnClass @ConditionalOnClass} and
+ * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
+ *
+ * @author Moritz Halbritter
+ * @since 2.7.0
+ * @see EnableAutoConfiguration
+ * @see Conditional
+ * @see ConditionalOnClass
+ * @see ConditionalOnMissingBean
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
