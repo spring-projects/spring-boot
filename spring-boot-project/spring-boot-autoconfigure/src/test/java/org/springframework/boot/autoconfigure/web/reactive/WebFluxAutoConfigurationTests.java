@@ -34,11 +34,15 @@ import java.util.function.Consumer;
 import jakarta.validation.ValidatorFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -594,6 +598,15 @@ class WebFluxAutoConfigurationTests {
 					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
 					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
 				}));
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { ServerProperties.class, WebFluxProperties.class })
+	void propertiesAreNotEnabledInNonWebApplication(Class<?> propertiesClass) {
+		new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class,
+						WebSessionIdResolverAutoConfiguration.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(propertiesClass));
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(

@@ -20,6 +20,8 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -42,6 +44,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @since 2.6.0
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ WebSessionManager.class, Mono.class })
 @EnableConfigurationProperties({ WebFluxProperties.class, ServerProperties.class })
 public class WebSessionIdResolverAutoConfiguration {
