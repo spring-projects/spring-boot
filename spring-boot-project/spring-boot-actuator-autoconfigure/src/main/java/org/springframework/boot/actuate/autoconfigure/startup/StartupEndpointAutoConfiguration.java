@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.startup;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.startup.StartupEndpoint;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -27,7 +28,6 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
@@ -37,7 +37,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Brian Clozel
  * @since 2.4.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnAvailableEndpoint(endpoint = StartupEndpoint.class)
 @Conditional(StartupEndpointAutoConfiguration.ApplicationStartupCondition.class)
 public class StartupEndpointAutoConfiguration {

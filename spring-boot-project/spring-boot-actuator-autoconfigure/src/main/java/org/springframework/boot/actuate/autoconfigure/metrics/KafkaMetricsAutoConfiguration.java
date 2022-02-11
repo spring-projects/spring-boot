@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
 import io.micrometer.core.instrument.binder.kafka.KafkaStreamsMetrics;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,7 +30,6 @@ import org.springframework.boot.autoconfigure.kafka.DefaultKafkaProducerFactoryC
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.autoconfigure.kafka.StreamsBuilderFactoryBeanCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -46,7 +46,7 @@ import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
  * @author Eddú Meléndez
  * @since 2.1.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @AutoConfigureBefore(KafkaAutoConfiguration.class)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass({ KafkaClientMetrics.class, ProducerFactory.class })
@@ -71,7 +71,7 @@ public class KafkaMetricsAutoConfiguration {
 		factory.addListener(new MicrometerProducerListener<>(meterRegistry));
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnClass({ KafkaStreamsMetrics.class, StreamsBuilderFactoryBean.class })
 	static class KafkaStreamsMetricsConfiguration {
 

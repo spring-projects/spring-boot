@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -35,7 +36,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
@@ -55,12 +55,12 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties({ WebEndpointProperties.class, ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
 	static class SameManagementContextConfiguration implements SmartInitializingSingleton {
 
@@ -110,7 +110,7 @@ public class ManagementContextAutoConfiguration {
 			});
 		}
 
-		@Configuration(proxyBeanMethods = false)
+		@AutoConfiguration
 		@EnableManagementContext(ManagementContextType.SAME)
 		static class EnableSameManagementContextConfiguration {
 
@@ -118,7 +118,7 @@ public class ManagementContextAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	static class DifferentManagementContextConfiguration implements ApplicationListener<WebServerInitializedEvent> {
 
