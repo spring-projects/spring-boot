@@ -768,7 +768,8 @@ bom {
 	library("Liquibase", "4.7.0") {
 		group("org.liquibase") {
 			modules = [
-				"liquibase-core"
+				"liquibase-core",
+				"liquibase-cdi"
 			]
 			plugins = [
 				"liquibase-maven-plugin"
