@@ -16,12 +16,12 @@
 
 package org.springframework.boot.autoconfigure.security.rsocket;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessageHandlerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.rsocket.EnableRSocketSecurity;
 import org.springframework.security.messaging.handler.invocation.reactive.AuthenticationPrincipalArgumentResolver;
 import org.springframework.security.rsocket.core.SecuritySocketAcceptorInterceptor;
@@ -35,7 +35,7 @@ import org.springframework.security.rsocket.core.SecuritySocketAcceptorIntercept
  * @author Guirong Hu
  * @since 2.2.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableRSocketSecurity
 @ConditionalOnClass(SecuritySocketAcceptorInterceptor.class)
 public class RSocketSecurityAutoConfiguration {
@@ -46,7 +46,7 @@ public class RSocketSecurityAutoConfiguration {
 	}
 
 	@ConditionalOnClass(AuthenticationPrincipalArgumentResolver.class)
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	static class RSocketSecurityMessageHandlerConfiguration {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
@@ -40,7 +41,6 @@ import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -56,7 +56,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * @author Brian Clozel
  * @since 2.2.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass({ RSocketServer.class, RSocketStrategies.class, HttpServer.class, TcpServerTransport.class })
 @ConditionalOnBean(RSocketMessageHandler.class)
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
@@ -64,7 +64,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 public class RSocketServerAutoConfiguration {
 
 	@Conditional(OnRSocketWebServerCondition.class)
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	static class WebFluxServerConfiguration {
 
 		@Bean
@@ -79,7 +79,7 @@ public class RSocketServerAutoConfiguration {
 
 	@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port")
 	@ConditionalOnClass(ReactorResourceFactory.class)
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	static class EmbeddedServerConfiguration {
 
 		@Bean

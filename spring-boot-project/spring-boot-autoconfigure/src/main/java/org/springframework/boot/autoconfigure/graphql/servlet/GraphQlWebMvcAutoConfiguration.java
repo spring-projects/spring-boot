@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -40,7 +41,6 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.GraphQlService;
@@ -79,7 +79,7 @@ import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler
  * @author Brian Clozel
  * @since 2.7.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class })
 @ConditionalOnBean(GraphQlService.class)
@@ -133,7 +133,7 @@ public class GraphQlWebMvcAutoConfiguration {
 		headers.setAllow(Collections.singleton(HttpMethod.POST));
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	public static class GraphQlEndpointCorsConfiguration implements WebMvcConfigurer {
 
 		final GraphQlProperties graphQlProperties;
@@ -155,7 +155,7 @@ public class GraphQlWebMvcAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnClass({ ServerContainer.class, WebSocketHandler.class })
 	@ConditionalOnProperty(prefix = "spring.graphql.websocket", name = "path")
 	public static class WebSocketConfiguration {

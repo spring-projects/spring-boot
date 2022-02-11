@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -68,8 +67,7 @@ class AutoConfigurationImportSelectorTests {
 	@Test
 	void importsAreSelectedWhenUsingEnableAutoConfiguration() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
-		assertThat(imports).hasSameSizeAs(
-				SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, getClass().getClassLoader()));
+		assertThat(imports).hasSameSizeAs(getAutoConfigurationClassNames());
 		assertThat(this.importSelector.getLastEvent().getExclusions()).isEmpty();
 	}
 
@@ -214,7 +212,7 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	private List<String> getAutoConfigurationClassNames() {
-		return SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, getClass().getClassLoader());
+		return new AutoConfigurationLocator().locate(AutoConfiguration.class, getClass().getClassLoader());
 	}
 
 	private class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
