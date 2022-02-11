@@ -182,8 +182,9 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		configurations.addAll(
 				SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));
 		configurations.addAll(new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getBeanClassLoader()));
-		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
-				+ "are using a custom packaging, make sure that file is correct.");
+		Assert.notEmpty(configurations,
+				"No auto configuration classes found in META-INF/spring.factories nor in META-INF/springboot/org.springframework.boot.autoconfigure.AutoConfiguration. If you "
+						+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
 	}
 
