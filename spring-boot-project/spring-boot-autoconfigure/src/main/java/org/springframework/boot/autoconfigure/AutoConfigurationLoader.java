@@ -26,14 +26,31 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 
+/**
+ * Loads the names of annotated classes, usually @{@link AutoConfiguration}.
+ *
+ * The names of the classes are stored in files named META-INF/springboot/{full qualified
+ * name of the annotation}. Every line contains the full qualified class name of the
+ * annotated class. Comments are supported using the # character.
+ *
+ * @author Moritz Halbritter
+ * @since 2.7.0
+ * @see AutoConfiguration
+ * @see SpringFactoriesLoader
+ */
 public class AutoConfigurationLoader {
 
 	private static final String LOCATION = "META-INF/springboot/";
 
 	private static final String COMMENT_START = "#";
 
+	/**
+	 * Loads the names of annotated classes.
+	 * @return list of names of annotated classes
+	 */
 	public List<String> loadNames(Class<?> annotation, ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
 		ClassLoader classLoaderToUse = decideClassloader(classLoader);
@@ -85,11 +102,11 @@ public class AutoConfigurationLoader {
 	}
 
 	private String stripComment(String line) {
-		int hash = line.indexOf(COMMENT_START);
-		if (hash == -1) {
+		int commentStart = line.indexOf(COMMENT_START);
+		if (commentStart == -1) {
 			return line;
 		}
-		return line.substring(0, hash);
+		return line.substring(0, commentStart);
 	}
 
 }
