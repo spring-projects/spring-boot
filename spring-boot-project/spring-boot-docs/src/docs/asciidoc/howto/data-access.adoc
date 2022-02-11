@@ -239,8 +239,11 @@ Hibernate uses {hibernate-docs}#naming[two different naming strategies] to map n
 The fully qualified class name of the physical and the implicit strategy implementations can be configured by setting the `spring.jpa.hibernate.naming.physical-strategy` and `spring.jpa.hibernate.naming.implicit-strategy` properties, respectively.
 Alternatively, if `ImplicitNamingStrategy` or `PhysicalNamingStrategy` beans are available in the application context, Hibernate will be automatically configured to use them.
 
-By default, Spring Boot configures the physical naming strategy with `SpringPhysicalNamingStrategy`.
-This implementation provides the same table structure as Hibernate 4: all dots are replaced by underscores and camel casing is replaced by underscores as well. Additionally, by default, all table names are generated in lower case.  For example, a `TelephoneNumber` entity is mapped to the `telephone_number` table. If your schema requires mixed-case identifiers, define a custom `SpringPhysicalNamingStrategy` bean, as shown in the following example:
+By default, Spring Boot configures the physical naming strategy with `CamelCaseToUnderscoresNamingStrategy`.
+Using this strategy, all dots are replaced by underscores and camel casing is replaced by underscores as well.
+Additionally, by default, all table names are generated in lower case.
+For example, a `TelephoneNumber` entity is mapped to the `telephone_number` table.
+If your schema requires mixed-case identifiers, define a custom `CamelCaseToUnderscoresNamingStrategy` bean, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
