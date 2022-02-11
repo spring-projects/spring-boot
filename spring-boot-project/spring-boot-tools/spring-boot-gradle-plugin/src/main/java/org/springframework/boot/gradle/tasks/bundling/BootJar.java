@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,8 +91,8 @@ public class BootJar extends Jar implements BootArchive {
 	private void configureBootInfSpec(CopySpec bootInfSpec) {
 		bootInfSpec.into("classes", fromCallTo(this::classpathDirectories));
 		bootInfSpec.into("lib", fromCallTo(this::classpathFiles)).eachFile(this.support::excludeNonZipFiles);
-		bootInfSpec.filesMatching("module-info.class",
-				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
+		this.support.moveModuleInfoToRoot(bootInfSpec);
+		this.support.moveMetaInfToRoot(bootInfSpec);
 	}
 
 	private Iterable<File> classpathDirectories() {
