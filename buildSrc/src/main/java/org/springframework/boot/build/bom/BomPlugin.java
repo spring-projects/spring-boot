@@ -219,8 +219,7 @@ public class BomPlugin implements Plugin<Project> {
 
 		private Node findChild(Node parent, String name) {
 			for (Object child : parent.children()) {
-				if (child instanceof Node) {
-					Node node = (Node) child;
+				if (child instanceof Node node) {
 					if ((node.name() instanceof QName) && name.equals(((QName) node.name()).getLocalPart())) {
 						return node;
 					}
@@ -240,8 +239,7 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		private boolean isNodeWithName(Object candidate, String name) {
-			if (candidate instanceof Node) {
-				Node node = (Node) candidate;
+			if (candidate instanceof Node node) {
 				if ((node.name() instanceof QName) && name.equals(((QName) node.name()).getLocalPart())) {
 					return true;
 				}
