@@ -167,15 +167,16 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureUtf8Encoding(Project project) {
-		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class, (compile) -> {
-			if (compile.getOptions().getEncoding() == null) {
-				compile.getOptions().setEncoding("UTF-8");
-			}
-		}));
+		project.afterEvaluate(
+				(evaluated) -> evaluated.getTasks().withType(JavaCompile.class).configureEach((compile) -> {
+					if (compile.getOptions().getEncoding() == null) {
+						compile.getOptions().setEncoding("UTF-8");
+					}
+				}));
 	}
 
 	private void configureParametersCompilerArg(Project project) {
-		project.getTasks().withType(JavaCompile.class, (compile) -> {
+		project.getTasks().withType(JavaCompile.class).configureEach((compile) -> {
 			List<String> compilerArgs = compile.getOptions().getCompilerArgs();
 			if (!compilerArgs.contains(PARAMETERS_COMPILER_ARG)) {
 				compilerArgs.add(PARAMETERS_COMPILER_ARG);
@@ -184,8 +185,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class,
-				this::configureAdditionalMetadataLocations));
+		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class)
+				.configureEach(this::configureAdditionalMetadataLocations));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
