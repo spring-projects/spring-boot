@@ -1,0 +1,2 @@
+# AutoConfigureTestEntityManager auto-configuration imports
+org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration
