@@ -82,9 +82,9 @@ public class AutoConfigurationLoader {
 	}
 
 	private List<String> readAutoConfigurations(URL url) {
-		List<String> autoConfigurations = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))) {
+			List<String> autoConfigurations = new ArrayList<>();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = stripComment(line);
