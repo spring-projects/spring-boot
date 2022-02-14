@@ -65,6 +65,8 @@ import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
+import org.springframework.kafka.retrytopic.DestinationTopic;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
@@ -87,6 +89,7 @@ import static org.mockito.Mockito.never;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Nakul Mishra
+ * @author Tomaz Fernandes
  */
 class KafkaAutoConfigurationTests {
 
@@ -314,6 +317,25 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.isEqualTo("localhost:9094, localhost:9095");
 					assertThat(configs.get(StreamsConfig.APPLICATION_ID_CONFIG)).isEqualTo("test-id");
+				});
+	}
+
+	@Test
+	void retryTopicConfiguration() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry-topic.enabled=true",
+				"spring.kafka.retry-topic.attempts=5", "spring.kafka.retry-topic.back-off.delay=100ms",
+				"spring.kafka.retry-topic.back-off.multiplier=2", "spring.kafka.retry-topic.back-off.max-delay=300ms")
+				.run((context) -> {
+					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
+					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
+					assertThat(properties.size()).isEqualTo(6);
+					assertThat(properties.get(0).delay()).isEqualTo(0);
+					assertThat(properties.get(1).delay()).isEqualTo(100);
+					assertThat(properties.get(2).delay()).isEqualTo(200);
+					assertThat(properties.get(3).delay()).isEqualTo(300);
+					assertThat(properties.get(4).delay()).isEqualTo(300);
+					assertThat(properties.get(5).delay()).isEqualTo(0);
 				});
 	}
 

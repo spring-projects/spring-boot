@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -53,12 +55,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Tomaz Fernandes
  */
 @DisabledOnOs(OS.WINDOWS)
 @EmbeddedKafka(topics = KafkaAutoConfigurationIntegrationTests.TEST_TOPIC)
 class KafkaAutoConfigurationIntegrationTests {
 
 	static final String TEST_TOPIC = "testTopic";
+	static final String TEST_RETRY_TOPIC = "testRetryTopic";
 
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
@@ -87,6 +91,27 @@ class KafkaAutoConfigurationIntegrationTests {
 		Producer producer = producerFactory.createProducer();
 		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
 		producer.close();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	void testEndToEndWithRetryTopics() throws Exception {
+		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
+				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.retry-topic.enabled=true",
+				"spring.kafka.retry-topic.attempts=4", "spring.kafka.retry-topic.back-off.delay=100ms",
+				"spring.kafka.retry-topic.back-off.multiplier=2", "spring.kafka.retry-topic.back-off.max-delay=300ms",
+				"spring.kafka.consumer.auto-offset-reset=earliest");
+		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
+		template.send(TEST_RETRY_TOPIC, "foo", "bar");
+		RetryListener listener = this.context.getBean(RetryListener.class);
+		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
+		assertThat(listener.key).isEqualTo("foo");
+		assertThat(listener.received).isEqualTo("bar");
+		assertThat(listener.topics.size()).isEqualTo(4);
+		assertThat(listener.topics.get(0)).isEqualTo("testRetryTopic");
+		assertThat(listener.topics.get(1)).isEqualTo("testRetryTopic-retry-100");
+		assertThat(listener.topics.get(2)).isEqualTo("testRetryTopic-retry-200");
+		assertThat(listener.topics.get(3)).isEqualTo("testRetryTopic-retry-300");
 	}
 
 	@Test
@@ -122,6 +147,11 @@ class KafkaAutoConfigurationIntegrationTests {
 		}
 
 		@Bean
+		RetryListener retryListener() {
+			return new RetryListener();
+		}
+
+		@Bean
 		NewTopic adminCreated() {
 			return TopicBuilder.name(ADMIN_CREATED_TOPIC).partitions(10).replicas(1).build();
 		}
@@ -153,6 +183,28 @@ class KafkaAutoConfigurationIntegrationTests {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();
+		}
+
+	}
+
+	static class RetryListener {
+
+		private final CountDownLatch latch = new CountDownLatch(4);
+
+		private final List<String> topics = new ArrayList<>();
+
+		private volatile String received;
+
+		private volatile String key;
+
+		@KafkaListener(topics = TEST_RETRY_TOPIC)
+		void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key,
+				@Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+			this.received = foo;
+			this.key = key;
+			this.topics.add(topic);
+			this.latch.countDown();
+			throw new RuntimeException("Test exception");
 		}
 
 	}

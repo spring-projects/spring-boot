@@ -54,6 +54,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @author Artem Bilan
  * @author Nakul Mishra
+ * @author Tomaz Fernandes
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -93,6 +94,8 @@ public class KafkaProperties {
 	private final Template template = new Template();
 
 	private final Security security = new Security();
+
+	private final RetryTopic retryTopic = new RetryTopic();
 
 	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
@@ -148,6 +151,10 @@ public class KafkaProperties {
 
 	public Security getSecurity() {
 		return this.security;
+	}
+
+	public RetryTopic getRetryTopic() {
+		return this.retryTopic;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
@@ -1328,6 +1335,82 @@ public class KafkaProperties {
 			if (options != null) {
 				this.options.putAll(options);
 			}
+		}
+
+	}
+
+	public static class RetryTopic {
+
+		private Integer attempts;
+
+		private BackOff backOff;
+
+		public Integer getAttempts() {
+			return this.attempts;
+		}
+
+		public void setAttempts(Integer attempts) {
+			this.attempts = attempts;
+		}
+
+		public BackOff getBackOff() {
+			return this.backOff;
+		}
+
+		public void setBackOff(BackOff backOff) {
+			this.backOff = backOff;
+		}
+
+		public static class BackOff {
+
+			private Duration delay;
+
+			private Double multiplier;
+
+			private Duration maxDelay;
+
+			private Boolean random;
+
+			public Duration getDelay() {
+				return this.delay;
+			}
+
+			public Long getDelayMillis() {
+				return (this.delay != null) ? this.delay.toMillis() : null;
+			}
+
+			public void setDelay(Duration delay) {
+				this.delay = delay;
+			}
+
+			public Double getMultiplier() {
+				return this.multiplier;
+			}
+
+			public void setMultiplier(Double multiplier) {
+				this.multiplier = multiplier;
+			}
+
+			public Duration getMaxDelay() {
+				return this.maxDelay;
+			}
+
+			public Long getMaxDelayMillis() {
+				return (this.maxDelay != null) ? this.maxDelay.toMillis() : null;
+			}
+
+			public void setMaxDelay(Duration maxDelay) {
+				this.maxDelay = maxDelay;
+			}
+
+			public Boolean isRandom() {
+				return this.random;
+			}
+
+			public void setRandom(Boolean random) {
+				this.random = random;
+			}
+
 		}
 
 	}

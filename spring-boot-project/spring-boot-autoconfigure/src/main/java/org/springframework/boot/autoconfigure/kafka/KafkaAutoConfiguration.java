@@ -33,9 +33,13 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
+import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
+import org.springframework.kafka.support.JavaUtils;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
@@ -48,6 +52,7 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Nakul Mishra
+ * @author Tomaz Fernandes
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -111,6 +116,20 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean
 	public KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
 		return new KafkaTransactionManager<>(producerFactory);
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "spring.kafka.retry-topic.enabled")
+	@ConditionalOnMissingBean
+	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
+		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance();
+		KafkaProperties.RetryTopic retryTopic = this.properties.getRetryTopic();
+		JavaUtils.INSTANCE.acceptIfNotNull(retryTopic.getAttempts(), builder::maxAttempts).acceptIfNotNull(
+				retryTopic.getBackOff(),
+				(backOff) -> builder
+						.customBackoff(KafkaAutoConfigurationUtils.createBackOffFrom(backOff.getDelayMillis(),
+								backOff.getMaxDelayMillis(), backOff.getMultiplier(), backOff.isRandom())));
+		return builder.create(kafkaOperations);
 	}
 
 	@Bean
