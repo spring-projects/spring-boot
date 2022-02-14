@@ -46,7 +46,6 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
-import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -158,15 +157,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureToolchainConvention(Project project, BootRun run) {
-		if (isGradle67OrLater()) {
-			JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
-			JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
-			run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
-		}
-	}
-
-	private boolean isGradle67OrLater() {
-		return GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.7")) >= 0;
+		JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+		JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+		run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
 	}
 
 	private JavaPluginExtension javaPluginExtension(Project project) {

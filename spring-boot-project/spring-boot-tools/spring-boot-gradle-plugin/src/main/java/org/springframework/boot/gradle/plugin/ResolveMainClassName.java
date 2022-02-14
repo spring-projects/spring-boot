@@ -178,18 +178,12 @@ public class ResolveMainClassName extends DefaultTask {
 		return resolveMainClassNameProvider;
 	}
 
-	@SuppressWarnings("deprecation")
 	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
 		JavaApplication javaApplication = extensions.findByType(JavaApplication.class);
 		if (javaApplication == null) {
 			return null;
 		}
-		try {
-			return javaApplication.getMainClass().getOrNull();
-		}
-		catch (NoSuchMethodError ex) {
-			return javaApplication.getMainClassName();
-		}
+		return javaApplication.getMainClass().getOrNull();
 	}
 
 	private static final class ClassNameReader implements Transformer<String, RegularFile> {
