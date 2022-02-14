@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,14 +89,9 @@ public class BootRun extends JavaExec {
 	}
 
 	private boolean isJava13OrLater() {
-		try {
-			Property<JavaLauncher> javaLauncher = this.getJavaLauncher();
-			if (javaLauncher.isPresent()) {
-				return javaLauncher.get().getMetadata().getLanguageVersion().asInt() >= 13;
-			}
-		}
-		catch (NoSuchMethodError ex) {
-			// Continue
+		Property<JavaLauncher> javaLauncher = this.getJavaLauncher();
+		if (javaLauncher.isPresent()) {
+			return javaLauncher.get().getMetadata().getLanguageVersion().asInt() >= 13;
 		}
 		for (Method method : String.class.getMethods()) {
 			if (method.getName().equals("stripIndent")) {
