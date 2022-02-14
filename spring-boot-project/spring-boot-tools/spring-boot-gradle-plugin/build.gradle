@@ -27,6 +27,7 @@ dependencies {
 	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
