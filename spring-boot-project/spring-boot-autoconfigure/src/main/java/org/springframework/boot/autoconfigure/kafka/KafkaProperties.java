@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -54,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @author Artem Bilan
  * @author Nakul Mishra
+ * @author Tomaz Fernandes
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -93,6 +96,8 @@ public class KafkaProperties {
 	private final Template template = new Template();
 
 	private final Security security = new Security();
+
+	private final Retry retry = new Retry();
 
 	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
@@ -148,6 +153,10 @@ public class KafkaProperties {
 
 	public Security getSecurity() {
 		return this.security;
+	}
+
+	public Retry getRetry() {
+		return this.retry;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
@@ -1328,6 +1337,140 @@ public class KafkaProperties {
 			if (options != null) {
 				this.options.putAll(options);
 			}
+		}
+
+	}
+
+	public static class Retry {
+
+		private Topic topic = new Topic();
+
+		public Topic getTopic() {
+			return this.topic.validate();
+		}
+
+		public void setTopic(Topic topic) {
+			this.topic = topic;
+		}
+
+		/**
+		 * Properties for non-blocking, topic-based retries.
+		 */
+		public static class Topic {
+
+			private static final String RETRY_TOPIC_PROPERTIES_PREFIX = "spring.kafka.retry.topic.";
+
+			private static final String RETRY_TOPIC_VALIDATION_ERROR_MSG = "Property " + RETRY_TOPIC_PROPERTIES_PREFIX
+					+ "%s should be greater than or equal to %s. Provided value was %s.";
+
+			/**
+			 * Whether to enable topic-based retries auto-configuration.
+			 */
+			private Boolean enabled;
+
+			/**
+			 * The total number of processing attempts made before sending the message to
+			 * the DLT.
+			 */
+			private Integer attempts = 3;
+
+			/**
+			 * A canonical backoff period. Used as an initial value in the exponential
+			 * case, and as a minimum value in the uniform case.
+			 */
+			private Duration delay = Duration.ofSeconds(1);
+
+			/**
+			 * If positive, then used as a multiplier for generating the next delay for
+			 * backoff.
+			 */
+			private Double multiplier = 0.0;
+
+			/**
+			 * The maximum wait between retries. If less than the delay then the default
+			 * of 30 seconds is applied.
+			 */
+			private Duration maxDelay = Duration.ZERO;
+
+			/**
+			 * In the exponential case, set this to true to have the backoff delays
+			 * randomized.
+			 */
+			private Boolean randomBackOff = false;
+
+			public Boolean getEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(Boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public Integer getAttempts() {
+				return this.attempts;
+			}
+
+			public void setAttempts(Integer attempts) {
+				this.attempts = attempts;
+			}
+
+			public Duration getDelay() {
+				return this.delay;
+			}
+
+			public Long getDelayMillis() {
+				return (this.delay != null) ? this.delay.toMillis() : null;
+			}
+
+			public void setDelay(Duration delay) {
+				this.delay = delay;
+			}
+
+			public Double getMultiplier() {
+				return this.multiplier;
+			}
+
+			public void setMultiplier(Double multiplier) {
+				this.multiplier = multiplier;
+			}
+
+			public Duration getMaxDelay() {
+				return this.maxDelay;
+			}
+
+			public void setMaxDelay(Duration maxDelay) {
+				this.maxDelay = maxDelay;
+			}
+
+			public Long getMaxDelayMillis() {
+				return (this.maxDelay != null) ? this.maxDelay.toMillis() : null;
+			}
+
+			public Boolean isRandomBackOff() {
+				return this.randomBackOff;
+			}
+
+			public void setRandomBackOff(Boolean randomBackOff) {
+				this.randomBackOff = randomBackOff;
+			}
+
+			private Topic validate() {
+				validateProperty("attempts", this.attempts, 1);
+				validateProperty("delay", this.getDelayMillis(), 0);
+				validateProperty("multiplier", this.multiplier, 0);
+				validateProperty("maxDelay", this.getMaxDelayMillis(), 0);
+				Assert.isTrue(this.multiplier != 0 || !this.isRandomBackOff(),
+						"Property " + RETRY_TOPIC_PROPERTIES_PREFIX
+								+ "randomBackOff should not be true with non-exponential back offs.");
+				return this;
+			}
+
+			private static void validateProperty(String propertyName, Number providedValue, int minValue) {
+				Assert.notNull(providedValue, () -> RETRY_TOPIC_PROPERTIES_PREFIX + propertyName + " cannot be null.");
+				Assert.isTrue(new BigDecimal(providedValue.toString()).compareTo(BigDecimal.valueOf(minValue)) >= 0,
+						() -> String.format(RETRY_TOPIC_VALIDATION_ERROR_MSG, propertyName, minValue, providedValue));
+			}
+
 		}
 
 	}

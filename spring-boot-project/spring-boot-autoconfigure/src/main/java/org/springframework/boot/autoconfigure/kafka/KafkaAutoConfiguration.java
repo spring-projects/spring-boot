@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -33,13 +34,18 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
+import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.retry.backoff.BackOffPolicyBuilder;
+import org.springframework.retry.backoff.SleepingBackOffPolicy;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -48,6 +54,7 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Nakul Mishra
+ * @author Tomaz Fernandes
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -135,6 +142,25 @@ public class KafkaAutoConfiguration {
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
 		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailFast());
 		return kafkaAdmin;
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
+	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
+		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
+		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
+				.maxAttempts(retryTopic.getAttempts()).useSingleTopicForFixedDelays().suffixTopicsWithIndexValues()
+				.doNotAutoCreateRetryTopics();
+		setBackOffPolicy(builder, retryTopic);
+		return builder.create(kafkaOperations);
+	}
+
+	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {
+		PropertyMapper.get().from(retryTopic.getDelayMillis()).whenEqualTo(0L).toCall(builder::noBackoff);
+		PropertyMapper.get().from(retryTopic.getDelayMillis()).when((delay) -> delay > 0)
+				.toCall(() -> builder.customBackoff((SleepingBackOffPolicy<?>) BackOffPolicyBuilder.newBuilder()
+						.delay(retryTopic.getDelayMillis()).maxDelay(retryTopic.getMaxDelayMillis())
+						.multiplier(retryTopic.getMultiplier()).random(retryTopic.isRandomBackOff()).build()));
 	}
 
 }
