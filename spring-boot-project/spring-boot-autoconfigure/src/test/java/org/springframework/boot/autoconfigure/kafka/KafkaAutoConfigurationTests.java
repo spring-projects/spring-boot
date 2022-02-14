@@ -508,6 +508,7 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void testConcurrentKafkaListenerContainerFactoryWithCustomErrorHandler() {
 		this.contextRunner.withBean("errorHandler", ErrorHandler.class, () -> mock(ErrorHandler.class))
 				.run((context) -> {
@@ -518,6 +519,7 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void concurrentKafkaListenerContainerFactoryInBatchModeShouldUseBatchErrorHandler() {
 		this.contextRunner.withBean("batchErrorHandler", BatchErrorHandler.class, () -> mock(BatchErrorHandler.class))
 				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
