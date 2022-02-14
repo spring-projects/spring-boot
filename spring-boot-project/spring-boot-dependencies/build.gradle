@@ -916,7 +916,7 @@ bom {
 			]
 		}
 	}
-	library("Johnzon", "1.2.15") {
+	library("Johnzon", "1.2.16") {
 		group("org.apache.johnzon") {
 			modules = [
 				"johnzon-core",
