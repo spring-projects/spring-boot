@@ -49,6 +49,8 @@ public class AutoConfigurationLoader {
 
 	/**
 	 * Loads the names of annotated classes.
+	 * @param annotation annotation to load
+	 * @param classLoader class loader to use for loading
 	 * @return list of names of annotated classes
 	 */
 	public List<String> loadNames(Class<?> annotation, ClassLoader classLoader) {
