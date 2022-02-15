@@ -51,31 +51,35 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		distribution.getDistributionBaseName()
 				.convention((project.provider(() -> applicationConvention.getApplicationName() + "-boot")));
 		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks().register("bootStartScripts",
-				CreateStartScripts.class, (bss) -> {
-					bss.setDescription(
-							"Generates OS-specific start scripts to run the project as a Spring Boot application.");
-					((TemplateBasedScriptGenerator) bss.getUnixStartScriptGenerator()).setTemplate(
-							project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
-					((TemplateBasedScriptGenerator) bss.getWindowsStartScriptGenerator()).setTemplate(
-							project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
-
-					project.getConfigurations().all((configuration) -> {
-						if ("bootArchives".equals(configuration.getName())) {
-							CopySpec libCopySpec = project.copySpec().into("lib")
-									.from((Callable<FileCollection>) () -> configuration.getArtifacts().getFiles());
-							libCopySpec.setFileMode(0644);
-							distribution.getContents().with(libCopySpec);
-							bss.setClasspath(configuration.getArtifacts().getFiles());
-						}
-					});
-					bss.getConventionMapping().map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
-					bss.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
-					bss.getConventionMapping().map("defaultJvmOpts",
-							applicationConvention::getApplicationDefaultJvmArgs);
-				});
+				CreateStartScripts.class,
+				(task) -> configureCreateStartScripts(project, applicationConvention, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
+	}
+
+	private void configureCreateStartScripts(Project project, ApplicationPluginConvention applicationConvention,
+			Distribution distribution, CreateStartScripts createStartScripts) {
+		createStartScripts
+				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
+		((TemplateBasedScriptGenerator) createStartScripts.getUnixStartScriptGenerator())
+				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
+		((TemplateBasedScriptGenerator) createStartScripts.getWindowsStartScriptGenerator())
+				.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
+		project.getConfigurations().all((configuration) -> {
+			if ("bootArchives".equals(configuration.getName())) {
+				CopySpec libCopySpec = project.copySpec().into("lib")
+						.from((Callable<FileCollection>) () -> configuration.getArtifacts().getFiles());
+				libCopySpec.setFileMode(0644);
+				distribution.getContents().with(libCopySpec);
+				createStartScripts.setClasspath(configuration.getArtifacts().getFiles());
+			}
+		});
+		createStartScripts.getConventionMapping().map("outputDir",
+				() -> new File(project.getBuildDir(), "bootScripts"));
+		createStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
+		createStartScripts.getConventionMapping().map("defaultJvmOpts",
+				applicationConvention::getApplicationDefaultJvmArgs);
 	}
 
 	@Override
