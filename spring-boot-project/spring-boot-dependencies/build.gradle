@@ -1075,6 +1075,7 @@ bom {
 	library("Liquibase", "4.7.0") {
 		group("org.liquibase") {
 			modules = [
+				"liquibase-cdi",
 				"liquibase-core"
 			]
 			plugins = [
@@ -1238,7 +1239,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.9.0-M2") {
+	library("Micrometer", "1.9.0-SNAPSHOT") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1417,7 +1418,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.15") {
+	library("Reactor Bom", "2020.0.16-SNAPSHOT") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1656,14 +1657,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.2.0-M2") {
+	library("Spring Data Bom", "2021.2.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.15") {
+	library("Spring Framework", "5.3.16-SNAPSHOT") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
@@ -1692,7 +1693,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.2") {
+	library("Spring Kafka", "2.8.3-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1700,7 +1701,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "2.4.0-M1") {
+	library("Spring LDAP", "2.4.0-SNAPSHOT") {
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",
@@ -1730,7 +1731,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.7.0-M1") {
+	library("Spring Security", "5.7.0-SNAPSHOT") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"

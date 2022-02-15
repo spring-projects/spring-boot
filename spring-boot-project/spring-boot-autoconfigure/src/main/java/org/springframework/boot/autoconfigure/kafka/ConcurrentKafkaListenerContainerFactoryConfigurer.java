@@ -169,6 +169,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		configureContainer(listenerFactory.getContainerProperties());
 	}
 
+	@SuppressWarnings("deprecation")
 	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
