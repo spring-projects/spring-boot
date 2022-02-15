@@ -31,6 +31,7 @@ import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.ApplicationPluginConvention;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.jvm.application.tasks.CreateStartScripts;
 
@@ -49,12 +50,21 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		Distribution distribution = distributions.create("boot");
 		distribution.getDistributionBaseName()
 				.convention((project.provider(() -> applicationConvention.getApplicationName() + "-boot")));
-		CreateStartScripts bootStartScripts = project.getTasks().create("bootStartScripts", CreateStartScripts.class);
-		bootStartScripts
+		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks().register("bootStartScripts",
+				CreateStartScripts.class,
+				(task) -> configureCreateStartScripts(project, applicationConvention, distribution, task));
+		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
+		binCopySpec.setFileMode(0755);
+		distribution.getContents().with(binCopySpec);
+	}
+
+	private void configureCreateStartScripts(Project project, ApplicationPluginConvention applicationConvention,
+			Distribution distribution, CreateStartScripts createStartScripts) {
+		createStartScripts
 				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
-		((TemplateBasedScriptGenerator) bootStartScripts.getUnixStartScriptGenerator())
+		((TemplateBasedScriptGenerator) createStartScripts.getUnixStartScriptGenerator())
 				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
-		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())
+		((TemplateBasedScriptGenerator) createStartScripts.getWindowsStartScriptGenerator())
 				.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
@@ -62,16 +72,14 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 						.from((Callable<FileCollection>) () -> configuration.getArtifacts().getFiles());
 				libCopySpec.setFileMode(0644);
 				distribution.getContents().with(libCopySpec);
-				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
+				createStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		bootStartScripts.getConventionMapping().map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
-		bootStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
-		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
+		createStartScripts.getConventionMapping().map("outputDir",
+				() -> new File(project.getBuildDir(), "bootScripts"));
+		createStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
+		createStartScripts.getConventionMapping().map("defaultJvmOpts",
 				applicationConvention::getApplicationDefaultJvmArgs);
-		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
-		binCopySpec.setFileMode(0755);
-		distribution.getContents().with(binCopySpec);
 	}
 
 	@Override
