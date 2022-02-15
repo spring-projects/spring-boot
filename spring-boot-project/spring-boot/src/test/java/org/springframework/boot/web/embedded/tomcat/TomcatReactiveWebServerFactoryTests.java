@@ -16,10 +16,7 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import java.io.IOException;
 import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
@@ -48,7 +45,6 @@ import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -224,15 +220,13 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
-	void portClashOfPrimaryConnectorResultsInPortInUseException() throws IOException {
-		doWithBlockedPort((port) -> {
-			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
-				AbstractReactiveWebServerFactory factory = getFactory();
-				factory.setPort(port);
-				this.webServer = factory.getWebServer(mock(HttpHandler.class));
-				this.webServer.start();
-			}).satisfies((ex) -> handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, port));
-		});
+	void portClashOfPrimaryConnectorResultsInPortInUseException() throws Exception {
+		doWithBlockedPort((port) -> assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
+			AbstractReactiveWebServerFactory factory = getFactory();
+			factory.setPort(port);
+			this.webServer = factory.getWebServer(mock(HttpHandler.class));
+			this.webServer.start();
+		}).satisfies((ex) -> handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, port)));
 	}
 
 	@Override
@@ -278,34 +272,9 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThat(webServerReference).hasValue(webServer);
 	}
 
-	private void doWithBlockedPort(BlockedPortAction action) throws IOException {
-		int port = SocketUtils.findAvailableTcpPort(40000);
-		ServerSocket serverSocket = new ServerSocket();
-		for (int i = 0; i < 10; i++) {
-			try {
-				serverSocket.bind(new InetSocketAddress(port));
-				break;
-			}
-			catch (Exception ex) {
-			}
-		}
-		try {
-			action.run(port);
-		}
-		finally {
-			serverSocket.close();
-		}
-	}
-
 	private void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
-	}
-
-	interface BlockedPortAction {
-
-		void run(int port);
-
 	}
 
 }
