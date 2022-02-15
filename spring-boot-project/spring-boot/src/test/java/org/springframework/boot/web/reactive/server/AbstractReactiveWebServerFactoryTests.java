@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
@@ -73,7 +74,6 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.util.SocketUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -109,11 +109,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	void specificPort() throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		int specificPort = doWithRetry(() -> {
-			int port = SocketUtils.findAvailableTcpPort(41000);
-			factory.setPort(port);
+			factory.setPort(0);
 			this.webServer = factory.getWebServer(new EchoHandler());
 			this.webServer.start();
-			return port;
+			return this.webServer.getPort();
 		});
 		Mono<String> result = getWebClient(this.webServer.getPort()).build().post().uri("/test")
 				.contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World")).retrieve()
@@ -567,6 +566,26 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			}
 		}
 		throw new IllegalStateException("Action was not successful in 10 attempts", lastFailure);
+	}
+
+	protected final void doWithBlockedPort(BlockedPortAction action) throws Exception {
+		ServerSocket serverSocket = new ServerSocket();
+		int blockedPort = doWithRetry(() -> {
+			serverSocket.bind(null);
+			return serverSocket.getLocalPort();
+		});
+		try {
+			action.run(blockedPort);
+		}
+		finally {
+			serverSocket.close();
+		}
+	}
+
+	public interface BlockedPortAction {
+
+		void run(int port);
+
 	}
 
 	protected static class EchoHandler implements HttpHandler {

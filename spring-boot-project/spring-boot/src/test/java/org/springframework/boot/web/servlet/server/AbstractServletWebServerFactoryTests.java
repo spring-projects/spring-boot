@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -140,7 +139,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -319,11 +317,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	void specificPort() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		int specificPort = doWithRetry(() -> {
-			int port = SocketUtils.findAvailableTcpPort(41000);
-			factory.setPort(port);
+			factory.setPort(0);
 			this.webServer = factory.getWebServer(exampleServletRegistration());
 			this.webServer.start();
-			return port;
+			return this.webServer.getPort();
 		});
 		assertThat(getResponse("http://localhost:" + specificPort + "/hello")).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
@@ -1405,9 +1402,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected final void doWithBlockedPort(BlockedPortAction action) throws Exception {
 		ServerSocket serverSocket = new ServerSocket();
 		int blockedPort = doWithRetry(() -> {
-			int port = SocketUtils.findAvailableTcpPort(40000);
-			serverSocket.bind(new InetSocketAddress(port));
-			return port;
+			serverSocket.bind(null);
+			return serverSocket.getLocalPort();
 		});
 		try {
 			action.run(blockedPort);
