@@ -95,7 +95,7 @@ public class KafkaProperties {
 
 	private final Security security = new Security();
 
-	private final RetryTopic retryTopic = new RetryTopic();
+	private final Retry retry = new Retry();
 
 	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
@@ -153,8 +153,8 @@ public class KafkaProperties {
 		return this.security;
 	}
 
-	public RetryTopic getRetryTopic() {
-		return this.retryTopic;
+	public Retry getRetry() {
+		return this.retry;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
@@ -1339,37 +1339,74 @@ public class KafkaProperties {
 
 	}
 
-	public static class RetryTopic {
+	public static class Retry {
 
-		private Integer attempts;
+		private Topic topic = new Topic();
 
-		private BackOff backOff;
-
-		public Integer getAttempts() {
-			return this.attempts;
+		public Topic getTopic() {
+			return this.topic;
 		}
 
-		public void setAttempts(Integer attempts) {
-			this.attempts = attempts;
+		public void setTopic(Topic topic) {
+			this.topic = topic;
 		}
 
-		public BackOff getBackOff() {
-			return this.backOff;
-		}
+		/**
+		 * Properties for non-blocking, topic-based retries.
+		 */
+		public static class Topic {
 
-		public void setBackOff(BackOff backOff) {
-			this.backOff = backOff;
-		}
+			/**
+			 * Whether to enable topic-based retries auto-configuration.
+			 */
+			private Boolean enabled;
 
-		public static class BackOff {
+			/**
+			 * The total number of processing attempts made before sending the message to
+			 * the DLT.
+			 */
+			private Integer attempts;
 
+			/**
+			 * A canonical backoff period. Used as an initial value in the exponential
+			 * case, and as a minimum value in the uniform case.
+			 */
 			private Duration delay;
 
+			/**
+			 * If positive, then used as a multiplier for generating the next delay for
+			 * backoff.
+			 */
 			private Double multiplier;
 
+			/**
+			 * The maximimum wait between retries. If less than the delay then the default
+			 * of 30 seconds is applied.
+			 */
 			private Duration maxDelay;
 
-			private Boolean random;
+			/**
+			 * In the exponential case (multiplier() > 0) set this to true to have the
+			 * backoff delays randomized, so that the maximum delay is multiplier times
+			 * the previous delay and the distribution is uniform between the two values.
+			 */
+			private Boolean randomBackOff;
+
+			public Boolean getEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(Boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public Integer getAttempts() {
+				return this.attempts;
+			}
+
+			public void setAttempts(Integer attempts) {
+				this.attempts = attempts;
+			}
 
 			public Duration getDelay() {
 				return this.delay;
@@ -1395,20 +1432,20 @@ public class KafkaProperties {
 				return this.maxDelay;
 			}
 
-			public Long getMaxDelayMillis() {
-				return (this.maxDelay != null) ? this.maxDelay.toMillis() : null;
-			}
-
 			public void setMaxDelay(Duration maxDelay) {
 				this.maxDelay = maxDelay;
 			}
 
-			public Boolean isRandom() {
-				return this.random;
+			public Long getMaxDelayMillis() {
+				return (this.maxDelay != null) ? this.maxDelay.toMillis() : null;
 			}
 
-			public void setRandom(Boolean random) {
-				this.random = random;
+			public Boolean isRandomBackOff() {
+				return this.randomBackOff;
+			}
+
+			public void setRandomBackOff(Boolean randomBackOff) {
+				this.randomBackOff = randomBackOff;
 			}
 
 		}

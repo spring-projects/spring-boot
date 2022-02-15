@@ -97,9 +97,9 @@ class KafkaAutoConfigurationIntegrationTests {
 	@Test
 	void testEndToEndWithRetryTopics() throws Exception {
 		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
-				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.retry-topic.enabled=true",
-				"spring.kafka.retry-topic.attempts=4", "spring.kafka.retry-topic.back-off.delay=100ms",
-				"spring.kafka.retry-topic.back-off.multiplier=2", "spring.kafka.retry-topic.back-off.max-delay=300ms",
+				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
+				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
@@ -107,11 +107,12 @@ class KafkaAutoConfigurationIntegrationTests {
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener.key).isEqualTo("foo");
 		assertThat(listener.received).isEqualTo("bar");
-		assertThat(listener.topics.size()).isEqualTo(4);
+		assertThat(listener.topics.size()).isEqualTo(5);
 		assertThat(listener.topics.get(0)).isEqualTo("testRetryTopic");
 		assertThat(listener.topics.get(1)).isEqualTo("testRetryTopic-retry-100");
 		assertThat(listener.topics.get(2)).isEqualTo("testRetryTopic-retry-200");
-		assertThat(listener.topics.get(3)).isEqualTo("testRetryTopic-retry-300");
+		assertThat(listener.topics.get(3)).isEqualTo("testRetryTopic-retry-300-0");
+		assertThat(listener.topics.get(4)).isEqualTo("testRetryTopic-retry-300-1");
 	}
 
 	@Test
@@ -189,7 +190,7 @@ class KafkaAutoConfigurationIntegrationTests {
 
 	static class RetryListener {
 
-		private final CountDownLatch latch = new CountDownLatch(4);
+		private final CountDownLatch latch = new CountDownLatch(5);
 
 		private final List<String> topics = new ArrayList<>();
 

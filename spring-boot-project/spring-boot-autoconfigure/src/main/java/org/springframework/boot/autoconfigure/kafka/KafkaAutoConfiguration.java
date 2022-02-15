@@ -39,11 +39,15 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
-import org.springframework.kafka.support.JavaUtils;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.backoff.ExponentialRandomBackOffPolicy;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.backoff.SleepingBackOffPolicy;
+import org.springframework.retry.backoff.UniformRandomBackOffPolicy;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -119,20 +123,6 @@ public class KafkaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.kafka.retry-topic.enabled")
-	@ConditionalOnMissingBean
-	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
-		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance();
-		KafkaProperties.RetryTopic retryTopic = this.properties.getRetryTopic();
-		JavaUtils.INSTANCE.acceptIfNotNull(retryTopic.getAttempts(), builder::maxAttempts).acceptIfNotNull(
-				retryTopic.getBackOff(),
-				(backOff) -> builder
-						.customBackoff(KafkaAutoConfigurationUtils.createBackOffFrom(backOff.getDelayMillis(),
-								backOff.getMaxDelayMillis(), backOff.getMultiplier(), backOff.isRandom())));
-		return builder.create(kafkaOperations);
-	}
-
-	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.jaas.enabled")
 	@ConditionalOnMissingBean
 	public KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
@@ -154,6 +144,50 @@ public class KafkaAutoConfiguration {
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
 		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailFast());
 		return kafkaAdmin;
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
+	@ConditionalOnMissingBean
+	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
+		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance();
+		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(retryTopic.getAttempts()).to(builder::maxAttempts);
+		map.from(createBackOffFor(retryTopic)).to(builder::customBackoff);
+		return builder.create(kafkaOperations);
+	}
+
+	private SleepingBackOffPolicy<?> createBackOffFor(KafkaProperties.Retry.Topic properties) {
+		Long min = properties.getDelayMillis();
+		Long max = properties.getMaxDelayMillis();
+		Double multiplier = properties.getMultiplier();
+		Boolean isRandom = properties.isRandomBackOff();
+		if (min == null && max == null && multiplier == null && isRandom == null) {
+			return null;
+		}
+		if (multiplier != null && multiplier > 0) {
+			ExponentialBackOffPolicy policy = new ExponentialBackOffPolicy();
+			if (isRandom != null && isRandom) {
+				policy = new ExponentialRandomBackOffPolicy();
+			}
+			policy.setInitialInterval((min != null) ? min : ExponentialBackOffPolicy.DEFAULT_INITIAL_INTERVAL);
+			policy.setMultiplier(multiplier);
+			policy.setMaxInterval(
+					(max != null && min != null && max > min) ? max : ExponentialBackOffPolicy.DEFAULT_MAX_INTERVAL);
+			return policy;
+		}
+		if (max != null && min != null && max > min) {
+			UniformRandomBackOffPolicy policy = new UniformRandomBackOffPolicy();
+			policy.setMinBackOffPeriod(min);
+			policy.setMaxBackOffPeriod(max);
+			return policy;
+		}
+		FixedBackOffPolicy policy = new FixedBackOffPolicy();
+		if (min != null) {
+			policy.setBackOffPeriod(min);
+		}
+		return policy;
 	}
 
 }

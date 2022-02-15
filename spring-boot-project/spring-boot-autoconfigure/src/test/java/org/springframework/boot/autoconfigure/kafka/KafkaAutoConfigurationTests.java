@@ -321,12 +321,11 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	void retryTopicConfiguration() {
+	void retryTopicConfigurationWithExponentialBackOff() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry-topic.enabled=true",
-				"spring.kafka.retry-topic.attempts=5", "spring.kafka.retry-topic.back-off.delay=100ms",
-				"spring.kafka.retry-topic.back-off.multiplier=2", "spring.kafka.retry-topic.back-off.max-delay=300ms")
-				.run((context) -> {
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
+				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms").run((context) -> {
 					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
 					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
 					assertThat(properties.size()).isEqualTo(6);
@@ -336,6 +335,36 @@ class KafkaAutoConfigurationTests {
 					assertThat(properties.get(3).delay()).isEqualTo(300);
 					assertThat(properties.get(4).delay()).isEqualTo(300);
 					assertThat(properties.get(5).delay()).isEqualTo(0);
+				});
+	}
+
+	@Test
+	void retryTopicConfigurationWithDefaultBackOff() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true")
+				.run((context) -> {
+					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
+					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
+					assertThat(properties.size()).isEqualTo(4);
+					assertThat(properties.get(0).delay()).isEqualTo(0);
+					assertThat(properties.get(1).delay()).isEqualTo(1000);
+					assertThat(properties.get(2).delay()).isEqualTo(1000);
+					assertThat(properties.get(3).delay()).isEqualTo(0);
+				});
+	}
+
+	@Test
+	void retryTopicConfigurationWithFixedBackOff() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=3", "spring.kafka.retry.topic.delay=2s").run((context) -> {
+					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
+					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
+					assertThat(properties.size()).isEqualTo(4);
+					assertThat(properties.get(0).delay()).isEqualTo(0);
+					assertThat(properties.get(1).delay()).isEqualTo(2000);
+					assertThat(properties.get(2).delay()).isEqualTo(2000);
+					assertThat(properties.get(3).delay()).isEqualTo(0);
 				});
 	}
 
