@@ -37,7 +37,7 @@ class AutoConfigurationLoaderTests {
 	}
 
 	@Test
-	void locate() {
+	void loadNames() {
 		List<String> classNames = this.sut.loadNames(TestAutoConfiguration.class, null);
 
 		assertThat(classNames).containsExactly("class1", "class2", "class3");
