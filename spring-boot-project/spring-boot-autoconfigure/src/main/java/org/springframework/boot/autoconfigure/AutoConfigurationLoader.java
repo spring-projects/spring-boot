@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
  * @see AutoConfiguration
  * @see SpringFactoriesLoader
  */
-public class AutoConfigurationLoader {
+class AutoConfigurationLoader {
 
 	private static final String LOCATION = "META-INF/springboot/";
 
