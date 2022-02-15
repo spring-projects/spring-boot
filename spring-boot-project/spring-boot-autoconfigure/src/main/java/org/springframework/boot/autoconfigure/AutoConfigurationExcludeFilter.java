@@ -67,7 +67,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 			autoConfigurations.addAll(
 					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanClassLoader));
 			autoConfigurations.addAll(
-					new AutoConfigurationLoader().loadNames(EnableAutoConfiguration.class, this.beanClassLoader));
+					new AutoConfigurationLoader().loadNames(AutoConfiguration.class, this.beanClassLoader));
 			this.autoConfigurations = autoConfigurations;
 		}
 		return this.autoConfigurations;
