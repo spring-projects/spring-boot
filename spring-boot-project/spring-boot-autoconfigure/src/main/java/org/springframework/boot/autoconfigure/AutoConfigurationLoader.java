@@ -37,7 +37,6 @@ import org.springframework.util.Assert;
  * annotated class. Comments are supported using the # character.
  *
  * @author Moritz Halbritter
- * @since 2.7.0
  * @see AutoConfiguration
  * @see SpringFactoriesLoader
  */
@@ -53,7 +52,7 @@ class AutoConfigurationLoader {
 	 * @param classLoader class loader to use for loading
 	 * @return list of names of annotated classes
 	 */
-	public List<String> loadNames(Class<?> annotation, ClassLoader classLoader) {
+	List<String> loadNames(Class<?> annotation, ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
 		ClassLoader classLoaderToUse = decideClassloader(classLoader);
 		String location = LOCATION + annotation.getName();
