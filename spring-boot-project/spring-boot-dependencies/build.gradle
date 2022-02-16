@@ -70,7 +70,7 @@ bom {
 			]
 		}
 	}
-	library("Artemis", "2.19.0") {
+	library("Artemis", "2.19.1") {
         prohibit("[2.20.0,)") {
             because "it requires Java 11"
         }
