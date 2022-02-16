@@ -100,6 +100,9 @@ bom {
 		}
 	}
 	library("AspectJ", "1.9.7") {
+		prohibit("[1.9.8.M1,)") {
+			because "it requires Java 11"
+		}
 		group("org.aspectj") {
 			modules = [
 				"aspectjrt",
