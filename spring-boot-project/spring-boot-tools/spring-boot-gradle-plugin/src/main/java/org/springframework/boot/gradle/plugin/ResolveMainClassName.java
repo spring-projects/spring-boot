@@ -96,7 +96,7 @@ public class ResolveMainClassName extends DefaultTask {
 	 * Sets the classpath to include in the archive. The given {@code classpath} is
 	 * evaluated as per {@link Project#files(Object...)}.
 	 * @param classpath the classpath
-	 * @since 2.5.9
+	 * @since 2.5.10
 	 */
 	public void setClasspath(Object classpath) {
 		this.classpath = getProject().files(classpath);
