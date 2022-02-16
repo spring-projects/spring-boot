@@ -16,6 +16,7 @@
 
 package smoketest.jetty.jsp;
 
+import org.eclipse.jetty.server.AllowedResourceAliasChecker;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +60,7 @@ class SampleWebJspApplicationTests {
 		JettyServerCustomizer jettyServerCustomizer() {
 			return (server) -> {
 				ContextHandler handler = (ContextHandler) server.getHandler();
-				handler.addAliasCheck((path, resource) -> true);
+				handler.addAliasCheck(new AllowedResourceAliasChecker(handler));
 			};
 		}
 
