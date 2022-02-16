@@ -12,7 +12,8 @@ TIP: A https://github.com/snicoll-demos/spring-boot-master-auto-configuration[de
 
 [[features.developing-auto-configuration.understanding-auto-configured-beans]]
 === Understanding Auto-configured Beans
-Under the hood, auto-configuration is implemented with standard `@Configuration` classes.
+Under the hood, auto-configuration is implemented with the `@AutoConfiguration` annotation.
+This annotation itself is meta-annotated with `@Configuration`, making auto-configurations standard `@Configuration` classes.
 Additional `@Conditional` annotations are used to constrain when the auto-configuration should apply.
 Usually, auto-configuration classes use `@ConditionalOnClass` and `@ConditionalOnMissingBean` annotations.
 This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own `@Configuration`.
