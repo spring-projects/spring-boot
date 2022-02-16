@@ -1873,7 +1873,7 @@ bom {
 			]
 		}
 	}
-	library("XmlUnit2", "2.8.4") {
+	library("XmlUnit2", "2.9.0") {
 		group("org.xmlunit") {
 			modules = [
 				"xmlunit-assertj",
