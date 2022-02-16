@@ -946,6 +946,12 @@ public class KafkaProperties {
 		 */
 		private boolean missingTopicsFatal = false;
 
+		/**
+		 * Whether the container stops after the current record is processed or after all
+		 * the records from the previous poll are processed.
+		 */
+		private boolean immediateStop = false;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1064,6 +1070,14 @@ public class KafkaProperties {
 
 		public void setMissingTopicsFatal(boolean missingTopicsFatal) {
 			this.missingTopicsFatal = missingTopicsFatal;
+		}
+
+		public boolean isImmediateStop() {
+			return this.immediateStop;
+		}
+
+		public void setImmediateStop(boolean immediateStop) {
+			this.immediateStop = immediateStop;
 		}
 
 	}
