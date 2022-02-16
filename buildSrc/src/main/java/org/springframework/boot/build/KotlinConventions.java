@@ -44,7 +44,7 @@ class KotlinConventions {
 
 	void apply(Project project) {
 		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
-			project.getTasks().withType(KotlinCompile.class, (compile) -> {
+			project.getTasks().withType(KotlinCompile.class).configureEach((compile) -> {
 				KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
 				kotlinOptions.setApiVersion("1.3");
 				kotlinOptions.setLanguageVersion("1.3");

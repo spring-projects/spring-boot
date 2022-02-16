@@ -58,8 +58,6 @@ public class AutoConfigurationMetadata extends DefaultTask {
 						"META-INF/spring.factories"))
 				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("spring.factories");
 		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
-		getProject().getConfigurations()
-				.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {

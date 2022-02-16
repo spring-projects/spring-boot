@@ -41,6 +41,7 @@ import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -119,29 +120,32 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
-		ExtractResources extractLegalResources = project.getTasks().create("extractLegalResources",
-				ExtractResources.class);
-		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
-		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
-		extractLegalResources.property("version", project.getVersion().toString());
-		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-		Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
-				.collect(Collectors.toSet());
-		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
-				.collect(Collectors.toSet());
-		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
-			jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
-			jar.manifest((manifest) -> {
-				Map<String, Object> attributes = new TreeMap<>();
-				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
-				attributes.put("Built-By", "Spring");
-				attributes.put("Implementation-Title",
-						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
-				attributes.put("Implementation-Version", project.getVersion());
-				manifest.attributes(attributes);
+		TaskProvider<ExtractResources> extractLegalResources = project.getTasks().register("extractLegalResources",
+				ExtractResources.class, (task) -> {
+					task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
+					task.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
+					task.property("version", project.getVersion().toString());
+				});
+		project.afterEvaluate((evaluated) -> {
+			SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+			Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
+					.collect(Collectors.toSet());
+			Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
+					.collect(Collectors.toSet());
+			project.getTasks().withType(Jar.class).configureEach((jar) -> {
+				jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
+				jar.manifest((manifest) -> {
+					Map<String, Object> attributes = new TreeMap<>();
+					attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
+					attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
+					attributes.put("Built-By", "Spring");
+					attributes.put("Implementation-Title",
+							determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
+					attributes.put("Implementation-Version", project.getVersion());
+					manifest.attributes(attributes);
+				});
 			});
-		}));
+		});
 	}
 
 	private String determineImplementationTitle(Project project, Set<String> sourceJarTaskNames,
@@ -156,17 +160,17 @@ class JavaConventions {
 	}
 
 	private void configureTestConventions(Project project) {
-		project.getTasks().withType(Test.class, (test) -> {
+		project.getTasks().withType(Test.class).configureEach((test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
-			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
-			project.getTasks().withType(CheckFormat.class, (checkFormat) -> test.mustRunAfter(checkFormat));
+			test.mustRunAfter(project.getTasks().withType(Checkstyle.class));
+			test.mustRunAfter(project.getTasks().withType(CheckFormat.class));
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
 		project.getPlugins().apply(TestRetryPlugin.class);
-		project.getTasks().withType(Test.class,
-				(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
+		project.getTasks().withType(Test.class)
+				.configureEach((test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
 					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
 					testRetry.getFailOnPassedAfterRetry().set(true);
 					testRetry.getMaxRetries().set(isCi() ? 3 : 0);
@@ -178,7 +182,8 @@ class JavaConventions {
 	}
 
 	private void configureJavadocConventions(Project project) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
+		project.getTasks().withType(Javadoc.class)
+				.configureEach((javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 	}
 
 	private void configureJavaConventions(Project project) {
@@ -186,7 +191,7 @@ class JavaConventions {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
 		}
-		project.getTasks().withType(JavaCompile.class, (compile) -> {
+		project.getTasks().withType(JavaCompile.class).configureEach((compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
@@ -209,7 +214,7 @@ class JavaConventions {
 
 	private void configureSpringJavaFormat(Project project) {
 		project.getPlugins().apply(SpringJavaFormatPlugin.class);
-		project.getTasks().withType(Format.class, (Format) -> Format.setEncoding("UTF-8"));
+		project.getTasks().withType(Format.class).configureEach((Format) -> Format.setEncoding("UTF-8"));
 		project.getPlugins().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
 		checkstyle.setToolVersion("8.45.1");
@@ -257,11 +262,13 @@ class JavaConventions {
 	}
 
 	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
-		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks().create(
-				"check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
-				CheckClasspathForProhibitedDependencies.class);
-		checkClasspathForProhibitedDependencies.setClasspath(classpath);
-		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
+		TaskProvider<CheckClasspathForProhibitedDependencies> checkClasspathForProhibitedDependencies = project
+				.getTasks()
+				.register("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+						CheckClasspathForProhibitedDependencies.class);
+		checkClasspathForProhibitedDependencies.configure((task) -> task.setClasspath(classpath));
+		project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME)
+				.configure((check) -> check.dependsOn(checkClasspathForProhibitedDependencies));
 	}
 
 }

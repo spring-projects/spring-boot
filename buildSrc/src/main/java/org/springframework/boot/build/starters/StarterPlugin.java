@@ -28,6 +28,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.build.ConventionsPlugin;
@@ -66,23 +67,25 @@ public class StarterPlugin implements Plugin<Project> {
 	}
 
 	private void createClasspathConflictsCheck(Configuration classpath, Project project) {
-		CheckClasspathForConflicts checkClasspathForConflicts = project.getTasks().create(
+		TaskProvider<CheckClasspathForConflicts> checkClasspathForConflicts = project.getTasks().register(
 				"check" + StringUtils.capitalize(classpath.getName() + "ForConflicts"),
 				CheckClasspathForConflicts.class);
-		checkClasspathForConflicts.setClasspath(classpath);
-		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForConflicts);
+		checkClasspathForConflicts.configure((task) -> task.setClasspath(classpath));
+		project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME,
+				(check) -> check.dependsOn(checkClasspathForConflicts));
 	}
 
 	private void createUnnecessaryExclusionsCheck(Configuration classpath, Project project) {
-		CheckClasspathForUnnecessaryExclusions checkClasspathForUnnecessaryExclusions = project.getTasks().create(
-				"check" + StringUtils.capitalize(classpath.getName() + "ForUnnecessaryExclusions"),
-				CheckClasspathForUnnecessaryExclusions.class);
-		checkClasspathForUnnecessaryExclusions.setClasspath(classpath);
-		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForUnnecessaryExclusions);
+		TaskProvider<CheckClasspathForUnnecessaryExclusions> checkClasspathForUnnecessaryExclusions = project.getTasks()
+				.register("check" + StringUtils.capitalize(classpath.getName() + "ForUnnecessaryExclusions"),
+						CheckClasspathForUnnecessaryExclusions.class);
+		checkClasspathForUnnecessaryExclusions.configure((task) -> task.setClasspath(classpath));
+		project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME,
+				(check) -> check.dependsOn(checkClasspathForUnnecessaryExclusions));
 	}
 
 	private void configureJarManifest(Project project) {
-		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
+		project.afterEvaluate((evaluated) -> project.getTasks().withType(Jar.class).configureEach((jar) -> {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Spring-Boot-Jar-Type", JAR_TYPE);

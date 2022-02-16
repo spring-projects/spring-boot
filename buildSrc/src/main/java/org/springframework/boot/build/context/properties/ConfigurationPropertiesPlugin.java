@@ -81,21 +81,21 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
 				evaluatedProject.provider((Callable<File>) () -> new File(mainSourceSet.getJava().getOutputDir(),
 						"META-INF/spring-configuration-metadata.json")),
-				(artifact) -> artifact
-						.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
+				(artifact) -> artifact.builtBy(evaluatedProject.getTasks().named(mainSourceSet.getClassesTaskName()))));
 	}
 
 	private void configureAdditionalMetadataLocationsCompilerArgument(Project project) {
-		JavaCompile compileJava = project.getTasks().withType(JavaCompile.class)
-				.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
-		((Task) compileJava).getInputs().files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME))
-				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("processed resources");
-		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		compileJava.getOptions().getCompilerArgs()
-				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + StringUtils
-						.collectionToCommaDelimitedString(mainSourceSet.getResources().getSourceDirectories().getFiles()
-								.stream().map(project.getRootProject()::relativePath).collect(Collectors.toSet())));
+		project.getTasks().named(JavaPlugin.COMPILE_JAVA_TASK_NAME, JavaCompile.class, (compileJava) -> {
+			((Task) compileJava).getInputs().files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME))
+					.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("processed resources");
+			SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			compileJava.getOptions().getCompilerArgs()
+					.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+							+ StringUtils.collectionToCommaDelimitedString(
+									mainSourceSet.getResources().getSourceDirectories().getFiles().stream()
+											.map(project.getRootProject()::relativePath).collect(Collectors.toSet())));
+		});
 	}
 
 }

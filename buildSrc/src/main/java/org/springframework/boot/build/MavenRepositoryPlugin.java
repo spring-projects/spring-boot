@@ -32,6 +32,7 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository;
 
 /**
  * A plugin to make a project's {@code deployment} publication available as a Maven
@@ -61,9 +62,11 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 			mavenRepository.setName("project");
 			mavenRepository.setUrl(repositoryLocation.toURI());
 		});
-		project.getTasks().matching((task) -> task.getName().equals(PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME))
+		project.getTasks().withType(PublishToMavenRepository.class)
+				.matching((task) -> task.getName().equals(PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME))
 				.all((task) -> setUpProjectRepository(project, task, repositoryLocation));
-		project.getTasks().matching((task) -> task.getName().equals("publishPluginMavenPublicationToProjectRepository"))
+		project.getTasks().withType(PublishToMavenRepository.class)
+				.matching((task) -> task.getName().equals("publishPluginMavenPublicationToProjectRepository"))
 				.all((task) -> setUpProjectRepository(project, task, repositoryLocation));
 	}
 

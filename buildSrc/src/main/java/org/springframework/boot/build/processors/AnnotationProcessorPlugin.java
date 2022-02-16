@@ -34,7 +34,7 @@ public class AnnotationProcessorPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
+		project.afterEvaluate((evaluated) -> project.getTasks().withType(Jar.class).configureEach((jar) -> {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Spring-Boot-Jar-Type", JAR_TYPE);

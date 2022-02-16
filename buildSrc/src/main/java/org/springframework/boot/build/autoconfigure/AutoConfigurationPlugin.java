@@ -18,7 +18,6 @@ package org.springframework.boot.build.autoconfigure;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -26,6 +25,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin;
@@ -65,15 +65,19 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 			annotationProcessors.getDependencies()
 					.add(project.getDependencies().project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
-			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
-				SourceSet main = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-				task.setSourceSet(main);
-				task.dependsOn(main.getClassesTaskName());
-				task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
-				project.getArtifacts().add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
-						project.provider((Callable<File>) task::getOutputFile), (artifact) -> artifact.builtBy(task));
-			});
+			project.getConfigurations()
+					.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
+			TaskProvider<AutoConfigurationMetadata> autoConfigurationMetadata = project.getTasks()
+					.register("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
+						SourceSet main = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+								.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+						task.setSourceSet(main);
+						task.dependsOn(main.getClassesTaskName());
+						task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
+					});
+			project.getArtifacts().add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
+					autoConfigurationMetadata.map(AutoConfigurationMetadata::getOutputFile),
+					(artifact) -> artifact.builtBy(autoConfigurationMetadata));
 		});
 	}
 
