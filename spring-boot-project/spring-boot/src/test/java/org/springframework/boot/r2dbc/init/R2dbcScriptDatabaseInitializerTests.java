@@ -38,9 +38,12 @@ class R2dbcScriptDatabaseInitializerTests
 			.withUrl("r2dbc:h2:mem:///" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
 			.build();
 
-	private final ConnectionFactory standaloneConnectionFactory = ConnectionFactoryBuilder.withUrl("r2dbc:h2:file:///"
-			+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation().toURI().getPath()
-			+ UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE").build();
+	private final ConnectionFactory standaloneConnectionFactory = ConnectionFactoryBuilder
+			.withUrl("r2dbc:h2:file:///"
+					+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation().getAbsolutePath()
+							.replace('\\', '/')
+					+ "/" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+			.build();
 
 	@Override
 	protected R2dbcScriptDatabaseInitializer createEmbeddedDatabaseInitializer(
