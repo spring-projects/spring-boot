@@ -382,21 +382,20 @@ class KafkaAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	void listenerProperties() {
-		this.contextRunner
-				.withPropertyValues("spring.kafka.template.default-topic=testTopic",
-						"spring.kafka.template.transaction-id-prefix=txOverride",
-						"spring.kafka.listener.ack-mode=MANUAL", "spring.kafka.listener.client-id=client",
-						"spring.kafka.listener.ack-count=123", "spring.kafka.listener.ack-time=456",
-						"spring.kafka.listener.concurrency=3", "spring.kafka.listener.poll-timeout=2000",
-						"spring.kafka.listener.no-poll-threshold=2.5", "spring.kafka.listener.type=batch",
-						"spring.kafka.listener.idle-between-polls=1s", "spring.kafka.listener.idle-event-interval=1s",
-						"spring.kafka.listener.idle-partition-event-interval=1s",
-						"spring.kafka.listener.monitor-interval=45", "spring.kafka.listener.log-container-config=true",
-						"spring.kafka.listener.only-log-record-metadata=true",
-						"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
-						"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
-						"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.kafka.template.default-topic=testTopic",
+				"spring.kafka.template.transaction-id-prefix=txOverride", "spring.kafka.listener.ack-mode=MANUAL",
+				"spring.kafka.listener.client-id=client", "spring.kafka.listener.ack-count=123",
+				"spring.kafka.listener.ack-time=456", "spring.kafka.listener.concurrency=3",
+				"spring.kafka.listener.poll-timeout=2000", "spring.kafka.listener.no-poll-threshold=2.5",
+				"spring.kafka.listener.type=batch", "spring.kafka.listener.idle-between-polls=1s",
+				"spring.kafka.listener.idle-event-interval=1s",
+				"spring.kafka.listener.idle-partition-event-interval=1s", "spring.kafka.listener.monitor-interval=45",
+				"spring.kafka.listener.log-container-config=true",
+				"spring.kafka.listener.only-log-record-metadata=true",
+				"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
+				"spring.kafka.listener.immediate-stop=true", "spring.kafka.producer.transaction-id-prefix=foo",
+				"spring.kafka.jaas.login-module=foo", "spring.kafka.jaas.control-flag=REQUISITE",
+				"spring.kafka.jaas.options.useKeyTab=true").run((context) -> {
 					DefaultKafkaProducerFactory<?, ?> producerFactory = context
 							.getBean(DefaultKafkaProducerFactory.class);
 					DefaultKafkaConsumerFactory<?, ?> consumerFactory = context
@@ -423,6 +422,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();
 					assertThat(containerProperties.isOnlyLogRecordMetadata()).isTrue();
 					assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
+					assertThat(containerProperties.isStopImmediate()).isTrue();
 					assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
 					assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class)).hasSize(1);
