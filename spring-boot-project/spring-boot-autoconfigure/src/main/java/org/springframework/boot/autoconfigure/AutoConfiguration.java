@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -29,13 +28,19 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto-configuration classes are regular Spring {@link Configuration @Configuration}
- * beans. Generally auto-configuration beans are {@link Conditional @Conditional} beans
+ * Indicates that a class provides configuration that can be automatically applied by
+ * Spring Boot. Auto-configuration classes are regular
+ * {@link Configuration @Configuration} with the exception that
+ * {@literal Configuration#proxyBeanMethods() proxyBeanMethods} is always {@code false}.
+ * <p>
+ * Generally auto-configuration classes are marked as {@link Conditional @Conditional}
  * (most often using {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
  *
  * @author Moritz Halbritter
  * @see EnableAutoConfiguration
+ * @see AutoConfigureBefore
+ * @see AutoConfigureAfter
  * @see Conditional
  * @see ConditionalOnClass
  * @see ConditionalOnMissingBean
@@ -44,7 +49,6 @@ import org.springframework.context.annotation.Configuration;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Inherited
 @Configuration(proxyBeanMethods = false)
 public @interface AutoConfiguration {
 
