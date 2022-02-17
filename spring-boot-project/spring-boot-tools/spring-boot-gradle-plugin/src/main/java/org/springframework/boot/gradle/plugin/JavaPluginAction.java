@@ -82,7 +82,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
 		configureBootRunTask(project);
-		configureUtf8Encoding(project);
+		project.afterEvaluate(this::configureUtf8Encoding);
 		configureParametersCompilerArg(project);
 		configureAdditionalMetadataLocations(project);
 	}
@@ -166,13 +166,14 @@ final class JavaPluginAction implements PluginApplicationAction {
 		return project.getExtensions().getByType(JavaPluginExtension.class);
 	}
 
-	private void configureUtf8Encoding(Project project) {
-		project.afterEvaluate(
-				(evaluated) -> evaluated.getTasks().withType(JavaCompile.class).configureEach((compile) -> {
-					if (compile.getOptions().getEncoding() == null) {
-						compile.getOptions().setEncoding("UTF-8");
-					}
-				}));
+	private void configureUtf8Encoding(Project evaluatedProject) {
+		evaluatedProject.getTasks().withType(JavaCompile.class).configureEach(this::configureUtf8Encoding);
+	}
+
+	private void configureUtf8Encoding(JavaCompile compile) {
+		if (compile.getOptions().getEncoding() == null) {
+			compile.getOptions().setEncoding("UTF-8");
+		}
 	}
 
 	private void configureParametersCompilerArg(Project project) {
