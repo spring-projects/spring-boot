@@ -24,15 +24,17 @@ You can browse the source code of {spring-boot-autoconfigure-module-code}[`sprin
 
 [[features.developing-auto-configuration.locating-auto-configuration-candidates]]
 === Locating Auto-configuration Candidates
-Spring Boot checks for the presence of a `META-INF/spring.factories` file within your published jar.
-The file should list your configuration classes under the `EnableAutoConfiguration` key, as shown in the following example:
+
+Spring Boot checks for the presence of a `META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration` file within your published jar.
+The file should list your configuration classes, as shown in the following example:
 
 [indent=0]
 ----
-	org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-	com.mycorp.libx.autoconfigure.LibXAutoConfiguration,\
-	com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
+    com.mycorp.libx.autoconfigure.LibXAutoConfiguration
+    com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 ----
+
+TIP: You can use comments via `#` in this file.
 
 NOTE: Auto-configurations must be loaded that way _only_.
 Make sure that they are defined in a specific package space and that they are never the target of component scanning.

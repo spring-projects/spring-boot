@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  * @since 1.3.0
  * @see EnableAutoConfiguration
  */
@@ -167,7 +168,9 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	/**
 	 * Return the auto-configuration class names that should be considered. By default
-	 * this method will load candidates using {@link SpringFactoriesLoader} with
+	 * this method will load candidates using {@link AutoConfigurationLoader} with
+	 * {@link #getSpringFactoriesLoaderFactoryClass()}. For backward compatible reasons it
+	 * will also consider {@link SpringFactoriesLoader} with
 	 * {@link #getSpringFactoriesLoaderFactoryClass()}.
 	 * @param metadata the source metadata
 	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
@@ -175,10 +178,13 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),
-				getBeanClassLoader());
-		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
-				+ "are using a custom packaging, make sure that file is correct.");
+		List<String> configurations = new ArrayList<>();
+		configurations.addAll(
+				SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));
+		configurations.addAll(new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getBeanClassLoader()));
+		Assert.notEmpty(configurations,
+				"No auto configuration classes found in META-INF/spring.factories nor in META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration. If you "
+						+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
 	}
 
