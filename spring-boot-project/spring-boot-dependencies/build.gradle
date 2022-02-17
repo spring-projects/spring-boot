@@ -1217,7 +1217,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.7.9-SNAPSHOT") {
+	library("Micrometer", "1.7.9") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
