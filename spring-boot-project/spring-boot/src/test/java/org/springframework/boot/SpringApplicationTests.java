@@ -232,7 +232,7 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(output).contains("No active profile set, falling back to default profiles: default");
+		assertThat(output).contains("No active profile set, falling back to 1 default profile(s): \"default\"");
 	}
 
 	@Test
@@ -240,7 +240,7 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=myprofiles");
-		assertThat(output).contains("The following profiles are active: myprofile");
+		assertThat(output).contains("The following 1 profile(s) are active: \"myprofiles\"");
 	}
 
 	@Test
@@ -250,6 +250,15 @@ class SpringApplicationTests {
 		this.context = application.run("--spring.main.banner-mode=log");
 		then(application).should(atLeastOnce()).setBannerMode(Banner.Mode.LOG);
 		assertThat(output).contains("o.s.b.SpringApplication");
+	}
+
+	@Test
+	void logsMultipleActiveProfilesWithComma(CapturedOutput output) {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("p1,p2", "p3");
+		application.run();
+		assertThat(output).contains("The following 2 profile(s) are active: \"p1,p2\",\"p3\"");
 	}
 
 	@Test
