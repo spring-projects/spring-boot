@@ -1,0 +1,6 @@
+# A comment spanning a complete line
+class1
+
+class2 # with comment at the end
+  # Comment with some whitespace in front
+class3
