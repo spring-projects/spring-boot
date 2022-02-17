@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -83,13 +84,8 @@ public class LogUpdateEvent extends UpdateEvent {
 			}
 		}
 		catch (IllegalStateException ex) {
-			// Parsing has failed, abort further parsing
-			LogUpdateEvent abortedEvent = new LogUpdateEvent(StreamType.STD_ERR,
-					ex.getMessage().getBytes(StandardCharsets.UTF_8));
-			consumer.accept(abortedEvent);
-
-			// At this point, the inputStream is burned, consume it fully to prevent
-			// further processing
+			byte[] message = ex.getMessage().getBytes(StandardCharsets.UTF_8);
+			consumer.accept(new LogUpdateEvent(StreamType.STD_ERR, message));
 			StreamUtils.drain(inputStream);
 		}
 		finally {
@@ -102,21 +98,12 @@ public class LogUpdateEvent extends UpdateEvent {
 		if (header == null) {
 			return null;
 		}
-
-		// First byte denotes stream type. 0 = stdin, 1 = stdout, 2 = stderr
-		byte streamTypeId = header[0];
-		if (streamTypeId < 0 || streamTypeId >= StreamType.values().length) {
-			throw new IllegalStateException("Stream type is out of bounds. Must be >= 0 and < "
-					+ StreamType.values().length + ", but was " + streamTypeId + ". Will abort parsing.");
-		}
-
+		StreamType streamType = StreamType.forId(header[0]);
 		long size = 0;
 		for (int i = 0; i < 4; i++) {
 			size = (size << 8) + (header[i + 4] & 0xff);
 		}
 		byte[] payload = read(inputStream, size);
-
-		StreamType streamType = StreamType.values()[streamTypeId];
 		return new LogUpdateEvent(streamType, payload);
 	}
 
@@ -152,7 +139,14 @@ public class LogUpdateEvent extends UpdateEvent {
 		/**
 		 * Output to {@code stderr}.
 		 */
-		STD_ERR
+		STD_ERR;
+
+		static StreamType forId(byte id) {
+			int upperBound = values().length;
+			Assert.state(id > 0 && id < upperBound,
+					() -> "Stream type is out of bounds. Must be >= 0 and < " + upperBound + ", but was " + id);
+			return values()[id];
+		}
 
 	}
 
