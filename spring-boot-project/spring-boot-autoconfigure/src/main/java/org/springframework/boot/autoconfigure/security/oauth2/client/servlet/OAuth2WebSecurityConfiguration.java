@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -32,13 +31,15 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * {@link WebSecurityConfigurerAdapter} to add OAuth client support.
+ * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
+ * to add OAuth client support.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(ClientRegistrationRepository.class)
+@SuppressWarnings("deprecation")
 class OAuth2WebSecurityConfiguration {
 
 	@Bean

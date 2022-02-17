@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -41,7 +40,10 @@ class DefaultWebSecurityCondition extends AllNestedConditions {
 
 	}
 
-	@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
+	@ConditionalOnMissingBean({
+			org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter.class,
+			SecurityFilterChain.class })
+	@SuppressWarnings("deprecation")
 	static class Beans {
 
 	}
