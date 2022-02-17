@@ -57,8 +57,7 @@ class LogUpdateEventTests {
 	void readSucceedsWhenStreamTypeIsInvalid() throws IOException {
 		List<LogUpdateEvent> events = readAll("log-update-event-invalid-stream-type.stream");
 		assertThat(events).hasSize(1);
-		assertThat(events.get(0).toString())
-				.isEqualTo("Stream type is out of bounds. Must be >= 0 and < 3, but was 3. Will abort parsing.");
+		assertThat(events.get(0).toString()).isEqualTo("Stream type is out of bounds. Must be >= 0 and < 3, but was 3");
 	}
 
 	private List<LogUpdateEvent> readAll(String name) throws IOException {

@@ -40,9 +40,10 @@ There are also several guides that cover Spring MVC available at https://spring.
 TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
 Beans can be ordered if you need to apply a precedence.
 
+
+
 [[features.developing-web-applications.spring-mvc.auto-configuration]]
 ==== Spring MVC Auto-configuration
-
 Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
