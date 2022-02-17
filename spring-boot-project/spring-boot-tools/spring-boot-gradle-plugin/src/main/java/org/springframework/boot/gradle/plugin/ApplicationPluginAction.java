@@ -25,6 +25,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.file.CopySpec;
@@ -68,10 +69,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
-				CopySpec libCopySpec = project.copySpec().into("lib")
-						.from((Callable<FileCollection>) () -> configuration.getArtifacts().getFiles());
-				libCopySpec.setFileMode(0644);
-				distribution.getContents().with(libCopySpec);
+				distribution.getContents().with(artifactFilesToLibCopySpec(project, configuration));
 				createStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
@@ -80,6 +78,16 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		createStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
 		createStartScripts.getConventionMapping().map("defaultJvmOpts",
 				applicationConvention::getApplicationDefaultJvmArgs);
+	}
+
+	private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {
+		CopySpec copySpec = project.copySpec().into("lib").from(artifactFiles(configuration));
+		copySpec.setFileMode(0644);
+		return copySpec;
+	}
+
+	private Callable<FileCollection> artifactFiles(Configuration configuration) {
+		return () -> configuration.getArtifacts().getFiles();
 	}
 
 	@Override
