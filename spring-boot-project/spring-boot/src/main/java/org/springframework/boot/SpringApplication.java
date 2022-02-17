@@ -667,13 +667,19 @@ public class SpringApplication {
 		Log log = getApplicationLog();
 		if (log.isInfoEnabled()) {
 			String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+			for (int i = 0; i < activeProfiles.length; i++) {
+				activeProfiles[i] = "\"" + activeProfiles[i] + "\"";
+			}
 			if (ObjectUtils.isEmpty(activeProfiles)) {
 				String[] defaultProfiles = context.getEnvironment().getDefaultProfiles();
-				log.info("No active profile set, falling back to default profiles: "
+				for (int i = 0; i < defaultProfiles.length; i++) {
+					defaultProfiles[i] = "\"" + defaultProfiles[i] + "\"";
+				}
+				log.info("No active profile set, falling back to " + defaultProfiles.length + " default profile(s): "
 						+ StringUtils.arrayToCommaDelimitedString(defaultProfiles));
 			}
 			else {
-				log.info("The following profiles are active: "
+				log.info("The following " + activeProfiles.length + " profile(s) are active: "
 						+ StringUtils.arrayToCommaDelimitedString(activeProfiles));
 			}
 		}
