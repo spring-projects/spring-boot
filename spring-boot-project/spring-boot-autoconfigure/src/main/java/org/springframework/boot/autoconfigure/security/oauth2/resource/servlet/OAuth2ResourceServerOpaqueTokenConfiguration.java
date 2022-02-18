@@ -31,14 +31,12 @@ import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Configures a {@link OpaqueTokenIntrospector} when a token introspection endpoint is
- * available. Also configures a
- * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
- * if a {@link OpaqueTokenIntrospector} bean is found.
+ * available. Also configures a {@link SecurityFilterChain} if a
+ * {@link OpaqueTokenIntrospector} bean is found.
  *
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
-@SuppressWarnings("deprecation")
 class OAuth2ResourceServerOpaqueTokenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

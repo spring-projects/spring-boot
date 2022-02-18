@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,13 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
- * to add OAuth client support.
+ * {@link SecurityFilterChain} to add OAuth client support.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(ClientRegistrationRepository.class)
-@SuppressWarnings("deprecation")
 class OAuth2WebSecurityConfiguration {
 
 	@Bean
