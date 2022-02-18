@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,14 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
- * configuration for Spring Security's relying party SAML support.
+ * {@link SecurityFilterChain} configuration for Spring Security's relying party SAML
+ * support.
  *
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnDefaultWebSecurity
 @ConditionalOnBean(RelyingPartyRegistrationRepository.class)
-@SuppressWarnings("deprecation")
 class Saml2LoginConfiguration {
 
 	@Bean
