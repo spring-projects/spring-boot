@@ -155,7 +155,26 @@ task extractTomcatConfigProperties(type: Sync) {
 	}
 }
 
+def syncJavaTemplates = tasks.register("syncJavaTemplates", Sync) {
+	from("src/main/javaTemplates")
+	into("build/generated-sources/main")
+	def properties = ["springBootVersion": project.version]
+	expand(properties)
+	inputs.properties(properties)
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		synchronizationTasks syncJavaTemplates
+	}
+}
+
 sourceSets {
+	main {
+		java {
+			srcDirs syncJavaTemplates
+		}
+	}
 	test {
 		output.dir(tomcatConfigProperties, builtBy: "extractTomcatConfigProperties")
 	}
