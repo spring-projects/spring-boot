@@ -16,10 +16,12 @@
 
 package org.springframework.boot;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -150,6 +152,7 @@ import static org.mockito.Mockito.spy;
  * @author Marten Deinum
  * @author Nguyen Bao Sach
  * @author Chris Bono
+ * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -1222,6 +1225,20 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(application.getEnvironmentPrefix()).isEqualTo("my");
+	}
+
+	@Test
+	void deregistersShutdownHookForFailedApplicationContext() {
+		SpringApplication application = new SpringApplication(BrokenPostConstructConfig.class);
+		List<ApplicationEvent> events = new ArrayList<>();
+		application.addListeners(events::add);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
+		assertThat(events).hasAtLeastOneElementOfType(ApplicationFailedEvent.class);
+		ApplicationFailedEvent failure = events.stream().filter((event) -> event instanceof ApplicationFailedEvent)
+				.map(ApplicationFailedEvent.class::cast).findFirst().get();
+		assertThat(SpringApplicationShutdownHookInstance.get())
+				.didNotRegisterApplicationContext(failure.getApplicationContext());
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
