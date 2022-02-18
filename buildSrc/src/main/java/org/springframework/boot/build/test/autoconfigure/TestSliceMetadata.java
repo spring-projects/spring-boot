@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -102,11 +105,52 @@ public class TestSliceMetadata extends DefaultTask {
 			MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory(classLoader);
 			Properties springFactories = readSpringFactories(
 					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
+			readTestSlicesDirectory(springFactories,
+					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring-boot/"));
 			for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
 				addTestSlices(testSlices, classesDir, metadataReaderFactory, springFactories);
 			}
 		}
 		return testSlices;
+	}
+
+	/**
+	 * Reads files from the given directory and puts them in springFactories. The key is
+	 * the file name, the value is the file contents, split by line, delimited with comma.
+	 *
+	 * This is done to mimic the spring.factories structure.
+	 * @param springFactories spring.factories parsed as properties
+	 * @param directory directory to scan
+	 */
+	private void readTestSlicesDirectory(Properties springFactories, File directory) {
+		File[] files = directory.listFiles();
+		if (files == null) {
+			return;
+		}
+		for (File file : files) {
+			try {
+				List<String> lines = removeComments(Files.readAllLines(file.toPath()));
+				springFactories.setProperty(file.getName(), StringUtils.collectionToCommaDelimitedString(lines));
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException("Failed to read file " + file, ex);
+			}
+		}
+	}
+
+	private List<String> removeComments(List<String> lines) {
+		List<String> result = new ArrayList<>();
+		for (String line : lines) {
+			int commentIndex = line.indexOf('#');
+			if (commentIndex > -1) {
+				line = line.substring(0, commentIndex);
+			}
+			line = line.trim();
+			if (!line.isEmpty()) {
+				result.add(line);
+			}
+		}
+		return result;
 	}
 
 	private URL toURL(File file) {
