@@ -23,13 +23,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
 /**
  * Import and apply the specified auto-configuration classes. Applies the same ordering
  * rules as {@code @EnableAutoConfiguration} but restricts the auto-configuration classes
- * to the specified set, rather than consulting {@code spring.factories}.
+ * to the specified set, rather than consulting {@link ImportCandidates}.
  * <p>
  * Can also be used to {@link #exclude()} specific auto-configuration classes such that
  * they will never be applied.
