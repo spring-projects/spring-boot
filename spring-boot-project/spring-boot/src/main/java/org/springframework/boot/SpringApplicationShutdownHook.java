@@ -43,6 +43,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Brian Clozel
  */
 class SpringApplicationShutdownHook implements Runnable {
 
@@ -89,6 +90,17 @@ class SpringApplicationShutdownHook implements Runnable {
 		}
 		catch (AccessControlException ex) {
 			// Not allowed in some environments
+		}
+	}
+
+	void deregisterFailedApplicationContext(ConfigurableApplicationContext applicationContext) {
+		synchronized (SpringApplicationShutdownHook.class) {
+			if (!applicationContext.isActive()) {
+				SpringApplicationShutdownHook.this.contexts.remove(applicationContext);
+			}
+			else {
+				throw new IllegalStateException("Cannot unregister active application context");
+			}
 		}
 	}
 
