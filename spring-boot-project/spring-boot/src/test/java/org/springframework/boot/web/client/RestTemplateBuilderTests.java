@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import okhttp3.OkHttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -523,19 +525,19 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void connectTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
+	void connectTimeoutCanBeConfiguredOnOkHttpRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
 				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
-		assertThat(
-				ReflectionTestUtils.getField(ReflectionTestUtils.getField(requestFactory, "client"), "connectTimeout"))
-						.isEqualTo(1234);
+		assertThat(requestFactory).extracting("client", InstanceOfAssertFactories.type(OkHttpClient.class))
+				.extracting(OkHttpClient::connectTimeoutMillis).isEqualTo(1234);
 	}
 
 	@Test
 	void readTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
 				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
-		assertThat(requestFactory).extracting("client").extracting("readTimeout").isEqualTo(1234);
+		assertThat(requestFactory).extracting("client", InstanceOfAssertFactories.type(OkHttpClient.class))
+				.extracting(OkHttpClient::readTimeoutMillis).isEqualTo(1234);
 	}
 
 	@Test

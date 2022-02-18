@@ -1016,19 +1016,16 @@ bom {
 			]
 		}
 	}
-	library("OkHttp3", "3.14.9") {
-		prohibit("[4.0.0-alpha01,)") {
-			because "it requires Kotlin"
-		}
+	library("OkHttp", "4.9.3") {
 		group("com.squareup.okhttp3") {
 			modules = [
 				"logging-interceptor",
 				"mockwebserver",
 				"okcurl",
 				"okhttp",
+				"okhttp-brotli",
 				"okhttp-dnsoverhttps",
 				"okhttp-sse",
-				"okhttp-testing-support",
 				"okhttp-tls",
 				"okhttp-urlconnection"
 			]
