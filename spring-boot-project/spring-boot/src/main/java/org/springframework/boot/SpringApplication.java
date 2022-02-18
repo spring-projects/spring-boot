@@ -821,6 +821,7 @@ public class SpringApplication {
 				reportFailure(getExceptionReporters(context), exception);
 				if (context != null) {
 					context.close();
+					shutdownHook.deregisterFailedApplicationContext(context);
 				}
 			}
 		}
