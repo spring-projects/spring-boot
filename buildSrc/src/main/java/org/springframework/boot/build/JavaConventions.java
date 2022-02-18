@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,8 +105,6 @@ class JavaConventions {
 
 	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "17";
 
-	private static final String SPRING_BOOT_PROPERTIES_FILE = "spring-boot.properties";
-
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
 			project.getPlugins().apply(TestFailuresPlugin.class);
@@ -115,7 +113,6 @@ class JavaConventions {
 			configureJavadocConventions(project);
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
-			configureMetaInfResourcesConventions(project);
 			configureDependencyManagement(project);
 			configureToolchain(project);
 			configureProhibitedDependencyChecks(project);
@@ -123,37 +120,29 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
-		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-		Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
-				.collect(Collectors.toSet());
-		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
-				.collect(Collectors.toSet());
-		project.getTasks().withType(Jar.class,
-				(jar) -> project.afterEvaluate((evaluated) -> jar.manifest((manifest) -> {
-					Map<String, Object> attributes = new TreeMap<>();
-					attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-					attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
-					attributes.put("Built-By", "Spring");
-					attributes.put("Implementation-Title",
-							determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
-					attributes.put("Implementation-Version", project.getVersion());
-					manifest.attributes(attributes);
-				})));
-	}
-
-	private void configureMetaInfResourcesConventions(Project project) {
 		ExtractResources extractLegalResources = project.getTasks().create("extractLegalResources",
 				ExtractResources.class);
 		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 		extractLegalResources.property("version", project.getVersion().toString());
-		GeneratePropertiesResource generateInfo = project.getTasks().create("generateSpringBootInfo",
-				GeneratePropertiesResource.class);
-		generateInfo.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("info"));
-		generateInfo.getPropertiesFileName().set(SPRING_BOOT_PROPERTIES_FILE);
-		generateInfo.property("version", project.getVersion().toString());
-		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate(
-				(evaluated) -> jar.metaInf((metaInf) -> metaInf.from(extractLegalResources, generateInfo))));
+		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+		Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
+				.collect(Collectors.toSet());
+		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
+				.collect(Collectors.toSet());
+		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
+			jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
+			jar.manifest((manifest) -> {
+				Map<String, Object> attributes = new TreeMap<>();
+				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
+				attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
+				attributes.put("Built-By", "Spring");
+				attributes.put("Implementation-Title",
+						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
+				attributes.put("Implementation-Version", project.getVersion());
+				manifest.attributes(attributes);
+			});
+		}));
 	}
 
 	private String determineImplementationTitle(Project project, Set<String> sourceJarTaskNames,
