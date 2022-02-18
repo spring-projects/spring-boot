@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -44,7 +43,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Configures a {@link JwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI or Public
- * Key configuration is available. Also configures a {@link WebSecurityConfigurerAdapter}
+ * Key configuration is available. Also configures a
+ * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
  * if a {@link JwtDecoder} bean is found.
  *
  * @author Madhura Bhave
@@ -52,6 +52,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author HaiTao Zhang
  */
 @Configuration(proxyBeanMethods = false)
+@SuppressWarnings("deprecation")
 class OAuth2ResourceServerJwtConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

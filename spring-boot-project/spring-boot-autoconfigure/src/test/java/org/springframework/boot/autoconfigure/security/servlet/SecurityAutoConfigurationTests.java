@@ -50,7 +50,6 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
@@ -102,9 +101,12 @@ class SecurityAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void securityConfigurerBacksOffWhenOtherWebSecurityAdapterBeanPresent() {
 		this.contextRunner.withUserConfiguration(WebSecurity.class).run((context) -> {
-			assertThat(context.getBeansOfType(WebSecurityConfigurerAdapter.class).size()).isEqualTo(1);
+			assertThat(context.getBeansOfType(
+					org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter.class)
+					.size()).isEqualTo(1);
 			assertThat(context.containsBean("securityAutoConfigurationTests.WebSecurity")).isTrue();
 		});
 	}
@@ -285,7 +287,9 @@ class SecurityAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
-	static class WebSecurity extends WebSecurityConfigurerAdapter {
+	@SuppressWarnings("deprecation")
+	static class WebSecurity
+			extends org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter {
 
 	}
 

@@ -21,19 +21,19 @@ import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSe
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * {@link WebSecurityConfigurerAdapter} configuration for Spring Security's relying party
- * SAML support.
+ * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}
+ * configuration for Spring Security's relying party SAML support.
  *
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnDefaultWebSecurity
 @ConditionalOnBean(RelyingPartyRegistrationRepository.class)
+@SuppressWarnings("deprecation")
 class Saml2LoginConfiguration {
 
 	@Bean
