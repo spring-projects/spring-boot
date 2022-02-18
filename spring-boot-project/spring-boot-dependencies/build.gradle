@@ -1318,14 +1318,6 @@ bom {
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.48.Final") {
-		group("io.netty") {
-			modules = [
-				"netty-tcnative",
-				"netty-tcnative-boringssl-static"
-			]
-		}
-	}
 	library("OkHttp", "4.9.3") {
 		group("com.squareup.okhttp3") {
 			modules = [
