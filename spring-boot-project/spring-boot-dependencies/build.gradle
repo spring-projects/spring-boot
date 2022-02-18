@@ -1693,7 +1693,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "2.4.0-SNAPSHOT") {
+	library("Spring LDAP", "2.4.0-M2") {
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",
