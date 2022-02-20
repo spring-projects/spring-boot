@@ -472,6 +472,22 @@ include::code:MyDataCassandraTests[]
 
 
 
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-elasticsearch]]
+==== Auto-configured Data Elasticsearch Tests
+You can use `@DataElasticsearchTest` to test Elasticsearch applications.
+By default, it configures a `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+(For more about using Elasticsearch with Spring Boot, see "<<data#data.nosql.elasticsearch>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataElasticsearchTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following example shows a typical setup for using Elasticsearch tests in Spring Boot:
+
+include::code:MyDataElasticsearchTests[]
+
+
+
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-jpa]]
 ==== Auto-configured Data JPA Tests
 You can use the `@DataJpaTest` annotation to test JPA applications.
