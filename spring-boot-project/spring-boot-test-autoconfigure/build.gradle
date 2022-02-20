@@ -48,6 +48,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
+	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-jdbc")
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
@@ -107,6 +108,7 @@ dependencies {
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.testcontainers:cassandra")
+	testImplementation("org.testcontainers:couchbase")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
