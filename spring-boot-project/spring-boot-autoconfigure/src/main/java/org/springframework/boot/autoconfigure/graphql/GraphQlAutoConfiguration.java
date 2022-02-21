@@ -64,8 +64,6 @@ public class GraphQlAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlAutoConfiguration.class);
 
-	private final BatchLoaderRegistry batchLoaderRegistry = new DefaultBatchLoaderRegistry();
-
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlSource graphQlSource(ResourcePatternResolver resourcePatternResolver, GraphQlProperties properties,
@@ -118,14 +116,14 @@ public class GraphQlAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public BatchLoaderRegistry batchLoaderRegistry() {
-		return this.batchLoaderRegistry;
+		return new DefaultBatchLoaderRegistry();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlService graphQlService(GraphQlSource graphQlSource) {
+	public GraphQlService graphQlService(GraphQlSource graphQlSource, BatchLoaderRegistry batchLoaderRegistry) {
 		ExecutionGraphQlService service = new ExecutionGraphQlService(graphQlSource);
-		service.addDataLoaderRegistrar(this.batchLoaderRegistry);
+		service.addDataLoaderRegistrar(batchLoaderRegistry);
 		return service;
 	}
 
