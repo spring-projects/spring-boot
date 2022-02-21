@@ -322,6 +322,21 @@ You can customize the console's path by using the configprop:spring.h2.console.p
 
 
 
+[[features.sql.h2-web-console.spring-security]]
+==== Configuring Spring Security for H2 Console
+H2 Console uses frames and, as it's intended for development only, does not implement CSRF protection measures. If your application uses Spring Security, you need to configure it accordingly.
+
+For example, Spring Security will ignore the console if the following `WebSecurityCustomizer` is exposed:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/sql/h2webconsole/springsecurity/MySecurityConfiguration.java[]
+----
+
+TIP: `PathRequest.toH2Console()` returns the correct request matcher also when the console's path has been customized.
+
+
+
 [[features.sql.jooq]]
 === Using jOOQ
 jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
