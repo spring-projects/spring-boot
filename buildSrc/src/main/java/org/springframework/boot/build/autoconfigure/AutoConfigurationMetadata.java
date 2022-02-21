@@ -66,7 +66,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("spring.factories");
 		getInputs()
 				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
-						"META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration"))
+						"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
 				.withPathSensitivity(PathSensitivity.RELATIVE)
 				.withPropertyName("org.springframework.boot.autoconfigure.AutoConfiguration");
 
@@ -137,17 +137,17 @@ public class AutoConfigurationMetadata extends DefaultTask {
 
 	/**
 	 * Reads auto-configurations from
-	 * META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration.
+	 * META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports.
 	 * @return auto-configurations
 	 */
 	private List<String> readAutoConfigurationsFile() throws IOException {
 		File file = new File(this.sourceSet.getOutput().getResourcesDir(),
-				"META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration");
+				"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports");
 		if (!file.exists()) {
 			return Collections.emptyList();
 		}
 		// Nearly identical copy of
-		// org.springframework.boot.autoconfigure.AutoConfigurationLoader.readAutoConfigurations
+		// org.springframework.boot.context.annotation.ImportCandidates.load
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 			List<String> autoConfigurations = new ArrayList<>();
 			String line;

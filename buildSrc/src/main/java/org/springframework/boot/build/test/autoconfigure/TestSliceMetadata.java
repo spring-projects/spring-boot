@@ -106,7 +106,7 @@ public class TestSliceMetadata extends DefaultTask {
 			Properties springFactories = readSpringFactories(
 					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
 			readTestSlicesDirectory(springFactories,
-					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring-boot/"));
+					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring/"));
 			for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
 				addTestSlices(testSlices, classesDir, metadataReaderFactory, springFactories);
 			}
@@ -123,14 +123,17 @@ public class TestSliceMetadata extends DefaultTask {
 	 * @param directory directory to scan
 	 */
 	private void readTestSlicesDirectory(Properties springFactories, File directory) {
-		File[] files = directory.listFiles();
+		File[] files = directory.listFiles((dir, name) -> name.endsWith(".imports"));
 		if (files == null) {
 			return;
 		}
 		for (File file : files) {
 			try {
 				List<String> lines = removeComments(Files.readAllLines(file.toPath()));
-				springFactories.setProperty(file.getName(), StringUtils.collectionToCommaDelimitedString(lines));
+				String fileNameWithoutExtension = file.getName().substring(0,
+						file.getName().length() - ".imports".length());
+				springFactories.setProperty(fileNameWithoutExtension,
+						StringUtils.collectionToCommaDelimitedString(lines));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to read file " + file, ex);

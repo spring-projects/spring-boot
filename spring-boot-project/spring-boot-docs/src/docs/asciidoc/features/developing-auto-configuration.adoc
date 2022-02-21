@@ -18,14 +18,14 @@ Additional `@Conditional` annotations are used to constrain when the auto-config
 Usually, auto-configuration classes use `@ConditionalOnClass` and `@ConditionalOnMissingBean` annotations.
 This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own `@Configuration`.
 
-You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@Configuration` classes that Spring provides (see the {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration[`META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration`] file).
+You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@Configuration` classes that Spring provides (see the {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
 
 
 
 [[features.developing-auto-configuration.locating-auto-configuration-candidates]]
 === Locating Auto-configuration Candidates
 
-Spring Boot checks for the presence of a `META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration` file within your published jar.
+Spring Boot checks for the presence of a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` file within your published jar.
 The file should list your configuration classes, as shown in the following example:
 
 [indent=0]

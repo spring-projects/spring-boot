@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -63,11 +64,9 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 
 	protected List<String> getAutoConfigurations() {
 		if (this.autoConfigurations == null) {
-			List<String> autoConfigurations = new ArrayList<>();
-			autoConfigurations.addAll(
+			List<String> autoConfigurations = new ArrayList<>(
 					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanClassLoader));
-			autoConfigurations
-					.addAll(new AutoConfigurationLoader().loadNames(AutoConfiguration.class, this.beanClassLoader));
+			ImportCandidates.load(AutoConfiguration.class, this.beanClassLoader).forEach(autoConfigurations::add);
 			this.autoConfigurations = autoConfigurations;
 		}
 		return this.autoConfigurations;

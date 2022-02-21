@@ -769,9 +769,9 @@ include::code:MyJdbcTests[]
 
 NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations as they are handled in a specific way by Spring Boot.
 
-Alternatively, additional auto-configurations can be added for any use of a slice annotation by registering them in a file stored in `META-INF/spring-boot` as shown in the following example:
+Alternatively, additional auto-configurations can be added for any use of a slice annotation by registering them in a file stored in `META-INF/spring` as shown in the following example:
 
-.META-INF/spring-boot/org.springframework.boot.test.autoconfigure.jdbc.JdbcTest
+.META-INF/spring/org.springframework.boot.test.autoconfigure.jdbc.JdbcTest.imports
 [indent=0]
 ----
 	com.example.IntegrationAutoConfiguration

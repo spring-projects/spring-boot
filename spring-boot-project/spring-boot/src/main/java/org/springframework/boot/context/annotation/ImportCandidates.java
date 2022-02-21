@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.context.annotation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,57 +22,76 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import org.springframework.core.io.UrlResource;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 
 /**
- * Loads the names of annotated classes, usually @{@link AutoConfiguration}.
+ * Contains import candidates, usually auto-configurations.
  *
- * The names of the classes are stored in files named META-INF/spring-boot/{full qualified
- * name of the annotation}. Every line contains the full qualified class name of the
- * annotated class. Comments are supported using the # character.
+ * The {@link #load(Class, ClassLoader)} method can be used to discover the import
+ * candidates.
  *
  * @author Moritz Halbritter
- * @see AutoConfiguration
- * @see SpringFactoriesLoader
+ * @since 2.7.0
  */
-class AutoConfigurationLoader {
+public final class ImportCandidates implements Iterable<String> {
 
-	private static final String LOCATION = "META-INF/spring-boot/";
+	private static final String LOCATION = "META-INF/spring/%s.imports";
 
 	private static final String COMMENT_START = "#";
 
+	private final List<String> candidates;
+
+	private ImportCandidates(List<String> candidates) {
+		Assert.notNull(candidates, "'candidates' must not be null");
+		this.candidates = Collections.unmodifiableList(candidates);
+	}
+
+	@NotNull
+	@Override
+	public Iterator<String> iterator() {
+		return this.candidates.iterator();
+	}
+
 	/**
-	 * Loads the names of annotated classes.
+	 * Loads the names of import candidates from the classpath.
+	 *
+	 * The names of the import candidates are stored in files named
+	 * {@code META-INF/spring/full-qualified-annotation-name.import} on the classpath.
+	 * Every line contains the full qualified name of the candidate class. Comments are
+	 * supported using the # character.
 	 * @param annotation annotation to load
 	 * @param classLoader class loader to use for loading
 	 * @return list of names of annotated classes
 	 */
-	List<String> loadNames(Class<?> annotation, ClassLoader classLoader) {
+	public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
 		ClassLoader classLoaderToUse = decideClassloader(classLoader);
-		String location = LOCATION + annotation.getName();
+		String location = String.format(LOCATION, annotation.getName());
 		Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
 		List<String> autoConfigurations = new ArrayList<>();
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
 			autoConfigurations.addAll(readAutoConfigurations(url));
 		}
-		return autoConfigurations;
+		return new ImportCandidates(autoConfigurations);
 	}
 
-	private ClassLoader decideClassloader(ClassLoader classLoader) {
+	private static ClassLoader decideClassloader(ClassLoader classLoader) {
 		if (classLoader == null) {
-			return AutoConfigurationLoader.class.getClassLoader();
+			return ImportCandidates.class.getClassLoader();
 		}
 		return classLoader;
 	}
 
-	private Enumeration<URL> findUrlsInClasspath(ClassLoader classLoader, String location) {
+	private static Enumeration<URL> findUrlsInClasspath(ClassLoader classLoader, String location) {
 		try {
 			return classLoader.getResources(location);
 		}
@@ -82,7 +101,7 @@ class AutoConfigurationLoader {
 		}
 	}
 
-	private List<String> readAutoConfigurations(URL url) {
+	private static List<String> readAutoConfigurations(URL url) {
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))) {
 			List<String> autoConfigurations = new ArrayList<>();
@@ -102,7 +121,7 @@ class AutoConfigurationLoader {
 		}
 	}
 
-	private String stripComment(String line) {
+	private static String stripComment(String line) {
 		int commentStart = line.indexOf(COMMENT_START);
 		if (commentStart == -1) {
 			return line;
