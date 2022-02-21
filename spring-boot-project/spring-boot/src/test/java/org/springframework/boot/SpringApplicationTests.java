@@ -231,19 +231,40 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void logsNoActiveProfiles(CapturedOutput output) {
+	void logsActiveProfilesWithoutProfileAndSingleDefault(CapturedOutput output) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(output).contains("No active profile set, falling back to default profiles: default");
+		assertThat(output).contains("No active profile set, falling back to 1 default profile: \"default\"");
 	}
 
 	@Test
-	void logsActiveProfiles(CapturedOutput output) {
+	void logsActiveProfilesWithoutProfileAndMultipleDefaults(CapturedOutput output) {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setDefaultProfiles("p0,p1", "default");
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setEnvironment(environment);
+		this.context = application.run();
+		assertThat(output)
+				.contains("No active profile set, falling back to 2 default profiles: \"p0,p1\", \"default\"");
+	}
+
+	@Test
+	void logsActiveProfilesWithSingleProfile(CapturedOutput output) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=myprofiles");
-		assertThat(output).contains("The following profiles are active: myprofile");
+		assertThat(output).contains("The following 1 profile is active: \"myprofiles\"");
+	}
+
+	@Test
+	void logsActiveProfilesWithMultipleProfiles(CapturedOutput output) {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("p1,p2", "p3");
+		application.run();
+		assertThat(output).contains("The following 2 profiles are active: \"p1,p2\", \"p3\"");
 	}
 
 	@Test
