@@ -101,9 +101,9 @@ public class GraphQlAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlService graphQlService(GraphQlSource graphQlSource) {
+	public GraphQlService graphQlService(GraphQlSource graphQlSource, BatchLoaderRegistry batchLoaderRegistry) {
 		ExecutionGraphQlService service = new ExecutionGraphQlService(graphQlSource);
-		service.addDataLoaderRegistrar(this.batchLoaderRegistry);
+		service.addDataLoaderRegistrar(batchLoaderRegistry);
 		return service;
 	}
 
