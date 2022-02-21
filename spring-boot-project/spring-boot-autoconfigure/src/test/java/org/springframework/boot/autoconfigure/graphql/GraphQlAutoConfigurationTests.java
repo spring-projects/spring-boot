@@ -166,6 +166,14 @@ class GraphQlAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldConfigCustomBatchLoaderRegistry() {
+		this.contextRunner.withUserConfiguration(CustomBatchLoaderRegistryConfiguration.class).run((context) -> {
+			assertThat(context).getBeanNames(BatchLoaderRegistry.class).containsOnly("customBatchLoaderRegistry");
+			assertThat(context).hasSingleBean(BatchLoaderRegistry.class);
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomGraphQlBuilderConfiguration {
 
@@ -244,6 +252,16 @@ class GraphQlAutoConfigurationTests {
 				this.applied = true;
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomBatchLoaderRegistryConfiguration {
+
+		@Bean
+		BatchLoaderRegistry customBatchLoaderRegistry() {
+			return mock(BatchLoaderRegistry.class);
 		}
 
 	}
