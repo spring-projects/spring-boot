@@ -190,10 +190,6 @@ compileTestKotlin {
 	}
 }
 
-compileJava {
-	doLast new org.springframework.boot.build.log4j2.ReproducibleLog4j2PluginsDatAction()
-}
-
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
