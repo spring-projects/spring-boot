@@ -40,6 +40,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -168,7 +169,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	/**
 	 * Return the auto-configuration class names that should be considered. By default
-	 * this method will load candidates using {@link AutoConfigurationLoader} with
+	 * this method will load candidates using {@link ImportCandidates} with
 	 * {@link #getSpringFactoriesLoaderFactoryClass()}. For backward compatible reasons it
 	 * will also consider {@link SpringFactoriesLoader} with
 	 * {@link #getSpringFactoriesLoaderFactoryClass()}.
@@ -178,12 +179,11 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		List<String> configurations = new ArrayList<>();
-		configurations.addAll(
+		List<String> configurations = new ArrayList<>(
 				SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));
-		configurations.addAll(new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getBeanClassLoader()));
+		ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader()).forEach(configurations::add);
 		Assert.notEmpty(configurations,
-				"No auto configuration classes found in META-INF/spring.factories nor in META-INF/spring-boot/org.springframework.boot.autoconfigure.AutoConfiguration. If you "
+				"No auto configuration classes found in META-INF/spring.factories nor in META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you "
 						+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
 	}

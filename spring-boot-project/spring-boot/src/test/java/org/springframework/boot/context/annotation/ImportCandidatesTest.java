@@ -14,39 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.context.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AutoConfigurationLoaderTests {
-
-	private AutoConfigurationLoader sut;
-
-	@BeforeEach
-	void setUp() {
-		this.sut = new AutoConfigurationLoader();
-	}
+class ImportCandidatesTest {
 
 	@Test
-	void loadNames() {
-		List<String> classNames = this.sut.loadNames(TestAutoConfiguration.class, null);
-
-		assertThat(classNames).containsExactly("class1", "class2", "class3");
+	void loadReadsFromClasspathFile() {
+		ImportCandidates candidates = ImportCandidates.load(TestAnnotation.class, null);
+		assertThat(candidates).containsExactly("class1", "class2", "class3");
 	}
 
-	@AutoConfiguration
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface TestAutoConfiguration {
+	public @interface TestAnnotation {
 
 	}
 

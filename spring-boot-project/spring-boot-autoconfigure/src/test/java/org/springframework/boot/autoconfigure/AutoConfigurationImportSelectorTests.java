@@ -32,6 +32,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -212,7 +213,10 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	private List<String> getAutoConfigurationClassNames() {
-		return new AutoConfigurationLoader().loadNames(AutoConfiguration.class, getClass().getClassLoader());
+		List<String> autoConfigurationClassNames = new ArrayList<>();
+		ImportCandidates.load(AutoConfiguration.class, getClass().getClassLoader())
+				.forEach(autoConfigurationClassNames::add);
+		return autoConfigurationClassNames;
 	}
 
 	private class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {

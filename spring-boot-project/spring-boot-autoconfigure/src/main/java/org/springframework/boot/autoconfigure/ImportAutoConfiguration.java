@@ -59,8 +59,8 @@ public @interface ImportAutoConfiguration {
 
 	/**
 	 * The auto-configuration classes that should be imported. When empty, the classes are
-	 * specified using a file in {@code META-INF/spring-boot} where the file name is the
-	 * fully-qualified name of the annotated class.
+	 * specified using a file in {@code META-INF/spring} where the file name is the
+	 * fully-qualified name of the annotated class, suffixed with '.imports'.
 	 * @return the classes to import
 	 */
 	@AliasFor("value")
