@@ -38,6 +38,7 @@ import org.springframework.graphql.GraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
+import org.springframework.graphql.execution.DataLoaderRegistrar;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.MissingSchemaException;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
@@ -170,11 +171,18 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldConfigCustomBatchLoaderRegistry() {
-		this.contextRunner.withUserConfiguration(CustomBatchLoaderRegistryConfiguration.class).run((context) -> {
-			assertThat(context).getBeanNames(BatchLoaderRegistry.class).containsOnly("customBatchLoaderRegistry");
-			assertThat(context).hasSingleBean(BatchLoaderRegistry.class);
-		});
+	void shouldConfigureCustomBatchLoaderRegistry() {
+		this.contextRunner
+				.withBean("customBatchLoaderRegistry", BatchLoaderRegistry.class, () -> mock(BatchLoaderRegistry.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(BatchLoaderRegistry.class);
+					assertThat(context.getBean("customBatchLoaderRegistry"))
+							.isSameAs(context.getBean(BatchLoaderRegistry.class));
+					assertThat(context.getBean(GraphQlService.class))
+							.extracting("dataLoaderRegistrars",
+									InstanceOfAssertFactories.list(DataLoaderRegistrar.class))
+							.containsOnly(context.getBean(BatchLoaderRegistry.class));
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -257,16 +265,6 @@ class GraphQlAutoConfigurationTests {
 				this.applied = true;
 			}
 
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomBatchLoaderRegistryConfiguration {
-
-		@Bean
-		BatchLoaderRegistry customBatchLoaderRegistry() {
-			return mock(BatchLoaderRegistry.class);
 		}
 
 	}
