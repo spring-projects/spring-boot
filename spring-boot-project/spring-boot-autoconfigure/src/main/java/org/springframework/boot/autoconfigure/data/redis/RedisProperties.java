@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -373,6 +373,11 @@ public class RedisProperties {
 		private List<String> nodes;
 
 		/**
+		 * Login username for authenticating with sentinel(s).
+		 */
+		private String username;
+
+		/**
 		 * Password for authenticating with sentinel(s).
 		 */
 		private String password;
@@ -391,6 +396,14 @@ public class RedisProperties {
 
 		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
 		}
 
 		public String getPassword() {
