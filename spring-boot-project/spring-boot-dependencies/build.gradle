@@ -1305,7 +1305,7 @@ bom {
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.48.Final") {
+	library("Netty tcNative", "2.0.49.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
