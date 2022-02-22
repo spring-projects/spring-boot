@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
  * <li>{@link KotlinCompile} tasks are configured to:
  * <ul>
  * <li>Use {@code apiVersion} and {@code languageVersion} 1.3.
+ * <li>Use {@code jvmTarget} 1.8.
  * <li>Treat all warnings as errors
  * <li>Suppress version warnings
  * </ul>
