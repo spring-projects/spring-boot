@@ -38,7 +38,7 @@ See also the section on "`<<web#web.servlet.spring-mvc.error-handling, Error Han
 === Sanitize Sensitive Values
 Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (that is their values are replaced by `+******+`).
 Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
-Additionally, any key that holds the word `credentials` (configured as a regular expression, that is `+*credentials.*+`) as part of the key is also entirely sanitized.
+Additionally, any key that holds the word `credentials` (configured as a regular expression, that is `+.*credentials.*+`) as part of the key is also entirely sanitized.
 
 Furthermore, Spring Boot sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
 
