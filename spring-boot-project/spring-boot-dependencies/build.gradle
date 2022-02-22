@@ -1109,7 +1109,7 @@ bom {
 			]
 		}
 	}
-	library("MariaDB", "2.7.5") {
+	library("MariaDB", "3.0.3") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
