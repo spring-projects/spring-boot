@@ -6,18 +6,6 @@ plugins {
 
 description = "Spring Boot WebFlux coroutines smoke test"
 
-compileKotlin {
-	kotlinOptions {
-		jvmTarget = "1.8"
-	}
-}
-
-compileTestKotlin {
-	kotlinOptions {
-		jvmTarget = "1.8"
-	}
-}
-
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
