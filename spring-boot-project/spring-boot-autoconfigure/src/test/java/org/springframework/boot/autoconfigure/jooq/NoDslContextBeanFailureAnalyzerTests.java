@@ -33,13 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class NoDslContextBeanFailureAnalyzerTests {
 
-	private final NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer();
-
 	@Test
 	void noAnalysisWithoutR2dbcAutoConfiguration() {
 		new ApplicationContextRunner().run((context) -> {
-			this.failureAnalyzer.setBeanFactory(context.getBeanFactory());
-			assertThat(this.failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class))).isNull();
+			NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
+					context.getBeanFactory());
+			assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class))).isNull();
 		});
 	}
 
@@ -47,8 +46,9 @@ class NoDslContextBeanFailureAnalyzerTests {
 	void analysisWithR2dbcAutoConfiguration() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 				.run((context) -> {
-					this.failureAnalyzer.setBeanFactory(context.getBeanFactory());
-					assertThat(this.failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class)))
+					NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
+							context.getBeanFactory());
+					assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class)))
 							.isNotNull();
 				});
 	}

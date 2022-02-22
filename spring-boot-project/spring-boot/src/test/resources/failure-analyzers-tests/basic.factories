@@ -1,4 +1,0 @@
-# Failure Analyzers
-org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.diagnostics.FailureAnalyzersTests$BasicFailureAnalyzer,\
-org.springframework.boot.diagnostics.FailureAnalyzersTests$StandardAwareFailureAnalyzer

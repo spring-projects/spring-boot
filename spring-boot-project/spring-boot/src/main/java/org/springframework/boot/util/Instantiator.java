@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @param <T> the type to instantiate
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.4.0
  */
 public class Instantiator<T> {
@@ -47,9 +48,16 @@ public class Instantiator<T> {
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = Comparator
 			.<Constructor<?>>comparingInt(Constructor::getParameterCount).reversed();
 
+	private static final FailureHandler throwingFailureHandler = (type, implementationName, failure) -> {
+		throw new IllegalArgumentException("Unable to instantiate " + implementationName + " [" + type.getName() + "]",
+				failure);
+	};
+
 	private final Class<?> type;
 
 	private final Map<Class<?>, Function<Class<?>, Object>> availableParameters;
+
+	private final FailureHandler failureHandler;
 
 	/**
 	 * Create a new {@link Instantiator} instance for the given type.
@@ -57,8 +65,22 @@ public class Instantiator<T> {
 	 * @param availableParameters consumer used to register available parameters
 	 */
 	public Instantiator(Class<?> type, Consumer<AvailableParameters> availableParameters) {
+		this(type, availableParameters, throwingFailureHandler);
+	}
+
+	/**
+	 * Create a new {@link Instantiator} instance for the given type.
+	 * @param type the type to instantiate
+	 * @param availableParameters consumer used to register available parameters
+	 * @param failureHandler a {@link FailureHandler} that will be called in case of
+	 * failure when instantiating objects
+	 * @since 2.7.0
+	 */
+	public Instantiator(Class<?> type, Consumer<AvailableParameters> availableParameters,
+			FailureHandler failureHandler) {
 		this.type = type;
 		this.availableParameters = getAvailableParameters(availableParameters);
+		this.failureHandler = failureHandler;
 	}
 
 	private Map<Class<?>, Function<Class<?>, Object>> getAvailableParameters(
@@ -127,8 +149,8 @@ public class Instantiator<T> {
 			return instantiate(type);
 		}
 		catch (Throwable ex) {
-			throw new IllegalArgumentException(
-					"Unable to instantiate " + this.type.getName() + " [" + typeSupplier.getName() + "]", ex);
+			this.failureHandler.handleFailure(this.type, typeSupplier.getName(), ex);
+			return null;
 		}
 	}
 
@@ -143,7 +165,7 @@ public class Instantiator<T> {
 				return (T) constructor.newInstance(args);
 			}
 		}
-		throw new IllegalAccessException("Unable to find suitable constructor");
+		throw new IllegalAccessException("Class [" + type.getName() + "] has no suitable constructor");
 	}
 
 	private Object[] getArgs(Class<?>[] parameterTypes) {
@@ -228,6 +250,24 @@ public class Instantiator<T> {
 
 			};
 		}
+
+	}
+
+	/**
+	 * Strategy for handling a failure that occurs when instantiating a type.
+	 *
+	 * @since 2.7.0
+	 */
+	public interface FailureHandler {
+
+		/**
+		 * Handle the {@code failure} that occurred when instantiating the {@code type}
+		 * that was expected to be of the given {@code typeSupplier}.
+		 * @param type the type
+		 * @param implementationName the name of the implementation type
+		 * @param failure the failure that occurred
+		 */
+		void handleFailure(Class<?> type, String implementationName, Throwable failure);
 
 	}
 

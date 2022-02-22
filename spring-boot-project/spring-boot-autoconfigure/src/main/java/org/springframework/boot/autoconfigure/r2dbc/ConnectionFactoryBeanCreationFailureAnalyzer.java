@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsInit
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -32,12 +31,11 @@ import org.springframework.util.StringUtils;
  * @author Mark Paluch
  */
 class ConnectionFactoryBeanCreationFailureAnalyzer
-		extends AbstractFailureAnalyzer<ConnectionFactoryBeanCreationException> implements EnvironmentAware {
+		extends AbstractFailureAnalyzer<ConnectionFactoryBeanCreationException> {
 
-	private Environment environment;
+	private final Environment environment;
 
-	@Override
-	public void setEnvironment(Environment environment) {
+	ConnectionFactoryBeanCreationFailureAnalyzer(Environment environment) {
 		this.environment = environment;
 	}
 
