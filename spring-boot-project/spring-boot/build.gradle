@@ -180,18 +180,6 @@ sourceSets {
 	}
 }
 
-compileKotlin {
-	kotlinOptions {
-		jvmTarget = 1.8
-	}
-}
-
-compileTestKotlin {
-	kotlinOptions {
-		jvmTarget = 1.8
-	}
-}
-
 toolchain {
 	testJvmArgs.add("--add-opens=java.base/java.net=ALL-UNNAMED")
 }
