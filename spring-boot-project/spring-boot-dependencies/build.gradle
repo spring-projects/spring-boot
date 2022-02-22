@@ -24,7 +24,7 @@ bom {
 			]
 		}
 	}
-	library("AppEngine SDK", "1.9.93") {
+	library("AppEngine SDK", "1.9.95") {
 		group("com.google.appengine") {
 			modules = [
 				"appengine-api-1.0-sdk"
@@ -222,7 +222,7 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "3.3.1") {
+	library("Embedded Mongo", "3.4.1") {
 		group("de.flapdoodle.embed") {
 			modules = [
 				"de.flapdoodle.embed.mongo"
@@ -799,7 +799,7 @@ bom {
 			]
 		}
 	}
-	library("MariaDB", "2.7.5") {
+	library("MariaDB", "3.0.3") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
@@ -971,7 +971,7 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "9.4.1.jre8") {
+	library("MSSQL JDBC", "10.2.0.jre8") {
 		group("com.microsoft.sqlserver") {
 			modules = [
 				"mssql-jdbc"
@@ -1466,7 +1466,7 @@ bom {
 			]
 		}
 	}
-	library("UnboundID LDAPSDK", "4.0.14") {
+	library("UnboundID LDAPSDK", "6.0.3") {
 		group("com.unboundid") {
 			modules = [
 				"unboundid-ldapsdk"
@@ -1489,7 +1489,7 @@ bom {
 			]
 		}
 	}
-	library("WebJars Locator Core", "0.48") {
+	library("WebJars Locator Core", "0.50") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-core"
