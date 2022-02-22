@@ -20,7 +20,6 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,10 +41,9 @@ import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessio
  * @author Mark Paluch
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = CassandraDataAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, ReactiveCassandraTemplate.class, Flux.class })
 @ConditionalOnBean(CqlSession.class)
-@AutoConfigureAfter(CassandraDataAutoConfiguration.class)
 public class CassandraReactiveDataAutoConfiguration {
 
 	@Bean

@@ -23,7 +23,6 @@ import org.apache.catalina.Manager;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.tomcat.TomcatMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,10 +36,9 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
-@AutoConfigureAfter(CompositeMeterRegistryAutoConfiguration.class)
 public class TomcatMetricsAutoConfiguration {
 
 	@Bean

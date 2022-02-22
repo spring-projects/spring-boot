@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointEx
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,9 +37,8 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 2.5.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = QuartzAutoConfiguration.class)
 @ConditionalOnClass(Scheduler.class)
-@AutoConfigureAfter(QuartzAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(endpoint = QuartzEndpoint.class)
 public class QuartzEndpointAutoConfiguration {
 

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.sql.init;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
@@ -35,8 +34,7 @@ import org.springframework.context.annotation.Import;
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-@AutoConfiguration
-@AutoConfigureAfter({ R2dbcAutoConfiguration.class, DataSourceAutoConfiguration.class })
+@AutoConfiguration(after = { R2dbcAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @EnableConfigurationProperties(SqlInitializationProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, R2dbcInitializationConfiguration.class,
 		DataSourceInitializationConfiguration.class })

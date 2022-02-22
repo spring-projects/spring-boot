@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,8 +45,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * @author Scott Frederick
  * @since 2.6.0
  */
-@AutoConfiguration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
 		TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class })
 @ConditionalOnClass(ExecutorServiceMetrics.class)
 @ConditionalOnBean({ Executor.class, MeterRegistry.class })

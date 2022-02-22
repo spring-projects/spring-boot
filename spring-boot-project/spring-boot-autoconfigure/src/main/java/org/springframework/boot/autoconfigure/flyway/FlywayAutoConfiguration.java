@@ -37,7 +37,6 @@ import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -85,12 +84,11 @@ import org.springframework.util.StringUtils;
  * @author Chris Bono
  * @since 1.1.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = { DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 @ConditionalOnClass(Flyway.class)
 @Conditional(FlywayDataSourceCondition.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
 @Import(DatabaseInitializationDependencyConfigurer.class)
 public class FlywayAutoConfiguration {
 

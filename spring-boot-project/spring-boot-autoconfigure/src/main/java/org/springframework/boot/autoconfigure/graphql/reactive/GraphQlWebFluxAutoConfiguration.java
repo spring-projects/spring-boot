@@ -26,7 +26,6 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -76,11 +75,10 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
  * @author Brian Clozel
  * @since 2.7.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class })
 @ConditionalOnBean(GraphQlService.class)
-@AutoConfigureAfter(GraphQlAutoConfiguration.class)
 @EnableConfigurationProperties(GraphQlCorsProperties.class)
 public class GraphQlWebFluxAutoConfiguration {
 

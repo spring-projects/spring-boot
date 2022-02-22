@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -58,8 +57,7 @@ import org.springframework.util.ResourceUtils;
  * @author Yulin Qin
  * @since 1.4.0
  */
-@AutoConfiguration
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
+@AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnClass(Cluster.class)
 @ConditionalOnProperty("spring.couchbase.connection-string")
 @EnableConfigurationProperties(CouchbaseProperties.class)

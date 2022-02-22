@@ -25,7 +25,6 @@ import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnable
 import org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,11 +39,10 @@ import org.springframework.context.annotation.Bean;
  * @author Dmytro Nosan
  * @since 2.2.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = HazelcastAutoConfiguration.class)
 @ConditionalOnClass(HazelcastInstance.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @ConditionalOnEnabledHealthIndicator("hazelcast")
-@AutoConfigureAfter(HazelcastAutoConfiguration.class)
 public class HazelcastHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<HazelcastHealthIndicator, HazelcastInstance> {
 

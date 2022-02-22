@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.jdbc;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -45,12 +44,11 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @since 2.1.0
  * @see EnableJdbcRepositories
  */
-@AutoConfiguration
+@AutoConfiguration(after = { JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })
 @ConditionalOnBean({ NamedParameterJdbcOperations.class, PlatformTransactionManager.class })
 @ConditionalOnClass({ NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class })
 @ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
-@AutoConfigureAfter({ JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })
 public class JdbcRepositoriesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

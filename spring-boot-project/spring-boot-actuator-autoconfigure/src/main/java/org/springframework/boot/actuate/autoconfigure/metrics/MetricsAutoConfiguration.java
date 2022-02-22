@@ -23,7 +23,6 @@ import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,10 +38,9 @@ import org.springframework.core.annotation.Order;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
-@AutoConfigureBefore(CompositeMeterRegistryAutoConfiguration.class)
 public class MetricsAutoConfiguration {
 
 	@Bean

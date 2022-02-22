@@ -27,7 +27,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -69,12 +68,11 @@ import org.springframework.util.StringUtils;
  * @author Artsiom Yudovin
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = MongoReactiveAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
 @ConditionalOnBean(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @Import(MongoDataConfiguration.class)
-@AutoConfigureAfter(MongoReactiveAutoConfiguration.class)
 public class MongoReactiveDataAutoConfiguration {
 
 	@Bean

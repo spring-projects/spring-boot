@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,11 +43,10 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = { WebFluxAutoConfiguration.class })
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnMissingBean(HttpHandler.class)
-@AutoConfigureAfter({ WebFluxAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class HttpHandlerAutoConfiguration {
 

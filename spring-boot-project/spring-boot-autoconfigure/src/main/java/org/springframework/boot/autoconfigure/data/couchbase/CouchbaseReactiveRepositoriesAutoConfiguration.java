@@ -20,7 +20,6 @@ import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,13 +38,12 @@ import org.springframework.data.couchbase.repository.support.ReactiveCouchbaseRe
  * @author Alex Derkach
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = CouchbaseReactiveDataAutoConfiguration.class)
 @ConditionalOnClass({ Cluster.class, ReactiveCouchbaseRepository.class, Flux.class })
 @ConditionalOnRepositoryType(store = "couchbase", type = RepositoryType.REACTIVE)
 @ConditionalOnBean(ReactiveRepositoryOperationsMapping.class)
 @ConditionalOnMissingBean(ReactiveCouchbaseRepositoryFactoryBean.class)
 @Import(CouchbaseReactiveRepositoriesRegistrar.class)
-@AutoConfigureAfter(CouchbaseReactiveDataAutoConfiguration.class)
 public class CouchbaseReactiveRepositoriesAutoConfiguration {
 
 }

@@ -32,7 +32,6 @@ import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
@@ -70,9 +69,8 @@ import org.springframework.util.StringUtils;
  * @author Raja Kolli
  * @since 1.5.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = LdapAutoConfiguration.class)
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
-@AutoConfigureBefore(LdapAutoConfiguration.class)
 @ConditionalOnClass(InMemoryDirectoryServer.class)
 @Conditional(EmbeddedLdapAutoConfiguration.EmbeddedLdapCondition.class)
 public class EmbeddedLdapAutoConfiguration {

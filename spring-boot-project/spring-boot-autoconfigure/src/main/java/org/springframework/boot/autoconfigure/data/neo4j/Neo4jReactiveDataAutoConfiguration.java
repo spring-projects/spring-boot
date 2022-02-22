@@ -20,7 +20,6 @@ import org.neo4j.driver.Driver;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,10 +41,9 @@ import org.springframework.transaction.ReactiveTransactionManager;
  * @author Stephane Nicoll
  * @since 2.4.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = Neo4jDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jTemplate.class, ReactiveTransactionManager.class, Flux.class })
 @ConditionalOnBean(Driver.class)
-@AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 public class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean

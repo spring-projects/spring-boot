@@ -17,7 +17,6 @@
 package org.springframework.boot.test.autoconfigure.webservices.client;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,9 +33,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * @since 2.3.0
  * @see AutoConfigureWebServiceClient
  */
-@AutoConfiguration
+@AutoConfiguration(after = WebServiceTemplateAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.test.webservice.client", name = "register-web-service-template")
-@AutoConfigureAfter(WebServiceTemplateAutoConfiguration.class)
 @ConditionalOnClass(WebServiceTemplate.class)
 @ConditionalOnBean(WebServiceTemplateBuilder.class)
 public class WebServiceClientTemplateAutoConfiguration {

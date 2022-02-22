@@ -22,7 +22,6 @@ import javax.jms.ConnectionFactory;
 import javax.naming.NamingException;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -43,8 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
-@AutoConfiguration
-@AutoConfigureBefore(JmsAutoConfiguration.class)
+@AutoConfiguration(before = JmsAutoConfiguration.class)
 @ConditionalOnClass(JmsTemplate.class)
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @Conditional(JndiOrPropertyCondition.class)

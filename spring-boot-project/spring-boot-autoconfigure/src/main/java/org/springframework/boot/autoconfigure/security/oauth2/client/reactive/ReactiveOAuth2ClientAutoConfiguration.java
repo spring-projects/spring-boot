@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.reactive;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -39,8 +38,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@AutoConfiguration
-@AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
+@AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class)
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 @Conditional(ReactiveOAuth2ClientAutoConfiguration.NonServletApplicationCondition.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ClientRegistration.class })

@@ -22,8 +22,6 @@ import org.neo4j.driver.Driver;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -59,12 +57,10 @@ import org.springframework.transaction.TransactionManager;
  * @author Michael J. Simons
  * @since 1.4.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = TransactionAutoConfiguration.class, after = Neo4jAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
 @EnableConfigurationProperties(Neo4jDataProperties.class)
 @ConditionalOnBean(Driver.class)
-@AutoConfigureBefore(TransactionAutoConfiguration.class)
-@AutoConfigureAfter(Neo4jAutoConfiguration.class)
 public class Neo4jDataAutoConfiguration {
 
 	@Bean

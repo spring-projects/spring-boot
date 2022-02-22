@@ -24,8 +24,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderCustomizer;
@@ -39,9 +37,8 @@ import org.springframework.context.annotation.Bean;
  * @author Yanming Zhou
  * @since 2.6.0
  */
-@AutoConfiguration
-@AutoConfigureBefore(RedisAutoConfiguration.class)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
+@AutoConfiguration(before = RedisAutoConfiguration.class,
+		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class LettuceMetricsAutoConfiguration {

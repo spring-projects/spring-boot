@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,11 +47,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = { HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnMissingBean(RepositoryRestMvcConfiguration.class)
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
-@AutoConfigureAfter({ HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class })
 @EnableConfigurationProperties(RepositoryRestProperties.class)
 @Import(RepositoryRestMvcConfiguration.class)
 public class RepositoryRestMvcAutoConfiguration {

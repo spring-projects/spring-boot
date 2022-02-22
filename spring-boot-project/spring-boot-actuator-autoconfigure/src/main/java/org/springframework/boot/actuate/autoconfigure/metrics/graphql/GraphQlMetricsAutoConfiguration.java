@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.metrics.graphql.GraphQlMetricsInstrument
 import org.springframework.boot.actuate.metrics.graphql.GraphQlTagsContributor;
 import org.springframework.boot.actuate.metrics.graphql.GraphQlTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,8 +46,7 @@ import org.springframework.graphql.execution.GraphQlSource;
  * @author Brian Clozel
  * @since 2.7.0
  */
-@AutoConfiguration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(MeterRegistry.class)
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class })

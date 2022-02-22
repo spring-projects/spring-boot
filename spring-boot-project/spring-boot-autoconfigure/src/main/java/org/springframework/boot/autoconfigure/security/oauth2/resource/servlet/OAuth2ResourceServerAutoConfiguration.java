@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -34,8 +33,7 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@AutoConfiguration
-@AutoConfigureBefore({ SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
+@AutoConfiguration(before = { SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass(BearerTokenAuthenticationToken.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

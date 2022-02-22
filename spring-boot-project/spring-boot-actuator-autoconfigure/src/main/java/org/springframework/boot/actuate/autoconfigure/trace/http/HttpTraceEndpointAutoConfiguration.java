@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.Conditi
 import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,9 +31,8 @@ import org.springframework.context.annotation.Bean;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = HttpTraceAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(endpoint = HttpTraceEndpoint.class)
-@AutoConfigureAfter(HttpTraceAutoConfiguration.class)
 public class HttpTraceEndpointAutoConfiguration {
 
 	@Bean

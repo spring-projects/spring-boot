@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnable
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.mail.MailHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,11 +37,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Johannes Edmeier
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = MailSenderAutoConfiguration.class)
 @ConditionalOnClass(JavaMailSenderImpl.class)
 @ConditionalOnBean(JavaMailSenderImpl.class)
 @ConditionalOnEnabledHealthIndicator("mail")
-@AutoConfigureAfter(MailSenderAutoConfiguration.class)
 public class MailHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 

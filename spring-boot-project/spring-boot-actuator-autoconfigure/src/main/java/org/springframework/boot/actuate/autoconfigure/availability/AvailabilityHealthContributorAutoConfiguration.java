@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.availability.AvailabilityStateHealthIndi
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,8 +34,7 @@ import org.springframework.context.annotation.Bean;
  * @author Brian Clozel
  * @since 2.3.2
  */
-@AutoConfiguration
-@AutoConfigureAfter(ApplicationAvailabilityAutoConfiguration.class)
+@AutoConfiguration(after = ApplicationAvailabilityAutoConfiguration.class)
 public class AvailabilityHealthContributorAutoConfiguration {
 
 	@Bean

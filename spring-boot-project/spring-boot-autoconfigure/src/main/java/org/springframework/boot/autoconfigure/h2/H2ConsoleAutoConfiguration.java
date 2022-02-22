@@ -29,7 +29,6 @@ import org.h2.server.web.WebServlet;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,11 +48,10 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebServlet.class)
 @ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true")
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 public class H2ConsoleAutoConfiguration {
 

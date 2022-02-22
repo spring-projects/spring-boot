@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,10 +46,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebSocketMessageBrokerConfigurer.class)
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
 public class WebSocketMessagingAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

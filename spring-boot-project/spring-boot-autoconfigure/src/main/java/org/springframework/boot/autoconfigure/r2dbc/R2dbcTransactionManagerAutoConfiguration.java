@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.r2dbc;
 import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,11 +36,10 @@ import org.springframework.transaction.ReactiveTransactionManager;
  * @author Mark Paluch
  * @since 2.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = TransactionAutoConfiguration.class)
 @ConditionalOnClass({ R2dbcTransactionManager.class, ReactiveTransactionManager.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@AutoConfigureBefore(TransactionAutoConfiguration.class)
 public class R2dbcTransactionManagerAutoConfiguration {
 
 	@Bean

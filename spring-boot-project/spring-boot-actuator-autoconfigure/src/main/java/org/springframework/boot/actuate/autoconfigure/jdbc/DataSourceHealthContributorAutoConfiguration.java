@@ -33,7 +33,6 @@ import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -61,11 +60,10 @@ import org.springframework.util.Assert;
  * @author Safeer Ansari
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)
 public class DataSourceHealthContributorAutoConfiguration implements InitializingBean {
 
