@@ -108,7 +108,7 @@ If the file has an encoding other than UTF-8, you can set `spring.banner.charset
 In addition to a text file, you can also add a `banner.gif`, `banner.jpg`, or `banner.png` image file to your classpath or set the configprop:spring.banner.image.location[] property.
 Images are converted into an ASCII art representation and printed above any text banner.
 
-Inside your `banner.txt` file, you can use any of the following placeholders:
+Inside your `banner.txt` file, you can use any key available in the `Environment` as well as any of the following placeholders:
 
 .Banner variables
 |===
