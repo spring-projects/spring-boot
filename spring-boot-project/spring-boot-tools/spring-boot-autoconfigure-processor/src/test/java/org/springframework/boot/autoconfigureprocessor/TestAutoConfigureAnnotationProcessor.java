@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package org.springframework.boot.autoconfigureprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -35,7 +36,8 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
-		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
+		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder",
+		"org.springframework.boot.autoconfigureprocessor.TestAutoConfiguration" })
 public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotationProcessor {
 
 	private final File outputLocation;
@@ -45,18 +47,25 @@ public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotatio
 	}
 
 	@Override
-	protected void addAnnotations(Map<String, String> annotations) {
-		put(annotations, "ConditionalOnClass", TestConditionalOnClass.class);
-		put(annotations, "ConditionalOnBean", TestConditionalOnBean.class);
-		put(annotations, "ConditionalOnSingleCandidate", TestConditionalOnSingleCandidate.class);
-		put(annotations, "ConditionalOnWebApplication", TestConditionalOnWebApplication.class);
-		put(annotations, "AutoConfigureBefore", TestAutoConfigureBefore.class);
-		put(annotations, "AutoConfigureAfter", TestAutoConfigureAfter.class);
-		put(annotations, "AutoConfigureOrder", TestAutoConfigureOrder.class);
-	}
-
-	private void put(Map<String, String> annotations, String key, Class<?> value) {
-		annotations.put(key, value.getName());
+	protected List<PropertyGenerator> getPropertyGenerators() {
+		List<PropertyGenerator> generators = new ArrayList<>();
+		generators.add(PropertyGenerator.of("ConditionalOnClass", TestConditionalOnClass.class.getName(),
+				new OnClassConditionValueExtractor()));
+		generators.add(PropertyGenerator.of("ConditionalOnBean", TestConditionalOnBean.class.getName(),
+				new OnBeanConditionValueExtractor()));
+		generators.add(PropertyGenerator.of("ConditionalOnSingleCandidate",
+				TestConditionalOnSingleCandidate.class.getName(), new OnBeanConditionValueExtractor()));
+		generators.add(PropertyGenerator.of("ConditionalOnWebApplication",
+				TestConditionalOnWebApplication.class.getName(), ValueExtractor.allFrom("type")));
+		generators.add(PropertyGenerator.of("AutoConfigureBefore", TestAutoConfigureBefore.class.getName(),
+				ValueExtractor.allFrom("value", "name"), TestAutoConfiguration.class.getName(),
+				ValueExtractor.allFrom("before", "beforeName")));
+		generators.add(PropertyGenerator.of("AutoConfigureAfter", TestAutoConfigureAfter.class.getName(),
+				ValueExtractor.allFrom("value", "name"), TestAutoConfiguration.class.getName(),
+				ValueExtractor.allFrom("after", "afterName")));
+		generators.add(PropertyGenerator.of("AutoConfigureOrder", TestAutoConfigureOrder.class.getName(),
+				ValueExtractor.allFrom("value")));
+		return generators;
 	}
 
 	public Properties getWrittenProperties() throws IOException {

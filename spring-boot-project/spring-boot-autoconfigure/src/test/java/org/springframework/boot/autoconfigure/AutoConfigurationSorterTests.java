@@ -113,6 +113,15 @@ class AutoConfigurationSorterTests {
 	}
 
 	@Test
+	void byAutoConfigureAfterAliasForWithProperties() throws Exception {
+		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
+		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A3, B2, C);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A3, B2, C));
+		assertThat(actual).containsExactly(C, B2, A3);
+	}
+
+	@Test
 	void byAutoConfigureBefore() {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
 		assertThat(actual).containsExactly(Z, Y, X);
@@ -120,6 +129,15 @@ class AutoConfigurationSorterTests {
 
 	@Test
 	void byAutoConfigureBeforeAliasFor() {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y2, Z2));
+		assertThat(actual).containsExactly(Z2, Y2, X);
+	}
+
+	@Test
+	void byAutoConfigureBeforeAliasForWithProperties() throws Exception {
+		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
+		this.autoConfigurationMetadata = getAutoConfigurationMetadata(X, Y2, Z2);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y2, Z2));
 		assertThat(actual).containsExactly(Z2, Y2, X);
 	}
@@ -273,7 +291,7 @@ class AutoConfigurationSorterTests {
 
 	}
 
-	@AutoConfiguration(after = { AutoConfigureC.class, AutoConfigureD.class, AutoConfigureE.class })
+	@AutoConfiguration(after = { AutoConfigureC.class })
 	static class AutoConfigureB2 {
 
 	}
