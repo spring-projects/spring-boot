@@ -122,6 +122,7 @@ class PaketoBuilderTests {
 			container.waitingFor(Wait.forHttp("/test")).start();
 			container.stop();
 		}
+		this.gradleBuild.expectDeprecationMessages("BOM table is deprecated in this buildpack api version");
 		result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (GenericContainer<?> container = new GenericContainer<>(imageName).withExposedPorts(8080)) {
