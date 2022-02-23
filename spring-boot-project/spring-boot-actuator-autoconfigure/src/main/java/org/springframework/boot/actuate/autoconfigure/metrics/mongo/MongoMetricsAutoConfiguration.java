@@ -28,8 +28,6 @@ import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolLi
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,9 +44,8 @@ import org.springframework.context.annotation.Bean;
  * @author Jonatan Ivanov
  * @since 2.5.0
  */
-@AutoConfiguration
-@AutoConfigureBefore(MongoAutoConfiguration.class)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
+@AutoConfiguration(before = MongoAutoConfiguration.class,
+		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MongoClientSettings.class)
 @ConditionalOnBean(MeterRegistry.class)
 public class MongoMetricsAutoConfiguration {

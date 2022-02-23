@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -39,10 +38,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  * @author Kazuki Shimizu
  * @since 1.4.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass({ DataSource.class, JdbcTemplate.class })
 @ConditionalOnSingleCandidate(DataSource.class)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(JdbcProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, JdbcTemplateConfiguration.class,
 		NamedParameterJdbcTemplateConfiguration.class })

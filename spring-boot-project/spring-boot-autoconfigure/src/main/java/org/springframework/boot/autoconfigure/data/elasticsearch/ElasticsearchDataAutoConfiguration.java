@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
@@ -37,10 +36,9 @@ import org.springframework.data.elasticsearch.repository.config.EnableReactiveEl
  * @see EnableElasticsearchRepositories
  * @see EnableReactiveElasticsearchRepositories
  */
-@AutoConfiguration
-@ConditionalOnClass({ ElasticsearchRestTemplate.class })
-@AutoConfigureAfter({ ElasticsearchRestClientAutoConfiguration.class,
+@AutoConfiguration(after = { ElasticsearchRestClientAutoConfiguration.class,
 		ReactiveElasticsearchRestClientAutoConfiguration.class })
+@ConditionalOnClass({ ElasticsearchRestTemplate.class })
 @Import({ ElasticsearchDataConfiguration.BaseConfiguration.class,
 		ElasticsearchDataConfiguration.RestClientConfiguration.class,
 		ElasticsearchDataConfiguration.ReactiveRestClientConfiguration.class })

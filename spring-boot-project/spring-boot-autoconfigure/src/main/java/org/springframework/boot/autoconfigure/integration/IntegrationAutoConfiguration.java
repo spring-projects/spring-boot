@@ -25,7 +25,6 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -82,11 +81,10 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.1.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
+		TaskSchedulingAutoConfiguration.class })
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties(IntegrationProperties.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
-		TaskSchedulingAutoConfiguration.class })
 public class IntegrationAutoConfiguration {
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)

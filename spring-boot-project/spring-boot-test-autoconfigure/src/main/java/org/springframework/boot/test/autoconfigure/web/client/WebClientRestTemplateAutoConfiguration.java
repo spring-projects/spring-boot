@@ -17,7 +17,6 @@
 package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -32,9 +31,8 @@ import org.springframework.web.client.RestTemplate;
  * @since 1.4.0
  * @see AutoConfigureMockRestServiceServer
  */
-@AutoConfiguration
+@AutoConfiguration(after = RestTemplateAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.test.webclient", name = "register-rest-template")
-@AutoConfigureAfter(RestTemplateAutoConfiguration.class)
 public class WebClientRestTemplateAutoConfiguration {
 
 	@Bean

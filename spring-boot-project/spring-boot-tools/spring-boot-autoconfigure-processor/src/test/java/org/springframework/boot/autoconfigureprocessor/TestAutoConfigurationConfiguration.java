@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition.config.second;
+package org.springframework.boot.autoconfigureprocessor;
 
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * Sample auto-configuration for {@link ConditionEvaluationReport} tests.
+ * Test @AutoConfiguration aliases for @AutoConfigureBefore and @AutoConfigureAfter.
  *
- * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
-@AutoConfiguration("autoConfigTwo")
-@ConditionalOnProperty("sample.second")
-public class SampleAutoConfiguration {
-
-	@Bean
-	public String two() {
-		return "two";
-	}
+@TestAutoConfiguration(before = InputStream.class, beforeName = { "test.before1", "test.before2" },
+		after = OutputStream.class, afterName = { "test.after1", "test.after2" })
+class TestAutoConfigurationConfiguration {
 
 }

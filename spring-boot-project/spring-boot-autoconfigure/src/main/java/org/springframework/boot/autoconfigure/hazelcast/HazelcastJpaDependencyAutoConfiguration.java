@@ -20,7 +20,6 @@ import com.hazelcast.core.HazelcastInstance;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,9 +38,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Stephane Nicoll
  * @since 1.3.2
  */
-@AutoConfiguration
+@AutoConfiguration(after = { HazelcastAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @ConditionalOnClass({ HazelcastInstance.class, LocalContainerEntityManagerFactoryBean.class })
-@AutoConfigureAfter({ HazelcastAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @Import(HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor.class)
 public class HazelcastJpaDependencyAutoConfiguration {
 

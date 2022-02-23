@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.availability;
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -41,10 +40,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Phillip Webb
  * @since 2.3.0
  */
-@AutoConfiguration
-@Conditional(AvailabilityProbesAutoConfiguration.ProbesCondition.class)
-@AutoConfigureAfter({ AvailabilityHealthContributorAutoConfiguration.class,
+@AutoConfiguration(after = { AvailabilityHealthContributorAutoConfiguration.class,
 		ApplicationAvailabilityAutoConfiguration.class })
+@Conditional(AvailabilityProbesAutoConfiguration.ProbesCondition.class)
 public class AvailabilityProbesAutoConfiguration {
 
 	@Bean

@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 import com.gargoylesoftware.htmlunit.WebClient;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,9 +35,8 @@ import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = MockMvcAutoConfiguration.class)
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter(MockMvcAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.test.mockmvc.webclient", name = "enabled", matchIfMissing = true)
 public class MockMvcWebClientAutoConfiguration {
 

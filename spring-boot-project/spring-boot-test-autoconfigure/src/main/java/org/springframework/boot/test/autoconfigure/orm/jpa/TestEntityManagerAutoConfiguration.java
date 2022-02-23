@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.orm.jpa;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -32,9 +31,8 @@ import org.springframework.context.annotation.Bean;
  * @since 1.4.0
  * @see AutoConfigureTestEntityManager
  */
-@AutoConfiguration
+@AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
 @ConditionalOnClass({ EntityManagerFactory.class })
-@AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 public class TestEntityManagerAutoConfiguration {
 
 	@Bean

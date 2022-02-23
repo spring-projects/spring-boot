@@ -23,7 +23,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,10 +38,9 @@ import org.springframework.context.annotation.Bean;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = LiquibaseAutoConfiguration.class)
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnAvailableEndpoint(endpoint = LiquibaseEndpoint.class)
-@AutoConfigureAfter(LiquibaseAutoConfiguration.class)
 public class LiquibaseEndpointAutoConfiguration {
 
 	@Bean

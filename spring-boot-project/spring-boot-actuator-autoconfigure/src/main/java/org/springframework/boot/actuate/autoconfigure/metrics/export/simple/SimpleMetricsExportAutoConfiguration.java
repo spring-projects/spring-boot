@@ -25,8 +25,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,9 +39,7 @@ import org.springframework.context.annotation.Bean;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@AutoConfiguration
-@AutoConfigureAfter(MetricsAutoConfiguration.class)
-@AutoConfigureBefore(CompositeMeterRegistryAutoConfiguration.class)
+@AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class, after = MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @EnableConfigurationProperties(SimpleProperties.class)
 @ConditionalOnMissingBean(MeterRegistry.class)

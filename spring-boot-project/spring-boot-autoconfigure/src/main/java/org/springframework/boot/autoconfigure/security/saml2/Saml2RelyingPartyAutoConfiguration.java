@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.saml2;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -33,11 +32,10 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
  * @author Madhura Bhave
  * @since 2.2.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = SecurityAutoConfiguration.class)
 @ConditionalOnClass(RelyingPartyRegistrationRepository.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Import({ Saml2RelyingPartyRegistrationConfiguration.class, Saml2LoginConfiguration.class })
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
 @EnableConfigurationProperties(Saml2RelyingPartyProperties.class)
 public class Saml2RelyingPartyAutoConfiguration {
 

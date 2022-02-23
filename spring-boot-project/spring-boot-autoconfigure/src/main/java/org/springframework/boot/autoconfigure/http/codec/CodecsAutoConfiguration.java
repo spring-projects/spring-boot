@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.http.codec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.codec.CodecProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -46,9 +45,8 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnClass({ CodecConfigurer.class, WebClient.class })
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
 @EnableConfigurationProperties(CodecProperties.class)
 public class CodecsAutoConfiguration {
 

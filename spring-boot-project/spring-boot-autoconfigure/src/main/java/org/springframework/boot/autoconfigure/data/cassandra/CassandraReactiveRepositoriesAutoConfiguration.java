@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.cassandra;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,12 +37,11 @@ import org.springframework.data.cassandra.repository.support.ReactiveCassandraRe
  * @since 2.0.0
  * @see EnableReactiveCassandraRepositories
  */
-@AutoConfiguration
+@AutoConfiguration(after = CassandraReactiveDataAutoConfiguration.class)
 @ConditionalOnClass({ ReactiveSession.class, ReactiveCassandraRepository.class })
 @ConditionalOnRepositoryType(store = "cassandra", type = RepositoryType.REACTIVE)
 @ConditionalOnMissingBean(ReactiveCassandraRepositoryFactoryBean.class)
 @Import(CassandraReactiveRepositoriesRegistrar.class)
-@AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)
 public class CassandraReactiveRepositoriesAutoConfiguration {
 
 }

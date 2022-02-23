@@ -28,7 +28,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -62,9 +61,8 @@ import org.springframework.util.StringUtils;
  * @author Mahmoud Ben Hassine
  * @since 1.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
 @ConditionalOnClass({ JobLauncher.class, DataSource.class })
-@AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean({ DataSource.class, JobLauncher.class })
 @EnableConfigurationProperties(BatchProperties.class)
 @Import({ BatchConfigurerConfiguration.class, DatabaseInitializationDependencyConfigurer.class })

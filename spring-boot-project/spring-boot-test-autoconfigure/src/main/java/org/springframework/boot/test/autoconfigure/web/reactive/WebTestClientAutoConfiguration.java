@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,9 +45,8 @@ import org.springframework.web.server.WebHandler;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = { CodecsAutoConfiguration.class, WebFluxAutoConfiguration.class })
 @ConditionalOnClass({ WebClient.class, WebTestClient.class })
-@AutoConfigureAfter({ CodecsAutoConfiguration.class, WebFluxAutoConfiguration.class })
 @Import(WebTestClientSecurityConfiguration.class)
 @EnableConfigurationProperties
 public class WebTestClientAutoConfiguration {

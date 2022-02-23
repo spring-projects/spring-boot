@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.neo4j.driver.Driver;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -50,12 +49,11 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  * @since 1.4.0
  * @see EnableNeo4jRepositories
  */
-@AutoConfiguration
+@AutoConfiguration(after = Neo4jDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, Neo4jRepository.class })
 @ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class, Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.IMPERATIVE)
 @Import(Neo4jRepositoriesRegistrar.class)
-@AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 public class Neo4jRepositoriesAutoConfiguration {
 
 }
