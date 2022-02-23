@@ -32,6 +32,9 @@ import java.lang.annotation.Target;
  * {@link org.springframework.boot.context.properties.ConfigurationProperties @ConfigurationProperties},
  * the default value for the property will not be used even if the property value is
  * empty.
+ * <p>
+ * NOTE: This annotation does not support property placeholder resolution and the value
+ * must be constant.
  *
  * @author Madhura Bhave
  * @since 2.2.0
