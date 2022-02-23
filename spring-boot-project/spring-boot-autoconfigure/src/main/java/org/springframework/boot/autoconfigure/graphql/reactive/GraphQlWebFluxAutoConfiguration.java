@@ -102,8 +102,9 @@ public class GraphQlWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> graphQlEndpoint(GraphQlHttpHandler httpHandler, GraphQlSource graphQlSource,
-			GraphQlProperties properties, ResourceLoader resourceLoader) {
+	public RouterFunction<ServerResponse> graphQlEndpoint(GraphQlHttpHandler httpHandler,
+			GraphQlSource graphQlSource,
+			GraphQlProperties properties) {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
