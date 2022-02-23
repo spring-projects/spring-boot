@@ -21,8 +21,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 
@@ -34,9 +32,8 @@ import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfigu
  *
  * @author Andy Wilkinson
  */
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
-@AutoConfigureBefore(IntegrationAutoConfiguration.class)
-@AutoConfiguration
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class },
+		before = IntegrationAutoConfiguration.class)
 class IntegrationMetricsAutoConfiguration {
 
 }

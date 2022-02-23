@@ -30,7 +30,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -57,10 +56,10 @@ import org.springframework.util.ReflectionUtils;
  * @since 1.4.0
  * @see AutoConfigureJsonTesters
  */
-@AutoConfiguration
+@AutoConfiguration(
+		after = { JacksonAutoConfiguration.class, GsonAutoConfiguration.class, JsonbAutoConfiguration.class })
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnProperty("spring.test.jsontesters.enabled")
-@AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class, JsonbAutoConfiguration.class })
 public class JsonTestersAutoConfiguration {
 
 	@Bean

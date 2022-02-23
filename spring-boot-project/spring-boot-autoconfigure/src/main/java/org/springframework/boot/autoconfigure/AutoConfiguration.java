@@ -25,8 +25,11 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.annotation.ImportCandidates;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
@@ -55,6 +58,52 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore
+@AutoConfigureAfter
 public @interface AutoConfiguration {
+
+	/**
+	 * Explicitly specify the name of the Spring bean definition associated with the
+	 * {@code @AutoConfiguration} class. If left unspecified (the common case), a bean
+	 * name will be automatically generated.
+	 * <p>
+	 * The custom name applies only if the {@code @AutoConfiguration} class is picked up
+	 * via component scanning or supplied directly to an
+	 * {@link AnnotationConfigApplicationContext}. If the {@code @AutoConfiguration} class
+	 * is registered as a traditional XML bean definition, the name/id of the bean element
+	 * will take precedence.
+	 * @return the explicit component name, if any (or empty String otherwise)
+	 * @see AnnotationBeanNameGenerator
+	 */
+	@AliasFor(annotation = Configuration.class)
+	String value() default "";
+
+	/**
+	 * The auto-configure classes that should have not yet been applied.
+	 * @return the classes
+	 */
+	@AliasFor(annotation = AutoConfigureBefore.class, attribute = "value")
+	Class<?>[] before() default {};
+
+	/**
+	 * The names of the auto-configure classes that should have not yet been applied.
+	 * @return the class names
+	 */
+	@AliasFor(annotation = AutoConfigureBefore.class, attribute = "name")
+	String[] beforeName() default {};
+
+	/**
+	 * The auto-configure classes that should have already been applied.
+	 * @return the classes
+	 */
+	@AliasFor(annotation = AutoConfigureAfter.class, attribute = "value")
+	Class<?>[] after() default {};
+
+	/**
+	 * The names of the auto-configure classes that should have already been applied.
+	 * @return the class names
+	 */
+	@AliasFor(annotation = AutoConfigureAfter.class, attribute = "name")
+	String[] afterName() default {};
 
 }

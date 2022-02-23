@@ -21,8 +21,6 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
@@ -49,13 +47,12 @@ import org.springframework.util.ClassUtils;
  * @author Hatef Palizgar
  * @since 2.1.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = SecurityAutoConfiguration.class,
+		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, OAuth2ClientAutoConfiguration.class,
+				OAuth2ResourceServerAutoConfiguration.class, Saml2RelyingPartyAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnDefaultWebSecurity
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
-@AutoConfigureAfter({ HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-		WebEndpointAutoConfiguration.class, OAuth2ClientAutoConfiguration.class,
-		OAuth2ResourceServerAutoConfiguration.class, Saml2RelyingPartyAutoConfiguration.class })
 public class ManagementWebSecurityAutoConfiguration {
 
 	@Bean

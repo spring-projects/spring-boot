@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnable
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.ldap.LdapHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,11 +38,10 @@ import org.springframework.ldap.core.LdapOperations;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = LdapAutoConfiguration.class)
 @ConditionalOnClass(LdapOperations.class)
 @ConditionalOnBean(LdapOperations.class)
 @ConditionalOnEnabledHealthIndicator("ldap")
-@AutoConfigureAfter(LdapAutoConfiguration.class)
 public class LdapHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<LdapHealthIndicator, LdapOperations> {
 

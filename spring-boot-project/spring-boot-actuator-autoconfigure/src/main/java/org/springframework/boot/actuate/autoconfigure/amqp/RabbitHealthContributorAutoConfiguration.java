@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthCont
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -38,11 +37,10 @@ import org.springframework.context.annotation.Bean;
  * @author Christian Dupuis
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = RabbitAutoConfiguration.class)
 @ConditionalOnClass(RabbitTemplate.class)
 @ConditionalOnBean(RabbitTemplate.class)
 @ConditionalOnEnabledHealthIndicator("rabbit")
-@AutoConfigureAfter(RabbitAutoConfiguration.class)
 public class RabbitHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 

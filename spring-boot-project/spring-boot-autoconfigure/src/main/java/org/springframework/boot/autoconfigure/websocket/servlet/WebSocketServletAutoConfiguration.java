@@ -24,7 +24,6 @@ import org.apache.tomcat.websocket.server.WsSci;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -54,10 +53,9 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @since 1.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = ServletWebServerFactoryAutoConfiguration.class)
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@AutoConfigureBefore(ServletWebServerFactoryAutoConfiguration.class)
 public class WebSocketServletAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

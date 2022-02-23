@@ -22,7 +22,6 @@ import graphql.GraphQL;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,10 +43,9 @@ import org.springframework.graphql.execution.GraphQlSource;
  * @since 2.7.0
  * @see QueryByExampleDataFetcher#autoRegistrationConfigurer(List, List)
  */
-@AutoConfiguration
+@AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnClass({ GraphQL.class, QueryByExampleDataFetcher.class, QueryByExampleExecutor.class })
 @ConditionalOnBean(GraphQlSource.class)
-@AutoConfigureAfter(GraphQlAutoConfiguration.class)
 public class GraphQlQueryByExampleAutoConfiguration {
 
 	@Bean

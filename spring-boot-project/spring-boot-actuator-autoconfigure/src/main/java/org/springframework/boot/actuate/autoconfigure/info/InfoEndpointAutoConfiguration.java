@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.Conditi
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -34,9 +33,8 @@ import org.springframework.context.annotation.Bean;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = InfoContributorAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(endpoint = InfoEndpoint.class)
-@AutoConfigureAfter(InfoContributorAutoConfiguration.class)
 public class InfoEndpointAutoConfiguration {
 
 	@Bean

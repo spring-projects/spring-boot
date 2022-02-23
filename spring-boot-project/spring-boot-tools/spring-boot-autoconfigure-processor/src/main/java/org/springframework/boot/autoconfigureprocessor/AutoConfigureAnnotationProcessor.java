@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import javax.tools.StandardLocation;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 1.5.0
  */
 @SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
@@ -59,46 +60,45 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigure.AutoConfigureBefore",
 		"org.springframework.boot.autoconfigure.AutoConfigureAfter",
-		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
+		"org.springframework.boot.autoconfigure.AutoConfigureOrder",
+		"org.springframework.boot.autoconfigure.AutoConfiguration" })
 public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	protected static final String PROPERTIES_PATH = "META-INF/spring-autoconfigure-metadata.properties";
 
-	private final Map<String, String> annotations;
-
-	private final Map<String, ValueExtractor> valueExtractors;
-
 	private final Map<String, String> properties = new TreeMap<>();
 
+	private final List<PropertyGenerator> propertyGenerators;
+
 	public AutoConfigureAnnotationProcessor() {
-		Map<String, String> annotations = new LinkedHashMap<>();
-		addAnnotations(annotations);
-		this.annotations = Collections.unmodifiableMap(annotations);
-		Map<String, ValueExtractor> valueExtractors = new LinkedHashMap<>();
-		addValueExtractors(valueExtractors);
-		this.valueExtractors = Collections.unmodifiableMap(valueExtractors);
+		this.propertyGenerators = Collections.unmodifiableList(getPropertyGenerators());
 	}
 
-	protected void addAnnotations(Map<String, String> annotations) {
-		annotations.put("ConditionalOnClass", "org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
-		annotations.put("ConditionalOnBean", "org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
-		annotations.put("ConditionalOnSingleCandidate",
-				"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate");
-		annotations.put("ConditionalOnWebApplication",
-				"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication");
-		annotations.put("AutoConfigureBefore", "org.springframework.boot.autoconfigure.AutoConfigureBefore");
-		annotations.put("AutoConfigureAfter", "org.springframework.boot.autoconfigure.AutoConfigureAfter");
-		annotations.put("AutoConfigureOrder", "org.springframework.boot.autoconfigure.AutoConfigureOrder");
-	}
-
-	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
-		attributes.put("ConditionalOnClass", new OnClassConditionValueExtractor());
-		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
-		attributes.put("ConditionalOnSingleCandidate", new OnBeanConditionValueExtractor());
-		attributes.put("ConditionalOnWebApplication", ValueExtractor.allFrom("type"));
-		attributes.put("AutoConfigureBefore", ValueExtractor.allFrom("value", "name"));
-		attributes.put("AutoConfigureAfter", ValueExtractor.allFrom("value", "name"));
-		attributes.put("AutoConfigureOrder", ValueExtractor.allFrom("value"));
+	protected List<PropertyGenerator> getPropertyGenerators() {
+		List<PropertyGenerator> generators = new ArrayList<>();
+		generators.add(PropertyGenerator.of("ConditionalOnClass",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+				new OnClassConditionValueExtractor()));
+		generators.add(PropertyGenerator.of("ConditionalOnBean",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
+				new OnBeanConditionValueExtractor()));
+		generators.add(PropertyGenerator.of("ConditionalOnSingleCandidate",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
+				new OnBeanConditionValueExtractor()));
+		generators.add(PropertyGenerator.of("ConditionalOnWebApplication",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
+				ValueExtractor.allFrom("type")));
+		generators.add(PropertyGenerator.of("AutoConfigureBefore", true,
+				"org.springframework.boot.autoconfigure.AutoConfigureBefore", ValueExtractor.allFrom("value", "name"),
+				"org.springframework.boot.autoconfigure.AutoConfiguration",
+				ValueExtractor.allFrom("before", "beforeName")));
+		generators.add(PropertyGenerator.of("AutoConfigureAfter", true,
+				"org.springframework.boot.autoconfigure.AutoConfigureAfter", ValueExtractor.allFrom("value", "name"),
+				"org.springframework.boot.autoconfigure.AutoConfiguration",
+				ValueExtractor.allFrom("after", "afterName")));
+		generators.add(PropertyGenerator.of("AutoConfigureOrder",
+				"org.springframework.boot.autoconfigure.AutoConfigureOrder", ValueExtractor.allFrom("value")));
+		return generators;
 	}
 
 	@Override
@@ -108,8 +108,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-		for (Map.Entry<String, String> entry : this.annotations.entrySet()) {
-			process(roundEnv, entry.getKey(), entry.getValue());
+		for (PropertyGenerator generator : this.propertyGenerators) {
+			process(roundEnv, generator);
 		}
 		if (roundEnv.processingOver()) {
 			try {
@@ -122,22 +122,24 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return false;
 	}
 
-	private void process(RoundEnvironment roundEnv, String propertyKey, String annotationName) {
-		TypeElement annotationType = this.processingEnv.getElementUtils().getTypeElement(annotationName);
-		if (annotationType != null) {
-			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
-				processElement(element, propertyKey, annotationName);
+	private void process(RoundEnvironment roundEnv, PropertyGenerator generator) {
+		for (String annotationName : generator.getSupportedAnnotations()) {
+			TypeElement annotationType = this.processingEnv.getElementUtils().getTypeElement(annotationName);
+			if (annotationType != null) {
+				for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
+					processElement(element, generator, annotationName);
+				}
 			}
 		}
 	}
 
-	private void processElement(Element element, String propertyKey, String annotationName) {
+	private void processElement(Element element, PropertyGenerator generator, String annotationName) {
 		try {
 			String qualifiedName = Elements.getQualifiedName(element);
 			AnnotationMirror annotation = getAnnotation(element, annotationName);
 			if (qualifiedName != null && annotation != null) {
-				List<Object> values = getValues(propertyKey, annotation);
-				this.properties.put(qualifiedName + "." + propertyKey, toCommaDelimitedString(values));
+				List<Object> values = getValues(generator, annotationName, annotation);
+				generator.applyToProperties(this.properties, qualifiedName, values);
 				this.properties.put(qualifiedName, "");
 			}
 		}
@@ -157,17 +159,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return null;
 	}
 
-	private String toCommaDelimitedString(List<Object> list) {
-		StringBuilder result = new StringBuilder();
-		for (Object item : list) {
-			result.append((result.length() != 0) ? "," : "");
-			result.append(item);
-		}
-		return result.toString();
-	}
-
-	private List<Object> getValues(String propertyKey, AnnotationMirror annotation) {
-		ValueExtractor extractor = this.valueExtractors.get(propertyKey);
+	private List<Object> getValues(PropertyGenerator generator, String annotationName, AnnotationMirror annotation) {
+		ValueExtractor extractor = generator.getValueExtractor(annotationName);
 		if (extractor == null) {
 			return Collections.emptyList();
 		}
@@ -190,7 +183,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	@FunctionalInterface
-	private interface ValueExtractor {
+	interface ValueExtractor {
 
 		List<Object> getValues(AnnotationMirror annotation);
 
@@ -245,7 +238,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	private static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
+	static class OnBeanConditionValueExtractor extends AbstractValueExtractor {
 
 		@Override
 		public List<Object> getValues(AnnotationMirror annotation) {
@@ -263,7 +256,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	private static class OnClassConditionValueExtractor extends NamedValuesExtractor {
+	static class OnClassConditionValueExtractor extends NamedValuesExtractor {
 
 		OnClassConditionValueExtractor() {
 			super("value", "name");
@@ -283,6 +276,86 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 		private boolean isSpringClass(String type) {
 			return type.startsWith("org.springframework");
+		}
+
+	}
+
+	static final class PropertyGenerator {
+
+		private final String keyName;
+
+		private final boolean omitEmptyValues;
+
+		/**
+		 * Maps from annotation class name -> {@link ValueExtractor}.
+		 */
+		private final Map<String, ValueExtractor> valueExtractors;
+
+		private PropertyGenerator(String keyName, boolean omitEmptyValues,
+				Map<String, ValueExtractor> valueExtractors) {
+			this.keyName = keyName;
+			this.omitEmptyValues = omitEmptyValues;
+			this.valueExtractors = valueExtractors;
+		}
+
+		Set<String> getSupportedAnnotations() {
+			return Collections.unmodifiableSet(this.valueExtractors.keySet());
+		}
+
+		ValueExtractor getValueExtractor(String annotation) {
+			return this.valueExtractors.get(annotation);
+		}
+
+		void applyToProperties(Map<String, String> properties, String className, List<Object> annotationValues) {
+			if (this.omitEmptyValues && annotationValues.isEmpty()) {
+				return;
+			}
+			mergeProperties(properties, className + "." + this.keyName, toCommaDelimitedString(annotationValues));
+		}
+
+		private void mergeProperties(Map<String, String> properties, String key, String value) {
+			String existingKey = properties.get(key);
+			if (existingKey == null || existingKey.isEmpty()) {
+				properties.put(key, value);
+			}
+			else if (!value.isEmpty()) {
+				properties.put(key, existingKey + "," + value);
+			}
+		}
+
+		private String toCommaDelimitedString(List<Object> list) {
+			if (list.isEmpty()) {
+				return "";
+			}
+			StringBuilder result = new StringBuilder();
+			for (Object item : list) {
+				result.append((result.length() != 0) ? "," : "");
+				result.append(item);
+			}
+			return result.toString();
+		}
+
+		static PropertyGenerator of(String keyName, String annotation, ValueExtractor valueExtractor) {
+			return of(keyName, false, annotation, valueExtractor);
+		}
+
+		static PropertyGenerator of(String keyName, boolean omitEmptyValues, String annotation,
+				ValueExtractor valueExtractor) {
+			return new PropertyGenerator(keyName, omitEmptyValues,
+					Collections.singletonMap(annotation, valueExtractor));
+		}
+
+		static PropertyGenerator of(String keyName, String annotation1, ValueExtractor valueExtractor1,
+				String annotation2, ValueExtractor valueExtractor2) {
+			return of(keyName, false, annotation1, valueExtractor1, annotation2, valueExtractor2);
+		}
+
+		static PropertyGenerator of(String keyName, boolean omitEmptyValues, String annotation1,
+				ValueExtractor valueExtractor1, String annotation2, ValueExtractor valueExtractor2) {
+			Map<String, ValueExtractor> valueExtractors = new LinkedHashMap<>();
+			valueExtractors.put(annotation1, valueExtractor1);
+			valueExtractors.put(annotation2, valueExtractor2);
+			return new PropertyGenerator(keyName, omitEmptyValues, valueExtractors);
 		}
 
 	}

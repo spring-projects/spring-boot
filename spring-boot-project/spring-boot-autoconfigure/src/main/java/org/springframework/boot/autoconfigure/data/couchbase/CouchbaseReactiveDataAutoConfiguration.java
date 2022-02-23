@@ -20,7 +20,6 @@ import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Import;
@@ -33,9 +32,8 @@ import org.springframework.data.couchbase.repository.ReactiveCouchbaseRepository
  * @author Alex Derkach
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = CouchbaseDataAutoConfiguration.class)
 @ConditionalOnClass({ Cluster.class, ReactiveCouchbaseRepository.class, Flux.class })
-@AutoConfigureAfter(CouchbaseDataAutoConfiguration.class)
 @Import(CouchbaseReactiveDataConfiguration.class)
 public class CouchbaseReactiveDataAutoConfiguration {
 

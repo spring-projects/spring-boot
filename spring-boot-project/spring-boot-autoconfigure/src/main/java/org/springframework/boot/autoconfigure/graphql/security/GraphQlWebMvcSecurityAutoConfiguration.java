@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.graphql.security;
 import graphql.GraphQL;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,11 +38,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * @author Brian Clozel
  * @since 2.7.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = GraphQlWebMvcAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class, EnableWebSecurity.class })
 @ConditionalOnBean(GraphQlHttpHandler.class)
-@AutoConfigureAfter(GraphQlWebMvcAutoConfiguration.class)
 public class GraphQlWebMvcSecurityAutoConfiguration {
 
 	@Bean

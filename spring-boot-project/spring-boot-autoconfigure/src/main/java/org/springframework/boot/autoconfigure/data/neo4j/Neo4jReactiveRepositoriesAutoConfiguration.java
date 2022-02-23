@@ -20,7 +20,6 @@ import org.neo4j.driver.Driver;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,13 +38,12 @@ import org.springframework.data.neo4j.repository.support.ReactiveNeo4jRepository
  * @author Stephane Nicoll
  * @since 2.4.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = Neo4jReactiveDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jRepository.class, Flux.class })
 @ConditionalOnMissingBean({ ReactiveNeo4jRepositoryFactoryBean.class,
 		ReactiveNeo4jRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.REACTIVE)
 @Import(Neo4jReactiveRepositoriesRegistrar.class)
-@AutoConfigureAfter(Neo4jReactiveDataAutoConfiguration.class)
 public class Neo4jReactiveRepositoriesAutoConfiguration {
 
 }

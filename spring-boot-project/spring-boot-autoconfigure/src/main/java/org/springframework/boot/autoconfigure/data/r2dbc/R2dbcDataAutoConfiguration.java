@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,10 +46,9 @@ import org.springframework.r2dbc.core.DatabaseClient;
  * @author Oliver Drotbohm
  * @since 2.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = R2dbcAutoConfiguration.class)
 @ConditionalOnClass({ DatabaseClient.class, R2dbcEntityTemplate.class })
 @ConditionalOnSingleCandidate(DatabaseClient.class)
-@AutoConfigureAfter(R2dbcAutoConfiguration.class)
 public class R2dbcDataAutoConfiguration {
 
 	private final DatabaseClient databaseClient;

@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import javax.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,11 +46,10 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = SecurityAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SecurityProperties.class)
 @ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class, SessionCreationPolicy.class })
-@AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
 	private static final String DEFAULT_FILTER_NAME = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME;

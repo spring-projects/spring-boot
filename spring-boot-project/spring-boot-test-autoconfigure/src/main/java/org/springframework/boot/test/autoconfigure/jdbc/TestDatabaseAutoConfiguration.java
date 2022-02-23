@@ -34,7 +34,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -59,8 +58,7 @@ import org.springframework.util.ObjectUtils;
  * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
-@AutoConfiguration
-@AutoConfigureBefore(DataSourceAutoConfiguration.class)
+@AutoConfiguration(before = DataSourceAutoConfiguration.class)
 public class TestDatabaseAutoConfiguration {
 
 	@Bean

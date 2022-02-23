@@ -22,7 +22,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.admin.SpringApplicationAdminMXBean;
 import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -39,8 +38,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * @since 1.3.0
  * @see SpringApplicationAdminMXBean
  */
-@AutoConfiguration
-@AutoConfigureAfter(JmxAutoConfiguration.class)
+@AutoConfiguration(after = JmxAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true",
 		matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {

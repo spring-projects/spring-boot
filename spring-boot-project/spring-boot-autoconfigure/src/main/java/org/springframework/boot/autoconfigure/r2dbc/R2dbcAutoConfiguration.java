@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.r2dbc;
 import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
@@ -35,10 +34,9 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = { DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class })
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnResource(resources = "classpath:META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider")
-@AutoConfigureBefore({ DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class })
 @EnableConfigurationProperties(R2dbcProperties.class)
 @Import({ ConnectionFactoryConfigurations.PoolConfiguration.class,
 		ConnectionFactoryConfigurations.GenericConfiguration.class, ConnectionFactoryDependentConfiguration.class })

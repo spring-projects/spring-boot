@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -35,8 +34,8 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@AutoConfiguration
-@AutoConfigureBefore({ ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
+@AutoConfiguration(
+		before = { ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass({ EnableWebFluxSecurity.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)

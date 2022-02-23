@@ -41,8 +41,6 @@ import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -79,13 +77,11 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = DispatcherServletAutoConfiguration.class, after = JacksonAutoConfiguration.class)
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
 @EnableConfigurationProperties(JerseyProperties.class)
 public class JerseyAutoConfiguration implements ServletContextAware {
 

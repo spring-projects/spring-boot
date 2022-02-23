@@ -25,7 +25,6 @@ import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnable
 import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,11 +41,11 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(
+		after = { CouchbaseAutoConfiguration.class, CouchbaseReactiveHealthContributorAutoConfiguration.class })
 @ConditionalOnClass(Cluster.class)
 @ConditionalOnBean(Cluster.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, CouchbaseReactiveHealthContributorAutoConfiguration.class })
 public class CouchbaseHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<CouchbaseHealthIndicator, Cluster> {
 

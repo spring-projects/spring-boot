@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AutoConfigureAnnotationProcessor}.
  *
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 class AutoConfigureAnnotationProcessorTests {
 
@@ -67,6 +68,19 @@ class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
+	void annotatedClassWithOnlyAutoConfiguration() throws Exception {
+		Properties properties = compile(TestAutoConfigurationOnlyConfiguration.class);
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration", "");
+		assertThat(properties).doesNotContainEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration.AutoConfigureAfter",
+				"");
+		assertThat(properties).doesNotContainEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration.AutoConfigureBefore",
+				"");
+	}
+
+	@Test
 	void annotatedClassWithOnBeanThatHasName() throws Exception {
 		Properties properties = compile(TestOnBeanWithNameClassConfiguration.class);
 		assertThat(properties).hasSize(2);
@@ -95,6 +109,32 @@ class AutoConfigureAnnotationProcessorTests {
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor.TestOrderedClassConfiguration.AutoConfigureOrder",
 				"123");
+	}
+
+	@Test
+	void annotatedClassWithAutoConfiguration() throws Exception {
+		Properties properties = compile(TestAutoConfigurationConfiguration.class);
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration", "");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration.AutoConfigureBefore",
+				"java.io.InputStream,test.before1,test.before2");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration.AutoConfigureAfter",
+				"java.io.OutputStream,test.after1,test.after2");
+	}
+
+	@Test
+	void annotatedClassWithAutoConfigurationMerged() throws Exception {
+		Properties properties = compile(TestMergedAutoConfigurationConfiguration.class);
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestMergedAutoConfigurationConfiguration", "");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestMergedAutoConfigurationConfiguration.AutoConfigureBefore",
+				"java.io.InputStream,test.before1,test.before2,java.io.ObjectInputStream,test.before3,test.before4");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestMergedAutoConfigurationConfiguration.AutoConfigureAfter",
+				"java.io.OutputStream,test.after1,test.after2,java.io.ObjectOutputStream,test.after3,test.after4");
 	}
 
 	@Test // gh-19370

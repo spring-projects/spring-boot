@@ -21,7 +21,6 @@ import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,9 +41,8 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * @author Brian Clozel
  * @since 2.2.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
 @ConditionalOnClass({ RSocketRequester.class, io.rsocket.RSocket.class, HttpServer.class, TcpServerTransport.class })
-@AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketRequesterAutoConfiguration {
 
 	@Bean

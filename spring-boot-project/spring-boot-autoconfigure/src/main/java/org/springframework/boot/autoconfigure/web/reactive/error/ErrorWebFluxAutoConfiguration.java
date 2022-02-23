@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,10 +47,9 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Scott Frederick
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = WebFluxAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
-@AutoConfigureBefore(WebFluxAutoConfiguration.class)
 @EnableConfigurationProperties({ ServerProperties.class, WebProperties.class })
 public class ErrorWebFluxAutoConfiguration {
 

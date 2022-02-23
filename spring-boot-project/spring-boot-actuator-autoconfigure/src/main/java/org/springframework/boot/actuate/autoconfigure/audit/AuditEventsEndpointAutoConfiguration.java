@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,8 +33,7 @@ import org.springframework.context.annotation.Bean;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@AutoConfiguration
-@AutoConfigureAfter(AuditAutoConfiguration.class)
+@AutoConfiguration(after = AuditAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(endpoint = AuditEventsEndpoint.class)
 public class AuditEventsEndpointAutoConfiguration {
 

@@ -24,7 +24,6 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -56,10 +55,9 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = CassandraAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, CassandraAdminOperations.class })
 @ConditionalOnBean(CqlSession.class)
-@AutoConfigureAfter(CassandraAutoConfiguration.class)
 public class CassandraDataAutoConfiguration {
 
 	private final CqlSession session;

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -49,10 +48,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@AutoConfiguration
-@ConditionalOnClass(PlatformTransactionManager.class)
-@AutoConfigureAfter({ JtaAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
+@AutoConfiguration(after = { JtaAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class, Neo4jDataAutoConfiguration.class })
+@ConditionalOnClass(PlatformTransactionManager.class)
 @EnableConfigurationProperties(TransactionProperties.class)
 public class TransactionAutoConfiguration {
 
