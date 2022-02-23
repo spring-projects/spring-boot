@@ -57,10 +57,10 @@ public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotatio
 				TestConditionalOnSingleCandidate.class.getName(), new OnBeanConditionValueExtractor()));
 		generators.add(PropertyGenerator.of("ConditionalOnWebApplication",
 				TestConditionalOnWebApplication.class.getName(), ValueExtractor.allFrom("type")));
-		generators.add(PropertyGenerator.of("AutoConfigureBefore", TestAutoConfigureBefore.class.getName(),
+		generators.add(PropertyGenerator.of("AutoConfigureBefore", true, TestAutoConfigureBefore.class.getName(),
 				ValueExtractor.allFrom("value", "name"), TestAutoConfiguration.class.getName(),
 				ValueExtractor.allFrom("before", "beforeName")));
-		generators.add(PropertyGenerator.of("AutoConfigureAfter", TestAutoConfigureAfter.class.getName(),
+		generators.add(PropertyGenerator.of("AutoConfigureAfter", true, TestAutoConfigureAfter.class.getName(),
 				ValueExtractor.allFrom("value", "name"), TestAutoConfiguration.class.getName(),
 				ValueExtractor.allFrom("after", "afterName")));
 		generators.add(PropertyGenerator.of("AutoConfigureOrder", TestAutoConfigureOrder.class.getName(),

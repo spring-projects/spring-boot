@@ -223,8 +223,10 @@ class AutoConfigurationSorterTests {
 		Map<String, Object> autoConfigureAfter = annotationMetadata
 				.getAnnotationAttributes(AutoConfigureAfter.class.getName(), true);
 		if (autoConfigureAfter != null) {
-			properties.put(className + ".AutoConfigureAfter",
-					merge((String[]) autoConfigureAfter.get("value"), (String[]) autoConfigureAfter.get("name")));
+			String value = merge((String[]) autoConfigureAfter.get("value"), (String[]) autoConfigureAfter.get("name"));
+			if (!value.isEmpty()) {
+				properties.put(className + ".AutoConfigureAfter", value);
+			}
 		}
 	}
 
@@ -233,8 +235,11 @@ class AutoConfigurationSorterTests {
 		Map<String, Object> autoConfigureBefore = annotationMetadata
 				.getAnnotationAttributes(AutoConfigureBefore.class.getName(), true);
 		if (autoConfigureBefore != null) {
-			properties.put(className + ".AutoConfigureBefore",
-					merge((String[]) autoConfigureBefore.get("value"), (String[]) autoConfigureBefore.get("name")));
+			String value = merge((String[]) autoConfigureBefore.get("value"),
+					(String[]) autoConfigureBefore.get("name"));
+			if (!value.isEmpty()) {
+				properties.put(className + ".AutoConfigureBefore", value);
+			}
 		}
 	}
 

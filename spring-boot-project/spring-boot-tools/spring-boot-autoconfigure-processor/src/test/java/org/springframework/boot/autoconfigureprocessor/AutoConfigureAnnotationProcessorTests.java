@@ -68,6 +68,19 @@ class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
+	void annotatedClassWithOnlyAutoConfiguration() throws Exception {
+		Properties properties = compile(TestAutoConfigurationOnlyConfiguration.class);
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration", "");
+		assertThat(properties).doesNotContainEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration.AutoConfigureAfter",
+				"");
+		assertThat(properties).doesNotContainEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration.AutoConfigureBefore",
+				"");
+	}
+
+	@Test
 	void annotatedClassWithOnBeanThatHasName() throws Exception {
 		Properties properties = compile(TestOnBeanWithNameClassConfiguration.class);
 		assertThat(properties).hasSize(2);

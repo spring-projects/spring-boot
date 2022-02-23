@@ -31,6 +31,6 @@ import java.io.OutputStream;
 @TestAutoConfigureAfter(value = OutputStream.class, name = { "test.after1", "test.after2" })
 @TestAutoConfiguration(before = ObjectInputStream.class, beforeName = { "test.before3", "test.before4" },
 		after = ObjectOutputStream.class, afterName = { "test.after3", "test.after4" })
-public class TestMergedAutoConfigurationConfiguration {
+class TestMergedAutoConfigurationConfiguration {
 
 }
