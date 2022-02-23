@@ -80,6 +80,8 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
+	private String[] expectedDeprecationMessages;
+
 	private boolean configurationCache = false;
 
 	private Map<String, String> scriptProperties = new HashMap<>();
@@ -152,6 +154,11 @@ public class GradleBuild {
 		return this;
 	}
 
+	public GradleBuild expectDeprecationMessages(String... messages) {
+		this.expectedDeprecationMessages = messages;
+		return this;
+	}
+
 	public GradleBuild configurationCache() {
 		this.configurationCache = true;
 		return this;
@@ -167,7 +174,13 @@ public class GradleBuild {
 			BuildResult result = prepareRunner(arguments).build();
 			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
 					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0)) {
-				assertThat(result.getOutput()).doesNotContain("Deprecated").doesNotContain("deprecated");
+				String buildOutput = result.getOutput();
+				if (this.expectedDeprecationMessages != null) {
+					for (String message : this.expectedDeprecationMessages) {
+						buildOutput = buildOutput.replaceAll(message, "");
+					}
+				}
+				assertThat(buildOutput).doesNotContain("Deprecated").doesNotContain("deprecated");
 			}
 			return result;
 		}
