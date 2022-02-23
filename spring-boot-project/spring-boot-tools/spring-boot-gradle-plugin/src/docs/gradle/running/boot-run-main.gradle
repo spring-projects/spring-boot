@@ -11,6 +11,6 @@ bootRun {
 
 task configuredMainClass {
 	doLast {
-		println bootRun.main
+		println bootRun.mainClass
 	}
 }
