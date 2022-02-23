@@ -383,6 +383,9 @@ To import these properties, you can add the following to your `application.prope
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
+TIP: The folders under the config tree form the property name.
+In the above example, to access the properties as `username` and `password`, you can set `spring.config.import` to `optional:configtree:/etc/config/myapp`.
+
 NOTE: Filenames with dot notation are also correctly mapped.
 For example, in the above example, a file named `myapp.username` in `/etc/config` would result in a `myapp.username` property in the `Environment`.
 
