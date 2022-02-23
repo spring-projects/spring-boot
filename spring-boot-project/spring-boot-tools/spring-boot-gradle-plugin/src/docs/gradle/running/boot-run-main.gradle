@@ -5,12 +5,12 @@ plugins {
 
 // tag::main[]
 bootRun {
-	main = 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }
 // end::main[]
 
 task configuredMainClass {
 	doLast {
-		println bootRun.main
+		println bootRun.mainClass
 	}
 }
