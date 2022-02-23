@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
+import org.springframework.jmx.support.JmxUtils;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
@@ -56,21 +57,20 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	}
 
 	@Override
-	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
-		ObjectName name = super.getObjectName(managedBean, beanKey);
-		Hashtable<String, String> properties = new Hashtable<>(name.getKeyPropertyList());
-		if (this.ensureUniqueRuntimeObjectNames) {
-			properties.put("identity", ObjectUtils.getIdentityHexString(managedBean));
-		}
-		else if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
-			properties.put("context", ObjectUtils.getIdentityHexString(this.applicationContext));
-		}
-		return ObjectNameManager.getInstance(name.getDomain(), properties);
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
+	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
+		ObjectName name = super.getObjectName(managedBean, beanKey);
+		if (this.ensureUniqueRuntimeObjectNames) {
+			return JmxUtils.appendIdentityToObjectName(name, managedBean);
+		}
+		if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
+			return appendToObjectName(name, "context", ObjectUtils.getIdentityHexString(this.applicationContext));
+		}
+		return name;
 	}
 
 	private boolean parentContextContainsSameBean(ApplicationContext context, String beanKey) {
@@ -84,6 +84,13 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 		catch (BeansException ex) {
 			return parentContextContainsSameBean(context.getParent(), beanKey);
 		}
+	}
+
+	private ObjectName appendToObjectName(ObjectName name, String key, String value)
+			throws MalformedObjectNameException {
+		Hashtable<String, String> keyProperties = name.getKeyPropertyList();
+		keyProperties.put(key, value);
+		return ObjectNameManager.getInstance(name.getDomain(), keyProperties);
 	}
 
 }
