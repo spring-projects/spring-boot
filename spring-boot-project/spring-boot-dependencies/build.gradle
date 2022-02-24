@@ -229,7 +229,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "8.5.0") {
+	library("Flyway", "8.5.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
@@ -765,7 +765,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.7.1") {
+	library("Liquibase", "4.8.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
