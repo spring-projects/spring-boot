@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import ch.qos.logback.classic.LoggerContext;
+import io.micrometer.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class LogbackMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ LogbackMetrics.class,
+			io.micrometer.core.instrument.binder.logging.LogbackMetrics.class })
 	public LogbackMetrics logbackMetrics() {
 		return new LogbackMetrics();
 	}

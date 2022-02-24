@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
+import io.micrometer.binder.system.FileDescriptorMetrics;
+import io.micrometer.binder.system.ProcessorMetrics;
+import io.micrometer.binder.system.UptimeMetrics;
 import io.micrometer.core.instrument.Tags;
-import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
-import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
-import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -59,6 +59,15 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
+	void allowsCustomUptimeMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfigurationBackwardsCompatible.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(io.micrometer.core.instrument.binder.system.UptimeMetrics.class)
+						.doesNotHaveBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
+	}
+
+	@Test
 	void autoConfiguresProcessorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
 	}
@@ -71,6 +80,15 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
+	void allowsCustomProcessorMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfigurationBackwardsCompatible.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(io.micrometer.core.instrument.binder.system.ProcessorMetrics.class)
+						.doesNotHaveBean(ProcessorMetrics.class).hasBean("customProcessorMetrics"));
+	}
+
+	@Test
 	void autoConfiguresFileDescriptorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class));
 	}
@@ -80,6 +98,15 @@ class SystemMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
 						.hasBean("customFileDescriptorMetrics"));
+	}
+
+	@Test
+	@Deprecated
+	void allowsCustomFileDescriptorMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfigurationBackwardsCompatible.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(io.micrometer.core.instrument.binder.system.FileDescriptorMetrics.class)
+						.doesNotHaveBean(FileDescriptorMetrics.class).hasBean("customFileDescriptorMetrics"));
 	}
 
 	@Test
@@ -126,6 +153,16 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomUptimeMetricsConfigurationBackwardsCompatible {
+
+		@Bean
+		io.micrometer.core.instrument.binder.system.UptimeMetrics customUptimeMetrics() {
+			return new io.micrometer.core.instrument.binder.system.UptimeMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomProcessorMetricsConfiguration {
 
 		@Bean
@@ -136,11 +173,31 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomProcessorMetricsConfigurationBackwardsCompatible {
+
+		@Bean
+		io.micrometer.core.instrument.binder.system.ProcessorMetrics customProcessorMetrics() {
+			return new io.micrometer.core.instrument.binder.system.ProcessorMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomFileDescriptorMetricsConfiguration {
 
 		@Bean
 		FileDescriptorMetrics customFileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomFileDescriptorMetricsConfigurationBackwardsCompatible {
+
+		@Bean
+		io.micrometer.core.instrument.binder.system.FileDescriptorMetrics customFileDescriptorMetrics() {
+			return new io.micrometer.core.instrument.binder.system.FileDescriptorMetrics();
 		}
 
 	}

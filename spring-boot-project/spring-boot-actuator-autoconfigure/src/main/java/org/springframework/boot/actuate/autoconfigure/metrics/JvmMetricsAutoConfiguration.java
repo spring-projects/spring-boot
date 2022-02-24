@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import io.micrometer.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.binder.jvm.JvmGcMetrics;
+import io.micrometer.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,31 +42,35 @@ import org.springframework.context.annotation.Bean;
 public class JvmMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ JvmGcMetrics.class, io.micrometer.core.instrument.binder.jvm.JvmGcMetrics.class })
 	public JvmGcMetrics jvmGcMetrics() {
 		return new JvmGcMetrics();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ JvmHeapPressureMetrics.class,
+			io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics.class })
 	public JvmHeapPressureMetrics jvmHeapPressureMetrics() {
 		return new JvmHeapPressureMetrics();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ JvmMemoryMetrics.class,
+			io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics.class })
 	public JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ JvmThreadMetrics.class,
+			io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics.class })
 	public JvmThreadMetrics jvmThreadMetrics() {
 		return new JvmThreadMetrics();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ ClassLoaderMetrics.class,
+			io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics.class })
 	public ClassLoaderMetrics classLoaderMetrics() {
 		return new ClassLoaderMetrics();
 	}

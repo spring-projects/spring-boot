@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.actuator.metrics.supported.mongodb.connectionpool
 
-import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider
+import io.micrometer.binder.mongodb.MongoConnectionPoolTagsProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

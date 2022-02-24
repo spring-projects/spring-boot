@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
+import io.micrometer.binder.jetty.JettyConnectionMetrics;
+import io.micrometer.binder.jetty.JettyServerThreadPoolMetrics;
+import io.micrometer.binder.jetty.JettySslHandshakeMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics;
-import io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics;
-import io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics;
 import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -49,19 +49,25 @@ import org.springframework.context.annotation.Bean;
 public class JettyMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean({ JettyServerThreadPoolMetrics.class, JettyServerThreadPoolMetricsBinder.class })
+	@ConditionalOnMissingBean({ JettyServerThreadPoolMetrics.class,
+			io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics.class,
+			JettyServerThreadPoolMetricsBinder.class })
 	public JettyServerThreadPoolMetricsBinder jettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyServerThreadPoolMetricsBinder(meterRegistry);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ JettyConnectionMetrics.class, JettyConnectionMetricsBinder.class })
+	@ConditionalOnMissingBean({ JettyConnectionMetrics.class,
+			io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics.class,
+			JettyConnectionMetricsBinder.class })
 	public JettyConnectionMetricsBinder jettyConnectionMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyConnectionMetricsBinder(meterRegistry);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ JettySslHandshakeMetrics.class, JettySslHandshakeMetricsBinder.class })
+	@ConditionalOnMissingBean({ JettySslHandshakeMetrics.class,
+			io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics.class,
+			JettySslHandshakeMetricsBinder.class })
 	@ConditionalOnProperty(name = "server.ssl.enabled", havingValue = "true")
 	public JettySslHandshakeMetricsBinder jettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettySslHandshakeMetricsBinder(meterRegistry);

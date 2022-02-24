@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.io.File;
 import java.util.List;
 
+import io.micrometer.binder.system.FileDescriptorMetrics;
+import io.micrometer.binder.system.ProcessorMetrics;
+import io.micrometer.binder.system.UptimeMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
-import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
-import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
-import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
 import org.springframework.boot.actuate.metrics.system.DiskSpaceMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -48,19 +48,21 @@ import org.springframework.context.annotation.Bean;
 public class SystemMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ UptimeMetrics.class, io.micrometer.core.instrument.binder.system.UptimeMetrics.class })
 	public UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ ProcessorMetrics.class,
+			io.micrometer.core.instrument.binder.system.ProcessorMetrics.class })
 	public ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ FileDescriptorMetrics.class,
+			io.micrometer.core.instrument.binder.system.FileDescriptorMetrics.class })
 	public FileDescriptorMetrics fileDescriptorMetrics() {
 		return new FileDescriptorMetrics();
 	}

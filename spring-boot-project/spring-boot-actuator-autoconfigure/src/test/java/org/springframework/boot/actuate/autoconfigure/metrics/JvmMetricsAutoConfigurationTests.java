@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import io.micrometer.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.binder.jvm.JvmGcMetrics;
+import io.micrometer.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.binder.jvm.JvmThreadMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -56,9 +60,32 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
+	void allowsCustomJvmGcMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsBackwardsCompatibleConfiguration.class)
+				.run(assertMetricsBeans(JvmGcMetrics.class).andThen((context) -> {
+					assertThat(context).hasBean("customJvmGcMetrics");
+					assertThat(context).doesNotHaveBean(JvmGcMetrics.class);
+					assertThat(context).hasSingleBean(io.micrometer.core.instrument.binder.jvm.JvmGcMetrics.class);
+				}));
+	}
+
+	@Test
 	void allowsCustomJvmHeapPressureMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomJvmHeapPressureMetricsConfiguration.class).run(
 				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmHeapPressureMetrics")));
+	}
+
+	@Test
+	@Deprecated
+	void allowsCustomJvmHeapPressureMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomJvmHeapPressureMetricsBackwardsCompatibleConfiguration.class)
+				.run(assertMetricsBeans(JvmHeapPressureMetrics.class).andThen((context) -> {
+					assertThat(context).hasBean("customJvmHeapPressureMetrics");
+					assertThat(context).doesNotHaveBean(JvmHeapPressureMetrics.class);
+					assertThat(context)
+							.hasSingleBean(io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics.class);
+				}));
 	}
 
 	@Test
@@ -68,9 +95,31 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
+	void allowsCustomJvmMemoryMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsBackwardsCompatibleConfiguration.class)
+				.run(assertMetricsBeans(JvmMemoryMetrics.class).andThen((context) -> {
+					assertThat(context).hasBean("customJvmMemoryMetrics");
+					assertThat(context).doesNotHaveBean(JvmMemoryMetrics.class);
+					assertThat(context).hasSingleBean(io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics.class);
+				}));
+	}
+
+	@Test
 	void allowsCustomJvmThreadMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
 				.run(assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmThreadMetrics")));
+	}
+
+	@Test
+	@Deprecated
+	void allowsCustomJvmThreadMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsBackwardsCompatibleConfiguration.class)
+				.run(assertMetricsBeans(JvmThreadMetrics.class).andThen((context) -> {
+					assertThat(context).hasBean("customJvmThreadMetrics");
+					assertThat(context).doesNotHaveBean(JvmThreadMetrics.class);
+					assertThat(context).hasSingleBean(io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics.class);
+				}));
 	}
 
 	@Test
@@ -79,10 +128,29 @@ class JvmMetricsAutoConfigurationTests {
 				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customClassLoaderMetrics")));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertMetricsBeans() {
-		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-				.hasSingleBean(JvmHeapPressureMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class);
+	@Test
+	@Deprecated
+	void allowsCustomClassLoaderMetricsToBeUsedBackwardsCompatible() {
+		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsBackwardsCompatibleConfiguration.class)
+				.run(assertMetricsBeans(ClassLoaderMetrics.class).andThen((context) -> {
+					assertThat(context).hasBean("customClassLoaderMetrics");
+					assertThat(context).doesNotHaveBean(ClassLoaderMetrics.class);
+					assertThat(context)
+							.hasSingleBean(io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics.class);
+				}));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertMetricsBeans(Class<?>... excludes) {
+		Set<Class<?>> beans = new HashSet<>(Arrays.asList(JvmGcMetrics.class, JvmHeapPressureMetrics.class,
+				JvmMemoryMetrics.class, JvmThreadMetrics.class, ClassLoaderMetrics.class));
+		for (Class<?> exclude : excludes) {
+			beans.remove(exclude);
+		}
+		return (context) -> {
+			for (Class<?> bean : beans) {
+				assertThat(context).hasSingleBean(bean);
+			}
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -91,6 +159,16 @@ class JvmMetricsAutoConfigurationTests {
 		@Bean
 		JvmGcMetrics customJvmGcMetrics() {
 			return new JvmGcMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmGcMetricsBackwardsCompatibleConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jvm.JvmGcMetrics customJvmGcMetrics() {
+			return new io.micrometer.core.instrument.binder.jvm.JvmGcMetrics();
 		}
 
 	}
@@ -106,11 +184,31 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmHeapPressureMetricsBackwardsCompatibleConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics customJvmHeapPressureMetrics() {
+			return new io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomJvmMemoryMetricsConfiguration {
 
 		@Bean
 		JvmMemoryMetrics customJvmMemoryMetrics() {
 			return new JvmMemoryMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmMemoryMetricsBackwardsCompatibleConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics customJvmMemoryMetrics() {
+			return new io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics();
 		}
 
 	}
@@ -126,11 +224,31 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmThreadMetricsBackwardsCompatibleConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics customJvmThreadMetrics() {
+			return new io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomClassLoaderMetricsConfiguration {
 
 		@Bean
 		ClassLoaderMetrics customClassLoaderMetrics() {
 			return new ClassLoaderMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomClassLoaderMetricsBackwardsCompatibleConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics customClassLoaderMetrics() {
+			return new io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics();
 		}
 
 	}

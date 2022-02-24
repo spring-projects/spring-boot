@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import io.micrometer.binder.jersey.server.DefaultJerseyTagsProvider;
+import io.micrometer.binder.jersey.server.JerseyTagsProvider;
+import io.micrometer.binder.jersey.server.MetricsApplicationEventListener;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.junit.jupiter.api.Test;
@@ -83,6 +83,17 @@ class JerseyServerMetricsAutoConfigurationTests {
 	void shouldHonorExistingTagProvider() {
 		this.webContextRunner.withUserConfiguration(CustomJerseyTagsProviderConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
+	}
+
+	@Test
+	@Deprecated
+	void shouldHonorExistingTagProviderBackwardsCompatible() {
+		this.webContextRunner.withUserConfiguration(CustomJerseyTagsProviderBackwardsCompatibleConfiguration.class)
+				.run((context) -> {
+					assertThat(context)
+							.hasSingleBean(io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider.class);
+					assertThat(context).doesNotHaveBean(JerseyTagsProvider.class);
+				});
 	}
 
 	@Test
@@ -144,7 +155,32 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJerseyTagsProviderBackwardsCompatibleConfiguration {
+
+		@Bean
+		io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider customJerseyTagsProvider() {
+			return new CustomJerseyTagsProviderBackwardsCompatible();
+		}
+
+	}
+
 	static class CustomJerseyTagsProvider implements JerseyTagsProvider {
+
+		@Override
+		public Iterable<Tag> httpRequestTags(RequestEvent event) {
+			return null;
+		}
+
+		@Override
+		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
+			return null;
+		}
+
+	}
+
+	static class CustomJerseyTagsProviderBackwardsCompatible
+			implements io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider {
 
 		@Override
 		public Iterable<Tag> httpRequestTags(RequestEvent event) {

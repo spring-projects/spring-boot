@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import io.micrometer.binder.logging.Log4j2Metrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.logging.Log4j2Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.spi.LoggerContext;
 
@@ -47,7 +47,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class Log4J2MetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ Log4j2Metrics.class, io.micrometer.core.instrument.binder.logging.Log4j2Metrics.class })
 	public Log4j2Metrics log4j2Metrics() {
 		return new Log4j2Metrics();
 	}

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import io.micrometer.binder.kafka.KafkaClientMetrics;
+import io.micrometer.binder.kafka.KafkaStreamsMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
-import io.micrometer.core.instrument.binder.kafka.KafkaStreamsMetrics;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
