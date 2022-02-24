@@ -42,6 +42,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
+	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-jdbc")
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
@@ -75,6 +76,7 @@ dependencies {
 	testImplementation("com.unboundid:unboundid-ldapsdk")
 	testImplementation("io.lettuce:lettuce-core")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
+	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
@@ -100,6 +102,7 @@ dependencies {
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.testcontainers:cassandra")
+	testImplementation("org.testcontainers:elasticsearch")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
