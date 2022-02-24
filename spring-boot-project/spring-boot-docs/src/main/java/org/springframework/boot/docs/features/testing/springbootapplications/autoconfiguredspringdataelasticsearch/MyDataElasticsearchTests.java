@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdataeleasticsearch;
+package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdataelasticsearch;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;

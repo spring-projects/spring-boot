@@ -37,11 +37,11 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used for a Elasticsearch test that focuses <strong>only</strong>
- * on Elasticsearch components.
+ * Annotation that can be used for a Data Elasticsearch test that focuses
+ * <strong>only</strong> on Data Elasticsearch components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Elasticsearch tests.
+ * configuration relevant to Data Elasticsearch tests.
  * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.

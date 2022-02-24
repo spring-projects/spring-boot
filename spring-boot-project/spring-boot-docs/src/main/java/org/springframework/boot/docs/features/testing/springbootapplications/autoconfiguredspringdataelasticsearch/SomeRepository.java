@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdataeleasticsearch;
+package org.springframework.boot.docs.features.testing.springbootapplications.autoconfiguredspringdataelasticsearch;
 
 public interface SomeRepository {
 
