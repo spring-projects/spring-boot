@@ -37,11 +37,11 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used for a Couchbase test that focuses <strong>only</strong> on
- * Couchbase components.
+ * Annotation that can be used for a Data Couchbase test that focuses
+ * <strong>only</strong> on Data Couchbase components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Couchbase tests.
+ * configuration relevant to Data Couchbase tests.
  * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.

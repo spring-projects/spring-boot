@@ -475,7 +475,7 @@ include::code:MyDataCassandraTests[]
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-couchbase]]
 ==== Auto-configured Data Couchbase Tests
 You can use `@DataCouchbaseTest` to test Couchbase applications.
-By default, it configures a `CouchbaseTemplate`, scans for `@Document` classes, and configures Spring Data Couchbase repositories.
+By default, it configures a `CouchbaseTemplate` or `ReactiveCouchbaseTemplate`, scans for `@Document` classes, and configures Spring Data Couchbase repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCouchbaseTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Couchbase with Spring Boot, see "<<data#data.nosql.couchbase>>", earlier in this chapter.)
