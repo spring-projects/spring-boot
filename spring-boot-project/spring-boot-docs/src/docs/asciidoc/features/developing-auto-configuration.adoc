@@ -44,6 +44,8 @@ Specific ``@Import``s should be used instead.
 You can use the {spring-boot-autoconfigure-module-code}/AutoConfigureAfter.java[`@AutoConfigureAfter`] or {spring-boot-autoconfigure-module-code}/AutoConfigureBefore.java[`@AutoConfigureBefore`] annotations if your configuration needs to be applied in a specific order.
 For example, if you provide web-specific configuration, your class may need to be applied after `WebMvcAutoConfiguration`.
 
+TIP: If you are using the {spring-boot-autoconfigure-module-code}/AutoConfiguration.java[`@AutoConfiguration`] annotation, you can use the `before`, `beforeName`, `after` and `afterName` attribute aliases instead of the dedicated annotations.
+
 If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use `@AutoConfigureOrder`.
 That annotation has the same semantic as the regular `@Order` annotation but provides a dedicated order for auto-configuration classes.
 
