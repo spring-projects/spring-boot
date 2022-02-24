@@ -117,7 +117,6 @@ public class TestSliceMetadata extends DefaultTask {
 	/**
 	 * Reads files from the given directory and puts them in springFactories. The key is
 	 * the file name, the value is the file contents, split by line, delimited with comma.
-	 *
 	 * This is done to mimic the spring.factories structure.
 	 * @param springFactories spring.factories parsed as properties
 	 * @param directory directory to scan

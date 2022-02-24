@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,12 +89,8 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	void deregisterFailedApplicationContext(ConfigurableApplicationContext applicationContext) {
 		synchronized (SpringApplicationShutdownHook.class) {
-			if (!applicationContext.isActive()) {
-				SpringApplicationShutdownHook.this.contexts.remove(applicationContext);
-			}
-			else {
-				throw new IllegalStateException("Cannot unregister active application context");
-			}
+			Assert.state(!applicationContext.isActive(), "Cannot unregister active application context");
+			SpringApplicationShutdownHook.this.contexts.remove(applicationContext);
 		}
 	}
 

@@ -33,7 +33,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
 
 /**
- * Contains import candidates, usually auto-configurations.
+ * Contains {@code @Configuration} import candidates, usually auto-configurations.
  *
  * The {@link #load(Class, ClassLoader)} method can be used to discover the import
  * candidates.

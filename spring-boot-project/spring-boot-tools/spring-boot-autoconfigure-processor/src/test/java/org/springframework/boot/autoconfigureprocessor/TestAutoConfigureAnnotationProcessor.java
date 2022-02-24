@@ -49,22 +49,23 @@ public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotatio
 	@Override
 	protected List<PropertyGenerator> getPropertyGenerators() {
 		List<PropertyGenerator> generators = new ArrayList<>();
-		generators.add(PropertyGenerator.of("ConditionalOnClass", TestConditionalOnClass.class.getName(),
-				new OnClassConditionValueExtractor()));
-		generators.add(PropertyGenerator.of("ConditionalOnBean", TestConditionalOnBean.class.getName(),
-				new OnBeanConditionValueExtractor()));
-		generators.add(PropertyGenerator.of("ConditionalOnSingleCandidate",
-				TestConditionalOnSingleCandidate.class.getName(), new OnBeanConditionValueExtractor()));
-		generators.add(PropertyGenerator.of("ConditionalOnWebApplication",
-				TestConditionalOnWebApplication.class.getName(), ValueExtractor.allFrom("type")));
-		generators.add(PropertyGenerator.of("AutoConfigureBefore", true, TestAutoConfigureBefore.class.getName(),
-				ValueExtractor.allFrom("value", "name"), TestAutoConfiguration.class.getName(),
-				ValueExtractor.allFrom("before", "beforeName")));
-		generators.add(PropertyGenerator.of("AutoConfigureAfter", true, TestAutoConfigureAfter.class.getName(),
-				ValueExtractor.allFrom("value", "name"), TestAutoConfiguration.class.getName(),
-				ValueExtractor.allFrom("after", "afterName")));
-		generators.add(PropertyGenerator.of("AutoConfigureOrder", TestAutoConfigureOrder.class.getName(),
-				ValueExtractor.allFrom("value")));
+		String annotationPackage = "org.springframework.boot.autoconfigureprocessor";
+		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnClass")
+				.withAnnotation("TestConditionalOnClass", new OnClassConditionValueExtractor()));
+		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnBean")
+				.withAnnotation("TestConditionalOnBean", new OnBeanConditionValueExtractor()));
+		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnSingleCandidate")
+				.withAnnotation("TestConditionalOnSingleCandidate", new OnBeanConditionValueExtractor()));
+		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnWebApplication")
+				.withAnnotation("TestConditionalOnWebApplication", ValueExtractor.allFrom("type")));
+		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureBefore", true)
+				.withAnnotation("TestAutoConfigureBefore", ValueExtractor.allFrom("value", "name"))
+				.withAnnotation("TestAutoConfiguration", ValueExtractor.allFrom("before", "beforeName")));
+		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureAfter", true)
+				.withAnnotation("TestAutoConfigureAfter", ValueExtractor.allFrom("value", "name"))
+				.withAnnotation("TestAutoConfiguration", ValueExtractor.allFrom("after", "afterName")));
+		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureOrder")
+				.withAnnotation("TestAutoConfigureOrder", ValueExtractor.allFrom("value")));
 		return generators;
 	}
 
