@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.GraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
@@ -102,8 +101,7 @@ public class GraphQlWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> graphQlEndpoint(GraphQlHttpHandler httpHandler,
-			GraphQlSource graphQlSource,
+	public RouterFunction<ServerResponse> graphQlEndpoint(GraphQlHttpHandler httpHandler, GraphQlSource graphQlSource,
 			GraphQlProperties properties) {
 		String path = properties.getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
