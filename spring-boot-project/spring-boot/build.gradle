@@ -116,6 +116,7 @@ dependencies {
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
+	testImplementation("jakarta.inject:jakarta.inject-api")
 	testImplementation("jakarta.persistence:jakarta.persistence-api")
 	testImplementation("jakarta.xml.ws:jakarta.xml.ws-api")
 	testImplementation("mysql:mysql-connector-java")
