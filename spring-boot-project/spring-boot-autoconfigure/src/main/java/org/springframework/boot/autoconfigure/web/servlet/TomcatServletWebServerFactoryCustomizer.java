@@ -22,6 +22,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.util.ObjectUtils;
+import org.apache.catalina.webresources.ExtractingRoot;
 
 /**
  * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Tomcat web
@@ -56,6 +57,7 @@ public class TomcatServletWebServerFactoryCustomizer
 		}
 		customizeUseRelativeRedirects(factory, tomcatProperties.isUseRelativeRedirects());
 		factory.setDisableMBeanRegistry(!tomcatProperties.getMbeanregistry().isEnabled());
+		factory.addContextCustomizers((context) -> context.setResources(new ExtractingRoot()));
 	}
 
 	private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {
