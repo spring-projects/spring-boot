@@ -71,7 +71,7 @@ You can automatically expand properties from the Gradle project by configuring t
 
 [source,gradle,indent=0,subs="verbatim"]
 ----
-	processResources {
+	tasks.named('processResources', Copy) {
 		expand(project.properties)
 	}
 ----
