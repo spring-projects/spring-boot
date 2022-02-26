@@ -12,6 +12,14 @@ def caches = [
 	"couchbase": [
 			project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase")
 	],
+	"ehcache": [
+		"javax.cache:cache-api",
+		dependencies.create("org.ehcache:ehcache") {
+			artifact {
+				classifier = 'jakarta'
+			}
+		}
+	],
 	"hazelcast": [
 		"com.hazelcast:hazelcast",
 		"com.hazelcast:hazelcast-spring"
