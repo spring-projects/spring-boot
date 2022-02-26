@@ -87,7 +87,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
-	private boolean isJulUsingASingleConsoleHandlerAtMost() {
+	protected boolean isJulUsingASingleConsoleHandlerAtMost() {
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
 		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
@@ -103,7 +103,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private void removeDefaultRootHandler() {
+	protected void removeDefaultRootHandler() {
 		try {
 			Logger rootLogger = LogManager.getLogManager().getLogger("");
 			Handler[] handlers = rootLogger.getHandlers();
