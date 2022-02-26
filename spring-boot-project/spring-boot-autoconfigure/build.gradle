@@ -88,6 +88,11 @@ dependencies {
 	optional("org.eclipse.jetty.websocket:websocket-jetty-server") {
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
 	}
+	optional("org.ehcache:ehcache") {
+		artifact {
+			classifier = 'jakarta'
+		}
+	}
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
