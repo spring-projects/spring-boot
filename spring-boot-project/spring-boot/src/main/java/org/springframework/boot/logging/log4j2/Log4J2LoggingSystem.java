@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -112,7 +113,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	};
 
 	public Log4J2LoggingSystem(ClassLoader classLoader) {
-		super(classLoader);
+		super(classLoader, Arrays.asList(new Log4jHandler(classLoader), new Slf4jHandler(classLoader)));
 	}
 
 	@Override

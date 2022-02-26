@@ -20,6 +20,7 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Handler;
@@ -100,7 +101,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	};
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
-		super(classLoader);
+		super(classLoader, Arrays.asList(new Slf4jHandler(classLoader), new Log4jHandler(classLoader)));
 	}
 
 	@Override
