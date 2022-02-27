@@ -16,14 +16,11 @@
 
 package org.springframework.boot.logging;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.util.Assert;
@@ -37,21 +34,10 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
-	private static final String SLF4J_BRIDGE_HANDLER = "org.slf4j.bridge.SLF4JBridgeHandler";
-
-	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
-
-	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
-
-	private final List<BridgeHandler> handlers;
+	private static final String BRIDGE_HANDLER = "org.slf4j.bridge.SLF4JBridgeHandler";
 
 	public Slf4JLoggingSystem(ClassLoader classLoader) {
-		this(classLoader, Collections.singletonList(new Slf4jHandler(classLoader)));
-	}
-
-	protected Slf4JLoggingSystem(ClassLoader classLoader, List<BridgeHandler> handlers) {
 		super(classLoader);
-		this.handlers = handlers;
 	}
 
 	@Override
@@ -62,7 +48,9 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void cleanUp() {
-		this.handlers.stream().filter(BridgeHandler::isAvailable).forEach(BridgeHandler::remove);
+		if (isBridgeHandlerAvailable()) {
+			removeJdkLoggingBridgeHandler();
+		}
 	}
 
 	@Override
@@ -76,8 +64,9 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (isJulUsingASingleConsoleHandlerAtMost() && !isLog4jLogManagerInstalled()) {
-				this.handlers.stream().filter(BridgeHandler::isAvailable).findFirst().ifPresent(BridgeHandler::install);
+			if (isBridgeJulIntoSlf4j()) {
+				removeJdkLoggingBridgeHandler();
+				SLF4JBridgeHandler.install();
 			}
 		}
 		catch (Throwable ex) {
@@ -91,26 +80,30 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 	 * @since 2.0.4
 	 */
 	protected final boolean isBridgeJulIntoSlf4j() {
-		return this.handlers.stream().filter(Slf4jHandler.class::isInstance).anyMatch(BridgeHandler::isAvailable)
-				&& isJulUsingASingleConsoleHandlerAtMost();
+		return isBridgeHandlerAvailable() && isJulUsingASingleConsoleHandlerAtMost();
 	}
 
 	protected final boolean isBridgeHandlerAvailable() {
-		return this.handlers.stream().anyMatch(BridgeHandler::isAvailable);
+		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
-	private boolean isJulUsingASingleConsoleHandlerAtMost() {
+	protected boolean isJulUsingASingleConsoleHandlerAtMost() {
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
 		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
 	}
 
-	private boolean isLog4jLogManagerInstalled() {
-		final String logManagerClassName = LogManager.getLogManager().getClass().getName();
-		return LOG4J_LOG_MANAGER.equals(logManagerClassName);
+	private void removeJdkLoggingBridgeHandler() {
+		try {
+			removeDefaultRootHandler();
+			SLF4JBridgeHandler.uninstall();
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
 	}
 
-	static void removeDefaultRootHandler() {
+	private void removeDefaultRootHandler() {
 		try {
 			Logger rootLogger = LogManager.getLogManager().getLogger("");
 			Handler[] handlers = rootLogger.getHandlers();
@@ -121,73 +114,6 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		catch (Throwable ex) {
 			// Ignore and continue
 		}
-	}
-
-	public interface BridgeHandler {
-
-		boolean isAvailable();
-
-		void install();
-
-		void remove();
-
-	}
-
-	protected static class Slf4jHandler implements BridgeHandler {
-
-		private final ClassLoader classLoader;
-
-		public Slf4jHandler(ClassLoader classLoader) {
-			this.classLoader = classLoader;
-		}
-
-		@Override
-		public boolean isAvailable() {
-			return ClassUtils.isPresent(SLF4J_BRIDGE_HANDLER, this.classLoader);
-		}
-
-		@Override
-		public void install() {
-			removeDefaultRootHandler();
-			SLF4JBridgeHandler.install();
-		}
-
-		@Override
-		public void remove() {
-			SLF4JBridgeHandler.uninstall();
-		}
-
-	}
-
-	protected static class Log4jHandler implements BridgeHandler {
-
-		private final ClassLoader classLoader;
-
-		public Log4jHandler(ClassLoader classLoader) {
-			this.classLoader = classLoader;
-		}
-
-		@Override
-		public boolean isAvailable() {
-			return ClassUtils.isPresent(LOG4J_BRIDGE_HANDLER, this.classLoader);
-		}
-
-		@Override
-		public void install() {
-			Log4jBridgeHandler.install(true, null, true);
-		}
-
-		@Override
-		public void remove() {
-			Logger rootLogger = LogManager.getLogManager().getLogger("");
-			for (final Handler handler : rootLogger.getHandlers()) {
-				if (handler instanceof Log4jBridgeHandler) {
-					handler.close();
-					rootLogger.removeHandler(handler);
-				}
-			}
-		}
-
 	}
 
 }
