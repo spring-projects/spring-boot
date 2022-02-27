@@ -75,6 +75,9 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private static final String FILE_PROTOCOL = "file";
 
+	/** Must be the same as the one used in 'log4j-spring-boot'. */
+	private static final String ENVIRONMENT_KEY = "SpringEnvironment";
+
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
 	static {
@@ -166,6 +169,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			return;
 		}
 		loggerContext.getConfiguration().removeFilter(FILTER);
+		loggerContext.putObject(ENVIRONMENT_KEY, initializationContext.getEnvironment());
 		super.initialize(initializationContext, configLocation, logFile);
 		markAsInitialized(loggerContext);
 	}
@@ -380,6 +384,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	public void cleanUp() {
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();
+		loggerContext.removeObject(ENVIRONMENT_KEY);
 		markAsUninitialized(loggerContext);
 		loggerContext.getConfiguration().removeFilter(FILTER);
 	}

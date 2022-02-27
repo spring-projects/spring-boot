@@ -36,6 +36,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
+import org.apache.logging.log4j.core.lookup.StrSubstitutor;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -400,6 +401,17 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setProperty("logging.log4j2.config.override", "src/test/resources/log4j2-override.xml");
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+	}
+
+	@Test
+	void springLookupWorks() {
+		final String value = "Hello world!";
+		this.environment.setProperty("spring.property.test", value);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		final LoggerContext context = LoggerContext.getContext(false);
+		final StrSubstitutor substitutor = context.getConfiguration().getConfigurationStrSubstitutor();
+		assertThat(substitutor.replace("${spring:spring.property.test}")).isEqualTo(value);
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {

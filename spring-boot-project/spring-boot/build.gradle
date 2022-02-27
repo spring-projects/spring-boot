@@ -10,9 +10,11 @@ plugins {
 description = "Spring Boot"
 
 def tomcatConfigProperties = "$buildDir/tomcat-config-properties"
+def log4jSpringBoot = "$buildDir/log4j-spring-boot"
 
 configurations {
 	tomcatDistribution
+	log4jSpringBootJar
 }
 
 dependencies {
@@ -145,6 +147,7 @@ dependencies {
 	}
 
 	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
+	log4jSpringBootJar("org.apache.logging.log4j:log4j-spring-boot:2.17.1@jar")
 }
 
 task extractTomcatConfigProperties(type: Sync) {
@@ -156,9 +159,17 @@ task extractTomcatConfigProperties(type: Sync) {
 	}
 }
 
+task extractLog4jSpringBoot(type: Copy) {
+	from(zipTree(configurations.log4jSpringBootJar.incoming.files.singleFile)) {
+		exclude "log4j2.system.properties"
+	}
+	into file(log4jSpringBoot)
+}
+
 sourceSets {
 	test {
 		output.dir(tomcatConfigProperties, builtBy: "extractTomcatConfigProperties")
+		output.dir(log4jSpringBoot, builtBy: "extractLog4jSpringBoot")
 	}
 }
 
