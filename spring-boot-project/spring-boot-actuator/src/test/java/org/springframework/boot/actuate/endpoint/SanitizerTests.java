@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -85,6 +87,39 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize(custom)).isEqualTo("$$$$$$");
 		SanitizableData hello = new SanitizableData(null, "hello", "abc");
 		assertThat(sanitizer.sanitize(hello)).isEqualTo("abc");
+	}
+
+	@Test
+	void overridingDefaultSanitizingFunction() {
+		Sanitizer sanitizer = new Sanitizer(Collections.singletonList((data) -> {
+			if (data.getKey().equals("password")) {
+				return data.withValue("------");
+			}
+			return data;
+		}));
+		SanitizableData password = new SanitizableData(null, "password", "123456");
+		assertThat(sanitizer.sanitize(password)).isEqualTo("------");
+	}
+
+	@Test
+	void whenValueSanitizedLaterSanitizingFunctionsShouldBeSkipped() {
+		final String sameKey = "custom";
+		List<SanitizingFunction> sanitizingFunctions = new ArrayList<>();
+		sanitizingFunctions.add((data) -> {
+			if (data.getKey().equals(sameKey)) {
+				return data.withValue("------");
+			}
+			return data;
+		});
+		sanitizingFunctions.add((data) -> {
+			if (data.getKey().equals(sameKey)) {
+				return data.withValue("******");
+			}
+			return data;
+		});
+		Sanitizer sanitizer = new Sanitizer(sanitizingFunctions);
+		SanitizableData custom = new SanitizableData(null, sameKey, "123456");
+		assertThat(sanitizer.sanitize(custom)).isEqualTo("------");
 	}
 
 	@ParameterizedTest(name = "key = {0}")

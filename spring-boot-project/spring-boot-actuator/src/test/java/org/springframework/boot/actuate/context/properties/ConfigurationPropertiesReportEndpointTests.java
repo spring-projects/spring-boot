@@ -293,7 +293,7 @@ class ConfigurationPropertiesReportEndpointTests {
 		new ApplicationContextRunner().withUserConfiguration(CustomSanitizingEndpointConfig.class,
 				SanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
 				.run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("dbPassword")).isEqualTo("$$$");
 					assertThat(properties.get("myTestProperty")).isEqualTo("$$$");
 				}));
 	}
