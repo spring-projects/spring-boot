@@ -34,7 +34,7 @@ If you are using an `additional-spring-configuration-metadata.json` file, the `c
 [source,gradle,indent=0,subs="verbatim"]
 ----
 	tasks.named('compileJava') {
-	    inputs.files(processResources)
+	    inputs.files(tasks.named('processResources'))
 	}
 ----
 
