@@ -103,7 +103,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private void removeDefaultRootHandler() {
+	protected void removeDefaultRootHandler() {
 		try {
 			Logger rootLogger = LogManager.getLogManager().getLogger("");
 			Handler[] handlers = rootLogger.getHandlers();

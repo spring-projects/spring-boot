@@ -171,6 +171,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		try {
 			if (isJulUsingASingleConsoleHandlerAtMost() && !isLog4jLogManagerInstalled()) {
 				if (isLog4jBridgeHandlerAvailable()) {
+					removeDefaultRootHandler();
 					installLog4jBridgeHandler();
 					return true;
 				}
@@ -192,7 +193,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private void installLog4jBridgeHandler() {
-		Log4jBridgeHandler.install(true, null, true);
+		Log4jBridgeHandler.install(false, null, true);
 	}
 
 	private void removeLog4jBridgeHandler() {
