@@ -608,6 +608,19 @@ The preceding example would be transformed into these properties:
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
 For more details see the "`<<features#features.external-config.typesafe-configuration-properties>>`" section below.
 
+[[features.external-config.yaml.using-env-variables-in-yaml]]
+==== Using environment variables and default values in YAML property definitions
+
+In order to use environment variable as a source for application property, one can use placeholders like this: 
+
+[source,yaml,indent=0,subs="verbatim"]
+----
+	environments:
+	  dev:
+	    url: ${DEV_ENV_URL}
+	    name: ${DEV_ENV_NAME:development-environment}
+----
+
 WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
 So, in the case that you need to load values that way, you need to use a properties file.
 
