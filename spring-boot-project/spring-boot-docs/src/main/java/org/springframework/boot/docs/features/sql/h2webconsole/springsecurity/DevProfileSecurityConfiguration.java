@@ -19,14 +19,26 @@ package org.springframework.boot.docs.features.sql.h2webconsole.springsecurity;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 
+@Profile("dev")
 @Configuration(proxyBeanMethods = false)
-public class MySecurityConfiguration {
+public class DevProfileSecurityConfiguration {
 
 	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().requestMatchers(PathRequest.toH2Console());
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
+		// @formatter:off
+		return http.requestMatcher(PathRequest.toH2Console())
+				// ... configuration for authorization
+				.csrf().disable()
+				.headers().frameOptions().sameOrigin().and()
+				.build();
+		// @formatter:on
 	}
 
 }

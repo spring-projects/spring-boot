@@ -324,14 +324,21 @@ You can customize the console's path by using the configprop:spring.h2.console.p
 
 [[features.sql.h2-web-console.spring-security]]
 ==== Configuring Spring Security for H2 Console
-H2 Console uses frames and, as it's intended for development only, does not implement CSRF protection measures. If your application uses Spring Security, you need to configure it accordingly.
+H2 Console uses frames and, as it's intended for development only, does not implement CSRF protection measures. If your application uses Spring Security, you need to configure it to
 
-For example, Spring Security will ignore the console if the following `WebSecurityCustomizer` is exposed:
+* disable CSRF protection for requests against the console,
+* set the header `X-Frame-Options` to `SAMEORIGIN` on responses from the console.
+
+More information on {spring-security-docs}#csrf[CSRF] and the header {spring-security-docs}#headers-frame-options[X-Frame-Options] can be found in the Spring Security Reference Guide.
+
+In simple setups, a `SecurityFilterChain` like the following can be used:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/h2webconsole/springsecurity/MySecurityConfiguration.java[]
+include::{docs-java}/features/sql/h2webconsole/springsecurity/DevProfileSecurityConfiguration.java[]
 ----
+
+WARNING: The H2 console is only intended for use during development. In production, disabling CSRF protection or allowing frames for a website may create severe security risks.
 
 TIP: `PathRequest.toH2Console()` returns the correct request matcher also when the console's path has been customized.
 
