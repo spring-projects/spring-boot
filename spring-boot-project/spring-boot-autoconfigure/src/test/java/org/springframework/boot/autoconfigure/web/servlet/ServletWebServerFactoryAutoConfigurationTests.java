@@ -385,7 +385,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
 						.withPropertyValues("server.forward-headers-strategy=framework",
-								"server.tomcat.use-relative-redirects=true");
+								"server.tomcat.use-relative-redirects=true", "server.port=0");
 		runner.run((context) -> {
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
@@ -399,7 +399,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
 						.withPropertyValues("server.forward-headers-strategy=framework",
-								"server.tomcat.use-relative-redirects=false");
+								"server.tomcat.use-relative-redirects=false", "server.port=0");
 		runner.run((context) -> {
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
@@ -413,7 +413,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withClassLoader(new FilteredClassLoader(Tomcat.class))
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withPropertyValues("server.forward-headers-strategy=framework");
+						.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0");
 		runner.run((context) -> {
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
