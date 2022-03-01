@@ -440,8 +440,8 @@ For example, if a secret named `db.password` is mounted at location `/run/secret
 
 [[features.external-config.files.property-placeholders]]
 ==== Property Placeholders
-The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties).
-The standard `$\{name}` property-placeholder syntax can be used anywhere within a value.
+The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties or environment variables).
+The standard `$\{name:default}` property-placeholder syntax can be used anywhere within a value.
 
 For example, the following file will set `app.description` to "`MyApp is a Spring Boot application`":
 
@@ -449,7 +449,7 @@ For example, the following file will set `app.description` to "`MyApp is a Sprin
 ----
 	app:
 	  name: "MyApp"
-	  description: "${app.name} is a Spring Boot application"
+	  description: "${app.name} is a Spring Boot application written by ${USERNAME:john.doe}"
 ----
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
@@ -607,19 +607,6 @@ The preceding example would be transformed into these properties:
 
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
 For more details see the "`<<features#features.external-config.typesafe-configuration-properties>>`" section below.
-
-[[features.external-config.yaml.using-env-variables-in-yaml]]
-==== Using environment variables and default values in YAML property definitions
-
-In order to use environment variable as a source for application property, one can use placeholders like this: 
-
-[source,yaml,indent=0,subs="verbatim"]
-----
-	environments:
-	  dev:
-	    url: ${DEV_ENV_URL}
-	    name: ${DEV_ENV_NAME:development-environment}
-----
 
 WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
 So, in the case that you need to load values that way, you need to use a properties file.
