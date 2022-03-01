@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
+@SuppressWarnings("deprecation")
 public class TomcatMetricsAutoConfiguration {
 
 	@Bean

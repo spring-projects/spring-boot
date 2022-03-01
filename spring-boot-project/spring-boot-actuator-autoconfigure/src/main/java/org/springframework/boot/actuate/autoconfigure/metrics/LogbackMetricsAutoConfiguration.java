@@ -46,6 +46,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ConditionalOnClass({ MeterRegistry.class, LoggerContext.class, LoggerFactory.class })
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(LogbackLoggingCondition.class)
+@SuppressWarnings("deprecation")
 public class LogbackMetricsAutoConfiguration {
 
 	@Bean

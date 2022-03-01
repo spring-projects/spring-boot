@@ -175,6 +175,7 @@ class TomcatMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomTomcatMetricsBackwardsCompatible {
 
 		@Bean

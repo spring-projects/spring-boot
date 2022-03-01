@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties(MetricsProperties.class)
+@SuppressWarnings("deprecation")
 public class SystemMetricsAutoConfiguration {
 
 	@Bean

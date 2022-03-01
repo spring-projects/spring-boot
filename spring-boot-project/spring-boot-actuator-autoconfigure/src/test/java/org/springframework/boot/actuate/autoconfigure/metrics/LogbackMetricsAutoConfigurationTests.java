@@ -69,6 +69,7 @@ class LogbackMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomLogbackMetricsConfigurationBackwardsCompatible {
 
 		@Bean

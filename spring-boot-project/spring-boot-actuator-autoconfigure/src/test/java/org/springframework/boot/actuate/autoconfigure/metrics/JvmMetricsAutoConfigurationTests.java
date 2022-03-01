@@ -164,6 +164,7 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJvmGcMetricsBackwardsCompatibleConfiguration {
 
 		@Bean
@@ -184,6 +185,7 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJvmHeapPressureMetricsBackwardsCompatibleConfiguration {
 
 		@Bean
@@ -204,6 +206,7 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJvmMemoryMetricsBackwardsCompatibleConfiguration {
 
 		@Bean
@@ -224,6 +227,7 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJvmThreadMetricsBackwardsCompatibleConfiguration {
 
 		@Bean
@@ -244,6 +248,7 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomClassLoaderMetricsBackwardsCompatibleConfiguration {
 
 		@Bean

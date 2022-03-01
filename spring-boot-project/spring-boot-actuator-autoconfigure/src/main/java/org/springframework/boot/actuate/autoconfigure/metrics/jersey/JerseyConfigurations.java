@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Moritz Halbritter
  */
+@SuppressWarnings("deprecation")
 abstract class JerseyConfigurations {
 
 	static class JerseyTagsProviderConfiguration {

@@ -44,6 +44,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 		name = "org.apache.logging.log4j.core.LoggerContext")
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(Log4JCoreLoggerContextCondition.class)
+@SuppressWarnings("deprecation")
 public class Log4J2MetricsAutoConfiguration {
 
 	@Bean

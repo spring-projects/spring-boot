@@ -77,6 +77,7 @@ class Log4J2MetricsWithLog4jLoggerContextAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomLog4J2MetricsConfigurationBackwardsCompatible {
 
 		@Bean

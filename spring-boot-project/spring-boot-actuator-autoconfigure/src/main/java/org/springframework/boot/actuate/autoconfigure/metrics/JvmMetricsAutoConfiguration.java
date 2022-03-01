@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
+@SuppressWarnings("deprecation")
 public class JvmMetricsAutoConfiguration {
 
 	@Bean

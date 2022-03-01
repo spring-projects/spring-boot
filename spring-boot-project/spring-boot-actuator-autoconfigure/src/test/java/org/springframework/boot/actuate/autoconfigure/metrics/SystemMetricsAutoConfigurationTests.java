@@ -153,6 +153,7 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomUptimeMetricsConfigurationBackwardsCompatible {
 
 		@Bean
@@ -173,6 +174,7 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomProcessorMetricsConfigurationBackwardsCompatible {
 
 		@Bean
@@ -193,6 +195,7 @@ class SystemMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomFileDescriptorMetricsConfigurationBackwardsCompatible {
 
 		@Bean

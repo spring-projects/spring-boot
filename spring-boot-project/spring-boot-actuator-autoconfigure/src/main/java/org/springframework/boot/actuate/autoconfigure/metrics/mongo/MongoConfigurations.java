@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Moritz Halbritter
  */
+@SuppressWarnings("deprecation")
 abstract class MongoConfigurations {
 
 	@Configuration(proxyBeanMethods = false)

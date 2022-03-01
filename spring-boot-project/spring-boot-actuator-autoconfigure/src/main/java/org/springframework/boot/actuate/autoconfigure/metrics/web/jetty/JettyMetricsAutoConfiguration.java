@@ -46,6 +46,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnWebApplication
 @ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class })
 @ConditionalOnBean(MeterRegistry.class)
+@SuppressWarnings("deprecation")
 public class JettyMetricsAutoConfiguration {
 
 	@Bean

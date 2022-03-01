@@ -58,6 +58,7 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
 @EnableConfigurationProperties(MetricsProperties.class)
 @Import(JerseyTagsProviderConfiguration.class)
+@SuppressWarnings("deprecation")
 public class JerseyServerMetricsAutoConfiguration {
 
 	private final MetricsProperties properties;

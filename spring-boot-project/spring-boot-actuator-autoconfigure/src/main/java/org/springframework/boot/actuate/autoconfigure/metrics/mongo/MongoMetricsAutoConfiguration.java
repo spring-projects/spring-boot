@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Import;
 		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MongoClientSettings.class)
 @ConditionalOnBean(MeterRegistry.class)
+@SuppressWarnings("deprecation")
 public class MongoMetricsAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

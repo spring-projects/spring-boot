@@ -156,6 +156,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJerseyTagsProviderBackwardsCompatibleConfiguration {
 
 		@Bean
@@ -179,6 +180,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	static class CustomJerseyTagsProviderBackwardsCompatible
 			implements io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider {
 

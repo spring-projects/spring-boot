@@ -334,6 +334,7 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJettyServerThreadPoolMetricsBackwardsCompatible {
 
 		@Bean
@@ -365,6 +366,7 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJettyConnectionMetricsBackwardsCompatible {
 
 		@Bean
@@ -396,6 +398,7 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("deprecation")
 	static class CustomJettySslHandshakeMetricsBackwardsCompatible {
 
 		@Bean
