@@ -8,6 +8,8 @@ When building a servlet web application, the following stores can be auto-config
 * Hazelcast
 * MongoDB
 
+Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-session[auto-configuration for using Apache Geode as a session store].
+
 The servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
 
 When building a reactive web application, the following stores can be auto-configured:
