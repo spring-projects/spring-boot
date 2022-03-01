@@ -131,25 +131,29 @@ class LaunchedURLClassLoaderTests {
 		ClassNotFoundException ex3 = null;
 		try {
 			loader.loadClass("demo.ApplicationNotExist");
-		} catch (ClassNotFoundException exception){
+		}
+		catch (ClassNotFoundException exception) {
 			ex = exception;
 		}
 		try {
 			loader.loadClass("demo.ApplicationNotExist");
-		} catch (ClassNotFoundException exception){
+		}
+		catch (ClassNotFoundException exception) {
 			ex1 = exception;
 		}
 		try {
 			loader.setEnableCache(false);
 			loader.loadClass("demo.ApplicationNotExist");
-		} catch (ClassNotFoundException exception){
+		}
+		catch (ClassNotFoundException exception) {
 			ex2 = exception;
 			loader.setEnableCache(true);
 		}
 		try {
 			loader.clearCache();
 			loader.loadClass("demo.ApplicationNotExist");
-		} catch (ClassNotFoundException exception){
+		}
+		catch (ClassNotFoundException exception) {
 			ex3 = exception;
 		}
 		assertThat(ex).isNotNull();

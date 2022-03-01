@@ -142,8 +142,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	public void setEnableCache(boolean enableCache){
-		loaderCache.setEnableCache(enableCache);
+	public void setEnableCache(boolean enableCache) {
+		this.loaderCache.setEnableCache(enableCache);
 	}
 
 	private Class<?> loadClassInternal(String name, boolean resolve) throws ClassNotFoundException {
