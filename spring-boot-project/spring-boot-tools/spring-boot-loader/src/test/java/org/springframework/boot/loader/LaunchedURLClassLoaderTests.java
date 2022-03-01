@@ -108,4 +108,54 @@ class LaunchedURLClassLoaderTests {
 		}
 	}
 
+	@Test
+	void enableLoaderCache() throws Exception {
+		resolveResourceFromArchive();
+		resolveResourcesFromArchive();
+		resolveRootPathFromArchive();
+		resolveRootResourcesFromArchive();
+		resolveFromNested();
+		resolveFromNestedWhileThreadIsInterrupted();
+
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
+		loader.setEnableCache(true);
+		assertThat(loader.getResource("demo/Application.java")).isEqualTo(loader.getResource("demo/Application.java"));
+		assertThat(loader.loadClass("demo.Application")).isEqualTo(loader.loadClass("demo.Application"));
+		assertThat(loader.getResource("demo/ApplicationNotExist.java")).isNull();
+		assertThat(loader.getResources("demo/ApplicationNotExist.java").hasMoreElements()).isNotEqualTo(true);
+		assertThat(loader.getResources("demo/ApplicationNotExist.java").hasMoreElements()).isNotEqualTo(true);
+		ClassNotFoundException ex = null;
+		ClassNotFoundException ex1 = null;
+		ClassNotFoundException ex2 = null;
+		ClassNotFoundException ex3 = null;
+		try {
+			loader.loadClass("demo.ApplicationNotExist");
+		} catch (ClassNotFoundException exception){
+			ex = exception;
+		}
+		try {
+			loader.loadClass("demo.ApplicationNotExist");
+		} catch (ClassNotFoundException exception){
+			ex1 = exception;
+		}
+		try {
+			loader.setEnableCache(false);
+			loader.loadClass("demo.ApplicationNotExist");
+		} catch (ClassNotFoundException exception){
+			ex2 = exception;
+			loader.setEnableCache(true);
+		}
+		try {
+			loader.clearCache();
+			loader.loadClass("demo.ApplicationNotExist");
+		} catch (ClassNotFoundException exception){
+			ex3 = exception;
+		}
+		assertThat(ex).isNotNull();
+		assertThat(ex1).isNotNull().isEqualTo(ex);
+		assertThat(ex2).isNotNull().isNotEqualTo(ex).isNotEqualTo(ex1);
+		assertThat(ex3).isNotNull().isNotEqualTo(ex2).isNotEqualTo(ex1).isNotEqualTo(ex);
+	}
+
 }
