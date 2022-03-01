@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,12 +155,13 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		process(ImmutablePrimitiveProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutablePrimitiveProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flag")).hasDefaultValue(false);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet")).hasDefaultValue(0);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet")).hasDefaultValue((byte) 0);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "letter")).hasDefaultValue(null);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "number")).hasDefaultValue(0);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "number"))
+					.hasDefaultValue((short) 0);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "counter")).hasDefaultValue(0);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "value")).hasDefaultValue(0L);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "percentage")).hasDefaultValue(0);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "percentage")).hasDefaultValue(0F);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "ratio")).hasDefaultValue(0D);
 		});
 	}
@@ -170,12 +171,14 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		process(ImmutablePrimitiveWithDefaultsProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutablePrimitiveWithDefaultsProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flag")).hasDefaultValue(true);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet")).hasDefaultValue(120);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet"))
+					.hasDefaultValue((byte) 120);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "letter")).hasDefaultValue("a");
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "number")).hasDefaultValue(1000);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "number"))
+					.hasDefaultValue((short) 1000);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "counter")).hasDefaultValue(42);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "value")).hasDefaultValue(2000);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "percentage")).hasDefaultValue(0.5);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "value")).hasDefaultValue(2000L);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "percentage")).hasDefaultValue(0.5F);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "ratio")).hasDefaultValue(42.42);
 		});
 	}
@@ -185,12 +188,14 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		process(ImmutablePrimitiveWrapperWithDefaultsProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutablePrimitiveWrapperWithDefaultsProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flag")).hasDefaultValue(true);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet")).hasDefaultValue(120);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "octet"))
+					.hasDefaultValue((byte) 120);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "letter")).hasDefaultValue("a");
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "number")).hasDefaultValue(1000);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "number"))
+					.hasDefaultValue((short) 1000);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "counter")).hasDefaultValue(42);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "value")).hasDefaultValue(2000);
-			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "percentage")).hasDefaultValue(0.5);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "value")).hasDefaultValue(2000L);
+			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "percentage")).hasDefaultValue(0.5F);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "ratio")).hasDefaultValue(42.42);
 		});
 	}
