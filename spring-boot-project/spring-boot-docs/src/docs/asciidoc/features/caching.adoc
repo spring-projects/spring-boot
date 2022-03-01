@@ -49,6 +49,8 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 . <<features#features.caching.provider.caffeine,Caffeine>>
 . <<features#features.caching.provider.simple,Simple>>
 
+Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
+
 TIP: It is also possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
 Use this property if you need to <<features#features.caching.provider.none,disable caching altogether>> in certain environment (such as tests).
 
