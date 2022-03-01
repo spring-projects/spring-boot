@@ -47,6 +47,8 @@
 :spring-boot-cli-module-api: {spring-boot-api}/org/springframework/boot/cli
 :spring-boot-devtools-module-code: {spring-boot-code}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
 :spring-boot-devtools-module-api: {spring-boot-api}/org/springframework/boot/devtools
+:spring-boot-for-apache-geode: https://github.com/spring-projects/spring-boot-data-geode
+:spring-boot-for-apache-geode-docs: https://docs.spring.io/spring-boot-data-geode-build/1.7.x/reference/html5/
 :spring-boot-test-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test/src/main/java/org/springframework/boot/test
 :spring-boot-test-module-api: {spring-boot-api}/org/springframework/boot/test
 :spring-boot-test-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
