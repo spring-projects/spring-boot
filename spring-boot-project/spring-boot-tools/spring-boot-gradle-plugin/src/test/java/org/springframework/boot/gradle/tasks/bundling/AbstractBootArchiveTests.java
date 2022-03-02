@@ -186,66 +186,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void metaInfEntryIsPackagedInTheRootOfTheArchive() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		File classpathDirectory = new File(this.temp, "classes");
-		File metaInfEntry = new File(classpathDirectory, "META-INF/test");
-		metaInfEntry.getParentFile().mkdirs();
-		metaInfEntry.createNewFile();
-		File applicationClass = new File(classpathDirectory, "com/example/Application.class");
-		applicationClass.getParentFile().mkdirs();
-		applicationClass.createNewFile();
-		this.task.classpath(classpathDirectory);
-		executeTask();
-		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.classesPath + "com/example/Application.class")).isNotNull();
-			assertThat(jarFile.getEntry("com/example/Application.class")).isNull();
-			assertThat(jarFile.getEntry(this.classesPath + "META-INF/test")).isNull();
-			assertThat(jarFile.getEntry("META-INF/test")).isNotNull();
-		}
-	}
-
-	@Test
-	void aopXmlIsPackagedBeneathClassesDirectory() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		File classpathDirectory = new File(this.temp, "classes");
-		File aopXml = new File(classpathDirectory, "META-INF/aop.xml");
-		aopXml.getParentFile().mkdirs();
-		aopXml.createNewFile();
-		File applicationClass = new File(classpathDirectory, "com/example/Application.class");
-		applicationClass.getParentFile().mkdirs();
-		applicationClass.createNewFile();
-		this.task.classpath(classpathDirectory);
-		executeTask();
-		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.classesPath + "com/example/Application.class")).isNotNull();
-			assertThat(jarFile.getEntry("com/example/Application.class")).isNull();
-			assertThat(jarFile.getEntry(this.classesPath + "META-INF/aop.xml")).isNotNull();
-			assertThat(jarFile.getEntry("META-INF/aop.xml")).isNull();
-		}
-	}
-
-	@Test
-	void kotlinModuleIsPackagedBeneathClassesDirectory() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		File classpathDirectory = new File(this.temp, "classes");
-		File kotlinModule = new File(classpathDirectory, "META-INF/example.kotlin_module");
-		kotlinModule.getParentFile().mkdirs();
-		kotlinModule.createNewFile();
-		File applicationClass = new File(classpathDirectory, "com/example/Application.class");
-		applicationClass.getParentFile().mkdirs();
-		applicationClass.createNewFile();
-		this.task.classpath(classpathDirectory);
-		executeTask();
-		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.classesPath + "com/example/Application.class")).isNotNull();
-			assertThat(jarFile.getEntry("com/example/Application.class")).isNull();
-			assertThat(jarFile.getEntry(this.classesPath + "META-INF/example.kotlin_module")).isNotNull();
-			assertThat(jarFile.getEntry("META-INF/example.kotlin_module")).isNull();
-		}
-	}
-
-	@Test
 	void classpathCanBeSetUsingAFileCollection() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		this.task.classpath(jarFile("one.jar"));
