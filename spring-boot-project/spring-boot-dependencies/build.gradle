@@ -1311,7 +1311,35 @@ bom {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
-				"netty-tcnative-boringssl-static"
+				"netty-tcnative" {
+					classifier = "linux-aarch_64-fedora"
+				},
+				"netty-tcnative" {
+					classifier = "linux-x86_64"
+				},
+				"netty-tcnative" {
+					classifier = "linux-x86_64-fedora"
+				},
+				"netty-tcnative" {
+					classifier = "osx-x86_64"
+				},
+				"netty-tcnative-boringssl-static",
+				"netty-tcnative-boringssl-static" {
+					classifier = "linux-aarch_64"
+				},
+				"netty-tcnative-boringssl-static" {
+					classifier = "linux-x86_64"
+				},
+				"netty-tcnative-boringssl-static" {
+					classifier = "osx-aarch_64"
+				},
+				"netty-tcnative-boringssl-static" {
+					classifier = "osx-x86_64"
+				},
+				"netty-tcnative-boringssl-static" {
+					classifier = "windows-x86_64"
+				},
+				"netty-tcnative-classes"
 			]
 		}
 	}
