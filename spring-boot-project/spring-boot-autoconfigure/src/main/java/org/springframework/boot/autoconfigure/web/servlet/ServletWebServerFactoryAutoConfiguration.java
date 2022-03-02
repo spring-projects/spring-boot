@@ -95,7 +95,6 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 		@Bean
 		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
-		@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 		ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
 			return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());
 		}
