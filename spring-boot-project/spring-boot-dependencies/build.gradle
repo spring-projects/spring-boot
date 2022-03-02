@@ -1008,21 +1008,35 @@ bom {
 	library("Kafka", "2.7.2") {
 		group("org.apache.kafka") {
 			modules = [
+				"connect",
 				"connect-api",
 				"connect-basic-auth-extension",
 				"connect-file",
 				"connect-json",
+				"connect-mirror",
+				"connect-mirror-client",
 				"connect-runtime",
 				"connect-transforms",
+				"generator",
 				"kafka-clients",
+				"kafka-clients" {
+					classifier = "test"
+				},
 				"kafka-log4j-appender",
+				"kafka-raft",
 				"kafka-streams",
 				"kafka-streams-scala_2.12",
 				"kafka-streams-scala_2.13",
 				"kafka-streams-test-utils",
 				"kafka-tools",
 				"kafka_2.12",
-				"kafka_2.13"
+				"kafka_2.12" {
+					classifier = "test"
+				},
+				"kafka_2.13",
+				"kafka_2.13" {
+					classifier = "test"
+				}
 			]
 		}
 	}
