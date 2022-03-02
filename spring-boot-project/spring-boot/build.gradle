@@ -161,6 +161,14 @@ def syncJavaTemplates = tasks.register("syncJavaTemplates", Sync) {
 	inputs.properties(properties)
 }
 
+tasks.named("checkFormatMain") {
+	def generatedSources = fileTree("build/generated-sources/main")
+	// Exclude source generated from the templates as expand(properties) changes line endings on Windows
+	exclude { candidate -> generatedSources.contains(candidate.file) }
+	// Add the templates to check that the input is correctly formatted
+	source(fileTree("src/main/javaTemplates"))
+}
+
 plugins.withType(EclipsePlugin) {
 	eclipse {
 		synchronizationTasks syncJavaTemplates
