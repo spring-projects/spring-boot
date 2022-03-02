@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,6 +109,7 @@ public class BomPlugin implements Plugin<Project> {
 				Node dependencyManagement = findChild(projectNode, "dependencyManagement");
 				if (dependencyManagement != null) {
 					addPropertiesBeforeDependencyManagement(projectNode, properties);
+					addClassifiedManagedDependencies(dependencyManagement);
 					replaceVersionsWithVersionPropertyReferences(dependencyManagement);
 					addExclusionsToManagedDependencies(dependencyManagement);
 					addTypesToManagedDependencies(dependencyManagement);
@@ -136,7 +137,9 @@ public class BomPlugin implements Plugin<Project> {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
 					String groupId = findChild(dependency, "groupId").text();
 					String artifactId = findChild(dependency, "artifactId").text();
-					String versionProperty = this.bom.getArtifactVersionProperty(groupId, artifactId);
+					Node classifierNode = findChild(dependency, "classifier");
+					String classifier = (classifierNode != null) ? classifierNode.text() : "";
+					String versionProperty = this.bom.getArtifactVersionProperty(groupId, artifactId, classifier);
 					if (versionProperty != null) {
 						findChild(dependency, "version").setValue("${" + versionProperty + "}");
 					}
@@ -183,6 +186,39 @@ public class BomPlugin implements Plugin<Project> {
 					if (types.size() == 1) {
 						String type = types.iterator().next();
 						dependency.appendNode("type", type);
+					}
+				}
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private void addClassifiedManagedDependencies(Node dependencyManagement) {
+			Node dependencies = findChild(dependencyManagement, "dependencies");
+			if (dependencies != null) {
+				for (Node dependency : findChildren(dependencies, "dependency")) {
+					String groupId = findChild(dependency, "groupId").text();
+					String artifactId = findChild(dependency, "artifactId").text();
+					String version = findChild(dependency, "version").text();
+					Set<String> classifiers = this.bom.getLibraries().stream()
+							.flatMap((library) -> library.getGroups().stream())
+							.filter((group) -> group.getId().equals(groupId))
+							.flatMap((group) -> group.getModules().stream())
+							.filter((module) -> module.getName().equals(artifactId)).map(Module::getClassifier)
+							.filter(Objects::nonNull).collect(Collectors.toSet());
+					Node target = dependency;
+					for (String classifier : classifiers) {
+						if (classifier.length() > 0) {
+							if (target == null) {
+								target = new Node(null, "dependency");
+								target.appendNode("groupId", groupId);
+								target.appendNode("artifactId", artifactId);
+								target.appendNode("version", version);
+								int index = dependency.parent().children().indexOf(dependency);
+								dependency.parent().children().add(index + 1, target);
+							}
+							target.appendNode("classifier", classifier);
+						}
+						target = null;
 					}
 				}
 			}

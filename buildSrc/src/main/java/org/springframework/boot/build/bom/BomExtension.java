@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,13 +168,18 @@ public class BomExtension {
 		return this.properties;
 	}
 
-	String getArtifactVersionProperty(String groupId, String artifactId) {
-		String coordinates = groupId + ":" + artifactId;
+	String getArtifactVersionProperty(String groupId, String artifactId, String classifier) {
+		String coordinates = groupId + ":" + artifactId + ":" + classifier;
 		return this.artifactVersionProperties.get(coordinates);
 	}
 
 	private void putArtifactVersionProperty(String groupId, String artifactId, String versionProperty) {
-		String coordinates = groupId + ":" + artifactId;
+		putArtifactVersionProperty(groupId, artifactId, null, versionProperty);
+	}
+
+	private void putArtifactVersionProperty(String groupId, String artifactId, String classifier,
+			String versionProperty) {
+		String coordinates = groupId + ":" + artifactId + ":" + ((classifier != null) ? classifier : "");
 		String existing = this.artifactVersionProperties.putIfAbsent(coordinates, versionProperty);
 		if (existing != null) {
 			throw new InvalidUserDataException("Cannot put version property for '" + coordinates
@@ -190,7 +195,7 @@ public class BomExtension {
 		}
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
-				putArtifactVersionProperty(group.getId(), module.getName(), versionProperty);
+				putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
 				this.dependencyHandler.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						createDependencyNotation(group.getId(), module.getName(), library.getVersion().getVersion()));
 			}
@@ -316,7 +321,7 @@ public class BomExtension {
 						closure.setResolveStrategy(Closure.DELEGATE_FIRST);
 						closure.setDelegate(moduleHandler);
 						closure.call(moduleHandler);
-						return new Module(name, moduleHandler.type, moduleHandler.exclusions);
+						return new Module(name, moduleHandler.type, moduleHandler.classifier, moduleHandler.exclusions);
 					}
 				}
 				throw new InvalidUserDataException("Invalid configuration for module '" + name + "'");
@@ -328,12 +333,18 @@ public class BomExtension {
 
 				private String type;
 
+				private String classifier;
+
 				public void exclude(Map<String, String> exclusion) {
 					this.exclusions.add(new Exclusion(exclusion.get("group"), exclusion.get("module")));
 				}
 
 				public void setType(String type) {
 					this.type = type;
+				}
+
+				public void setClassifier(String classifier) {
+					this.classifier = classifier;
 				}
 
 			}
