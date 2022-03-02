@@ -95,7 +95,7 @@ public class BootJar extends Jar implements BootArchive {
 		bootInfSpec.into("classes", fromCallTo(this::classpathDirectories));
 		bootInfSpec.into("lib", fromCallTo(this::classpathFiles)).eachFile(this.support::excludeNonZipFiles);
 		this.support.moveModuleInfoToRoot(bootInfSpec);
-		this.support.moveMetaInfToRoot(bootInfSpec);
+		moveMetaInfToRoot(bootInfSpec);
 	}
 
 	private Iterable<File> classpathDirectories() {
@@ -108,6 +108,15 @@ public class BootJar extends Jar implements BootArchive {
 
 	private Iterable<File> classpathEntries(Spec<File> filter) {
 		return (this.classpath != null) ? this.classpath.filter(filter) : Collections.emptyList();
+	}
+
+	private void moveMetaInfToRoot(CopySpec spec) {
+		spec.eachFile((file) -> {
+			String path = file.getRelativeSourcePath().getPathString();
+			if (path.startsWith("META-INF/") && !path.equals("META-INF/aop.xml") && !path.endsWith(".kotlin_module")) {
+				this.support.moveToRoot(file);
+			}
+		});
 	}
 
 	@Override
