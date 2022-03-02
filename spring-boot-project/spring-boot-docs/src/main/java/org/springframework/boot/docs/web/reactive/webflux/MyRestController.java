@@ -38,19 +38,19 @@ public class MyRestController {
 		this.customerRepository = customerRepository;
 	}
 
-	@GetMapping("/{user}")
-	public Mono<User> getUser(@PathVariable Long user) {
-		return this.userRepository.findById(user);
+	@GetMapping("/{userId}")
+	public Mono<User> getUser(@PathVariable Long userId) {
+		return this.userRepository.findById(userId);
 	}
 
-	@GetMapping("/{user}/customers")
-	public Flux<Customer> getUserCustomers(@PathVariable Long user) {
-		return this.userRepository.findById(user).flatMapMany(this.customerRepository::findByUser);
+	@GetMapping("/{userId}/customers")
+	public Flux<Customer> getUserCustomers(@PathVariable Long userId) {
+		return this.userRepository.findById(userId).flatMapMany(this.customerRepository::findByUser);
 	}
 
-	@DeleteMapping("/{user}")
-	public Mono<Void> deleteUser(@PathVariable Long user) {
-		return this.userRepository.deleteById(user);
+	@DeleteMapping("/{userId}")
+	public Mono<Void> deleteUser(@PathVariable Long userId) {
+		return this.userRepository.deleteById(userId);
 	}
 
 }

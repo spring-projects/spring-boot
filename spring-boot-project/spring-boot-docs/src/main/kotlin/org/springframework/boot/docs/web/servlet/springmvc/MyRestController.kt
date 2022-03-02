@@ -27,19 +27,19 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/users")
 class MyRestController(private val userRepository: UserRepository, private val customerRepository: CustomerRepository) {
 
-	@GetMapping("/{user}")
-	fun getUser(@PathVariable user: Long): User {
-		return userRepository.findById(user).get()
+	@GetMapping("/{userId}")
+	fun getUser(@PathVariable userId: Long): User {
+		return userRepository.findById(userId).get()
 	}
 
-	@GetMapping("/{user}/customers")
-	fun getUserCustomers(@PathVariable user: Long): List<Customer> {
-		return userRepository.findById(user).map(customerRepository::findByUser).get()
+	@GetMapping("/{userId}/customers")
+	fun getUserCustomers(@PathVariable userId: Long): List<Customer> {
+		return userRepository.findById(userId).map(customerRepository::findByUser).get()
 	}
 
-	@DeleteMapping("/{user}")
-	fun deleteUser(@PathVariable user: Long) {
-		userRepository.deleteById(user)
+	@DeleteMapping("/{userId}")
+	fun deleteUser(@PathVariable userId: Long) {
+		userRepository.deleteById(userId)
 	}
 
 }

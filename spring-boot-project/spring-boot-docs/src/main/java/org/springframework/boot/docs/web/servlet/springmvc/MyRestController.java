@@ -37,19 +37,19 @@ public class MyRestController {
 		this.customerRepository = customerRepository;
 	}
 
-	@GetMapping("/{user}")
-	public User getUser(@PathVariable Long user) {
-		return this.userRepository.findById(user).get();
+	@GetMapping("/{userId}")
+	public User getUser(@PathVariable Long userId) {
+		return this.userRepository.findById(userId).get();
 	}
 
-	@GetMapping("/{user}/customers")
-	public List<Customer> getUserCustomers(@PathVariable Long user) {
-		return this.userRepository.findById(user).map(this.customerRepository::findByUser).get();
+	@GetMapping("/{userId}/customers")
+	public List<Customer> getUserCustomers(@PathVariable Long userId) {
+		return this.userRepository.findById(userId).map(this.customerRepository::findByUser).get();
 	}
 
-	@DeleteMapping("/{user}")
-	public void deleteUser(@PathVariable Long user) {
-		this.userRepository.deleteById(user);
+	@DeleteMapping("/{userId}")
+	public void deleteUser(@PathVariable Long userId) {
+		this.userRepository.deleteById(userId);
 	}
 
 }
