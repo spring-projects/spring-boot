@@ -179,19 +179,10 @@ class BootArchiveSupport {
 	}
 
 	void moveModuleInfoToRoot(CopySpec spec) {
-		spec.filesMatching("module-info.class", BootArchiveSupport::moveToRoot);
+		spec.filesMatching("module-info.class", this::moveToRoot);
 	}
 
-	void moveMetaInfToRoot(CopySpec spec) {
-		spec.eachFile((file) -> {
-			String path = file.getRelativeSourcePath().getPathString();
-			if (path.startsWith("META-INF/") && !path.equals("META-INF/aop.xml") && !path.endsWith(".kotlin_module")) {
-				moveToRoot(file);
-			}
-		});
-	}
-
-	private static void moveToRoot(FileCopyDetails details) {
+	void moveToRoot(FileCopyDetails details) {
 		details.setRelativePath(details.getRelativeSourcePath());
 	}
 

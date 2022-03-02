@@ -74,7 +74,6 @@ public class BootWar extends War implements BootArchive {
 		this.mainClass = project.getObjects().property(String.class);
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
-		this.support.moveMetaInfToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
 		project.getConfigurations().all((configuration) -> {
 			ResolvableDependencies incoming = configuration.getIncoming();
