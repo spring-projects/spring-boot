@@ -1032,22 +1032,41 @@ bom {
 	library("Kafka", "3.1.0") {
 		group("org.apache.kafka") {
 			modules = [
+				"connect",
 				"connect-api",
 				"connect-basic-auth-extension",
 				"connect-file",
 				"connect-json",
+				"connect-mirror",
+				"connect-mirror-client",
 				"connect-runtime",
 				"connect-transforms",
+				"generator",
 				"kafka-clients",
-				"kafka-metadata",
+				"kafka-clients" {
+					classifier = "test"
+				},
 				"kafka-log4j-appender",
+				"kafka-metadata",
+				"kafka-raft",
+				"kafka-server-common",
+				"kafka-shell",
+				"kafka-storage",
+				"kafka-storage-api",
 				"kafka-streams",
 				"kafka-streams-scala_2.12",
 				"kafka-streams-scala_2.13",
 				"kafka-streams-test-utils",
 				"kafka-tools",
 				"kafka_2.12",
-				"kafka_2.13"
+				"kafka_2.12" {
+					classifier = "test"
+				},
+				"kafka_2.13",
+				"kafka_2.13" {
+					classifier = "test"
+				},
+				"trogdor"
 			]
 		}
 	}
