@@ -4,7 +4,7 @@ plugins {
 }
 
 // tag::main-class[]
-bootJar {
+tasks.named("bootJar") {
 	manifest {
 		attributes 'Start-Class': 'com.example.ExampleApplication'
 	}

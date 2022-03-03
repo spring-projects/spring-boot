@@ -4,15 +4,15 @@ plugins {
 }
 
 // tag::classifiers[]
-bootJar {
+tasks.named("bootJar") {
 	archiveClassifier = 'boot'
 }
 
-jar {
+tasks.named("jar") {
 	archiveClassifier = ''
 }
 // end::classifiers[]
 
-bootJar {
+tasks.named("bootJar") {
 	mainClass = 'com.example.Application'
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 // tag::upload[]
-uploadBootArchives {
+tasks.named("uploadBootArchives") {
 	repositories {
 		mavenDeployer {
 			repository url: 'https://repo.example.com'
@@ -14,7 +14,7 @@ uploadBootArchives {
 }
 // end::upload[]
 
-task deployerRepository {
+tasks.register("deployerRepository") {
 	doLast {
 		println uploadBootArchives.repositories.mavenDeployer.repository.url
 	}

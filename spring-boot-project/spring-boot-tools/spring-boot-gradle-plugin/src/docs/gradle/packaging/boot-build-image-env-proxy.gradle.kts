@@ -6,7 +6,7 @@ plugins {
 }
 
 // tag::env[]
-tasks.getByName<BootBuildImage>("bootBuildImage") {
+tasks.named<BootBuildImage>("bootBuildImage") {
 	environment = mapOf("HTTP_PROXY" to "http://proxy.example.com",
 						"HTTPS_PROXY" to "https://proxy.example.com")
 }

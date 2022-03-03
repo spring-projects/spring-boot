@@ -6,12 +6,12 @@ plugins {
 }
 
 // tag::source-resources[]
-tasks.getByName<BootRun>("bootRun") {
+tasks.named<BootRun>("bootRun") {
 	sourceResources(sourceSets["main"])
 }
 // end::source-resources[]
 
-task("configuredClasspath") {
+tasks.register("configuredClasspath") {
 	doLast {
 		println(tasks.getByName<BootRun>("bootRun").classpath.files)
 	}

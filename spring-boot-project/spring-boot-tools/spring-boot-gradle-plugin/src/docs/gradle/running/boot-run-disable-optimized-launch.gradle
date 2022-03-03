@@ -4,12 +4,12 @@ plugins {
 }
 
 // tag::launch[]
-bootRun {
+tasks.named("bootRun") {
 	optimizedLaunch = false
 }
 // end::launch[]
 
-task optimizedLaunch {
+tasks.register("optimizedLaunch") {
 	doLast {
 		println bootRun.optimizedLaunch
 	}
