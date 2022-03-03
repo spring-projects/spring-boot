@@ -53,8 +53,19 @@ The sensitive portion of the URI is identified using the format `<scheme>://<use
 For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
 `++http://user1:******@localhost:8081++`.
 
+
+
+[[howto.actuator.sanitize-sensitive-values.customizing-sanitization]]
+==== Customizing Sanitization
+Sanitization can be customized in two different ways.
+
 The default patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
 Alternatively, additional patterns can be configured using configprop:management.endpoint.env.additional-keys-to-sanitize[] and configprop:management.endpoint.configprops.additional-keys-to-sanitize[].
+
+To take more control over the santization, define a `SanitizingFunction` bean.
+The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.
+This allows you to, for example, sanitize every value that comes from a particular property source.
+Each `SanitizingFunction` is called before and in addition to the built-in key-based sanitization.
 
 
 
