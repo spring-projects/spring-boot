@@ -26,7 +26,7 @@ the<DependencyManagementExtension>().apply {
 	}
 }
 
-task("slf4jVersion") {
+tasks.register("slf4jVersion") {
 	doLast {
 		println(project.the<DependencyManagementExtension>().managedVersions["org.slf4j:slf4j-api"])
 	}

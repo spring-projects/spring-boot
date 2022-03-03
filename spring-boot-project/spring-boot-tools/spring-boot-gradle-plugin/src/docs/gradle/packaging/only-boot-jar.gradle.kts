@@ -6,11 +6,11 @@ plugins {
 }
 
 // tag::disable-jar[]
-tasks.getByName<Jar>("jar") {
+tasks.named<Jar>("jar") {
 	enabled = false
 }
 // end::disable-jar[]
 
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	mainClass.set("com.example.Application")
 }

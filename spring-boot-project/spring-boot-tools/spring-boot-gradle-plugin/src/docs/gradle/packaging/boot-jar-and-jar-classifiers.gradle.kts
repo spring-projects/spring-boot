@@ -6,15 +6,15 @@ plugins {
 }
 
 // tag::classifiers[]
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	archiveClassifier.set("boot")
 }
 
-tasks.getByName<Jar>("jar") {
+tasks.named<Jar>("jar") {
 	archiveClassifier.set("")
 }
 // end::classifiers[]
 
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	mainClass.set("com.example.Application")
 }

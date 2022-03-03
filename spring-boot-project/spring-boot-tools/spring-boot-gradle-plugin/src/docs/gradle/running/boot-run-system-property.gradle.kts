@@ -6,14 +6,14 @@ plugins {
 }
 
 // tag::system-property[]
-tasks.getByName<BootRun>("bootRun") {
+tasks.named<BootRun>("bootRun") {
 	systemProperty("com.example.property", findProperty("example") ?: "default")
 }
 // end::system-property[]
 
-task("configuredSystemProperties") {
+tasks.register("configuredSystemProperties") {
 	doLast {
-		tasks.getByName<BootRun>("bootRun").systemProperties.forEach { k, v -> 
+		tasks.getByName<BootRun>("bootRun").systemProperties.forEach { k, v ->
 			println("$k = $v")
 		}
 	}

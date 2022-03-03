@@ -6,12 +6,12 @@ plugins {
 }
 
 // tag::launch[]
-tasks.getByName<BootRun>("bootRun") {
+tasks.named<BootRun>("bootRun") {
 	isOptimizedLaunch = false
 }
 // end::launch[]
 
-task("optimizedLaunch") {
+tasks.register("optimizedLaunch") {
 	doLast {
 		println(tasks.getByName<BootRun>("bootRun").isOptimizedLaunch)
 	}

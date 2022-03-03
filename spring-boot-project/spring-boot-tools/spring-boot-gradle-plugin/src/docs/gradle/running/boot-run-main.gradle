@@ -4,12 +4,12 @@ plugins {
 }
 
 // tag::main[]
-bootRun {
+tasks.named("bootRun") {
 	mainClass = 'com.example.ExampleApplication'
 }
 // end::main[]
 
-task configuredMainClass {
+tasks.register("configuredMainClass") {
 	doLast {
 		println bootRun.mainClass
 	}
