@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,11 +76,11 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void customSanitizingFunctionShouldBeApplied() {
+	void customSanitizingFunctionsAreAppliedInOrder() {
 		this.contextRunner.withUserConfiguration(Config.class, SanitizingFunctionConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=configprops",
 						"test.my-test-property=abc")
-				.run(validateTestProperties("******", "$$$"));
+				.run(validateTestProperties("$$$111$$$", "$$$222$$$"));
 	}
 
 	@Test
@@ -152,10 +153,22 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	static class SanitizingFunctionConfiguration {
 
 		@Bean
-		SanitizingFunction testSanitizingFunction() {
+		@Order(0)
+		SanitizingFunction firstSanitizingFunction() {
 			return (data) -> {
-				if (data.getKey().contains("my")) {
-					return data.withValue("$$$");
+				if (data.getKey().contains("Password")) {
+					return data.withValue("$$$111$$$");
+				}
+				return data;
+			};
+		}
+
+		@Bean
+		@Order(1)
+		SanitizingFunction secondSanitizingFunction() {
+			return (data) -> {
+				if (data.getKey().contains("Password") || data.getKey().contains("test")) {
+					return data.withValue("$$$222$$$");
 				}
 				return data;
 			};
