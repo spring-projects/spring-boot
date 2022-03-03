@@ -18,11 +18,11 @@ package org.springframework.boot.actuate.metrics.cache;
 
 import java.util.concurrent.TimeUnit;
 
-import io.micrometer.binder.cache.CacheMeterBinder;
 import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.TimeGauge;
+import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
 
 import org.springframework.data.redis.cache.RedisCache;
 
