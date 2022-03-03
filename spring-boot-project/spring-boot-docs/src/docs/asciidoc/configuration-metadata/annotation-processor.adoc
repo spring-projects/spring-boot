@@ -33,7 +33,9 @@ If you are using an `additional-spring-configuration-metadata.json` file, the `c
 
 [source,gradle,indent=0,subs="verbatim"]
 ----
-	compileJava.inputs.files(processResources)
+	tasks.named('compileJava') {
+	    inputs.files(tasks.named('processResources'))
+	}
 ----
 
 This dependency ensures that the additional metadata is available when the annotation processor runs during compilation.
