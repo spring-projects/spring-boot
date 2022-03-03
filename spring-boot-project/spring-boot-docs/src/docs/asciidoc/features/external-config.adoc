@@ -444,16 +444,19 @@ For example, if a secret named `db.password` is mounted at location `/run/secret
 [[features.external-config.files.property-placeholders]]
 ==== Property Placeholders
 The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties or environment variables).
-The standard `$\{name:default}` property-placeholder syntax can be used anywhere within a value.
+The standard `$\{name}` property-placeholder syntax can be used anywhere within a value.
+Property placeholders can also specify a default value using a `:` to separate the default value from the property name, for example `${name:default}`.
 
-For example, the following file will set `app.description` to "`MyApp is a Spring Boot application written by john.doe`":
+The use of placeholders with and without defaults is shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	app:
 	  name: "MyApp"
-	  description: "${app.name} is a Spring Boot application written by ${USERNAME:john.doe}"
+	  description: "${app.name} is a Spring Boot application written by ${username:Unknown}"
 ----
+
+Assuming that the `username` property has not be set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
 See the _<<howto#howto.properties-and-configuration.short-command-line-arguments>>_ how-to for details.
