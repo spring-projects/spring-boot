@@ -3,7 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
-bootWar {
+tasks.named("bootWar") {
 	mainClass = 'com.example.ExampleApplication'
 }
 
@@ -12,7 +12,7 @@ dependencies {
 }
 
 // tag::include-devtools[]
-bootWar {
+tasks.named("bootWar") {
 	classpath configurations.developmentOnly
 }
 // end::include-devtools[]

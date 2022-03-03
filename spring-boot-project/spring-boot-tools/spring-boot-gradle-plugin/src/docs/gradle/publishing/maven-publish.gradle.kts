@@ -8,7 +8,7 @@ plugins {
 publishing {
 	publications {
 		create<MavenPublication>("bootJava") {
-			artifact(tasks.getByName("bootJar"))
+			artifact(tasks.named("bootJar"))
 		}
 	}
 	repositories {
@@ -19,7 +19,7 @@ publishing {
 }
 // end::publishing[]
 
-task("publishingConfiguration") {
+tasks.register("publishingConfiguration") {
 	doLast {
 		println(publishing.publications["bootJava"])
 		println(publishing.repositories.getByName<MavenArtifactRepository>("maven").url)

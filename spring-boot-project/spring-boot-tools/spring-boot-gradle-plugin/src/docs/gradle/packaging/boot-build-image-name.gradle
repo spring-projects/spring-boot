@@ -4,13 +4,13 @@ plugins {
 }
 
 // tag::image-name[]
-bootBuildImage {
+tasks.named("bootBuildImage") {
 	imageName = "example.com/library/${project.name}"
 }
 // end::image-name[]
 
-task bootBuildImageName {
-    doFirst {
-        println(tasks.bootBuildImage.imageName)
-    }
+tasks.register("bootBuildImageName") {
+	doFirst {
+		println(tasks.bootBuildImage.imageName)
+	}
 }

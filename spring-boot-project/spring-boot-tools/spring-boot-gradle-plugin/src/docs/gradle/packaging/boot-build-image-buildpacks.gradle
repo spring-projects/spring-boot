@@ -4,12 +4,12 @@ plugins {
 }
 
 // tag::buildpacks[]
-bootBuildImage {
+tasks.named("bootBuildImage") {
 	buildpacks = ["file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java"]
 }
 // end::buildpacks[]
 
-task bootBuildImageBuildpacks {
+tasks.register("bootBuildImageBuildpacks") {
 	doFirst {
 		bootBuildImage.buildpacks.each { reference -> println "$reference" }
 	}

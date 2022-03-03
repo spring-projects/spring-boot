@@ -6,7 +6,7 @@ plugins {
 }
 
 // tag::caches[]
-tasks.getByName<BootBuildImage>("bootBuildImage") {
+tasks.named<BootBuildImage>("bootBuildImage") {
 	buildCache {
 		volume {
 			name = "cache-${rootProject.name}.build"

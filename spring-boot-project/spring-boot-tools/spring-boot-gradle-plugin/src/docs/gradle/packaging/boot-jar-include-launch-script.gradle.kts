@@ -5,12 +5,12 @@ plugins {
 	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	mainClass.set("com.example.ExampleApplication")
 }
 
 // tag::include-launch-script[]
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	launchScript()
 }
 // end::include-launch-script[]

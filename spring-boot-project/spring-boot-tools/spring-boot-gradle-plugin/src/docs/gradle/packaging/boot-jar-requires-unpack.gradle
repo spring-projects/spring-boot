@@ -11,12 +11,12 @@ dependencies {
 	runtimeOnly('org.jruby:jruby-complete:1.7.25')
 }
 
-bootJar {
+tasks.named("bootJar") {
 	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::requires-unpack[]
-bootJar {
+tasks.named("bootJar") {
 	requiresUnpack '**/jruby-complete-*.jar'
 }
 // end::requires-unpack[]

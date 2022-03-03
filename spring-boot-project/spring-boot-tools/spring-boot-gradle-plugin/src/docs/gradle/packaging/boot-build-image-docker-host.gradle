@@ -3,12 +3,12 @@ plugins {
 	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
-bootJar {
+tasks.named("bootJar") {
 	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::docker-host[]
-bootBuildImage {
+tasks.named("bootBuildImage") {
 	docker {
 		host = "tcp://192.168.99.100:2376"
 		tlsVerify = true
@@ -17,7 +17,7 @@ bootBuildImage {
 }
 // end::docker-host[]
 
-task bootBuildImageDocker {
+tasks.register("bootBuildImageDocker") {
 	doFirst {
 		println("host=${tasks.bootBuildImage.docker.host}")
 		println("tlsVerify=${tasks.bootBuildImage.docker.tlsVerify}")
