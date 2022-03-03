@@ -4,11 +4,11 @@ plugins {
 }
 
 // tag::disable-jar[]
-jar {
+tasks.named("jar") {
 	enabled = false
 }
 // end::disable-jar[]
 
-bootJar {
+tasks.named("bootJar") {
 	mainClass = 'com.example.Application'
 }

@@ -6,12 +6,12 @@ plugins {
 	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
-tasks.getByName<BootJar>("bootJar") {
+tasks.named<BootJar>("bootJar") {
 	mainClass.set("com.example.ExampleApplication")
 }
 
 // tag::publish[]
-tasks.getByName<BootBuildImage>("bootBuildImage") {
+tasks.named<BootBuildImage>("bootBuildImage") {
 	imageName = "docker.example.com/library/${project.name}"
 	isPublish = true
 	docker {
@@ -26,7 +26,7 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 // end::publish[]
 
 tasks.register("bootBuildImagePublish") {
-    doFirst {
-        println(tasks.getByName<BootBuildImage>("bootBuildImage").isPublish)
-    }
+	doFirst {
+		println(tasks.getByName<BootBuildImage>("bootBuildImage").isPublish)
+	}
 }

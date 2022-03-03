@@ -3,12 +3,12 @@ plugins {
 	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
-bootWar {
+tasks.named("bootWar") {
 	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::properties-launcher[]
-bootWar {
+tasks.named("bootWar") {
 	manifest {
 		attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
 	}

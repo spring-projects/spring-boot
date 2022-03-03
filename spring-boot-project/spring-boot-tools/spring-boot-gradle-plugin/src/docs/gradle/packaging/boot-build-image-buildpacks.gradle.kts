@@ -6,7 +6,7 @@ plugins {
 }
 
 // tag::buildpacks[]
-tasks.getByName<BootBuildImage>("bootBuildImage") {
+tasks.named<BootBuildImage>("bootBuildImage") {
 	buildpacks = listOf("file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java")
 }
 // end::buildpacks[]

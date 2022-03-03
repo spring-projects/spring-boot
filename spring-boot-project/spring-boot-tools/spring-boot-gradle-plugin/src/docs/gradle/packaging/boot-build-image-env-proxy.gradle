@@ -4,7 +4,7 @@ plugins {
 }
 
 // tag::env[]
-bootBuildImage {
+tasks.named("bootBuildImage") {
 	environment = [
 			"HTTP_PROXY" : "http://proxy.example.com",
 			"HTTPS_PROXY": "https://proxy.example.com"
@@ -12,7 +12,7 @@ bootBuildImage {
 }
 // end::env[]
 
-task bootBuildImageEnvironment {
+tasks.register("bootBuildImageEnvironment") {
 	doFirst {
 		bootBuildImage.environment.each { name, value -> println "$name=$value" } 		
 	}
