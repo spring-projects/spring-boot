@@ -46,7 +46,7 @@ public class JettyServerCustomizerConfig {
 	public JettyServerCustomizer jettyServerCustomizer() {
 		return (server) -> {
 			ContextHandler handler = (ContextHandler) server.getHandler();
-			handler.addAliasCheck(new AllowedResourceAliasChecker(handler));
+			handler.addAliasCheck((path, resource) -> true);
 			
 			for (Connector connector : server.getConnectors()) {
 				connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration()
