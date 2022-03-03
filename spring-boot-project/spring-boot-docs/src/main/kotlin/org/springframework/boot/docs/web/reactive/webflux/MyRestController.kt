@@ -28,21 +28,21 @@ import reactor.core.publisher.Mono
 @RequestMapping("/users")
 class MyRestController(private val userRepository: UserRepository, private val customerRepository: CustomerRepository) {
 
-	@GetMapping("/{user}")
+	@GetMapping("/{userId}")
 	fun getUser(@PathVariable userId: Long): Mono<User?> {
 		return userRepository.findById(userId)
 	}
 
-	@GetMapping("/{user}/customers")
+	@GetMapping("/{userId}/customers")
 	fun getUserCustomers(@PathVariable userId: Long): Flux<Customer> {
 		return userRepository.findById(userId).flatMapMany { user: User? ->
 			customerRepository.findByUser(user)
 		}
 	}
 
-	@DeleteMapping("/{user}")
-	fun deleteUser(@PathVariable userId: Long) {
-		userRepository.deleteById(userId)
+	@DeleteMapping("/{userId}")
+	fun deleteUser(@PathVariable userId: Long): Mono<Void> {
+		return userRepository.deleteById(userId)
 	}
 
 }
