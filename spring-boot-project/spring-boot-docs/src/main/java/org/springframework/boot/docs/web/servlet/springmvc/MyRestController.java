@@ -37,17 +37,17 @@ public class MyRestController {
 		this.customerRepository = customerRepository;
 	}
 
-	@GetMapping("/{user}")
+	@GetMapping("/{userId}")
 	public User getUser(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).get();
 	}
 
-	@GetMapping("/{user}/customers")
+	@GetMapping("/{userId}/customers")
 	public List<Customer> getUserCustomers(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).map(this.customerRepository::findByUser).get();
 	}
 
-	@DeleteMapping("/{user}")
+	@DeleteMapping("/{userId}")
 	public void deleteUser(@PathVariable Long userId) {
 		this.userRepository.deleteById(userId);
 	}
