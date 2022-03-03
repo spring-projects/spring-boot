@@ -30,7 +30,7 @@ The following example shows the equivalent Gradle configuration:
 
 [source,gradle,indent=0,subs="verbatim"]
 ----
-	bootJar {
+	tasks.named('bootJar') {
 		launchScript()
 	}
 ----
