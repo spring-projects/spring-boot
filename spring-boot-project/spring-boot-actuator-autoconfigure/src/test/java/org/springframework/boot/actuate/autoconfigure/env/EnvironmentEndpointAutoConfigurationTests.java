@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,7 +73,7 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void sanitizingFunctionsCanBeConfiguredViaTheEnvironment() {
+	void customSanitizingFunctionsAreAppliedInOrder() {
 		this.contextRunner.withUserConfiguration(SanitizingFunctionConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=env")
 				.withSystemProperties("custom=123456", "password=123456").run((context) -> {
@@ -81,8 +82,8 @@ class EnvironmentEndpointAutoConfigurationTests {
 					EnvironmentDescriptor env = endpoint.environment(null);
 					Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env)
 							.getProperties();
-					assertThat(systemProperties.get("custom").getValue()).isEqualTo("$$$");
-					assertThat(systemProperties.get("password").getValue()).isEqualTo("******");
+					assertThat(systemProperties.get("custom").getValue()).isEqualTo("$$$111$$$");
+					assertThat(systemProperties.get("password").getValue()).isEqualTo("$$$222$$$");
 				});
 	}
 
@@ -123,8 +124,25 @@ class EnvironmentEndpointAutoConfigurationTests {
 	static class SanitizingFunctionConfiguration {
 
 		@Bean
-		SanitizingFunction testSanitizingFunction() {
-			return (data) -> data.withValue("$$$");
+		@Order(0)
+		SanitizingFunction firstSanitizingFunction() {
+			return (data) -> {
+				if (data.getKey().contains("custom")) {
+					return data.withValue("$$$111$$$");
+				}
+				return data;
+			};
+		}
+
+		@Bean
+		@Order(1)
+		SanitizingFunction secondSanitizingFunction() {
+			return (data) -> {
+				if (data.getKey().contains("custom") || data.getKey().contains("password")) {
+					return data.withValue("$$$222$$$");
+				}
+				return data;
+			};
 		}
 
 	}
