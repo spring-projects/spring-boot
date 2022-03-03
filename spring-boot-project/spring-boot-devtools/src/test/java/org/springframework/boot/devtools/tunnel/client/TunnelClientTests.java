@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SocketChannel;
@@ -91,7 +92,17 @@ class TunnelClientTests {
 		assertThat(this.tunnelConnection.isOpen()).isTrue();
 		client.stop();
 		assertThat(this.tunnelConnection.isOpen()).isFalse();
-		assertThat(channel.read(ByteBuffer.allocate(1))).isEqualTo(-1);
+		assertThat(readWithPossibleFailure(channel)).satisfiesAnyOf((result) -> assertThat(result).isEqualTo(-1),
+				(result) -> assertThat(result).isInstanceOf(SocketException.class));
+	}
+
+	private Object readWithPossibleFailure(SocketChannel channel) {
+		try {
+			return channel.read(ByteBuffer.allocate(1));
+		}
+		catch (Exception ex) {
+			return ex;
+		}
 	}
 
 	@Test
