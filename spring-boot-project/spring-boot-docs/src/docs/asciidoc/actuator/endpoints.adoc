@@ -316,8 +316,8 @@ TIP: If you want to implement your own strategy for when endpoints are exposed, 
 
 [[actuator.endpoints.security]]
 === Security
-For security purposes, all actuators other than `/health` are disabled by default.
-You can use the configprop:management.endpoints.web.exposure.include[] property to enable the actuators.
+For security purposes, only the `/health` endpoint is exposed over HTTP by default.
+You can use the configprop:management.endpoints.web.exposure.include[] property to configure the endpoints that are exposed.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information, are secured by placing them behind a firewall, or are secured by something like Spring Security.
 
