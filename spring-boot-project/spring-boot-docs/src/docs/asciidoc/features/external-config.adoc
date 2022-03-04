@@ -719,7 +719,8 @@ Unless your record has multiple constructors, there is no need to use `@Construc
 
 Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
 
-Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
+Default values can be specified using `@DefaultValue` on constructor parameters and record components.
+The conversion service will be applied to coerce the annotation's `String` value to the target type of a missing property.
 By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 

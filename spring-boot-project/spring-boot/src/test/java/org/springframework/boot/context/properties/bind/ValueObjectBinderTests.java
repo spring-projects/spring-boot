@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -371,7 +369,6 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void bindToRecordWithDefaultValue(@TempDir File tempDir) throws IOException, ClassNotFoundException {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.record.property1", "value-from-config-1");

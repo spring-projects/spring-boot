@@ -447,7 +447,6 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void recordPropertiesWithDefaultValues(@TempDir File temp) throws IOException {
 		File exampleRecord = new File(temp, "ExampleRecord.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
