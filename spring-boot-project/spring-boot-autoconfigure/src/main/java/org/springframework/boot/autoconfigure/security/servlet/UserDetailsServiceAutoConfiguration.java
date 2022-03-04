@@ -85,7 +85,11 @@ public class UserDetailsServiceAutoConfiguration {
 	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
+			logger.warn(String.format(
+					"%n%nUsing generated security password: %s%n%nThis generated password is for development use only. "
+							+ "Your security configuration must be updated before running your application in "
+							+ "production.%n",
+					user.getPassword()));
 		}
 		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
 			return password;
