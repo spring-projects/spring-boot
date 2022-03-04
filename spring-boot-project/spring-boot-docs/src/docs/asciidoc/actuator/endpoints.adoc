@@ -316,18 +316,8 @@ TIP: If you want to implement your own strategy for when endpoints are exposed, 
 
 [[actuator.endpoints.security]]
 === Security
-For security purposes, all actuator's endpoints that are exposed over HTTP are secret by default except `/health` endpoint.
-You can use the configprop:management.endpoints.web.exposure.include[] property to expose the actuator's endpoint.
-
-The following configuration expose `/info` and `/metrics` endpoint from the example.com domain:
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	management:
-	  endpoints:
-	    web:
-	      exposure:
-	        include: ["info", "metrics"]
-----
+For security purposes, only the `/health` endpoint is exposed over HTTP by default. If you want to expose more endpoints,
+you can use the configprop:management.endpoints.web.exposure.include[] property to expose the actuator's endpoint.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information, are secured by placing them behind a firewall, or are secured by something like Spring Security.
 
