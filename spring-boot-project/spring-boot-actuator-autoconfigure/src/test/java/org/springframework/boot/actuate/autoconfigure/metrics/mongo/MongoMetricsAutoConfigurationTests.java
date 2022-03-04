@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.connection.ConnectionPoolSettings;
 import com.mongodb.event.ConnectionPoolListener;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
+import io.micrometer.binder.mongodb.DefaultMongoCommandTagsProvider;
+import io.micrometer.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
+import io.micrometer.binder.mongodb.MongoCommandTagsProvider;
+import io.micrometer.binder.mongodb.MongoConnectionPoolTagsProvider;
+import io.micrometer.binder.mongodb.MongoMetricsCommandListener;
+import io.micrometer.binder.mongodb.MongoMetricsConnectionPoolListener;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.metrics.web.tomcat;
 
 import java.util.Collections;
 
+import io.micrometer.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;

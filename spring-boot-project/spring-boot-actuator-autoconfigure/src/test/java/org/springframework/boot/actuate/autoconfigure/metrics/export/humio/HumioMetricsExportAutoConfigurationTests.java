@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.humio;
 
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.humio.HumioConfig;
 import io.micrometer.humio.HumioMeterRegistry;
 import org.junit.jupiter.api.Test;

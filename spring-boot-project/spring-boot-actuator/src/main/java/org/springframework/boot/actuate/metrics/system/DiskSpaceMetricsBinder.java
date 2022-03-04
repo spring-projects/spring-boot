@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.metrics.system;
 import java.io.File;
 import java.util.List;
 
+import io.micrometer.binder.system.DiskSpaceMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.binder.system.DiskSpaceMetrics;
 
 import org.springframework.util.Assert;
 

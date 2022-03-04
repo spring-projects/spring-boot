@@ -134,8 +134,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			Object handler = getHandler(request);
 			Set<Timed> annotations = getTimedAnnotations(handler);
 			Timer.Sample timerSample = timingContext.getTimerSample();
-			AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-					(builder) -> timerSample.stop(getTimer(builder, handler, request, response, exception)));
+			AutoTimer.apply(this.autoTimer, this.metricName, annotations, (builder) -> timerSample
+					.stop(getTimer(builder, handler, request, response, exception).register(this.registry)));
 		}
 		catch (Exception ex) {
 			logger.warn("Failed to record timer metrics", ex);

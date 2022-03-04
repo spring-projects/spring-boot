@@ -22,11 +22,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CyclicBarrier;
 
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.DispatcherType;
