@@ -144,7 +144,13 @@ public final class ConfigurationPropertiesBean {
 		}
 		Map<String, ConfigurationPropertiesBean> propertiesBeans = new LinkedHashMap<>();
 		applicationContext.getBeansWithAnnotation(ConfigurationProperties.class)
-				.forEach((beanName, bean) -> propertiesBeans.put(beanName, get(applicationContext, bean, beanName)));
+				.forEach((beanName, bean) -> { 
+					ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
+					if (propertiesBean == null) { //ignore for null
+						return;
+					}
+					propertiesBeans.put(beanName,propertiesBean);
+				});
 		return propertiesBeans;
 	}
 
@@ -158,6 +164,9 @@ public final class ConfigurationPropertiesBean {
 				try {
 					Object bean = beanFactory.getBean(beanName);
 					ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
+					if (propertiesBean == null) { //ignore for null
+						continue;
+					}
 					propertiesBeans.put(beanName, propertiesBean);
 				}
 				catch (Exception ex) {

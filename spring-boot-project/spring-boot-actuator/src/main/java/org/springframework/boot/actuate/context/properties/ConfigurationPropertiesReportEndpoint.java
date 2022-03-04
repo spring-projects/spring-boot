@@ -121,7 +121,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationProperties() {
-		return extract(this.context, (bean) -> true);
+		return extract(this.context, (bean) -> bean != null);
 	}
 
 	@ReadOperation
