@@ -6,14 +6,16 @@ To add method-level security to a web application, you can also add `@EnableGlob
 Additional information can be found in the {spring-security-docs}#jc-method[Spring Security Reference Guide].
 
 The default `UserDetailsService` has a single user.
-The user name is `user`, and the password is random and is printed at INFO level when the application starts, as shown in the following example:
+The user name is `user`, and the password is random and is printed at WARN level when the application starts, as shown in the following example:
 
 [indent=0]
 ----
 	Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
+
+	This generated password is for development use only. Your security configuration must be updated before running your application in production.
 ----
 
-NOTE: If you fine-tune your logging configuration, ensure that the `org.springframework.boot.autoconfigure.security` category is set to log `INFO`-level messages.
+NOTE: If you fine-tune your logging configuration, ensure that the `org.springframework.boot.autoconfigure.security` category is set to log `WARN`-level messages.
 Otherwise, the default password is not printed.
 
 You can change the username and password by providing a `spring.security.user.name` and `spring.security.user.password`.
