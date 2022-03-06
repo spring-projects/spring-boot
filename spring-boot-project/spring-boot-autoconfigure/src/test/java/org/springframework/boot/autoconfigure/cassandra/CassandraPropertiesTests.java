@@ -40,7 +40,7 @@ class CassandraPropertiesTests {
 	@Test
 	void defaultValuesInManualMetadataAreConsistent() {
 		OptionsMap driverDefaults = OptionsMap.driverDefaults();
-		// spring.data.cassandra.connection.connection-timeout
+		// spring.data.cassandra.connection.connect-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_CONNECT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
 		// spring.data.cassandra.connection.init-query-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_INIT_QUERY_TIMEOUT))
