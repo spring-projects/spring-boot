@@ -42,7 +42,11 @@ import org.springframework.lang.Nullable;
 @WebEndpoint(id = "prometheus")
 public class PrometheusScrapeEndpoint {
 
+	private static final int METRICS_SCRAPE_CHARS_EXTRA = 1024;
+
 	private final CollectorRegistry collectorRegistry;
+
+	private volatile int nextMetricsScrapeSize = 16;
 
 	public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 		this.collectorRegistry = collectorRegistry;
@@ -51,12 +55,16 @@ public class PrometheusScrapeEndpoint {
 	@ReadOperation(producesFrom = TextOutputFormat.class)
 	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
-			Writer writer = new StringWriter();
+			Writer writer = new StringWriter(nextMetricsScrapeSize);
 			Enumeration<MetricFamilySamples> samples = (includedNames != null)
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
 			format.write(writer, samples);
-			return new WebEndpointResponse<>(writer.toString(), format);
+
+			String scrapePage = writer.toString();
+			nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
+
+			return new WebEndpointResponse<>(scrapePage, format);
 		}
 		catch (IOException ex) {
 			// This actually never happens since StringWriter doesn't throw an IOException
