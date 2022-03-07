@@ -132,6 +132,30 @@ class SanitizerTests {
 
 	@ParameterizedTest(name = "key = {0}")
 	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleValueWithKeysQueryParamsShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?password=password"))
+				.isEqualTo("http://localhost:8080?password=******");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?username=username&password=password"))
+				.isEqualTo("http://localhost:8080?username=username&password=******");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?password=password&username=username"))
+				.isEqualTo("http://localhost:8080?password=******&username=username");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?password=password&username=username&token=token"))
+				.isEqualTo("http://localhost:8080?password=******&username=username&token=******");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?username=username&password=password&userid=userid"))
+				.isEqualTo("http://localhost:8080?username=username&password=******&userid=userid");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleValueWithPasswordAndKeysQueryParamsShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://username:password@localhost:8080?password=password"))
+				.isEqualTo("http://username:******@localhost:8080?password=******");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithNonAlphaSchemeCharactersAndSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "s-ch3m.+-e://user:password@localhost:8080"))
@@ -140,10 +164,14 @@ class SanitizerTests {
 
 	@ParameterizedTest(name = "key = {0}")
 	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithSingleValueWithNoPasswordShouldNotBeSanitized(String key) {
+	void uriWithSingleValueWithNoPasswordAndNoKeysQueryParamsShouldNotBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://localhost:8080")).isEqualTo("http://localhost:8080");
 		assertThat(sanitizer.sanitize(key, "http://user@localhost:8080")).isEqualTo("http://user@localhost:8080");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?username=username"))
+				.isEqualTo("http://localhost:8080?username=username");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?username=username&userid=userid"))
+				.isEqualTo("http://localhost:8080?username=username&userid=userid");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -156,11 +184,47 @@ class SanitizerTests {
 
 	@ParameterizedTest(name = "key = {0}")
 	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleValueWithKeysQueryParamsMatchingOtherPartsOfStringShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080?password="))
+				.isEqualTo("http://localhost:8080?password=******");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleValueWithPasswordAndKeysQueryParamsMatchingOtherPartsOfStringShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://user://@localhost:8080?password="))
+				.isEqualTo("http://user:******@localhost:8080?password=******");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithMultipleValuesEachWithPasswordShouldHaveAllSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(
 				sanitizer.sanitize(key, "http://user1:password1@localhost:8080,http://user2:password2@localhost:8082"))
 						.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithMultipleValuesEachWithKeysQueryParamsShouldHaveAllSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key,
+				"http://localhost:8080?username=username1&password=password1,http://localhost:8081?username=username2&password=password2"))
+						.isEqualTo(
+								"http://localhost:8080?username=username1&password=******,http://localhost:8081?username=username2&password=******");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithMultipleValuesEachWithPasswordAndKeysQueryParamsShouldHaveAllSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key,
+				"http://username1:password1@localhost:8080?username=username1&password=password1,http://username2:password2@localhost:8081?username=username2&password=password2"))
+						.isEqualTo(
+								"http://username1:******@localhost:8080?username=username1&password=******,http://username2:******@localhost:8081?username=username2&password=******");
 	}
 
 	@ParameterizedTest(name = "key = {0}")

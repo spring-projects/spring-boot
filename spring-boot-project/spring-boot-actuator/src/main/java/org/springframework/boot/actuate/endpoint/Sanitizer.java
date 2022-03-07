@@ -55,8 +55,9 @@ public class Sanitizer {
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
 			Arrays.asList("uri", "uris", "url", "urls", "address", "addresses"));
 
-	private static final Pattern URI_USERINFO_PATTERN = Pattern
-			.compile("^\\[?[A-Za-z][A-Za-z0-9\\+\\.\\-]+://.+:(.*)@.+$");
+	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("^\\[?[A-Za-z][A-Za-z0-9+.\\-]+://.+:(.*)@.+$");
+
+	private static final Pattern URI_QUERY_PARAM_PATTERN = Pattern.compile("[?&]([a-zA-Z_]+)=([\\w\\-.]*)");
 
 	private Pattern[] keysToSanitize;
 
@@ -215,9 +216,25 @@ public class Sanitizer {
 		Matcher matcher = URI_USERINFO_PATTERN.matcher(value);
 		String password = matcher.matches() ? matcher.group(1) : null;
 		if (password != null) {
-			return StringUtils.replace(value, ":" + password + "@", ":" + SanitizableData.SANITIZED_VALUE + "@");
+			value = StringUtils.replace(value, ":" + password + "@", ":" + SanitizableData.SANITIZED_VALUE + "@");
 		}
-		return value;
+		return sanitizeUriQueryParams(value);
+	}
+
+	private String sanitizeUriQueryParams(String value) {
+		Matcher matcher = URI_QUERY_PARAM_PATTERN.matcher(value);
+		StringBuilder sanitizedUri = new StringBuilder();
+		while (matcher.find()) {
+			String paramName = matcher.group(1);
+			String paramValue = matcher.group(2);
+			Object sanitizedValue = sanitize(paramName, paramValue);
+			if (!paramValue.equals(sanitizedValue)) {
+				matcher.appendReplacement(sanitizedUri,
+						StringUtils.replace(matcher.group(), "=" + paramValue, "=" + sanitizedValue));
+			}
+		}
+		matcher.appendTail(sanitizedUri);
+		return sanitizedUri.toString();
 	}
 
 }
