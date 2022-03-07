@@ -33,7 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = "enableEnvironmentPostProcessor=true") // gh-28530
+@SpringBootTest(webEnvironment = WebEnvironment.NONE,
+		properties = { "enableEnvironmentPostProcessor=true", "server.port=0" }) // gh-28530
 @ActiveProfiles("hello")
 class ActiveProfilesTests {
 
