@@ -21,11 +21,15 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import graphql.execution.instrumentation.Instrumentation;
+
+import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
@@ -51,6 +55,9 @@ public class GraphQlTypeExcludeFilter extends StandardAnnotationCustomizableType
 		includes.add(RuntimeWiringConfigurer.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		includes.add(DataFetcherExceptionResolver.class);
+		includes.add(Instrumentation.class);
+		includes.add(GraphQlSourceBuilderCustomizer.class);
 		for (String optionalInclude : OPTIONAL_INCLUDES) {
 			try {
 				includes.add(ClassUtils.forName(optionalInclude, null));
