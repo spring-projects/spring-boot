@@ -520,7 +520,7 @@
       "defaultValue": "none"
     },
     {
-      "name": "spring.data.cassandra.connection.connection-timeout",
+      "name": "spring.data.cassandra.connection.connect-timeout",
       "defaultValue": "5s"
     },
     {
