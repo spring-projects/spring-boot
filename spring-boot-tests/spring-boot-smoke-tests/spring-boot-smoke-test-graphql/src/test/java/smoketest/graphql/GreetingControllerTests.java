@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,23 @@ package smoketest.graphql;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureWebGraphQlTester;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.execution.ErrorType;
-import org.springframework.graphql.test.tester.WebGraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@AutoConfigureWebGraphQlTester
+@AutoConfigureHttpGraphQlTester
 class GreetingControllerTests {
 
 	@Autowired
-	private WebGraphQlTester graphQlTester;
+	private HttpGraphQlTester graphQlTester;
 
 	@Test
 	void shouldUnauthorizeAnonymousUsers() {
-		this.graphQlTester.queryName("greeting").variable("name", "Brian").execute().errors().satisfy((errors) -> {
+		this.graphQlTester.documentName("greeting").variable("name", "Brian").execute().errors().satisfy((errors) -> {
 			assertThat(errors).hasSize(1);
 			assertThat(errors.get(0).getErrorType()).isEqualTo(ErrorType.UNAUTHORIZED);
 		});
@@ -43,15 +43,23 @@ class GreetingControllerTests {
 
 	@Test
 	void shouldGreetWithSpecificName() {
-		this.graphQlTester.queryName("greeting").variable("name", "Brian")
-				.httpHeaders((headers) -> headers.setBasicAuth("admin", "admin")).execute().path("greeting")
-				.entity(String.class).isEqualTo("Hello, Brian!");
+		HttpGraphQlTester authenticated = withAdminCredentials(this.graphQlTester);
+		authenticated.documentName("greeting").variable("name", "Brian").execute().path("greeting").entity(String.class)
+				.isEqualTo("Hello, Brian!");
 	}
 
 	@Test
 	void shouldGreetWithDefaultName() {
-		this.graphQlTester.query("{ greeting }").httpHeaders((headers) -> headers.setBasicAuth("admin", "admin"))
-				.execute().path("greeting").entity(String.class).isEqualTo("Hello, Spring!");
+		HttpGraphQlTester authenticated = withAdminCredentials(this.graphQlTester);
+		authenticated.document("{ greeting }").execute().path("greeting").entity(String.class)
+				.isEqualTo("Hello, Spring!");
+	}
+
+	private HttpGraphQlTester withAdminCredentials(HttpGraphQlTester graphQlTester) {
+		return graphQlTester.mutate()
+				.webTestClient(
+						(httpClient) -> httpClient.defaultHeaders((headers) -> headers.setBasicAuth("admin", "admin")))
+				.build();
 	}
 
 }

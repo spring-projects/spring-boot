@@ -19,7 +19,7 @@ package org.springframework.boot.test.graphql.tester;
 import java.util.List;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
@@ -27,14 +27,14 @@ import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link ContextCustomizerFactory} for {@link GraphQlTester}.
+ * {@link ContextCustomizerFactory} for {@link HttpGraphQlTester}.
  *
  * @author Brian Clozel
- * @see WebGraphQlTesterContextCustomizer
+ * @see HttpGraphQlTesterContextCustomizer
  */
-class WebGraphQlTesterContextCustomizerFactory implements ContextCustomizerFactory {
+class HttpGraphQlTesterContextCustomizerFactory implements ContextCustomizerFactory {
 
-	private static final String WEBGRAPHQLTESTER_CLASS = "org.springframework.graphql.test.tester.WebGraphQlTester";
+	private static final String HTTPGRAPHQLTESTER_CLASS = "org.springframework.graphql.test.tester.HttpGraphQlTester";
 
 	private static final String WEBTESTCLIENT_CLASS = "org.springframework.test.web.reactive.server.WebTestClient";
 
@@ -43,12 +43,12 @@ class WebGraphQlTesterContextCustomizerFactory implements ContextCustomizerFacto
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
-		return (springBootTest != null && isGraphQlTesterPresent()) ? new WebGraphQlTesterContextCustomizer() : null;
+		return (springBootTest != null && isGraphQlTesterPresent()) ? new HttpGraphQlTesterContextCustomizer() : null;
 	}
 
 	private boolean isGraphQlTesterPresent() {
 		return ClassUtils.isPresent(WEBTESTCLIENT_CLASS, getClass().getClassLoader())
-				&& ClassUtils.isPresent(WEBGRAPHQLTESTER_CLASS, getClass().getClassLoader());
+				&& ClassUtils.isPresent(HTTPGRAPHQLTESTER_CLASS, getClass().getClassLoader());
 	}
 
 }

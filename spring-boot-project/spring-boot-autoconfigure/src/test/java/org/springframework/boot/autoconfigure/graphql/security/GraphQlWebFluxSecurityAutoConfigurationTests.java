@@ -37,8 +37,8 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.ErrorType;
+import org.springframework.graphql.execution.ReactiveSecurityDataFetcherExceptionResolver;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
-import org.springframework.graphql.security.ReactiveSecurityDataFetcherExceptionResolver;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;

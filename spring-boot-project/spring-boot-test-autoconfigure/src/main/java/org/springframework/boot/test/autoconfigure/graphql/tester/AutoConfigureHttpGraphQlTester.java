@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.graphql.test.tester.WebGraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
 /**
- * Annotation that can be applied to a test class to enable a {@link WebGraphQlTester}.
+ * Annotation that can be applied to a test class to enable a {@link HttpGraphQlTester}.
  *
  * <p>
  * This annotation should be used with
@@ -38,7 +38,7 @@ import org.springframework.graphql.test.tester.WebGraphQlTester;
  *
  * @author Brian Clozel
  * @since 2.7.0
- * @see WebGraphQlTesterAutoConfiguration
+ * @see HttpGraphQlTesterAutoConfiguration
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -47,6 +47,6 @@ import org.springframework.graphql.test.tester.WebGraphQlTester;
 @AutoConfigureMockMvc
 @AutoConfigureWebTestClient
 @ImportAutoConfiguration
-public @interface AutoConfigureWebGraphQlTester {
+public @interface AutoConfigureHttpGraphQlTester {
 
 }

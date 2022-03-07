@@ -19,26 +19,22 @@ package org.springframework.boot.docs.features.testing.springbootapplications.sp
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.docs.web.graphql.runtimewiring.GreetingController;
-import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
-@GraphQlTest(GreetingController.class)
-class GreetingControllerTests {
-
-	@Autowired
-	private GraphQlTester graphQlTester;
+@AutoConfigureHttpGraphQlTester
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class GraphQlIntegrationTests {
 
 	@Test
-	void shouldGreetWithSpecificName() {
-		this.graphQlTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
+	void shouldGreetWithSpecificName(@Autowired HttpGraphQlTester graphQlTester) {
+		HttpGraphQlTester authenticatedTester = graphQlTester.mutate()
+				.webTestClient(
+						(client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))
+				.build();
+		authenticatedTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
 				.isEqualTo("Hello, Alice!");
-	}
-
-	@Test
-	void shouldGreetWithDefaultName() {
-		this.graphQlTester.document("{ greeting } ").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Spring!");
 	}
 
 }

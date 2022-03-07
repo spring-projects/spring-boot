@@ -30,13 +30,13 @@ internal class GreetingControllerTests {
 
 	@Test
 	fun shouldGreetWithSpecificName() {
-		graphQlTester.query("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String::class.java)
+		graphQlTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String::class.java)
 				.isEqualTo("Hello, Alice!")
 	}
 
 	@Test
 	fun shouldGreetWithDefaultName() {
-		graphQlTester.query("{ greeting } ").execute().path("greeting").entity(String::class.java)
+		graphQlTester.document("{ greeting } ").execute().path("greeting").entity(String::class.java)
 				.isEqualTo("Hello, Spring!")
 	}
 

@@ -24,26 +24,27 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.graphql.test.tester.WebGraphQlTester;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Auto-configuration for {@link WebGraphQlTester}.
+ * Auto-configuration for {@link HttpGraphQlTester}.
  *
  * @author Brian Clozel
  * @since 2.7.0
  */
 @AutoConfiguration(after = { WebTestClientAutoConfiguration.class, MockMvcAutoConfiguration.class })
 @ConditionalOnClass({ WebClient.class, WebTestClient.class, WebGraphQlTester.class })
-public class WebGraphQlTesterAutoConfiguration {
+public class HttpGraphQlTesterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(WebTestClient.class)
 	@ConditionalOnMissingBean
-	public WebGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {
+	public HttpGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {
 		WebTestClient mutatedWebTestClient = webTestClient.mutate().baseUrl(properties.getPath()).build();
-		return WebGraphQlTester.create(mutatedWebTestClient);
+		return HttpGraphQlTester.create(mutatedWebTestClient);
 	}
 
 }

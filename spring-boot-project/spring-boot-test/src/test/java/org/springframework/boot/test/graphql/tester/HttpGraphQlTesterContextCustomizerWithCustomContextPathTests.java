@@ -24,7 +24,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.graphql.test.tester.WebGraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,21 +32,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * Tests for {@link WebGraphQlTesterContextCustomizer} with a custom context path for a
+ * Tests for {@link HttpGraphQlTesterContextCustomizer} with a custom context path for a
  * Servlet web application.
  *
  * @author Brian Clozel
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = "server.servlet.context-path=/test")
-class WebGraphQlTesterContextCustomizerWithCustomContextPathTests {
+class HttpGraphQlTesterContextCustomizerWithCustomContextPathTests {
 
 	@Autowired
-	WebGraphQlTester graphQlTester;
+	HttpGraphQlTester graphQlTester;
 
 	@Test
 	void shouldHandleGraphQlRequests() {
-		this.graphQlTester.query("{}").executeAndVerify();
+		this.graphQlTester.document("{}").executeAndVerify();
 	}
 
 	@Configuration(proxyBeanMethods = false)

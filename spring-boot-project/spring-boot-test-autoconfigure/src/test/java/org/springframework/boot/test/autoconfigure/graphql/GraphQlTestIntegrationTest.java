@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class GraphQlTestIntegrationTest {
 	@Test
 	void getBookdByIdShouldReturnTestBook() {
 		String query = "{ bookById(id: \"book-1\"){ id name pageCount author } }";
-		this.graphQlTester.query(query).execute().path("data.bookById.id").entity(String.class).isEqualTo("42");
+		this.graphQlTester.document(query).execute().path("data.bookById.id").entity(String.class).isEqualTo("42");
 	}
 
 }

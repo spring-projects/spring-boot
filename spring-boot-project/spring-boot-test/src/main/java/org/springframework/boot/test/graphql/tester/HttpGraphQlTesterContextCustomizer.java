@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.graphql.test.tester.WebGraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
@@ -45,32 +45,32 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * {@link ContextCustomizer} for {@link WebGraphQlTester}.
+ * {@link ContextCustomizer} for {@link HttpGraphQlTester}.
  *
  * @author Brian Clozel
  */
-class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
+class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
 				SpringBootTest.class);
 		if (springBootTest.webEnvironment().isEmbedded()) {
-			registerWebGraphQlTester(context);
+			registerHttpGraphQlTester(context);
 		}
 	}
 
-	private void registerWebGraphQlTester(ConfigurableApplicationContext context) {
+	private void registerHttpGraphQlTester(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerWebGraphQlTester((BeanDefinitionRegistry) beanFactory);
+			registerHttpGraphQlTester((BeanDefinitionRegistry) beanFactory);
 		}
 	}
 
-	private void registerWebGraphQlTester(BeanDefinitionRegistry registry) {
-		RootBeanDefinition definition = new RootBeanDefinition(WebGraphQlTesterRegistrar.class);
+	private void registerHttpGraphQlTester(BeanDefinitionRegistry registry) {
+		RootBeanDefinition definition = new RootBeanDefinition(HttpGraphQlTesterRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(WebGraphQlTesterRegistrar.class.getName(), definition);
+		registry.registerBeanDefinition(HttpGraphQlTesterRegistrar.class.getName(), definition);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
 		return getClass().hashCode();
 	}
 
-	private static class WebGraphQlTesterRegistrar
+	private static class HttpGraphQlTesterRegistrar
 			implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
@@ -96,9 +96,9 @@ class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
-					WebGraphQlTester.class, false, false).length == 0) {
-				registry.registerBeanDefinition(WebGraphQlTester.class.getName(),
-						new RootBeanDefinition(WebGraphQlTesterFactory.class));
+					HttpGraphQlTester.class, false, false).length == 0) {
+				registry.registerBeanDefinition(HttpGraphQlTester.class.getName(),
+						new RootBeanDefinition(HttpGraphQlTesterFactory.class));
 			}
 		}
 
@@ -114,7 +114,7 @@ class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	}
 
-	public static class WebGraphQlTesterFactory implements FactoryBean<WebGraphQlTester>, ApplicationContextAware {
+	public static class HttpGraphQlTesterFactory implements FactoryBean<HttpGraphQlTester>, ApplicationContextAware {
 
 		private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
@@ -122,7 +122,7 @@ class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		private ApplicationContext applicationContext;
 
-		private WebGraphQlTester object;
+		private HttpGraphQlTester object;
 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -136,23 +136,23 @@ class WebGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public Class<?> getObjectType() {
-			return WebGraphQlTester.class;
+			return HttpGraphQlTester.class;
 		}
 
 		@Override
-		public WebGraphQlTester getObject() throws Exception {
+		public HttpGraphQlTester getObject() throws Exception {
 			if (this.object == null) {
 				this.object = createGraphQlTester();
 			}
 			return this.object;
 		}
 
-		private WebGraphQlTester createGraphQlTester() {
+		private HttpGraphQlTester createGraphQlTester() {
 			WebTestClient webTestClient = this.applicationContext.getBean(WebTestClient.class);
 			boolean sslEnabled = isSslEnabled(this.applicationContext);
 			String port = this.applicationContext.getEnvironment().getProperty("local.server.port", "8080");
 			WebTestClient mutatedWebClient = webTestClient.mutate().baseUrl(getBaseUrl(sslEnabled, port)).build();
-			return WebGraphQlTester.create(mutatedWebClient);
+			return HttpGraphQlTester.create(mutatedWebClient);
 		}
 
 		private String getBaseUrl(boolean sslEnabled, String port) {

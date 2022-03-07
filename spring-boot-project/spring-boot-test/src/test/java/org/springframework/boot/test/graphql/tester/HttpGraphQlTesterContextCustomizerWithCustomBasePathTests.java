@@ -28,31 +28,31 @@ import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFacto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.graphql.test.tester.WebGraphQlTester;
+import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 
 /**
- * Integration test for {@link WebGraphQlTesterContextCustomizer}.
+ * Tests for {@link HttpGraphQlTesterContextCustomizer} with a custom context path for a
+ * Reactive web application.
  *
  * @author Brian Clozel
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = "spring.main.web-application-type=reactive")
-@DirtiesContext
-class WebGraphQlTesterContextCustomizerIntegrationTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = { "spring.main.web-application-type=reactive", "spring.webflux.base-path=/test" })
+class HttpGraphQlTesterContextCustomizerWithCustomBasePathTests {
 
 	@Autowired
-	WebGraphQlTester graphQlTester;
+	HttpGraphQlTester graphQlTester;
 
 	@Test
 	void shouldHandleGraphQlRequests() {
-		this.graphQlTester.query("{}").executeAndVerify();
+		this.graphQlTester.document("{}").executeAndVerify();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -66,7 +66,7 @@ class WebGraphQlTesterContextCustomizerIntegrationTests {
 		@Bean
 		HttpHandler httpHandler() {
 			TestHandler httpHandler = new TestHandler();
-			Map<String, HttpHandler> handlersMap = Collections.singletonMap("/graphql", httpHandler);
+			Map<String, HttpHandler> handlersMap = Collections.singletonMap("/test/graphql", httpHandler);
 			return new ContextPathCompositeHandler(handlersMap);
 		}
 
