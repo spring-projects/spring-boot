@@ -24,11 +24,9 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
-import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.MessageConverter;
@@ -54,10 +52,6 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private KafkaAwareTransactionManager<Object, Object> transactionManager;
 
 	private ConsumerAwareRebalanceListener rebalanceListener;
-
-	private ErrorHandler errorHandler;
-
-	private BatchErrorHandler batchErrorHandler;
 
 	private CommonErrorHandler commonErrorHandler;
 
@@ -115,22 +109,6 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Set the {@link ErrorHandler} to use.
-	 * @param errorHandler the error handler
-	 */
-	void setErrorHandler(ErrorHandler errorHandler) {
-		this.errorHandler = errorHandler;
-	}
-
-	/**
-	 * Set the {@link BatchErrorHandler} to use.
-	 * @param batchErrorHandler the error handler
-	 */
-	void setBatchErrorHandler(BatchErrorHandler batchErrorHandler) {
-		this.batchErrorHandler = batchErrorHandler;
-	}
-
-	/**
 	 * Set the {@link CommonErrorHandler} to use.
 	 * @param commonErrorHandler the error handler.
 	 * @since 2.6.0
@@ -178,10 +156,6 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.replyTemplate).to(factory::setReplyTemplate);
 		if (properties.getType().equals(Listener.Type.BATCH)) {
 			factory.setBatchListener(true);
-			factory.setBatchErrorHandler(this.batchErrorHandler);
-		}
-		else {
-			factory.setErrorHandler(this.errorHandler);
 		}
 		map.from(this.commonErrorHandler).to(factory::setCommonErrorHandler);
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);

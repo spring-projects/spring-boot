@@ -42,7 +42,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 include::code:MyBean[]
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
-Similarly, if a `RecordFilterStrategy`, `ErrorHandler`, `CommonErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
+Similarly, if a `RecordFilterStrategy`, `CommonErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
 
 Depending on the listener type, a `RecordMessageConverter` or `BatchMessageConverter` bean is associated to the default factory.
 If only a `RecordMessageConverter` bean is present for a batch listener, it is wrapped in a `BatchMessageConverter`.
