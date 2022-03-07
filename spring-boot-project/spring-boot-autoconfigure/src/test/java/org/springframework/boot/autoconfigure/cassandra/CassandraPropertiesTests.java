@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class CassandraPropertiesTests {
 	@Test
 	void defaultValuesInManualMetadataAreConsistent() {
 		OptionsMap driverDefaults = OptionsMap.driverDefaults();
-		// spring.data.cassandra.connection.connection-timeout
+		// spring.data.cassandra.connection.connect-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_CONNECT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
 		// spring.data.cassandra.connection.init-query-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_INIT_QUERY_TIMEOUT))
