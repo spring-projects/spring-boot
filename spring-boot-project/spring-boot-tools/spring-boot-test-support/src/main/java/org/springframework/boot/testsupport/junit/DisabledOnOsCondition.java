@@ -16,7 +16,7 @@
 
 package org.springframework.boot.testsupport.junit;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
@@ -32,24 +32,21 @@ class DisabledOnOsCondition implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		List<DisabledOnOs> annotations = AnnotationUtils.findRepeatableAnnotations(context.getElement(),
-				DisabledOnOs.class);
-		if (annotations.isEmpty()) {
+		Optional<DisabledOnOs> annotation = AnnotationUtils.findAnnotation(context.getElement(), DisabledOnOs.class);
+		if (!annotation.isPresent()) {
 			return ConditionEvaluationResult.enabled("No @DisabledOnOs found");
 		}
-		return evaluate(annotations);
+		return evaluate(annotation.get());
 	}
 
-	private ConditionEvaluationResult evaluate(List<DisabledOnOs> annotations) {
+	private ConditionEvaluationResult evaluate(DisabledOnOs annotation) {
 		String architecture = System.getProperty("os.arch");
 		String os = System.getProperty("os.name");
-		for (DisabledOnOs annotation : annotations) {
-			if (annotation.os().isCurrentOs() && annotation.architecture().equals(architecture)) {
-				String reason = annotation.disabledReason().isEmpty()
-						? String.format("Disabled on OS = %s, architecture = %s", os, architecture)
-						: annotation.disabledReason();
-				return ConditionEvaluationResult.disabled(reason);
-			}
+		if (annotation.os().isCurrentOs() && annotation.architecture().equals(architecture)) {
+			String reason = annotation.disabledReason().isEmpty()
+					? String.format("Disabled on OS = %s, architecture = %s", os, architecture)
+					: annotation.disabledReason();
+			return ConditionEvaluationResult.disabled(reason);
 		}
 		return ConditionEvaluationResult
 				.enabled(String.format("Enabled on OS = %s, architecture = %s", os, architecture));
