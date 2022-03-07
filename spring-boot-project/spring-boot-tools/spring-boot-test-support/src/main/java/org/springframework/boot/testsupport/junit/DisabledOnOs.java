@@ -17,7 +17,6 @@
 package org.springframework.boot.testsupport.junit;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -27,7 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Improves JUnit5's {@link org.junit.jupiter.api.condition.DisabledOnOs} by adding an
- * architecture check and making it repeatable.
+ * architecture check.
  *
  * @author Moritz Halbritter
  * @since 2.5.11
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(DisabledOnOsCondition.class)
-@Repeatable(DisabledOnOsRepeatable.class)
 public @interface DisabledOnOs {
 
 	/**
