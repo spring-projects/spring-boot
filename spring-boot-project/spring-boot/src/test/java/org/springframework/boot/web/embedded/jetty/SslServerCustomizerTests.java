@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
@@ -55,6 +57,8 @@ class SslServerCustomizerTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
+	@DisabledOnOs(os = OS.LINUX, architecture = "aarch64",
+			disabledReason = "conscrypt doesn't support Linux aarch64, see https://github.com/google/conscrypt/issues/1051")
 	void whenHttp2IsEnabledServerConnectorsHasSslAlpnH2AndHttpConnectionFactories() {
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
@@ -67,6 +71,8 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
+	@DisabledOnOs(os = OS.LINUX, architecture = "aarch64",
+			disabledReason = "conscrypt doesn't support Linux aarch64, see https://github.com/google/conscrypt/issues/1051")
 	void alpnConnectionFactoryHasNullDefaultProtocolToAllowNegotiationToHttp11() {
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
