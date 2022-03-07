@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Repeatable container for {@link DisabledOnOs}.
  *
  * @author Moritz Halbritter
- * @since 2.5.10
+ * @since 2.5.11
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
