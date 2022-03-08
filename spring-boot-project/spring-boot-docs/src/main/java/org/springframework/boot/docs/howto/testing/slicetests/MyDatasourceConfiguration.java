@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-class MyDatasourceConfiguration {
+public class MyDatasourceConfiguration {
 
 	@Bean
 	@ConfigurationProperties("app.datasource.second")
