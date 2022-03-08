@@ -1,5 +1,0 @@
-[[upgrading.whats-next]]
-== What to Read Next
-Once you've decided to upgrade your application, you can find detailed information regarding specific features in the rest of the document.
-
-Spring Boot's documentation is specific to that version, so any information that you find in here will contain the most up-to-date changes that are in that version.

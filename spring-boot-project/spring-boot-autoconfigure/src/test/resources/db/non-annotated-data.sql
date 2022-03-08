@@ -1,1 +1,0 @@
-INSERT INTO NON_ANNOTATED (ID, VALUE) values (2000, 'Test');

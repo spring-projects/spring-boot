@@ -1,2 +1,0 @@
-org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
-org.springframework.boot.test.context.bootstrap.TestDefaultTestExecutionListenersPostProcessor

@@ -1,5 +1,0 @@
-[[web.whats-next]]
-== What to Read Next
-You should now have a good understanding of how to develop  web applications with Spring Boot.
-The next few sections describe how Spring Boot integrates with various <<data#data, data technologies>>, <<messaging#messaging, messaging systems>>, and other IO capabilities.
-You can pick any of these based on your application's needs.
