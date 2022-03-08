@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.Wrapped;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -53,10 +54,21 @@ public class ConnectionPoolMetricsAutoConfiguration {
 	public void bindConnectionPoolsToRegistry(Map<String, ConnectionFactory> connectionFactories,
 			MeterRegistry registry) {
 		connectionFactories.forEach((beanName, connectionFactory) -> {
-			if (connectionFactory instanceof ConnectionPool) {
-				new ConnectionPoolMetrics((ConnectionPool) connectionFactory, beanName, Tags.empty()).bindTo(registry);
+			ConnectionPool pool = extractPool(connectionFactory);
+			if (pool != null) {
+				new ConnectionPoolMetrics(pool, beanName, Tags.empty()).bindTo(registry);
 			}
 		});
+	}
+
+	private ConnectionPool extractPool(Object candidate) {
+		if (candidate instanceof ConnectionPool) {
+			return (ConnectionPool) candidate;
+		}
+		if (candidate instanceof Wrapped) {
+			return extractPool(((Wrapped<?>) candidate).unwrap());
+		}
+		return null;
 	}
 
 }

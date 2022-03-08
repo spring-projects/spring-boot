@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,12 @@ import io.r2dbc.h2.H2ConnectionFactory;
 import io.r2dbc.h2.H2ConnectionOption;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
+import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.ConnectionFactoryMetadata;
+import io.r2dbc.spi.Wrapped;
 import org.junit.jupiter.api.Test;
+import org.reactivestreams.Publisher;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -90,6 +94,15 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void wrappedConnectionPoolExposedAsConnectionFactoryTypeIsInstrumented() {
+		this.contextRunner.withUserConfiguration(WrappedConnectionPoolConfiguration.class).run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			assertThat(registry.find("r2dbc.pool.acquired").gauges()).extracting(Meter::getId)
+					.extracting((id) -> id.getTag("name")).containsExactly("wrappedConnectionPool");
+		});
+	}
+
+	@Test
 	void allConnectionPoolsCanBeInstrumented() {
 		this.contextRunner.withUserConfiguration(TwoConnectionPoolsConfiguration.class).run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -116,6 +129,46 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 			return new ConnectionPool(
 					ConnectionPoolConfiguration.builder(H2ConnectionFactory.inMemory("db-" + UUID.randomUUID(), "sa",
 							"", Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1"))).build());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WrappedConnectionPoolConfiguration {
+
+		@Bean
+		ConnectionFactory wrappedConnectionPool() {
+			return new Wrapper(
+					new ConnectionPool(
+							ConnectionPoolConfiguration
+									.builder(H2ConnectionFactory.inMemory("db-" + UUID.randomUUID(), "sa", "",
+											Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1")))
+									.build()));
+		}
+
+		static class Wrapper implements ConnectionFactory, Wrapped<ConnectionFactory> {
+
+			private final ConnectionFactory delegate;
+
+			Wrapper(ConnectionFactory delegate) {
+				this.delegate = delegate;
+			}
+
+			@Override
+			public ConnectionFactory unwrap() {
+				return this.delegate;
+			}
+
+			@Override
+			public Publisher<? extends Connection> create() {
+				return this.delegate.create();
+			}
+
+			@Override
+			public ConnectionFactoryMetadata getMetadata() {
+				return this.delegate.getMetadata();
+			}
+
 		}
 
 	}
