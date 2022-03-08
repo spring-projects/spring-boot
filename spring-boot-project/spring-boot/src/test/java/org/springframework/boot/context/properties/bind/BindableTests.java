@@ -146,7 +146,7 @@ class BindableTests {
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		assertThat(bindable.toString())
 				.contains("type = java.lang.String, value = 'provided', annotations = array<Annotation>["
-						+ "@org.springframework.boot.context.properties.bind.BindableTests$TestAnnotation()]");
+						+ "@org.springframework.boot.context.properties.bind.BindableTests.TestAnnotation()]");
 	}
 
 	@Test
