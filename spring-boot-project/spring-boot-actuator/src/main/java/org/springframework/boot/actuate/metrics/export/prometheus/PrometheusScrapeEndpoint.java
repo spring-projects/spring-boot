@@ -42,13 +42,11 @@ import org.springframework.lang.Nullable;
 @WebEndpoint(id = "prometheus")
 public class PrometheusScrapeEndpoint {
 
-	// the default Prometheus metrics contains more than 11k characters
-	private static final int METRICS_SCRAPE_CHARS_INIT = 12 * 1024;
 	private static final int METRICS_SCRAPE_CHARS_EXTRA = 1024;
 
 	private final CollectorRegistry collectorRegistry;
 
-	private volatile int previousMetricsScrapeSize = METRICS_SCRAPE_CHARS_INIT;
+	private volatile int nextMetricsScrapeSize = 16;
 
 	public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 		this.collectorRegistry = collectorRegistry;
@@ -57,14 +55,14 @@ public class PrometheusScrapeEndpoint {
 	@ReadOperation(producesFrom = TextOutputFormat.class)
 	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
-			Writer writer = new StringWriter(previousMetricsScrapeSize + METRICS_SCRAPE_CHARS_EXTRA);
+			Writer writer = new StringWriter(nextMetricsScrapeSize);
 			Enumeration<MetricFamilySamples> samples = (includedNames != null)
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
 			format.write(writer, samples);
 
 			String scrapePage = writer.toString();
-			previousMetricsScrapeSize = scrapePage.length();
+			nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
 
 			return new WebEndpointResponse<>(scrapePage, format);
 		}
