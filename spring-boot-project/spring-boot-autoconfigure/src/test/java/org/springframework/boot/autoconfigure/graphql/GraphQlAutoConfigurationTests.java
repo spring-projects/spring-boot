@@ -40,7 +40,6 @@ import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.DataLoaderRegistrar;
 import org.springframework.graphql.execution.GraphQlSource;
-import org.springframework.graphql.execution.MissingSchemaException;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,11 +74,9 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldFailWhenSchemaFileIsMissing() {
-		this.contextRunner.withPropertyValues("spring.graphql.schema.locations:classpath:missing/").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context).getFailure().getRootCause().isInstanceOf(MissingSchemaException.class);
-		});
+	void shouldBackoffWhenSchemaFileIsMissing() {
+		this.contextRunner.withPropertyValues("spring.graphql.schema.locations:classpath:missing/")
+				.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(GraphQlSource.class));
 	}
 
 	@Test

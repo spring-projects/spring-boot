@@ -48,7 +48,6 @@ import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.DefaultBatchLoaderRegistry;
 import org.springframework.graphql.execution.ExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
-import org.springframework.graphql.execution.MissingSchemaException;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 /**
@@ -60,6 +59,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
  */
 @AutoConfiguration
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class })
+@ConditionalOnGraphQlSchema
 @EnableConfigurationProperties(GraphQlProperties.class)
 public class GraphQlAutoConfiguration {
 
@@ -87,12 +87,7 @@ public class GraphQlAutoConfiguration {
 		}
 		wiringConfigurers.orderedStream().forEach(builder::configureRuntimeWiring);
 		sourceCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		try {
-			return builder.build();
-		}
-		catch (MissingSchemaException ex) {
-			throw new InvalidSchemaLocationsException(schemaLocations, resourcePatternResolver, ex);
-		}
+		return builder.build();
 	}
 
 	private Builder enableIntrospection(Builder wiring) {
