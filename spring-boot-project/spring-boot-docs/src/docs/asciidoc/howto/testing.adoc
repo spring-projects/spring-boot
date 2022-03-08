@@ -45,3 +45,36 @@ include::{docs-java}/howto/testing/testcontainers/dynamicproperties/MyIntegratio
 ----
 
 The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
+
+
+
+[[howto.testing.slice-tests]]
+=== Structure `@Configuration` classes for inclusion in slice tests
+Slice tests work by restricting Spring Framework's component scanning to a limited set of components based on their type.
+For any beans that are not created via component scanning, for example, beans that are created using the `@Bean` annotation, slice tests will not be able to include/exclude them from the application context.
+Consider this example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/testing/slicetests/MyConfiguration.java[]
+----
+
+For a `@WebMvcTest` for an application with the above `@Configuration` class, you might expect to have the `SecurityFilterChain` bean in the application context so that you can test if your controller endpoints are secured properly.
+However, `MyConfiguration` is not picked up by @WebMvcTest's component scanning filter because it doesn't match any of the types specified by the filter.
+You can include the configuration explicitly by annotating the test class with `@Import(MySecurityConfiguration.class)`.
+This will load all the beans in `MyConfiguration` including the `BasicDataSource` bean which isn't required when testing the web tier.
+Splitting the configuration class into two will enable importing just the security configuration.
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/testing/slicetests/MySecurityConfiguration.java[]
+----
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/testing/slicetests/MyDatasourceConfiguration.java[]
+----
+
+Having a single configuration class can be inefficient when beans of a certain domain needed to be included in slice tests.
+Instead, structuring the application's configuration as multiple granular classes with beans for a specific domain can enable importing them only for specific slice tests.
+

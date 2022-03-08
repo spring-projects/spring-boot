@@ -871,6 +871,7 @@ include::{docs-java}/features/testing/springbootapplications/userconfigurationan
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
 The latter approach lets you enable it in one of your tests, if necessary, with the `@Import` annotation.
+See <<howto#howto.testing.slice-tests,this how-to section>> for more details on when you might want to enable specific `@Configuration` classes for slice tests.
 
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:
