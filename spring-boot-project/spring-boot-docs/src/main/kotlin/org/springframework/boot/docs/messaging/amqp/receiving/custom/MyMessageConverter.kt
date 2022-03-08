@@ -22,12 +22,12 @@ import org.springframework.amqp.support.converter.MessageConverter
 
 internal class MyMessageConverter : MessageConverter {
 
-	override fun toMessage(`object`: Any, messageProperties: MessageProperties): Message? {
-		return null
+	override fun toMessage(`object`: Any, messageProperties: MessageProperties): Message {
+		return Message(byteArrayOf())
 	}
 
-	override fun fromMessage(message: Message): Any? {
-		return null
+	override fun fromMessage(message: Message): Any {
+		return Any()
 	}
 
 }

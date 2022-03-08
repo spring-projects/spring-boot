@@ -22,12 +22,12 @@ import org.springframework.jms.support.converter.MessageConverter
 
 internal class MyMessageConverter : MessageConverter {
 
-	override fun toMessage(`object`: Any, session: Session): Message? {
-		return null
+	override fun toMessage(`object`: Any, session: Session): Message {
+		return session.createObjectMessage()
 	}
 
-	override fun fromMessage(message: Message): Any? {
-		return null
+	override fun fromMessage(message: Message): Any {
+		return Any()
 	}
 
 }
