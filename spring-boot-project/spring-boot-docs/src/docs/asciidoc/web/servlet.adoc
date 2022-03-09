@@ -582,6 +582,17 @@ Usually a `TomcatServletWebServerFactory`, `JettyServletWebServerFactory`, or `U
 NOTE: You usually do not need to be aware of these implementation classes.
 Most applications are auto-configured, and the appropriate `ApplicationContext` and `ServletWebServerFactory` are created on your behalf.
 
+In an embedded container setup, the `ServletContext` is set as part of server startup which happens during application context initialization.
+Because of this beans in the `ApplicationContext` cannot be reliably initialized with a `ServletContext`.
+One way to get around this is to inject `ApplicationContext` as a dependency of the bean and access the `ServletContext` only when it is needed.
+Another way is to use a callback once the server has started.
+This can be done using an `ApplicationListener` which listens for the `ApplicationStartedEvent` as follows:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean.java[]
+----
+
 
 
 [[web.servlet.embedded-container.customizing]]
