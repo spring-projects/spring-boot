@@ -108,7 +108,7 @@ abstract class ElasticsearchDataConfiguration {
 				ElasticsearchConverter converter) {
 			ReactiveElasticsearchTemplate template = new ReactiveElasticsearchTemplate(client, converter);
 			template.setIndicesOptions(IndicesOptions.strictExpandOpenAndForbidClosed());
-			template.setRefreshPolicy(RefreshPolicy.IMMEDIATE);
+			template.setRefreshPolicy(RefreshPolicy.NONE);
 			return template;
 		}
 
