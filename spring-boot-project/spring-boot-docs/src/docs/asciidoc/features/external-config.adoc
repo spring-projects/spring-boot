@@ -893,7 +893,10 @@ NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys 
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
 The slash has been removed from `key3` because it was not surrounded by square brackets.
 
-You may also occasionally need to use the bracket notation if your `key` contains a `.` and you are binding to non-scalar value.
+When binding to scalar values, keys with `.` in them do not need to be surrounded by `[]`.
+Scalar values include enums and all types in the `java.lang` package except for `Object`.
+Binding `a.b=c` to `Map<String, String>` will preserve the `.` in the key and return a Map with the entry `{"a.b"="c"}`.
+For any other types you need to use the bracket notation if your `key` contains a `.`.
 For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` whereas `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`.
 
 
