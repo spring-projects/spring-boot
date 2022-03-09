@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.system;
 
+import java.lang.reflect.Method;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.platform.commons.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -137,6 +141,27 @@ class JavaVersionTests {
 	@EnabledOnJre(JRE.JAVA_17)
 	void currentJavaVersionSeventeen() {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SEVENTEEN);
+	}
+
+	@Test
+	@EnabledIf(value = "isJava18")
+	void currentJavaVersionEighteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.EIGHTEEN);
+	}
+
+	boolean isJava18() throws Exception {
+		// Same detection mechanism as org.junit.jupiter.api.condition.JRE
+		// which does not have a JAVA_18 constant in JUnit 5.7.x
+		try {
+			Method versionMethod = Runtime.class.getMethod("version");
+			Object version = ReflectionUtils.invokeMethod(versionMethod, null);
+			Method majorMethod = version.getClass().getMethod("major");
+			int major = (int) ReflectionUtils.invokeMethod(majorMethod, version);
+			return major == 18;
+		}
+		catch (Exception ex) {
+			return false;
+		}
 	}
 
 }
