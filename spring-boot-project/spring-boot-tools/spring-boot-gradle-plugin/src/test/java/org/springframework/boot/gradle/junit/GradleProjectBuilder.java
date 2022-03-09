@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 /**
  * Helper class to build Gradle {@link Project Projects} for test fixtures. Wraps
  * functionality of Gradle's own {@link ProjectBuilder} in order to workaround an issue on
- * JDK 17.
+ * JDK 17 and 18.
  *
  * @author Christoph Dreis
  * @see <a href="https://github.com/gradle/gradle/issues/16857">Gradle Support JDK 17</a>
@@ -67,7 +67,7 @@ public final class GradleProjectBuilder {
 		if (StringUtils.hasText(this.name)) {
 			builder.withName(this.name);
 		}
-		if (JavaVersion.current() == JavaVersion.VERSION_17) {
+		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
 			NativeServices.initialize(userHome);
 			try {
 				ProjectBuilderImpl.getGlobalServices();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ClassPathOverrides({ "org.mockito:mockito-core:4.0.0", "org.mockito:mockito-junit-jupiter:4.0.0" })
 class MapBinderTests {
 
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable.mapOf(String.class, String.class);

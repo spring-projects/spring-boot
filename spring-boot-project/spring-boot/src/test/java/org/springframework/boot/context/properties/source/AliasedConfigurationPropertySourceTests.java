@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -31,6 +34,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ClassPathOverrides({ "org.mockito:mockito-core:4.0.0", "org.mockito:mockito-junit-jupiter:4.0.0" })
 class AliasedConfigurationPropertySourceTests {
 
 	@Test
@@ -90,7 +94,7 @@ class AliasedConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenAnyIsPresentShouldReturnPresent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
+		ConfigurationPropertySource source = mockConfigurationPropertySource();
 		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.ABSENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
 				.willReturn(ConfigurationPropertyState.PRESENT);
@@ -111,6 +115,12 @@ class AliasedConfigurationPropertySourceTests {
 	private Object getValue(ConfigurationPropertySource source, String name) {
 		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getValue() : null;
+	}
+
+	private ConfigurationPropertySource mockConfigurationPropertySource() {
+		ConfigurationPropertySource mock = mock(ConfigurationPropertySource.class);
+		given(mock.withAliases(any())).willAnswer((invocation) -> invocation.callRealMethod());
+		return mock;
 	}
 
 }

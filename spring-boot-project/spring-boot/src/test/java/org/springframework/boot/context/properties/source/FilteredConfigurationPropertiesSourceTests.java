@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ClassPathOverrides({ "org.mockito:mockito-core:4.0.0", "org.mockito:mockito-junit-jupiter:4.0.0" })
 class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
