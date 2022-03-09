@@ -123,7 +123,7 @@ For example, to look for `myproject.properties` and `myproject.yaml` files you c
 ----
 
 You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
-This properties accepts a comma-separated list of one or more locations to check.
+This property accepts a comma-separated list of one or more locations to check.
 
 The following example shows how to specify two distinct files:
 
