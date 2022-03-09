@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.system;
 
 import java.io.Console;
 import java.lang.invoke.MethodHandles;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +84,12 @@ public enum JavaVersion {
 	/**
 	 * Java 17.
 	 */
-	SEVENTEEN("17", Console.class, "charset");
+	SEVENTEEN("17", Console.class, "charset"),
+
+	/**
+	 * Java 18.
+	 */
+	EIGHTEEN("18", Duration.class, "isPositive");
 
 	private final String name;
 
