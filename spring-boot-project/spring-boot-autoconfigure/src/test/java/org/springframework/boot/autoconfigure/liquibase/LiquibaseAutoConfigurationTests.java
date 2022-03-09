@@ -30,8 +30,6 @@ import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -132,7 +130,6 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	@EnabledOnJre(JRE.JAVA_8)
 	void changelogSql() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")

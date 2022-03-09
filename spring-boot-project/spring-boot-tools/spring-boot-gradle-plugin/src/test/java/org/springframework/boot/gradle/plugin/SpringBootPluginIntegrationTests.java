@@ -18,8 +18,6 @@ package org.springframework.boot.gradle.plugin;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
@@ -37,18 +35,11 @@ class SpringBootPluginIntegrationTests {
 
 	final GradleBuild gradleBuild = new GradleBuild();
 
-	@DisabledForJreRange(min = JRE.JAVA_14)
 	@Test
 	void failFastWithVersionOfGradle7LowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("7.3.3").buildAndFail();
 		assertThat(result.getOutput())
 				.contains("Spring Boot plugin requires Gradle 7.x (7.4 or later). The current version is Gradle 7.3.3");
-	}
-
-	@DisabledForJreRange(min = JRE.JAVA_16)
-	@Test
-	void succeedWithVersionOfGradle6MatchingWithIsRequired() {
-		this.gradleBuild.gradleVersion("6.8").build();
 	}
 
 }

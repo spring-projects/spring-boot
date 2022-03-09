@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
@@ -412,7 +410,6 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void implicitlyBoundRecordProperties(@TempDir File temp) throws IOException {
 		File exampleRecord = new File(temp, "ExampleRecord.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
@@ -426,7 +423,6 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void multiConstructorRecordProperties(@TempDir File temp) throws IOException {
 		File exampleRecord = new File(temp, "ExampleRecord.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {

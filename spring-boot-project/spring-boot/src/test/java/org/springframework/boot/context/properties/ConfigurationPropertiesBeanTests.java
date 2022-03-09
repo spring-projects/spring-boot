@@ -23,8 +23,6 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.ClassFileVersion;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,7 +223,6 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void forValueObjectWithUnannotatedRecordReturnsBean() {
 		Class<?> implicitConstructorBinding = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
 				.name("org.springframework.boot.context.properties.ImplicitConstructorBinding")
