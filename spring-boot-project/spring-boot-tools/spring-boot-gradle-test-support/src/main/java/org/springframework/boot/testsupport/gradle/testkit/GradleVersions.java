@@ -33,6 +33,9 @@ public final class GradleVersions {
 	}
 
 	public static List<String> allCompatible() {
+		if (isJava18()) {
+			return Arrays.asList("7.3.3", "7.4");
+		}
 		if (isJava17()) {
 			return Arrays.asList("7.2", "7.3.3", "7.4");
 		}
@@ -50,6 +53,10 @@ public final class GradleVersions {
 			return "7.0.2";
 		}
 		return GradleVersion.current().getVersion();
+	}
+
+	private static boolean isJava18() {
+		return JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_HIGHER);
 	}
 
 	private static boolean isJava17() {
