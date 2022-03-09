@@ -108,7 +108,7 @@ class LoaderIntegrationTests {
 		}
 
 		static JavaRuntime openJdk(JavaVersion version) {
-			String imageVersion = (version != JavaVersion.EIGHT) ? version.toString() : "8";
+			String imageVersion = version.toString();
 			DockerImageName image = DockerImageName.parse("bellsoft/liberica-openjdk-debian:" + imageVersion);
 			return new JavaRuntime("OpenJDK " + imageVersion, version, () -> new GenericContainer<>(image));
 		}
