@@ -144,7 +144,7 @@ class JavaVersionTests {
 	}
 
 	@Test
-	@EnabledIf(value = "isJava18")
+	@EnabledIf("isJava18")
 	void currentJavaVersionEighteen() {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.EIGHTEEN);
 	}
