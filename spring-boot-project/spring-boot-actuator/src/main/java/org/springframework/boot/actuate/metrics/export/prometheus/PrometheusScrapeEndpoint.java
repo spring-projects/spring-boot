@@ -55,14 +55,14 @@ public class PrometheusScrapeEndpoint {
 	@ReadOperation(producesFrom = TextOutputFormat.class)
 	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
-			Writer writer = new StringWriter(nextMetricsScrapeSize);
+			Writer writer = new StringWriter(this.nextMetricsScrapeSize);
 			Enumeration<MetricFamilySamples> samples = (includedNames != null)
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
 			format.write(writer, samples);
 
 			String scrapePage = writer.toString();
-			nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
+			this.nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
 
 			return new WebEndpointResponse<>(scrapePage, format);
 		}
