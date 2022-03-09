@@ -31,6 +31,27 @@ The name of the default profile is `default` and it can be tuned using the confi
 	    default: "none"
 ----
 
+`spring.profiles.active` and `spring.profiles.default` can only be used in non-profile specific documents.
+This means they cannot be included in <<features#features.external-config.files.profile-specific,profile specific files>> or <<features#features.external-config.files.activation-properties,documents activated>> by `spring.config.activate.on-profile`.
+
+For example, the second document configuration is invalid:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	# this document is valid
+	spring:
+	  profiles:
+	    active: "prod"
+	---
+	# this document is invalid
+	spring:
+	  config:
+	    activate:
+	      on-profile: "prod"
+	  profiles:
+	    active: "metrics"
+----
+
 
 
 [[features.profiles.adding-active-profiles]]
@@ -39,8 +60,24 @@ The configprop:spring.profiles.active[] property follows the same ordering rules
 This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
 
 Sometimes, it is useful to have properties that *add* to the active profiles rather than replace them.
-The `SpringApplication` entry point has a Java API for setting additional profiles (that is, on top of those activated by the configprop:spring.profiles.active[] property).
+The `spring.profiles.include` property can be used to add active profiles on top of those activated by the configprop:spring.profiles.active[] property.
+The `SpringApplication` entry point also has a Java API for setting additional profiles.
 See the `setAdditionalProfiles()` method in {spring-boot-module-api}/SpringApplication.html[SpringApplication].
+
+For example, when an application with the following properties is run, the common and local profiles will be activated even when it runs using the --spring.profiles.active switch:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  profiles:
+	    include:
+	      - "common"
+	      - "local"
+----
+
+WARNING: Similar to `spring.profiles.active`, `spring.profiles.include` can only be used in non-profile specific documents.
+This means it cannot be included in <<features#features.external-config.files.profile-specific,profile specific files>> or <<features#features.external-config.files.activation-properties,documents activated>> by `spring.config.activate.on-profile`.
+
 Profile groups, which are described in the <<features#features.profiles.groups,next section>> can also be used to add active profiles if a given profile is active.
 
 
