@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -338,6 +339,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result, HttpMethod httpMethod) {
+			if (result instanceof Flux) {
+				result = ((Flux<?>) result).collectList();
+			}
 			return Mono.from(result).map(this::toResponseEntity)
 					.onErrorMap(InvalidEndpointRequestException.class,
 							(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getReason()))
