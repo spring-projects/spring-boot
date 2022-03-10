@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -267,6 +268,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	void readOperationWithMonoResponse() {
 		load(MonoResponseEndpointConfiguration.class, (client) -> client.get().uri("/mono").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("a").isEqualTo("alpha"));
+	}
+
+	@Test
+	void readOperationWithFluxResponse() {
+		load(FluxResponseEndpointConfiguration.class,
+				(client) -> client.get().uri("/flux").exchange().expectStatus().isOk().expectBody().jsonPath("[0].a")
+						.isEqualTo("alpha").jsonPath("[1].b").isEqualTo("bravo").jsonPath("[2].c")
+						.isEqualTo("charlie"));
 	}
 
 	@Test
@@ -566,6 +575,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
+	static class FluxResponseEndpointConfiguration {
+
+		@Bean
+		FluxResponseEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+			return new FluxResponseEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
 	static class CustomMediaTypesEndpointConfiguration {
 
 		@Bean
@@ -802,6 +822,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		Mono<Map<String, String>> operation() {
 			return Mono.just(Collections.singletonMap("a", "alpha"));
+		}
+
+	}
+
+	@Endpoint(id = "flux")
+	static class FluxResponseEndpoint {
+
+		@ReadOperation
+		Flux<Map<String, String>> operation() {
+			return Flux.just(Collections.singletonMap("a", "alpha"), Collections.singletonMap("b", "bravo"),
+					Collections.singletonMap("c", "charlie"));
 		}
 
 	}
