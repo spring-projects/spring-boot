@@ -976,7 +976,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "2.0.0-M3") {
+	library("Micrometer", "2.0.0-SNAPSHOT") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -985,6 +985,13 @@ bom {
 			]
 			imports = [
 				"micrometer-bom"
+			]
+		}
+	}
+	library("Micrometer Tracing", "1.0.0-SNAPSHOT") {
+		group("io.micrometer") {
+			modules = [
+				"micrometer-tracing-api"
 			]
 		}
 	}

@@ -47,7 +47,9 @@ dependencies {
 	optional("com.zaxxer:HikariCP")
 	optional("io.dropwizard.metrics:metrics-jmx")
 	optional("io.lettuce:lettuce-core")
+	optional("io.micrometer:micrometer-observation")
 	optional("io.micrometer:micrometer-core")
+	optional("io.micrometer:micrometer-tracing-api")
 	optional("io.micrometer:micrometer-binders")
 	optional("io.micrometer:micrometer-registry-appoptics")
 	optional("io.micrometer:micrometer-registry-atlas") {
