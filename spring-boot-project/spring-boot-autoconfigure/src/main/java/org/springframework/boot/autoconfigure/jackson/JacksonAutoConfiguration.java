@@ -41,11 +41,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jackson.JacksonProperties.ConstructorDetectorStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.JsonComponentModule;
+import org.springframework.boot.jackson.JsonMixinModule;
+import org.springframework.boot.jackson.JsonMixinScanPackages;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -91,6 +94,15 @@ public class JacksonAutoConfiguration {
 	@Bean
 	public JsonComponentModule jsonComponentModule() {
 		return new JsonComponentModule();
+	}
+
+	@Bean
+	public JsonMixinModule jsonMixinModule(ApplicationContext context) {
+		List<String> packages = JsonMixinScanPackages.get(context).getPackageNames();
+		if (packages.isEmpty() && AutoConfigurationPackages.has(context)) {
+			packages = AutoConfigurationPackages.get(context);
+		}
+		return new JsonMixinModule(context, packages);
 	}
 
 	@Configuration(proxyBeanMethods = false)
