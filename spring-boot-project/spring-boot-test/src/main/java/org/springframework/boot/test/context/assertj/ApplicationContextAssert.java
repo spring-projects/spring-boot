@@ -198,7 +198,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		}
 		try {
 			Object bean = getApplicationContext().getBean(name);
-			throwAssertionError(new BasicErrorMessageFactory(
+			if(!bean.equals(null))
+				throwAssertionError(new BasicErrorMessageFactory(
 					"%nExpecting:%n <%s>%nnot to have a bean of name:%n <%s>%nbut found:%n <%s>",
 					getApplicationContext(), name, bean));
 		}
