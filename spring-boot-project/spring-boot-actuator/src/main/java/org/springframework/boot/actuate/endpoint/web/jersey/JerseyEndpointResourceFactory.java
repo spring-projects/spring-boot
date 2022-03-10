@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.glassfish.jersey.process.Inflector;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.Resource.Builder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
@@ -138,6 +139,7 @@ public class JerseyEndpointResourceFactory {
 			List<Function<Object, Object>> converters = new ArrayList<>();
 			converters.add(new ResourceBodyConverter());
 			if (ClassUtils.isPresent("reactor.core.publisher.Mono", OperationInflector.class.getClassLoader())) {
+				converters.add(new FluxBodyConverter());
 				converters.add(new MonoBodyConverter());
 			}
 			BODY_CONVERTERS = Collections.unmodifiableList(converters);
@@ -291,6 +293,21 @@ public class JerseyEndpointResourceFactory {
 		public Object apply(Object body) {
 			if (body instanceof Mono) {
 				return ((Mono<?>) body).block();
+			}
+			return body;
+		}
+
+	}
+
+	/**
+	 * Body converter from {@link Flux} to {@link Flux#collectList Mono&lt;List&gt;}.
+	 */
+	private static final class FluxBodyConverter implements Function<Object, Object> {
+
+		@Override
+		public Object apply(Object body) {
+			if (body instanceof Flux) {
+				return ((Flux<?>) body).collectList();
 			}
 			return body;
 		}

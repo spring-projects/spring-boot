@@ -27,6 +27,7 @@ import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.FatalBeanException;
@@ -153,6 +154,15 @@ class EndpointMBeanTests {
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 		assertThat(result).isEqualTo("monoResult");
+	}
+
+	@Test
+	void invokeWhenFluxResultShouldCollectToMonoListAndBlockOnMono() throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> Flux.just("flux", "result")));
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
+		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThat(result).asList().containsExactly("flux", "result");
 	}
 
 	@Test
