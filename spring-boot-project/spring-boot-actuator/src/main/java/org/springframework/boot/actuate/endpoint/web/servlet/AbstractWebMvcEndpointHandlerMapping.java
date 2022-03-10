@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,20 @@ package org.springframework.boot.actuate.endpoint.web.servlet;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
@@ -52,6 +57,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -310,6 +316,17 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
+		private static final List<Function<Object, Object>> BODY_CONVERTERS;
+
+		static {
+			List<Function<Object, Object>> converters = new ArrayList<>();
+			if (ClassUtils.isPresent("reactor.core.publisher.Flux",
+					ServletWebOperationAdapter.class.getClassLoader())) {
+				converters.add(new FluxBodyConverter());
+			}
+			BODY_CONVERTERS = Collections.unmodifiableList(converters);
+		}
+
 		private final WebOperation operation;
 
 		ServletWebOperationAdapter(WebOperation operation) {
@@ -395,12 +412,32 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
 			}
 			if (!(result instanceof WebEndpointResponse)) {
-				return result;
+				return convertIfNecessary(result);
 			}
 			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
 			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
 					: null;
-			return ResponseEntity.status(response.getStatus()).contentType(contentType).body(response.getBody());
+			return ResponseEntity.status(response.getStatus()).contentType(contentType)
+					.body(convertIfNecessary(response.getBody()));
+		}
+
+		private Object convertIfNecessary(Object body) {
+			for (Function<Object, Object> converter : BODY_CONVERTERS) {
+				body = converter.apply(body);
+			}
+			return body;
+		}
+
+		private static class FluxBodyConverter implements Function<Object, Object> {
+
+			@Override
+			public Object apply(Object body) {
+				if (!(body instanceof Flux)) {
+					return body;
+				}
+				return ((Flux<?>) body).collectList();
+			}
+
 		}
 
 	}
