@@ -50,7 +50,8 @@ class CassandraAutoConfigurationIntegrationTests {
 					"spring.data.cassandra.contact-points:" + cassandra.getHost() + ":"
 							+ cassandra.getFirstMappedPort(),
 					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.request.timeout=20s",
-					"spring.data.cassandra.connection.init-query-timeout=10s");
+					"spring.data.cassandra.connection.init-query-timeout=20s",
+					"spring.data.cassandra.request.timeout=20s");
 
 	@Test
 	void whenTheContextIsClosedThenTheDriverConfigLoaderIsClosed() {
