@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
+import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
@@ -47,9 +48,13 @@ class Lifecycle implements Closeable {
 
 	private static final String PLATFORM_API_VERSION_KEY = "CNB_PLATFORM_API";
 
+	private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
+
 	private final BuildLog log;
 
 	private final DockerApi docker;
+
+	private final ResolvedDockerHost dockerHost;
 
 	private final BuildRequest request;
 
@@ -75,12 +80,15 @@ class Lifecycle implements Closeable {
 	 * Create a new {@link Lifecycle} instance.
 	 * @param log build output log
 	 * @param docker the Docker API
+	 * @param dockerHost the Docker host information
 	 * @param request the request to process
 	 * @param builder the ephemeral builder used to run the phases
 	 */
-	Lifecycle(BuildLog log, DockerApi docker, BuildRequest request, EphemeralBuilder builder) {
+	Lifecycle(BuildLog log, DockerApi docker, ResolvedDockerHost dockerHost, BuildRequest request,
+			EphemeralBuilder builder) {
 		this.log = log;
 		this.docker = docker;
+		this.dockerHost = dockerHost;
 		this.request = request;
 		this.builder = builder;
 		this.lifecycleVersion = LifecycleVersion.parse(builder.getBuilderMetadata().getLifecycle().getVersion());
@@ -147,6 +155,7 @@ class Lifecycle implements Closeable {
 	private Phase createPhase() {
 		Phase phase = new Phase("creator", isVerboseLogging());
 		phase.withDaemonAccess();
+		configureDaemonAccess(phase);
 		phase.withLogLevelArg();
 		phase.withArgs("-app", Directory.APPLICATION);
 		phase.withArgs("-platform", Directory.PLATFORM);
@@ -174,6 +183,24 @@ class Lifecycle implements Closeable {
 			phase.withNetworkMode(this.request.getNetwork());
 		}
 		return phase;
+	}
+
+	private void configureDaemonAccess(Phase phase) {
+		if (this.dockerHost != null) {
+			if (this.dockerHost.isRemote()) {
+				phase.withEnv("DOCKER_HOST", this.dockerHost.getAddress());
+				if (this.dockerHost.isSecure()) {
+					phase.withEnv("DOCKER_TLS_VERIFY", "1");
+					phase.withEnv("DOCKER_CERT_PATH", this.dockerHost.getCertificatePath());
+				}
+			}
+			else {
+				phase.withBinding(Binding.from(this.dockerHost.getAddress(), DOMAIN_SOCKET_PATH));
+			}
+		}
+		else {
+			phase.withBinding(Binding.from(DOMAIN_SOCKET_PATH, DOMAIN_SOCKET_PATH));
+		}
 	}
 
 	private boolean isVerboseLogging() {

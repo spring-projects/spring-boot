@@ -36,6 +36,8 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
+import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
@@ -212,6 +214,28 @@ class LifecycleTests {
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
+	@Test
+	void executeWithDockerHostAndRemoteAddressExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest();
+		createLifecycle(request, ResolvedDockerHost.from(new DockerHost("tcp://192.168.1.2:2376"))).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-remote.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeWithDockerHostAndLocalAddressExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest();
+		createLifecycle(request, ResolvedDockerHost.from(new DockerHost("/var/alt.sock"))).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-local.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
 	private DockerApi mockDockerApi() {
 		DockerApi docker = mock(DockerApi.class);
 		ImageApi imageApi = mock(ImageApi.class);
@@ -243,8 +267,13 @@ class LifecycleTests {
 		return createLifecycle(getTestRequest(), builder);
 	}
 
+	private Lifecycle createLifecycle(BuildRequest request, ResolvedDockerHost dockerHost) throws IOException {
+		EphemeralBuilder builder = mockEphemeralBuilder();
+		return new TestLifecycle(BuildLog.to(this.out), this.docker, dockerHost, request, builder);
+	}
+
 	private Lifecycle createLifecycle(BuildRequest request, EphemeralBuilder ephemeralBuilder) {
-		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, ephemeralBuilder);
+		return new TestLifecycle(BuildLog.to(this.out), this.docker, null, request, ephemeralBuilder);
 	}
 
 	private EphemeralBuilder mockEphemeralBuilder() throws IOException {
@@ -296,8 +325,9 @@ class LifecycleTests {
 
 	static class TestLifecycle extends Lifecycle {
 
-		TestLifecycle(BuildLog log, DockerApi docker, BuildRequest request, EphemeralBuilder builder) {
-			super(log, docker, request, builder);
+		TestLifecycle(BuildLog log, DockerApi docker, ResolvedDockerHost dockerHost, BuildRequest request,
+				EphemeralBuilder builder) {
+			super(log, docker, dockerHost, request, builder);
 		}
 
 		@Override
