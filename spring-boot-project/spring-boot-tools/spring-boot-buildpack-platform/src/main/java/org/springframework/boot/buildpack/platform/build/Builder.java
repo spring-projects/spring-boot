@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListe
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -83,7 +84,8 @@ public class Builder {
 	 * @since 2.4.0
 	 */
 	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
-		this(log, new DockerApi(dockerConfiguration), dockerConfiguration);
+		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null),
+				dockerConfiguration);
 	}
 
 	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
@@ -147,7 +149,11 @@ public class Builder {
 	}
 
 	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
-		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, request, builder)) {
+		ResolvedDockerHost dockerHost = null;
+		if (this.dockerConfiguration != null && this.dockerConfiguration.isBindHostToBuilder()) {
+			dockerHost = ResolvedDockerHost.from(this.dockerConfiguration.getHost());
+		}
+		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, dockerHost, request, builder)) {
 			lifecycle.execute();
 		}
 	}

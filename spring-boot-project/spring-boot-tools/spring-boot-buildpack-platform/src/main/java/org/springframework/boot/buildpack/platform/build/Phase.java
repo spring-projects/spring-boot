@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,6 @@ import org.springframework.util.StringUtils;
  * @author Jeroen Meijer
  */
 class Phase {
-
-	private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
 
 	private final String name;
 
@@ -132,7 +130,6 @@ class Phase {
 	void apply(ContainerConfig.Update update) {
 		if (this.daemonAccess) {
 			update.withUser("root");
-			update.withBinding(Binding.from(DOMAIN_SOCKET_PATH, DOMAIN_SOCKET_PATH));
 		}
 		update.withCommand("/cnb/lifecycle/" + this.name, StringUtils.toStringArray(this.args));
 		update.withLabel("author", "spring-boot");

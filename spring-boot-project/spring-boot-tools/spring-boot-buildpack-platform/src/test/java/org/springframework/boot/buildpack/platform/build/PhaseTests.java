@@ -60,13 +60,12 @@ class PhaseTests {
 	}
 
 	@Test
-	void applyWhenWithDaemonAccessUpdatesConfigurationWithRootUserAndDomainSocketBinding() {
+	void applyWhenWithDaemonAccessUpdatesConfigurationWithRootUser() {
 		Phase phase = new Phase("test", false);
 		phase.withDaemonAccess();
 		Update update = mock(Update.class);
 		phase.apply(update);
 		then(update).should().withUser("root");
-		then(update).should().withBinding(Binding.from("/var/run/docker.sock", "/var/run/docker.sock"));
 		then(update).should().withCommand("/cnb/lifecycle/test", NO_ARGS);
 		then(update).should().withLabel("author", "spring-boot");
 		then(update).shouldHaveNoMoreInteractions();

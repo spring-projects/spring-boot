@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public class DockerSpec {
 	private boolean tlsVerify;
 
 	private String certPath;
+
+	private boolean bindHostToBuilder;
 
 	private final DockerRegistrySpec builderRegistry;
 
@@ -81,6 +83,16 @@ public class DockerSpec {
 
 	public void setCertPath(String certPath) {
 		this.certPath = certPath;
+	}
+
+	@Input
+	@Optional
+	public Boolean isBindHostToBuilder() {
+		return this.bindHostToBuilder;
+	}
+
+	public void setBindHostToBuilder(boolean use) {
+		this.bindHostToBuilder = use;
 	}
 
 	/**
@@ -130,6 +142,7 @@ public class DockerSpec {
 	DockerConfiguration asDockerConfiguration() {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
+		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(this.bindHostToBuilder);
 		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
 		dockerConfiguration = customizePublishAuthentication(dockerConfiguration);
 		return dockerConfiguration;

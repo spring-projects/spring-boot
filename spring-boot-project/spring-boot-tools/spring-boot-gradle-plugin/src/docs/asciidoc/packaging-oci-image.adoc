@@ -48,6 +48,9 @@ The following table summarizes the available properties:
 
 | `certPath`
 | Path to certificate and key files for HTTPS (required if `tlsVerify` is `true`, ignored otherwise)
+
+| `bindHostToBuilder`
+| When `true`, the value of the `host` property will be provided to the container that is created for the CNB builder (optional)
 |===
 
 For more details, see also <<build-image.examples.docker,examples>>.
