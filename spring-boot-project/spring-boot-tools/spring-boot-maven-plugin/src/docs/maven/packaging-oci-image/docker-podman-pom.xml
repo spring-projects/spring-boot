@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- tag::docker-remote[] -->
+<!-- tag::docker-podman[] -->
 <project>
 	<build>
 		<plugins>
@@ -8,14 +8,13 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<docker>
-						<host>tcp://192.168.99.100:2376</host>
-						<tlsVerify>true</tlsVerify>
-						<certPath>/home/user/.minikube/certs</certPath>
+						<host>unix:///run/user/1000/podman/podman.sock</host>
+						<bindHostToBuilder>true</bindHostToBuilder>
 					</docker>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 </project>
-<!-- end::docker-remote[] -->
+<!-- end::docker-podman[] -->
 

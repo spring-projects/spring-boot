@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Scott Frederick
  */
 class EphemeralBuilderTests extends AbstractJsonTests {
+
+	private static final int EXISTING_IMAGE_LAYER_COUNT = 43;
 
 	@TempDir
 	File temp;
@@ -131,7 +133,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void getArchiveContainsEnvLayer() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
-		File directory = unpack(getLayer(builder.getArchive(), 0), "env");
+		File directory = unpack(getLayer(builder.getArchive(), EXISTING_IMAGE_LAYER_COUNT), "env");
 		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 		assertThat(new File(directory, "platform/env/empty")).usingCharset(StandardCharsets.UTF_8).hasContent("");
 	}
@@ -154,10 +156,13 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 		this.buildpacks = Buildpacks.of(buildpackList);
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, null, this.buildpacks);
-		assertBuildpackLayerContent(builder, 0, "/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
-		assertBuildpackLayerContent(builder, 1, "/cnb/buildpacks/example_buildpack2/0.0.2/buildpack.toml");
-		assertBuildpackLayerContent(builder, 2, "/cnb/buildpacks/example_buildpack3/0.0.3/buildpack.toml");
-		File orderDirectory = unpack(getLayer(builder.getArchive(), 3), "order");
+		assertBuildpackLayerContent(builder, EXISTING_IMAGE_LAYER_COUNT,
+				"/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
+		assertBuildpackLayerContent(builder, EXISTING_IMAGE_LAYER_COUNT + 1,
+				"/cnb/buildpacks/example_buildpack2/0.0.2/buildpack.toml");
+		assertBuildpackLayerContent(builder, EXISTING_IMAGE_LAYER_COUNT + 2,
+				"/cnb/buildpacks/example_buildpack3/0.0.3/buildpack.toml");
+		File orderDirectory = unpack(getLayer(builder.getArchive(), EXISTING_IMAGE_LAYER_COUNT + 3), "order");
 		assertThat(new File(orderDirectory, "cnb/order.toml")).usingCharset(StandardCharsets.UTF_8)
 				.hasContent(content("order.toml"));
 	}

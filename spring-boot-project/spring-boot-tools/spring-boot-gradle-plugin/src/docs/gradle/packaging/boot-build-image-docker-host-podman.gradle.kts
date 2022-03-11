@@ -13,9 +13,8 @@ tasks.named<BootJar>("bootJar") {
 // tag::docker-host[]
 tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
-		host = "tcp://192.168.99.100:2376"
-		isTlsVerify = true
-		certPath = "/home/user/.minikube/certs"
+		host = "unix:///run/user/1000/podman/podman.sock"
+		isBindHostToBuilder = true
 	}
 }
 // end::docker-host[]
@@ -23,7 +22,6 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 tasks.register("bootBuildImageDocker") {
 	doFirst {
 		println("host=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.host}")
-		println("tlsVerify=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.isTlsVerify}")
-		println("certPath=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.certPath}")
+		println("bindHostToBuilder=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.isBindHostToBuilder}")
 	}
 }
