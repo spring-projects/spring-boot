@@ -16,7 +16,7 @@ The `bootBuildImage` task requires access to a Docker daemon.
 By default, it will communicate with a Docker daemon over a local connection.
 This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
 
-Environment variables can be set to configure the `bootBuildImage` task to use the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube].
+Environment variables can be set to configure the `bootBuildImage` task to use an alternative local or remote connection.
 The following table shows the environment variables and their values:
 
 |===
@@ -31,8 +31,6 @@ The following table shows the environment variables and their values:
 | DOCKER_CERT_PATH
 | Path to certificate and key files for HTTPS (required if `DOCKER_TLS_VERIFY=1`, ignored otherwise)
 |===
-
-On Linux and macOS, these environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
 
 Docker daemon connection information can also be provided using `docker` properties in the plugin configuration.
 The following table summarizes the available properties:
@@ -416,7 +414,14 @@ include::../gradle/packaging/boot-build-image-caches.gradle.kts[tags=caches]
 [[build-image.examples.docker]]
 === Docker Configuration
 
-If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` properties as shown in the following example:
+[[build-image.examples.docker.minikube]]
+==== Docker Configuration for minikube
+
+The plugin can communicate with the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube] instead of the default local connection.
+
+On Linux and macOS, environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
+
+The plugin can also be configured to use the minikube daemon by providing connection details similar to those shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -429,6 +434,28 @@ include::../gradle/packaging/boot-build-image-docker-host.gradle[tags=docker-hos
 ----
 include::../gradle/packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
 ----
+
+[[build-image.examples.docker.podman]]
+==== Docker Configuration for podman
+
+The plugin can communicate with a https://podman.io/[podman container engine].
+
+The plugin can be configured to use podman local connection by providing connection details similar to those shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-docker-host-podman.gradle[tags=docker-host]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-docker-host-podman.gradle.kts[tags=docker-host]
+----
+
+[[build-image.examples.docker.auth]]
+==== Docker Configuration for Authentication
 
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` properties as shown in the following example:
 

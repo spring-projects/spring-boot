@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,8 @@ public class ImageArchive implements TarArchive {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME
 			.withZone(ZoneOffset.UTC);
+
+	private static final String EMPTY_LAYER_NAME_PREFIX = "blank_";
 
 	private static final IOConsumer<Update> NO_UPDATES = (update) -> {
 	};
@@ -125,6 +127,9 @@ public class ImageArchive implements TarArchive {
 	}
 
 	private List<LayerId> writeLayers(Layout writer) throws IOException {
+		for (int i = 0; i < this.existingLayers.size(); i++) {
+			writeEmptyLayer(writer, EMPTY_LAYER_NAME_PREFIX + i);
+		}
 		List<LayerId> writtenLayers = new ArrayList<>();
 		for (Layer layer : this.newLayers) {
 			writtenLayers.add(writeLayer(writer, layer));
@@ -132,9 +137,13 @@ public class ImageArchive implements TarArchive {
 		return Collections.unmodifiableList(writtenLayers);
 	}
 
+	private void writeEmptyLayer(Layout writer, String name) throws IOException {
+		writer.file(name, Owner.ROOT, Content.of(""));
+	}
+
 	private LayerId writeLayer(Layout writer, Layer layer) throws IOException {
 		LayerId id = layer.getId();
-		writer.file("/" + id.getHash() + ".tar", Owner.ROOT, layer);
+		writer.file(id.getHash() + ".tar", Owner.ROOT, layer);
 		return id;
 	}
 
@@ -144,7 +153,7 @@ public class ImageArchive implements TarArchive {
 			String json = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			InspectedContent content = InspectedContent.of(Content.of(json), digest::update);
-			String name = "/" + LayerId.ofSha256Digest(digest.digest()).getHash() + ".json";
+			String name = LayerId.ofSha256Digest(digest.digest()).getHash() + ".json";
 			writer.file(name, Owner.ROOT, content);
 			return name;
 		}
@@ -187,7 +196,7 @@ public class ImageArchive implements TarArchive {
 	private void writeManifest(Layout writer, String config, List<LayerId> writtenLayers) throws IOException {
 		ArrayNode manifest = createManifest(config, writtenLayers);
 		String manifestJson = this.objectMapper.writeValueAsString(manifest);
-		writer.file("/manifest.json", Owner.ROOT, Content.of(manifestJson));
+		writer.file("manifest.json", Owner.ROOT, Content.of(manifestJson));
 	}
 
 	private ArrayNode createManifest(String config, List<LayerId> writtenLayers) {
@@ -204,7 +213,7 @@ public class ImageArchive implements TarArchive {
 	private ArrayNode getManifestLayers(List<LayerId> writtenLayers) {
 		ArrayNode layers = this.objectMapper.createArrayNode();
 		for (int i = 0; i < this.existingLayers.size(); i++) {
-			layers.add("");
+			layers.add(EMPTY_LAYER_NAME_PREFIX + i);
 		}
 		writtenLayers.stream().map((id) -> id.getHash() + ".tar").forEach(layers::add);
 		return layers;

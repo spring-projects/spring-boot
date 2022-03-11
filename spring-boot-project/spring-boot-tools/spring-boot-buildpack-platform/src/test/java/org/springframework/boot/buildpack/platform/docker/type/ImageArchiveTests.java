@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ImageArchiveTests extends AbstractJsonTests {
 
+	private static final int EXISTING_IMAGE_LAYER_COUNT = 46;
+
 	@Test
 	void fromImageWritesToValidArchiveTar() throws Exception {
 		Image image = Image.of(getContent("image.json"));
@@ -51,13 +53,16 @@ class ImageArchiveTests extends AbstractJsonTests {
 		archive.writeTo(outputStream);
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
+			for (int i = 0; i < EXISTING_IMAGE_LAYER_COUNT; i++) {
+				TarArchiveEntry blankEntry = tar.getNextTarEntry();
+				assertThat(blankEntry.getName()).isEqualTo("blank_" + i);
+			}
 			TarArchiveEntry layerEntry = tar.getNextTarEntry();
 			byte[] layerContent = read(tar, layerEntry.getSize());
 			TarArchiveEntry configEntry = tar.getNextTarEntry();
 			byte[] configContent = read(tar, configEntry.getSize());
 			TarArchiveEntry manifestEntry = tar.getNextTarEntry();
 			byte[] manifestContent = read(tar, manifestEntry.getSize());
-			assertThat(tar.getNextTarEntry()).isNull();
 			assertExpectedLayer(layerEntry, layerContent);
 			assertExpectedConfig(configEntry, configContent);
 			assertExpectedManifest(manifestEntry, manifestContent);
@@ -65,7 +70,7 @@ class ImageArchiveTests extends AbstractJsonTests {
 	}
 
 	private void assertExpectedLayer(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("/bb09e17fd1bd2ee47155f1349645fcd9fff31e1247c7ed99cad469f1c16a4216.tar");
+		assertThat(entry.getName()).isEqualTo("bb09e17fd1bd2ee47155f1349645fcd9fff31e1247c7ed99cad469f1c16a4216.tar");
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
 			TarArchiveEntry contentEntry = tar.getNextTarEntry();
 			assertThat(contentEntry.getName()).isEqualTo("/spring/");
@@ -73,14 +78,14 @@ class ImageArchiveTests extends AbstractJsonTests {
 	}
 
 	private void assertExpectedConfig(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("/682f8d24b9d9c313d1190a0e955dcb5e65ec9beea40420999839c6f0cbb38382.json");
+		assertThat(entry.getName()).isEqualTo("682f8d24b9d9c313d1190a0e955dcb5e65ec9beea40420999839c6f0cbb38382.json");
 		String actualJson = new String(content, StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("image-archive-config.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, actualJson, false);
 	}
 
 	private void assertExpectedManifest(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("/manifest.json");
+		assertThat(entry.getName()).isEqualTo("manifest.json");
 		String actualJson = new String(content, StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("image-archive-manifest.json"),
 				StandardCharsets.UTF_8);

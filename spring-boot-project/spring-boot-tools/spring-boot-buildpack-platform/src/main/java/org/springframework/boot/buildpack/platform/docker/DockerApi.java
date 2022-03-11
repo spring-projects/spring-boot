@@ -187,7 +187,7 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				return inspect(reference.withDigest(digestCapture.getCapturedDigest()));
+				return inspect(reference);
 			}
 			finally {
 				listener.onFinish();
