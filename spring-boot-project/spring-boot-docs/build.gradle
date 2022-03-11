@@ -243,6 +243,8 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 	outputDir = file("${buildDir}/docs/generated/")
 }
 
+task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
+
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
 	asciidoctorj {
@@ -296,6 +298,7 @@ syncDocumentationSourceForAsciidoctor {
 	dependsOn documentDependencyVersions
 	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
+	dependsOn documentDevtoolsPropertyDefaults
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
 	}

@@ -16,9 +16,11 @@
 
 package org.springframework.boot.devtools.env;
 
-import java.util.Collections;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 
@@ -62,23 +64,19 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	private static final Map<String, Object> PROPERTIES;
 
 	static {
-		Map<String, Object> properties = new HashMap<>();
-		properties.put("spring.thymeleaf.cache", "false");
-		properties.put("spring.freemarker.cache", "false");
-		properties.put("spring.groovy.template.cache", "false");
-		properties.put("spring.mustache.cache", "false");
-		properties.put("server.servlet.session.persistent", "true");
-		properties.put("spring.h2.console.enabled", "true");
-		properties.put("spring.web.resources.cache.period", "0");
-		properties.put("spring.web.resources.chain.cache", "false");
-		properties.put("spring.template.provider.cache", "false");
-		properties.put("spring.mvc.log-resolved-exception", "true");
-		properties.put("server.error.include-binding-errors", "ALWAYS");
-		properties.put("server.error.include-message", "ALWAYS");
-		properties.put("server.error.include-stacktrace", "ALWAYS");
-		properties.put("server.servlet.jsp.init-parameters.development", "true");
-		properties.put("spring.reactor.debug", "true");
-		PROPERTIES = Collections.unmodifiableMap(properties);
+		Properties properties = new Properties();
+		try (InputStream stream = DevToolsPropertyDefaultsPostProcessor.class
+				.getResourceAsStream("devtools-property-defaults.properties")) {
+			properties.load(stream);
+		}
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to load devtools-property-defaults.properties", ex);
+		}
+		Map<String, Object> map = new HashMap<>();
+		for (String name : properties.stringPropertyNames()) {
+			map.put(name, properties.getProperty(name));
+		}
+		PROPERTIES = map;
 	}
 
 	@Override
