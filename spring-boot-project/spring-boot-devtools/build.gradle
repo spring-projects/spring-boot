@@ -13,6 +13,13 @@ configurations {
 	intTestDependencies {
 		extendsFrom dependencyManagement
 	}
+	propertyDefaults
+}
+
+artifacts {
+	propertyDefaults(file("build/resources/main/org/springframework/boot/devtools/env/devtools-property-defaults.properties")) {
+		builtBy(processResources)
+	}
 }
 
 dependencies {
