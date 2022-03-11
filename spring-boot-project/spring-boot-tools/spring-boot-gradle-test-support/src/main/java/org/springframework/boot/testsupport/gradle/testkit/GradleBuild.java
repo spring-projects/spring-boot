@@ -80,7 +80,7 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
-	private String[] expectedDeprecationMessages;
+	private List<String> expectedDeprecationMessages = new ArrayList<>();
 
 	private boolean configurationCache = false;
 
@@ -155,7 +155,7 @@ public class GradleBuild {
 	}
 
 	public GradleBuild expectDeprecationMessages(String... messages) {
-		this.expectedDeprecationMessages = messages;
+		this.expectedDeprecationMessages.addAll(Arrays.asList(messages));
 		return this;
 	}
 
