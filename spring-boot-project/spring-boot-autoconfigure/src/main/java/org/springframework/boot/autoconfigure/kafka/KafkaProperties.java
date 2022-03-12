@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -1022,10 +1023,13 @@ public class KafkaProperties {
 			this.logContainerConfig = logContainerConfig;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "Use KafkaUtils#setConsumerRecordFormatter instead.")
 		public boolean isOnlyLogRecordMetadata() {
 			return this.onlyLogRecordMetadata;
 		}
 
+		@Deprecated
 		public void setOnlyLogRecordMetadata(boolean onlyLogRecordMetadata) {
 			this.onlyLogRecordMetadata = onlyLogRecordMetadata;
 		}

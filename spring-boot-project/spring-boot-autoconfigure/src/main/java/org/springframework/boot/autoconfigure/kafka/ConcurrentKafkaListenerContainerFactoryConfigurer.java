@@ -189,6 +189,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void configureContainer(ContainerProperties container) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();

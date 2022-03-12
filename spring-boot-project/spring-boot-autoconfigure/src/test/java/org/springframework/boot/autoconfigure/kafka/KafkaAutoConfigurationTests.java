@@ -390,7 +390,6 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.no-poll-threshold=2.5", "spring.kafka.listener.type=batch",
 						"spring.kafka.listener.idle-between-polls=1s", "spring.kafka.listener.idle-event-interval=1s",
 						"spring.kafka.listener.monitor-interval=45", "spring.kafka.listener.log-container-config=true",
-						"spring.kafka.listener.only-log-record-metadata=true",
 						"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
@@ -417,7 +416,6 @@ class KafkaAutoConfigurationTests {
 					assertThat(containerProperties.getIdleEventInterval()).isEqualTo(1000L);
 					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();
-					assertThat(containerProperties.isOnlyLogRecordMetadata()).isTrue();
 					assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
 					assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
@@ -430,6 +428,17 @@ class KafkaAutoConfigurationTests {
 					assertThat(((Map<String, String>) ReflectionTestUtils.getField(jaas, "options")))
 							.containsExactly(entry("useKeyTab", "true"));
 				});
+	}
+
+	@Test
+	@Deprecated
+	void logOnlyRecordMetadataProperty() {
+		this.contextRunner.withPropertyValues("spring.kafka.listener.only-log-record-metadata=true").run((context) -> {
+			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
+					.getBean(KafkaListenerContainerFactory.class);
+			ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
+			assertThat(containerProperties.isOnlyLogRecordMetadata()).isTrue();
+		});
 	}
 
 	@Test
