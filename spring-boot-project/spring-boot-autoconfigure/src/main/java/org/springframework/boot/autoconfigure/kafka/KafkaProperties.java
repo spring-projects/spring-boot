@@ -34,6 +34,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -1056,10 +1057,13 @@ public class KafkaProperties {
 			this.logContainerConfig = logContainerConfig;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "Use KafkaUtils#setConsumerRecordFormatter instead.")
 		public boolean isOnlyLogRecordMetadata() {
 			return this.onlyLogRecordMetadata;
 		}
 
+		@Deprecated
 		public void setOnlyLogRecordMetadata(boolean onlyLogRecordMetadata) {
 			this.onlyLogRecordMetadata = onlyLogRecordMetadata;
 		}
