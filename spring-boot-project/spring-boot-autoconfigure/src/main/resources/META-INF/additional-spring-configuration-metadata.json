@@ -1504,6 +1504,16 @@
       "defaultValue": "required"
     },
     {
+      "name": "spring.kafka.listener.only-log-record-metadata",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to suppress the entire record from being written to the log when retries are being attempted.",
+      "deprecation": {
+        "reason": "Use KafkaUtils#setConsumerRecordFormatter instead.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.kafka.listener.type",
       "defaultValue": "single"
     },

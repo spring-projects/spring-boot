@@ -433,17 +433,6 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void logOnlyRecordMetadataProperty() {
-		this.contextRunner.withPropertyValues("spring.kafka.listener.only-log-record-metadata=true").run((context) -> {
-			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
-					.getBean(KafkaListenerContainerFactory.class);
-			ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
-			assertThat(containerProperties.isOnlyLogRecordMetadata()).isTrue();
-		});
-	}
-
-	@Test
 	void testKafkaTemplateRecordMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
