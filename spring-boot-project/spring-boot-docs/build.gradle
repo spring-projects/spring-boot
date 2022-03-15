@@ -343,6 +343,7 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	dependsOn documentDependencyVersions
 	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
+	dependsOn documentDevtoolsPropertyDefaults
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
 	}
@@ -367,6 +368,7 @@ syncDocumentationSourceForAsciidoctorPdf {
 	dependsOn documentDependencyVersions
 	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
+	dependsOn documentDevtoolsPropertyDefaults
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
 	}
