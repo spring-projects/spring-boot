@@ -24,7 +24,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.provider.Provider;
@@ -107,8 +106,7 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {
-		LazyPublishArtifact artifact = new LazyPublishArtifact(bootWar);
-		this.singlePublishedArtifact.addWarCandidate(artifact);
+		this.singlePublishedArtifact.addWarCandidate(bootWar);
 	}
 
 }
