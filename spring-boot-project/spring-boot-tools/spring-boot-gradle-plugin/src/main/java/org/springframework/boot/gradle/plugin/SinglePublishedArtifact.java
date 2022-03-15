@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,20 @@ final class SinglePublishedArtifact implements Buildable {
 		this.artifacts = artifacts;
 	}
 
-	void addCandidate(PublishArtifact candidate) {
-		if (this.currentArtifact == null || "war".equals(candidate.getExtension())) {
-			this.artifacts.remove(this.currentArtifact);
-			this.artifacts.add(candidate);
-			this.currentArtifact = candidate;
+	void addWarCandidate(PublishArtifact candidate) {
+		add(candidate);
+	}
+
+	void addJarCandidate(PublishArtifact candidate) {
+		if (this.currentArtifact == null) {
+			add(candidate);
 		}
+	}
+
+	private void add(PublishArtifact artifact) {
+		this.artifacts.remove(this.currentArtifact);
+		this.artifacts.add(artifact);
+		this.currentArtifact = artifact;
 	}
 
 	@Override
