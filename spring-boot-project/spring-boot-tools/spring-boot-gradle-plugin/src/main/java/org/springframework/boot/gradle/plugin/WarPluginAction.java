@@ -109,7 +109,7 @@ class WarPluginAction implements PluginApplicationAction {
 	@SuppressWarnings("deprecation")
 	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {
 		LazyPublishArtifact artifact = new LazyPublishArtifact(bootWar);
-		this.singlePublishedArtifact.addCandidate(artifact);
+		this.singlePublishedArtifact.addWarCandidate(artifact);
 	}
 
 }

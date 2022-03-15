@@ -164,6 +164,10 @@ public class GradleBuild {
 		return this;
 	}
 
+	public boolean isConfigurationCache() {
+		return this.configurationCache;
+	}
+
 	public GradleBuild scriptProperty(String key, String value) {
 		this.scriptProperties.put(key, value);
 		return this;
