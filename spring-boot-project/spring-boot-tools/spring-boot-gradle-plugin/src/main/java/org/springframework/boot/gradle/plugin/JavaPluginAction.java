@@ -133,7 +133,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
 		LazyPublishArtifact artifact = new LazyPublishArtifact(bootJar);
-		this.singlePublishedArtifact.addCandidate(artifact);
+		this.singlePublishedArtifact.addJarCandidate(artifact);
 	}
 
 	private void configureBootRunTask(Project project) {

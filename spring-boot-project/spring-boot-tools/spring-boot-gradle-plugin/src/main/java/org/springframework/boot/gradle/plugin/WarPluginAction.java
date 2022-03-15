@@ -108,7 +108,7 @@ class WarPluginAction implements PluginApplicationAction {
 
 	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {
 		LazyPublishArtifact artifact = new LazyPublishArtifact(bootWar);
-		this.singlePublishedArtifact.addCandidate(artifact);
+		this.singlePublishedArtifact.addWarCandidate(artifact);
 	}
 
 }
