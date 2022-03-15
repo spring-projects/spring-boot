@@ -32,7 +32,6 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
@@ -132,8 +131,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	@SuppressWarnings("deprecation")
 	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
-		LazyPublishArtifact artifact = new LazyPublishArtifact(bootJar);
-		this.singlePublishedArtifact.addJarCandidate(artifact);
+		this.singlePublishedArtifact.addJarCandidate(bootJar);
 	}
 
 	private void configureBootRunTask(Project project) {
