@@ -17,9 +17,13 @@
 package org.springframework.boot.gradle.plugin;
 
 import org.gradle.api.Buildable;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.PublishArtifact;
 import org.gradle.api.artifacts.PublishArtifactSet;
+import org.gradle.api.artifacts.dsl.ArtifactHandler;
 import org.gradle.api.tasks.TaskDependency;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 
 /**
  * A wrapper for a {@link PublishArtifactSet} that ensures that only a single artifact is
@@ -30,25 +34,27 @@ import org.gradle.api.tasks.TaskDependency;
  */
 final class SinglePublishedArtifact implements Buildable {
 
-	private final PublishArtifactSet artifacts;
+	private final Configuration configuration;
+
+	private final ArtifactHandler handler;
 
 	private PublishArtifact currentArtifact;
 
-	SinglePublishedArtifact(PublishArtifactSet artifacts) {
-		this.artifacts = artifacts;
+	SinglePublishedArtifact(Configuration configuration, ArtifactHandler handler) {
+		this.configuration = configuration;
+		this.handler = handler;
 	}
 
-	void addCandidate(PublishArtifact candidate) {
-		if (this.currentArtifact == null || "war".equals(candidate.getExtension())) {
-			this.artifacts.remove(this.currentArtifact);
-			this.artifacts.add(candidate);
-			this.currentArtifact = candidate;
+	void addCandidate(TaskProvider<? extends AbstractArchiveTask> candidate) {
+		if (this.currentArtifact == null || "war".equals(candidate.get().getArchiveExtension().get())) {
+			this.configuration.getArtifacts().remove(this.currentArtifact);
+			this.currentArtifact = this.handler.add(this.configuration.getName(), candidate);
 		}
 	}
 
 	@Override
 	public TaskDependency getBuildDependencies() {
-		return this.artifacts.getBuildDependencies();
+		return this.configuration.getArtifacts().getBuildDependencies();
 	}
 
 }
