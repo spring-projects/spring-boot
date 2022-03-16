@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import com.mongodb.MongoClientSettings;
-import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.Defaults;
@@ -32,10 +31,10 @@ import de.flapdoodle.embed.mongo.config.ImmutableMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.Storage;
-import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
+import de.flapdoodle.embed.mongo.packageresolver.Command;
 import de.flapdoodle.embed.process.config.RuntimeConfig;
 import de.flapdoodle.embed.process.config.process.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.DownloadConfig;
@@ -146,16 +145,12 @@ public class EmbeddedMongoAutoConfiguration {
 	private IFeatureAwareVersion determineVersion(EmbeddedMongoProperties embeddedProperties) {
 		Assert.state(embeddedProperties.getVersion() != null, "Set the spring.mongodb.embedded.version property or "
 				+ "define your own MongodConfig bean to use embedded MongoDB");
-		if (embeddedProperties.getFeatures() == null) {
-			for (Version version : Version.values()) {
-				if (version.asInDownloadPath().equals(embeddedProperties.getVersion())) {
-					return version;
-				}
+		for (Version version : Version.values()) {
+			if (version.asInDownloadPath().equals(embeddedProperties.getVersion())) {
+				return version;
 			}
-			return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties));
 		}
-		return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties),
-				embeddedProperties.getFeatures().toArray(new Feature[0]));
+		return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties));
 	}
 
 	private GenericVersion createEmbeddedMongoVersion(EmbeddedMongoProperties embeddedProperties) {

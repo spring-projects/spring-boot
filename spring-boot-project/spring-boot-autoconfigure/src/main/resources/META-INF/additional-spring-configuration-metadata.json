@@ -1618,9 +1618,10 @@
     },
     {
       "name": "spring.mongodb.embedded.features",
-      "defaultValue": [
-        "sync_delay"
-      ]
+      "deprecation": {
+        "level": "error",
+        "reason": "Feature support has been removed from Embedded Mongo. A custom MongodConfig bean should be defined instead."
+      }
     },
     {
       "name": "spring.mustache.prefix",
