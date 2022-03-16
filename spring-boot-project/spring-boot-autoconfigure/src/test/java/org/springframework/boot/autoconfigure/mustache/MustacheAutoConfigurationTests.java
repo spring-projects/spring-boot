@@ -47,6 +47,16 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@Test
+	void servletViewResolverCanBeDisabled() {
+		configure(new WebApplicationContextRunner()).withPropertyValues("spring.mustache.enabled=false")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Mustache.Compiler.class);
+					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+					assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
+				});
+	}
+
+	@Test
 	void registerCompilerForServletApp() {
 		configure(new WebApplicationContextRunner()).withUserConfiguration(CustomCompilerConfiguration.class)
 				.run((context) -> {
@@ -66,6 +76,17 @@ class MustacheAutoConfigurationTests {
 			assertThat(context)
 					.hasSingleBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
 		});
+	}
+
+	@Test
+	void reactiveViewResolverCanBeDisabled() {
+		configure(new ReactiveWebApplicationContextRunner()).withPropertyValues("spring.mustache.enabled=false")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Mustache.Compiler.class);
+					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+					assertThat(context).doesNotHaveBean(
+							org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+				});
 	}
 
 	@Test
