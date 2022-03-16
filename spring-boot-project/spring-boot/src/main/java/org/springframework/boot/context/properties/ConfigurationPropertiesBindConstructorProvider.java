@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 		return (superclass != null) && "java.lang.Record".equals(superclass.getName());
 	}
 
-	@SuppressWarnings("deprecation")
 	private boolean isConstructorBindingAnnotatedType(Class<?> type) {
 		return MergedAnnotations.from(type, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY_AND_ENCLOSING_CLASSES)
 				.isPresent(ConstructorBinding.class);
