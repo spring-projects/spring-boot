@@ -990,8 +990,8 @@ bom {
 	}
 	library("Micrometer Tracing", "1.0.0-SNAPSHOT") {
 		group("io.micrometer") {
-			modules = [
-				"micrometer-tracing-api"
+			imports = [
+				"micrometer-tracing-bom"
 			]
 		}
 	}
@@ -1071,6 +1071,13 @@ bom {
 				"okhttp-sse",
 				"okhttp-tls",
 				"okhttp-urlconnection"
+			]
+		}
+	}
+	library("OpenTelemetry", "1.12.0") {
+		group("io.opentelemetry") {
+			imports = [
+				"opentelemetry-bom"
 			]
 		}
 	}
@@ -1576,6 +1583,13 @@ bom {
 		group("org.eclipse") {
 			modules = [
 				"yasson"
+			]
+		}
+	}
+	library("Zipkin", "2.16.3") {
+		group("io.zipkin.reporter2") {
+			modules = [
+				"zipkin-sender-urlconnection"
 			]
 		}
 	}

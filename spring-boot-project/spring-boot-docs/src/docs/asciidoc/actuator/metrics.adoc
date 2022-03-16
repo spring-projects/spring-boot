@@ -589,9 +589,7 @@ If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, 
 ----
 	management:
 	  wavefront:
-	    metrics:
-	      export:
-	        api-token: "YOUR_API_TOKEN"
+        api-token: "YOUR_API_TOKEN"
 ----
 
 Alternatively, you can use a Wavefront sidecar or an internal proxy in your environment to forward metrics data to the Wavefront API host:
@@ -600,9 +598,7 @@ Alternatively, you can use a Wavefront sidecar or an internal proxy in your envi
 ----
 	management:
 	  wavefront:
-	    metrics:
-	      export:
-	        uri: "proxy://localhost:2878"
+        uri: "proxy://localhost:2878"
 ----
 
 NOTE: If you publish metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the Wavefront documentation]), the host must be in the `proxy://HOST:PORT` format.

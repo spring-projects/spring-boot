@@ -1832,7 +1832,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.api-token"
+        "replacement": "management.wavefront.api-token"
       }
     },
     {
@@ -1840,7 +1840,7 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.batch-size"
+        "replacement": "management.wavefront.sender.batch-size"
       }
     },
     {
@@ -1885,7 +1885,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.sender.flush-interval"
+        "replacement": "management.wavefront.sender.flush-interval"
       }
     },
     {
@@ -1893,7 +1893,7 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.sender.max-queue-size"
+        "replacement": "management.wavefront.sender.max-queue-size"
       }
     },
     {
@@ -1901,7 +1901,7 @@
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.sender.message-size"
+        "replacement": "management.wavefront.sender.message-size"
       }
     },
     {
@@ -1909,7 +1909,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.source"
+        "replacement": "management.wavefront.source"
       }
     },
     {
@@ -1925,7 +1925,7 @@
       "type": "java.net.URI",
       "deprecation": {
         "level": "error",
-        "replacement": "management.wavefront.metrics.export.uri"
+        "replacement": "management.wavefront.uri"
       }
     },
     {
