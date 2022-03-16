@@ -444,7 +444,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate Validator", "6.2.2.Final") {
+	library("Hibernate Validator", "6.2.3.Final") {
 		prohibit("[7.0.0.Alpha1,)") {
 			because "it uses the jakarta.* namespace"
 		}
