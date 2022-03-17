@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import com.samskivert.mustache.Mustache;
@@ -31,6 +32,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -133,6 +135,8 @@ class MustacheAutoConfigurationTests {
 			assertThat(viewResolver).extracting("prefix").isEqualTo("classpath:/templates/");
 			assertThat(viewResolver).extracting("requestContextAttribute").isNull();
 			assertThat(viewResolver).extracting("suffix").isEqualTo(".mustache");
+			assertThat(viewResolver.getSupportedMediaTypes())
+					.containsExactly(MediaType.parseMediaType("text/html;charset=UTF-8"));
 		});
 	}
 
@@ -236,6 +240,14 @@ class MustacheAutoConfigurationTests {
 	@EnumSource(ViewResolverKind.class)
 	void suffixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.suffix=.tache", "suffix", ".tache");
+	}
+
+	@Test
+	void mediaTypesCanBeCustomizedOnReactiveViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.REACTIVE,
+				"spring.mustache.reactive.media-types=text/xml;charset=UTF-8,text/plain;charset=UTF-16", "mediaTypes",
+				Arrays.asList(MediaType.parseMediaType("text/xml;charset=UTF-8"),
+						MediaType.parseMediaType("text/plain;charset=UTF-16")));
 	}
 
 	private void assertViewResolverProperty(ViewResolverKind kind, String property, String field,

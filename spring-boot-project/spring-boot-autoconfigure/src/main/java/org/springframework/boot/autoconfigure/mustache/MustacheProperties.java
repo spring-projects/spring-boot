@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 
 /**
@@ -41,6 +43,8 @@ public class MustacheProperties {
 	public static final String DEFAULT_SUFFIX = ".mustache";
 
 	private final Servlet servlet = new Servlet();
+
+	private final Reactive reactive = new Reactive();
 
 	/**
 	 * View names that can be resolved.
@@ -79,6 +83,10 @@ public class MustacheProperties {
 
 	public Servlet getServlet() {
 		return this.servlet;
+	}
+
+	public Reactive getReactive() {
+		return this.reactive;
 	}
 
 	public String getPrefix() {
@@ -314,6 +322,23 @@ public class MustacheProperties {
 
 		public void setExposeSpringMacroHelpers(boolean exposeSpringMacroHelpers) {
 			this.exposeSpringMacroHelpers = exposeSpringMacroHelpers;
+		}
+
+	}
+
+	public static class Reactive {
+
+		/**
+		 * Media types supported by Mustache views.
+		 */
+		private List<MediaType> mediaTypes;
+
+		public List<MediaType> getMediaTypes() {
+			return this.mediaTypes;
+		}
+
+		public void setMediaTypes(List<MediaType> mediaTypes) {
+			this.mediaTypes = mediaTypes;
 		}
 
 	}
