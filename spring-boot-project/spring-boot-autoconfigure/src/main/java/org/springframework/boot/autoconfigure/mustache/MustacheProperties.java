@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
-import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.MimeType;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for Mustache.
@@ -26,11 +29,42 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.2.2
  */
 @ConfigurationProperties(prefix = "spring.mustache")
-public class MustacheProperties extends AbstractTemplateViewResolverProperties {
+public class MustacheProperties {
+
+	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
+
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
 	public static final String DEFAULT_SUFFIX = ".mustache";
+
+	private final Servlet servlet = new Servlet();
+
+	/**
+	 * View names that can be resolved.
+	 */
+	private String[] viewNames;
+
+	/**
+	 * Name of the RequestContext attribute for all views.
+	 */
+	private String requestContextAttribute;
+
+	/**
+	 * Whether to enable MVC view resolution for Mustache.
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Template encoding.
+	 */
+	private Charset charset = DEFAULT_CHARSET;
+
+	/**
+	 * Whether to check that the templates location exists.
+	 */
+	private boolean checkTemplateLocation = true;
 
 	/**
 	 * Prefix to apply to template names.
@@ -42,28 +76,168 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 	 */
 	private String suffix = DEFAULT_SUFFIX;
 
-	public MustacheProperties() {
-		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
+	public Servlet getServlet() {
+		return this.servlet;
 	}
 
-	@Override
 	public String getPrefix() {
 		return this.prefix;
 	}
 
-	@Override
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
-	@Override
 	public String getSuffix() {
 		return this.suffix;
 	}
 
-	@Override
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
+	}
+
+	public String[] getViewNames() {
+		return this.viewNames;
+	}
+
+	public void setViewNames(String[] viewNames) {
+		this.viewNames = viewNames;
+	}
+
+	public String getRequestContextAttribute() {
+		return this.requestContextAttribute;
+	}
+
+	public void setRequestContextAttribute(String requestContextAttribute) {
+		this.requestContextAttribute = requestContextAttribute;
+	}
+
+	public Charset getCharset() {
+		return this.charset;
+	}
+
+	public String getCharsetName() {
+		return (this.charset != null) ? this.charset.name() : null;
+	}
+
+	public void setCharset(Charset charset) {
+		this.charset = charset;
+	}
+
+	public boolean isCheckTemplateLocation() {
+		return this.checkTemplateLocation;
+	}
+
+	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
+		this.checkTemplateLocation = checkTemplateLocation;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public static class Servlet {
+
+		/**
+		 * Whether HttpServletRequest attributes are allowed to override (hide) controller
+		 * generated model attributes of the same name.
+		 */
+		private boolean allowRequestOverride = false;
+
+		/**
+		 * Whether HttpSession attributes are allowed to override (hide) controller
+		 * generated model attributes of the same name.
+		 */
+		private boolean allowSessionOverride = false;
+
+		/**
+		 * Whether to enable template caching.
+		 */
+		private boolean cache;
+
+		/**
+		 * Content-Type value.
+		 */
+		private MimeType contentType = DEFAULT_CONTENT_TYPE;
+
+		/**
+		 * Whether all request attributes should be added to the model prior to merging
+		 * with the template.
+		 */
+		private boolean exposeRequestAttributes = false;
+
+		/**
+		 * Whether all HttpSession attributes should be added to the model prior to
+		 * merging with the template.
+		 */
+		private boolean exposeSessionAttributes = false;
+
+		/**
+		 * Whether to expose a RequestContext for use by Spring's macro library, under the
+		 * name "springMacroRequestContext".
+		 */
+		private boolean exposeSpringMacroHelpers = true;
+
+		public boolean isAllowRequestOverride() {
+			return this.allowRequestOverride;
+		}
+
+		public void setAllowRequestOverride(boolean allowRequestOverride) {
+			this.allowRequestOverride = allowRequestOverride;
+		}
+
+		public boolean isAllowSessionOverride() {
+			return this.allowSessionOverride;
+		}
+
+		public void setAllowSessionOverride(boolean allowSessionOverride) {
+			this.allowSessionOverride = allowSessionOverride;
+		}
+
+		public boolean isCache() {
+			return this.cache;
+		}
+
+		public void setCache(boolean cache) {
+			this.cache = cache;
+		}
+
+		public MimeType getContentType() {
+			return this.contentType;
+		}
+
+		public void setContentType(MimeType contentType) {
+			this.contentType = contentType;
+		}
+
+		public boolean isExposeRequestAttributes() {
+			return this.exposeRequestAttributes;
+		}
+
+		public void setExposeRequestAttributes(boolean exposeRequestAttributes) {
+			this.exposeRequestAttributes = exposeRequestAttributes;
+		}
+
+		public boolean isExposeSessionAttributes() {
+			return this.exposeSessionAttributes;
+		}
+
+		public void setExposeSessionAttributes(boolean exposeSessionAttributes) {
+			this.exposeSessionAttributes = exposeSessionAttributes;
+		}
+
+		public boolean isExposeSpringMacroHelpers() {
+			return this.exposeSpringMacroHelpers;
+		}
+
+		public void setExposeSpringMacroHelpers(boolean exposeSpringMacroHelpers) {
+			this.exposeSpringMacroHelpers = exposeSpringMacroHelpers;
+		}
+
 	}
 
 }

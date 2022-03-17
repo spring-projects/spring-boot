@@ -138,19 +138,19 @@ class MustacheAutoConfigurationTests {
 
 	@Test
 	void allowRequestOverrideCanBeCustomizedOnServletViewResolver() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-request-override=true",
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.allow-request-override=true",
 				"allowRequestOverride", true);
 	}
 
 	@Test
 	void allowSessionOverrideCanBeCustomizedOnServletViewResolver() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-session-override=true",
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.allow-session-override=true",
 				"allowSessionOverride", true);
 	}
 
 	@Test
 	void cacheCanBeCustomizedOnServletViewResolver() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.cache=true", "cache", true);
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.cache=true", "cache", true);
 	}
 
 	@ParameterizedTest
@@ -161,19 +161,19 @@ class MustacheAutoConfigurationTests {
 
 	@Test
 	void exposeRequestAttributesCanBeCustomizedOnServletViewResolver() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-request-attributes=true",
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-request-attributes=true",
 				"exposeRequestAttributes", true);
 	}
 
 	@Test
 	void exposeSessionAttributesCanBeCustomizedOnServletViewResolver() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-session-attributes=true",
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-session-attributes=true",
 				"exposeSessionAttributes", true);
 	}
 
 	@Test
 	void exposeSpringMacroHelpersCanBeCustomizedOnServletViewResolver() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-spring-macro-helpers=true",
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-spring-macro-helpers=true",
 				"exposeSpringMacroHelpers", true);
 	}
 
