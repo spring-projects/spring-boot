@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
+import java.util.function.Supplier;
+
 import com.samskivert.mustache.Mustache;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.AbstractApplicationContextRunner;
@@ -102,9 +107,105 @@ class MustacheAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void defaultServletViewResolverConfiguration() {
+		configure(new WebApplicationContextRunner()).run((context) -> {
+			MustacheViewResolver viewResolver = context.getBean(MustacheViewResolver.class);
+			assertThat(viewResolver).extracting("allowRequestOverride", InstanceOfAssertFactories.BOOLEAN).isFalse();
+			assertThat(viewResolver).extracting("allowSessionOverride", InstanceOfAssertFactories.BOOLEAN).isFalse();
+			assertThat(viewResolver).extracting("cache", InstanceOfAssertFactories.BOOLEAN).isFalse();
+			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
+			assertThat(viewResolver).extracting("exposeRequestAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
+			assertThat(viewResolver).extracting("exposeSessionAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
+			assertThat(viewResolver).extracting("exposeSpringMacroHelpers", InstanceOfAssertFactories.BOOLEAN).isTrue();
+			assertThat(viewResolver).extracting("prefix").isEqualTo("classpath:/templates/");
+			assertThat(viewResolver).extracting("requestContextAttribute").isNull();
+			assertThat(viewResolver).extracting("suffix").isEqualTo(".mustache");
+		});
+	}
+
+	@Test
+	void defaultReactiveViewResolverConfiguration() {
+		configure(new ReactiveWebApplicationContextRunner()).run((context) -> {
+			org.springframework.boot.web.reactive.result.view.MustacheViewResolver viewResolver = context
+					.getBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
+			assertThat(viewResolver).extracting("prefix").isEqualTo("classpath:/templates/");
+			assertThat(viewResolver).extracting("requestContextAttribute").isNull();
+			assertThat(viewResolver).extracting("suffix").isEqualTo(".mustache");
+		});
+	}
+
+	@Test
+	void allowRequestOverrideCanBeCustomizedOnServletViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-request-override=true",
+				"allowRequestOverride", true);
+	}
+
+	@Test
+	void allowSessionOverrideCanBeCustomizedOnServletViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-session-override=true",
+				"allowSessionOverride", true);
+	}
+
+	@Test
+	void cacheCanBeCustomizedOnServletViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.cache=true", "cache", true);
+	}
+
+	@ParameterizedTest
+	@EnumSource(ViewResolverKind.class)
+	void charsetCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
+		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", "UTF-16");
+	}
+
+	@Test
+	void exposeRequestAttributesCanBeCustomizedOnServletViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-request-attributes=true",
+				"exposeRequestAttributes", true);
+	}
+
+	@Test
+	void exposeSessionAttributesCanBeCustomizedOnServletViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-session-attributes=true",
+				"exposeSessionAttributes", true);
+	}
+
+	@Test
+	void exposeSpringMacroHelpersCanBeCustomizedOnServletViewResolver() {
+		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-spring-macro-helpers=true",
+				"exposeSpringMacroHelpers", true);
+	}
+
+	@ParameterizedTest
+	@EnumSource(ViewResolverKind.class)
+	void prefixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
+		assertViewResolverProperty(kind, "spring.mustache.prefix=classpath:/mustache-templates/", "prefix",
+				"classpath:/mustache-templates/");
+	}
+
+	@ParameterizedTest
+	@EnumSource(ViewResolverKind.class)
+	void requestContextAttributeCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
+		assertViewResolverProperty(kind, "spring.mustache.request-context-attribute=test", "requestContextAttribute",
+				"test");
+	}
+
+	@ParameterizedTest
+	@EnumSource(ViewResolverKind.class)
+	void suffixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
+		assertViewResolverProperty(kind, "spring.mustache.suffix=.tache", "suffix", ".tache");
+	}
+
+	private void assertViewResolverProperty(ViewResolverKind kind, String property, String field,
+			Object expectedValue) {
+		kind.runner().withConfiguration(AutoConfigurations.of(MustacheAutoConfiguration.class))
+				.withPropertyValues(property).run((context) -> assertThat(context.getBean(kind.viewResolverClass()))
+						.extracting(field).isEqualTo(expectedValue));
+	}
+
 	private <T extends AbstractApplicationContextRunner<T, ?, ?>> T configure(T runner) {
-		return runner.withPropertyValues("spring.mustache.prefix=classpath:/mustache-templates/")
-				.withConfiguration(AutoConfigurations.of(MustacheAutoConfiguration.class));
+		return runner.withConfiguration(AutoConfigurations.of(MustacheAutoConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -113,6 +214,38 @@ class MustacheAutoConfigurationTests {
 		@Bean
 		Mustache.Compiler compiler(Mustache.TemplateLoader mustacheTemplateLoader) {
 			return Mustache.compiler().standardsMode(true).withLoader(mustacheTemplateLoader);
+		}
+
+	}
+
+	private enum ViewResolverKind {
+
+		/**
+		 * Servlet MustacheViewResolver
+		 */
+		SERVLET(WebApplicationContextRunner::new, MustacheViewResolver.class),
+
+		/**
+		 * Reactive MustacheViewResolver
+		 */
+		REACTIVE(ReactiveWebApplicationContextRunner::new,
+				org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+
+		private final Supplier<AbstractApplicationContextRunner<?, ?, ?>> runner;
+
+		private final Class<?> viewResolverClass;
+
+		ViewResolverKind(Supplier<AbstractApplicationContextRunner<?, ?, ?>> runner, Class<?> viewResolverClass) {
+			this.runner = runner;
+			this.viewResolverClass = viewResolverClass;
+		}
+
+		private AbstractApplicationContextRunner<?, ?, ?> runner() {
+			return this.runner.get();
+		}
+
+		private Class<?> viewResolverClass() {
+			return this.viewResolverClass;
 		}
 
 	}
