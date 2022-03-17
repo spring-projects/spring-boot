@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics.analyzer;
+package org.springframework.boot.web.embedded.tomcat;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.web.embedded.tomcat.ConnectorStartFailedException;
 
 /**
  * An {@link AbstractFailureAnalyzer} for {@link ConnectorStartFailedException}.

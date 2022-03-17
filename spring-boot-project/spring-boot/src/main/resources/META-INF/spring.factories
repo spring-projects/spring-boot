@@ -65,7 +65,6 @@ org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyz
 org.springframework.boot.diagnostics.analyzer.BindFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BindValidationFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
-org.springframework.boot.diagnostics.analyzer.ConnectorStartFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.MutuallyExclusiveConfigurationPropertiesFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
@@ -74,7 +73,8 @@ org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyNameFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
-org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
+org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
+org.springframework.boot.web.embedded.tomcat.ConnectorStartFailureAnalyzer
 
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
