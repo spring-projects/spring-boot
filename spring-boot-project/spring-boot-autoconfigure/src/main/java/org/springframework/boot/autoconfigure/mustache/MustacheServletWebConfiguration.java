@@ -36,7 +36,19 @@ class MustacheServletWebConfiguration {
 	@ConditionalOnProperty(prefix = "spring.mustache", name = "enabled", matchIfMissing = true)
 	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
-		mustache.applyToMvcViewResolver(resolver);
+		resolver.setPrefix(mustache.getPrefix());
+		resolver.setSuffix(mustache.getSuffix());
+		resolver.setCache(mustache.getServlet().isCache());
+		if (mustache.getServlet().getContentType() != null) {
+			resolver.setContentType(mustache.getServlet().getContentType().toString());
+		}
+		resolver.setViewNames(mustache.getViewNames());
+		resolver.setExposeRequestAttributes(mustache.getServlet().isExposeRequestAttributes());
+		resolver.setAllowRequestOverride(mustache.getServlet().isAllowRequestOverride());
+		resolver.setAllowSessionOverride(mustache.getServlet().isAllowSessionOverride());
+		resolver.setExposeSessionAttributes(mustache.getServlet().isExposeSessionAttributes());
+		resolver.setExposeSpringMacroHelpers(mustache.getServlet().isExposeSpringMacroHelpers());
+		resolver.setRequestContextAttribute(mustache.getRequestContextAttribute());
 		resolver.setCharset(mustache.getCharsetName());
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;
