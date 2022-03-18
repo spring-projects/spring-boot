@@ -797,10 +797,10 @@ Alternatively, you can specify a source for your test, which disables the behavi
 
 [[features.testing.spring-boot-applications.spock]]
 ==== Using Spock to Test Spring Boot Applications
-Spock 2.x can be used to test a Spring Boot application.
-To do so, add a dependency on Spock's `spock-spring` module to your application's build.
+Spock 2.2 or later can be used to test a Spring Boot application.
+To do so, add a dependency on a `-groovy-4.0` version of Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
-See https://spockframework.org/spock/docs/2.0/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
+See https://spockframework.org/spock/docs/2.2-M1/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
 
 
 
