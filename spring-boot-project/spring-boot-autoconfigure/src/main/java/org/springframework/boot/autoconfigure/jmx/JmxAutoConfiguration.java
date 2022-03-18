@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 1.0.0
  */
 @AutoConfiguration
@@ -72,6 +73,8 @@ public class JmxAutoConfiguration {
 		if (StringUtils.hasLength(serverBean)) {
 			exporter.setServer(beanFactory.getBean(serverBean, MBeanServer.class));
 		}
+		boolean uniqueNames = this.environment.getProperty("spring.jmx.unique-names", Boolean.class, false);
+		exporter.setEnsureUniqueRuntimeObjectNames(uniqueNames);
 		return exporter;
 	}
 
