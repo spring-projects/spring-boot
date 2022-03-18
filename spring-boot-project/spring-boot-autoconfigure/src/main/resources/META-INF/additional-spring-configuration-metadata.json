@@ -924,6 +924,10 @@
       "defaultValue": 50
     },
     {
+      "name": "spring.flyway.placeholder-separator",
+      "defaultValue": ":"
+    },
+    {
       "name": "spring.flyway.script-placeholder-prefix",
       "defaultValue": "FP__"
     },
