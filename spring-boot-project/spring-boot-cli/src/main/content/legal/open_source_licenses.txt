@@ -43,7 +43,7 @@ SECTION 2: Apache License, V2.0
    >>> Plexus Cipher: encryption/decryption Component (org.sonatype.plexus:plexus-cipher)
    >>> Plexus Security Dispatcher Component (org.sonatype.plexus:plexus-sec-dispatcher)
    >>> Apache Commons Logging (commons-logging:commons-logging)
-   >>> Apache Groovy (org.codehaus.groovy:groovy)
+   >>> Apache Groovy (org.apache.groovy:groovy)
    >>> Maven Aether Provider (org.apache.maven:maven-aether-provider)
    >>> Maven Model (org.apache.maven:maven-model)
    >>> Maven Model Builder (org.apache.maven:maven-model-builder)
@@ -178,7 +178,7 @@ Apache License, V2.0 is applicable to the following component(s).
 >>> org.sonatype.plexus:plexus-cipher
 >>> org.sonatype.plexus:plexus-sec-dispatcher
 >>> commons-logging:commons-logging
->>> org.codehaus.groovy:groovy
+>>> org.apache.groovy:groovy
 >>> org.apache.maven:maven-aether-provider
 >>> org.apache.maven:maven-model
 >>> org.apache.maven:maven-model-builder

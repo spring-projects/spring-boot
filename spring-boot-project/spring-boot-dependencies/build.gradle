@@ -284,8 +284,8 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "3.0.9") {
-		group("org.codehaus.groovy") {
+	library("Groovy", "4.0.1") {
+		group("org.apache.groovy") {
 			imports = [
 				"groovy-bom"
 			]
@@ -1448,7 +1448,7 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf Layout Dialect", "3.0.0") {
+	library("Thymeleaf Layout Dialect", "3.1.0") {
 		group("nz.net.ultraq.thymeleaf") {
 			modules = [
 				"thymeleaf-layout-dialect"
