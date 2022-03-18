@@ -47,8 +47,10 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.JsonComponent;
@@ -92,8 +94,13 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void jsonMixinModuleShouldBeAutoconfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JsonMixinModule.class));
+	void jsonMixinModuleShouldBeAutoConfiguredWithBasePackages() {
+		this.contextRunner.withUserConfiguration(MixinConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(JsonMixinModule.class);
+			JsonMixinModule module = context.getBean(JsonMixinModule.class);
+			assertThat(module).extracting("basePackages", InstanceOfAssertFactories.list(String.class))
+					.containsExactly(MixinConfiguration.class.getPackage().getName());
+		});
 	}
 
 	@Test
@@ -634,6 +641,11 @@ class JacksonAutoConfigurationTests {
 		void setBirthDate(Date birthDate) {
 			this.birthDate = birthDate;
 		}
+
+	}
+
+	@AutoConfigurationPackage
+	static class MixinConfiguration {
 
 	}
 

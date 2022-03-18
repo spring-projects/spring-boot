@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Guirong Hu
  */
-public class JsonMixinModuleTests {
+class JsonMixinModuleTests {
 
 	private AnnotationConfigApplicationContext context;
 

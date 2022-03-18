@@ -16,7 +16,6 @@
 
 package org.springframework.boot.jackson;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import com.fasterxml.jackson.databind.Module;
@@ -29,15 +28,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Spring Bean and Jackson {@link Module} to register {@link JsonMixin @JsonMixin}
- * annotated beans.
+ * Spring Bean and Jackson {@link Module} to find and
+ * {@link SimpleModule#setMixInAnnotation(Class, Class) register}
+ * {@link JsonMixin @JsonMixin}-annotated classes.
  *
  * @author Guirong Hu
  * @since 2.7.0
@@ -68,7 +68,6 @@ public class JsonMixinModule extends SimpleModule implements InitializingBean {
 		JsonMixinComponentScanner scanner = new JsonMixinComponentScanner();
 		scanner.setEnvironment(this.context.getEnvironment());
 		scanner.setResourceLoader(this.context);
-
 		for (String basePackage : this.basePackages) {
 			if (StringUtils.hasText(basePackage)) {
 				for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
@@ -81,25 +80,20 @@ public class JsonMixinModule extends SimpleModule implements InitializingBean {
 	private void addJsonMixin(Class<?> mixinClass) {
 		MergedAnnotation<JsonMixin> annotation = MergedAnnotations
 				.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(JsonMixin.class);
-		Class<?>[] targetTypes = annotation.getClassArray("type");
-		if (ObjectUtils.isEmpty(targetTypes)) {
-			return;
-		}
-		for (Class<?> targetType : targetTypes) {
+		for (Class<?> targetType : annotation.getClassArray("type")) {
 			setMixInAnnotation(targetType, mixinClass);
 		}
 	}
 
 	static class JsonMixinComponentScanner extends ClassPathScanningCandidateComponentProvider {
 
-		@Override
-		protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
-			return true;
+		JsonMixinComponentScanner() {
+			addIncludeFilter(new AnnotationTypeFilter(JsonMixin.class));
 		}
 
 		@Override
 		protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-			return beanDefinition.getMetadata().hasAnnotation(JsonMixin.class.getName());
+			return true;
 		}
 
 	}
