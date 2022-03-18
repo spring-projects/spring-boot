@@ -453,7 +453,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
 		String tldScan = ((StandardJarScanFilter) jarScanFilter).getTldScan();
-		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
+		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-jakarta-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
 	}
 
 	@Test
