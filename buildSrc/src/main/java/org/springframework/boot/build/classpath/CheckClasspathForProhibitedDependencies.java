@@ -76,6 +76,9 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.equals("javax.money")) {
 			return false;
 		}
+		if (group.equals("org.codehaus.groovy")) {
+			return true;
+		}
 		if (group.startsWith("javax")) {
 			return true;
 		}

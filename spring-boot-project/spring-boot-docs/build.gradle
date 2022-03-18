@@ -102,7 +102,7 @@ dependencies {
 	}
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
-	implementation("org.codehaus.groovy:groovy")
+	implementation("org.apache.groovy:groovy")
 	implementation("org.hibernate:hibernate-jcache") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

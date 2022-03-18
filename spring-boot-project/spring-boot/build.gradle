@@ -56,8 +56,8 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.assertj:assertj-core")
-	optional("org.codehaus.groovy:groovy")
-	optional("org.codehaus.groovy:groovy-xml")
+	optional("org.apache.groovy:groovy")
+	optional("org.apache.groovy:groovy-xml")
 	optional("org.eclipse.jetty:jetty-servlets")
 	optional("org.eclipse.jetty:jetty-util")
 	optional("org.eclipse.jetty:jetty-webapp") {

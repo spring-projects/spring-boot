@@ -16,7 +16,7 @@ configurations {
 dependencies {
 	compileOnly(project(":spring-boot-project:spring-boot"))
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
-	compileOnly("org.codehaus.groovy:groovy-templates")
+	compileOnly("org.apache.groovy:groovy-templates")
 	compileOnly("org.springframework:spring-web")
 
 	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
@@ -41,7 +41,7 @@ dependencies {
 	implementation("org.apache.maven:maven-settings-builder") {
 		exclude group: "javax.inject", module: "javax.inject"
 	}
-	implementation("org.codehaus.groovy:groovy")
+	implementation("org.apache.groovy:groovy")
 	implementation("org.slf4j:slf4j-simple")
 	implementation("org.sonatype.plexus:plexus-sec-dispatcher")
 	implementation("org.sonatype.sisu:sisu-inject-plexus") {
@@ -64,7 +64,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.codehaus.groovy:groovy-templates")
+	testImplementation("org.apache.groovy:groovy-templates")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
