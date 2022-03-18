@@ -147,6 +147,11 @@ public class FlywayProperties {
 	private String placeholderSuffix = "}";
 
 	/**
+	 * Separator of default placeholders.
+	 */
+	private String placeholderSeparator;
+
+	/**
 	 * Perform placeholder replacement in migration scripts.
 	 */
 	private boolean placeholderReplacement = true;
@@ -536,6 +541,14 @@ public class FlywayProperties {
 
 	public void setPlaceholderSuffix(String placeholderSuffix) {
 		this.placeholderSuffix = placeholderSuffix;
+	}
+
+	public String getPlaceholderSeparator() {
+		return this.placeholderSeparator;
+	}
+
+	public void setPlaceholderSeparator(String placeholderSeparator) {
+		this.placeholderSeparator = placeholderSeparator;
 	}
 
 	public boolean isPlaceholderReplacement() {

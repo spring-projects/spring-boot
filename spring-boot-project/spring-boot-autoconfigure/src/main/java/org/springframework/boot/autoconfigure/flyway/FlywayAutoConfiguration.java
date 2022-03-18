@@ -188,6 +188,9 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getPlaceholders()).to(configuration::placeholders);
 			map.from(properties.getPlaceholderPrefix()).to(configuration::placeholderPrefix);
 			map.from(properties.getPlaceholderSuffix()).to(configuration::placeholderSuffix);
+			// No method reference for compatibility with Flyway version < 8.0
+			map.from(properties.getPlaceholderSeparator())
+					.to((placeHolderSeparator) -> configuration.placeholderSeparator(placeHolderSeparator));
 			map.from(properties.isPlaceholderReplacement()).to(configuration::placeholderReplacement);
 			map.from(properties.getSqlMigrationPrefix()).to(configuration::sqlMigrationPrefix);
 			map.from(properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
