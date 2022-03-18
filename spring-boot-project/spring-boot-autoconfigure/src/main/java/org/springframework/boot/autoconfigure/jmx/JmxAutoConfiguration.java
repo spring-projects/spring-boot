@@ -25,10 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
@@ -47,17 +47,19 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 1.0.0
  */
 @AutoConfiguration
+@EnableConfigurationProperties(JmxProperties.class)
 @ConditionalOnClass({ MBeanExporter.class })
 @ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
 public class JmxAutoConfiguration {
 
-	private final Environment environment;
+	private final JmxProperties properties;
 
-	public JmxAutoConfiguration(Environment environment) {
-		this.environment = environment;
+	public JmxAutoConfiguration(JmxProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
@@ -67,10 +69,11 @@ public class JmxAutoConfiguration {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
 		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
 		exporter.setNamingStrategy(namingStrategy);
-		String serverBean = this.environment.getProperty("spring.jmx.server", "mbeanServer");
+		String serverBean = this.properties.getServer();
 		if (StringUtils.hasLength(serverBean)) {
 			exporter.setServer(beanFactory.getBean(serverBean, MBeanServer.class));
 		}
+		exporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		return exporter;
 	}
 
@@ -78,12 +81,11 @@ public class JmxAutoConfiguration {
 	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class, search = SearchStrategy.CURRENT)
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
-		String defaultDomain = this.environment.getProperty("spring.jmx.default-domain");
+		String defaultDomain = this.properties.getDefaultDomain();
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}
-		boolean uniqueNames = this.environment.getProperty("spring.jmx.unique-names", Boolean.class, false);
-		namingStrategy.setEnsureUniqueRuntimeObjectNames(uniqueNames);
+		namingStrategy.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		return namingStrategy;
 	}
 

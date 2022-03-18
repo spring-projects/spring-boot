@@ -1109,29 +1109,6 @@
       }
     },
     {
-      "name": "spring.jmx.default-domain",
-      "type": "java.lang.String",
-      "description": "JMX domain name."
-    },
-    {
-      "name": "spring.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Expose management beans to the JMX domain.",
-      "defaultValue": false
-    },
-    {
-      "name": "spring.jmx.server",
-      "type": "java.lang.String",
-      "description": "MBeanServer bean name.",
-      "defaultValue": "mbeanServer"
-    },
-    {
-      "name": "spring.jmx.unique-names",
-      "type": "java.lang.Boolean",
-      "description": "Whether unique runtime object names should be ensured.",
-      "defaultValue": false
-    },
-    {
       "name": "spring.jpa.open-in-view",
       "defaultValue": true
     },

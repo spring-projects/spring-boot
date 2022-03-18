@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
-import org.springframework.mock.env.MockEnvironment;
+import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,9 +40,9 @@ import static org.mockito.Mockito.mock;
  */
 class DefaultEndpointObjectNameFactoryTests {
 
-	private final MockEnvironment environment = new MockEnvironment();
-
 	private final JmxEndpointProperties properties = new JmxEndpointProperties();
+
+	private final JmxProperties jmxProperties = new JmxProperties();
 
 	private final MBeanServer mBeanServer = mock(MBeanServer.class);
 
@@ -69,7 +69,7 @@ class DefaultEndpointObjectNameFactoryTests {
 
 	@Test
 	void generateObjectNameWithUniqueNames() {
-		this.environment.setProperty("spring.jmx.unique-names", "true");
+		this.jmxProperties.setUniqueNames(true);
 		assertUniqueObjectName();
 	}
 
@@ -103,7 +103,7 @@ class DefaultEndpointObjectNameFactoryTests {
 
 	private ObjectName generateObjectName(ExposableJmxEndpoint endpoint) {
 		try {
-			return new DefaultEndpointObjectNameFactory(this.properties, this.environment, this.mBeanServer,
+			return new DefaultEndpointObjectNameFactory(this.properties, this.jmxProperties, this.mBeanServer,
 					this.contextId).getObjectName(endpoint);
 		}
 		catch (MalformedObjectNameException ex) {
