@@ -1105,7 +1105,7 @@ bom {
 			]
 		}
 	}
-	library("Log4j2", "2.17.1") {
+	library("Log4j2", "2.17.2") {
 		group("org.apache.logging.log4j") {
 			imports = [
 				"log4j-bom"
