@@ -60,7 +60,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 			RedisHealth.fromClusterInfo(builder, ((RedisClusterConnection) connection).clusterGetClusterInfo());
 		}
 		else {
-			RedisHealth.up(builder, connection.info("server"));
+			RedisHealth.up(builder, connection.serverCommands().info());
 		}
 	}
 

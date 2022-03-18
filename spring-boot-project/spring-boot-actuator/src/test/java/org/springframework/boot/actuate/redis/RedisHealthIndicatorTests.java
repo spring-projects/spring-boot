@@ -30,6 +30,7 @@ import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisClusterNode;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisServerCommands;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -51,7 +52,9 @@ class RedisHealthIndicatorTests {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info("server")).willReturn(info);
+		RedisServerCommands serverCommands = mock(RedisServerCommands.class);
+		given(redisConnection.serverCommands()).willReturn(serverCommands);
+		given(serverCommands.info()).willReturn(info);
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -61,7 +64,9 @@ class RedisHealthIndicatorTests {
 	@Test
 	void redisIsDown() {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info("server")).willThrow(new RedisConnectionFailureException("Connection failed"));
+		RedisServerCommands serverCommands = mock(RedisServerCommands.class);
+		given(redisConnection.serverCommands()).willReturn(serverCommands);
+		given(serverCommands.info()).willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
