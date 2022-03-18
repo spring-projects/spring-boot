@@ -15,6 +15,9 @@ bom {
 		}
 	}
 	library("ActiveMQ", "5.16.4") {
+		prohibit("[5.17.0,)") {
+			because "it requires Java 11"
+		}
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-amqp",
@@ -1814,6 +1817,9 @@ bom {
 		}
 	}
 	library("Thymeleaf Layout Dialect", "3.0.0") {
+		prohibit("[3.1.0,)") {
+			because "it requires Groovy 4"
+		}
 		group("nz.net.ultraq.thymeleaf") {
 			modules = [
 				"thymeleaf-layout-dialect"
