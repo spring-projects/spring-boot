@@ -1280,7 +1280,7 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "4.3.1") {
+	library("Mockito", "4.4.0") {
 		group("org.mockito") {
 			modules = [
 				"mockito-core",
