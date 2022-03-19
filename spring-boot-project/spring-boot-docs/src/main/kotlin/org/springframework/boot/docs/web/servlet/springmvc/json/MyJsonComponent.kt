@@ -33,8 +33,10 @@ class MyJsonComponent {
 	class Serializer : JsonSerializer<MyObject>() {
 		@Throws(IOException::class)
 		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializerProvider) {
+			jgen.writeStartObject()
 			jgen.writeStringField("name", value.name)
 			jgen.writeNumberField("age", value.age)
+			jgen.writeEndObject()
 		}
 	}
 
