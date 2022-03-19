@@ -37,8 +37,10 @@ public class MyJsonComponent {
 
 		@Override
 		public void serialize(MyObject value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+			jgen.writeStartObject();
 			jgen.writeStringField("name", value.getName());
 			jgen.writeNumberField("age", value.getAge());
+			jgen.writeEndObject();
 		}
 
 	}
