@@ -18,7 +18,7 @@ class ForwardMerge
 end
 
 def find_forward_merges(message_file)
-  $log.debug "Searching for for forward merge"
+  $log.debug "Searching for forward merge"
   rev=`git rev-parse -q --verify MERGE_HEAD`.strip
   $log.debug "Found #{rev} from git rev-parse"
   return nil unless rev
