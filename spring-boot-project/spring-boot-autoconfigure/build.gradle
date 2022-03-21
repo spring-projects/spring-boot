@@ -93,7 +93,6 @@ dependencies {
 	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-spring")
-	optional("org.cache2k:cache2k-micrometer")
 	optional("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}

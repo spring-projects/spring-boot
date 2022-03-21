@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.cache.Caching;
 import javax.cache.configuration.CompleteConfiguration;
@@ -48,6 +49,7 @@ import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfigurati
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -74,7 +76,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -624,137 +625,60 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
-	void cache2kCacheWithDynamicCacheCreation() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=cache2k").run((context) -> {
-					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
-					assertThat(manager.getCacheNames()).isEmpty();
-					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
-					Cache foo = manager.getCache("dynamic");
-					foo.get("1");
-				});
-	}
-
-	@Test
-	void cache2kCacheWithCacheNamesInProperties() {
+	void cache2kCacheWithExplicitCaches() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo,bar").run((context) -> {
 					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
 					assertThat(manager.getCacheNames()).containsExactlyInAnyOrder("foo", "bar");
-					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
-					manager.getCache("foo").get("1");
-					manager.getCache("bar").get("2");
-					assertThat(manager.getCache("unknown")).isNull();
 				});
 	}
 
 	@Test
-	void cache2kCacheWithDynamicCacheCreationAndDefaults() {
+	void cache2kCacheWithCustomizedDefaults() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=cache2k")
-				.withBean(Cache2kDefaults.class, () -> (b) -> b.valueType(String.class).loader((key) -> "default"))
+				.withBean(Cache2kBuilderCustomizer.class,
+						() -> (builder) -> builder.valueType(String.class).loader((key) -> "default"))
 				.run((context) -> {
 					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
 					assertThat(manager.getCacheNames()).isEmpty();
-					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
-					Cache foo = manager.getCache("fooDynamic");
-					assertThat(foo.get("1").get()).isEqualTo("default");
-					Cache bar = manager.getCache("barDynamic");
-					assertThat(bar.get("1").get()).isEqualTo("default");
-					assertThat(manager.getCache("barDynamic")).isSameAs(bar);
+					Cache dynamic = manager.getCache("dynamic");
+					assertThat(dynamic.get("1")).satisfies(hasEntry("default"));
+					assertThat(dynamic.get("2")).satisfies(hasEntry("default"));
 				});
 	}
 
 	@Test
-	void cache2kCacheWithNamesInPropertiesAndDefaults() {
+	void cache2kCacheWithCustomizedDefaultsAndExplicitCaches() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo,bar")
-				.withBean(Cache2kDefaults.class, () -> (b) -> b.valueType(String.class).loader((key) -> "default"))
+				.withBean(Cache2kBuilderCustomizer.class,
+						() -> (builder) -> builder.valueType(String.class).loader((key) -> "default"))
 				.run((context) -> {
 					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
 					assertThat(manager.getCacheNames()).containsExactlyInAnyOrder("foo", "bar");
-					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
-					Cache foo = manager.getCache("foo");
-					assertThat(foo.get("1").get()).isEqualTo("default");
-					Cache bar = manager.getCache("bar");
-					assertThat(bar.get("1").get()).isEqualTo("default");
+					assertThat(manager.getCache("foo").get("1")).satisfies(hasEntry("default"));
+					assertThat(manager.getCache("bar").get("1")).satisfies(hasEntry("default"));
 				});
 	}
 
 	@Test
-	void cache2kCacheWithDynamicCacheCreationAndDefaultAndCustomCachesViaCacheManagerCustomizer() {
+	void cache2kCacheWithCacheManagerCustomizer() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=cache2k").withBean(CacheManagerCustomizer.class,
-						() -> (CacheManagerCustomizer<SpringCache2kCacheManager>) (cm) -> {
-							cm.defaultSetup((b) -> b.valueType(String.class).loader((key) -> "default"));
-							cm.addCache("custom", (b) -> b.valueType(String.class).loader((key) -> "custom"));
-						})
+				.withPropertyValues("spring.cache.type=cache2k")
+				.withBean(CacheManagerCustomizer.class,
+						() -> cache2kCacheManagerCustomizer((cacheManager) -> cacheManager.addCache("custom",
+								(builder) -> builder.valueType(String.class).loader((key) -> "custom"))))
 				.run((context) -> {
 					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
 					assertThat(manager.getCacheNames()).containsExactlyInAnyOrder("custom");
-					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
-					Cache foo = manager.getCache("fooDynamic");
-					assertThat(foo.get("1").get()).isEqualTo("default");
-					Cache custom = manager.getCache("custom");
-					assertThat(custom.get("1").get()).isEqualTo("custom");
+					assertThat(manager.getCache("custom").get("1")).satisfies(hasEntry("custom"));
 				});
 	}
 
-	@Test
-	void cache2kCacheWithNamesInPropertiesAndDefaultsAndCacheManagerCustomizer() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=cache2k",
-						"spring.cache.cacheNames=foo,bar")
-				.withBean(Cache2kDefaults.class, () -> (b) -> b.valueType(String.class).loader((key) -> "default"))
-				.withBean(CacheManagerCustomizer.class,
-						() -> (CacheManagerCustomizer<SpringCache2kCacheManager>) (cm) -> cm.addCache("custom",
-								(b) -> b.valueType(String.class).loader((key) -> "custom")))
-				.run((context) -> {
-					SpringCache2kCacheManager manager = getCacheManager(context, SpringCache2kCacheManager.class);
-					assertThat(manager.getCacheNames()).containsExactlyInAnyOrder("foo", "bar", "custom");
-					assertThat(manager.getNativeCacheManager().getName()).isEqualTo("springDefault");
-					Cache foo = manager.getCache("foo");
-					assertThat(foo.get("1").get()).isEqualTo("default");
-					Cache bar = manager.getCache("bar");
-					assertThat(bar.get("1").get()).isEqualTo("default");
-					assertThat(manager.isAllowUnknownCache()).isFalse();
-				});
-	}
-
-	/**
-	 * Default cannot be changed in CacheManagerCustomizer, if cache names are present in
-	 * the properties
-	 */
-	@Test
-	void cache2kCacheNamesAndCacheManagerDefaultsYieldsException() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cacheNames=foo,bar")
-				.withBean(CacheManagerCustomizer.class,
-						() -> (CacheManagerCustomizer<SpringCache2kCacheManager>) (cm) -> cm
-								.defaultSetup((b) -> b.entryCapacity(1234)))
-				.run((context) -> {
-					assertThatCode(() -> getCacheManager(context, SpringCache2kCacheManager.class)).getRootCause()
-							.isInstanceOf(IllegalStateException.class);
-					// close underlying cache manager directly since Spring bean was not
-					// created
-					org.cache2k.CacheManager.getInstance(SpringCache2kCacheManager.DEFAULT_SPRING_CACHE_MANAGER_NAME)
-							.close();
-				});
-	}
-
-	/**
-	 * Applying defaults via customizer and cache manager is not possible
-	 */
-	@Test
-	void cache2kCacheDefaultsTwiceYieldsException() {
-		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=cache2k")
-				.withBean(Cache2kDefaults.class, () -> (b) -> b.entryCapacity(1234))
-				.withBean(CacheManagerCustomizer.class,
-						() -> (CacheManagerCustomizer<SpringCache2kCacheManager>) (cm) -> cm
-								.defaultSetup((b) -> b.entryCapacity(1234)))
-				.run((context) -> assertThatCode(() -> getCacheManager(context, SpringCache2kCacheManager.class))
-						.getRootCause().isInstanceOf(IllegalStateException.class));
+	private CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCacheManagerCustomizer(
+			Consumer<SpringCache2kCacheManager> cacheManager) {
+		return cacheManager::accept;
 	}
 
 	@Test
@@ -816,6 +740,10 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(postProcessor.cacheManagers).hasSize(1);
 					assertThat(postProcessor.cacheManagers.get(0)).isInstanceOf(CaffeineCacheManager.class);
 				});
+	}
+
+	private Consumer<ValueWrapper> hasEntry(Object value) {
+		return (valueWrapper) -> assertThat(valueWrapper.get()).isEqualTo(value);
 	}
 
 	private void validateCaffeineCacheWithStats(AssertableApplicationContext context) {

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache;
+package org.springframework.boot.docs.io.caching.provider.cache2k;
 
-import org.cache2k.Cache2kBuilder;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Default configuration for cache2k when Spring boot auto configuration is creating the
- * Cache Manager.
- *
- * @author Jens Wilke
- * @since 2.7.0
- */
-public interface Cache2kDefaults {
+import org.springframework.boot.autoconfigure.cache.Cache2kBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-	void customize(Cache2kBuilder<?, ?> builder);
+@Configuration(proxyBeanMethods = false)
+public class MyCache2kDefaultsConfiguration {
+
+	@Bean
+	public Cache2kBuilderCustomizer myCache2kDefaultsCustomizer() {
+		// @formatter:off
+		return (builder) -> builder.entryCapacity(200)
+				.expireAfterWrite(5, TimeUnit.MINUTES);
+		// @formatter:on
+	}
 
 }
