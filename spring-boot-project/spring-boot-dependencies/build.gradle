@@ -1057,7 +1057,7 @@ bom {
 			]
 		}
 	}
-	library("Lettuce", "6.1.6.RELEASE") {
+	library("Lettuce", "6.1.8.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
