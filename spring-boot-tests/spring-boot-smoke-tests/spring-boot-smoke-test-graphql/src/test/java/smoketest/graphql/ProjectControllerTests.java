@@ -37,7 +37,7 @@ class ProjectControllerTests {
 	@Test
 	void shouldNotFindUnknownProject() {
 		this.graphQlTester.document("{ project(slug: \"spring-unknown\") { name } }").execute().path("project.name")
-				.valueDoesNotExist();
+				.pathDoesNotExist();
 	}
 
 }
