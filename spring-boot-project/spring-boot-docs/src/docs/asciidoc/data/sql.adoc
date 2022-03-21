@@ -351,7 +351,7 @@ In simple setups, a `SecurityFilterChain` like the following can be used:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/h2webconsole/springsecurity/DevProfileSecurityConfiguration.java[]
+include::{docs-java}/data/sql/h2webconsole/springsecurity/DevProfileSecurityConfiguration.java[]
 ----
 
 WARNING: The H2 console is only intended for use during development.
@@ -361,7 +361,7 @@ TIP: `PathRequest.toH2Console()` returns the correct request matcher also when t
 
 
 
-[[features.sql.jooq]]
+[[data.sql.jooq]]
 === Using jOOQ
 jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
 Both the commercial and open source editions can be used with Spring Boot.
