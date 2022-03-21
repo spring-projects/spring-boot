@@ -153,7 +153,7 @@ Contrary to a test, application code callbacks are processed early (before the v
 
 [[howto.webserver.enable-response-compression]]
 === Enable HTTP Response Compression
-HTTP response compression is supported by Jetty, Tomcat, Undertow and Netty.
+HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
