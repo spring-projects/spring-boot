@@ -1419,7 +1419,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.0-SNAPSHOT") {
+	library("Spring WS", "4.0.0-M2") {
 		group("org.springframework.ws") {
 			modules = [
 				"spring-ws-core",
