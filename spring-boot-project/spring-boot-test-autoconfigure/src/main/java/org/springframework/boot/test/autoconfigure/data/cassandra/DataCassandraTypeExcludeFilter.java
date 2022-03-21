@@ -26,7 +26,7 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  */
 class DataCassandraTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataCassandraTest> {
 
-	protected DataCassandraTypeExcludeFilter(Class<?> testClass) {
+	DataCassandraTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

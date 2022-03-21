@@ -34,7 +34,7 @@ public final class WebServiceClientExcludeFilter
 
 	private final Class<?>[] components;
 
-	protected WebServiceClientExcludeFilter(Class<?> testClass) {
+	WebServiceClientExcludeFilter(Class<?> testClass) {
 		super(testClass);
 		this.components = getAnnotation().getValue("components", Class[].class).orElseGet(() -> new Class<?>[0]);
 	}
