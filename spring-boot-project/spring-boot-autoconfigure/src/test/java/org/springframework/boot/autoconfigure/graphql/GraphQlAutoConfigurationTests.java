@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.graphql.GraphQlService;
+import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
@@ -58,7 +58,7 @@ class GraphQlAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(GraphQlSource.class);
 			assertThat(context).hasSingleBean(BatchLoaderRegistry.class);
-			assertThat(context).hasSingleBean(GraphQlService.class);
+			assertThat(context).hasSingleBean(ExecutionGraphQlService.class);
 			assertThat(context).hasSingleBean(AnnotatedControllerConfigurer.class);
 		});
 	}
@@ -175,7 +175,7 @@ class GraphQlAutoConfigurationTests {
 					assertThat(context).hasSingleBean(BatchLoaderRegistry.class);
 					assertThat(context.getBean("customBatchLoaderRegistry"))
 							.isSameAs(context.getBean(BatchLoaderRegistry.class));
-					assertThat(context.getBean(GraphQlService.class))
+					assertThat(context.getBean(ExecutionGraphQlService.class))
 							.extracting("dataLoaderRegistrars",
 									InstanceOfAssertFactories.list(DataLoaderRegistrar.class))
 							.containsOnly(context.getBean(BatchLoaderRegistry.class));

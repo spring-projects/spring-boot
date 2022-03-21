@@ -41,12 +41,12 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.graphql.GraphQlService;
+import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.DefaultBatchLoaderRegistry;
-import org.springframework.graphql.execution.ExecutionGraphQlService;
+import org.springframework.graphql.execution.DefaultExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
@@ -123,8 +123,9 @@ public class GraphQlAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlService graphQlService(GraphQlSource graphQlSource, BatchLoaderRegistry batchLoaderRegistry) {
-		ExecutionGraphQlService service = new ExecutionGraphQlService(graphQlSource);
+	public ExecutionGraphQlService executionGraphQlService(GraphQlSource graphQlSource,
+			BatchLoaderRegistry batchLoaderRegistry) {
+		DefaultExecutionGraphQlService service = new DefaultExecutionGraphQlService(graphQlSource);
 		service.addDataLoaderRegistrar(batchLoaderRegistry);
 		return service;
 	}

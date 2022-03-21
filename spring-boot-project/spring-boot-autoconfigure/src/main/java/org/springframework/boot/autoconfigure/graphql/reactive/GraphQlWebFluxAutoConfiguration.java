@@ -39,10 +39,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.log.LogMessage;
-import org.springframework.graphql.GraphQlService;
+import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.web.WebGraphQlHandler;
-import org.springframework.graphql.web.WebInterceptor;
+import org.springframework.graphql.web.WebGraphQlHandlerInterceptor;
 import org.springframework.graphql.web.webflux.GraphQlHttpHandler;
 import org.springframework.graphql.web.webflux.GraphQlWebSocketHandler;
 import org.springframework.graphql.web.webflux.GraphiQlHandler;
@@ -77,7 +77,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class })
-@ConditionalOnBean(GraphQlService.class)
+@ConditionalOnBean(ExecutionGraphQlService.class)
 @EnableConfigurationProperties(GraphQlCorsProperties.class)
 public class GraphQlWebFluxAutoConfiguration {
 
@@ -94,8 +94,8 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebGraphQlHandler webGraphQlHandler(GraphQlService service,
-			ObjectProvider<WebInterceptor> interceptorsProvider) {
+	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
+			ObjectProvider<WebGraphQlHandlerInterceptor> interceptorsProvider) {
 		return WebGraphQlHandler.builder(service)
 				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList())).build();
 	}

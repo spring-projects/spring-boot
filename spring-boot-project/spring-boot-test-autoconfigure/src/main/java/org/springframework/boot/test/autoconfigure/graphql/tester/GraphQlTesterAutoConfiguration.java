@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.graphql.GraphQlService;
+import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.test.tester.GraphQlServiceTester;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
@@ -39,9 +39,9 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 public class GraphQlTesterAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(GraphQlService.class)
+	@ConditionalOnBean(ExecutionGraphQlService.class)
 	@ConditionalOnMissingBean
-	public GraphQlServiceTester graphQlTester(GraphQlService graphQlService) {
+	public GraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService) {
 		return GraphQlServiceTester.create(graphQlService);
 	}
 

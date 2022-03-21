@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.web.WebGraphQlHandler;
-import org.springframework.graphql.web.WebInterceptor;
+import org.springframework.graphql.web.WebGraphQlHandlerInterceptor;
 import org.springframework.graphql.web.webflux.GraphQlHttpHandler;
 import org.springframework.graphql.web.webflux.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
@@ -172,7 +172,7 @@ class GraphQlWebFluxAutoConfigurationTests {
 	static class CustomWebInterceptor {
 
 		@Bean
-		WebInterceptor customWebInterceptor() {
+		WebGraphQlHandlerInterceptor customWebGraphQlHandlerInterceptor() {
 			return (webInput, interceptorChain) -> interceptorChain.next(webInput)
 					.doOnNext((output) -> output.getResponseHeaders().add("X-Custom-Header", "42"));
 		}
