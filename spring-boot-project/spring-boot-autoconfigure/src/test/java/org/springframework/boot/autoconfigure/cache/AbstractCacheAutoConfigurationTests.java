@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.hazelcast.spring.cache.HazelcastCacheManager;
+import org.cache2k.extra.spring.SpringCache2kCacheManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -115,6 +116,13 @@ abstract class AbstractCacheAutoConfigurationTests {
 		@Bean
 		CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<>() {
+
+			};
+		}
+
+		@Bean
+		CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<SpringCache2kCacheManager>() {
 
 			};
 		}

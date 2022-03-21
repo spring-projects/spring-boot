@@ -815,6 +815,7 @@ Additional, cache-specific metrics are also available.
 
 The following cache libraries are supported:
 
+* Cache2k
 * Caffeine
 * Hazelcast
 * Any compliant JCache (JSR-107) implementation

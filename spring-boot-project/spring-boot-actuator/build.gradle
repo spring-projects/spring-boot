@@ -40,6 +40,8 @@ dependencies {
 	}
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
+	optional("org.cache2k:cache2k-micrometer")
+	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude(group: "javax.servlet", module: "javax.servlet-api")
 	}

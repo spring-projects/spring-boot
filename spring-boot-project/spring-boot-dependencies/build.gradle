@@ -87,6 +87,18 @@ bom {
 			]
 		}
 	}
+	library("cache2k", "2.6.1.Final") {
+		group("org.cache2k") {
+			modules = [
+					"cache2k-api",
+					"cache2k-config",
+					"cache2k-core",
+					"cache2k-jcache",
+					"cache2k-micrometer",
+					"cache2k-spring"
+			]
+		}
+	}
 	library("Caffeine", "3.0.5") {
 		group("com.github.ben-manes.caffeine") {
 			modules = [
