@@ -158,6 +158,18 @@ bom {
 			]
 		}
 	}
+	library("cache2k", "2.6.1.Final") {
+		group("org.cache2k") {
+			modules = [
+					"cache2k-api",
+					"cache2k-config",
+					"cache2k-core",
+					"cache2k-jcache",
+					"cache2k-micrometer",
+					"cache2k-spring"
+			]
+		}
+	}
 	library("Caffeine", "2.9.3") {
 		prohibit("[3.0.0,)") {
 			because "it requires Java 11"

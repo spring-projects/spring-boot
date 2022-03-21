@@ -850,6 +850,7 @@ Additional, cache-specific metrics are also available.
 
 The following cache libraries are supported:
 
+* Cache2k
 * Caffeine
 * EhCache 2
 * Hazelcast
