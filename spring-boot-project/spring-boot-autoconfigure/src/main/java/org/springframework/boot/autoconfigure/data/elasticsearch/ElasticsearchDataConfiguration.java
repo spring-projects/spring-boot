@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
 import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
@@ -107,7 +106,6 @@ abstract class ElasticsearchDataConfiguration {
 				ElasticsearchConverter converter) {
 			ReactiveElasticsearchTemplate template = new ReactiveElasticsearchTemplate(client, converter);
 			template.setIndicesOptions(IndicesOptions.strictExpandOpenAndForbidClosed());
-			template.setRefreshPolicy(RefreshPolicy.IMMEDIATE);
 			return template;
 		}
 
