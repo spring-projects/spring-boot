@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.elasticsearch;
+package org.springframework.boot.docs.io.caching.provider.cache2k;
 
-import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
+import java.util.concurrent.TimeUnit;
 
-/**
- * {@link TypeExcludeFilter} for {@link DataElasticsearchTest @DataElasticsearchTest}.
- *
- * @author Eddú Meléndez
- */
-class DataElasticsearchTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<DataElasticsearchTest> {
+import org.springframework.boot.autoconfigure.cache.Cache2kBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-	DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
-		super(testClass);
+@Configuration(proxyBeanMethods = false)
+public class MyCache2kDefaultsConfiguration {
+
+	@Bean
+	public Cache2kBuilderCustomizer myCache2kDefaultsCustomizer() {
+		// @formatter:off
+		return (builder) -> builder.entryCapacity(200)
+				.expireAfterWrite(5, TimeUnit.MINUTES);
+		// @formatter:on
 	}
 
 }

@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.elasticsearch;
+package org.springframework.boot.actuate.metrics.cache;
 
-import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import org.cache2k.extra.micrometer.Cache2kCacheMetrics;
+import org.cache2k.extra.spring.SpringCache2kCache;
 
 /**
- * {@link TypeExcludeFilter} for {@link DataElasticsearchTest @DataElasticsearchTest}.
+ * {@link CacheMeterBinderProvider} implementation for cache2k.
  *
- * @author Eddú Meléndez
+ * @author Jens Wilke
+ * @since 2.7.0
  */
-class DataElasticsearchTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<DataElasticsearchTest> {
+public class Cache2kCacheMeterBinderProvider implements CacheMeterBinderProvider<SpringCache2kCache> {
 
-	DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
-		super(testClass);
+	@Override
+	public MeterBinder getMeterBinder(SpringCache2kCache cache, Iterable<Tag> tags) {
+		return new Cache2kCacheMetrics(cache.getNativeCache(), tags);
 	}
 
 }

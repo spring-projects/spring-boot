@@ -42,6 +42,7 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 . <<io#io.caching.provider.couchbase,Couchbase>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>
+. <<io#io.caching.provider.cache2k,Cache2k>>
 . <<io#io.caching.provider.simple,Simple>>
 
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
@@ -187,6 +188,19 @@ For instance, the following configuration creates `cache1` and `cache2` caches w
 If a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, it is automatically associated to the `CaffeineCacheManager`.
 Since the `CacheLoader` is going to be associated with _all_ caches managed by the cache manager, it must be defined as `CacheLoader<Object, Object>`.
 The auto-configuration ignores any other generic type.
+
+
+
+[[io.caching.provider.cache2k]]
+==== Cache2k
+https://cache2k.org/[Cache2k] is an in-memory cache.
+If the Cache2k spring integration is present, a `SpringCache2kCacheManager` is auto-configured.
+
+Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
+Cache defaults can be customized using a `Cache2kBuilderCustomizer` bean.
+The following example shows a customizer that configures the capacity of the cache to 200 entries, with an expiration of 5 minutes:
+
+include::code:MyCache2kDefaultsConfiguration[]
 
 
 

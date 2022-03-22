@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.elasticsearch;
+package org.springframework.boot.autoconfigure.cache;
 
-import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
+import org.cache2k.Cache2kBuilder;
 
 /**
- * {@link TypeExcludeFilter} for {@link DataElasticsearchTest @DataElasticsearchTest}.
+ * Callback interface that can be implemented by beans wishing to customize the default
+ * setup for caches added to the manager via addCaches and for dynamically created caches.
  *
- * @author Eddú Meléndez
+ * @author Jens Wilke
+ * @author Stephane Nicoll
+ * @since 2.7.0
  */
-class DataElasticsearchTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<DataElasticsearchTest> {
+public interface Cache2kBuilderCustomizer {
 
-	DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
-		super(testClass);
-	}
+	/**
+	 * Customize the default cache settings.
+	 * @param builder the builder to customize
+	 */
+	void customize(Cache2kBuilder<?, ?> builder);
 
 }

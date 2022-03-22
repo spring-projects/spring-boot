@@ -87,6 +87,18 @@ bom {
 			]
 		}
 	}
+	library("cache2k", "2.6.1.Final") {
+		group("org.cache2k") {
+			modules = [
+					"cache2k-api",
+					"cache2k-config",
+					"cache2k-core",
+					"cache2k-jcache",
+					"cache2k-micrometer",
+					"cache2k-spring"
+			]
+		}
+	}
 	library("Caffeine", "3.0.5") {
 		group("com.github.ben-manes.caffeine") {
 			modules = [
@@ -235,7 +247,7 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "3.4.2") {
+	library("Embedded Mongo", "3.4.3") {
 		group("de.flapdoodle.embed") {
 			modules = [
 				"de.flapdoodle.embed.mongo"
@@ -790,7 +802,7 @@ bom {
 			]
 		}
 	}
-	library("Lettuce", "6.1.6.RELEASE") {
+	library("Lettuce", "6.1.8.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
@@ -1327,7 +1339,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2022.0.0-SNAPSHOT") {
+	library("Spring Data Bom", "2022.0.0-M2") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1407,7 +1419,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.0-SNAPSHOT") {
+	library("Spring WS", "4.0.0-M2") {
 		group("org.springframework.ws") {
 			modules = [
 				"spring-ws-core",
