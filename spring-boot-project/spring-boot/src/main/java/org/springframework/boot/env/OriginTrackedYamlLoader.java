@@ -113,8 +113,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 					return constructTrackedObject(node, super.constructObject(node));
 				}
 			}
-			if (node instanceof MappingNode) {
-				replaceMappingNodeKeys((MappingNode) node);
+			if (node instanceof MappingNode mappingNode) {
+				replaceMappingNodeKeys(mappingNode);
 			}
 			return super.constructObject(node);
 		}
@@ -156,8 +156,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private static Node get(Node node) {
-			if (node instanceof ScalarNode) {
-				return new KeyScalarNode((ScalarNode) node);
+			if (node instanceof ScalarNode scalarNode) {
+				return new KeyScalarNode(scalarNode);
 			}
 			return node;
 		}

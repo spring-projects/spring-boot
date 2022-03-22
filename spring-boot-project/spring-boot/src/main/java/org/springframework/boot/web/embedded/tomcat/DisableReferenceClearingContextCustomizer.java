@@ -29,10 +29,9 @@ class DisableReferenceClearingContextCustomizer implements TomcatContextCustomiz
 
 	@Override
 	public void customize(Context context) {
-		if (!(context instanceof StandardContext)) {
+		if (!(context instanceof StandardContext standardContext)) {
 			return;
 		}
-		StandardContext standardContext = (StandardContext) context;
 		try {
 			standardContext.setClearReferencesObjectStreamClassCaches(false);
 			standardContext.setClearReferencesRmiTargets(false);

@@ -147,8 +147,8 @@ public class NettyWebServer implements WebServer {
 
 	private boolean isPermissionDenied(Throwable bindExceptionCause) {
 		try {
-			if (bindExceptionCause instanceof NativeIoException) {
-				return ((NativeIoException) bindExceptionCause).expectedErr() == ERROR_NO_EACCES;
+			if (bindExceptionCause instanceof NativeIoException nativeIoException) {
+				return nativeIoException.expectedErr() == ERROR_NO_EACCES;
 			}
 		}
 		catch (Throwable ex) {

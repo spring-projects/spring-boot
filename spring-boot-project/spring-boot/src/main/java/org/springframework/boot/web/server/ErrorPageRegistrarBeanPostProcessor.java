@@ -52,8 +52,8 @@ public class ErrorPageRegistrarBeanPostProcessor implements BeanPostProcessor, B
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof ErrorPageRegistry) {
-			postProcessBeforeInitialization((ErrorPageRegistry) bean);
+		if (bean instanceof ErrorPageRegistry errorPageRegistry) {
+			postProcessBeforeInitialization(errorPageRegistry);
 		}
 		return bean;
 	}

@@ -112,8 +112,7 @@ public class ErrorPage {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof ErrorPage) {
-			ErrorPage other = (ErrorPage) obj;
+		if (obj instanceof ErrorPage other) {
 			return ObjectUtils.nullSafeEquals(getExceptionName(), other.getExceptionName())
 					&& ObjectUtils.nullSafeEquals(this.path, other.path) && this.status == other.status;
 		}

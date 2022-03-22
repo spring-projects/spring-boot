@@ -62,8 +62,8 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	@Override
 	public Object getProperty(String name) {
 		Object value = super.getProperty(name);
-		if (value instanceof OriginTrackedValue) {
-			return ((OriginTrackedValue) value).getValue();
+		if (value instanceof OriginTrackedValue originTrackedValue) {
+			return originTrackedValue.getValue();
 		}
 		return value;
 	}
@@ -71,8 +71,8 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	@Override
 	public Origin getOrigin(String name) {
 		Object value = super.getProperty(name);
-		if (value instanceof OriginTrackedValue) {
-			return ((OriginTrackedValue) value).getOrigin();
+		if (value instanceof OriginTrackedValue originTrackedValue) {
+			return originTrackedValue.getOrigin();
 		}
 		return null;
 	}

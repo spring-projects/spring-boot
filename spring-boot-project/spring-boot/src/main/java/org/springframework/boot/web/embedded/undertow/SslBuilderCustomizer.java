@@ -129,8 +129,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	private KeyManager[] getConfigurableAliasKeyManagers(Ssl ssl, KeyManager[] keyManagers) {
 		for (int i = 0; i < keyManagers.length; i++) {
-			if (keyManagers[i] instanceof X509ExtendedKeyManager) {
-				keyManagers[i] = new ConfigurableAliasKeyManager((X509ExtendedKeyManager) keyManagers[i],
+			if (keyManagers[i] instanceof X509ExtendedKeyManager x509ExtendedKeyManager) {
+				keyManagers[i] = new ConfigurableAliasKeyManager(x509ExtendedKeyManager,
 						ssl.getKeyAlias());
 			}
 		}

@@ -369,8 +369,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	protected void configureContext(Context context, ServletContextInitializer[] initializers) {
 		TomcatStarter starter = new TomcatStarter(initializers);
-		if (context instanceof TomcatEmbeddedContext) {
-			TomcatEmbeddedContext embeddedContext = (TomcatEmbeddedContext) context;
+		if (context instanceof TomcatEmbeddedContext embeddedContext) {
 			embeddedContext.setStarter(starter);
 			embeddedContext.setFailCtxIfServletStartFails(true);
 		}
@@ -750,8 +749,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			if (event.getType().equals(Lifecycle.START_EVENT)) {
 				Context context = (Context) event.getLifecycle();
 				Manager manager = context.getManager();
-				if (manager instanceof StandardManager) {
-					((StandardManager) manager).setPathname(null);
+				if (manager instanceof StandardManager standardManager) {
+					standardManager.setPathname(null);
 				}
 			}
 		}

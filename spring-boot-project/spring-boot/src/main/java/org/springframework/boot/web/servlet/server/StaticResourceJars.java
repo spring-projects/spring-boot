@@ -42,8 +42,8 @@ class StaticResourceJars {
 
 	List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		if (classLoader instanceof URLClassLoader) {
-			return getUrlsFrom(((URLClassLoader) classLoader).getURLs());
+		if (classLoader instanceof URLClassLoader urlClassLoader) {
+			return getUrlsFrom(urlClassLoader.getURLs());
 		}
 		else {
 			return getUrlsFrom(Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))

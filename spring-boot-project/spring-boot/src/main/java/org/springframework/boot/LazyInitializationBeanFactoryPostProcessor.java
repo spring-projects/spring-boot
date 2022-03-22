@@ -52,8 +52,8 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 		Collection<LazyInitializationExcludeFilter> filters = getFilters(beanFactory);
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			if (beanDefinition instanceof AbstractBeanDefinition) {
-				postProcess(beanFactory, filters, beanName, (AbstractBeanDefinition) beanDefinition);
+			if (beanDefinition instanceof AbstractBeanDefinition abstractBeanDefinition) {
+				postProcess(beanFactory, filters, beanName, abstractBeanDefinition);
 			}
 		}
 	}

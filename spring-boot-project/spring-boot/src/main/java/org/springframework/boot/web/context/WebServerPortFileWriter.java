@@ -124,8 +124,8 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 	}
 
 	private String getServerNamespace(ApplicationContext applicationContext) {
-		if (applicationContext instanceof WebServerApplicationContext) {
-			return ((WebServerApplicationContext) applicationContext).getServerNamespace();
+		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
+			return webServerApplicationContext.getServerNamespace();
 		}
 		return null;
 	}

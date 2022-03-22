@@ -168,12 +168,12 @@ public class UndertowWebServer implements WebServer {
 		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
-			if (handler instanceof Closeable) {
-				this.closeables.add((Closeable) handler);
+			if (handler instanceof Closeable closeable) {
+				this.closeables.add(closeable);
 			}
-			if (handler instanceof GracefulShutdownHandler) {
+			if (handler instanceof GracefulShutdownHandler gracefulShutdownHandler) {
 				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdownHandler can be defined");
-				this.gracefulShutdown = (GracefulShutdownHandler) handler;
+				this.gracefulShutdown = gracefulShutdownHandler;
 			}
 		}
 		return handler;

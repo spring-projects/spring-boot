@@ -72,9 +72,9 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 
 	private void scanPackage(ClassPathScanningCandidateComponentProvider componentProvider, String packageToScan) {
 		for (BeanDefinition candidate : componentProvider.findCandidateComponents(packageToScan)) {
-			if (candidate instanceof AnnotatedBeanDefinition) {
+			if (candidate instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
 				for (ServletComponentHandler handler : HANDLERS) {
-					handler.handle(((AnnotatedBeanDefinition) candidate),
+					handler.handle(annotatedBeanDefinition,
 							(BeanDefinitionRegistry) this.applicationContext);
 				}
 			}
@@ -82,8 +82,8 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 	}
 
 	private boolean isRunningInEmbeddedWebServer() {
-		return this.applicationContext instanceof WebApplicationContext
-				&& ((WebApplicationContext) this.applicationContext).getServletContext() == null;
+		return this.applicationContext instanceof WebApplicationContext webApplicationContext
+				&& webApplicationContext.getServletContext() == null;
 	}
 
 	private ClassPathScanningCandidateComponentProvider createComponentProvider() {

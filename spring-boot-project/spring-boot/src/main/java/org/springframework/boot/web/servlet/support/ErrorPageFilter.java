@@ -133,8 +133,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 		}
 		catch (Throwable ex) {
 			Throwable exceptionToHandle = ex;
-			if (ex instanceof NestedServletException) {
-				Throwable rootCause = ((NestedServletException) ex).getRootCause();
+			if (ex instanceof NestedServletException nestedServletException) {
+				Throwable rootCause = nestedServletException.getRootCause();
 				if (rootCause != null) {
 					exceptionToHandle = rootCause;
 				}
@@ -261,17 +261,17 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 	}
 
 	private void rethrow(Throwable ex) throws IOException, ServletException {
-		if (ex instanceof RuntimeException) {
-			throw (RuntimeException) ex;
+		if (ex instanceof RuntimeException runtimeException) {
+			throw runtimeException;
 		}
-		if (ex instanceof Error) {
-			throw (Error) ex;
+		if (ex instanceof Error error) {
+			throw error;
 		}
-		if (ex instanceof IOException) {
-			throw (IOException) ex;
+		if (ex instanceof IOException ioException) {
+			throw ioException;
 		}
-		if (ex instanceof ServletException) {
-			throw (ServletException) ex;
+		if (ex instanceof ServletException servletException) {
+			throw servletException;
 		}
 		throw new IllegalStateException(ex);
 	}

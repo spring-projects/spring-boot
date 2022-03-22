@@ -60,8 +60,8 @@ public class UndertowServletWebServer extends UndertowWebServer {
 
 	private DeploymentManager findManager(Iterable<HttpHandlerFactory> httpHandlerFactories) {
 		for (HttpHandlerFactory httpHandlerFactory : httpHandlerFactories) {
-			if (httpHandlerFactory instanceof DeploymentManagerHttpHandlerFactory) {
-				return ((DeploymentManagerHttpHandlerFactory) httpHandlerFactory).getDeploymentManager();
+			if (httpHandlerFactory instanceof DeploymentManagerHttpHandlerFactory deploymentManagerHttpHandlerFactory) {
+				return deploymentManagerHttpHandlerFactory.getDeploymentManager();
 			}
 		}
 		return null;

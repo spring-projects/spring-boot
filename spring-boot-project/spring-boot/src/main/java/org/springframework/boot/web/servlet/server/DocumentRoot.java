@@ -103,8 +103,8 @@ class DocumentRoot {
 			}
 			String path;
 			URLConnection connection = location.openConnection();
-			if (connection instanceof JarURLConnection) {
-				path = ((JarURLConnection) connection).getJarFile().getName();
+			if (connection instanceof JarURLConnection jarURLConnection) {
+				path = jarURLConnection.getJarFile().getName();
 			}
 			else {
 				path = location.toURI().getPath();

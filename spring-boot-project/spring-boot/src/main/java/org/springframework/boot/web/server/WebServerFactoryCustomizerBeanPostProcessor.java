@@ -54,8 +54,8 @@ public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProc
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof WebServerFactory) {
-			postProcessBeforeInitialization((WebServerFactory) bean);
+		if (bean instanceof WebServerFactory webServerFactory) {
+			postProcessBeforeInitialization(webServerFactory);
 		}
 		return bean;
 	}

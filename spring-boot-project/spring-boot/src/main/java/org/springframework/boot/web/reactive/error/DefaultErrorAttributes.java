@@ -99,8 +99,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
-		if (error instanceof ResponseStatusException) {
-			return ((ResponseStatusException) error).getStatus();
+		if (error instanceof ResponseStatusException responseStatusException) {
+			return responseStatusException.getStatus();
 		}
 		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}

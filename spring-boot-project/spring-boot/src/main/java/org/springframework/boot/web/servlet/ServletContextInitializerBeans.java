@@ -110,8 +110,8 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			Filter source = ((FilterRegistrationBean<?>) initializer).getFilter();
 			addServletContextInitializerBean(Filter.class, beanName, initializer, beanFactory, source);
 		}
-		else if (initializer instanceof DelegatingFilterProxyRegistrationBean) {
-			String source = ((DelegatingFilterProxyRegistrationBean) initializer).getTargetBeanName();
+		else if (initializer instanceof DelegatingFilterProxyRegistrationBean delegatingFilterProxyRegistrationBean) {
+			String source = delegatingFilterProxyRegistrationBean.getTargetBeanName();
 			addServletContextInitializerBean(Filter.class, beanName, initializer, beanFactory, source);
 		}
 		else if (initializer instanceof ServletListenerRegistrationBean) {
@@ -140,8 +140,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
-		if (beanFactory instanceof BeanDefinitionRegistry) {
-			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			return registry.getBeanDefinition(beanName).getResourceDescription();
 		}
 		return "unknown";

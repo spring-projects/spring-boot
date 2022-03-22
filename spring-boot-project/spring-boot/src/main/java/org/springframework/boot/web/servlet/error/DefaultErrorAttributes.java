@@ -190,8 +190,8 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private BindingResult extractBindingResult(Throwable error) {
-		if (error instanceof BindingResult) {
-			return (BindingResult) error;
+		if (error instanceof BindingResult bindingResultError) {
+			return bindingResultError;
 		}
 		return null;
 	}
