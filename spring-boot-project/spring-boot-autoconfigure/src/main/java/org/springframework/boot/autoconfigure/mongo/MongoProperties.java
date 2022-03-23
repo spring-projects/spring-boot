@@ -59,8 +59,7 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. Cannot be set with host, port, credentials and replica set
-	 * name.
+	 * Mongo database URI. Overrides host, port, username, password, and database.
 	 */
 	private String uri;
 
