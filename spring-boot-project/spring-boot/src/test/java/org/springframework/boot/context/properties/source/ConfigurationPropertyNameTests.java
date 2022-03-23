@@ -686,6 +686,15 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void equalsWhenAdaptedNameMatchesDueToRemovalOfTrailingCharacters() {
+		// gh-30317
+		ConfigurationPropertyName name1 = ConfigurationPropertyName.of("example.demo");
+		ConfigurationPropertyName name2 = ConfigurationPropertyName.adapt("example.demo$$", '.');
+		assertThat(name1).isEqualTo(name2);
+		assertThat(name2).isEqualTo(name1);
+	}
+
+	@Test
 	void isValidWhenValidShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
