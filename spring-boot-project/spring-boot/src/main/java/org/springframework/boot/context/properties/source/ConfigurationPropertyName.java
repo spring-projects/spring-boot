@@ -448,7 +448,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		int i2 = 0;
 		while (i1 < l1) {
 			if (i2 >= l2) {
-				return false;
+				return remainderIsNotAlphaNumberic(e1, i, i1);
 			}
 			char ch1 = indexed1 ? e1.charAt(i, i1) : Character.toLowerCase(e1.charAt(i, i1));
 			char ch2 = indexed2 ? e2.charAt(i, i2) : Character.toLowerCase(e2.charAt(i, i2));
@@ -467,17 +467,23 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 		}
 		if (i2 < l2) {
-			if (indexed2) {
+			return remainderIsNotAlphaNumberic(e2, i, i2);
+		}
+		return true;
+	}
+
+	private boolean remainderIsNotAlphaNumberic(Elements elements, int element, int index) {
+		if (elements.getType(element).isIndexed()) {
+			return false;
+		}
+		int length = elements.getLength(element);
+		do {
+			char c = Character.toLowerCase(elements.charAt(element, index++));
+			if (ElementsParser.isAlphaNumeric(c)) {
 				return false;
 			}
-			do {
-				char ch2 = Character.toLowerCase(e2.charAt(i, i2++));
-				if (ElementsParser.isAlphaNumeric(ch2)) {
-					return false;
-				}
-			}
-			while (i2 < l2);
 		}
+		while (index < length);
 		return true;
 	}
 
