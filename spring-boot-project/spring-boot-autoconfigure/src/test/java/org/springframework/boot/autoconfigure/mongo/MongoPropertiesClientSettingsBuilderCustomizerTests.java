@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link MongoPropertiesClientSettingsBuilderCustomizer}.
@@ -153,29 +152,34 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	}
 
 	@Test
-	void uriCannotBeSetWithCredentials() {
+	void uriOverridesUsernameAndPassword() {
 		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		this.properties.setUsername("user");
 		this.properties.setPassword("secret".toCharArray());
-		assertThatIllegalStateException().isThrownBy(this::customizeSettings).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
+		MongoClientSettings settings = customizeSettings();
+		assertThat(settings.getCredential()).isNull();
 	}
 
 	@Test
-	void uriCannotBeSetWithReplicaSetName() {
-		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		this.properties.setReplicaSetName("test");
-		assertThatIllegalStateException().isThrownBy(this::customizeSettings).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
+	void uriOverridesDatabase() {
+		this.properties.setUri("mongodb://secret:password@127.0.0.1:1234/mydb");
+		this.properties.setDatabase("test");
+		MongoClientSettings settings = customizeSettings();
+		List<ServerAddress> allAddresses = getAllAddresses(settings);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "127.0.0.1", 1234);
+		assertThat(settings.getCredential().getSource()).isEqualTo("mydb");
 	}
 
 	@Test
-	void uriCannotBeSetWithHostPort() {
+	void uriOverridesHostAndPort() {
 		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		this.properties.setHost("localhost");
 		this.properties.setPort(4567);
-		assertThatIllegalStateException().isThrownBy(this::customizeSettings).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
+		MongoClientSettings settings = customizeSettings();
+		List<ServerAddress> addresses = getAllAddresses(settings);
+		assertThat(addresses.get(0).getHost()).isEqualTo("127.0.0.1");
+		assertThat(addresses.get(0).getPort()).isEqualTo(1234);
 	}
 
 	@Test
