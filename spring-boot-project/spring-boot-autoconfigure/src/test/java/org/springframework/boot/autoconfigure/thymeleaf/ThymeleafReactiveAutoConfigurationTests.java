@@ -88,10 +88,23 @@ class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultMediaTypes() {
+		this.contextRunner.run(
+				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+						.containsExactly(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML,
+								MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_RSS_XML,
+								MediaType.APPLICATION_ATOM_XML, new MediaType("application", "javascript"),
+								new MediaType("application", "ecmascript"), new MediaType("text", "javascript"),
+								new MediaType("text", "ecmascript"), MediaType.APPLICATION_JSON,
+								new MediaType("text", "css"), MediaType.TEXT_PLAIN, MediaType.TEXT_EVENT_STREAM)
+						.satisfies(System.out::println));
+	}
+
+	@Test
 	void overrideMediaTypes() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.media-types:text/html,text/plain").run(
 				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
-						.contains(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
+						.containsExactly(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
 	}
 
 	@Test
