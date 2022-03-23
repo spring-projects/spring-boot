@@ -397,7 +397,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "2.59.0") {
+	library("HtmlUnit", "2.60.0") {
 		group("net.sourceforge.htmlunit") {
 			modules = [
 				"htmlunit" {
@@ -1251,7 +1251,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "3.59.0") {
+	library("Selenium HtmlUnit", "3.60.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
