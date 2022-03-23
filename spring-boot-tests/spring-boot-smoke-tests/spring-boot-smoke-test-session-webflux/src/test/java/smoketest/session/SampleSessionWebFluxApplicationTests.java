@@ -20,10 +20,12 @@ import java.time.Duration;
 import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -36,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  */
 @SpringBootTest(properties = "spring.session.timeout:10", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DisabledOnOs(os = OS.LINUX, architecture = "aarch64",
+		disabledReason = "Embedded Mongo doesn't support Linux aarch64, see https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/379")
 class SampleSessionWebFluxApplicationTests {
 
 	@LocalServerPort
