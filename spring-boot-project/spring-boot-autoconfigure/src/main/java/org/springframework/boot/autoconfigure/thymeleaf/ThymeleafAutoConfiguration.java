@@ -24,20 +24,15 @@ import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDiale
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -57,6 +52,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
@@ -79,6 +75,8 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 @AutoConfiguration(after = { WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
 @EnableConfigurationProperties(ThymeleafProperties.class)
 @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
+@Import({ TemplateEngineConfigurations.ReactiveTemplateEngineConfiguration.class,
+		TemplateEngineConfigurations.DefaultTemplateEngineConfiguration.class })
 public class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -125,23 +123,6 @@ public class ThymeleafAutoConfiguration {
 			}
 			resolver.setCheckExistence(this.properties.isCheckTemplate());
 			return resolver;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	protected static class ThymeleafDefaultConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(ISpringTemplateEngine.class)
-		SpringTemplateEngine templateEngine(ThymeleafProperties properties,
-				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
-			SpringTemplateEngine engine = new SpringTemplateEngine();
-			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
-			engine.setRenderHiddenMarkersBeforeCheckboxes(properties.isRenderHiddenMarkersBeforeCheckboxes());
-			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
-			dialects.orderedStream().forEach(engine::addDialect);
-			return engine;
 		}
 
 	}
@@ -194,25 +175,6 @@ public class ThymeleafAutoConfiguration {
 				return new MimeType(type, parameters).toString();
 			}
 
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
-	static class ThymeleafReactiveConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
-		SpringWebFluxTemplateEngine templateEngine(ThymeleafProperties properties,
-				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
-			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
-			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
-			engine.setRenderHiddenMarkersBeforeCheckboxes(properties.isRenderHiddenMarkersBeforeCheckboxes());
-			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
-			dialects.orderedStream().forEach(engine::addDialect);
-			return engine;
 		}
 
 	}
