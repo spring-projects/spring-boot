@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.util.Collections;
 
-import org.elasticsearch.action.support.IndicesOptions;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -105,9 +103,7 @@ abstract class ElasticsearchDataConfiguration {
 		@ConditionalOnBean(ReactiveElasticsearchClient.class)
 		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(ReactiveElasticsearchClient client,
 				ElasticsearchConverter converter) {
-			ReactiveElasticsearchTemplate template = new ReactiveElasticsearchTemplate(client, converter);
-			template.setIndicesOptions(IndicesOptions.strictExpandOpenAndForbidClosed());
-			return template;
+			return new ReactiveElasticsearchTemplate(client, converter);
 		}
 
 	}
