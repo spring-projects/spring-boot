@@ -333,7 +333,7 @@ If your application uses Spring Security, you need to configure it to
 * disable CSRF protection for requests against the console,
 * set the header `X-Frame-Options` to `SAMEORIGIN` on responses from the console.
 
-More information on {spring-security-docs}#csrf[CSRF] and the header {spring-security-docs}#headers-frame-options[X-Frame-Options] can be found in the Spring Security Reference Guide.
+More information on {spring-security-docs}/features/exploits/csrf.html[CSRF] and the header {spring-security-docs}/features/exploits/headers.html#headers-frame-options[X-Frame-Options] can be found in the Spring Security Reference Guide.
 
 In simple setups, a `SecurityFilterChain` like the following can be used:
 
