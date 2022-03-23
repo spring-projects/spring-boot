@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 package smoketest.data.mongo;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest
+@DisabledOnOs(os = OS.LINUX, architecture = "aarch64",
+		disabledReason = "Embedded Mongo doesn't support Linux aarch64, see https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/379")
 class SampleMongoApplicationTests {
 
 	@Test
