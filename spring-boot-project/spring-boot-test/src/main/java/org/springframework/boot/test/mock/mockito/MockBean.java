@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,12 @@ import org.springframework.test.context.junit4.SpringRunner;
  * used as a class level annotation or on fields in either {@code @Configuration} classes,
  * or test classes that are {@link RunWith @RunWith} the {@link SpringRunner}.
  * <p>
- * Mocks can be registered by type or by {@link #name() bean name}. Any existing single
- * bean of the same type defined in the context will be replaced by the mock. If no
- * existing bean is defined a new one will be added. Dependencies that are known to the
- * application context but are not beans (such as those
+ * Mocks can be registered by type or by {@link #name() bean name}. When registered by
+ * type, any existing single bean of a matching type (including subclasses) in the context
+ * will be replaced by the mock. When registered by name, an existing bean can be
+ * specifically targeted for replacement by a mock. In either case, if no existing bean is
+ * defined a new one will be added. Dependencies that are known to the application context
+ * but are not beans (such as those
  * {@link org.springframework.beans.factory.config.ConfigurableListableBeanFactory#registerResolvableDependency(Class, Object)
  * registered directly}) will not be found and a mocked bean will be added to the context
  * alongside the existing dependency.
