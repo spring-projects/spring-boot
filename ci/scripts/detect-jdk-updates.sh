@@ -21,7 +21,7 @@ case "$JDK_VERSION" in
 		 ISSUE_TITLE="Upgrade Java 17 version in CI image"
 	;;
 	java18)
-		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/18/ea"
+		 BASE_URL="https://api.adoptium.net/v3/assets/feature_releases/18/ga"
 		 ISSUE_TITLE="Upgrade Java 18 version in CI image"
 	;;
 	*)
