@@ -1004,7 +1004,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.5.0") {
+	library("MongoDB", "4.5.1") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
