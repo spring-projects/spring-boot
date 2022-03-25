@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -52,7 +50,6 @@ class LoaderIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
-	@EnabledForJreRange(max = JRE.JAVA_17)
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
 		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
@@ -79,6 +76,7 @@ class LoaderIntegrationTests {
 	static Stream<JavaRuntime> javaRuntimes() {
 		List<JavaRuntime> javaRuntimes = new ArrayList<>();
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
+		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.EIGHTEEN));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
