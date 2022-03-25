@@ -1,4 +1,5 @@
 {
+  "groups": [],
   "properties": [
     {
       "name": "info",
@@ -339,13 +340,6 @@
       }
     },
     {
-      "name": "management.metrics.system.diskspace.paths",
-      "type": "java.util.List<java.io.File>",
-      "defaultValue": [
-        "."
-      ]
-    },
-    {
       "name": "management.metrics.export.appoptics.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",
@@ -549,6 +543,13 @@
       "name": "management.metrics.mongo.connectionpool.enabled",
       "description": "Whether to enable Mongo connection pool metrics.",
       "defaultValue": true
+    },
+    {
+      "name": "management.metrics.system.diskspace.paths",
+      "type": "java.util.List<java.io.File>",
+      "defaultValue": [
+        "."
+      ]
     },
     {
       "name": "management.metrics.web.client.request.autotime.enabled",
