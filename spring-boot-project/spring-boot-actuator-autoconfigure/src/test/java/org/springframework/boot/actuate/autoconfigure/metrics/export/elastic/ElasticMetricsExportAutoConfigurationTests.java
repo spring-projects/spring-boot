@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.defaults.enabled=false")
+				.withPropertyValues("management.defaults.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ElasticMeterRegistry.class)
 						.doesNotHaveBean(ElasticConfig.class));
 	}
@@ -62,7 +62,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.elastic.enabled=false")
+				.withPropertyValues("management.elastic.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ElasticMeterRegistry.class)
 						.doesNotHaveBean(ElasticConfig.class));
 	}
@@ -94,8 +94,8 @@ class ElasticMetricsExportAutoConfigurationTests {
 	@Test
 	void apiKeyCredentialsIsMutuallyExclusiveWithUserName() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.elastic.api-key-credentials:secret",
-						"management.metrics.export.elastic.user-name:alice")
+				.withPropertyValues("management.elastic.metrics.export.api-key-credentials:secret",
+						"management.elastic.metrics.export.user-name:alice")
 				.run((context) -> assertThat(context).hasFailed().getFailure().getRootCause()
 						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
@@ -103,8 +103,8 @@ class ElasticMetricsExportAutoConfigurationTests {
 	@Test
 	void apiKeyCredentialsIsMutuallyExclusiveWithPassword() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.elastic.api-key-credentials:secret",
-						"management.metrics.export.elastic.password:secret")
+				.withPropertyValues("management.elastic.metrics.export.api-key-credentials:secret",
+						"management.elastic.metrics.export.password:secret")
 				.run((context) -> assertThat(context).hasFailed().getFailure().getRootCause()
 						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}

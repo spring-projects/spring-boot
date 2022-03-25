@@ -37,10 +37,10 @@ The following example disables Datadog:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      datadog:
-	        enabled: false
+      datadog:
+	    metrics:
+	      export:
+            enabled: false
 ----
 
 You can also disable all registries unless stated otherwise by the registry-specific property, as the following example shows:
@@ -48,9 +48,9 @@ You can also disable all registries unless stated otherwise by the registry-spec
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      defaults:
+      defaults:
+	    metrics:
+	      export:
 	        enabled: false
 ----
 
@@ -89,9 +89,9 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      appoptics:
+	  appoptics:
+	    metrics:
+	      export:
 	        api-token: "YOUR_TOKEN"
 ----
 
@@ -105,9 +105,9 @@ You can provide the location of the https://github.com/Netflix/atlas[Atlas serve
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      atlas:
+      atlas:
+        metrics:
+  	      export:
 	        uri: "https://atlas.example.com:7101/api/v1/publish"
 ----
 
@@ -121,9 +121,9 @@ To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provi
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      datadog:
+      datadog:
+        metrics:
+	      export:
 	        api-key: "YOUR_KEY"
 ----
 
@@ -132,9 +132,9 @@ You can also change the interval at which metrics are sent to Datadog:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      datadog:
+	  datadog:
+	    metrics:
+	      export:
 	        step: "30s"
 ----
 
@@ -174,9 +174,9 @@ The example below configures metrics export using the `example` environment id:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      dynatrace:
+	  dynatrace:
+	    metrics:
+	      export:
 	        uri: "https://example.live.dynatrace.com/api/v2/metrics/ingest"
 	        api-token: "YOUR_TOKEN"
 ----
@@ -194,9 +194,9 @@ In this scenario, the local OneAgent endpoint is used:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      dynatrace:
+	  dynatrace:
+	    metrics:
+	      export:
 	        # Specify uri and api-token here if not using the local OneAgent endpoint.
 	        v2:
 	          metric-key-prefix: "your.key.prefix"
@@ -217,9 +217,9 @@ To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API t
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      dynatrace:
+	  dynatrace:
+	    metrics:
+	      export:
 	        uri: "https://{your-environment-id}.live.dynatrace.com"
 	        api-token: "YOUR_TOKEN"
 	        v1:
@@ -239,9 +239,9 @@ The following example sets the export interval to 30 seconds:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      dynatrace:
+	  dynatrace:
+	    metrics:
+	      export:
 	        step: "30s"
 ----
 
@@ -257,9 +257,9 @@ You can provide the location of the Elastic server to use by using the following
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      elastic:
+	  elastic:
+	    metrics:
+	      export:
 	        host: "https://elastic.example.com:8086"
 ----
 
@@ -271,9 +271,9 @@ You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      ganglia:
+	  ganglia:
+	    metrics:
+	      export:
 	        host: "ganglia.example.com"
 	        port: 9649
 ----
@@ -288,9 +288,9 @@ You can provide the https://graphiteapp.org[Graphite server] host and port, as t
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	     export:
-	       graphite:
+	  graphite:
+	    metrics:
+	      export:
 	         host: "graphite.example.com"
 	         port: 9004
 ----
@@ -315,9 +315,9 @@ To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], you must prov
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      humio:
+	  humio:
+	    metrics:
+	      export:
 	        api-token: "YOUR_TOKEN"
 ----
 
@@ -326,9 +326,9 @@ You should also configure one or more tags to identify the data source to which 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      humio:
+	  humio:
+	    metrics:
+	      export:
 	        tags:
 	          alpha: "a"
 	          bravo: "b"
@@ -345,9 +345,9 @@ You can provide the location of the https://www.influxdata.com[Influx server] to
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      influx:
+	  influx:
+	    metrics:
+	      export:
 	        uri: "https://influx.example.com:8086"
 ----
 
@@ -362,9 +362,9 @@ You can provide the domain to use by using:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      jmx:
+	  jmx:
+	    metrics:
+	      export:
 	        domain: "com.example.app.metrics"
 ----
 
@@ -388,9 +388,9 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      kairos:
+	  kairos:
+	    metrics:
+	      export:
 	        uri: "https://kairosdb.example.com:8080/api/v1/datapoints"
 ----
 
@@ -404,9 +404,9 @@ To export metrics to https://newrelic.com[New Relic], you must provide your API 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      newrelic:
+	  newrelic:
+	    metrics:
+	      export:
 	        api-key: "YOUR_KEY"
 	        account-id: "YOUR_ACCOUNT_ID"
 ----
@@ -416,9 +416,9 @@ You can also change the interval at which metrics are sent to New Relic:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      newrelic:
+	  newrelic:
+	    metrics:
+	      export:
 	        step: "30s"
 ----
 
@@ -427,9 +427,9 @@ By default, metrics are published through REST calls, but you can also use the J
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      newrelic:
+	  newrelic:
+	    metrics:
+	      export:
 	        client-provider-type: "insights-agent"
 ----
 
@@ -466,10 +466,10 @@ To enable Prometheus Pushgateway support, add the following dependency to your p
 </dependency>
 ----
 
-When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.metrics.export.prometheus.pushgateway.enabled[] property is set to `true`, a `PrometheusPushGatewayManager` bean is auto-configured.
+When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.prometheus.metrics.export.pushgateway.enabled[] property is set to `true`, a `PrometheusPushGatewayManager` bean is auto-configured.
 This manages the pushing of metrics to a Prometheus Pushgateway.
 
-You can tune the `PrometheusPushGatewayManager` by using properties under `management.metrics.export.prometheus.pushgateway`.
+You can tune the `PrometheusPushGatewayManager` by using properties under `management.prometheus.metrics.export.pushgateway`.
 For advanced configuration, you can also provide your own `PrometheusPushGatewayManager` bean.
 
 
@@ -482,9 +482,9 @@ To export metrics to https://www.signalfx.com[SignalFx], you must provide your a
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      signalfx:
+	  signalfx:
+	    metrics:
+	      export:
 	        access-token: "YOUR_ACCESS_TOKEN"
 ----
 
@@ -493,9 +493,9 @@ You can also change the interval at which metrics are sent to SignalFx:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      signalfx:
+	  signalfx:
+	    metrics:
+	      export:
 	        step: "30s"
 ----
 
@@ -512,10 +512,10 @@ You can also disable it explicitly:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      simple:
-	        enabled: false
+      simple:
+	    metrics:
+	      export:
+            enabled: false
 ----
 
 
@@ -528,9 +528,9 @@ To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], y
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      stackdriver:
+	  stackdriver:
+	    metrics:
+	      export:
 	        project-id: "my-project"
 ----
 
@@ -539,9 +539,9 @@ You can also change the interval at which metrics are sent to Stackdriver:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      stackdriver:
+	  stackdriver:
+	    metrics:
+	      export:
 	        step: "30s"
 ----
 
@@ -556,9 +556,9 @@ You can provide the StatsD agent host, port, and protocol to use by using:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      statsd:
+	  statsd:
+	    metrics:
+	      export:
 	        host: "statsd.example.com"
 	        port: 9125
 	        protocol: "udp"
@@ -569,9 +569,9 @@ You can also change the StatsD line protocol to use (it defaults to Datadog):
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      statsd:
+	  statsd:
+	    metrics:
+	      export:
 	        flavor: "etsy"
 ----
 
@@ -585,9 +585,9 @@ If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      wavefront:
+	  wavefront:
+	    metrics:
+	      export:
 	        api-token: "YOUR_API_TOKEN"
 ----
 
@@ -596,9 +596,9 @@ Alternatively, you can use a Wavefront sidecar or an internal proxy in your envi
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      wavefront:
+	  wavefront:
+	    metrics:
+	      export:
 	        uri: "proxy://localhost:2878"
 ----
 
@@ -609,9 +609,9 @@ You can also change the interval at which metrics are sent to Wavefront:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
-	  metrics:
-	    export:
-	      wavefront:
+	  wavefront:
+	    metrics:
+	      export:
 	        step: "30s"
 ----
 

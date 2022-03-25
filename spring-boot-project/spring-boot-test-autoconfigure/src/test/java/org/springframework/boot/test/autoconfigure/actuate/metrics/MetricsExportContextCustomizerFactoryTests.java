@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ class MetricsExportContextCustomizerFactoryTests {
 		assertThat(customizer).isNotNull();
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		customizer.customizeContext(context, null);
-		assertThat(context.getEnvironment().getProperty("management.metrics.export.defaults.enabled"))
+		assertThat(context.getEnvironment().getProperty("management.defaults.metrics.export.enabled"))
 				.isEqualTo("false");
-		assertThat(context.getEnvironment().getProperty("management.metrics.export.simple.enabled")).isEqualTo("true");
+		assertThat(context.getEnvironment().getProperty("management.simple.metrics.export.enabled")).isEqualTo("true");
 	}
 
 	@Test

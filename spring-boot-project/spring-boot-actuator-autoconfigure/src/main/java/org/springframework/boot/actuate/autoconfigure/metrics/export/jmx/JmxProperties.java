@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.jmx")
+@ConfigurationProperties(prefix = "management.jmx.metrics.export")
 public class JmxProperties {
 
 	/**

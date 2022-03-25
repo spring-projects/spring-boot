@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Georg Pirklbauer
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.dynatrace")
+@ConfigurationProperties(prefix = "management.dynatrace.metrics.export")
 public class DynatraceProperties extends StepRegistryProperties {
 
 	private final V1 v1 = new V1();
@@ -57,7 +57,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.device-id")
+	@DeprecatedConfigurationProperty(replacement = "management.dynatrace.metrics.export.v1.device-id")
 	public String getDeviceId() {
 		return this.v1.getDeviceId();
 	}
@@ -68,7 +68,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.technology-type")
+	@DeprecatedConfigurationProperty(replacement = "management.dynatrace.metrics.export.v1.technology-type")
 	public String getTechnologyType() {
 		return this.v1.getTechnologyType();
 	}
@@ -87,7 +87,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.group")
+	@DeprecatedConfigurationProperty(replacement = "management.dynatrace.metrics.export.v1.group")
 	public String getGroup() {
 		return this.v1.getGroup();
 	}
