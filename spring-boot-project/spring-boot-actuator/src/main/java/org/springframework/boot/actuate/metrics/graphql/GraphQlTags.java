@@ -27,7 +27,6 @@ import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchPar
 import graphql.schema.GraphQLObjectType;
 import io.micrometer.core.instrument.Tag;
 
-import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -48,7 +47,7 @@ public final class GraphQlTags {
 
 	}
 
-	public static Tag executionOutcome(ExecutionResult result, @Nullable Throwable exception) {
+	public static Tag executionOutcome(ExecutionResult result, Throwable exception) {
 		if (exception == null && result.getErrors().isEmpty()) {
 			return OUTCOME_SUCCESS;
 		}
@@ -84,7 +83,7 @@ public final class GraphQlTags {
 		return Tag.of("errorPath", builder.toString());
 	}
 
-	public static Tag dataFetchingOutcome(@Nullable Throwable exception) {
+	public static Tag dataFetchingOutcome(Throwable exception) {
 		return (exception != null) ? OUTCOME_ERROR : OUTCOME_SUCCESS;
 	}
 

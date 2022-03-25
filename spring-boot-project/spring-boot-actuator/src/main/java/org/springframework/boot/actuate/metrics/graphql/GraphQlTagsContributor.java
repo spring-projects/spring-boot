@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchPar
 import graphql.schema.DataFetcher;
 import io.micrometer.core.instrument.Tag;
 
-import org.springframework.lang.Nullable;
-
 /**
  * A contributor of {@link Tag Tags} for Spring GraphQL-based request handling. Typically,
  * used by a {@link GraphQlTagsProvider} to provide tags in addition to its defaults.
@@ -35,11 +33,11 @@ import org.springframework.lang.Nullable;
 public interface GraphQlTagsContributor {
 
 	Iterable<Tag> getExecutionTags(InstrumentationExecutionParameters parameters, ExecutionResult result,
-			@Nullable Throwable exception);
+			Throwable exception);
 
 	Iterable<Tag> getErrorTags(InstrumentationExecutionParameters parameters, GraphQLError error);
 
 	Iterable<Tag> getDataFetchingTags(DataFetcher<?> dataFetcher, InstrumentationFieldFetchParameters parameters,
-			@Nullable Throwable exception);
+			Throwable exception);
 
 }

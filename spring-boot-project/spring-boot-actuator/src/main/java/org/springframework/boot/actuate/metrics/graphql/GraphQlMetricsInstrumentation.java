@@ -33,7 +33,6 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
-import org.springframework.lang.Nullable;
 
 /**
  * Micrometer-based {@link SimpleInstrumentation}.
@@ -117,7 +116,7 @@ public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 	}
 
 	private void recordDataFetcherMetric(Timer.Sample sample, DataFetcher<?> dataFetcher,
-			InstrumentationFieldFetchParameters parameters, @Nullable Throwable throwable) {
+			InstrumentationFieldFetchParameters parameters, Throwable throwable) {
 		Timer.Builder timer = this.autoTimer.builder("graphql.datafetcher");
 		timer.tags(this.tagsProvider.getDataFetchingTags(dataFetcher, parameters, throwable));
 		sample.stop(timer.register(this.registry));
