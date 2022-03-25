@@ -49,6 +49,7 @@ dependencies {
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
+	optional("org.springframework.restdocs:spring-restdocs-restassured")
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-test")
