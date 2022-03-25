@@ -1,4 +1,5 @@
 {
+  "groups": [],
   "properties": [
     {
       "name": "server.compression.enabled",
@@ -515,6 +516,14 @@
       }
     },
     {
+      "name": "spring.data.cassandra.pool.heartbeat-interval",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.data.cassandra.pool.idle-timeout",
+      "defaultValue": "5s"
+    },
+    {
       "name": "spring.data.cassandra.pool.max-queue-size",
       "type": "java.lang.Integer",
       "deprecation": {
@@ -550,12 +559,12 @@
       "defaultValue": 5000
     },
     {
-      "name": "spring.data.cassandra.request.timeout",
-      "defaultValue": "2s"
-    },
-    {
       "name": "spring.data.cassandra.request.throttler.type",
       "defaultValue": "none"
+    },
+    {
+      "name": "spring.data.cassandra.request.timeout",
+      "defaultValue": "2s"
     },
     {
       "name": "spring.data.cassandra.retry-policy",
@@ -564,14 +573,6 @@
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "spring.data.cassandra.pool.heartbeat-interval",
-      "defaultValue": "30s"
-    },
-    {
-      "name": "spring.data.cassandra.pool.idle-timeout",
-      "defaultValue": "5s"
     },
     {
       "name": "spring.data.couchbase.consistency",
@@ -1642,6 +1643,10 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
+      "name": "spring.netty.leak-detection",
+      "defaultValue": "simple"
+    },
+    {
       "name": "spring.quartz.jdbc.comment-prefix",
       "defaultValue": [
         "#",
@@ -2026,10 +2031,6 @@
       "name": "spring.webservices.wsdl-locations",
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
-    },
-    {
-      "name": "spring.netty.leak-detection",
-      "defaultValue": "simple"
     }
   ],
   "hints": [
