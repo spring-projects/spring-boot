@@ -40,6 +40,14 @@ include::code:object/MyJsonComponent[]
 
 
 
+[[features.json.jackson.mixins]]
+==== Mixins
+Jackson has support for mixins that can be used to mix additional annotations into those already declared on a target class.
+Spring Boot's Jackson auto-configuration will scan your application's packages for classes annotated with `@JsonMixin` and register them with the auto-configured `ObjectMapper`.
+The registration is performed by Spring Boot's `JsonMixinModule`.
+
+
+
 [[features.json.gson]]
 === Gson
 Auto-configuration for Gson is provided.
