@@ -2,6 +2,7 @@
 <!DOCTYPE import-control PUBLIC "-//Checkstyle//DTD ImportControl Configuration 1.4//EN" "https://checkstyle.org/dtds/import_control_1_4.dtd">
 <import-control pkg="org.springframework.boot">
 	<disallow pkg="io.micrometer" />
+	<disallow pkg="org.springframework.lang" />
 	<allow pkg=".*" regex="true" />
 	<subpackage name="autoconfigure">
 		<disallow class="org.springframework.boot.autoconfigure.jdbc.DataSourceProperties"/>
@@ -45,6 +46,13 @@
 		<subpackage name="endpoint">
 			<disallow pkg="org.springframework.http" />
 			<disallow pkg="org.springframework.web" />
+			<subpackage name="invoke">
+				<subpackage name="reflect">
+					<file name="OperationMethodParameter">
+						<allow pkg="org.springframework.lang"/>
+					</file>
+				</subpackage>
+			</subpackage>
 			<subpackage name="web">
 				<allow pkg="org.springframework.http" />
 				<allow pkg="org.springframework.web" />
@@ -56,6 +64,9 @@
 				</subpackage>
 			</subpackage>
 		</subpackage>
+		<file name=".*Endpoint(WebExtension)?" regex="true">
+			<allow pkg="org.springframework.lang"/>
+		</file>
 	</subpackage>
 
 	<subpackage name="docs">

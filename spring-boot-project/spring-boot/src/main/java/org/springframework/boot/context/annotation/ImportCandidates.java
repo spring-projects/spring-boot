@@ -27,8 +27,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
 
@@ -54,7 +52,6 @@ public final class ImportCandidates implements Iterable<String> {
 		this.candidates = Collections.unmodifiableList(candidates);
 	}
 
-	@NotNull
 	@Override
 	public Iterator<String> iterator() {
 		return this.candidates.iterator();
