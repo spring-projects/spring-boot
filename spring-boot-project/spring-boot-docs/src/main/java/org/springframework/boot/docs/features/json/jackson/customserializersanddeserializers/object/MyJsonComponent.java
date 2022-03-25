@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.servlet.springmvc.json;
+package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers.object;
 
 import java.io.IOException;
 
@@ -22,36 +22,34 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
+import org.springframework.boot.jackson.JsonObjectSerializer;
 
 @JsonComponent
 public class MyJsonComponent {
 
-	public static class Serializer extends JsonSerializer<MyObject> {
+	public static class Serializer extends JsonObjectSerializer<MyObject> {
 
 		@Override
-		public void serialize(MyObject value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
-			jgen.writeStartObject();
+		protected void serializeObject(MyObject value, JsonGenerator jgen, SerializerProvider provider)
+				throws IOException {
 			jgen.writeStringField("name", value.getName());
 			jgen.writeNumberField("age", value.getAge());
-			jgen.writeEndObject();
 		}
 
 	}
 
-	public static class Deserializer extends JsonDeserializer<MyObject> {
+	public static class Deserializer extends JsonObjectDeserializer<MyObject> {
 
 		@Override
-		public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
-			ObjectCodec codec = jsonParser.getCodec();
-			JsonNode tree = codec.readTree(jsonParser);
-			String name = tree.get("name").textValue();
-			int age = tree.get("age").intValue();
+		protected MyObject deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
+				JsonNode tree) throws IOException {
+			String name = nullSafeValue(tree.get("name"), String.class);
+			int age = nullSafeValue(tree.get("age"), Integer.class);
 			return new MyObject(name, age);
 		}
 

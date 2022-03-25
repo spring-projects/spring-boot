@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.servlet.springmvc.json.`object`
+package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers.`object`
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
