@@ -1,4 +1,5 @@
 {
+  "groups": [],
   "properties": [
     {
       "name": "server.compression.enabled",
@@ -357,10 +358,10 @@
     },
     {
       "name": "spring.batch.initialize-schema",
-      "type" : "org.springframework.boot.sql.init.DatabaseInitializationMode",
-      "deprecation" : {
+      "type": "org.springframework.boot.sql.init.DatabaseInitializationMode",
+      "deprecation": {
         "replacement": "spring.batch.jdbc.initialize-schema",
-        "level" : "error"
+        "level": "error"
       }
     },
     {
@@ -383,11 +384,11 @@
       "defaultValue": true
     },
     {
-      "name" : "spring.batch.schema",
-      "type" : "java.lang.String",
-      "deprecation" : {
+      "name": "spring.batch.schema",
+      "type": "java.lang.String",
+      "deprecation": {
         "replacement": "spring.batch.jdbc.schema",
-        "level" : "error"
+        "level": "error"
       }
     },
     {
@@ -551,6 +552,14 @@
       }
     },
     {
+      "name": "spring.data.cassandra.pool.heartbeat-interval",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.data.cassandra.pool.idle-timeout",
+      "defaultValue": "5s"
+    },
+    {
       "name": "spring.data.cassandra.pool.max-queue-size",
       "type": "java.lang.Integer",
       "deprecation": {
@@ -586,12 +595,12 @@
       "defaultValue": 5000
     },
     {
-      "name": "spring.data.cassandra.request.timeout",
-      "defaultValue": "2s"
-    },
-    {
       "name": "spring.data.cassandra.request.throttler.type",
       "defaultValue": "none"
+    },
+    {
+      "name": "spring.data.cassandra.request.timeout",
+      "defaultValue": "2s"
     },
     {
       "name": "spring.data.cassandra.retry-policy",
@@ -600,14 +609,6 @@
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "spring.data.cassandra.pool.heartbeat-interval",
-      "defaultValue": "30s"
-    },
-    {
-      "name": "spring.data.cassandra.pool.idle-timeout",
-      "defaultValue": "5s"
     },
     {
       "name": "spring.data.couchbase.consistency",
@@ -1000,12 +1001,12 @@
       }
     },
     {
-      "name": "spring.graphql.schema.locations",
-      "defaultValue": "classpath:graphql/**/"
-    },
-    {
       "name": "spring.graphql.schema.file-extensions",
       "defaultValue": ".graphqls,.gqls"
+    },
+    {
+      "name": "spring.graphql.schema.locations",
+      "defaultValue": "classpath:graphql/**/"
     },
     {
       "name": "spring.groovy.template.prefix",
@@ -1680,6 +1681,10 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
+      "name": "spring.netty.leak-detection",
+      "defaultValue": "simple"
+    },
+    {
       "name": "spring.quartz.jdbc.comment-prefix",
       "defaultValue": [
         "#",
@@ -2064,10 +2069,6 @@
       "name": "spring.webservices.wsdl-locations",
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
-    },
-    {
-      "name": "spring.netty.leak-detection",
-      "defaultValue": "simple"
     }
   ],
   "hints": [

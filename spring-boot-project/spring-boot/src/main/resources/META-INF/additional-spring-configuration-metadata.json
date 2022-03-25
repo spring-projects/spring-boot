@@ -14,12 +14,6 @@
       "defaultValue": false
     },
     {
-      "name": "logging.config",
-      "type": "java.lang.String",
-      "description": "Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
-    },
-    {
       "name": "logging.charset.console",
       "type": "java.nio.charset.Charset",
       "description": "Charset to use for console output."
@@ -28,6 +22,12 @@
       "name": "logging.charset.file",
       "type": "java.nio.charset.Charset",
       "description": "Charset to use for file output."
+    },
+    {
+      "name": "logging.config",
+      "type": "java.lang.String",
+      "description": "Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.exception-conversion-word",
@@ -46,6 +46,36 @@
       }
     },
     {
+      "name": "logging.file.clean-history-on-start",
+      "type": "java.lang.Boolean",
+      "description": "Whether to clean the archive log files on startup. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "logging.logback.rollingpolicy.clean-history-on-start"
+      }
+    },
+    {
+      "name": "logging.file.max-history",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of archive log files to keep. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": 7,
+      "deprecation": {
+        "replacement": "logging.logback.rollingpolicy.max-history"
+      }
+    },
+    {
+      "name": "logging.file.max-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum log file size. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "10MB",
+      "deprecation": {
+        "replacement": "logging.logback.rollingpolicy.max-file-size"
+      }
+    },
+    {
       "name": "logging.file.name",
       "type": "java.lang.String",
       "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
@@ -58,6 +88,16 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
+      "name": "logging.file.total-size-cap",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "0B",
+      "deprecation": {
+        "replacement": "logging.logback.rollingpolicy.total-size-cap"
+      }
+    },
+    {
       "name": "logging.group",
       "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
       "description": "Log groups to quickly change multiple loggers at the same time. For instance, `logging.group.db=org.hibernate,org.springframework.jdbc`.",
@@ -68,6 +108,46 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.log4j2.config.override",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Overriding configuration files used to create a composite configuration."
+    },
+    {
+      "name": "logging.logback.rollingpolicy.clean-history-on-start",
+      "type": "java.lang.Boolean",
+      "description": "Whether to clean the archive log files on startup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "logging.logback.rollingpolicy.file-name-pattern",
+      "type": "java.lang.String",
+      "description": "Pattern for rolled-over log file names.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
+    },
+    {
+      "name": "logging.logback.rollingpolicy.max-file-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum log file size.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "10MB"
+    },
+    {
+      "name": "logging.logback.rollingpolicy.max-history",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of archive log files to keep.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": 7
+    },
+    {
+      "name": "logging.logback.rollingpolicy.total-size-cap",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Total size of log backups to be kept.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "0B"
     },
     {
       "name": "logging.path",
@@ -107,13 +187,6 @@
       "defaultValue": "%5p"
     },
     {
-      "name": "logging.register-shutdown-hook",
-      "type": "java.lang.Boolean",
-      "description": "Register a shutdown hook for the logging system when it is initialized. Disabled automatically when deployed as a war file.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": true
-    },
-    {
       "name": "logging.pattern.rolling-file-name",
       "type": "java.lang.String",
       "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
@@ -124,84 +197,11 @@
       }
     },
     {
-      "name": "logging.file.clean-history-on-start",
+      "name": "logging.register-shutdown-hook",
       "type": "java.lang.Boolean",
-      "description": "Whether to clean the archive log files on startup. Only supported with the default logback setup.",
+      "description": "Register a shutdown hook for the logging system when it is initialized. Disabled automatically when deployed as a war file.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false,
-      "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.clean-history-on-start"
-      }
-    },
-    {
-      "name": "logging.file.max-size",
-      "type": "org.springframework.util.unit.DataSize",
-      "description": "Maximum log file size. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "10MB",
-      "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.max-file-size"
-      }
-    },
-    {
-      "name": "logging.file.total-size-cap",
-      "type": "org.springframework.util.unit.DataSize",
-      "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "0B",
-      "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.total-size-cap"
-      }
-    },
-    {
-      "name": "logging.file.max-history",
-      "type": "java.lang.Integer",
-      "description": "Maximum number of archive log files to keep. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": 7,
-      "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.max-history"
-      }
-    },
-    {
-      "name": "logging.logback.rollingpolicy.file-name-pattern",
-      "type": "java.lang.String",
-      "description": "Pattern for rolled-over log file names.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
-    },
-    {
-      "name": "logging.logback.rollingpolicy.clean-history-on-start",
-      "type": "java.lang.Boolean",
-      "description": "Whether to clean the archive log files on startup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false
-    },
-    {
-      "name": "logging.logback.rollingpolicy.max-file-size",
-      "type": "org.springframework.util.unit.DataSize",
-      "description": "Maximum log file size.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "10MB"
-    },
-    {
-      "name": "logging.logback.rollingpolicy.total-size-cap",
-      "type": "org.springframework.util.unit.DataSize",
-      "description": "Total size of log backups to be kept.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "0B"
-    },
-    {
-      "name": "logging.logback.rollingpolicy.max-history",
-      "type": "java.lang.Integer",
-      "description": "Maximum number of archive log files to keep.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": 7
-    },
-    {
-      "name": "logging.log4j2.config.override",
-      "type": "java.util.List<java.lang.String>",
-      "description": "Overriding configuration files used to create a composite configuration."
+      "defaultValue": true
     },
     {
       "name": "spring.application.index",
@@ -930,16 +930,16 @@
       "defaultValue": "default"
     },
     {
-      "name": "spring.profiles.include",
-      "type": "java.util.List<java.lang.String>",
-      "sourceType": "org.springframework.boot.context.config.Profiles",
-      "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
-    },
-    {
       "name": "spring.profiles.group",
       "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
       "sourceType": "org.springframework.boot.context.config.Profiles",
       "description": "Profile groups to define a logical name for a related group of profiles."
+    },
+    {
+      "name": "spring.profiles.include",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
+      "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
     },
     {
       "name": "spring.reactor.debug-agent.enabled",
@@ -1022,22 +1022,6 @@
       ]
     },
     {
-      "name": "spring.profiles.active",
-      "providers": [
-        {
-          "name": "spring-profile-name"
-        }
-      ]
-    },
-    {
-      "name": "spring.profiles.include",
-      "providers": [
-        {
-          "name": "spring-profile-name"
-        }
-      ]
-    },
-    {
       "name": "spring.config.import",
       "values": [
         {
@@ -1053,6 +1037,22 @@
       "providers": [
         {
           "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.profiles.active",
+      "providers": [
+        {
+          "name": "spring-profile-name"
+        }
+      ]
+    },
+    {
+      "name": "spring.profiles.include",
+      "providers": [
+        {
+          "name": "spring-profile-name"
         }
       ]
     }
