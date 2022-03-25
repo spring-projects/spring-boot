@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.servlet.springmvc.json
+package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers.`object`
 
 class MyObject(val name: String = "", val age: Int = 0)

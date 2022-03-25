@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.servlet.springmvc.json
+package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers.`object`
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import org.springframework.boot.jackson.JsonComponent
+import org.springframework.boot.jackson.JsonObjectDeserializer
+import org.springframework.boot.jackson.JsonObjectSerializer
 import java.io.IOException
 
 @JsonComponent
 class MyJsonComponent {
 
-	class Serializer : JsonSerializer<MyObject>() {
+	class Serializer : JsonObjectSerializer<MyObject>() {
 		@Throws(IOException::class)
-		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializerProvider) {
-			jgen.writeStartObject()
+		override fun serializeObject(value: MyObject, jgen: JsonGenerator, provider: SerializerProvider) {
 			jgen.writeStringField("name", value.name)
 			jgen.writeNumberField("age", value.age)
-			jgen.writeEndObject()
 		}
 	}
 
-	class Deserializer : JsonDeserializer<MyObject>() {
-		@Throws(IOException::class, JsonProcessingException::class)
-		override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): MyObject {
-			val codec = jsonParser.codec
-			val tree = codec.readTree<JsonNode>(jsonParser)
-			val name = tree["name"].textValue()
-			val age = tree["age"].intValue()
+	class Deserializer : JsonObjectDeserializer<MyObject>() {
+		@Throws(IOException::class)
+		override fun deserializeObject(jsonParser: JsonParser, context: DeserializationContext,
+				codec: ObjectCodec, tree: JsonNode): MyObject {
+			val name = nullSafeValue(tree["name"], String::class.java)
+			val age = nullSafeValue(tree["age"], Int::class.java)
 			return MyObject(name, age)
 		}
 	}

@@ -75,7 +75,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 
 include::code:MyCodecsConfiguration[]
 
-You can also leverage <<web#web.servlet.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
+You can also leverage <<features#features.json.jackson.custom-serializers-and-deserializers,Boot's custom JSON serializers and deserializers>>.
 
 
 

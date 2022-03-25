@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.web.servlet.springmvc.json.`object`
+package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import org.springframework.boot.jackson.JsonComponent
-import org.springframework.boot.jackson.JsonObjectDeserializer
-import org.springframework.boot.jackson.JsonObjectSerializer
 import java.io.IOException
 
 @JsonComponent
 class MyJsonComponent {
 
-	class Serializer : JsonObjectSerializer<MyObject>() {
+	class Serializer : JsonSerializer<MyObject>() {
 		@Throws(IOException::class)
-		override fun serializeObject(value: MyObject, jgen: JsonGenerator, provider: SerializerProvider) {
+		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializerProvider) {
+			jgen.writeStartObject()
 			jgen.writeStringField("name", value.name)
 			jgen.writeNumberField("age", value.age)
+			jgen.writeEndObject()
 		}
 	}
 
-	class Deserializer : JsonObjectDeserializer<MyObject>() {
-		@Throws(IOException::class)
-		override fun deserializeObject(jsonParser: JsonParser, context: DeserializationContext,
-				codec: ObjectCodec, tree: JsonNode): MyObject {
-			val name = nullSafeValue(tree["name"], String::class.java)
-			val age = nullSafeValue(tree["age"], Int::class.java)
+	class Deserializer : JsonDeserializer<MyObject>() {
+		@Throws(IOException::class, JsonProcessingException::class)
+		override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): MyObject {
+			val codec = jsonParser.codec
+			val tree = codec.readTree<JsonNode>(jsonParser)
+			val name = tree["name"].textValue()
+			val age = tree["age"].intValue()
 			return MyObject(name, age)
 		}
 	}
