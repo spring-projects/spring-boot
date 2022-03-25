@@ -434,12 +434,6 @@
       }
     },
     {
-      "name": "management.metrics.export.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether exporting of metrics to JMX is enabled.",
-      "defaultValue": true
-    },
-    {
       "name": "management.metrics.export.kairos.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",
@@ -457,12 +451,6 @@
       }
     },
     {
-      "name": "management.metrics.export.prometheus.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether exporting of metrics to Prometheus is enabled.",
-      "defaultValue": true
-    },
-    {
       "name": "management.metrics.export.prometheus.histogram-flavor",
       "defaultValue": "prometheus"
     },
@@ -478,12 +466,6 @@
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "management.metrics.export.simple.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
-      "defaultValue": true
     },
     {
       "name": "management.metrics.export.simple.mode",
