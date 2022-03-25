@@ -1,4 +1,5 @@
 {
+  "groups": [],
   "properties": [
     {
       "name": "management.endpoints.migrate-legacy-ids",
@@ -6,5 +7,6 @@
       "description": "Whether to transparently migrate legacy endpoint IDs.",
       "defaultValue": false
     }
-  ]
+  ],
+  "hints": []
 }

@@ -1,4 +1,5 @@
 {
+  "groups": [],
   "properties": [
     {
       "name": "spring.devtools.add-properties",
@@ -6,5 +7,6 @@
       "description": "Whether to enable development property defaults.",
       "defaultValue": true
     }
-  ]
+  ],
+  "hints": []
 }
