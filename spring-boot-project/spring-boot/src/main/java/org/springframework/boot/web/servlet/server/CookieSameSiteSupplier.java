@@ -20,9 +20,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-/**
- * @author Phillip Webb
- */
 import javax.servlet.http.Cookie;
 
 import org.springframework.boot.web.server.Cookie.SameSite;
