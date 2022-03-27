@@ -75,7 +75,7 @@ We like to know the Spring Boot version, operating system, and JVM version you'r
 
 == Building from Source
 You don't need to build from source to use Spring Boot (binaries in https://repo.spring.io[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle wrapper].
-You also need JDK 11.
+You also need JDK 17.
 
 [indent=0]
 ----
