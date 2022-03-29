@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -423,6 +423,27 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(exampleRecord);
 		assertThat(metadata).has(Metadata.withProperty("explicit.some-string"));
 		assertThat(metadata).has(Metadata.withProperty("explicit.some-integer"));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void explicitlyBoundRecordPropertiesWithDefaultValues(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "ExampleRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
+			writer.println(
+					"@org.springframework.boot.configurationsample.ConfigurationProperties(\"record.defaults\")");
+			writer.println("public record ExampleRecord(");
+			writer.println("@org.springframework.boot.configurationsample.DefaultValue(\"An1s9n\") String someString,");
+			writer.println("@org.springframework.boot.configurationsample.DefaultValue(\"594\") Integer someInteger");
+			writer.println(") {");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata)
+				.has(Metadata.withProperty("record.defaults.some-string", String.class).withDefaultValue("An1s9n"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("record.defaults.some-integer", Integer.class).withDefaultValue(594));
 	}
 
 	@Test

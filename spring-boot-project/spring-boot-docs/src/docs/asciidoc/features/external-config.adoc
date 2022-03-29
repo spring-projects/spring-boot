@@ -726,8 +726,10 @@ In this case, unless your record has multiple constructors, there is no need to 
 
 Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound through their constructor.
 
-Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
-By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+Default values can be specified using `@DefaultValue` on a constructor parameter or, when using Java 16 or later, a record component.
+The conversion service will be applied to coerce the `String` value to the target type of a missing property.
+
+Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 
 [source,java,indent=0,subs="verbatim"]
