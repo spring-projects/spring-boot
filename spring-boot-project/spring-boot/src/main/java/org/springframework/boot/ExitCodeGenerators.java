@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
 /**
@@ -84,6 +85,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	 */
 	int getExitCode() {
 		int exitCode = 0;
+		AnnotationAwareOrderComparator.sort(generators);
 		for (ExitCodeGenerator generator : this.generators) {
 			try {
 				int value = generator.getExitCode();
