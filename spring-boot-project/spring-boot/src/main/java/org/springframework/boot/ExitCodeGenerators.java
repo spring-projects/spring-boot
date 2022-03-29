@@ -85,7 +85,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	 */
 	int getExitCode() {
 		int exitCode = 0;
-		AnnotationAwareOrderComparator.sort(generators);
+		AnnotationAwareOrderComparator.sort(this.generators);
 		for (ExitCodeGenerator generator : this.generators) {
 			try {
 				int value = generator.getExitCode();
