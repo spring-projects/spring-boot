@@ -21,14 +21,22 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 
 /**
  * Maintains a collection of {@link ExitCodeGenerator} instances and allows the final exit
  * code to be calculated.
  *
+ * <p>If several {@code ExitCodeGenerator} are registered in {@code ExitCodeGenerators},
+ * they can be called in a specific order by using {@link Order @Order} or by implementing {@link Ordered},
+ * and {@link #getExitCode()} will return the first non-zero value.
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author GenKui Du
  * @see #getExitCode()
  * @see ExitCodeGenerator
  */
@@ -84,15 +92,17 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	 */
 	int getExitCode() {
 		int exitCode = 0;
+		AnnotationAwareOrderComparator.sort(this.generators);
 		for (ExitCodeGenerator generator : this.generators) {
 			try {
 				int value = generator.getExitCode();
-				if (value > 0 && value > exitCode || value < 0 && value < exitCode) {
+				if (value != 0) {
 					exitCode = value;
+					break;
 				}
 			}
 			catch (Exception ex) {
-				exitCode = (exitCode != 0) ? exitCode : 1;
+				exitCode = 1;
 				ex.printStackTrace();
 			}
 		}

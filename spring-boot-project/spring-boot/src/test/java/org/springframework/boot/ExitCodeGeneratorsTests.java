@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.core.Ordered;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link ExitCodeGenerators}.
@@ -89,9 +91,26 @@ class ExitCodeGeneratorsTests {
 		assertThat(generators.getExitCode()).isEqualTo(2);
 	}
 
+	@Test
+	void getExitCodeWithOrderedGenerator() {
+		ExitCodeGenerators generators = new ExitCodeGenerators();
+		generators.add(mockGenerator(0, 1));
+		generators.add(mockGenerator(1, 3));
+		generators.add(mockGenerator(2, 2));
+		generators.add(mockGenerator(3, 4));
+		assertThat(generators.getExitCode()).isEqualTo(2);
+	}
+
 	private ExitCodeGenerator mockGenerator(int exitCode) {
 		ExitCodeGenerator generator = mock(ExitCodeGenerator.class);
 		given(generator.getExitCode()).willReturn(exitCode);
+		return generator;
+	}
+
+	private ExitCodeGenerator mockGenerator(int exitCode, int orderValue) {
+		ExitCodeGenerator generator = mock(ExitCodeGenerator.class, withSettings().extraInterfaces(Ordered.class));
+		given(generator.getExitCode()).willReturn(exitCode);
+		given(((Ordered) generator).getOrder()).willReturn(orderValue);
 		return generator;
 	}
 
