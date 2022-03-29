@@ -11,7 +11,7 @@ The `bootRun` task is an instance of {boot-run-javadoc}[`BootRun`] which is a `J
 As such, all of the {gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing a Java process in Gradle are available to you.
 The task is automatically configured to use the runtime classpath of the main source set.
 
-By default, the main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
+By default, the main class will be configured automatically by looking for a class with a `public static void main(String[])` method in the main source set's output.
 
 The main class can also be configured explicitly using the task's `main` property:
 

@@ -82,6 +82,12 @@ public class SpringBootPlugin implements Plugin<Project> {
 	public static final String PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME = "productionRuntimeClasspath";
 
 	/**
+	 * The name of the {@link ResolveMainClassName} task.
+	 * @since 3.0.0
+	 */
+	public static final String RESOLVE_MAIN_CLASS_NAME_TASK_NAME = "resolveMainClassName";
+
+	/**
 	 * The coordinates {@code (group:name:version)} of the
 	 * {@code spring-boot-dependencies} bom.
 	 */

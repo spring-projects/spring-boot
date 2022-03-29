@@ -76,8 +76,8 @@ class WarPluginAction implements PluginApplicationAction {
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
 				.minus(providedRuntimeConfiguration(project)).minus((developmentOnly.minus(productionRuntimeClasspath)))
 				.filter(new JarTypeFileSpec());
-		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
-				.registerForTask(SpringBootPlugin.BOOT_WAR_TASK_NAME, project, classpath);
+		TaskProvider<ResolveMainClassName> resolveMainClassName = project.getTasks()
+				.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
 		TaskProvider<BootWar> bootWarProvider = project.getTasks().register(SpringBootPlugin.BOOT_WAR_TASK_NAME,
 				BootWar.class, (bootWar) -> {
 					bootWar.setGroup(BasePlugin.BUILD_GROUP);

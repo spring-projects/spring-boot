@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
@@ -33,9 +32,6 @@ import org.gradle.api.Transformer;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
@@ -43,10 +39,8 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskProvider;
 import org.gradle.work.DisableCachingByDefault;
 
-import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
@@ -152,38 +146,6 @@ public class ResolveMainClassName extends DefaultTask {
 
 	Provider<String> readMainClassName() {
 		return this.outputFile.map(new ClassNameReader());
-	}
-
-	static TaskProvider<ResolveMainClassName> registerForTask(String taskName, Project project,
-			Callable<FileCollection> classpath) {
-		TaskProvider<ResolveMainClassName> resolveMainClassNameProvider = project.getTasks()
-				.register(taskName + "MainClassName", ResolveMainClassName.class, (resolveMainClassName) -> {
-					ExtensionContainer extensions = project.getExtensions();
-					resolveMainClassName.setDescription(
-							"Resolves the name of the application's main class for the " + taskName + " task.");
-					resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
-					resolveMainClassName.setClasspath(classpath);
-					resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
-						String javaApplicationMainClass = getJavaApplicationMainClass(extensions);
-						if (javaApplicationMainClass != null) {
-							return javaApplicationMainClass;
-						}
-						SpringBootExtension springBootExtension = project.getExtensions()
-								.findByType(SpringBootExtension.class);
-						return springBootExtension.getMainClass().getOrNull();
-					}));
-					resolveMainClassName.getOutputFile()
-							.set(project.getLayout().getBuildDirectory().file(taskName + "MainClassName"));
-				});
-		return resolveMainClassNameProvider;
-	}
-
-	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
-		JavaApplication javaApplication = extensions.findByType(JavaApplication.class);
-		if (javaApplication == null) {
-			return null;
-		}
-		return javaApplication.getMainClass().getOrNull();
 	}
 
 	private static final class ClassNameReader implements Transformer<String, RegularFile> {
