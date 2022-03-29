@@ -444,7 +444,7 @@ If you use Tomcat, you can additionally configure the names of the headers used 
 ----
 
 Tomcat is also configured with a default regular expression that matches internal proxies that are to be trusted.
-By default, IP addresses in `10/8`, `192.168/16`, `169.254/16` and `127/8` are trusted.
+By default, IP addresses in `10/8`, `192.168/16`, `169.254/16`, `127/8`, `172.16/12` and `::1` are trusted.
 You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
