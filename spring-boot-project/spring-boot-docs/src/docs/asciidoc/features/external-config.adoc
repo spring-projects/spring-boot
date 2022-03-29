@@ -721,11 +721,14 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/con
 
 In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
 This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
+If you are using Java 16 or later, constructor binding can be used with records.
 
 Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
 
-Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
-By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+Default values can be specified using `@DefaultValue` on a constructor parameter or, when using Java 16 or later, a record component.
+The conversion service will be applied to coerce the `String` value to the target type of a missing property.
+
+Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 
 [source,java,indent=0,subs="verbatim"]

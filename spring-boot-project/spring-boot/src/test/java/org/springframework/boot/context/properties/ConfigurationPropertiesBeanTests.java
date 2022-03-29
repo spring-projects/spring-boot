@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,15 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Constructor;
 import java.util.Map;
 
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.ClassFileVersion;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
@@ -214,6 +220,32 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(target.getValue()).isNull();
 		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
 				.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void forValueObjectWithRecordReturnsBean() {
+		Class<?> constructorBindingRecord = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
+				.name("org.springframework.boot.context.properties.RecordProperties")
+				.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
+						.define("prefix", "explicit").build())
+				.annotateType(AnnotationDescription.Builder.ofType(ConstructorBinding.class).build())
+				.defineRecordComponent("someString", String.class).defineRecordComponent("someInteger", Integer.class)
+				.make().load(getClass().getClassLoader()).getLoaded();
+		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
+				.forValueObject(constructorBindingRecord, "constructorBindingRecord");
+		assertThat(propertiesBean.getName()).isEqualTo("constructorBindingRecord");
+		assertThat(propertiesBean.getInstance()).isNull();
+		assertThat(propertiesBean.getType()).isEqualTo(constructorBindingRecord);
+		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		assertThat(propertiesBean.getAnnotation()).isNotNull();
+		Bindable<?> target = propertiesBean.asBindTarget();
+		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(constructorBindingRecord));
+		assertThat(target.getValue()).isNull();
+		Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
+				.getBindConstructor(constructorBindingRecord, false);
+		assertThat(bindConstructor).isNotNull();
+		assertThat(bindConstructor.getParameterTypes()).containsExactly(String.class, Integer.class);
 	}
 
 	@Test
