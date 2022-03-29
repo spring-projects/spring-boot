@@ -45,12 +45,12 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.ThreadLocalAccessor;
-import org.springframework.graphql.web.WebGraphQlHandler;
-import org.springframework.graphql.web.WebGraphQlHandlerInterceptor;
-import org.springframework.graphql.web.webmvc.GraphQlHttpHandler;
-import org.springframework.graphql.web.webmvc.GraphQlWebSocketHandler;
-import org.springframework.graphql.web.webmvc.GraphiQlHandler;
-import org.springframework.graphql.web.webmvc.SchemaHandler;
+import org.springframework.graphql.server.WebGraphQlHandler;
+import org.springframework.graphql.server.WebGraphQlInterceptor;
+import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
+import org.springframework.graphql.server.webmvc.GraphiQlHandler;
+import org.springframework.graphql.server.webmvc.SchemaHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -87,6 +87,9 @@ public class GraphQlWebMvcAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebMvcAutoConfiguration.class);
 
+	private static MediaType[] SUPPORTED_MEDIA_TYPES = new MediaType[] { MediaType.valueOf("application/graphql+json"),
+			MediaType.APPLICATION_JSON };
+
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
@@ -96,7 +99,7 @@ public class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
-			ObjectProvider<WebGraphQlHandlerInterceptor> interceptorsProvider,
+			ObjectProvider<WebGraphQlInterceptor> interceptorsProvider,
 			ObjectProvider<ThreadLocalAccessor> accessorsProvider) {
 		return WebGraphQlHandler.builder(service)
 				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList()))

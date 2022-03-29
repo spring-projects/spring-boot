@@ -47,9 +47,9 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.GraphQlSource.Builder;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
-import org.springframework.graphql.web.WebGraphQlHandlerInterceptor;
-import org.springframework.graphql.web.WebGraphQlRequest;
-import org.springframework.graphql.web.WebGraphQlResponse;
+import org.springframework.graphql.server.WebGraphQlInterceptor;
+import org.springframework.graphql.server.WebGraphQlRequest;
+import org.springframework.graphql.server.WebGraphQlResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -199,7 +199,7 @@ class GraphQlTypeExcludeFilterTests {
 
 	}
 
-	static class ExampleWebInterceptor implements WebGraphQlHandlerInterceptor {
+	static class ExampleWebInterceptor implements WebGraphQlInterceptor {
 
 		@Override
 		public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {

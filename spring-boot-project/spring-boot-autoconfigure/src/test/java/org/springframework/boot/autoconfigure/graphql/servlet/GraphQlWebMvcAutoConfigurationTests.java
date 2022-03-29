@@ -31,10 +31,10 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
-import org.springframework.graphql.web.WebGraphQlHandler;
-import org.springframework.graphql.web.WebGraphQlHandlerInterceptor;
-import org.springframework.graphql.web.webmvc.GraphQlHttpHandler;
-import org.springframework.graphql.web.webmvc.GraphQlWebSocketHandler;
+import org.springframework.graphql.server.WebGraphQlHandler;
+import org.springframework.graphql.server.WebGraphQlInterceptor;
+import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -183,7 +183,7 @@ class GraphQlWebMvcAutoConfigurationTests {
 	static class CustomWebInterceptor {
 
 		@Bean
-		WebGraphQlHandlerInterceptor customWebGraphQlHandlerInterceptor() {
+		WebGraphQlInterceptor customWebGraphQlInterceptor() {
 			return (webInput, interceptorChain) -> interceptorChain.next(webInput)
 					.doOnNext((output) -> output.getResponseHeaders().add("X-Custom-Header", "42"));
 		}

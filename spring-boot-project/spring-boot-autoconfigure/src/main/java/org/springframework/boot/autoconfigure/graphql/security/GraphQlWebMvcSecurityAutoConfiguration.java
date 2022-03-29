@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoC
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.SecurityContextThreadLocalAccessor;
 import org.springframework.graphql.execution.SecurityDataFetcherExceptionResolver;
-import org.springframework.graphql.web.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**

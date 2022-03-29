@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.graphql.reactive.GraphQlWebFluxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.ReactiveSecurityDataFetcherExceptionResolver;
-import org.springframework.graphql.web.webflux.GraphQlHttpHandler;
+import org.springframework.graphql.server.webflux.GraphQlHttpHandler;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 
 /**
