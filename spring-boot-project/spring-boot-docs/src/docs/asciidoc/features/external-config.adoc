@@ -721,7 +721,9 @@ Nested members of a constructor bound class (such as `Security` in the example a
 
 Default values can be specified using `@DefaultValue` on constructor parameters and record components.
 The conversion service will be applied to coerce the annotation's `String` value to the target type of a missing property.
-By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+
+Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 
 include::code:nonnull/MyProperties[tag=*]

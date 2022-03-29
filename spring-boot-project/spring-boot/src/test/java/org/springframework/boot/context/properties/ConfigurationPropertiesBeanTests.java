@@ -223,6 +223,31 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
+	void forValueObjectWithConstructorBindingAnnotatedRecordReturnsBean() {
+		Class<?> constructorBindingRecord = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
+				.name("org.springframework.boot.context.properties.RecordProperties")
+				.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
+						.define("prefix", "explicit").build())
+				.annotateType(AnnotationDescription.Builder.ofType(ConstructorBinding.class).build())
+				.defineRecordComponent("someString", String.class).defineRecordComponent("someInteger", Integer.class)
+				.make().load(getClass().getClassLoader()).getLoaded();
+		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
+				.forValueObject(constructorBindingRecord, "constructorBindingRecord");
+		assertThat(propertiesBean.getName()).isEqualTo("constructorBindingRecord");
+		assertThat(propertiesBean.getInstance()).isNull();
+		assertThat(propertiesBean.getType()).isEqualTo(constructorBindingRecord);
+		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		assertThat(propertiesBean.getAnnotation()).isNotNull();
+		Bindable<?> target = propertiesBean.asBindTarget();
+		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(constructorBindingRecord));
+		assertThat(target.getValue()).isNull();
+		Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
+				.getBindConstructor(constructorBindingRecord, false);
+		assertThat(bindConstructor).isNotNull();
+		assertThat(bindConstructor.getParameterTypes()).containsExactly(String.class, Integer.class);
+	}
+
+	@Test
 	void forValueObjectWithUnannotatedRecordReturnsBean() {
 		Class<?> implicitConstructorBinding = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
 				.name("org.springframework.boot.context.properties.ImplicitConstructorBinding")
