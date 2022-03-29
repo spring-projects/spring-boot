@@ -410,41 +410,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void explicityBoundRecordProperties(@TempDir File temp) throws IOException {
-		File exampleRecord = new File(temp, "ExampleRecord.java");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
-			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
-			writer.println("@org.springframework.boot.configurationsample.ConfigurationProperties(\"explicit\")");
-			writer.println("public record ExampleRecord(String someString, Integer someInteger) {");
-			writer.println("}");
-		}
-		ConfigurationMetadata metadata = compile(exampleRecord);
-		assertThat(metadata).has(Metadata.withProperty("explicit.some-string"));
-		assertThat(metadata).has(Metadata.withProperty("explicit.some-integer"));
-	}
-
-	@Test
-	void explicitlyBoundRecordPropertiesWithDefaultValues(@TempDir File temp) throws IOException {
-		File exampleRecord = new File(temp, "ExampleRecord.java");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
-			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
-			writer.println(
-					"@org.springframework.boot.configurationsample.ConfigurationProperties(\"record.defaults\")");
-			writer.println("public record ExampleRecord(");
-			writer.println("@org.springframework.boot.configurationsample.DefaultValue(\"An1s9n\") String someString,");
-			writer.println("@org.springframework.boot.configurationsample.DefaultValue(\"594\") Integer someInteger");
-			writer.println(") {");
-			writer.println("}");
-		}
-		ConfigurationMetadata metadata = compile(exampleRecord);
-		assertThat(metadata)
-				.has(Metadata.withProperty("record.defaults.some-string", String.class).withDefaultValue("An1s9n"));
-		assertThat(metadata)
-				.has(Metadata.withProperty("record.defaults.some-integer", Integer.class).withDefaultValue(594));
-	}
-
-	@Test
-	void implicitlyBoundRecordProperties(@TempDir File temp) throws IOException {
+	void recordProperties(@TempDir File temp) throws IOException {
 		File exampleRecord = new File(temp, "ExampleRecord.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
 			writer.println("@org.springframework.boot.configurationsample.ConfigurationProperties(\"implicit\")");
@@ -457,7 +423,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void implicitlyBoundRecordPropertiesWithDefaultValues(@TempDir File temp) throws IOException {
+	void recordPropertiesWithDefaultValues(@TempDir File temp) throws IOException {
 		File exampleRecord = new File(temp, "ExampleRecord.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
 			writer.println(
