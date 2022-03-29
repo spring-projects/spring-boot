@@ -93,8 +93,8 @@ public class ResolveMainClassName extends DefaultTask {
 	}
 
 	/**
-	 * Sets the classpath to include in the archive. The given {@code classpath} is
-	 * evaluated as per {@link Project#files(Object...)}.
+	 * Sets the classpath that the task will examine when resolving the main class name.
+	 * The given {@code classpath} is evaluated as per {@link Project#files(Object...)}.
 	 * @param classpath the classpath
 	 * @since 2.5.10
 	 */
