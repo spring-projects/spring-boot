@@ -439,7 +439,7 @@ This testing module ships the {spring-graphql-docs}/#testing-graphqltester[Graph
 The tester is heavily used in test, so be sure to become familiar with using it.
 There are `GraphQlTester` variants and Spring Boot will auto-configure them depending on the type of tests:
 
-* the `GraphQlServiceTester` performs tests on the server side, without a client nor a transport
+* the `ExecutionGraphQlServiceTester` performs tests on the server side, without a client nor a transport
 * the `HttpGraphQlTester` performs tests with a client that connects to a server, with or without a live server
 
 Spring Boot helps you to test your {spring-graphql-docs}#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.

@@ -30,7 +30,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.GraphQlRepository;
-import org.springframework.graphql.test.tester.GraphQlServiceTester;
+import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +56,7 @@ class GraphQlQuerydslAutoConfigurationTests {
 	void shouldRegisterDataFetcherForQueryDslRepositories() {
 		this.contextRunner.run((context) -> {
 			ExecutionGraphQlService graphQlService = context.getBean(ExecutionGraphQlService.class);
-			GraphQlTester graphQlTester = GraphQlServiceTester.create(graphQlService);
+			GraphQlTester graphQlTester = ExecutionGraphQlServiceTester.create(graphQlService);
 			graphQlTester.document("{ bookById(id: 1) {name}}").execute().path("bookById.name").entity(String.class)
 					.isEqualTo("Test title");
 		});

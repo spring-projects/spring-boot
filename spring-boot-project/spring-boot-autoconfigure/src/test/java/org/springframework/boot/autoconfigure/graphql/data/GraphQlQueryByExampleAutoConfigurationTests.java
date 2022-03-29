@@ -30,7 +30,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.GraphQlRepository;
-import org.springframework.graphql.test.tester.GraphQlServiceTester;
+import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -55,7 +55,7 @@ class GraphQlQueryByExampleAutoConfigurationTests {
 	void shouldRegisterDataFetcherForQueryByExampleRepositories() {
 		this.contextRunner.run((context) -> {
 			ExecutionGraphQlService graphQlService = context.getBean(ExecutionGraphQlService.class);
-			GraphQlServiceTester graphQlTester = GraphQlServiceTester.create(graphQlService);
+			ExecutionGraphQlServiceTester graphQlTester = ExecutionGraphQlServiceTester.create(graphQlService);
 			graphQlTester.document("{ bookById(id: 1) {name}}").execute().path("bookById.name").entity(String.class)
 					.isEqualTo("Test title");
 		});
