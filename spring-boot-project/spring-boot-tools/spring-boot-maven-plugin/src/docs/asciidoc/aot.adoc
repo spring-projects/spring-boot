@@ -1,0 +1,22 @@
+[[aot]]
+= Optimizing Your Application at Build-Time
+
+Spring AOT inspects an application at build-time and generates an optimized version of it.
+Based on your `@SpringBootApplication`-annotated main class, the AOT engine generates a persistent view of the beans that are going to be contributed at runtime in a way that bean instantiation is as straightforward as possible.
+Additional post-processing of the factory is possible using callbacks.
+For instance, these are used to generate the necessary reflection configuration that GraalVM needs to initialize the context in a native image.
+
+To configure your application to use this feature, add an execution for the `aot-generate` goal, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/aot/pom.xml[tags=aot]
+----
+
+As the `BeanFactory` is fully prepared at build-time, conditions are also evaluated.
+This has an important difference compared to what a regular Spring Boot application does at runtime.
+For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
+The `aot-generate` goal shares a number of properties with the <<run,run goal>> for that reason.
+
+
+include::goals/aot-generate.adoc[leveloffset=+1]

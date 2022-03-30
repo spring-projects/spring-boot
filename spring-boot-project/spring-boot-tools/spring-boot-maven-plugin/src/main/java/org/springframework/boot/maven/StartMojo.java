@@ -49,7 +49,7 @@ import org.springframework.boot.loader.tools.RunProcess;
  */
 @Mojo(name = "start", requiresProject = true, defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST,
 		requiresDependencyResolution = ResolutionScope.TEST)
-public class StartMojo extends AbstractRunMojo {
+public class StartMojo extends AbstractApplicationRunMojo {
 
 	private static final String ENABLE_MBEAN_PROPERTY = "--spring.application.admin.enabled=true";
 

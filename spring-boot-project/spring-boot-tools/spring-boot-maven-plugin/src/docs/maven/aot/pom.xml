@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>aot</artifactId>
+	<build>
+		<plugins>
+			<!-- tag::aot[] -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>aot-generate</id>
+						<goals>
+							<goal>aot-generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- end::aot[] -->
+		</plugins>
+	</build>
+</project>
+
+

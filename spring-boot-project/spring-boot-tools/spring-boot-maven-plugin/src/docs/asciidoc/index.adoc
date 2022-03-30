@@ -36,6 +36,8 @@ include::packaging-oci-image.adoc[leveloffset=+1]
 
 include::running.adoc[leveloffset=+1]
 
+include::aot.adoc[leveloffset=+1]
+
 include::integration-tests.adoc[leveloffset=+1]
 
 include::build-info.adoc[leveloffset=+1]
