@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import com.samskivert.mustache.Mustache.Compiler;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -29,6 +30,7 @@ import org.springframework.core.Ordered;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnClass(MustacheViewResolver.class)
 class MustacheServletWebConfiguration {
 
 	@Bean
