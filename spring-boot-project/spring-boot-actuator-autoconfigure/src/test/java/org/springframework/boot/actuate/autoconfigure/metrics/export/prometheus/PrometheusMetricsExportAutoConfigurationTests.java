@@ -22,6 +22,8 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exemplars.ExemplarSampler;
+import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.DefaultHttpConnectionFactory;
 import io.prometheus.client.exporter.HttpConnectionFactory;
@@ -50,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Jonatan Ivanov
  */
 @ExtendWith(OutputCaptureExtension.class)
 class PrometheusMetricsExportAutoConfigurationTests {
@@ -107,6 +110,20 @@ class PrometheusMetricsExportAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(PrometheusMeterRegistry.class)
 						.hasBean("customCollectorRegistry").hasSingleBean(CollectorRegistry.class)
 						.hasSingleBean(PrometheusConfig.class));
+	}
+
+	@Test
+	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
+		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
+						.hasSingleBean(ExemplarSampler.class).hasSingleBean(PrometheusMeterRegistry.class));
+	}
+
+	@Test
+	void exemplarSamplerIsNotAutoConfiguredIfSpanContextSupplierIsMissing() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class)
+						.doesNotHaveBean(ExemplarSampler.class).hasSingleBean(PrometheusMeterRegistry.class));
 	}
 
 	@Test
@@ -267,6 +284,27 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		@Bean
 		PrometheusScrapeEndpoint customEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class ExemplarsConfiguration {
+
+		@Bean
+		SpanContextSupplier spanContextSupplier() {
+			return new SpanContextSupplier() {
+				@Override
+				public String getTraceId() {
+					return null;
+				}
+
+				@Override
+				public String getSpanId() {
+					return null;
+				}
+			};
 		}
 
 	}
