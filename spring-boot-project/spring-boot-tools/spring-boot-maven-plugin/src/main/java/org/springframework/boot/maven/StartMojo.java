@@ -113,6 +113,7 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected RunArguments resolveApplicationArguments() {
 		RunArguments applicationArguments = super.resolveApplicationArguments();
 		applicationArguments.getArgs().addLast(ENABLE_MBEAN_PROPERTY);
@@ -123,6 +124,7 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (isFork()) {
@@ -138,6 +140,7 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	@Deprecated
 	protected void runWithMavenJvm(String startClassName, String... arguments) throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
 		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName, arguments),
@@ -171,6 +174,7 @@ public class StartMojo extends AbstractRunMojo {
 				"Spring application did not start before the configured timeout (" + (wait * maxAttempts) + "ms");
 	}
 
+	@SuppressWarnings("deprecation")
 	private void waitForSpringApplication() throws MojoFailureException, MojoExecutionException {
 		try {
 			if (isFork()) {

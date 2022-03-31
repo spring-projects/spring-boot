@@ -71,6 +71,7 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (isFork() && this.optimizedLaunch) {
@@ -114,6 +115,7 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	@Deprecated
 	protected void runWithMavenJvm(String startClassName, String... arguments) throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
 		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName, arguments), "main");
