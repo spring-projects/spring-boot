@@ -42,7 +42,6 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -387,8 +386,8 @@ class ValueObjectBinderTests {
 		compiler.getTask(Arrays.asList(recordProperties)).call();
 		ClassLoader ucl = new URLClassLoader(new URL[] { tempDir.toURI().toURL() });
 		Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, ucl)).get();
-		assertThat(ReflectionTestUtils.getField(bean, "property1")).isEqualTo("value-from-config-1");
-		assertThat(ReflectionTestUtils.getField(bean, "property2")).isEqualTo("default-value-2");
+		assertThat(bean).hasFieldOrPropertyWithValue("property1", "value-from-config-1")
+				.hasFieldOrPropertyWithValue("property2", "default-value-2");
 	}
 
 	private void noConfigurationProperty(BindException ex) {
