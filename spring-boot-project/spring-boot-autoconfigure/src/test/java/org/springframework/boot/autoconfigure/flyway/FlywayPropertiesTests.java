@@ -112,8 +112,8 @@ class FlywayPropertiesTests {
 		// Property that moved to a separate SQL plugin
 		ignoreProperties(properties, "sqlServerKerberosLoginFile");
 		// High level object we can't set with properties
-		ignoreProperties(configuration, "callbacks", "dataSource", "javaMigrations", "javaMigrationClassProvider",
-				"resourceProvider", "resolvers");
+		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
+				"javaMigrationClassProvider", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver");
 		// Handled by the conversion service
