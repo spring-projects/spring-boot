@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,10 @@ public class StopMojo extends AbstractMojo {
 	 * ({@code true}). If it is set, it must match the value used to {@link StartMojo
 	 * start} the process.
 	 * @since 1.3.0
+	 * @deprecated since 2.7.0 for removal in 3.0.0 with no replacement
 	 */
 	@Parameter(property = "spring-boot.stop.fork")
+	@Deprecated
 	private Boolean fork;
 
 	/**
@@ -80,6 +82,7 @@ public class StopMojo extends AbstractMojo {
 	private boolean skip;
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("skipping stop as per configuration.");
@@ -100,6 +103,7 @@ public class StopMojo extends AbstractMojo {
 		}
 	}
 
+	@Deprecated
 	private boolean isForked() {
 		if (this.fork != null) {
 			return this.fork;
