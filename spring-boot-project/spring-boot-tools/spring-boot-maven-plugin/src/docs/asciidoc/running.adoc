@@ -9,13 +9,13 @@ The plugin includes a run goal which can be used to launch your application from
 
 Application arguments can be specified using the `arguments` parameter, see <<run.examples.using-application-arguments,using application arguments>> for more details.
 
-By default the application is executed in a forked process and setting properties on the command-line will not affect the application.
+The application is executed in a forked process and setting properties on the command-line will not affect the application.
 If you need to specify some JVM arguments (that is for debugging purposes), you can use the `jvmArguments` parameter, see <<run.examples.debug,Debug the application>> for more details.
 There is also explicit support for <<run.examples.system-properties,system properties>> and <<run.examples.environment-variables,environment variables>>.
 
 As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run.examples.specify-active-profiles,Specify active profiles>>.
 
-Although this is not recommended, it is possible to execute the application directly from the Maven JVM by disabling the `fork` property.
+Although this is not recommended (and deprecated), it is possible to execute the application directly from the Maven JVM by disabling the `fork` property.
 Doing so means that the `jvmArguments`, `systemPropertyVariables`, `environmentVariables` and `agents` options are ignored.
 
 Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
@@ -73,7 +73,7 @@ include::goals/run.adoc[leveloffset=+1]
 
 [[run.examples.debug]]
 === Debug the Application
-By default, the `run` goal runs your application in a forked process.
+The `run` goal runs your application in a forked process.
 If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
 The following configuration suspend the process until a debugger has joined on port 5005:
 

@@ -192,12 +192,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
-	 * Flag to indicate if the run processes should be forked. Disabling forking will
-	 * disable some features such as an agent, custom JVM arguments, devtools or
-	 * specifying the working directory to use.
+	 * Deprecated. Flag to indicate if the run processes should be forked. Disabling
+	 * forking will disable some features such as an agent, custom JVM arguments, devtools
+	 * or specifying the working directory to use.
 	 * @since 1.2.0
+	 * @deprecated since 2.7.0 for removal in 3.0.0 with no replacement
 	 */
 	@Parameter(property = "spring-boot.run.fork", defaultValue = "true")
+	@Deprecated
 	private boolean fork;
 
 	/**
@@ -226,7 +228,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Specify if the application process should be forked.
 	 * @return {@code true} if the application process should be forked
+	 * @deprecated since 2.7.0 for removal in 3.0.0 with no replacement
 	 */
+	@Deprecated
 	protected boolean isFork() {
 		return this.fork;
 	}
@@ -244,6 +248,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return this.workingDirectory != null;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		boolean fork = isFork();
 		this.project.getProperties().setProperty("_spring.boot.fork.enabled", Boolean.toString(fork));
@@ -304,7 +309,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @param arguments the class arguments
 	 * @throws MojoExecutionException in case of MOJO execution errors
 	 * @throws MojoFailureException in case of MOJO failures
+	 * @deprecated since 2.7.0 for removal in 3.0.0 with no replacement
 	 */
+	@Deprecated
 	protected abstract void runWithMavenJvm(String startClassName, String... arguments)
 			throws MojoExecutionException, MojoFailureException;
 
