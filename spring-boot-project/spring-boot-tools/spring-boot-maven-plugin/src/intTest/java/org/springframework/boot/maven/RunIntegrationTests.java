@@ -45,22 +45,6 @@ class RunIntegrationTests {
 	}
 
 	@TestTemplate
-	@Deprecated
-	void whenForkingIsDisabledAndDevToolsIsPresentDevToolsIsDisabled(MavenBuild mavenBuild) {
-		mavenBuild.project("run-devtools").goals("spring-boot:run").execute((project) -> assertThat(buildLog(project))
-				.contains("I haz been run").contains("Fork mode disabled, devtools will be disabled"));
-	}
-
-	@TestTemplate
-	@Deprecated
-	void whenForkingIsDisabledJvmArgumentsAndWorkingDirectoryAreIgnored(MavenBuild mavenBuild) {
-		mavenBuild.project("run-disable-fork").goals("spring-boot:run")
-				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run").contains(
-						"Fork mode disabled, ignoring JVM argument(s) [-Dproperty1=value1 -Dproperty2 -Dfoo=bar]")
-						.contains("Fork mode disabled, ignoring working directory configuration"));
-	}
-
-	@TestTemplate
 	void whenEnvironmentVariablesAreConfiguredTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
 		mavenBuild.project("run-envargs").goals("spring-boot:run")
 				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
@@ -101,13 +85,6 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenProfilesAreConfiguredTheyArePassedToTheApplication(MavenBuild mavenBuild) {
 		mavenBuild.project("run-profiles").goals("spring-boot:run", "-X").execute(
-				(project) -> assertThat(buildLog(project)).contains("I haz been run with profile(s) 'foo,bar'"));
-	}
-
-	@TestTemplate
-	@Deprecated
-	void whenProfilesAreConfiguredAndForkingIsDisabledTheyArePassedToTheApplication(MavenBuild mavenBuild) {
-		mavenBuild.project("run-profiles-fork-disabled").goals("spring-boot:run").execute(
 				(project) -> assertThat(buildLog(project)).contains("I haz been run with profile(s) 'foo,bar'"));
 	}
 

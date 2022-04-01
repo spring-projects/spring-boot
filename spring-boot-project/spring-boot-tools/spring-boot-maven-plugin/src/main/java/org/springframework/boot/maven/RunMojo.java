@@ -18,8 +18,6 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
@@ -48,13 +46,6 @@ public class RunMojo extends AbstractRunMojo {
 
 	private static final int EXIT_CODE_SIGINT = 130;
 
-	private static final String RESTARTER_CLASS_LOCATION = "org/springframework/boot/devtools/restart/Restarter.class";
-
-	/**
-	 * Devtools presence flag to avoid checking for it several times per execution.
-	 */
-	private Boolean hasDevtools;
-
 	/**
 	 * Whether the JVM's launch should be optimized.
 	 * @since 2.2.0
@@ -63,19 +54,9 @@ public class RunMojo extends AbstractRunMojo {
 	private boolean optimizedLaunch;
 
 	@Override
-	@Deprecated
-	protected void logDisabledFork() {
-		super.logDisabledFork();
-		if (hasDevtools()) {
-			getLog().warn("Fork mode disabled, devtools will be disabled");
-		}
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
-		if (isFork() && this.optimizedLaunch) {
+		if (this.optimizedLaunch) {
 			jvmArguments.getArgs().addFirst("-XX:TieredStopAtLevel=1");
 			if (!isJava13OrLater()) {
 				jvmArguments.getArgs().addFirst("-Xverify:none");
@@ -94,7 +75,7 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected void runWithForkedJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+	protected void run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
 		if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
@@ -112,57 +93,6 @@ public class RunMojo extends AbstractRunMojo {
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
-		}
-	}
-
-	@Override
-	@Deprecated
-	protected void runWithMavenJvm(String startClassName, String... arguments) throws MojoExecutionException {
-		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName, arguments), "main");
-		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
-		launchThread.start();
-		join(threadGroup);
-		threadGroup.rethrowUncaughtException();
-	}
-
-	private void join(ThreadGroup threadGroup) {
-		boolean hasNonDaemonThreads;
-		do {
-			hasNonDaemonThreads = false;
-			Thread[] threads = new Thread[threadGroup.activeCount()];
-			threadGroup.enumerate(threads);
-			for (Thread thread : threads) {
-				if (thread != null && !thread.isDaemon()) {
-					try {
-						hasNonDaemonThreads = true;
-						thread.join();
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-			}
-		}
-		while (hasNonDaemonThreads);
-	}
-
-	private boolean hasDevtools() {
-		if (this.hasDevtools == null) {
-			this.hasDevtools = checkForDevtools();
-		}
-		return this.hasDevtools;
-	}
-
-	private boolean checkForDevtools() {
-		try {
-			URL[] urls = getClassPathUrls();
-			try (URLClassLoader classLoader = new URLClassLoader(urls)) {
-				return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
-			}
-		}
-		catch (Exception ex) {
-			return false;
 		}
 	}
 
