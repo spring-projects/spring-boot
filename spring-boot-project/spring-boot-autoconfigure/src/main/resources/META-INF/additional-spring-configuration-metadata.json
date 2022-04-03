@@ -792,10 +792,6 @@
       "defaultValue": "default"
     },
     {
-      "name": "spring.datasource.initialization-mode",
-      "defaultValue": "embedded"
-    },
-    {
       "name": "spring.datasource.jmx-enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JMX support (if provided by the underlying pool).",
