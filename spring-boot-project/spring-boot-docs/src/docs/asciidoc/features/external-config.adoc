@@ -456,7 +456,7 @@ The use of placeholders with and without defaults is shown in the following exam
 	  description: "${app.name} is a Spring Boot application written by ${username:Unknown}"
 ----
 
-Assuming that the `username` property has not be set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
+Assuming that the `username` property has not been set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
 See the _<<howto#howto.properties-and-configuration.short-command-line-arguments>>_ how-to for details.
