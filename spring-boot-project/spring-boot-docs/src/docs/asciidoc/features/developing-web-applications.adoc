@@ -628,7 +628,7 @@ The first step to customizing this feature often involves using the existing mec
 For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
-Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
+Because an `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
