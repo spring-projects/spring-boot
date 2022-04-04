@@ -152,7 +152,6 @@ class GsonAutoConfigurationTests {
 	void customGsonBuilder() {
 		this.contextRunner.withUserConfiguration(GsonBuilderConfig.class).run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			// assertThat(gson.toJson(new DataObject())).isEqualTo("{\"dat\":1,\"owner\":null}");
 			List<String> expectedJson = Arrays.asList("{\"data\":1,\"owner\":null}", "{\"owner\":null,\"data\":1}");
 			assertThat(gson.toJson(new DataObject())).isIn(expectedJson);
 		});
