@@ -81,8 +81,8 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @EnableConfigurationProperties(GraphQlCorsProperties.class)
 public class GraphQlWebFluxAutoConfiguration {
 
-	private static final RequestPredicate ACCEPT_JSON_CONTENT = accept(MediaType.APPLICATION_JSON)
-			.and(contentType(MediaType.APPLICATION_JSON));
+	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL,
+			MediaType.APPLICATION_JSON).and(contentType(MediaType.APPLICATION_GRAPHQL, MediaType.APPLICATION_JSON));
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 
@@ -107,7 +107,7 @@ public class GraphQlWebFluxAutoConfiguration {
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder = builder.GET(path, this::onlyAllowPost);
-		builder = builder.POST(path, ACCEPT_JSON_CONTENT, httpHandler::handleRequest);
+		builder = builder.POST(path, SUPPORTS_MEDIATYPES, httpHandler::handleRequest);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);

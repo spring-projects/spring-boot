@@ -81,7 +81,7 @@ class GraphQlWebMvcAutoConfigurationTests {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 			MvcResult result = mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}")).andReturn();
 			mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk())
-					.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+					.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_GRAPHQL))
 					.andExpect(jsonPath("data.bookById.name").value("GraphQL for beginners"));
 		});
 	}
@@ -155,9 +155,9 @@ class GraphQlWebMvcAutoConfigurationTests {
 
 	private void testWith(MockMvcConsumer mockMvcConsumer) {
 		this.contextRunner.run((context) -> {
-			MediaType mediaType = MediaType.APPLICATION_JSON;
-			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context)
-					.defaultRequest(post("/graphql").contentType(mediaType).accept(mediaType)).build();
+			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).defaultRequest(
+					post("/graphql").contentType(MediaType.APPLICATION_GRAPHQL).accept(MediaType.APPLICATION_GRAPHQL))
+					.build();
 			mockMvcConsumer.accept(mockMvc);
 		});
 	}

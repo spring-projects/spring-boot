@@ -79,7 +79,7 @@ class HttpGraphQlTesterContextCustomizerIntegrationTests {
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			response.setStatusCode(HttpStatus.OK);
-			response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+			response.getHeaders().setContentType(MediaType.APPLICATION_GRAPHQL);
 			return response.writeWith(Mono.just(factory.wrap("{\"data\":{}}".getBytes())));
 		}
 

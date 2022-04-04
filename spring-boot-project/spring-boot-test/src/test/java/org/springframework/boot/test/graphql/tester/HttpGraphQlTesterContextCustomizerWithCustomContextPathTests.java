@@ -70,7 +70,7 @@ class HttpGraphQlTesterContextCustomizerWithCustomContextPathTests {
 	@RestController
 	static class TestController {
 
-		@PostMapping(path = "/graphql", produces = MediaType.APPLICATION_JSON_VALUE)
+		@PostMapping(path = "/graphql", produces = MediaType.APPLICATION_GRAPHQL_VALUE)
 		String graphql() {
 			return "{}";
 		}

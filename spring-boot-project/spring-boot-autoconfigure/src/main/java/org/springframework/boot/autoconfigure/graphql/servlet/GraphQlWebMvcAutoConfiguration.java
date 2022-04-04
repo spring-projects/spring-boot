@@ -87,7 +87,7 @@ public class GraphQlWebMvcAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebMvcAutoConfiguration.class);
 
-	private static MediaType[] SUPPORTED_MEDIA_TYPES = new MediaType[] { MediaType.valueOf("application/graphql+json"),
+	private static MediaType[] SUPPORTED_MEDIA_TYPES = new MediaType[] { MediaType.APPLICATION_GRAPHQL,
 			MediaType.APPLICATION_JSON };
 
 	@Bean
@@ -113,8 +113,8 @@ public class GraphQlWebMvcAutoConfiguration {
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder = builder.GET(path, this::onlyAllowPost);
-		builder = builder.POST(path, RequestPredicates.contentType(MediaType.APPLICATION_JSON)
-				.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), httpHandler::handleRequest);
+		builder = builder.POST(path, RequestPredicates.contentType(SUPPORTED_MEDIA_TYPES)
+				.and(RequestPredicates.accept(SUPPORTED_MEDIA_TYPES)), httpHandler::handleRequest);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder = builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);
