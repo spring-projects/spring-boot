@@ -25,11 +25,15 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exemplars.DefaultExemplarSampler;
+import io.prometheus.client.exemplars.ExemplarSampler;
+import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -56,6 +60,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Jon Schneider
  * @author David J. M. Karlsen
+ * @author Jonatan Ivanov
  * @since 2.0.0
  */
 @AutoConfiguration(
@@ -76,14 +81,22 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
-			CollectorRegistry collectorRegistry, Clock clock) {
-		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock);
+			CollectorRegistry collectorRegistry, Clock clock, ObjectProvider<ExemplarSampler> exemplarSamplerProvider) {
+		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock,
+				exemplarSamplerProvider.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public CollectorRegistry collectorRegistry() {
 		return new CollectorRegistry(true);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(SpanContextSupplier.class)
+	public ExemplarSampler exemplarSampler(SpanContextSupplier spanContextSupplier) {
+		return new DefaultExemplarSampler(spanContextSupplier);
 	}
 
 	@Configuration(proxyBeanMethods = false)
