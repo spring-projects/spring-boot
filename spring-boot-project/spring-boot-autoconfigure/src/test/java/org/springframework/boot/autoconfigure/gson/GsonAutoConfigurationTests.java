@@ -21,6 +21,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -150,7 +152,9 @@ class GsonAutoConfigurationTests {
 	void customGsonBuilder() {
 		this.contextRunner.withUserConfiguration(GsonBuilderConfig.class).run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":1,\"owner\":null}");
+			// assertThat(gson.toJson(new DataObject())).isEqualTo("{\"dat\":1,\"owner\":null}");
+			List<String> expectedJson = Arrays.asList("{\"data\":1,\"owner\":null}", "{\"owner\":null,\"data\":1}");
+			assertThat(gson.toJson(new DataObject())).isIn(expectedJson);
 		});
 	}
 
