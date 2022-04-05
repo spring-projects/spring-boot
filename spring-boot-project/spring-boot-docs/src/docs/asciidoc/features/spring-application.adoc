@@ -352,8 +352,8 @@ include::code:MyApplication[]
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
 When such an exception is encountered, Spring Boot returns the exit code provided by the implemented `getExitCode()` method.
 
-If several `ExitCodeGenerator` are registered in a `ExitCodeGenerators` that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
-
+If several `ExitCodeGenerator` are registered in a `ExitCodeGenerators`, they can be called in a specific order by using `org.springframework.core.annotation.Order` annotation or by implementing `org.springframework.core.Ordered`,
+and `ExitCodeGenerators#getExitCode()` will return the first non-zero value.
 
 [[features.spring-application.admin]]
 === Admin Features
