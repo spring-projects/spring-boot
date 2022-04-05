@@ -267,6 +267,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void resetDefaultLocaleMapping(TomcatEmbeddedContext context) {
 		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(), DEFAULT_CHARSET.displayName());
 		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(), DEFAULT_CHARSET.displayName());
+		context.addLocaleEncodingMappingParameter(Locale.JAPANESE.toString(), DEFAULT_CHARSET.displayName());
 	}
 
 	private void addLocaleMappings(TomcatEmbeddedContext context) {
