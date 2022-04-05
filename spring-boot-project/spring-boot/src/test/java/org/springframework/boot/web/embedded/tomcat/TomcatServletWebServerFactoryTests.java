@@ -411,6 +411,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
 		assertThat(getCharset(Locale.ENGLISH)).isEqualTo(StandardCharsets.UTF_8);
 		assertThat(getCharset(Locale.FRENCH)).isEqualTo(StandardCharsets.UTF_8);
+		assertThat(getCharset(Locale.JAPANESE)).isEqualTo(StandardCharsets.UTF_8);
 	}
 
 	@Test
