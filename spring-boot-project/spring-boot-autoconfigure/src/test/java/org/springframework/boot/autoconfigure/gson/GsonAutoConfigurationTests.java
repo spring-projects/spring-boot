@@ -18,11 +18,11 @@ package org.springframework.boot.autoconfigure.gson;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
