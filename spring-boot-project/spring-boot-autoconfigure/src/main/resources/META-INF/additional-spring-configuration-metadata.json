@@ -763,7 +763,7 @@
       "type": "java.lang.String",
       "description": "Login user of the server.",
       "deprecation": {
-        "replacement": "spring.neo4j.authentication.password",
+        "replacement": "spring.neo4j.authentication.username",
         "level": "warning"
       }
     },
