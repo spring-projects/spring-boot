@@ -16,8 +16,8 @@
 
 package org.springframework.boot.availability;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 public class ApplicationAvailabilityBean
 		implements ApplicationAvailability, ApplicationListener<AvailabilityChangeEvent<?>> {
 
-	private final Map<Class<? extends AvailabilityState>, AvailabilityChangeEvent<?>> events = new HashMap<>();
+	private final Map<Class<? extends AvailabilityState>, AvailabilityChangeEvent<?>> events = new ConcurrentHashMap<>();
 
 	private final Log logger;
 
