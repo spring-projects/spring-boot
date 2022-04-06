@@ -70,6 +70,12 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
+	void driverConfigLoaderDisabled() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(DriverConfigLoader.class));
+	}
+
+	@Test
 	void driverConfigLoaderWithContactPoints() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.contact-points=cluster.example.com:9042",
 				"spring.data.cassandra.local-datacenter=cassandra-eu1").run((context) -> {
