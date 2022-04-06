@@ -25,17 +25,17 @@ repositories {
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
+	compileOnly("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	compileOnly("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
-	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
-	implementation("org.apache.maven:maven-plugin-api") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
