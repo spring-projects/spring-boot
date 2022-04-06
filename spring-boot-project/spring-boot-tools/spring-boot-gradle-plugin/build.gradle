@@ -7,7 +7,7 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Gradle Plugin"
+description = "Spring Boot Gradle Plugins"
 
 configurations {
 	documentation
@@ -22,6 +22,7 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
+	optional("org.graalvm.buildtools:native-gradle-plugin")
 	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
@@ -43,6 +44,12 @@ gradlePlugin {
 			displayName = "Spring Boot Gradle Plugin"
 			description = "Spring Boot Gradle Plugin"
 			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootPlugin"
+		}
+		springBootAotPlugin {
+			id = "org.springframework.boot.aot"
+			displayName = "Spring Boot AOT Gradle Plugin"
+			description = "Spring Boot AOT Gradle Plugin"
+			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootAotPlugin"
 		}
 	}
 }

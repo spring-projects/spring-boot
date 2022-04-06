@@ -63,3 +63,16 @@ When Gradle's {application-plugin}[`application` plugin] is applied to a project
 5. Configures the `bootJar` task to use the `mainClassName` property as a convention for the `Start-Class` entry in its manifest.
 6. Configures the `bootWar` task to use the `mainClassName` property as a convention for the `Start-Class` entry in its manifest.
 
+
+
+[[reacting-to-other-plugins.nbt]]
+== Reacting to the GraalVM Native Image Plugin
+When the {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
+
+. Applies the `org.springframework.boot.aot` plugin that:
+.. Registers a `GenerateAotSources` task named `generateAotSources` that will generate AOT-optimized source code for the application.
+.. Configures the Java compilation and process resources tasks for the `aot` source set to depend upon `generateAotSources`.
+. Adds the output of the `aot` source set to the classpath of the `nativeCompile` task.
+. Configures the GraalVM extension to disable Toolchain detection.
+
+

@@ -1,0 +1,11 @@
+plugins {
+	id 'org.springframework.boot' version '{version}'
+}
+
+apply plugin: 'org.graalvm.buildtools.native'
+
+task('aotPluginApplied') {
+	doFirst {
+		println "org.springframework.boot.aot applied = ${plugins.hasPlugin('org.springframework.boot.aot')}"
+	}
+}
