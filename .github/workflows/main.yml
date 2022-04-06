@@ -1,5 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
+# branch develop
 name: CI
 
 # this is manual control
@@ -7,7 +8,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ develop ]
   pull_request:
     branches: [ main ]
 
