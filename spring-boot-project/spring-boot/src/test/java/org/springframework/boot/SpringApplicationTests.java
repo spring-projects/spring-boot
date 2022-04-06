@@ -54,6 +54,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.SpringApplicationHooks.Action;
+import org.springframework.boot.SpringApplicationHooks.Hook;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -126,6 +128,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -1260,6 +1263,31 @@ class SpringApplicationTests {
 				.map(ApplicationFailedEvent.class::cast).findFirst().get();
 		assertThat(SpringApplicationShutdownHookInstance.get())
 				.didNotRegisterApplicationContext(failure.getApplicationContext());
+	}
+
+	@Test
+	void hookIsCalledWhenApplicationIsRun() throws Exception {
+		Hook hook = mock(Hook.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		given(hook.preRefresh(eq(application), any(ConfigurableApplicationContext.class))).willReturn(true);
+		this.context = SpringApplicationHooks.withHook(hook, (Action<ConfigurableApplicationContext>) application::run);
+		then(hook).should().preRun(application);
+		then(hook).should().preRefresh(application, this.context);
+		then(hook).should().postRun(application, this.context);
+		assertThat(this.context.isRunning()).isTrue();
+	}
+
+	@Test
+	void hookIsCalledAndCanPreventRefreshWhenApplicationIsRun() throws Exception {
+		Hook hook = mock(Hook.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = SpringApplicationHooks.withHook(hook, (Action<ConfigurableApplicationContext>) application::run);
+		then(hook).should().preRun(application);
+		then(hook).should().preRefresh(application, this.context);
+		then(hook).should().postRun(application, this.context);
+		assertThat(this.context.isRunning()).isFalse();
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
