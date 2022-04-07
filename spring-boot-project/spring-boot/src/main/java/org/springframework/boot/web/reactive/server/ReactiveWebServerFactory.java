@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.reactive.server;
 
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 
 /**
@@ -27,7 +28,7 @@ import org.springframework.http.server.reactive.HttpHandler;
  * @see WebServer
  */
 @FunctionalInterface
-public interface ReactiveWebServerFactory {
+public interface ReactiveWebServerFactory extends WebServerFactory {
 
 	/**
 	 * Gets a new fully configured but paused {@link WebServer} instance. Clients should
