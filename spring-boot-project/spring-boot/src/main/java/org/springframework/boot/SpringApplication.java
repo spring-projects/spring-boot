@@ -61,7 +61,9 @@ import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -1320,9 +1322,10 @@ public class SpringApplication {
 	 * Static helper that can be used to exit a {@link SpringApplication} and obtain a
 	 * code indicating success (0) or otherwise. Does not throw exceptions but should
 	 * print stack traces of any encountered. Applies the specified
-	 * {@link ExitCodeGenerator} in addition to any Spring beans that implement
-	 * {@link ExitCodeGenerator}. In the case of multiple exit codes the highest value
-	 * will be used (or if all values are negative, the lowest value will be used)
+	 * {@link ExitCodeGenerator ExitCodeGenerators} in addition to any Spring beans that
+	 * implement {@link ExitCodeGenerator}. When multiple generators are available, the
+	 * first non-zero exit code is used. Generators ordered based on their {@link Ordered}
+	 * implementation and {@link Order @Order} annotation.
 	 * @param context the context to close if possible
 	 * @param exitCodeGenerators exit code generators
 	 * @return the outcome (0 if successful)
