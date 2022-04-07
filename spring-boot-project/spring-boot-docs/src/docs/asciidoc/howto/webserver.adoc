@@ -59,6 +59,13 @@ If you wish to use Jetty 10, which does support servlet 4.0, you can do so as sh
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-tomcat</artifactId>
 			</exclusion>
+		</exclusions>
+	</dependency>
+	<!-- Use Jetty instead -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+		<exclusions>
 			<!-- Exclude the Jetty-9 specific dependencies -->
 			<exclusion>
 				<groupId>org.eclipse.jetty.websocket</groupId>
@@ -69,11 +76,6 @@ If you wish to use Jetty 10, which does support servlet 4.0, you can do so as sh
 				<artifactId>javax-websocket-server-impl</artifactId>
 			</exclusion>
 		</exclusions>
-	</dependency>
-	<!-- Use Jetty instead -->
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-jetty</artifactId>
 	</dependency>
 ----
 
