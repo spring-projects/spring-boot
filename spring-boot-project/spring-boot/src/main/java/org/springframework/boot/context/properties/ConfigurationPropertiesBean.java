@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,8 +143,12 @@ public final class ConfigurationPropertiesBean {
 			return getAll((ConfigurableApplicationContext) applicationContext);
 		}
 		Map<String, ConfigurationPropertiesBean> propertiesBeans = new LinkedHashMap<>();
-		applicationContext.getBeansWithAnnotation(ConfigurationProperties.class)
-				.forEach((beanName, bean) -> propertiesBeans.put(beanName, get(applicationContext, bean, beanName)));
+		applicationContext.getBeansWithAnnotation(ConfigurationProperties.class).forEach((beanName, bean) -> {
+			ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
+			if (propertiesBean != null) {
+				propertiesBeans.put(beanName, propertiesBean);
+			}
+		});
 		return propertiesBeans;
 	}
 
@@ -158,7 +162,9 @@ public final class ConfigurationPropertiesBean {
 				try {
 					Object bean = beanFactory.getBean(beanName);
 					ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
-					propertiesBeans.put(beanName, propertiesBean);
+					if (propertiesBean != null) {
+						propertiesBeans.put(beanName, propertiesBean);
+					}
 				}
 				catch (Exception ex) {
 				}
