@@ -47,7 +47,7 @@ import org.springframework.util.ClassUtils;
  * This class is primarily intended for use with tests that need to specify configuration
  * classes but can't use {@link SpringRunner}.
  * <p>
- * Implementations of this class should be annotated with {@code @Order} or implement
+ * Implementations of this class should be annotated with {@link org.springframework.core.annotation.Order @Order} or implement
  * {@link Ordered}.
  *
  * @author Phillip Webb
