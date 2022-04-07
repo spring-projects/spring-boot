@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NoUniqueBeanDefinitionFailureAnalyzer}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
-	private final NoUniqueBeanDefinitionFailureAnalyzer analyzer = new NoUniqueBeanDefinitionFailureAnalyzer();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	private final NoUniqueBeanDefinitionFailureAnalyzer analyzer = new NoUniqueBeanDefinitionFailureAnalyzer(
+			this.context.getBeanFactory());
 
 	@Test
 	void failureAnalysisForFieldConsumer() {
@@ -90,18 +94,15 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private BeanCreationException createFailure(Class<?> consumer) {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			context.register(DuplicateBeansProducer.class, consumer);
-			context.setParent(new AnnotationConfigApplicationContext(ParentProducer.class));
-			try {
-				context.refresh();
-			}
-			catch (BeanCreationException ex) {
-				this.analyzer.setBeanFactory(context.getBeanFactory());
-				return ex;
-			}
-			return null;
+		this.context.register(DuplicateBeansProducer.class, consumer);
+		this.context.setParent(new AnnotationConfigApplicationContext(ParentProducer.class));
+		try {
+			this.context.refresh();
 		}
+		catch (BeanCreationException ex) {
+			return ex;
+		}
+		return null;
 	}
 
 	private FailureAnalysis analyzeFailure(BeanCreationException failure) {
