@@ -85,15 +85,15 @@ public class ReactiveKafkaAutoConfiguration {
         }
         Duration commitInterval = this.reactiveKafkaProperties.getReceiver().getCommitInterval();
         if (commitInterval != null) {
-            receiverOptions = receiverOptions.commitInterval(commitInterval.get());
+            receiverOptions = receiverOptions.commitInterval(commitInterval);
         }
         Collection<String> subscribeTopics = this.reactiveKafkaProperties.getReceiver().getSubscribeTopics();
         if (subscribeTopics != null) {
             receiverOptions = receiverOptions.subscription(subscribeTopics);
         } else {
-            Optional<Pattern> subscribePattern = Optional.of(this.reactiveKafkaProperties.getReceiver().getSubscribePattern());
-            if (subscribePattern.isPresent()) {
-                receiverOptions = receiverOptions.subscription(subscribePattern.get());
+            Pattern subscribePattern = this.reactiveKafkaProperties.getReceiver().getSubscribePattern();
+            if (subscribePattern != null) {
+                receiverOptions = receiverOptions.subscription(subscribePattern);
             }
         }
         return receiverOptions;
