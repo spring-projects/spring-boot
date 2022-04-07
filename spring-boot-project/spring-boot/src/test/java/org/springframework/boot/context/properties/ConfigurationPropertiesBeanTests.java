@@ -79,6 +79,15 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
+	void getAllDoesNotFindABeanDeclaredInAStaticBeanMethodOnAConfigurationAndConfigurationPropertiesAnnotatedClass() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				StaticBeanMethodConfiguration.class)) {
+			Map<String, ConfigurationPropertiesBean> all = ConfigurationPropertiesBean.getAll(context);
+			assertThat(all).containsOnlyKeys("configurationPropertiesBeanTests.StaticBeanMethodConfiguration");
+		}
+	}
+
+	@Test
 	void getAllWhenHasBadBeanDoesNotFail() {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				NonAnnotatedComponent.class, AnnotatedComponent.class, AnnotatedBeanConfiguration.class,
@@ -604,6 +613,18 @@ class ConfigurationPropertiesBeanTests {
 	class ParameterizedConstructorInner {
 
 		ParameterizedConstructorInner(Integer age) {
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConfigurationProperties
+	static class StaticBeanMethodConfiguration {
+
+		@Bean
+		static String stringBean() {
+			return "example";
 		}
 
 	}
