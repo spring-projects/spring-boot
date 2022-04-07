@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ *
+ */
+
 package org.springframework.boot.autoconfigure.diagnostics.analyzer
 
 import org.assertj.core.api.Assertions.assertThat
@@ -18,11 +34,12 @@ import org.springframework.context.annotation.Configuration
  * on the classpath.
  *
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
 @ClassPathExclusions("kotlin-reflect*.jar")
 class KotlinNoSuchBeanFailureAnalyzerNoKotlinReflectTests {
 
-	private val analyzer = NoSuchBeanDefinitionFailureAnalyzer()
+	private val context = AnnotationConfigApplicationContext()
 
 	@Test
 	fun failureAnalysisForConfigurationPropertiesThatMaybeShouldHaveBeenConstructorBound() {
@@ -37,7 +54,6 @@ class KotlinNoSuchBeanFailureAnalyzerNoKotlinReflectTests {
 	private fun createFailure(config: Class<*>, vararg environment: String): FatalBeanException? {
 		try {
 			AnnotationConfigApplicationContext().use { context ->
-				this.analyzer.setBeanFactory(context.beanFactory)
 				TestPropertyValues.of(*environment).applyTo(context)
 				context.register(config)
 				context.refresh()
@@ -50,7 +66,8 @@ class KotlinNoSuchBeanFailureAnalyzerNoKotlinReflectTests {
 	}
 
 	private fun analyzeFailure(failure: Exception?): FailureAnalysis? {
-		val analysis = this.analyzer.analyze(failure)
+		val analyzer = NoSuchBeanDefinitionFailureAnalyzer(this.context.beanFactory)
+		val analysis = analyzer.analyze(failure)
 		if (analysis != null) {
 			LoggingFailureAnalysisReporter().report(analysis)
 		}
