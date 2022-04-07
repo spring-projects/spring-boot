@@ -49,6 +49,12 @@
       ]
     },
     {
+      "name": "management.endpoint.health.probes.add-additional-paths",
+      "type": "java.lang.Boolean",
+      "description": "Whether to make the liveness and readiness health groups available on the main server port.",
+      "defaultValue": false
+    },
+    {
       "name": "management.endpoint.health.probes.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable liveness and readiness probes.",
