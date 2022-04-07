@@ -14,36 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.context;
+package org.springframework.boot.web.context;
 
-import org.springframework.boot.WebApplicationType;
+import java.util.Locale;
+
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
-import org.springframework.context.ApplicationContextException;
+import org.springframework.core.annotation.Order;
 
 /**
  * A {@link FailureAnalyzer} that performs analysis of failures caused by an
  * {@link MissingWebServerFactoryBeanException}.
  *
  * @author Guirong Hu
+ * @author Andy Wilkinson
  */
-class MissingWebServerFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer<ApplicationContextException> {
-
-	private static final String ACTION = "Check your application's dependencies on supported web servers "
-			+ "or configuration of web application type.";
+@Order(0)
+class MissingWebServerFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer<MissingWebServerFactoryBeanException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, ApplicationContextException cause) {
-		Throwable rootCause = cause.getCause();
-		if (rootCause instanceof MissingWebServerFactoryBeanException) {
-			WebApplicationType webApplicationType = ((MissingWebServerFactoryBeanException) rootCause)
-					.getWebApplicationType();
-			return new FailureAnalysis(String.format(
-					"Reason: The running web application is of type %s, but the dependent class is missing.",
-					webApplicationType.name().toLowerCase()), ACTION, cause);
-		}
-		return null;
+	protected FailureAnalysis analyze(Throwable rootFailure, MissingWebServerFactoryBeanException cause) {
+		return new FailureAnalysis(
+				"Web application could not be started as there was no " + cause.getBeanType().getName()
+						+ " bean defined in the context.",
+				"Check your application's dependencies for a supported "
+						+ cause.getWebApplicationType().name().toLowerCase(Locale.ENGLISH) + " web server.\n"
+						+ "Check the configured web application type.",
+				cause);
 	}
 
 }
