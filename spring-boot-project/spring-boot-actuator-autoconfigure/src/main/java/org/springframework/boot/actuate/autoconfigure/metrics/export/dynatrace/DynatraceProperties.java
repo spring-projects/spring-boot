@@ -168,6 +168,14 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private String metricKeyPrefix;
 
+		/**
+		 * Since version 1.9.0 of Micrometer, the Dynatrace registry uses specialized
+		 * instruments to make sure data is exported in an optimal format. This behavior
+		 * is the new default. This toggle allows switching back to the original
+		 * implementation.
+		 */
+		private boolean useDynatraceSummaryInstruments = true;
+
 		public Map<String, String> getDefaultDimensions() {
 			return this.defaultDimensions;
 		}
@@ -190,6 +198,14 @@ public class DynatraceProperties extends StepRegistryProperties {
 
 		public void setMetricKeyPrefix(String metricKeyPrefix) {
 			this.metricKeyPrefix = metricKeyPrefix;
+		}
+
+		public boolean isUseDynatraceSummaryInstruments() {
+			return this.useDynatraceSummaryInstruments;
+		}
+
+		public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
+			this.useDynatraceSummaryInstruments = useDynatraceSummaryInstruments;
 		}
 
 	}
