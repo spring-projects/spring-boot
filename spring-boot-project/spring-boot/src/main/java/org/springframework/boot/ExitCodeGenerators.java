@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 
 /**
- * Maintains a collection of {@link ExitCodeGenerator} instances and allows the final exit
- * code to be calculated.
- *
- * <p>If several {@code ExitCodeGenerator} are registered in {@code ExitCodeGenerators},
- * they can be called in a specific order by using {@link Order @Order} or by implementing {@link Ordered},
- * and {@link #getExitCode()} will return the first non-zero value.
+ * Maintains an ordered collection of {@link ExitCodeGenerator} instances and allows the
+ * final exit code to be calculated. Generators are ordered by {@link Order @Order} and
+ * {@link Ordered}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -79,6 +76,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	void add(ExitCodeGenerator generator) {
 		Assert.notNull(generator, "Generator must not be null");
 		this.generators.add(generator);
+		AnnotationAwareOrderComparator.sort(this.generators);
 	}
 
 	@Override
@@ -87,12 +85,12 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	}
 
 	/**
-	 * Get the final exit code that should be returned based on all contained generators.
+	 * Get the final exit code that should be returned. The final exit code is the first
+	 * non-zero exit code that is {@link ExitCodeGenerator#getExitCode generated}.
 	 * @return the final exit code.
 	 */
 	int getExitCode() {
 		int exitCode = 0;
-		AnnotationAwareOrderComparator.sort(this.generators);
 		for (ExitCodeGenerator generator : this.generators) {
 			try {
 				int value = generator.getExitCode();
