@@ -16,17 +16,21 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.time.Duration;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.RetriableCommitFailedException;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import reactor.kafka.receiver.KafkaReceiver;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.CollectionUtils;
-import reactor.kafka.receiver.KafkaReceiver;
 
-import java.time.Duration;
-import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Configuration properties for Project Reactor for Apache Kafka.
@@ -161,7 +165,7 @@ public class ReactiveKafkaProperties {
 		private int maxDeferredCommits;
 
 		public Duration getPollTimeout() {
-			return pollTimeout;
+			return this.pollTimeout;
 		}
 
 		public void setPollTimeout(Duration pollTimeout) {
@@ -169,7 +173,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public Duration getCloseTimeout() {
-			return closeTimeout;
+			return this.closeTimeout;
 		}
 
 		public void setCloseTimeout(Duration closeTimeout) {
@@ -177,7 +181,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public Collection<String> getSubscribeTopics() {
-			return subscribeTopics;
+			return this.subscribeTopics;
 		}
 
 		public void setSubscribeTopics(Collection<String> subscribeTopics) {
@@ -185,7 +189,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public Pattern getSubscribePattern() {
-			return subscribePattern;
+			return this.subscribePattern;
 		}
 
 		public void setSubscribePattern(Pattern subscribePattern) {
@@ -193,7 +197,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public Duration getCommitInterval() {
-			return commitInterval;
+			return this.commitInterval;
 		}
 
 		public void setCommitInterval(Duration commitInterval) {
@@ -201,7 +205,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public int getCommitBatchSize() {
-			return commitBatchSize;
+			return this.commitBatchSize;
 		}
 
 		public void setCommitBatchSize(int commitBatchSize) {
@@ -209,7 +213,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public int getAtmostOnceCommitAheadSize() {
-			return atmostOnceCommitAheadSize;
+			return this.atmostOnceCommitAheadSize;
 		}
 
 		public void setAtmostOnceCommitAheadSize(int atmostOnceCommitAheadSize) {
@@ -217,7 +221,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public int getMaxCommitAttempts() {
-			return maxCommitAttempts;
+			return this.maxCommitAttempts;
 		}
 
 		public void setMaxCommitAttempts(int maxCommitAttempts) {
@@ -225,7 +229,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public int getMaxDeferredCommits() {
-			return maxDeferredCommits;
+			return this.maxDeferredCommits;
 		}
 
 		public void setMaxDeferredCommits(int maxDeferredCommits) {
@@ -280,7 +284,7 @@ public class ReactiveKafkaProperties {
 		private Duration closeTimeout;
 
 		public int getMaxInFlight() {
-			return maxInFlight;
+			return this.maxInFlight;
 		}
 
 		public void setMaxInFlight(int maxInFlight) {
@@ -288,7 +292,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public boolean isStopOnError() {
-			return stopOnError;
+			return this.stopOnError;
 		}
 
 		public void setStopOnError(boolean stopOnError) {
@@ -296,7 +300,7 @@ public class ReactiveKafkaProperties {
 		}
 
 		public Duration getCloseTimeout() {
-			return closeTimeout;
+			return this.closeTimeout;
 		}
 
 		public void setCloseTimeout(Duration closeTimeout) {

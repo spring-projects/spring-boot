@@ -16,6 +16,18 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
+import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.sender.KafkaSender;
+import reactor.kafka.sender.SenderOptions;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -23,16 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import reactor.kafka.receiver.KafkaReceiver;
-import reactor.kafka.receiver.ReceiverOptions;
-import reactor.kafka.sender.KafkaSender;
-import reactor.kafka.sender.SenderOptions;
-
-import java.time.Duration;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Reactive client of Apache
@@ -60,7 +62,7 @@ public class ReactiveKafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ReceiverOptions.class)
 	public <K, V> ReceiverOptions<K, V> receiverOptions() {
-		Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
+		Map<String, Object> properties = this.kafkaProperties.buildConsumerProperties();
 		properties.putAll(this.reactiveKafkaProperties.buildReceiverProperties());
 		ReceiverOptions<K, V> receiverOptions = ReceiverOptions.create(properties);
 		int atmostOnceCommitAheadSize = this.reactiveKafkaProperties.getReceiver().getAtmostOnceCommitAheadSize();
@@ -109,7 +111,7 @@ public class ReactiveKafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SenderOptions.class)
 	public <K, V> SenderOptions<K, V> senderOptions() {
-		Map<String, Object> properties = kafkaProperties.buildProducerProperties();
+		Map<String, Object> properties = this.kafkaProperties.buildProducerProperties();
 		properties.putAll(this.reactiveKafkaProperties.buildSenderProperties());
 		SenderOptions<K, V> senderOptions = SenderOptions.<K, V>create(properties);
 		Duration closeTimeout = this.reactiveKafkaProperties.getSender().getCloseTimeout();
