@@ -19,7 +19,8 @@ package org.springframework.boot.autoconfigure.kafka;
 import reactor.kafka.receiver.internals.DefaultKafkaReceiver;
 
 /**
- * Callback interface for customizing {@code reactor.kafka.receiver.internals.DefaultKafkaReceiver} beans.
+ * Callback interface for customizing
+ * {@code reactor.kafka.receiver.internals.DefaultKafkaReceiver} beans.
  *
  * @author Almog Tavor
  * @since 2.7.0
@@ -27,10 +28,10 @@ import reactor.kafka.receiver.internals.DefaultKafkaReceiver;
 @FunctionalInterface
 public interface DefaultKafkaReceiverCustomizer {
 
-    /**
-     * Customize the {@link DefaultKafkaReceiver}.
-     * @param receiverFactory the receiver factory to customize
-     */
-    void customize(DefaultKafkaReceiver<?, ?> receiverFactory);
+	/**
+	 * Customize the {@link DefaultKafkaReceiver}.
+	 * @param receiverFactory the receiver factory to customize
+	 */
+	void customize(DefaultKafkaReceiver<?, ?> receiverFactory);
 
 }

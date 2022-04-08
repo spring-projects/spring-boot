@@ -19,7 +19,8 @@ package org.springframework.boot.autoconfigure.kafka;
 import reactor.kafka.sender.internals.DefaultKafkaSender;
 
 /**
- * Callback interface for customizing {@code reactor.kafka.sender.internals.DefaultKafkaSender} beans.
+ * Callback interface for customizing
+ * {@code reactor.kafka.sender.internals.DefaultKafkaSender} beans.
  *
  * @author Almog Tavor
  * @since 2.7.0
@@ -27,11 +28,10 @@ import reactor.kafka.sender.internals.DefaultKafkaSender;
 @FunctionalInterface
 public interface DefaultKafkaSenderCustomizer {
 
-    /**
-     * Customize the {@link DefaultKafkaSender}.
-     *
-     * @param senderFactory the consumer factory to customize
-     */
-    void customize(DefaultKafkaSender<?, ?> senderFactory);
+	/**
+	 * Customize the {@link DefaultKafkaSender}.
+	 * @param senderFactory the consumer factory to customize
+	 */
+	void customize(DefaultKafkaSender<?, ?> senderFactory);
 
 }

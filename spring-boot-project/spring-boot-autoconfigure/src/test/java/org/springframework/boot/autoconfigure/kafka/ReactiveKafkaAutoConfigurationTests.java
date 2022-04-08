@@ -35,47 +35,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Almog Tavor
  */
 class ReactiveKafkaAutoConfigurationTests {
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-        .withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
-        .withConfiguration(AutoConfigurations.of(ReactiveKafkaAutoConfiguration.class));
 
-    @Test
-    void receiverProperties() {
-        this.contextRunner.withPropertyValues(
-                "spring.reactor.kafka.receiver.commit-interval=2000", "spring.reactor.kafka.receiver.close-timeout=1500",
-                "spring.reactor.kafka.receiver.commit-batch-size=100", "spring.reactor.kafka.receiver.poll-timeout=1000",
-                "spring.reactor.kafka.receiver.atmost-once-commit-ahead-size=42", "spring.reactor.kafka.receiver.max-commit-attempts=3",
-                "spring.reactor.kafka.receiver.max-deferred-commits=5", "spring.reactor.kafka.receiver.subscribe-topics=foo,bar",
-                "spring.reactor.kafka.receiver.subscribe-pattern=myTopic.+")
-            .run((context) -> {
-                ReceiverOptions<?, ?> receiverOptions = context
-                    .getBean(ReceiverOptions.class);
-                Map<String, Object> configs = receiverOptions.consumerProperties();
-                assertThat(configs.get("commitInterval")).isEqualTo(2000);
-                assertThat(configs.get("closeTimeout")).isEqualTo(1500);
-                assertThat(configs.get("commitBatchSize")).isEqualTo(100);
-                assertThat(configs.get("pollTimeout")).isEqualTo(1000);
-                assertThat(configs.get("atmostOnceCommitAheadSize")).isEqualTo(42);
-                assertThat(configs.get("maxCommitAttempts")).isEqualTo(3);
-                assertThat(configs.get("maxDeferredCommits")).isEqualTo(5);
-                assertThat(configs.get("subscribeTopics")).isEqualTo(Arrays.asList("foo", "bar"));
-                assertThat((Pattern) configs.get("subscribePattern"))
-						.matches(p -> Objects.equals(Pattern.compile("myTopic.+").pattern(), p.pattern()));
-            });
-    }
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(ReactiveKafkaAutoConfiguration.class));
 
-    @Test
-    void producerProperties() {
-        this.contextRunner.withPropertyValues(
-                "spring.reactor.kafka.sender.max-in-flight=1500", "spring.reactor.kafka.sender.stop-on-error=false",
-                "spring.reactor.kafka.sender.close-timeout=500")
-            .run((context) -> {
-                SenderOptions<?, ?> senderOptions = context
-                    .getBean(SenderOptions.class);
-                Map<String, Object> configs = senderOptions.producerProperties();
-                assertThat(configs.get("maxInFlight")).isEqualTo(1500);
-                assertThat((Boolean) configs.get("stopOnError")).isFalse();
-                assertThat(configs.get("closeTimeout")).isEqualTo(500);
-            });
-    }
+	@Test
+	void receiverProperties() {
+		this.contextRunner.withPropertyValues("spring.reactor.kafka.receiver.commit-interval=2000",
+				"spring.reactor.kafka.receiver.close-timeout=1500",
+				"spring.reactor.kafka.receiver.commit-batch-size=100",
+				"spring.reactor.kafka.receiver.poll-timeout=1000",
+				"spring.reactor.kafka.receiver.atmost-once-commit-ahead-size=42",
+				"spring.reactor.kafka.receiver.max-commit-attempts=3",
+				"spring.reactor.kafka.receiver.max-deferred-commits=5",
+				"spring.reactor.kafka.receiver.subscribe-topics=foo,bar",
+				"spring.reactor.kafka.receiver.subscribe-pattern=myTopic.+").run((context) -> {
+					ReceiverOptions<?, ?> receiverOptions = context.getBean(ReceiverOptions.class);
+					Map<String, Object> configs = receiverOptions.consumerProperties();
+					assertThat(configs.get("commitInterval")).isEqualTo(2000);
+					assertThat(configs.get("closeTimeout")).isEqualTo(1500);
+					assertThat(configs.get("commitBatchSize")).isEqualTo(100);
+					assertThat(configs.get("pollTimeout")).isEqualTo(1000);
+					assertThat(configs.get("atmostOnceCommitAheadSize")).isEqualTo(42);
+					assertThat(configs.get("maxCommitAttempts")).isEqualTo(3);
+					assertThat(configs.get("maxDeferredCommits")).isEqualTo(5);
+					assertThat(configs.get("subscribeTopics")).isEqualTo(Arrays.asList("foo", "bar"));
+					assertThat((Pattern) configs.get("subscribePattern"))
+							.matches(p -> Objects.equals(Pattern.compile("myTopic.+").pattern(), p.pattern()));
+				});
+	}
+
+	@Test
+	void producerProperties() {
+		this.contextRunner.withPropertyValues("spring.reactor.kafka.sender.max-in-flight=1500",
+				"spring.reactor.kafka.sender.stop-on-error=false", "spring.reactor.kafka.sender.close-timeout=500")
+				.run((context) -> {
+					SenderOptions<?, ?> senderOptions = context.getBean(SenderOptions.class);
+					Map<String, Object> configs = senderOptions.producerProperties();
+					assertThat(configs.get("maxInFlight")).isEqualTo(1500);
+					assertThat((Boolean) configs.get("stopOnError")).isFalse();
+					assertThat(configs.get("closeTimeout")).isEqualTo(500);
+				});
+	}
+
 }
