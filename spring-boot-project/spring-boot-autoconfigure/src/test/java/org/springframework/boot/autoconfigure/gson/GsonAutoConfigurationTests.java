@@ -18,10 +18,8 @@ package org.springframework.boot.autoconfigure.gson;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gson.ExclusionStrategy;
@@ -31,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -152,8 +151,7 @@ class GsonAutoConfigurationTests {
 	void customGsonBuilder() {
 		this.contextRunner.withUserConfiguration(GsonBuilderConfig.class).run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			List<String> expectedJson = Arrays.asList("{\"data\":1,\"owner\":null}", "{\"owner\":null,\"data\":1}");
-			assertThat(gson.toJson(new DataObject())).isIn(expectedJson);
+			JSONAssert.assertEquals(gson.toJson(new DataObject()), "{\"data\":1,\"owner\":null}", false);
 		});
 	}
 
