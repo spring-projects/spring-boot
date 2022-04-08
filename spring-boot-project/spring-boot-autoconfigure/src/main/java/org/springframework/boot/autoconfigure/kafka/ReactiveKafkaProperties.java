@@ -31,7 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.CollectionUtils;
 
-
 /**
  * Configuration properties for Project Reactor for Apache Kafka.
  * <p>
