@@ -16,16 +16,17 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import reactor.kafka.receiver.ReceiverOptions;
-import reactor.kafka.sender.SenderOptions;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+
+import org.junit.jupiter.api.Test;
+import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.sender.SenderOptions;
+
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +63,7 @@ class ReactiveKafkaAutoConfigurationTests {
 					assertThat(configs.get("maxDeferredCommits")).isEqualTo(5);
 					assertThat(configs.get("subscribeTopics")).isEqualTo(Arrays.asList("foo", "bar"));
 					assertThat((Pattern) configs.get("subscribePattern"))
-							.matches(p -> Objects.equals(Pattern.compile("myTopic.+").pattern(), p.pattern()));
+							.matches((p) -> Objects.equals(Pattern.compile("myTopic.+").pattern(), p.pattern()));
 				});
 	}
 
