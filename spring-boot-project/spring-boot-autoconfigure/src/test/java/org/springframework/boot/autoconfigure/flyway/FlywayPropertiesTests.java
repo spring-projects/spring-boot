@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,8 +111,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled", "checkLocation",
 				"createDataSource");
 		// High level object we can't set with properties
-		ignoreProperties(configuration, "callbacks", "dataSource", "javaMigrations", "javaMigrationClassProvider",
-				"resourceProvider", "resolvers");
+		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
+				"javaMigrationClassProvider", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver");
 		// Handled by the conversion service
