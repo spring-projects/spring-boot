@@ -1279,7 +1279,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.9.0-M4") {
+	library("Micrometer", "1.9.0-SNAPSHOT") {
 		prohibit("[2.0.0-M1,)") {
 			because "we upgrade in Spring Boot 3.x"
 		}
