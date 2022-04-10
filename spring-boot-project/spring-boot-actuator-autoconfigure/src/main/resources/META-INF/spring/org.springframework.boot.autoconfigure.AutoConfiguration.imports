@@ -38,6 +38,7 @@ org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoCon
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.metrics.ProjectMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.KafkaMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.Log4J2MetricsAutoConfiguration
