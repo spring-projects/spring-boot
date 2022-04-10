@@ -736,7 +736,7 @@ Additional `HealthIndicators` are available but are not enabled by default:
 
 
 
-[[actuator.endpoints.health.writing-custom-health-indicators]]
+[[actuator.endpoints.health.writing-totom-health-indicators]]
 ==== Writing Custom HealthIndicators
 To provide custom health information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] interface.
 You need to provide an implementation of the `health()` method and return a `Health` response.
@@ -1020,7 +1020,7 @@ You can, for example, configure additional Health Indicators:
 	    health:
 	      group:
 	        readiness:
-	          include: "readinessState,customCheck"
+	          include: readinessState,customCheck
 ----
 
 By default, Spring Boot does not add other health indicators to these groups.
