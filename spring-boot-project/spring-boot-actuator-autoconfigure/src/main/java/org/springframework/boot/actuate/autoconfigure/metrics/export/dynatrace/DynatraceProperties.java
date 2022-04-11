@@ -201,7 +201,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 		}
 
 		public boolean isUseDynatraceSummaryInstruments() {
-			return useDynatraceSummaryInstruments;
+			return this.useDynatraceSummaryInstruments;
 		}
 
 		public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
