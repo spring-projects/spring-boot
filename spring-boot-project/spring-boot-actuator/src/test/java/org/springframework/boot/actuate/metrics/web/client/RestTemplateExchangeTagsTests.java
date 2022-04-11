@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
+import java.net.URI;
 
 import io.micrometer.core.instrument.Tag;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
@@ -100,6 +102,14 @@ class RestTemplateExchangeTagsTests {
 		given(response.getRawStatusCode()).willReturn(701);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	void clientNameTagIsHostOfRequestUri() throws IOException {
+		ClientHttpRequest request = mock(ClientHttpRequest.class);
+		given(request.getURI()).willReturn(URI.create("https://example.org"));
+		Tag tag = RestTemplateExchangeTags.clientName(request);
+		assertThat(tag).isEqualTo(Tag.of("client.name", "example.org"));
 	}
 
 }

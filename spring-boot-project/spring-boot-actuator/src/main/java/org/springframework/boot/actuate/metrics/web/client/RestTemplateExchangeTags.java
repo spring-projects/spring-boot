@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,17 +105,17 @@ public final class RestTemplateExchangeTags {
 	}
 
 	/**
-	 * Create a {@code clientName} {@code Tag} derived from the {@link URI#getHost host}
+	 * Create a {@code client.name} {@code Tag} derived from the {@link URI#getHost host}
 	 * of the {@link HttpRequest#getURI() URI} of the given {@code request}.
 	 * @param request the request
-	 * @return the clientName tag
+	 * @return the client.name tag
 	 */
 	public static Tag clientName(HttpRequest request) {
 		String host = request.getURI().getHost();
 		if (host == null) {
 			host = "none";
 		}
-		return Tag.of("clientName", host);
+		return Tag.of("client.name", host);
 	}
 
 	/**

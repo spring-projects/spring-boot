@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,21 +39,21 @@ class GraphQlTagsTests {
 	void executionOutcomeShouldSucceed() {
 		ExecutionResult result = ExecutionResultImpl.newExecutionResult().build();
 		Tag outcomeTag = GraphQlTags.executionOutcome(result, null);
-		assertThat(outcomeTag.getValue()).isEqualTo("SUCCESS");
+		assertThat(outcomeTag).isEqualTo(Tag.of("outcome", "SUCCESS"));
 	}
 
 	@Test
 	void executionOutcomeShouldErrorWhenExceptionThrown() {
 		ExecutionResult result = ExecutionResultImpl.newExecutionResult().build();
 		Tag tag = GraphQlTags.executionOutcome(result, new IllegalArgumentException("test error"));
-		assertThat(tag.getValue()).isEqualTo("ERROR");
+		assertThat(tag).isEqualTo(Tag.of("outcome", "ERROR"));
 	}
 
 	@Test
 	void executionOutcomeShouldErrorWhenResponseErrors() {
 		GraphQLError error = GraphqlErrorBuilder.newError().message("Invalid query").build();
 		Tag tag = GraphQlTags.executionOutcome(ExecutionResultImpl.newExecutionResult().addError(error).build(), null);
-		assertThat(tag.getValue()).isEqualTo("ERROR");
+		assertThat(tag).isEqualTo(Tag.of("outcome", "ERROR"));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class GraphQlTagsTests {
 		GraphQLError error = GraphqlErrorBuilder.newError().errorType(ErrorType.DataFetchingException)
 				.message("test error").build();
 		Tag errorTypeTag = GraphQlTags.errorType(error);
-		assertThat(errorTypeTag.getValue()).isEqualTo("DataFetchingException");
+		assertThat(errorTypeTag).isEqualTo(Tag.of("error.type", "DataFetchingException"));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class GraphQlTagsTests {
 		GraphQLError error = GraphqlErrorBuilder.newError().path(Arrays.asList("project", "name")).message("test error")
 				.build();
 		Tag errorPathTag = GraphQlTags.errorPath(error);
-		assertThat(errorPathTag.getValue()).isEqualTo("$.project.name");
+		assertThat(errorPathTag).isEqualTo(Tag.of("error.path", "$.project.name"));
 	}
 
 	@Test
@@ -77,19 +77,19 @@ class GraphQlTagsTests {
 		GraphQLError error = GraphqlErrorBuilder.newError().path(Arrays.asList("issues", "42", "title"))
 				.message("test error").build();
 		Tag errorPathTag = GraphQlTags.errorPath(error);
-		assertThat(errorPathTag.getValue()).isEqualTo("$.issues[*].title");
+		assertThat(errorPathTag).isEqualTo(Tag.of("error.path", "$.issues[*].title"));
 	}
 
 	@Test
 	void dataFetchingOutcomeShouldBeSuccessfulIfNoException() {
 		Tag fetchingOutcomeTag = GraphQlTags.dataFetchingOutcome(null);
-		assertThat(fetchingOutcomeTag.getValue()).isEqualTo("SUCCESS");
+		assertThat(fetchingOutcomeTag).isEqualTo(Tag.of("outcome", "SUCCESS"));
 	}
 
 	@Test
 	void dataFetchingOutcomeShouldBeErrorIfException() {
 		Tag fetchingOutcomeTag = GraphQlTags.dataFetchingOutcome(new IllegalStateException("error state"));
-		assertThat(fetchingOutcomeTag.getValue()).isEqualTo("ERROR");
+		assertThat(fetchingOutcomeTag).isEqualTo(Tag.of("outcome", "ERROR"));
 	}
 
 }
