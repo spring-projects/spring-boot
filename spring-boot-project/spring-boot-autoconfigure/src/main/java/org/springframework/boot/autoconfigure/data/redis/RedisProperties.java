@@ -473,7 +473,7 @@ public class RedisProperties {
 		}
 
 		public ProtocolVersion getProtocolVersion() {
-			return protocolVersion;
+			return this.protocolVersion;
 		}
 
 		public void setProtocolVersion(ProtocolVersion protocolVersion) {
