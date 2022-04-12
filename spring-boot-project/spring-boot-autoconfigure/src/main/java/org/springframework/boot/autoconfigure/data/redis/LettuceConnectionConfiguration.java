@@ -25,6 +25,7 @@ import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.Builder;
+import io.lettuce.core.protocol.ProtocolVersion;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -52,6 +53,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Andy Wilkinson
+ * @author Gaurav Ojha
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
@@ -139,6 +141,11 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
 			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
+		}
+		// allow clients to specify the protocol version to use
+		ProtocolVersion protocolVersion = getProperties().getLettuce().getProtocolVersion();
+		if (protocolVersion != null) {
+			builder.protocolVersion(getProperties().getLettuce().getProtocolVersion());
 		}
 		return builder.timeoutOptions(TimeoutOptions.enabled()).build();
 	}

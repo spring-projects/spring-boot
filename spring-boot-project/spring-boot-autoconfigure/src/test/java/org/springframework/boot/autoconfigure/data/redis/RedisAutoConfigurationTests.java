@@ -28,6 +28,7 @@ import io.lettuce.core.ClientOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
+import io.lettuce.core.protocol.ProtocolVersion;
 import io.lettuce.core.resource.DefaultClientResources;
 import io.lettuce.core.tracing.Tracing;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -72,6 +73,7 @@ import static org.mockito.Mockito.mock;
  * @author Alen Turkovic
  * @author Scott Frederick
  * @author Weix Sun
+ * @author Gaurav Ojha
  */
 class RedisAutoConfigurationTests {
 
@@ -456,6 +458,31 @@ class RedisAutoConfigurationTests {
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
 								.isEqualTo(ClusterTopologyRefreshOptions.DEFAULT_DYNAMIC_REFRESH_SOURCES)));
+	}
+
+	@Test
+	void testRedisConfigurationWithProtocolSpecifiedForLettuceUsesDefault() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1").run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getHostName()).isEqualTo("foo");
+			assertThat(cf.getDatabase()).isEqualTo(1);
+			assertThat(cf.getClientConfiguration().getClientOptions().isPresent()).isTrue();
+			assertThat(cf.getClientConfiguration().getClientOptions().get().getConfiguredProtocolVersion())
+					.isEqualTo(ProtocolVersion.RESP3);
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithProtocolSpecifiedForLettuceUsesCustomVersion() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1",
+				"spring.redis.lettuce.protocolVersion:RESP2").run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getDatabase()).isEqualTo(1);
+					assertThat(cf.getClientConfiguration().getClientOptions().isPresent()).isTrue();
+					assertThat(cf.getClientConfiguration().getClientOptions().get().getConfiguredProtocolVersion())
+							.isEqualTo(ProtocolVersion.RESP2);
+				});
 	}
 
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(

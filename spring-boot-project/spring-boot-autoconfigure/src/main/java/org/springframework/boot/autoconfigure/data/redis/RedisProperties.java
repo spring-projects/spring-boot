@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.time.Duration;
 import java.util.List;
 
+import io.lettuce.core.protocol.ProtocolVersion;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Gaurav Ojha
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.redis")
@@ -443,6 +445,11 @@ public class RedisProperties {
 		private Duration shutdownTimeout = Duration.ofMillis(100);
 
 		/**
+		 * The protocol version to use for Redis. Defaults to RESP3
+		 */
+		private ProtocolVersion protocolVersion = ProtocolVersion.RESP3;
+
+		/**
 		 * Lettuce pool configuration.
 		 */
 		private final Pool pool = new Pool();
@@ -463,6 +470,14 @@ public class RedisProperties {
 
 		public Cluster getCluster() {
 			return this.cluster;
+		}
+
+		public ProtocolVersion getProtocolVersion() {
+			return protocolVersion;
+		}
+
+		public void setProtocolVersion(ProtocolVersion protocolVersion) {
+			this.protocolVersion = protocolVersion;
 		}
 
 		public static class Cluster {
