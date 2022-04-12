@@ -21,7 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.time.Duration;
-import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -55,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Evgeniy Cheban
  * @author Filip Hrisafov
+ * @author Andy Wilkinson
  */
 @SuppressWarnings("deprecation")
 class ElasticsearchRestClientAutoConfigurationTests {
@@ -63,7 +63,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
-	void configureShouldCreateHighLevelAndLowLevelRestClient() {
+	void configureShouldCreateHighLevelAndLowLevelRestClients() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class)
 					.hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
@@ -77,8 +77,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureWithoutRestHighLevelClientShouldOnlyCreateRestClientBuilderAndRestClient() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
 				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClientBuilder.class));
+						.hasSingleBean(RestClientBuilder.class)
+						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class));
 	}
 
 	@Test
@@ -91,44 +91,26 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void configureWhenCustomRestHighLevelClientIsNotPresent() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClient.class).hasSingleBean(RestClientBuilder.class));
-	}
-
-	@Test
-	void configureWhenCustomRestHighLevelClientShouldBackOff() {
+	void configureWhenCustomRestHighLevelClientShouldDefineRestClientFromCustomHighLevelClient() {
 		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClient.class).hasBean("elasticsearchRestClient"));
+						.hasSingleBean(RestClient.class).hasBean("elasticsearchRestClient").getBean(RestClient.class)
+						.isEqualTo(context.getBean(org.elasticsearch.client.RestHighLevelClient.class)
+								.getLowLevelClient()));
 	}
 
 	@Test
-	void configureWhenCustomRestHighLevelClientAndRestClientWithRestHighLevelClientShouldBackOff() {
+	void configureWhenCustomRestHighLevelClientAndRestClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientWithRestClientConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClient.class).hasBean("customRestClient"));
+						.hasBean("customRestHighLevelClient").hasSingleBean(RestClient.class)
+						.hasBean("customRestClient"));
 	}
 
 	@Test
-	void configureWhenDefaultRestClientShouldCreateWhenNoUniqueRestHighLevelClient() {
-		this.contextRunner.withUserConfiguration(TwoCustomRestHighLevelClientConfiguration.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(RestClient.class);
-			Map<String, org.elasticsearch.client.RestHighLevelClient> restHighLevelClients = context
-					.getBeansOfType(org.elasticsearch.client.RestHighLevelClient.class);
-			assertThat(restHighLevelClients).hasSize(2);
-		});
-	}
-
-	@Test
-	void configureWhenDefaultRestClientShouldCreateWhenNoUniqueRestClient() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
-				.withUserConfiguration(TwoCustomRestClientConfiguration.class).run((context) -> {
-					Map<String, RestClient> restClients = context.getBeansOfType(RestClient.class);
-					assertThat(restClients).hasSize(2);
-				});
+	void configureWhenNoUniqueRestHighLevelClientShouldNotDefineRestClient() {
+		this.contextRunner.withUserConfiguration(TwoCustomRestHighLevelClientsConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class));
 	}
 
 	@Test
@@ -352,7 +334,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TwoCustomRestHighLevelClientConfiguration {
+	static class TwoCustomRestHighLevelClientsConfiguration {
 
 		@Bean
 		org.elasticsearch.client.RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
@@ -360,7 +342,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		}
 
 		@Bean
-		org.elasticsearch.client.RestHighLevelClient customoRestHighLevelClient1(RestClientBuilder builder) {
+		org.elasticsearch.client.RestHighLevelClient anotherCustomRestHighLevelClient(RestClientBuilder builder) {
 			return new org.elasticsearch.client.RestHighLevelClient(builder);
 		}
 

@@ -35,7 +35,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
@@ -89,26 +88,6 @@ class ElasticsearchRestClientAutoConfigurationIntegrationTests {
 					index.setJsonEntity("{" + "  \"a\": \"alpha\"," + "  \"b\": \"bravo\"" + "}");
 					client.performRequest(index);
 					Request getRequest = new Request("GET", "/test/_doc/2");
-					Response response = client.performRequest(getRequest);
-					try (InputStream input = response.getEntity().getContent()) {
-						JsonNode result = new ObjectMapper().readTree(input);
-						assertThat(result.path("found").asBoolean()).isTrue();
-					}
-				});
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void restClientCanQueryElasticsearchNodeWithoutHighLevelClient() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
-				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
-						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
-				.run((context) -> {
-					RestClient client = context.getBean(RestClient.class);
-					Request index = new Request("PUT", "/test/_doc/3");
-					index.setJsonEntity("{" + "  \"a\": \"alpha\"," + "  \"b\": \"bravo\"" + "}");
-					client.performRequest(index);
-					Request getRequest = new Request("GET", "/test/_doc/3");
 					Response response = client.performRequest(getRequest);
 					try (InputStream input = response.getEntity().getContent()) {
 						JsonNode result = new ObjectMapper().readTree(input);

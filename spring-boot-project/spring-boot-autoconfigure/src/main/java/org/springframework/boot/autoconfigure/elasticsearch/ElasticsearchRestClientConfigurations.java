@@ -131,7 +131,7 @@ class ElasticsearchRestClientConfigurations {
 	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
 	@ConditionalOnSingleCandidate(org.elasticsearch.client.RestHighLevelClient.class)
 	@ConditionalOnMissingBean(RestClient.class)
-	static class RestClientWithRestHighLevelClientConfiguration {
+	static class RestClientFromRestHighLevelClientConfiguration {
 
 		@Bean
 		RestClient elasticsearchRestClient(org.elasticsearch.client.RestHighLevelClient restHighLevelClient) {

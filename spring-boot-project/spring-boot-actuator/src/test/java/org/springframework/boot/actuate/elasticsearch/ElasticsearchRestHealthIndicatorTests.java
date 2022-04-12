@@ -42,7 +42,6 @@ import static org.mockito.Mockito.mock;
  * @author Artsiom Yudovin
  * @author Filip Hrisafov
  */
-@Deprecated
 class ElasticsearchRestHealthIndicatorTests {
 
 	private final RestClient restClient = mock(RestClient.class);
