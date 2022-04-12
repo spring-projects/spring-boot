@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.List;
 
 import io.lettuce.core.protocol.ProtocolVersion;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
