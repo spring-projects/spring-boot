@@ -445,9 +445,9 @@ public class RedisProperties {
 		private Duration shutdownTimeout = Duration.ofMillis(100);
 
 		/**
-		 * The protocol version to use for Redis. Defaults to RESP3
+		 * The protocol version to use for Redis. Defaults to the newest supported version
 		 */
-		private ProtocolVersion protocolVersion = ProtocolVersion.RESP3;
+		private ProtocolVersion protocolVersion = ProtocolVersion.newestSupported();
 
 		/**
 		 * Lettuce pool configuration.

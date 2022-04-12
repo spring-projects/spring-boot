@@ -467,7 +467,7 @@ class RedisAutoConfigurationTests {
 			assertThat(cf.getHostName()).isEqualTo("foo");
 			assertThat(cf.getDatabase()).isEqualTo(1);
 			assertThat(cf.getClientConfiguration().getClientOptions().isPresent()).isTrue();
-			assertThat(cf.getClientConfiguration().getClientOptions().get().getConfiguredProtocolVersion())
+			assertThat(cf.getClientConfiguration().getClientOptions().get().getProtocolVersion())
 					.isEqualTo(ProtocolVersion.RESP3);
 		});
 	}
@@ -480,7 +480,7 @@ class RedisAutoConfigurationTests {
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getDatabase()).isEqualTo(1);
 					assertThat(cf.getClientConfiguration().getClientOptions().isPresent()).isTrue();
-					assertThat(cf.getClientConfiguration().getClientOptions().get().getConfiguredProtocolVersion())
+					assertThat(cf.getClientConfiguration().getClientOptions().get().getProtocolVersion())
 							.isEqualTo(ProtocolVersion.RESP2);
 				});
 	}
