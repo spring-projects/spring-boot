@@ -16,17 +16,23 @@
 
 package org.springframework.boot.test.autoconfigure.graphql.tester;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.GraphQL;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 
 /**
  * Auto-configuration for {@link GraphQlTester}.
@@ -34,15 +40,23 @@ import org.springframework.graphql.test.tester.GraphQlTester;
  * @author Brian Clozel
  * @since 2.7.0
  */
-@AutoConfiguration(after = GraphQlAutoConfiguration.class)
+@AutoConfiguration(after = { JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class })
 @ConditionalOnClass({ GraphQL.class, GraphQlTester.class })
 public class GraphQlTesterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(ExecutionGraphQlService.class)
 	@ConditionalOnMissingBean
-	public ExecutionGraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService) {
-		return ExecutionGraphQlServiceTester.create(graphQlService);
+	public ExecutionGraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService,
+			ObjectProvider<ObjectMapper> objectMapperProvider) {
+		ExecutionGraphQlServiceTester.Builder<?> builder = ExecutionGraphQlServiceTester.builder(graphQlService);
+		objectMapperProvider.ifAvailable(objectMapper -> {
+			final MediaType[] mediaTypes = new MediaType[] { MediaType.APPLICATION_JSON,
+					MediaType.APPLICATION_GRAPHQL };
+			builder.encoder(new Jackson2JsonEncoder(objectMapper, mediaTypes));
+			builder.decoder(new Jackson2JsonDecoder(objectMapper, mediaTypes));
+		});
+		return builder.build();
 	}
 
 }
