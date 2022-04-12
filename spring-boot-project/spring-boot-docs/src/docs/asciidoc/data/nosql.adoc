@@ -270,7 +270,8 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
 ===== Connecting to Elasticsearch using RestClient
 If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
-If you have `elasticsearch-rest-high-level-client` on the classpath a `RestHighLevelClient` bean will be registered as well.
+If you have `elasticsearch-rest-high-level-client` on the classpath a `RestHighLevelClient` bean will be auto-configured as well.
+Following Elasticsearch's deprecation of `RestHighLevelClient`, its auto-configuration is deprecated and will be removed in a future release.
 In addition to the properties described previously, to fine-tune the `RestClient` and `RestHighLevelClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
 To take full control over the clients' configuration, define a `RestClientBuilder` bean.
 
