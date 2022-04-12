@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.micrometer.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.apache.tomcat.util.modeler.Registry;
 import org.junit.jupiter.api.Test;
@@ -108,16 +108,6 @@ class TomcatMetricsAutoConfigurationTests {
 						.hasBean("customTomcatMetrics"));
 	}
 
-	@Test
-	@Deprecated
-	void allowsCustomTomcatMetricsToBeUsedBackwardsCompatible() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(TomcatMetricsAutoConfiguration.class))
-				.withUserConfiguration(MeterRegistryConfiguration.class, CustomTomcatMetricsBackwardsCompatible.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(TomcatMetricsBinder.class)
-						.hasSingleBean(io.micrometer.core.instrument.binder.tomcat.TomcatMetrics.class)
-						.doesNotHaveBean(TomcatMetrics.class).hasBean("customTomcatMetrics"));
-	}
-
 	private ApplicationStartedEvent createApplicationStartedEvent(ConfigurableApplicationContext context) {
 		return new ApplicationStartedEvent(new SpringApplication(), null, context, null);
 	}
@@ -170,17 +160,6 @@ class TomcatMetricsAutoConfigurationTests {
 		@Bean
 		TomcatMetrics customTomcatMetrics() {
 			return new TomcatMetrics(null, Collections.emptyList());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomTomcatMetricsBackwardsCompatible {
-
-		@Bean
-		io.micrometer.core.instrument.binder.tomcat.TomcatMetrics customTomcatMetrics() {
-			return new io.micrometer.core.instrument.binder.tomcat.TomcatMetrics(null, Collections.emptyList());
 		}
 
 	}

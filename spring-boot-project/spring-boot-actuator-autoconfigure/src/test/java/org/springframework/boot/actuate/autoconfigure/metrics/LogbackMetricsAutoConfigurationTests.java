@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -49,32 +49,12 @@ class LogbackMetricsAutoConfigurationTests {
 				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
 	}
 
-	@Test
-	@Deprecated
-	void allowsCustomLogbackMetricsToBeUsedBackwardsCompatible() {
-		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfigurationBackwardsCompatible.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(io.micrometer.core.instrument.binder.logging.LogbackMetrics.class)
-						.doesNotHaveBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class CustomLogbackMetricsConfiguration {
 
 		@Bean
 		LogbackMetrics customLogbackMetrics() {
 			return new LogbackMetrics();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomLogbackMetricsConfigurationBackwardsCompatible {
-
-		@Bean
-		io.micrometer.core.instrument.binder.logging.LogbackMetrics customLogbackMetrics() {
-			return new io.micrometer.core.instrument.binder.logging.LogbackMetrics();
 		}
 
 	}

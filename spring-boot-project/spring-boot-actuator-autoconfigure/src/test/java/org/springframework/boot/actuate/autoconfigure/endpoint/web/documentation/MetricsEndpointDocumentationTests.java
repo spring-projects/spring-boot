@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import io.micrometer.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 

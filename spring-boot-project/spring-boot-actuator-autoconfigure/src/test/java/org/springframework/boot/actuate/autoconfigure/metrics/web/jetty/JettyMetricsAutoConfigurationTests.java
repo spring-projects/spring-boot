@@ -16,13 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
-import io.micrometer.binder.jetty.JettyConnectionMetrics;
-import io.micrometer.binder.jetty.JettyServerThreadPoolMetrics;
-import io.micrometer.binder.jetty.JettySslHandshakeMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -91,28 +87,6 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void allowsCustomJettyServerThreadPoolMetrics() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyServerThreadPoolMetrics.class, MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(JettyServerThreadPoolMetrics.class)
-						.doesNotHaveBean(JettyServerThreadPoolMetricsBinder.class)
-						.hasBean("customJettyServerThreadPoolMetrics"));
-	}
-
-	@Test
-	@Deprecated
-	void allowsCustomJettyServerThreadPoolMetricsBackwardsCompatible() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyServerThreadPoolMetricsBackwardsCompatible.class,
-						MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics.class)
-						.doesNotHaveBean(JettyServerThreadPoolMetrics.class)
-						.doesNotHaveBean(JettyServerThreadPoolMetricsBinder.class)
-						.hasBean("customJettyServerThreadPoolMetrics"));
-	}
-
-	@Test
 	void autoConfiguresConnectionMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
@@ -154,26 +128,6 @@ class JettyMetricsAutoConfigurationTests {
 					assertThat(registry.find("jetty.connections.messages.in").tag("custom-tag-name", "custom-tag-value")
 							.meter()).isNotNull();
 				});
-	}
-
-	@Test
-	void allowsCustomJettyConnectionMetrics() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyConnectionMetrics.class, MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(JettyConnectionMetrics.class)
-						.doesNotHaveBean(JettyConnectionMetricsBinder.class).hasBean("customJettyConnectionMetrics"));
-	}
-
-	@Test
-	@Deprecated
-	void allowsCustomJettyConnectionMetricsBackwardsCompatible() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyConnectionMetricsBackwardsCompatible.class,
-						MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics.class)
-						.doesNotHaveBean(JettyConnectionMetrics.class)
-						.doesNotHaveBean(JettyConnectionMetricsBinder.class).hasBean("customJettyConnectionMetrics"));
 	}
 
 	@Test
@@ -231,28 +185,6 @@ class JettyMetricsAutoConfigurationTests {
 						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
 						.hasBean("customJettySslHandshakeMetricsBinder"));
-	}
-
-	@Test
-	void allowsCustomJettySslHandshakeMetrics() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettySslHandshakeMetrics.class, MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(JettySslHandshakeMetrics.class)
-						.doesNotHaveBean(JettySslHandshakeMetricsBinder.class)
-						.hasBean("customJettySslHandshakeMetrics"));
-	}
-
-	@Test
-	@Deprecated
-	void allowsCustomJettySslHandshakeMetricsBackwardsCompatible() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettySslHandshakeMetricsBackwardsCompatible.class,
-						MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics.class)
-						.doesNotHaveBean(JettySslHandshakeMetrics.class)
-						.doesNotHaveBean(JettySslHandshakeMetricsBinder.class)
-						.hasBean("customJettySslHandshakeMetrics"));
 	}
 
 	@Test
@@ -324,28 +256,6 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class CustomJettyServerThreadPoolMetrics {
-
-		@Bean
-		JettyServerThreadPoolMetrics customJettyServerThreadPoolMetrics() {
-			return new JettyServerThreadPoolMetrics(mock(ThreadPool.class), Tags.empty());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomJettyServerThreadPoolMetricsBackwardsCompatible {
-
-		@Bean
-		io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics customJettyServerThreadPoolMetrics() {
-			return new io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics(mock(ThreadPool.class),
-					Tags.empty());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class CustomJettyConnectionMetricsBinder {
 
 		@Bean
@@ -356,55 +266,11 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class CustomJettyConnectionMetrics {
-
-		@Bean
-		JettyConnectionMetrics customJettyConnectionMetrics(MeterRegistry meterRegistry) {
-			return new JettyConnectionMetrics(meterRegistry);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomJettyConnectionMetricsBackwardsCompatible {
-
-		@Bean
-		io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics customJettyConnectionMetrics(
-				MeterRegistry meterRegistry) {
-			return new io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics(meterRegistry);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class CustomJettySslHandshakeMetricsBinder {
 
 		@Bean
 		JettySslHandshakeMetricsBinder customJettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {
 			return new JettySslHandshakeMetricsBinder(meterRegistry, Tags.of("custom-tag-name", "custom-tag-value"));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomJettySslHandshakeMetrics {
-
-		@Bean
-		JettySslHandshakeMetrics customJettySslHandshakeMetrics(MeterRegistry meterRegistry) {
-			return new JettySslHandshakeMetrics(meterRegistry);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomJettySslHandshakeMetricsBackwardsCompatible {
-
-		@Bean
-		io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics customJettySslHandshakeMetrics(
-				MeterRegistry meterRegistry) {
-			return new io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics(meterRegistry);
 		}
 
 	}

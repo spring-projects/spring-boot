@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.binder.logging.Log4j2Metrics;
+import io.micrometer.core.instrument.binder.logging.Log4j2Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
 
@@ -55,34 +55,12 @@ class Log4J2MetricsWithLog4jLoggerContextAutoConfigurationTests {
 				(context) -> assertThat(context).hasSingleBean(Log4j2Metrics.class).hasBean("customLog4J2Metrics"));
 	}
 
-	@Test
-	@Deprecated
-	void allowsCustomLog4J2MetricsToBeUsedBackwardsCompatible() {
-		assertThat(LogManager.getContext().getClass().getName())
-				.isEqualTo("org.apache.logging.log4j.core.LoggerContext");
-		this.contextRunner.withUserConfiguration(CustomLog4J2MetricsConfigurationBackwardsCompatible.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(io.micrometer.core.instrument.binder.logging.Log4j2Metrics.class)
-						.doesNotHaveBean(Log4j2Metrics.class).hasBean("customLog4J2Metrics"));
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class CustomLog4J2MetricsConfiguration {
 
 		@Bean
 		Log4j2Metrics customLog4J2Metrics() {
 			return new Log4j2Metrics();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomLog4J2MetricsConfigurationBackwardsCompatible {
-
-		@Bean
-		io.micrometer.core.instrument.binder.logging.Log4j2Metrics customLog4J2Metrics() {
-			return new io.micrometer.core.instrument.binder.logging.Log4j2Metrics();
 		}
 
 	}

@@ -19,10 +19,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import io.micrometer.binder.jersey.server.AnnotationFinder;
-import io.micrometer.binder.jersey.server.JerseyTagsProvider;
-import io.micrometer.binder.jersey.server.MetricsApplicationEventListener;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.jersey.server.AnnotationFinder;
+import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
+import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
+import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
 import io.micrometer.core.instrument.config.MeterFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -31,16 +32,15 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyConfigurations.JerseyTagsProviderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
@@ -57,8 +57,6 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
 @EnableConfigurationProperties(MetricsProperties.class)
-@Import(JerseyTagsProviderConfiguration.class)
-@SuppressWarnings("deprecation")
 public class JerseyServerMetricsAutoConfiguration {
 
 	private final MetricsProperties properties;
@@ -68,26 +66,18 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(JerseyTagsProvider.class)
+	@ConditionalOnMissingBean(JerseyTagsProvider.class)
+	public DefaultJerseyTagsProvider jerseyTagsProvider() {
+		return new DefaultJerseyTagsProvider();
+	}
+
+	@Bean
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
 			JerseyTagsProvider tagsProvider) {
 		Server server = this.properties.getWeb().getServer();
 		return (config) -> config.register(
 				new MetricsApplicationEventListener(meterRegistry, tagsProvider, server.getRequest().getMetricName(),
 						server.getRequest().getAutotime().isEnabled(), new AnnotationUtilsAnnotationFinder()));
-	}
-
-	@Bean
-	@ConditionalOnBean(io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider.class)
-	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizerBackwardsCompatible(
-			MeterRegistry meterRegistry,
-			io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider tagsProvider) {
-		Server server = this.properties.getWeb().getServer();
-		return (config) -> config.register(
-				new io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener(meterRegistry,
-						tagsProvider, server.getRequest().getMetricName(),
-						server.getRequest().getAutotime().isEnabled(),
-						new AnnotationUtilsAnnotationFinderBackwardsCompatible()));
 	}
 
 	@Bean
@@ -104,20 +94,6 @@ public class JerseyServerMetricsAutoConfiguration {
 	 * An {@link AnnotationFinder} that uses {@link AnnotationUtils}.
 	 */
 	private static class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
-
-		@Override
-		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
-			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
-		}
-
-	}
-
-	/**
-	 * An {@link AnnotationFinder} (for backwards compatability) that uses
-	 * {@link AnnotationUtils}.
-	 */
-	private static class AnnotationUtilsAnnotationFinderBackwardsCompatible
-			implements io.micrometer.core.instrument.binder.jersey.server.AnnotationFinder {
 
 		@Override
 		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {

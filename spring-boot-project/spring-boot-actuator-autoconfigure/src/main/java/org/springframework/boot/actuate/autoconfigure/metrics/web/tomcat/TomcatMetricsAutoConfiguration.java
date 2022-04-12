@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 
-import io.micrometer.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import org.apache.catalina.Manager;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -39,13 +39,11 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
-@SuppressWarnings("deprecation")
 public class TomcatMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
-	@ConditionalOnMissingBean({ TomcatMetrics.class, io.micrometer.core.instrument.binder.tomcat.TomcatMetrics.class,
-			TomcatMetricsBinder.class })
+	@ConditionalOnMissingBean({ TomcatMetrics.class, TomcatMetricsBinder.class })
 	public TomcatMetricsBinder tomcatMetricsBinder(MeterRegistry meterRegistry) {
 		return new TomcatMetricsBinder(meterRegistry);
 	}

@@ -23,12 +23,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.connection.ConnectionPoolSettings;
 import com.mongodb.event.ConnectionPoolListener;
-import io.micrometer.binder.mongodb.DefaultMongoCommandTagsProvider;
-import io.micrometer.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
-import io.micrometer.binder.mongodb.MongoCommandTagsProvider;
-import io.micrometer.binder.mongodb.MongoConnectionPoolTagsProvider;
-import io.micrometer.binder.mongodb.MongoMetricsCommandListener;
-import io.micrometer.binder.mongodb.MongoMetricsConnectionPoolListener;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -93,7 +93,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsACustomMetricsCommandTagsProviderItIsUsed() {
-		MongoCommandTagsProvider customTagsProvider = mock(MongoCommandTagsProvider.class);
+		final MongoCommandTagsProvider customTagsProvider = mock(MongoCommandTagsProvider.class);
 		this.contextRunner.with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withBean("customMongoCommandTagsProvider", MongoCommandTagsProvider.class, () -> customTagsProvider)
@@ -102,51 +102,14 @@ class MongoMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenThereIsACustomMetricsCommandTagsProviderItIsUsedBackwardsCompatible() {
-		io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider customTagsProvider = mock(
-				io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider.class);
-		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.withBean("customMongoCommandTagsProvider",
-						io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider.class,
-						() -> customTagsProvider)
-				.run((context) -> {
-					assertThat(context).hasBean("customMongoCommandTagsProvider");
-					assertThat(context)
-							.hasSingleBean(io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider.class);
-					assertThat(context).doesNotHaveBean(MongoCommandTagsProvider.class);
-				});
-	}
-
-	@Test
 	void whenThereIsACustomMetricsConnectionPoolTagsProviderItIsUsed() {
-		MongoConnectionPoolTagsProvider customTagsProvider = mock(MongoConnectionPoolTagsProvider.class);
+		final MongoConnectionPoolTagsProvider customTagsProvider = mock(MongoConnectionPoolTagsProvider.class);
 		this.contextRunner.with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withBean("customMongoConnectionPoolTagsProvider", MongoConnectionPoolTagsProvider.class,
 						() -> customTagsProvider)
 				.run((context) -> assertThat(getMongoConnectionPoolTagsProviderUsedToConstructListener(context))
 						.isSameAs(customTagsProvider));
-	}
-
-	@Test
-	@Deprecated
-	void whenThereIsACustomMetricsConnectionPoolTagsProviderItIsUsedBackwardsCompatible() {
-		io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider customTagsProvider = mock(
-				io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider.class);
-		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.withBean("customMongoConnectionPoolTagsProvider",
-						io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider.class,
-						() -> customTagsProvider)
-				.run((context) -> {
-					assertThat(context).hasBean("customMongoConnectionPoolTagsProvider");
-					assertThat(context).hasSingleBean(
-							io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider.class);
-					assertThat(context).doesNotHaveBean(MongoConnectionPoolTagsProvider.class);
-
-				});
 	}
 
 	@Test
@@ -213,25 +176,26 @@ class MongoMetricsAutoConfigurationTests {
 	}
 
 	private MongoClientSettings getActualMongoClientSettingsUsedToConstructClient(
-			AssertableApplicationContext context) {
-		MongoClientImpl mongoClient = (MongoClientImpl) context.getBean(MongoClient.class);
+			final AssertableApplicationContext context) {
+		final MongoClientImpl mongoClient = (MongoClientImpl) context.getBean(MongoClient.class);
 		return mongoClient.getSettings();
 	}
 
-	private List<ConnectionPoolListener> getConnectionPoolListenersFromClient(AssertableApplicationContext context) {
+	private List<ConnectionPoolListener> getConnectionPoolListenersFromClient(
+			final AssertableApplicationContext context) {
 		MongoClientSettings mongoClientSettings = getActualMongoClientSettingsUsedToConstructClient(context);
 		ConnectionPoolSettings connectionPoolSettings = mongoClientSettings.getConnectionPoolSettings();
 		return connectionPoolSettings.getConnectionPoolListeners();
 	}
 
 	private MongoCommandTagsProvider getMongoCommandTagsProviderUsedToConstructListener(
-			AssertableApplicationContext context) {
+			final AssertableApplicationContext context) {
 		MongoMetricsCommandListener listener = context.getBean(MongoMetricsCommandListener.class);
 		return (MongoCommandTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
 	}
 
 	private MongoConnectionPoolTagsProvider getMongoConnectionPoolTagsProviderUsedToConstructListener(
-			AssertableApplicationContext context) {
+			final AssertableApplicationContext context) {
 		MongoMetricsConnectionPoolListener listener = context.getBean(MongoMetricsConnectionPoolListener.class);
 		return (MongoConnectionPoolTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
 	}

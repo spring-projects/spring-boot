@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.metrics.cache;
 
 import java.util.Collections;
 
-import io.micrometer.binder.cache.EhCache2Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.cache.EhCache2Metrics;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;

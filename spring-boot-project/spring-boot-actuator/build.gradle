@@ -23,7 +23,6 @@ dependencies {
 	optional("com.zaxxer:HikariCP")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-binders")
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.prometheus:simpleclient_pushgateway") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
