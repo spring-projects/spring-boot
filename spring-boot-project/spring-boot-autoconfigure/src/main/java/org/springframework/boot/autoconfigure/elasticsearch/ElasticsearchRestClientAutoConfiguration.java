@@ -22,6 +22,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientBuilderConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientFromRestHighLevelClientConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientSnifferConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestHighLevelClientConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,6 +42,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties({ ElasticsearchProperties.class, ElasticsearchRestClientProperties.class,
 		DeprecatedElasticsearchRestClientProperties.class })
 @Import({ RestClientBuilderConfiguration.class, RestHighLevelClientConfiguration.class,
+		RestClientFromRestHighLevelClientConfiguration.class, RestClientConfiguration.class,
 		RestClientSnifferConfiguration.class })
 public class ElasticsearchRestClientAutoConfiguration {
 
