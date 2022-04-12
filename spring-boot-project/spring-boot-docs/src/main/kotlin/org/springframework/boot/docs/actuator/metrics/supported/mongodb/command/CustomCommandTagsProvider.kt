@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.actuator.metrics.supported.mongodb.command
 
 import com.mongodb.event.CommandEvent
-import io.micrometer.binder.mongodb.MongoCommandTagsProvider
+import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider
 import io.micrometer.core.instrument.Tag
 
 class CustomCommandTagsProvider : MongoCommandTagsProvider {
