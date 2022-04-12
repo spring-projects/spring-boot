@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class MetricsWebClientFilterFunctionTests {
 	void filterShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(5));
 		assertThat(this.registry.get("http.client.requests")
 				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200").timer().count()).isEqualTo(1);
@@ -86,7 +86,7 @@ class MetricsWebClientFilterFunctionTests {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(5));
 		assertThat(this.registry.get("http.client.requests")
 				.tags("method", "GET", "uri", "/projects/{project}", "status", "200").timer().count()).isEqualTo(1);
@@ -120,7 +120,7 @@ class MetricsWebClientFilterFunctionTests {
 	void filterWhenCancelThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		Mono<ClientResponse> filter = this.filterFunction.filter(request, this.exchange);
 		StepVerifier.create(filter).thenCancel().verify(Duration.ofSeconds(5));
 		assertThat(this.registry.get("http.client.requests")
@@ -135,7 +135,7 @@ class MetricsWebClientFilterFunctionTests {
 	void filterWhenCancelAfterResponseThrownShouldNotRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		Mono<ClientResponse> filter = this.filterFunction.filter(request, this.exchange);
 		StepVerifier.create(filter).expectNextCount(1).thenCancel().verify(Duration.ofSeconds(5));
 		assertThat(this.registry.get("http.client.requests")

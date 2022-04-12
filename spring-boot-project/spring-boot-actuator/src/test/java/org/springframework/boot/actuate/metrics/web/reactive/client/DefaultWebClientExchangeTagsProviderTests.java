@@ -54,7 +54,7 @@ class DefaultWebClientExchangeTagsProviderTests {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}").build();
 		this.response = mock(ClientResponse.class);
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 	}
 
 	@Test
