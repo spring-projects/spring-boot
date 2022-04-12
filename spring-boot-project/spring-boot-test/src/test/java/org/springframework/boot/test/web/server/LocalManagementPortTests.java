@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.test.web.server;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,24 +27,22 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LocalServerPort @LocalServerPort}.
+ * Tests for {@link LocalManagementPort @LocalManagementPort}.
  *
- * @author Anand Shah
- * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-@Deprecated
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(properties = "local.server.port=8181")
-class LocalServerPortTests {
+@TestPropertySource(properties = "local.management.port=8181")
+class LocalManagementPortTests {
 
-	@Value("${local.server.port}")
+	@Value("${local.management.port}")
 	private String fromValue;
 
-	@LocalServerPort
+	@LocalManagementPort
 	private String fromAnnotation;
 
 	@Test
-	void testLocalServerPortAnnotation() {
+	void testLocalManagementPortAnnotation() {
 		assertThat(this.fromAnnotation).isNotNull().isEqualTo(this.fromValue);
 	}
 

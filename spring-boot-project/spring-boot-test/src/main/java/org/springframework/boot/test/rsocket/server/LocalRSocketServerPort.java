@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.rsocket.context;
+package org.springframework.boot.test.rsocket.server;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,20 +26,17 @@ import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Annotation at the field or method/constructor parameter level that injects the RSocket
- * port that got allocated at runtime. Provides a convenient alternative for
+ * port that was allocated at runtime. Provides a convenient alternative for
  * <code>&#064;Value(&quot;${local.rsocket.server.port}&quot;)</code>.
  *
  * @author Verónica Vásquez
  * @author Eddú Meléndez
- * @since 2.2.0
- * @deprecated since 2.7.0 for removal in 2.9.0 in favor of
- * {@code org.springframework.boot.test.rsocket.LocalRSocketServerPort}
+ * @since 2.7.0
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Value("${local.rsocket.server.port}")
-@Deprecated
 public @interface LocalRSocketServerPort {
 
 }
