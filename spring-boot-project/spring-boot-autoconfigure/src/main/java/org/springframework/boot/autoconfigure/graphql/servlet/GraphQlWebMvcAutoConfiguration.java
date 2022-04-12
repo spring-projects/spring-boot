@@ -69,7 +69,6 @@ import org.springframework.web.servlet.function.ServerResponse;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
-import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for enabling Spring GraphQL over
@@ -191,7 +190,7 @@ public class GraphQlWebMvcAutoConfiguration {
 			WebSocketHandlerMapping mapping = new WebSocketHandlerMapping();
 			mapping.setWebSocketUpgradeMatch(true);
 			mapping.setUrlMap(Collections.singletonMap(path,
-					new WebSocketHttpRequestHandler(handler, new DefaultHandshakeHandler())));
+					handler.asWebSocketHttpRequestHandler(new DefaultHandshakeHandler())));
 			mapping.setOrder(2); // Ahead of HTTP endpoint ("routerFunctionMapping" bean)
 			return mapping;
 		}
