@@ -77,11 +77,6 @@ public enum DatabaseDriver {
 	MARIADB("MariaDB", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1"),
 
 	/**
-	 * Google App Engine.
-	 */
-	GAE(null, "com.google.appengine.api.rdbms.AppEngineDriver"),
-
-	/**
 	 * Oracle.
 	 */
 	ORACLE("Oracle", "oracle.jdbc.OracleDriver", "oracle.jdbc.xa.client.OracleXADataSource",
