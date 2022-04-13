@@ -64,6 +64,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Leo Li
  * @author Chris Bono
+ * @author Scott Frederick
  */
 class NettyRSocketServerFactoryTests {
 
@@ -166,6 +167,30 @@ class NettyRSocketServerFactoryTests {
 		testBasicSslWithKeyStore("src/test/resources/test.jks", "password", Transport.WEBSOCKET);
 	}
 
+	@Test
+	void tcpTransportBasicSslCertificateFromClassPath() {
+		testBasicSslWithPemCertificate("classpath:test-cert.pem", "classpath:test-key.pem", "classpath:test-cert.pem",
+				Transport.TCP);
+	}
+
+	@Test
+	void tcpTransportBasicSslCertificateFromFileSystem() {
+		testBasicSslWithPemCertificate("src/test/resources/test-cert.pem", "src/test/resources/test-key.pem",
+				"src/test/resources/test-cert.pem", Transport.TCP);
+	}
+
+	@Test
+	void websocketTransportBasicSslCertificateFromClassPath() {
+		testBasicSslWithPemCertificate("classpath:test-cert.pem", "classpath:test-key.pem", "classpath:test-cert.pem",
+				Transport.WEBSOCKET);
+	}
+
+	@Test
+	void websocketTransportBasicSslCertificateFromFileSystem() {
+		testBasicSslWithPemCertificate("src/test/resources/test-cert.pem", "src/test/resources/test-key.pem",
+				"src/test/resources/test-cert.pem", Transport.WEBSOCKET);
+	}
+
 	private void checkEchoRequest() {
 		String payload = "test payload";
 		Mono<String> response = this.requester.route("test").data(payload).retrieveMono(String.class);
@@ -178,6 +203,23 @@ class NettyRSocketServerFactoryTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore(keyStore);
 		ssl.setKeyPassword(keyPassword);
+		factory.setSsl(ssl);
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
+		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()
+				: createSecureRSocketWebSocketClient();
+		checkEchoRequest();
+	}
+
+	private void testBasicSslWithPemCertificate(String certificate, String certificatePrivateKey,
+			String trustCertificate, Transport transport) {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(transport);
+		Ssl ssl = new Ssl();
+		ssl.setCertificate(certificate);
+		ssl.setCertificatePrivateKey(certificatePrivateKey);
+		ssl.setTrustCertificate(trustCertificate);
+		ssl.setKeyStorePassword("");
 		factory.setSsl(ssl);
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		this.server.start();

@@ -244,6 +244,22 @@
       "description": "Type of the trust store."
     },
     {
+      "name": "server.ssl.certificate",
+      "description": "Path to a PEM-encoded SSL certificate file."
+    },
+    {
+      "name": "server.ssl.certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate."
+    },
+    {
+      "name": "server.ssl.trust-certificate",
+      "description": "Path to a PEM-encoded SSL certificate authority file."
+    },
+    {
+      "name": "server.ssl.trust-certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
+    },
+    {
       "name": "server.tomcat.max-http-post-size",
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {

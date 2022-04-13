@@ -167,6 +167,7 @@ import static org.mockito.Mockito.mock;
  * @author Greg Turnquist
  * @author Andy Wilkinson
  * @author Raja Kolli
+ * @author Scott Frederick
  */
 @ExtendWith(OutputCaptureExtension.class)
 public abstract class AbstractServletWebServerFactoryTests {
@@ -560,6 +561,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	void pemKeyStoreAndTrustStore() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		factory.setSsl(getSsl("classpath:test-cert.pem", "classpath:test-key.pem"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		KeyStore keyStore = KeyStore.getInstance("pkcs12");
+		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+						.loadKeyMaterial(keyStore, "secret".toCharArray()).build());
+		HttpClient httpClient = this.httpClientBuilder.get().setSSLSocketFactory(socketFactory).build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
+	}
+
+	@Test
 	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setRegisterDefaultServlet(true);
@@ -707,6 +725,16 @@ public abstract class AbstractServletWebServerFactoryTests {
 		if (supportedProtocols != null) {
 			ssl.setEnabledProtocols(supportedProtocols);
 		}
+		return ssl;
+	}
+
+	private Ssl getSsl(String cert, String privateKey) {
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(ClientAuth.NEED);
+		ssl.setCertificate(cert);
+		ssl.setCertificatePrivateKey(privateKey);
+		ssl.setTrustCertificate(cert);
+		ssl.setKeyStorePassword("secret");
 		return ssl;
 	}
 
