@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +65,12 @@ class ApiVersionsTests {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> ApiVersions.parse("1.1", "1.2").findLatestSupported("1.3", "1.4")).withMessage(
 						"Detected platform API versions '1.3,1.4' are not included in supported versions '1.1,1.2'");
+	}
+
+	@Test
+	void createFromRange() {
+		ApiVersions versions = ApiVersions.of(1, IntStream.rangeClosed(2, 7));
+		assertThat(versions.toString()).isEqualTo("1.2,1.3,1.4,1.5,1.6,1.7");
 	}
 
 	@Test
