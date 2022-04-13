@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -347,17 +347,6 @@ public class Restarter {
 		catch (Throwable ex) {
 			clear(AnnotationUtils.class, "findAnnotationCache");
 			clear(AnnotationUtils.class, "annotatedInterfaceCache");
-		}
-	}
-
-	private void clear(String className, String fieldName) {
-		try {
-			clear(Class.forName(className), fieldName);
-		}
-		catch (Exception ex) {
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug("Unable to clear field " + className + " " + fieldName, ex);
-			}
 		}
 	}
 
