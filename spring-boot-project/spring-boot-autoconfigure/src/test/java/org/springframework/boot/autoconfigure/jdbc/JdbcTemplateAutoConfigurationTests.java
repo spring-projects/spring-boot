@@ -146,16 +146,6 @@ class JdbcTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void testDependencyToDeprecatedDataSourceInitialization() {
-		this.contextRunner.withUserConfiguration(DataSourceInitializationValidator.class)
-				.withPropertyValues("spring.datasource.initialization-mode=always").run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(DataSourceInitializationValidator.class).count).isEqualTo(1);
-				});
-	}
-
-	@Test
 	void testDependencyToScriptBasedDataSourceInitialization() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class))
 				.withUserConfiguration(DataSourceInitializationValidator.class).run((context) -> {

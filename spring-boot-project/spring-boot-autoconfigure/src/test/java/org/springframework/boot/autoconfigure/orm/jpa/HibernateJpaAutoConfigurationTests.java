@@ -98,17 +98,6 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
-	@Deprecated
-	void testDataScriptWithDeprecatedMissingDdl() {
-		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql",
-				// Missing:
-				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure()).hasMessageContaining("ddl.sql");
-				});
-	}
-
-	@Test
 	void testDmlScriptWithMissingDdl() {
 		contextRunner().withPropertyValues("spring.sql.init.data-locations:classpath:/city.sql",
 				// Missing:
@@ -119,16 +108,6 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
-	void testDataScript() {
-		// This can't succeed because the data SQL is executed immediately after the
-		// schema and Hibernate hasn't initialized yet at that point
-		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql").run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
-		});
-	}
-
-	@Test
 	void testDmlScript() {
 		// This can't succeed because the data SQL is executed immediately after the
 		// schema and Hibernate hasn't initialized yet at that point
@@ -136,16 +115,6 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
 		});
-	}
-
-	@Test
-	@Deprecated
-	void testDataScriptRunsEarly() {
-		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
-				.withClassLoader(new HideDataScriptClassLoader())
-				.withPropertyValues("spring.jpa.show-sql=true", "spring.jpa.hibernate.ddl-auto:create-drop",
-						"spring.datasource.data:classpath:/city.sql", "spring.jpa.defer-datasource-initialization=true")
-				.run((context) -> assertThat(context.getBean(TestInitializedJpaConfiguration.class).called).isTrue());
 	}
 
 	@Test

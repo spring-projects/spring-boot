@@ -52,14 +52,11 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @since 1.0.0
  */
-@SuppressWarnings("deprecation")
 @AutoConfiguration(before = SqlInitializationAutoConfiguration.class)
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)
-@Import({ DataSourcePoolMetadataProvidersConfiguration.class,
-		DataSourceInitializationConfiguration.InitializationSpecificCredentialsDataSourceInitializationConfiguration.class,
-		DataSourceInitializationConfiguration.SharedCredentialsDataSourceInitializationConfiguration.class })
+@Import(DataSourcePoolMetadataProvidersConfiguration.class)
 public class DataSourceAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

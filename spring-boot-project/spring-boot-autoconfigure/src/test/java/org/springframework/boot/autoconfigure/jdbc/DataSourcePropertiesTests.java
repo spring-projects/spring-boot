@@ -178,24 +178,4 @@ class DataSourcePropertiesTests {
 		assertThat(properties.determinePassword()).isNull();
 	}
 
-	@Test
-	@Deprecated
-	void determineCredentialsForSchemaScripts() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setSchemaUsername("foo");
-		properties.setSchemaPassword("bar");
-		assertThat(properties.getSchemaUsername()).isEqualTo("foo");
-		assertThat(properties.getSchemaPassword()).isEqualTo("bar");
-	}
-
-	@Test
-	@Deprecated
-	void determineCredentialsForDataScripts() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setDataUsername("foo");
-		properties.setDataPassword("bar");
-		assertThat(properties.getDataUsername()).isEqualTo("foo");
-		assertThat(properties.getDataPassword()).isEqualTo("bar");
-	}
-
 }

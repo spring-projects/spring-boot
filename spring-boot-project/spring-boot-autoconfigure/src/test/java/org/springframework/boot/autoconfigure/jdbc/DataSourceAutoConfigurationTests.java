@@ -236,16 +236,6 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void testDataSourceIsInitializedEarly() {
-		this.contextRunner.withUserConfiguration(TestInitializedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.initialization-mode=always").run((context) -> {
-					assertThat(context).hasSingleBean(DataSourceScriptDatabaseInitializer.class);
-					assertThat(context.getBean(TestInitializedDataSourceConfiguration.class).called).isTrue();
-				});
-	}
-
-	@Test
 	void whenNoInitializationRelatedSpringDataSourcePropertiesAreConfiguredThenInitializationBacksOff() {
 		this.contextRunner
 				.run((context) -> assertThat(context).doesNotHaveBean(DataSourceScriptDatabaseInitializer.class));
