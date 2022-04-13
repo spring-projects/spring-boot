@@ -86,6 +86,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Base for testing classes that extends {@link AbstractReactiveWebServerFactory}.
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
 
@@ -215,7 +216,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyPassword("password");
 		ssl.setKeyStorePassword("secret");
 		ssl.setTrustStore("classpath:test.jks");
-		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
+		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector("test.jks", "password"));
 	}
 
 	@Test
@@ -229,14 +230,15 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		testClientAuthSuccess(ssl, buildTrustAllSslConnector());
 	}
 
-	protected ReactorClientHttpConnector buildTrustAllSslWithClientKeyConnector() throws Exception {
+	protected ReactorClientHttpConnector buildTrustAllSslWithClientKeyConnector(String keyStoreFile,
+			String keyStorePassword) throws Exception {
 		KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		try (InputStream stream = new FileInputStream("src/test/resources/test.jks")) {
+		try (InputStream stream = new FileInputStream("src/test/resources/" + keyStoreFile)) {
 			clientKeyStore.load(stream, "secret".toCharArray());
 		}
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
+		clientKeyManagerFactory.init(clientKeyStore, keyStorePassword.toCharArray());
 
 		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
 				.configure((builder) -> builder.sslProvider(SslProvider.JDK)
@@ -265,7 +267,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
-		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
+		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector("test.jks", "password"));
 	}
 
 	@Test
@@ -277,6 +279,17 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
 		testClientAuthFailure(ssl, buildTrustAllSslConnector());
+	}
+
+	@Test
+	void sslWithPemCertificates() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(Ssl.ClientAuth.NEED);
+		ssl.setCertificate("classpath:test-cert.pem");
+		ssl.setCertificatePrivateKey("classpath:test-key.pem");
+		ssl.setTrustCertificate("classpath:test-cert.pem");
+		ssl.setKeyStorePassword("secret");
+		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector("test.p12", "secret"));
 	}
 
 	protected void testClientAuthFailure(Ssl sslConfiguration, ReactorClientHttpConnector clientConnector) {
