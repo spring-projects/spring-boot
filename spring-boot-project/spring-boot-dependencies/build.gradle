@@ -1036,6 +1036,13 @@ bom {
 			]
 		}
 	}
+	library("Native Build Tools Plugin", "0.9.11") {
+		group("org.graalvm.buildtools") {
+			plugins = [
+					"native-maven-plugin"
+			]
+		}
+	}
 	library("NekoHTML", "1.9.22") {
 		group("net.sourceforge.nekohtml") {
 			modules = [

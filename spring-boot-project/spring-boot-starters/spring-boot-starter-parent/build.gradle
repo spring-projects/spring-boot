@@ -217,6 +217,39 @@ publishing.publications.withType(MavenPublication) {
 					}
 				}
 			}
+			profiles {
+				profile {
+					delegate.id("native")
+					build {
+						plugins {
+							plugin {
+								delegate.groupId('org.springframework.boot')
+								delegate.artifactId('spring-boot-maven-plugin')
+								executions {
+									execution {
+										delegate.id('aot-generate')
+										goals {
+											delegate.goal('aot-generate')
+										}
+									}
+								}
+							}
+							plugin {
+								delegate.groupId('org.graalvm.buildtools')
+								delegate.artifactId('native-maven-plugin')
+								executions {
+									execution {
+										delegate.id('build-native')
+										goals {
+											delegate.goal('build')
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
