@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.metrics.cache;
 import java.lang.reflect.Method;
 
 import com.hazelcast.spring.cache.HazelcastCache;
-import io.micrometer.binder.cache.HazelcastCacheMetrics;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 
 import org.springframework.util.ReflectionUtils;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ class WebFluxTagsTests {
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
 		ServerHttpResponse response = mock(ServerHttpResponse.class);
 		given(response.getStatusCode()).willReturn(HttpStatus.OK);
-		given(response.getRawStatusCode()).willReturn(null);
+		given(response.getStatusCode().value()).willReturn(null);
 		given(exchange.getRequest()).willReturn(request);
 		given(exchange.getResponse()).willReturn(response);
 		Tag tag = WebFluxTags.outcome(exchange, null);

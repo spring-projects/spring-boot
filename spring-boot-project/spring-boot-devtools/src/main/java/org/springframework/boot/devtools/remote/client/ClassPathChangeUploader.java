@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -108,7 +109,7 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 					headers.setContentLength(bytes.length);
 					FileCopyUtils.copy(bytes, request.getBody());
 					ClientHttpResponse response = request.execute();
-					HttpStatus statusCode = response.getStatusCode();
+					HttpStatusCode statusCode = response.getStatusCode();
 					Assert.state(statusCode == HttpStatus.OK,
 							() -> "Unexpected " + statusCode + " response uploading class files");
 					logUpload(classLoaderFiles);

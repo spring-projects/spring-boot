@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,14 @@ import org.springframework.beans.factory.annotation.Value;
  * @author Verónica Vásquez
  * @author Eddú Meléndez
  * @since 2.2.0
+ * @deprecated since 2.7.0 for removal in 2.9.0 in favor of
+ * {@code org.springframework.boot.test.rsocket.LocalRSocketServerPort}
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Value("${local.rsocket.server.port}")
+@Deprecated
 public @interface LocalRSocketServerPort {
 
 }

@@ -49,7 +49,14 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 
 	private final JsonParser jsonParser;
 
-	@SuppressWarnings("deprecation")
+	/**
+	 * Create a new {@code ElasticsearchRestHealthIndicator} using the {@link RestClient}
+	 * obtained from the given high-level client.
+	 * @param client the high-level client
+	 * @deprecated since 2.7.0 for removal in 2.9.0 in favor of
+	 * {@link #ElasticsearchRestHealthIndicator(RestClient)}
+	 */
+	@Deprecated
 	public ElasticsearchRestHealthIndicator(org.elasticsearch.client.RestHighLevelClient client) {
 		this(client.getLowLevelClient());
 	}

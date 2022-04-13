@@ -39,18 +39,16 @@ import org.springframework.context.annotation.Bean;
  * @author Artsiom Yudovin
  * @since 2.1.1
  */
-@SuppressWarnings("deprecation")
 @AutoConfiguration(after = ElasticsearchRestClientAutoConfiguration.class)
-@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-@ConditionalOnBean(org.elasticsearch.client.RestHighLevelClient.class)
+@ConditionalOnClass(RestClient.class)
+@ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
-public class ElasticSearchRestHealthContributorAutoConfiguration extends
-		CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, org.elasticsearch.client.RestHighLevelClient> {
+public class ElasticSearchRestHealthContributorAutoConfiguration
+		extends CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
-	public HealthContributor elasticsearchHealthContributor(
-			Map<String, org.elasticsearch.client.RestHighLevelClient> clients) {
+	public HealthContributor elasticsearchHealthContributor(Map<String, RestClient> clients) {
 		return createContributor(clients);
 	}
 

@@ -20,8 +20,8 @@ import java.util.Collections;
 
 import com.hazelcast.map.IMap;
 import com.hazelcast.spring.cache.HazelcastCache;
-import io.micrometer.binder.cache.HazelcastCacheMetrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
