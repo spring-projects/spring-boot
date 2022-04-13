@@ -37,16 +37,16 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ElasticsearchRestHealthIndicator}.
+ * Tests for {@link ElasticsearchRestClientHealthIndicator}.
  *
  * @author Artsiom Yudovin
  * @author Filip Hrisafov
  */
-class ElasticsearchRestHealthIndicatorTests {
+class ElasticsearchRestClientHealthIndicatorTests {
 
 	private final RestClient restClient = mock(RestClient.class);
 
-	private final ElasticsearchRestHealthIndicator elasticsearchRestHealthIndicator = new ElasticsearchRestHealthIndicator(
+	private final ElasticsearchRestClientHealthIndicator elasticsearchRestClientHealthIndicator = new ElasticsearchRestClientHealthIndicator(
 			this.restClient);
 
 	@Test
@@ -59,7 +59,7 @@ class ElasticsearchRestHealthIndicatorTests {
 		given(response.getStatusLine()).willReturn(statusLine);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
-		Health health = this.elasticsearchRestHealthIndicator.health();
+		Health health = this.elasticsearchRestClientHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "green");
 	}
@@ -74,7 +74,7 @@ class ElasticsearchRestHealthIndicatorTests {
 		given(response.getStatusLine()).willReturn(statusLine);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
-		Health health = this.elasticsearchRestHealthIndicator.health();
+		Health health = this.elasticsearchRestClientHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
 	}
@@ -82,7 +82,7 @@ class ElasticsearchRestHealthIndicatorTests {
 	@Test
 	void elasticsearchIsDown() throws IOException {
 		given(this.restClient.performRequest(any(Request.class))).willThrow(new IOException("Couldn't connect"));
-		Health health = this.elasticsearchRestHealthIndicator.health();
+		Health health = this.elasticsearchRestClientHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).contains(entry("error", "java.io.IOException: Couldn't connect"));
 	}
@@ -95,7 +95,7 @@ class ElasticsearchRestHealthIndicatorTests {
 		given(statusLine.getReasonPhrase()).willReturn("Internal server error");
 		given(response.getStatusLine()).willReturn(statusLine);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
-		Health health = this.elasticsearchRestHealthIndicator.health();
+		Health health = this.elasticsearchRestClientHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).contains(entry("statusCode", 500),
 				entry("reasonPhrase", "Internal server error"));
@@ -111,7 +111,7 @@ class ElasticsearchRestHealthIndicatorTests {
 		given(response.getStatusLine()).willReturn(statusLine);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
-		Health health = this.elasticsearchRestHealthIndicator.health();
+		Health health = this.elasticsearchRestClientHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 		assertHealthDetailsWithStatus(health.getDetails(), "red");
 	}

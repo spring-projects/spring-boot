@@ -22,7 +22,7 @@ import org.elasticsearch.client.RestClient;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestHealthIndicator;
+import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestClientHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link ElasticsearchRestHealthIndicator} using the {@link RestClient}.
+ * {@link ElasticsearchRestClientHealthIndicator}.
  *
  * @author Artsiom Yudovin
  * @since 2.1.1
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 public class ElasticSearchRestHealthContributorAutoConfiguration
-		extends CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
+		extends CompositeHealthContributorConfiguration<ElasticsearchRestClientHealthIndicator, RestClient> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })

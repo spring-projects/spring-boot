@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchReactiveHealthIndicator;
-import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestHealthIndicator;
+import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestClientHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRestClientAutoConfiguration;
@@ -55,7 +55,7 @@ class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(ElasticSearchRestHealthContributorAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchReactiveHealthIndicator.class)
 						.hasBean("elasticsearchHealthContributor")
-						.doesNotHaveBean(ElasticsearchRestHealthIndicator.class));
+						.doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class));
 	}
 
 	@Test
