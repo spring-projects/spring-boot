@@ -51,9 +51,9 @@ public class WavefrontProperties extends PushRegistryProperties {
 	private String apiToken;
 
 	/**
-	 * Global prefix to separate metrics originating from this app's white box
-	 * instrumentation from those originating from other Wavefront integrations when
-	 * viewed in the Wavefront UI.
+	 * Global prefix to separate metrics originating from this app's instrumentation from
+	 * those originating from other Wavefront integrations when viewed in the Wavefront
+	 * UI.
 	 */
 	private String globalPrefix;
 
