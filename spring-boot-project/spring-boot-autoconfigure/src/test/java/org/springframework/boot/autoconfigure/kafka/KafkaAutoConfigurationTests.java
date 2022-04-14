@@ -78,6 +78,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -326,30 +327,25 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
 				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
 				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms").run((context) -> {
-					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
-					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
-					assertThat(properties.size()).isEqualTo(6);
-					assertThat(properties.get(0).delay()).isEqualTo(0);
-					assertThat(properties.get(1).delay()).isEqualTo(100);
-					assertThat(properties.get(2).delay()).isEqualTo(200);
-					assertThat(properties.get(3).delay()).isEqualTo(300);
-					assertThat(properties.get(4).delay()).isEqualTo(300);
-					assertThat(properties.get(5).delay()).isEqualTo(0);
+					RetryTopicConfiguration configuration = context.getBean(RetryTopicConfiguration.class);
+					assertThat(configuration.getDestinationTopicProperties()).hasSize(6)
+							.extracting(DestinationTopic.Properties::delay, DestinationTopic.Properties::suffix)
+							.containsExactly(tuple(0L, ""), tuple(100L, "-retry-0"), tuple(200L, "-retry-1"),
+									tuple(300L, "-retry-2"), tuple(300L, "-retry-3"), tuple(0L, "-dlt"));
 				});
 	}
 
 	@Test
-	void retryTopicConfigurationWithDefaultBackOff() {
+	void retryTopicConfigurationWithDefaultProperties() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true")
 				.run((context) -> {
-					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
-					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
-					assertThat(properties.size()).isEqualTo(4);
-					assertThat(properties.get(0).delay()).isEqualTo(0);
-					assertThat(properties.get(1).delay()).isEqualTo(1000);
-					assertThat(properties.get(2).delay()).isEqualTo(1000);
-					assertThat(properties.get(3).delay()).isEqualTo(0);
+					RetryTopicConfiguration configuration = context.getBean(RetryTopicConfiguration.class);
+					assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
+							.extracting(DestinationTopic.Properties::delay, DestinationTopic.Properties::suffix)
+							.containsExactly(tuple(0L, ""), tuple(1000L, "-retry"), tuple(0L, "-dlt"));
+					assertThat(configuration.forKafkaTopicAutoCreation()).extracting("shouldCreateTopics")
+							.asInstanceOf(InstanceOfAssertFactories.BOOLEAN).isFalse();
 				});
 	}
 
@@ -357,15 +353,10 @@ class KafkaAutoConfigurationTests {
 	void retryTopicConfigurationWithFixedBackOff() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=3", "spring.kafka.retry.topic.delay=2s").run((context) -> {
-					RetryTopicConfiguration config = context.getBean(RetryTopicConfiguration.class);
-					List<DestinationTopic.Properties> properties = config.getDestinationTopicProperties();
-					assertThat(properties.size()).isEqualTo(4);
-					assertThat(properties.get(0).delay()).isEqualTo(0);
-					assertThat(properties.get(1).delay()).isEqualTo(2000);
-					assertThat(properties.get(2).delay()).isEqualTo(2000);
-					assertThat(properties.get(3).delay()).isEqualTo(0);
-				});
+				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=2s")
+				.run((context) -> assertThat(
+						context.getBean(RetryTopicConfiguration.class).getDestinationTopicProperties()).hasSize(3)
+								.extracting(DestinationTopic.Properties::delay).containsExactly(0L, 2000L, 0L));
 	}
 
 	@SuppressWarnings("unchecked")

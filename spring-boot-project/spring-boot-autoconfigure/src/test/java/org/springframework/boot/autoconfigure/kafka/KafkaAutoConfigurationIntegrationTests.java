@@ -43,6 +43,8 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.retrytopic.DestinationTopic;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.condition.EmbeddedKafkaCondition;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -93,7 +95,7 @@ class KafkaAutoConfigurationIntegrationTests {
 		producer.close();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	@Test
 	void testEndToEndWithRetryTopics() throws Exception {
 		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
@@ -101,18 +103,17 @@ class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
 				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
+		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
+		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)
+				.containsExactly(0L, 100L, 200L, 300L, 300L, 0L);
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
 		RetryListener listener = this.context.getBean(RetryListener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
-		assertThat(listener.key).isEqualTo("foo");
-		assertThat(listener.received).isEqualTo("bar");
-		assertThat(listener.topics.size()).isEqualTo(5);
-		assertThat(listener.topics.get(0)).isEqualTo("testRetryTopic");
-		assertThat(listener.topics.get(1)).isEqualTo("testRetryTopic-retry-100");
-		assertThat(listener.topics.get(2)).isEqualTo("testRetryTopic-retry-200");
-		assertThat(listener.topics.get(3)).isEqualTo("testRetryTopic-retry-300-0");
-		assertThat(listener.topics.get(4)).isEqualTo("testRetryTopic-retry-300-1");
+		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived).containsExactly("foo",
+				"bar");
+		assertThat(listener).extracting(RetryListener::getTopics).asList().hasSize(5).containsSequence("testRetryTopic",
+				"testRetryTopic-retry-0", "testRetryTopic-retry-1", "testRetryTopic-retry-2", "testRetryTopic-retry-3");
 	}
 
 	@Test
@@ -206,6 +207,18 @@ class KafkaAutoConfigurationIntegrationTests {
 			this.topics.add(topic);
 			this.latch.countDown();
 			throw new RuntimeException("Test exception");
+		}
+
+		private List<String> getTopics() {
+			return this.topics;
+		}
+
+		private String getReceived() {
+			return this.received;
+		}
+
+		private String getKey() {
+			return this.key;
 		}
 
 	}

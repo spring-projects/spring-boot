@@ -1365,32 +1365,32 @@ public class KafkaProperties {
 			 * The total number of processing attempts made before sending the message to
 			 * the DLT.
 			 */
-			private Integer attempts;
+			private Integer attempts = 3;
 
 			/**
 			 * A canonical backoff period. Used as an initial value in the exponential
 			 * case, and as a minimum value in the uniform case.
 			 */
-			private Duration delay;
+			private Duration delay = Duration.ofSeconds(1);
 
 			/**
 			 * If positive, then used as a multiplier for generating the next delay for
 			 * backoff.
 			 */
-			private Double multiplier;
+			private Double multiplier = 0.0;
 
 			/**
 			 * The maximimum wait between retries. If less than the delay then the default
 			 * of 30 seconds is applied.
 			 */
-			private Duration maxDelay;
+			private Duration maxDelay = Duration.ZERO;
 
 			/**
 			 * In the exponential case (multiplier() > 0) set this to true to have the
 			 * backoff delays randomized, so that the maximum delay is multiplier times
 			 * the previous delay and the distribution is uniform between the two values.
 			 */
-			private Boolean randomBackOff;
+			private Boolean randomBackOff = false;
 
 			public Boolean getEnabled() {
 				return this.enabled;

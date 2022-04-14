@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -43,11 +44,10 @@ import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.backoff.ExponentialRandomBackOffPolicy;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.backoff.BackOffPolicy;
+import org.springframework.retry.backoff.BackOffPolicyBuilder;
 import org.springframework.retry.backoff.SleepingBackOffPolicy;
-import org.springframework.retry.backoff.UniformRandomBackOffPolicy;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -148,46 +148,20 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
-	@ConditionalOnMissingBean
 	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
-		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance();
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(retryTopic.getAttempts()).to(builder::maxAttempts);
-		map.from(createBackOffFor(retryTopic)).to(builder::customBackoff);
-		return builder.create(kafkaOperations);
+		return RetryTopicConfigurationBuilder.newInstance().maxAttempts(retryTopic.getAttempts())
+				.customBackoff(getBackOffPolicy(retryTopic)).useSingleTopicForFixedDelays()
+				.suffixTopicsWithIndexValues().doNotAutoCreateRetryTopics().create(kafkaOperations);
 	}
 
-	private SleepingBackOffPolicy<?> createBackOffFor(KafkaProperties.Retry.Topic properties) {
-		Long min = properties.getDelayMillis();
-		Long max = properties.getMaxDelayMillis();
-		Double multiplier = properties.getMultiplier();
-		Boolean isRandom = properties.isRandomBackOff();
-		if (min == null && max == null && multiplier == null && isRandom == null) {
-			return null;
-		}
-		if (multiplier != null && multiplier > 0) {
-			ExponentialBackOffPolicy policy = new ExponentialBackOffPolicy();
-			if (isRandom != null && isRandom) {
-				policy = new ExponentialRandomBackOffPolicy();
-			}
-			policy.setInitialInterval((min != null) ? min : ExponentialBackOffPolicy.DEFAULT_INITIAL_INTERVAL);
-			policy.setMultiplier(multiplier);
-			policy.setMaxInterval(
-					(max != null && min != null && max > min) ? max : ExponentialBackOffPolicy.DEFAULT_MAX_INTERVAL);
-			return policy;
-		}
-		if (max != null && min != null && max > min) {
-			UniformRandomBackOffPolicy policy = new UniformRandomBackOffPolicy();
-			policy.setMinBackOffPeriod(min);
-			policy.setMaxBackOffPeriod(max);
-			return policy;
-		}
-		FixedBackOffPolicy policy = new FixedBackOffPolicy();
-		if (min != null) {
-			policy.setBackOffPeriod(min);
-		}
-		return policy;
+	private SleepingBackOffPolicy<?> getBackOffPolicy(Topic retryTopic) {
+		BackOffPolicy policy = BackOffPolicyBuilder.newBuilder().delay(retryTopic.getDelayMillis())
+				.maxDelay(retryTopic.getMaxDelayMillis()).multiplier(retryTopic.getMultiplier())
+				.random(retryTopic.isRandomBackOff()).build();
+		Assert.isInstanceOf(SleepingBackOffPolicy.class, policy,
+				() -> "BackOffPolicy must be an instance of SleepingBackOffPolicy. Provided: " + policy);
+		return (SleepingBackOffPolicy<?>) policy;
 	}
 
 }
