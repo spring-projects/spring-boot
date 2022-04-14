@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ public interface MethodValidationExcludeFilter {
 
 	/**
 	 * Factory method to create a {@link MethodValidationExcludeFilter} that excludes
-	 * classes by annotation.
+	 * classes by annotation found using an {@link SearchStrategy#INHERITED_ANNOTATIONS
+	 * inherited annotations search strategy}.
 	 * @param annotationType the annotation to check
 	 * @return a {@link MethodValidationExcludeFilter} instance
 	 */
@@ -50,14 +51,14 @@ public interface MethodValidationExcludeFilter {
 
 	/**
 	 * Factory method to create a {@link MethodValidationExcludeFilter} that excludes
-	 * classes by annotation.
+	 * classes by annotation found using the given search strategy.
 	 * @param annotationType the annotation to check
 	 * @param searchStrategy the annotation search strategy
 	 * @return a {@link MethodValidationExcludeFilter} instance
 	 */
 	static MethodValidationExcludeFilter byAnnotation(Class<? extends Annotation> annotationType,
 			SearchStrategy searchStrategy) {
-		return (type) -> MergedAnnotations.from(type, SearchStrategy.SUPERCLASS).isPresent(annotationType);
+		return (type) -> MergedAnnotations.from(type, searchStrategy).isPresent(annotationType);
 	}
 
 }
