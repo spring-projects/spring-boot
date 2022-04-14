@@ -110,7 +110,13 @@ public class BuildInfo extends ConventionTask {
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
 		Map<String, String> output = new HashMap<>();
-		input.forEach((key, value) -> output.put(key, value.toString()));
+		input.forEach((key, value) -> {
+			if(value==null){
+				output.put(key, null);
+			}else{
+				output.put(key, value.toString());
+			}
+		});
 		return output;
 	}
 
