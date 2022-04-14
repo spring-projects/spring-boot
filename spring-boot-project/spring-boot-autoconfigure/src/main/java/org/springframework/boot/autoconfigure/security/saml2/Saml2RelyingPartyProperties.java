@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,14 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Remote SAML Identity Provider.
 		 */
-		private final Identityprovider identityprovider = new Identityprovider();
+		private final AssertingParty assertingParty = new AssertingParty();
+
+		/**
+		 * Remote SAML Identity Provider.
+		 * @deprecated use {@link #assertingParty}
+		 */
+		@Deprecated
+		private final AssertingParty identityprovider = new AssertingParty();
 
 		public String getEntityId() {
 			return this.entityId;
@@ -89,7 +96,17 @@ public class Saml2RelyingPartyProperties {
 			return this.decryption;
 		}
 
-		public Identityprovider getIdentityprovider() {
+		public AssertingParty getAssertingParty() {
+			return this.assertingParty;
+		}
+
+		/**
+		 * Remote SAML Identity Provider.
+		 * @return remote SAML Identity Provider
+		 * @deprecated use {@link #getAssertingParty()}
+		 */
+		@Deprecated
+		public AssertingParty getIdentityprovider() {
 			return this.identityprovider;
 		}
 
@@ -224,7 +241,7 @@ public class Saml2RelyingPartyProperties {
 	/**
 	 * Represents a remote Identity Provider.
 	 */
-	public static class Identityprovider {
+	public static class AssertingParty {
 
 		/**
 		 * Unique identifier for the identity provider.
@@ -282,7 +299,7 @@ public class Saml2RelyingPartyProperties {
 			/**
 			 * Whether to sign authentication requests.
 			 */
-			private boolean signRequest = true;
+			private Boolean signRequest;
 
 			public String getUrl() {
 				return this.url;
@@ -304,7 +321,11 @@ public class Saml2RelyingPartyProperties {
 				return this.signRequest;
 			}
 
-			public void setSignRequest(boolean signRequest) {
+			public Boolean getSignRequest() {
+				return this.signRequest;
+			}
+
+			public void setSignRequest(Boolean signRequest) {
 				this.signRequest = signRequest;
 			}
 
