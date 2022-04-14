@@ -109,9 +109,9 @@ public class BuildInfo extends ConventionTask {
 	}
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
-		Map<String, String> output = new HashMap<>();
-		input.forEach((key, value) -> output.put(key, value.toString()));
-		return output;
+		return input.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().toString()));
 	}
 
 }
