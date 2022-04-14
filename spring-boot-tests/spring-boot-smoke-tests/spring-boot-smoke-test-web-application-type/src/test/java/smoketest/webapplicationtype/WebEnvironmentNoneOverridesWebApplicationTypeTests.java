@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package smoketest.profile;
+package smoketest.webapplicationtype;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests that profiles are activited in the correct order from an
- * {@link EnvironmentPostProcessor}.
+ * Integration tests for a web environment of none overriding the configured web
+ * application type.
  *
- * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "enableEnvironmentPostProcessor=true" }) // gh-28530
-@ActiveProfiles("hello")
-class ActiveProfilesTests {
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+class WebEnvironmentNoneOverridesWebApplicationTypeTests {
 
 	@Autowired
-	private Environment environment;
+	private ApplicationContext context;
 
 	@Test
-	void activeProfileShouldTakePrecedenceOverProgrammaticallySetProfile() {
-		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "hello");
+	void contextIsPlain() {
+		assertThat(this.context).isNotInstanceOf(ReactiveWebApplicationContext.class);
+		assertThat(this.context).isNotInstanceOf(WebApplicationContext.class);
 	}
 
 }
