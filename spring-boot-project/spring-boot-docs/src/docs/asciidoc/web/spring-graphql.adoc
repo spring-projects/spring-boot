@@ -1,7 +1,7 @@
 [[web.graphql]]
-== Spring GraphQL
-If you want to build GraphQL applications, you can take advantage of Spring Boot's auto-configuration for {spring-graphql}[Spring GraphQL].
-The Spring GraphQL project is based on https://github.com/graphql-java/graphql-java[GraphQL Java].
+== Spring for GraphQL
+If you want to build GraphQL applications, you can take advantage of Spring Boot's auto-configuration for {spring-graphql}[Spring for GraphQL].
+The Spring for GraphQL project is based on https://github.com/graphql-java/graphql-java[GraphQL Java].
 You'll need the `spring-boot-starter-graphql` starter at a minimum.
 Because GraphQL is transport-agnostic, you'll also need to have one or more additional starters in your application to expose your GraphQL API over the web:
 
@@ -22,6 +22,9 @@ Because GraphQL is transport-agnostic, you'll also need to have one or more addi
 | HTTP, WebSocket
 | Spring WebFlux
 
+| `spring-boot-starter-rsocket`
+| TCP, WebSocket
+| Spring WebFlux on Reactor Netty
 |===
 
 
@@ -74,9 +77,11 @@ Spring Data repositories annotated with `@GraphQlRepository` and extending one o
 are detected by Spring Boot and considered as candidates for `DataFetcher` for matching top-level queries.
 
 
+[[web.graphql.transports]]
+=== Transports
 
-[[web.graphql.web-endpoints]]
-=== Web Endpoints
+[[web.graphql.transports.http-websocket]]
+==== HTTP and WebSocket
 
 The GraphQL HTTP endpoint is at HTTP POST "/graphql" by default. The path can be customized with configprop:spring.graphql.path[].
 
@@ -90,10 +95,6 @@ Spring GraphQL provides a {spring-graphql-docs}#web-interception[Web Interceptio
 This is quite useful for retrieving information from an HTTP request header and set it in the GraphQL context or fetching information from the same context and writing it to a response header.
 With Spring Boot, you can declare a `WebInterceptor` bean to have it registered with the web transport.
 
-
-
-[[web.graphql.cors]]
-=== CORS
 
 {spring-framework-docs}/web.html#mvc-cors[Spring MVC] and {spring-framework-docs}/web-reactive.html#webflux-cors[Spring WebFlux] support CORS (Cross-Origin Resource Sharing) requests.
 CORS is a critical part of the web config for GraphQL applications that are accessed from browsers using different domains.
@@ -111,6 +112,19 @@ Spring Boot supports many configuration properties under the `spring.graphql.cor
 ----
 
 
+[[web.graphql.transports.rsocket]]
+==== RSocket
+
+RSocket is also supported as a transport, on top of WebSocket or TCP.
+Once the <<messaging#messaging.rsocket.server-auto-configuration,RSocket server is configured>>, we can configure our GraphQL handler on a particular route using configprop:spring.graphql.rsocket.mapping[].
+For example, configuring that mapping as `"graphql"` means we can use the `RSocketGraphQlClient` as follows.
+
+For RSocket over TCP:
+include::code:RSocketGraphQlClientExample[tag=tcp]
+
+For RSocket over WebSocket:
+include::code:RSocketGraphQlClientExample[tag=websocket]
+
 
 [[web.graphql.exception-handling]]
 === Exceptions Handling
@@ -126,7 +140,7 @@ Spring Boot will automatically detect `DataFetcherExceptionResolver` beans and r
 
 Spring GraphQL offers infrastructure for helping developers when consuming or developing a GraphQL API.
 
-Spring GraphQL ships with a default https://github.com/graphql/graphiql[GraphiQL] page that is exposed at "/graphiql" by default.
+Spring GraphQL ships with a default https://github.com/graphql/graphiql[GraphiQL] page that is exposed at `"/graphiql"` by default.
 This page is disabled by default and can be turned on with the configprop:spring.graphql.graphiql.enabled[] property.
 Many applications exposing such a page will prefer a custom build.
 A default implementation is very useful during development, this is why it is exposed automatically with <<using#using.devtools,`spring-boot-devtools`>> during development.

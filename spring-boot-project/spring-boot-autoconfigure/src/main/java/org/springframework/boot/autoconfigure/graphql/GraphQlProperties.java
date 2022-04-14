@@ -41,6 +41,8 @@ public class GraphQlProperties {
 
 	private final Websocket websocket = new Websocket();
 
+	private final Rsocket rsocket = new Rsocket();
+
 	public Graphiql getGraphiql() {
 		return this.graphiql;
 	}
@@ -59,6 +61,10 @@ public class GraphQlProperties {
 
 	public Websocket getWebsocket() {
 		return this.websocket;
+	}
+
+	public Rsocket getRsocket() {
+		return this.rsocket;
 	}
 
 	public static class Schema {
@@ -200,6 +206,23 @@ public class GraphQlProperties {
 
 		public void setConnectionInitTimeout(Duration connectionInitTimeout) {
 			this.connectionInitTimeout = connectionInitTimeout;
+		}
+
+	}
+
+	public static class Rsocket {
+
+		/**
+		 * Mapping of the RSocket message handler.
+		 */
+		private String mapping;
+
+		public String getMapping() {
+			return this.mapping;
+		}
+
+		public void setMapping(String mapping) {
+			this.mapping = mapping;
 		}
 
 	}
