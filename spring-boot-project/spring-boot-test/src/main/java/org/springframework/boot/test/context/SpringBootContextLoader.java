@@ -55,6 +55,7 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
@@ -103,14 +104,21 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		}
 		else if (config instanceof ReactiveWebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.REACTIVE);
-			if (!isEmbeddedWebEnvironment(config)) {
-				application.setApplicationContextFactory(
-						ApplicationContextFactory.of(GenericReactiveWebApplicationContext::new));
-			}
 		}
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
+		application.setApplicationContextFactory((type) -> {
+			if (type != WebApplicationType.NONE && !isEmbeddedWebEnvironment(config)) {
+				if (type == WebApplicationType.REACTIVE) {
+					return new GenericReactiveWebApplicationContext();
+				}
+				else if (type == WebApplicationType.SERVLET) {
+					return new GenericWebApplicationContext();
+				}
+			}
+			return ApplicationContextFactory.DEFAULT.create(type);
+		});
 		application.setInitializers(initializers);
 		ConfigurableEnvironment environment = getEnvironment();
 		if (environment != null) {
@@ -261,14 +269,38 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
 			addMockServletContext(initializers, webConfiguration);
-			application.setApplicationContextFactory((webApplicationType) -> new GenericWebApplicationContext());
 		}
 
 		private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
 				WebMergedContextConfiguration webConfiguration) {
 			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
 					webConfiguration.getResourceBasePath());
-			initializers.add(0, new ServletContextApplicationContextInitializer(servletContext, true));
+			initializers.add(0, new DefensiveWebApplicationContextInitializer(
+					new ServletContextApplicationContextInitializer(servletContext, true)));
+		}
+
+		/**
+		 * Decorator for {@link ServletContextApplicationContextInitializer} that prevents
+		 * a failure when the context type is not as was predicted when the initializer
+		 * was registered. This can occur when spring.main.web-application-type is set to
+		 * something other than servlet.
+		 */
+		private static final class DefensiveWebApplicationContextInitializer
+				implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+			private final ServletContextApplicationContextInitializer delegate;
+
+			private DefensiveWebApplicationContextInitializer(ServletContextApplicationContextInitializer delegate) {
+				this.delegate = delegate;
+			}
+
+			@Override
+			public void initialize(ConfigurableApplicationContext applicationContext) {
+				if (applicationContext instanceof ConfigurableWebApplicationContext) {
+					this.delegate.initialize((ConfigurableWebApplicationContext) applicationContext);
+				}
+			}
+
 		}
 
 	}
