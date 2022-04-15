@@ -22,7 +22,6 @@ import java.util.List;
 import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.observation.Observation;
