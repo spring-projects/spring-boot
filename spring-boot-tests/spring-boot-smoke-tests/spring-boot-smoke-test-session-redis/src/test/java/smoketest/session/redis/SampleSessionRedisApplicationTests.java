@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -60,6 +61,7 @@ public class SampleSessionRedisApplicationTests {
 	}
 
 	@Test
+	@Disabled("See gh-30673")
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSessions() {
 		createSession(URI.create("/"));
