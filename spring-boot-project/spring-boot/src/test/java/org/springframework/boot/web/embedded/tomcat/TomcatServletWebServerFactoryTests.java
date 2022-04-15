@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -405,13 +406,15 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void defaultLocaleCharsetMappingsAreOverridden() {
+	void defaultLocaleCharsetMappingsAreOverridden() throws IOException {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
-		assertThat(getCharset(Locale.ENGLISH)).isEqualTo(StandardCharsets.UTF_8);
-		assertThat(getCharset(Locale.FRENCH)).isEqualTo(StandardCharsets.UTF_8);
-		assertThat(getCharset(Locale.JAPANESE)).isEqualTo(StandardCharsets.UTF_8);
+		Properties charsetMapperDefault = new Properties();
+		charsetMapperDefault.load(CharsetMapper.class.getResourceAsStream("CharsetMapperDefault.properties"));
+		for (String language : charsetMapperDefault.stringPropertyNames()) {
+			assertThat(getCharset(new Locale(language))).isEqualTo(StandardCharsets.UTF_8);
+		}
 	}
 
 	@Test
