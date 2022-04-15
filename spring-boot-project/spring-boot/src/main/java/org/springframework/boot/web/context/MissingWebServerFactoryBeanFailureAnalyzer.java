@@ -24,7 +24,7 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.core.annotation.Order;
 
 /**
- * A {@link FailureAnalyzer} that performs analysis of failures caused by an
+ * A {@link FailureAnalyzer} that performs analysis of failures caused by a
  * {@link MissingWebServerFactoryBeanException}.
  *
  * @author Guirong Hu
