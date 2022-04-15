@@ -383,7 +383,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		private static <T extends DataSource> MappedDataSourceProperties<T> lookupPooled(ClassLoader classLoader,
 				Class<T> type) {
 			MappedDataSourceProperties<T> result = null;
-			result = lookup(classLoader, type, result, "com.zaxxer.hikari.HikariDataSource",
+			result = lookup(classLoader, type, null, "com.zaxxer.hikari.HikariDataSource",
 					HikariDataSourceProperties::new);
 			result = lookup(classLoader, type, result, "org.apache.tomcat.jdbc.pool.DataSource",
 					TomcatPoolDataSourceProperties::new);
@@ -397,7 +397,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		private static <T extends DataSource> MappedDataSourceProperties<T> lookupBasic(ClassLoader classLoader,
 				Class<T> dataSourceType) {
 			MappedDataSourceProperties<T> result = null;
-			result = lookup(classLoader, dataSourceType, result,
+			result = lookup(classLoader, dataSourceType, null,
 					"org.springframework.jdbc.datasource.SimpleDriverDataSource",
 					SimpleDataSourceProperties::new);
 			result = lookup(classLoader, dataSourceType, result, "oracle.jdbc.datasource.OracleDataSource",
