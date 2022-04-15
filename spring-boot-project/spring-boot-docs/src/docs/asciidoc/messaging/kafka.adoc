@@ -61,7 +61,7 @@ The former can be configured using `spring.kafka.streams.application-id`, defaul
 The latter can be set globally or specifically overridden only for streams.
 
 Several additional properties are available using dedicated properties; other arbitrary Kafka properties can be set using the `spring.kafka.streams.properties` namespace.
-See also <<features#messaging.kafka.additional-properties>> for more information.
+See also <<kafka#messaging.kafka.additional-properties>> for more information.
 
 To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
