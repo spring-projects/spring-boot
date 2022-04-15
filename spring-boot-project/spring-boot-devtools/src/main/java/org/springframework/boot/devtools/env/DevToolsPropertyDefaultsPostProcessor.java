@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.env;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -74,7 +75,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		for (String name : properties.stringPropertyNames()) {
 			map.put(name, properties.getProperty(name));
 		}
-		PROPERTIES = map;
+		PROPERTIES = Collections.unmodifiableMap(map);
 	}
 
 	@Override

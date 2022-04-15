@@ -41,7 +41,7 @@ import org.gradle.api.tasks.TaskAction;
  */
 public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 
-	private Configuration devtools;
+	private final Configuration devtools;
 
 	private final RegularFileProperty outputFile;
 

@@ -37,7 +37,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
 /**
- * A {@link FailureAnalyzer} that performs analysis of failures caused by an
+ * A {@link FailureAnalyzer} that performs analysis of failures caused by a
  * {@link MutuallyExclusiveConfigurationPropertiesException}.
  *
  * @author Andy Wilkinson

@@ -209,7 +209,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		// Use bean names so that we don't consider the hierarchy
 		String[] beanNames = getBeanFactory().getBeanNamesForType(ServletWebServerFactory.class);
 		if (beanNames.length == 0) {
-			throw new MissingWebServerFactoryBeanException(this.getClass(), ServletWebServerFactory.class,
+			throw new MissingWebServerFactoryBeanException(getClass(), ServletWebServerFactory.class,
 					WebApplicationType.SERVLET);
 		}
 		if (beanNames.length > 1) {
