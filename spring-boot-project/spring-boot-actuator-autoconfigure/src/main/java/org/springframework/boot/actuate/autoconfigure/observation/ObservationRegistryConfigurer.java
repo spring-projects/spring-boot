@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.observation;
 
 import java.util.List;
 
-import io.micrometer.observation.Observation.GlobalTagsProvider;
+import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -29,7 +29,7 @@ import org.springframework.boot.util.LambdaSafe;
 /**
  * Configurer to apply {@link ObservationRegistryCustomizer customizers} to
  * {@link ObservationRegistry observation registries}. Installs
- * {@link ObservationPredicate observation predicates} and {@link GlobalTagsProvider
+ * {@link ObservationPredicate observation predicates} and {@link GlobalKeyValuesProvider
  * global tag providers} into the {@link ObservationRegistry}. Also uses a
  * {@link ObservationHandlerGrouping} to group handlers, which are then added to the
  * {@link ObservationRegistry}.
@@ -42,7 +42,7 @@ class ObservationRegistryConfigurer {
 
 	private final ObjectProvider<ObservationPredicate> observationPredicates;
 
-	private final ObjectProvider<GlobalTagsProvider<?>> tagProviders;
+	private final ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders;
 
 	private final ObjectProvider<ObservationHandler<?>> observationHandlers;
 
@@ -50,7 +50,7 @@ class ObservationRegistryConfigurer {
 
 	ObservationRegistryConfigurer(ObjectProvider<ObservationRegistryCustomizer<?>> customizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalTagsProvider<?>> tagProviders,
+			ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		this.customizers = customizers;
@@ -79,7 +79,7 @@ class ObservationRegistryConfigurer {
 
 	private void registerGlobalTagsProvider(ObservationRegistry registry) {
 		this.tagProviders.orderedStream()
-				.forEach((tagProvider) -> registry.observationConfig().tagsProvider(tagProvider));
+				.forEach((tagProvider) -> registry.observationConfig().keyValuesProvider(tagProvider));
 	}
 
 	@SuppressWarnings("unchecked")
