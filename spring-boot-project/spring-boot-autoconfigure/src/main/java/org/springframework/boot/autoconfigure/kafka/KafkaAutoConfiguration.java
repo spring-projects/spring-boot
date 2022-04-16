@@ -44,7 +44,6 @@ import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.BackOffPolicyBuilder;
 import org.springframework.retry.backoff.SleepingBackOffPolicy;
 import org.springframework.util.Assert;
@@ -64,6 +63,8 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties(KafkaProperties.class)
 @Import({ KafkaAnnotationDrivenConfiguration.class, KafkaStreamsAnnotationDrivenConfiguration.class })
 public class KafkaAutoConfiguration {
+
+	private static final String RETRY_TOPIC_VALIDATION_ERROR_MSG = "Property spring.kafka.retry.topic.%s should be greater than or equal to %s. Provided value was %s.";
 
 	private final KafkaProperties properties;
 
@@ -150,18 +151,32 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
 	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
-		return RetryTopicConfigurationBuilder.newInstance().maxAttempts(retryTopic.getAttempts())
-				.customBackoff(getBackOffPolicy(retryTopic)).useSingleTopicForFixedDelays()
-				.suffixTopicsWithIndexValues().doNotAutoCreateRetryTopics().create(kafkaOperations);
+		validateRetryTopicInput(retryTopic);
+		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
+				.maxAttempts(retryTopic.getAttempts()).useSingleTopicForFixedDelays().suffixTopicsWithIndexValues()
+				.doNotAutoCreateRetryTopics();
+		setBackOffPolicy(builder, retryTopic);
+		return builder.create(kafkaOperations);
 	}
 
-	private SleepingBackOffPolicy<?> getBackOffPolicy(Topic retryTopic) {
-		BackOffPolicy policy = BackOffPolicyBuilder.newBuilder().delay(retryTopic.getDelayMillis())
-				.maxDelay(retryTopic.getMaxDelayMillis()).multiplier(retryTopic.getMultiplier())
-				.random(retryTopic.isRandomBackOff()).build();
-		Assert.isInstanceOf(SleepingBackOffPolicy.class, policy,
-				() -> "BackOffPolicy must be an instance of SleepingBackOffPolicy. Provided: " + policy);
-		return (SleepingBackOffPolicy<?>) policy;
+	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {
+		PropertyMapper.get().from(retryTopic.getDelayMillis()).whenEqualTo(0L).toCall(builder::noBackoff);
+		PropertyMapper.get().from(retryTopic.getDelayMillis()).when((delay) -> delay > 0)
+				.toCall(() -> builder.customBackoff((SleepingBackOffPolicy<?>) BackOffPolicyBuilder.newBuilder()
+						.delay(retryTopic.getDelayMillis()).maxDelay(retryTopic.getMaxDelayMillis())
+						.multiplier(retryTopic.getMultiplier()).random(retryTopic.isRandomBackOff()).build()));
+	}
+
+	private static void validateRetryTopicInput(Topic retryTopic) {
+		assertProperty("attempts", retryTopic.getAttempts() >= 1, 1, retryTopic.getMaxDelayMillis());
+		assertProperty("delay", retryTopic.getDelayMillis() >= 0, 0, retryTopic.getDelayMillis());
+		assertProperty("multiplier", retryTopic.getMultiplier() >= 0, 0, retryTopic.getMultiplier());
+		assertProperty("maxDelayMillis", retryTopic.getDelayMillis() >= 0, 0, retryTopic.getMaxDelayMillis());
+	}
+
+	private static void assertProperty(String propertyName, boolean condition, Object minValue, Object providedValue) {
+		Assert.isTrue(condition,
+				() -> String.format(RETRY_TOPIC_VALIDATION_ERROR_MSG, propertyName, minValue, providedValue));
 	}
 
 }

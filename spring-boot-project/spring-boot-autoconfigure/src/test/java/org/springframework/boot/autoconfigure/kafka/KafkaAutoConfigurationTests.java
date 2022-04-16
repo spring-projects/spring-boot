@@ -359,6 +359,16 @@ class KafkaAutoConfigurationTests {
 								.extracting(DestinationTopic.Properties::delay).containsExactly(0L, 2000L, 0L));
 	}
 
+	@Test
+	void retryTopicConfigurationWithNoBackOff() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=0")
+				.run((context) -> assertThat(
+						context.getBean(RetryTopicConfiguration.class).getDestinationTopicProperties()).hasSize(3)
+								.extracting(DestinationTopic.Properties::delay).containsExactly(0L, 0L, 0L));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	void streamsWithSeveralStreamsBuilderFactoryBeans() {

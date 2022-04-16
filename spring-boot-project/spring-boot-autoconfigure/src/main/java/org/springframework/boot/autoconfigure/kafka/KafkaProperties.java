@@ -1380,15 +1380,14 @@ public class KafkaProperties {
 			private Double multiplier = 0.0;
 
 			/**
-			 * The maximimum wait between retries. If less than the delay then the default
+			 * The maximum wait between retries. If less than the delay then the default
 			 * of 30 seconds is applied.
 			 */
 			private Duration maxDelay = Duration.ZERO;
 
 			/**
-			 * In the exponential case (multiplier() > 0) set this to true to have the
-			 * backoff delays randomized, so that the maximum delay is multiplier times
-			 * the previous delay and the distribution is uniform between the two values.
+			 * In the exponential case, set this to true to have the backoff delays
+			 * randomized. This has no effect for other back off types.
 			 */
 			private Boolean randomBackOff = false;
 
