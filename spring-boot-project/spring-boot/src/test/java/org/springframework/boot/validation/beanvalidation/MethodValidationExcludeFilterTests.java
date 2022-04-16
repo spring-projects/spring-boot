@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.core.annotation.MergedAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +43,17 @@ class MethodValidationExcludeFilterTests {
 		assertThat(filter.isExcluded(Plain.class)).isFalse();
 	}
 
+	@Test
+	void byAnnotationWhenClassIsAnnotatedAndSearchStrategyExcludes() {
+		MethodValidationExcludeFilter filter = MethodValidationExcludeFilter.byAnnotation(Indicator.class,MergedAnnotations.SearchStrategy.SUPERCLASS);
+		assertThat(filter.isExcluded(Annotated.class)).isTrue();
+	}
+
+	@Test
+	void byAnnotationWhenClassIsAnnotatedAndSearchStrategyIncludes() {
+		MethodValidationExcludeFilter filter = MethodValidationExcludeFilter.byAnnotation(Indicator.class,MergedAnnotations.SearchStrategy.DIRECT);
+		assertThat(filter.isExcluded(Annotated.class)).isFalse();
+	}
 	static class Plain {
 
 	}
