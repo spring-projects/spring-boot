@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.boot.ExitCodeGenerator;
@@ -31,7 +31,7 @@ import org.springframework.context.ApplicationListener;
  */
 public class JobExecutionExitCodeGenerator implements ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
 
-	private final List<JobExecution> executions = new ArrayList<>();
+	private final List<JobExecution> executions = new CopyOnWriteArrayList<>();
 
 	@Override
 	public void onApplicationEvent(JobExecutionEvent event) {

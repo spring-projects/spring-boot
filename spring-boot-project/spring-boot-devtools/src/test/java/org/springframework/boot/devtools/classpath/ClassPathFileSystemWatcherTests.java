@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -116,7 +117,7 @@ class ClassPathFileSystemWatcherTests {
 
 	static class Listener implements ApplicationListener<ClassPathChangedEvent> {
 
-		private List<ClassPathChangedEvent> events = new ArrayList<>();
+		private List<ClassPathChangedEvent> events = new CopyOnWriteArrayList<>();
 
 		@Override
 		public void onApplicationEvent(ClassPathChangedEvent event) {
