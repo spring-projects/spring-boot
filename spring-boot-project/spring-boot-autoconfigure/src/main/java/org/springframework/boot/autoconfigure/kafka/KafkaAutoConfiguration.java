@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -168,14 +169,15 @@ public class KafkaAutoConfiguration {
 	}
 
 	private static void validateRetryTopicInput(Topic retryTopic) {
-		assertProperty("attempts", retryTopic.getAttempts() >= 1, 1, retryTopic.getMaxDelayMillis());
-		assertProperty("delay", retryTopic.getDelayMillis() >= 0, 0, retryTopic.getDelayMillis());
-		assertProperty("multiplier", retryTopic.getMultiplier() >= 0, 0, retryTopic.getMultiplier());
-		assertProperty("maxDelayMillis", retryTopic.getDelayMillis() >= 0, 0, retryTopic.getMaxDelayMillis());
+		assertProperty("attempts",  retryTopic.getAttempts(), 1);
+		assertProperty("delay",  retryTopic.getDelayMillis(), 0);
+		assertProperty("multiplier",  retryTopic.getMultiplier(), 0);
+		assertProperty("maxDelayMillis",  retryTopic.getMaxDelayMillis(), 0);
 	}
 
-	private static void assertProperty(String propertyName, boolean condition, Object minValue, Object providedValue) {
-		Assert.isTrue(condition,
+	private static void assertProperty(String propertyName, Number providedValue, int minValue) {
+		Assert.notNull(providedValue, () -> "spring.kafka.retry.topic." + propertyName + " cannot be null.");
+		Assert.isTrue(new BigDecimal(providedValue.toString()).compareTo(BigDecimal.valueOf(minValue)) >= 0,
 				() -> String.format(RETRY_TOPIC_VALIDATION_ERROR_MSG, propertyName, minValue, providedValue));
 	}
 
