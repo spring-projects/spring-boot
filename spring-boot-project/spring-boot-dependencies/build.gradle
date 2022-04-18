@@ -1167,7 +1167,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Clean Plugin", "3.1.0") {
+	library("Maven Clean Plugin", "3.2.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-clean-plugin"
