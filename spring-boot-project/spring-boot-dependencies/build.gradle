@@ -1291,7 +1291,7 @@ bom {
 			]
 		}
 	}
-	library("MIMEPull", "1.9.15") {
+	library("MIMEPull", "1.10.0") {
 		group("org.jvnet.mimepull") {
 			modules = [
 				"mimepull"
