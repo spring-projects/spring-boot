@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 								MediaType.APPLICATION_ATOM_XML, new MediaType("application", "javascript"),
 								new MediaType("application", "ecmascript"), new MediaType("text", "javascript"),
 								new MediaType("text", "ecmascript"), MediaType.APPLICATION_JSON,
-								new MediaType("text", "css"), MediaType.TEXT_PLAIN, MediaType.TEXT_EVENT_STREAM)
-						.satisfies(System.out::println));
+								new MediaType("text", "css"), MediaType.TEXT_PLAIN, MediaType.TEXT_EVENT_STREAM));
 	}
 
 	@Test

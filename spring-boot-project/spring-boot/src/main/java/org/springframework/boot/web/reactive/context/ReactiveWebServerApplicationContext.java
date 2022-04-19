@@ -107,7 +107,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		// Use bean names so that we don't consider the hierarchy
 		String[] beanNames = getBeanFactory().getBeanNamesForType(ReactiveWebServerFactory.class);
 		if (beanNames.length == 0) {
-			throw new MissingWebServerFactoryBeanException(this.getClass(), ReactiveWebServerFactory.class,
+			throw new MissingWebServerFactoryBeanException(getClass(), ReactiveWebServerFactory.class,
 					WebApplicationType.REACTIVE);
 		}
 		if (beanNames.length > 1) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.env;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -74,7 +75,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		for (String name : properties.stringPropertyNames()) {
 			map.put(name, properties.getProperty(name));
 		}
-		PROPERTIES = map;
+		PROPERTIES = Collections.unmodifiableMap(map);
 	}
 
 	@Override
