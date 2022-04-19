@@ -184,7 +184,7 @@ public class GradleBuild {
 						buildOutput = buildOutput.replaceAll(message, "");
 					}
 				}
-				assertThat(buildOutput).doesNotContain("Deprecated").doesNotContain("deprecated");
+				assertThat(buildOutput).doesNotContainIgnoringCase("deprecated");
 			}
 			return result;
 		}
