@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,11 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 	@Override
 	public boolean enrichWithDynatraceMetadata() {
 		return get(v2(V2::isEnrichWithDynatraceMetadata), DynatraceConfig.super::enrichWithDynatraceMetadata);
+	}
+
+	@Override
+	public boolean useDynatraceSummaryInstruments() {
+		return get(v2(V2::isUseDynatraceSummaryInstruments), DynatraceConfig.super::useDynatraceSummaryInstruments);
 	}
 
 	private <V> Function<DynatraceProperties, V> v1(Function<V1, V> getter) {
