@@ -1720,7 +1720,7 @@ bom {
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.5.0-M2") {
+	library("Spring HATEOAS", "1.5.0-RC1") {
 		prohibit("[2.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
