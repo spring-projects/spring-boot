@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -47,7 +46,6 @@ import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.retry.backoff.BackOffPolicyBuilder;
 import org.springframework.retry.backoff.SleepingBackOffPolicy;
-import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -64,8 +62,6 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties(KafkaProperties.class)
 @Import({ KafkaAnnotationDrivenConfiguration.class, KafkaStreamsAnnotationDrivenConfiguration.class })
 public class KafkaAutoConfiguration {
-
-	private static final String RETRY_TOPIC_VALIDATION_ERROR_MSG = "Property spring.kafka.retry.topic.%s should be greater than or equal to %s. Provided value was %s.";
 
 	private final KafkaProperties properties;
 
@@ -152,7 +148,6 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
 	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
-		validateRetryTopicInput(retryTopic);
 		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
 				.maxAttempts(retryTopic.getAttempts()).useSingleTopicForFixedDelays().suffixTopicsWithIndexValues()
 				.doNotAutoCreateRetryTopics();
@@ -166,19 +161,6 @@ public class KafkaAutoConfiguration {
 				.toCall(() -> builder.customBackoff((SleepingBackOffPolicy<?>) BackOffPolicyBuilder.newBuilder()
 						.delay(retryTopic.getDelayMillis()).maxDelay(retryTopic.getMaxDelayMillis())
 						.multiplier(retryTopic.getMultiplier()).random(retryTopic.isRandomBackOff()).build()));
-	}
-
-	private static void validateRetryTopicInput(Topic retryTopic) {
-		assertProperty("attempts", retryTopic.getAttempts(), 1);
-		assertProperty("delay", retryTopic.getDelayMillis(), 0);
-		assertProperty("multiplier", retryTopic.getMultiplier(), 0);
-		assertProperty("maxDelayMillis", retryTopic.getMaxDelayMillis(), 0);
-	}
-
-	private static void assertProperty(String propertyName, Number providedValue, int minValue) {
-		Assert.notNull(providedValue, () -> "spring.kafka.retry.topic." + propertyName + " cannot be null.");
-		Assert.isTrue(new BigDecimal(providedValue.toString()).compareTo(BigDecimal.valueOf(minValue)) >= 0,
-				() -> String.format(RETRY_TOPIC_VALIDATION_ERROR_MSG, propertyName, minValue, providedValue));
 	}
 
 }

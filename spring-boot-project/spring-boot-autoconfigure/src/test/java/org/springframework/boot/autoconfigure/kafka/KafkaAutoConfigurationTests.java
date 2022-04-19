@@ -371,9 +371,10 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void retryTopicConfigurationWithNegativeDelay() {
-		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=-1")
+		this.contextRunner
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.retry.topic.enabled=true", "spring.kafka.retry.topic.delay=-1")
 				.run((context) -> assertThat(context.getStartupFailure()).getRootCause()
 						.isInstanceOf(IllegalArgumentException.class).message()
 						.isEqualTo("Property spring.kafka.retry.topic.delay"
@@ -382,9 +383,10 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void retryTopicConfigurationWithNegativeMultiplier() {
-		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.multiplier=-1")
+		this.contextRunner
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.retry.topic.enabled=true", "spring.kafka.retry.topic.multiplier=-1")
 				.run((context) -> assertThat(context.getStartupFailure()).getRootCause()
 						.isInstanceOf(IllegalArgumentException.class).message()
 						.isEqualTo("Property spring.kafka.retry.topic.multiplier"
@@ -393,9 +395,10 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void retryTopicConfigurationWithNegativeMaxDelay() {
-		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.maxDelay=-1")
+		this.contextRunner
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.retry.topic.enabled=true", "spring.kafka.retry.topic.maxDelay=-1")
 				.run((context) -> assertThat(context.getStartupFailure()).getRootCause()
 						.isInstanceOf(IllegalArgumentException.class).message()
 						.isEqualTo("Property spring.kafka.retry.topic.maxDelay"
@@ -412,6 +415,17 @@ class KafkaAutoConfigurationTests {
 						.isInstanceOf(IllegalArgumentException.class).message()
 						.isEqualTo("Property spring.kafka.retry.topic.attempts"
 								+ " should be greater than or equal to 1. Provided value was 0."));
+	}
+
+	@Test
+	void retryTopicConfigurationWithZeroMultiplierAndRandomBackOff() {
+		this.contextRunner
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.retry.topic.enabled=true", "spring.kafka.retry.topic.randomBackOff=true")
+				.run((context) -> assertThat(context.getStartupFailure()).getRootCause()
+						.isInstanceOf(IllegalArgumentException.class).message().isEqualTo(
+								"Property spring.kafka.retry.topic.randomBackOff should not be true with non-exponential back offs."));
 	}
 
 	@SuppressWarnings("unchecked")
