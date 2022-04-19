@@ -169,10 +169,10 @@ public class KafkaAutoConfiguration {
 	}
 
 	private static void validateRetryTopicInput(Topic retryTopic) {
-		assertProperty("attempts",  retryTopic.getAttempts(), 1);
-		assertProperty("delay",  retryTopic.getDelayMillis(), 0);
-		assertProperty("multiplier",  retryTopic.getMultiplier(), 0);
-		assertProperty("maxDelayMillis",  retryTopic.getMaxDelayMillis(), 0);
+		assertProperty("attempts", retryTopic.getAttempts(), 1);
+		assertProperty("delay", retryTopic.getDelayMillis(), 0);
+		assertProperty("multiplier", retryTopic.getMultiplier(), 0);
+		assertProperty("maxDelayMillis", retryTopic.getMaxDelayMillis(), 0);
 	}
 
 	private static void assertProperty(String propertyName, Number providedValue, int minValue) {
