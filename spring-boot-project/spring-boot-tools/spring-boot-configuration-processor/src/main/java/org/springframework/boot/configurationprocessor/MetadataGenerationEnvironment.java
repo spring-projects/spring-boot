@@ -221,10 +221,6 @@ class MetadataGenerationEnvironment {
 		return Collections.unmodifiableList(stack);
 	}
 
-	private boolean hasAnnotationRecursive(Element element, String type) {
-		return !getElementsAnnotatedOrMetaAnnotatedWith(element, this.elements.getTypeElement(type)).isEmpty();
-	}
-
 	private boolean collectElementsAnnotatedOrMetaAnnotatedWith(TypeElement annotationType, LinkedList<Element> stack) {
 		Element element = stack.peekLast();
 		for (AnnotationMirror annotation : this.elements.getAllAnnotationMirrors(element)) {
