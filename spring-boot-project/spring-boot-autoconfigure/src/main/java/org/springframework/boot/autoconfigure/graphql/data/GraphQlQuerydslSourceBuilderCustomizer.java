@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
-import org.springframework.graphql.execution.GraphQlSource.Builder;
+import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 /**
@@ -59,7 +59,7 @@ class GraphQlQuerydslSourceBuilderCustomizer<E, R> implements GraphQlSourceBuild
 	}
 
 	@Override
-	public void customize(Builder builder) {
+	public void customize(GraphQlSource.SchemaResourceBuilder builder) {
 		if (!this.executors.isEmpty() || !this.reactiveExecutors.isEmpty()) {
 			builder.configureRuntimeWiring(this.wiringConfigurerFactory.apply(this.executors, this.reactiveExecutors));
 		}

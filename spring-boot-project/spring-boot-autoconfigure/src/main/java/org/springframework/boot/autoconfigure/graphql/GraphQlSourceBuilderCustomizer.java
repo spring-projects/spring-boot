@@ -20,8 +20,8 @@ import org.springframework.graphql.execution.GraphQlSource;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize properties of
- * {@link org.springframework.graphql.execution.GraphQlSource.Builder Builder} whilst
- * retaining default auto-configuration.
+ * {@link org.springframework.graphql.execution.GraphQlSource.SchemaResourceBuilder
+ * Builder} whilst retaining default auto-configuration.
  *
  * @author Rossen Stoyanchev
  * @since 2.7.0
@@ -30,10 +30,11 @@ import org.springframework.graphql.execution.GraphQlSource;
 public interface GraphQlSourceBuilderCustomizer {
 
 	/**
-	 * Customize the {@link org.springframework.graphql.execution.GraphQlSource.Builder
+	 * Customize the
+	 * {@link org.springframework.graphql.execution.GraphQlSource.SchemaResourceBuilder
 	 * Builder} instance.
 	 * @param builder builder the builder to customize
 	 */
-	void customize(GraphQlSource.Builder builder);
+	void customize(GraphQlSource.SchemaResourceBuilder builder);
 
 }

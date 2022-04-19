@@ -45,7 +45,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
-import org.springframework.graphql.execution.GraphQlSource.Builder;
+import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
@@ -267,7 +267,7 @@ class GraphQlTypeExcludeFilterTests {
 	static class ExampleGraphQlSourceBuilderCustomizer implements GraphQlSourceBuilderCustomizer {
 
 		@Override
-		public void customize(Builder builder) {
+		public void customize(GraphQlSource.SchemaResourceBuilder builder) {
 
 		}
 

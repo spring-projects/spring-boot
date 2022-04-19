@@ -186,8 +186,9 @@ class GraphQlAutoConfigurationTests {
 	static class CustomGraphQlBuilderConfiguration {
 
 		@Bean
-		GraphQlSource.Builder customGraphQlSourceBuilder() {
-			return GraphQlSource.builder().schemaResources(new ClassPathResource("graphql/schema.graphqls"),
+		GraphQlSource.SchemaResourceBuilder customGraphQlSourceBuilder() {
+			return GraphQlSource.schemaResourceBuilder().schemaResources(
+					new ClassPathResource("graphql/schema.graphqls"),
 					new ClassPathResource("graphql/types/book.graphqls"));
 		}
 
@@ -200,7 +201,7 @@ class GraphQlAutoConfigurationTests {
 		GraphQlSource customGraphQlSource() {
 			ByteArrayResource schemaResource = new ByteArrayResource(
 					"type Query { greeting: String }".getBytes(StandardCharsets.UTF_8));
-			return GraphQlSource.builder().schemaResources(schemaResource).build();
+			return GraphQlSource.schemaResourceBuilder().schemaResources(schemaResource).build();
 		}
 
 	}
@@ -258,7 +259,7 @@ class GraphQlAutoConfigurationTests {
 			public boolean applied = false;
 
 			@Override
-			public void customize(GraphQlSource.Builder builder) {
+			public void customize(GraphQlSource.SchemaResourceBuilder builder) {
 				this.applied = true;
 			}
 

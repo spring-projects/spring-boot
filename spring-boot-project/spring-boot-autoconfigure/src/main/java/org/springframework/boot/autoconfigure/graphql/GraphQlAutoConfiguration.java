@@ -80,8 +80,9 @@ public class GraphQlAutoConfiguration {
 		String[] schemaLocations = properties.getSchema().getLocations();
 		Resource[] schemaResources = resolveSchemaResources(resourcePatternResolver, schemaLocations,
 				properties.getSchema().getFileExtensions());
-		GraphQlSource.Builder builder = GraphQlSource.builder().schemaResources(schemaResources)
-				.exceptionResolvers(toList(exceptionResolvers)).instrumentation(toList(instrumentations));
+		GraphQlSource.SchemaResourceBuilder builder = GraphQlSource.schemaResourceBuilder()
+				.schemaResources(schemaResources).exceptionResolvers(toList(exceptionResolvers))
+				.instrumentation(toList(instrumentations));
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}
