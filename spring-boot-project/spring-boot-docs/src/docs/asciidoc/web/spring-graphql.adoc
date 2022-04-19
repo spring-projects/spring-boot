@@ -117,13 +117,14 @@ Spring Boot supports many configuration properties under the `spring.graphql.cor
 
 RSocket is also supported as a transport, on top of WebSocket or TCP.
 Once the <<messaging#messaging.rsocket.server-auto-configuration,RSocket server is configured>>, we can configure our GraphQL handler on a particular route using configprop:spring.graphql.rsocket.mapping[].
-For example, configuring that mapping as `"graphql"` means we can use the `RSocketGraphQlClient` as follows.
+For example, configuring that mapping as `"graphql"` means we can use that as a route when sending requests with the `RSocketGraphQlClient`.
 
-For RSocket over TCP:
-include::code:RSocketGraphQlClientExample[tag=tcp]
+Spring Boot auto-configures a `RSocketGraphQlClient.Builder<?>` bean that you can inject in your components:
 
-For RSocket over WebSocket:
-include::code:RSocketGraphQlClientExample[tag=websocket]
+include::code:RSocketGraphQlClientExample[tag=builder]
+
+And then send a request:
+include::code:RSocketGraphQlClientExample[tag=request]
 
 
 [[web.graphql.exception-handling]]

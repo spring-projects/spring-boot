@@ -16,32 +16,29 @@
 
 package org.springframework.boot.docs.web.graphql.transports.rsocket;
 
-import java.net.URI;
 import java.time.Duration;
 
 import reactor.core.publisher.Mono;
 
 import org.springframework.graphql.client.RSocketGraphQlClient;
+import org.springframework.stereotype.Component;
 
+// tag::builder[]
+@Component
 public class RSocketGraphQlClientExample {
 
-	public void rsocketOverTcp() {
-		// tag::tcp[]
-		RSocketGraphQlClient client = RSocketGraphQlClient.builder().tcp("example.spring.io", 8181).route("graphql")
-				.build();
-		Mono<Book> book = client.document("{ bookById(id: \"book-1\"){ id name pageCount author } }")
-				.retrieve("bookById").toEntity(Book.class);
-		// end::tcp[]
-		book.block(Duration.ofSeconds(5));
-	}
+	private final RSocketGraphQlClient graphQlClient;
 
-	public void rsocketOverWebSocket() {
-		// tag::websocket[]
-		RSocketGraphQlClient client = RSocketGraphQlClient.builder()
-				.webSocket(URI.create("wss://example.spring.io/rsocket")).route("graphql").build();
-		Mono<Book> book = client.document("{ bookById(id: \"book-1\"){ id name pageCount author } }")
+	public RSocketGraphQlClientExample(RSocketGraphQlClient.Builder<?> builder) {
+		this.graphQlClient = builder.tcp("example.spring.io", 8181).route("graphql").build();
+	}
+	// end::builder[]
+
+	public void rsocketOverTcp() {
+		// tag::request[]
+		Mono<Book> book = this.graphQlClient.document("{ bookById(id: \"book-1\"){ id name pageCount author } }")
 				.retrieve("bookById").toEntity(Book.class);
-		// end::websocket[]
+		// end::request[]
 		book.block(Duration.ofSeconds(5));
 	}
 
