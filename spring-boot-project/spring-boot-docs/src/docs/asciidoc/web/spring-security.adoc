@@ -262,6 +262,10 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"
+                singlelogout:
+                   url: "https://myapp/logout/saml2/slo"
+                   reponse-url: "https://remoteidp2.slo.url"
+                   binding: "POST"
 	            assertingparty:
 	              verification:
 	                credentials:
@@ -284,4 +288,14 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
                     - certificate-location: "path-to-other-verification-cert"
                   entity-id: "remote-idp-entity-id2"
                   sso-url: "https://remoteidp2.sso.url"
+                  singlelogout:
+                    url: "https://remoteidp2.slo.url"
+                    reponse-url: "https://myapp/logout/saml2/slo"
+                    binding: "POST"
 ----
+
+For SAML2 logout, by default, Spring Security's `Saml2LogoutRequestFilter` and `Saml2LogoutResponseFilter` only process URLs matching `/logout/saml2/slo`.
+If you want to customize the `url` to which AP-initiated logout requests get sent to or the `response-url` to which an AP sends logout responses to, to use a different pattern, you need to provide configuration to process that custom pattern.
+For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
+
+include::code:MySamlRelyingPartyConfiguration[]
