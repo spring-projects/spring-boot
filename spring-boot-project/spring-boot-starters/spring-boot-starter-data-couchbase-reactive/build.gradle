@@ -8,5 +8,8 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("io.projectreactor:reactor-core")
 	api("io.reactivex:rxjava-reactive-streams")
-	api("org.springframework.data:spring-data-couchbase")
+	api("org.springframework.data:spring-data-couchbase") {
+		exclude group: "com.querydsl", module: "querydsl-apt"
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
 }

@@ -168,7 +168,10 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.batch:spring-batch-core")
-	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-couchbase") {
+		exclude group: "com.querydsl", module: "querydsl-apt"
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
 	optional("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

@@ -140,7 +140,10 @@ dependencies {
 	optional("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
-	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-couchbase") {
+		exclude group: "com.querydsl", module: "querydsl-apt"
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
