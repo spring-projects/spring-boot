@@ -66,16 +66,12 @@ public class ReactiveKafkaProperties {
 	public static class Receiver {
 
 		/**
-		 * Sets the timeout for each {@link KafkaConsumer#poll(Duration)} operation. Since
-		 * the underlying Kafka consumer is not thread-safe, long poll intervals may delay
-		 * commits and other operations invoked using
-		 * {@link KafkaReceiver#doOnConsumer(java.util.function.Function)}. Very short
-		 * timeouts may reduce batching and increase load on the broker.
+		 * Sets the timeout for each KafkaConsumer's poll operation duration.
 		 */
 		private Duration pollTimeout;
 
 		/**
-		 * Sets timeout for graceful shutdown of {@link KafkaConsumer}.
+		 * Sets timeout for graceful shutdown of the KafkaConsumer.
 		 */
 		private Duration closeTimeout;
 
@@ -104,24 +100,18 @@ public class ReactiveKafkaProperties {
 
 		/**
 		 * Configures commit ahead size per partition for at-most-once delivery. Before
-		 * dispatching each record, an offset ahead by this size may be committed. The
-		 * maximum number of records that may be lost if the application fails is
-		 * <code>commitAheadSize + 1</code>.
+		 * dispatching each record, an offset ahead by this size may be committed.
 		 */
 		private int atmostOnceCommitAheadSize;
 
 		/**
-		 * Configures the maximum number of consecutive non-fatal
-		 * {@link RetriableCommitFailedException} commit failures that are tolerated. For
-		 * manual commits, failure in commit after the configured number of attempts fails
-		 * the commit operation. For auto commits, the received Flux is terminated if the
-		 * commit does not succeed after these attempts.
+		 * Configures the maximum number of consecutive non-fatal RetriableCommitFailedException
+		 * commit failures that are tolerated.
 		 */
 		private int maxCommitAttempts;
 
 		/**
-		 * Set to greater than 0 to enable out of order commit sequencing. If the number
-		 * of deferred commits exceeds this value, the consumer is paused until the
+		 * The limit for the number of deferred commits to pause the consumer until the
 		 * deferred commits are reduced.
 		 */
 		private int maxDeferredCommits;
@@ -206,22 +196,12 @@ public class ReactiveKafkaProperties {
 
 		/**
 		 * Configures the maximum number of in-flight records that are fetched from the
-		 * outbound record publisher while acknowledgements are pending. This limit must
-		 * be configured along with {@link ProducerConfig#BUFFER_MEMORY_CONFIG} to control
-		 * memory usage and to avoid blocking the reactive pipeline.
+		 * outbound record publisher while acknowledgements are pending.
 		 */
 		private int maxInFlight;
 
 		/**
-		 * Configures error handling behaviour for
-		 * {@link reactor.kafka.sender.KafkaSender#send(org.reactivestreams.Publisher)}.
-		 * If set to true, send fails when an error is encountered and only records that
-		 * are already in transit may be delivered after the first error. If set to false,
-		 * an attempt is made to send each record to Kafka, even if one or more records
-		 * cannot be delivered after the configured number of retries due to a non-fatal
-		 * exception. This flag should be set along with
-		 * {@link ProducerConfig#RETRIES_CONFIG} and {@link ProducerConfig#ACKS_CONFIG} to
-		 * configure the required quality-of-service. By default, stopOnError is true.
+		 * Configures error handling behaviour for the KafkaSender's send function.
 		 */
 		private boolean stopOnError;
 
