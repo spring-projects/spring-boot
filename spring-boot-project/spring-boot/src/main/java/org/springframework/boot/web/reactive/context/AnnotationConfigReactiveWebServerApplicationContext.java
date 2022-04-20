@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
@@ -207,6 +210,20 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 		if (!this.annotatedClasses.isEmpty()) {
 			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
+	}
+
+	/**
+	 * {@link ApplicationContextFactory} registered in {@code spring.factories} to support
+	 * {@link AnnotationConfigReactiveWebServerApplicationContext}.
+	 */
+	static class Factory implements ApplicationContextFactory {
+
+		@Override
+		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+			return (webApplicationType != WebApplicationType.REACTIVE) ? null
+					: new AnnotationConfigReactiveWebServerApplicationContext();
+		}
+
 	}
 
 }
