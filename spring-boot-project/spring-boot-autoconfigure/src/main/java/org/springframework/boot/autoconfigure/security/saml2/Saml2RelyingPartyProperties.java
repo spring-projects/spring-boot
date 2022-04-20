@@ -30,6 +30,7 @@ import org.springframework.security.saml2.provider.service.registration.Saml2Mes
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.2.0
  */
 @ConfigurationProperties("spring.security.saml2.relyingparty")

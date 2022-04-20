@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.EnumSet;
-
 import jakarta.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -65,7 +63,9 @@ class SpringBootWebSecurityConfiguration {
 		@Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER)
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
+			http.authorizeRequests().anyRequest().authenticated();
+			http.formLogin();
+			http.httpBasic();
 			return http.build();
 		}
 
@@ -83,7 +83,7 @@ class SpringBootWebSecurityConfiguration {
 		FilterRegistrationBean<ErrorPageSecurityFilter> errorPageSecurityFilter(ApplicationContext context) {
 			FilterRegistrationBean<ErrorPageSecurityFilter> registration = new FilterRegistrationBean<>(
 					new ErrorPageSecurityFilter(context));
-			registration.setDispatcherTypes(EnumSet.of(DispatcherType.ERROR));
+			registration.setDispatcherTypes(DispatcherType.ERROR);
 			return registration;
 		}
 

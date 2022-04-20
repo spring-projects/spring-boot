@@ -294,6 +294,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		@Bean
 		SpanContextSupplier spanContextSupplier() {
 			return new SpanContextSupplier() {
+
 				@Override
 				public String getTraceId() {
 					return null;
@@ -303,6 +304,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 				public String getSpanId() {
 					return null;
 				}
+
 			};
 		}
 

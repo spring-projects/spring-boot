@@ -52,6 +52,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link Saml2RelyingPartyAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 class Saml2RelyingPartyAutoConfigurationTests {
 

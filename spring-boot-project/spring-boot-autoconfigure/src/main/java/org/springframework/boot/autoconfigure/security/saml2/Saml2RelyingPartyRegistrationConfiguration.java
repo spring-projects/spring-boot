@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
@@ -95,8 +96,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty,
 			boolean usingMetadata) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (details) -> {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(assertingParty::getEntityId).to(details::entityId);
 			map.from(assertingParty.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
 			map.from(assertingParty.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
