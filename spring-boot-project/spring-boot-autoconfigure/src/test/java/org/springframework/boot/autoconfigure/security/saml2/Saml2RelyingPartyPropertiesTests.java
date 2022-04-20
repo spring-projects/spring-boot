@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,34 +41,27 @@ class Saml2RelyingPartyPropertiesTests {
 
 	@Test
 	void customizeSsoUrl() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.url",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.url",
 				"https://simplesaml-for-spring-saml/SSOService.php");
 		assertThat(
-				this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon().getUrl())
+				this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getSinglesignon().getUrl())
 						.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
 	}
 
 	@Test
 	void customizeSsoBinding() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.binding",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.binding",
 				"post");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getSinglesignon()
 				.getBinding()).isEqualTo(Saml2MessageBinding.POST);
 	}
 
 	@Test
 	void customizeSsoSignRequests() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.sign-request",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.sign-request",
 				"false");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
-				.isSignRequest()).isEqualTo(false);
-	}
-
-	@Test
-	void customizeSsoSignRequestsIsTrueByDefault() {
-		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
-				.isSignRequest()).isEqualTo(true);
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getSinglesignon()
+				.getSignRequest()).isEqualTo(false);
 	}
 
 	@Test
@@ -86,10 +79,10 @@ class Saml2RelyingPartyPropertiesTests {
 	}
 
 	@Test
-	void customizeIdentityProviderMetadataUri() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.metadata-uri",
+	void customizeAssertingPartyMetadataUri() {
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.metadata-uri",
 				"https://idp.example.org/metadata");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getMetadataUri())
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getMetadataUri())
 				.isEqualTo("https://idp.example.org/metadata");
 	}
 

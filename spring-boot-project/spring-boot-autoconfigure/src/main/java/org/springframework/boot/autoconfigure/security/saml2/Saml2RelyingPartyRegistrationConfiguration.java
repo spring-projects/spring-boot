@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,16 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Decryption;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Identityprovider.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -59,6 +64,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(RelyingPartyRegistrationRepository.class)
 class Saml2RelyingPartyRegistrationConfiguration {
 
+	private static final Log logger = LogFactory.getLog(Saml2RelyingPartyRegistrationConfiguration.class);
+
 	@Bean
 	RelyingPartyRegistrationRepository relyingPartyRegistrationRepository(Saml2RelyingPartyProperties properties) {
 		List<RelyingPartyRegistration> registrations = properties.getRegistration().entrySet().stream()
@@ -71,19 +78,21 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
+		boolean usingMetadata = StringUtils
+				.hasText(getFromAssertingParty(properties, id, "metadata-uri", AssertingParty::getMetadataUri));
 		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
-				.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri()).registrationId(id)
-				: RelyingPartyRegistration.withRegistrationId(id);
+				.fromMetadataLocation(
+						getFromAssertingParty(properties, id, "metadata-uri", AssertingParty::getMetadataUri))
+				.registrationId(id) : RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
-		builder.assertingPartyDetails(mapIdentityProvider(properties, usingMetadata));
+		builder.assertingPartyDetails(mapAssertingParty(properties, id, usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
 		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
 				.map(this::asDecryptionCredential).forEach(credentials::add));
-		builder.assertingPartyDetails((details) -> details
-				.verificationX509Credentials((credentials) -> properties.getIdentityprovider().getVerification()
+		builder.assertingPartyDetails((details) -> details.verificationX509Credentials(
+				(credentials) -> getFromAssertingParty(properties, id, "verification", AssertingParty::getVerification)
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
 		builder.entityId(properties.getEntityId());
 		RelyingPartyRegistration registration = builder.build();
@@ -92,16 +101,35 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return registration;
 	}
 
-	private Consumer<AssertingPartyDetails.Builder> mapIdentityProvider(Registration properties,
+	@SuppressWarnings("deprecation")
+	private <T> T getFromAssertingParty(Registration registration, String id, String name,
+			Function<AssertingParty, T> getter) {
+		T newValue = getter.apply(registration.getAssertingParty());
+		if (newValue != null) {
+			return newValue;
+		}
+		T deprecatedValue = getter.apply(registration.getIdentityprovider());
+		if (deprecatedValue != null) {
+			logger.warn(String.format(
+					"Property 'spring.security.saml2.relyingparty.registration.identityprovider.%1$s.%2$s' is deprecated, please use 'spring.security.saml2.relyingparty.registration.asserting-party.%1$s.%2$s' instead",
+					id, name));
+			return deprecatedValue;
+		}
+		return newValue;
+	}
+
+	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(Registration registration, String id,
 			boolean usingMetadata) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
 		return (details) -> {
-			map.from(identityprovider::getEntityId).to(details::entityId);
-			map.from(identityprovider.getSinglesignon()::getBinding).whenNonNull()
-					.to(details::singleSignOnServiceBinding);
-			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
-			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
+			map.from(() -> getFromAssertingParty(registration, id, "entity-id", AssertingParty::getEntityId))
+					.to(details::entityId);
+			map.from(() -> getFromAssertingParty(registration, id, "singlesignon.binding",
+					(property) -> property.getSinglesignon().getBinding())).to(details::singleSignOnServiceBinding);
+			map.from(() -> getFromAssertingParty(registration, id, "singlesignon.url",
+					(property) -> property.getSinglesignon().getUrl())).to(details::singleSignOnServiceLocation);
+			map.from(() -> getFromAssertingParty(registration, id, "singlesignon.sign-request",
+					(property) -> property.getSinglesignon().getSignRequest())).when((ignored) -> !usingMetadata)
 					.to(details::wantAuthnRequestsSigned);
 		};
 	}

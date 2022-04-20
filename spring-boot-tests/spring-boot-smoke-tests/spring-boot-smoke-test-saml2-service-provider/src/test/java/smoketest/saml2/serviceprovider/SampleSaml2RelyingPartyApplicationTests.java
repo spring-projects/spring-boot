@@ -46,7 +46,7 @@ class SampleSaml2RelyingPartyApplicationTests {
 	}
 
 	@Test
-	void loginShouldHaveAllIdentityProvidersToChooseFrom() {
+	void loginShouldHaveAllAssertingPartiesToChooseFrom() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("/saml2/authenticate/simplesamlphp");
