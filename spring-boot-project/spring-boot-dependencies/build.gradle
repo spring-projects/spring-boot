@@ -1002,12 +1002,10 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "4.4.0") {
+	library("Mockito", "4.5.0") {
 		group("org.mockito") {
-			modules = [
-				"mockito-core",
-				"mockito-inline",
-				"mockito-junit-jupiter"
+			imports = [
+				"mockito-bom"
 			]
 		}
 	}
