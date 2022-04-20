@@ -16,17 +16,18 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.RetriableCommitFailedException;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import reactor.kafka.receiver.KafkaReceiver;
-
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.RetriableCommitFailedException;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import reactor.kafka.receiver.KafkaReceiver;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Project Reactor for Apache Kafka.
@@ -196,6 +197,7 @@ public class ReactiveKafkaProperties {
 		public void setMaxDeferredCommits(int maxDeferredCommits) {
 			this.maxDeferredCommits = maxDeferredCommits;
 		}
+
 	}
 
 	public static class Sender {
@@ -255,21 +257,7 @@ public class ReactiveKafkaProperties {
 		public Map<String, String> getProperties() {
 			return this.properties;
 		}
+
 	}
 
-	@SuppressWarnings("serial")
-	public static class Properties extends HashMap<String, Object> {
-
-		public <V> java.util.function.Consumer<V> in(String key) {
-			return (value) -> put(key, value);
-		}
-
-		public Properties with(KafkaProperties.Ssl ssl, KafkaProperties.Security security,
-				Map<String, String> properties) {
-			putAll(ssl.buildProperties());
-			putAll(security.buildProperties());
-			putAll(properties);
-			return this;
-		}
-	}
 }
