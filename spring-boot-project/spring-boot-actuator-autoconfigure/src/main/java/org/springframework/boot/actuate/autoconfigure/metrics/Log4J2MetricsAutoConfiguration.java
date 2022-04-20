@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.binder.logging.Log4j2Metrics;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.logging.Log4j2Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.spi.LoggerContext;
 

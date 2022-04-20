@@ -168,6 +168,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private String metricKeyPrefix;
 
+		/**
+		 * Whether to fall back to the built-in micrometer instruments for Timer and
+		 * DistributionSummary.
+		 */
+		private boolean useDynatraceSummaryInstruments = true;
+
 		public Map<String, String> getDefaultDimensions() {
 			return this.defaultDimensions;
 		}
@@ -190,6 +196,14 @@ public class DynatraceProperties extends StepRegistryProperties {
 
 		public void setMetricKeyPrefix(String metricKeyPrefix) {
 			this.metricKeyPrefix = metricKeyPrefix;
+		}
+
+		public boolean isUseDynatraceSummaryInstruments() {
+			return this.useDynatraceSummaryInstruments;
+		}
+
+		public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
+			this.useDynatraceSummaryInstruments = useDynatraceSummaryInstruments;
 		}
 
 	}

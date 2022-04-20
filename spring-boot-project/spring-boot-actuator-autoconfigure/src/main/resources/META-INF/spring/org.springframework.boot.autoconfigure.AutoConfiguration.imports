@@ -95,6 +95,12 @@ org.springframework.boot.actuate.autoconfigure.startup.StartupEndpointAutoConfig
 org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration

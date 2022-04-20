@@ -35,6 +35,7 @@ import org.elasticsearch.client.sniff.SnifferBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,7 @@ import org.springframework.util.StringUtils;
  * Elasticsearch rest client configurations.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -123,15 +125,39 @@ class ElasticsearchRestClientConfigurations {
 
 	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Sniffer.class)
+	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
 	@ConditionalOnSingleCandidate(org.elasticsearch.client.RestHighLevelClient.class)
+	@ConditionalOnMissingBean(RestClient.class)
+	static class RestClientFromRestHighLevelClientConfiguration {
+
+		@Bean
+		RestClient elasticsearchRestClient(org.elasticsearch.client.RestHighLevelClient restHighLevelClient) {
+			return restHighLevelClient.getLowLevelClient();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingClass("org.elasticsearch.client.RestHighLevelClient")
+	@ConditionalOnMissingBean(RestClient.class)
+	static class RestClientConfiguration {
+
+		@Bean
+		RestClient elasticsearchRestClient(RestClientBuilder restClientBuilder) {
+			return restClientBuilder.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Sniffer.class)
+	@ConditionalOnSingleCandidate(RestClient.class)
 	static class RestClientSnifferConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		Sniffer elasticsearchSniffer(org.elasticsearch.client.RestHighLevelClient client,
-				ElasticsearchRestClientProperties properties) {
-			SnifferBuilder builder = Sniffer.builder(client.getLowLevelClient());
+		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchRestClientProperties properties) {
+			SnifferBuilder builder = Sniffer.builder(client);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			Duration interval = properties.getSniffer().getInterval();
 			map.from(interval).asInt(Duration::toMillis).to(builder::setSniffIntervalMillis);

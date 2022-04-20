@@ -74,6 +74,7 @@ org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyNameFa
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
 org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
+org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer,\
 org.springframework.boot.web.embedded.tomcat.ConnectorStartFailureAnalyzer
 
 # Failure Analysis Reporters

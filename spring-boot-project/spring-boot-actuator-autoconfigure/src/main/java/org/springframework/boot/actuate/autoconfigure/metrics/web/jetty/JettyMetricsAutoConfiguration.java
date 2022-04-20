@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
-import io.micrometer.binder.jetty.JettyConnectionMetrics;
-import io.micrometer.binder.jetty.JettyServerThreadPoolMetrics;
-import io.micrometer.binder.jetty.JettySslHandshakeMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics;
+import io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics;
+import io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics;
 import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;

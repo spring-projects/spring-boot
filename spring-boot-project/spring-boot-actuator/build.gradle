@@ -24,7 +24,6 @@ dependencies {
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-binders")
 	optional("io.micrometer:micrometer-tracing-api")
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.prometheus:simpleclient_pushgateway") {

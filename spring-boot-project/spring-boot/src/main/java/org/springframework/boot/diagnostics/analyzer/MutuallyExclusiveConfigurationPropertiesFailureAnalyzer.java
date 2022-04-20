@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,24 +32,23 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
 /**
- * A {@link FailureAnalyzer} that performs analysis of failures caused by an
+ * A {@link FailureAnalyzer} that performs analysis of failures caused by a
  * {@link MutuallyExclusiveConfigurationPropertiesException}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
-		extends AbstractFailureAnalyzer<MutuallyExclusiveConfigurationPropertiesException> implements EnvironmentAware {
+		extends AbstractFailureAnalyzer<MutuallyExclusiveConfigurationPropertiesException> {
 
-	private ConfigurableEnvironment environment;
+	private final ConfigurableEnvironment environment;
 
-	@Override
-	public void setEnvironment(Environment environment) {
+	MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(Environment environment) {
 		this.environment = (ConfigurableEnvironment) environment;
 	}
 

@@ -9,5 +9,4 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	api("io.micrometer:micrometer-observation")
 	api("io.micrometer:micrometer-core")
-	api("io.micrometer:micrometer-binders")
 }

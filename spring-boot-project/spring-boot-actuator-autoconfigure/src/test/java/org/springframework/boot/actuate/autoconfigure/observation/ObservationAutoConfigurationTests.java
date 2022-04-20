@@ -19,14 +19,14 @@ package org.springframework.boot.actuate.autoconfigure.observation;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.micrometer.common.Tag;
-import io.micrometer.common.Tags;
+import io.micrometer.common.KeyValue;
+import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
-import io.micrometer.observation.Observation.GlobalTagsProvider;
+import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
@@ -104,7 +104,7 @@ class ObservationAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Context micrometerContext = new Context();
 			Observation.start("test-observation", micrometerContext, observationRegistry).stop();
-			assertThat(micrometerContext.getAllTags()).containsExactly(Tag.of("tag1", "value1"));
+			assertThat(micrometerContext.getAllKeyValues()).containsExactly(KeyValue.of("tag1", "value1"));
 		});
 	}
 
@@ -164,16 +164,16 @@ class ObservationAutoConfigurationTests {
 	static class GlobalTagsProviders {
 
 		@Bean
-		GlobalTagsProvider<?> customTagsProvider() {
-			return new GlobalTagsProvider<>() {
+		Observation.GlobalKeyValuesProvider<?> customTagsProvider() {
+			return new GlobalKeyValuesProvider<>() {
 				@Override
 				public boolean supportsContext(Context context) {
 					return true;
 				}
 
 				@Override
-				public Tags getLowCardinalityTags(Context context) {
-					return Tags.of("tag1", "value1");
+				public KeyValues getLowCardinalityKeyValues(Context context) {
+					return KeyValues.of("tag1", "value1");
 				}
 			};
 		}

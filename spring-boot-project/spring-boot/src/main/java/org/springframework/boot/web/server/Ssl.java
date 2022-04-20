@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.springframework.boot.web.server;
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class Ssl {
@@ -53,6 +54,14 @@ public class Ssl {
 	private String trustStoreType;
 
 	private String trustStoreProvider;
+
+	private String certificate;
+
+	private String certificatePrivateKey;
+
+	private String trustCertificate;
+
+	private String trustCertificatePrivateKey;
 
 	private String protocol = "TLS";
 
@@ -224,6 +233,54 @@ public class Ssl {
 
 	public void setTrustStoreProvider(String trustStoreProvider) {
 		this.trustStoreProvider = trustStoreProvider;
+	}
+
+	/**
+	 * Return the location of the certificate in PEM format.
+	 * @return the certificate location
+	 */
+	public String getCertificate() {
+		return this.certificate;
+	}
+
+	public void setCertificate(String certificate) {
+		this.certificate = certificate;
+	}
+
+	/**
+	 * Return the location of the private key for the certificate in PEM format.
+	 * @return the location of the certificate private key
+	 */
+	public String getCertificatePrivateKey() {
+		return this.certificatePrivateKey;
+	}
+
+	public void setCertificatePrivateKey(String certificatePrivateKey) {
+		this.certificatePrivateKey = certificatePrivateKey;
+	}
+
+	/**
+	 * Return the location of the trust certificate authority chain in PEM format.
+	 * @return the location of the trust certificate
+	 */
+	public String getTrustCertificate() {
+		return this.trustCertificate;
+	}
+
+	public void setTrustCertificate(String trustCertificate) {
+		this.trustCertificate = trustCertificate;
+	}
+
+	/**
+	 * Return the location of the private key for the trust certificate in PEM format.
+	 * @return the location of the trust certificate private key
+	 */
+	public String getTrustCertificatePrivateKey() {
+		return this.trustCertificatePrivateKey;
+	}
+
+	public void setTrustCertificatePrivateKey(String trustCertificatePrivateKey) {
+		this.trustCertificatePrivateKey = trustCertificatePrivateKey;
 	}
 
 	/**

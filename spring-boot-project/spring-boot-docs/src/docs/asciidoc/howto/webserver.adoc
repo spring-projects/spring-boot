@@ -59,6 +59,13 @@ If you wish to use Jetty 10, which does support servlet 4.0, you can do so as sh
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-tomcat</artifactId>
 			</exclusion>
+		</exclusions>
+	</dependency>
+	<!-- Use Jetty instead -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+		<exclusions>
 			<!-- Exclude the Jetty-9 specific dependencies -->
 			<exclusion>
 				<groupId>org.eclipse.jetty.websocket</groupId>
@@ -69,11 +76,6 @@ If you wish to use Jetty 10, which does support servlet 4.0, you can do so as sh
 				<artifactId>javax-websocket-server-impl</artifactId>
 			</exclusion>
 		</exclusions>
-	</dependency>
-	<!-- Use Jetty instead -->
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-jetty</artifactId>
 	</dependency>
 ----
 
@@ -181,7 +183,7 @@ You can configure this behavior by setting the configprop:server.compression.mim
 [[howto.webserver.configure-ssl]]
 === Configure SSL
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
-The following example shows setting SSL properties in `application.properties`:
+The following example shows setting SSL properties using a Java KeyStore file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -191,6 +193,19 @@ The following example shows setting SSL properties in `application.properties`:
 	    key-store: "classpath:keystore.jks"
 	    key-store-password: "secret"
 	    key-password: "another-secret"
+----
+
+The following example shows setting SSL properties using PEM-encoded certificate and private key files:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  port: 8443
+	  ssl:
+	    certificate: "classpath:my-cert.crt"
+	    certificate-private-key: "classpath:my-cert.key"
+	    trust-certificate: "classpath:ca-cert.crt"
+	    key-store-password: "secret"
 ----
 
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.

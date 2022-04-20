@@ -46,10 +46,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NoSuchBeanDefinitionFailureAnalyzer}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class NoSuchBeanDefinitionFailureAnalyzerTests {
 
-	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer(
+			this.context.getBeanFactory());
 
 	@Test
 	void failureAnalysisForMultipleBeans() {
@@ -208,11 +212,10 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private FatalBeanException createFailure(Class<?> config, String... environment) {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			this.analyzer.setBeanFactory(context.getBeanFactory());
-			TestPropertyValues.of(environment).applyTo(context);
-			context.register(config);
-			context.refresh();
+		try {
+			TestPropertyValues.of(environment).applyTo(this.context);
+			this.context.register(config);
+			this.context.refresh();
 			return null;
 		}
 		catch (FatalBeanException ex) {
