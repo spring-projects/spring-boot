@@ -33,9 +33,10 @@ import org.springframework.util.MimeTypeUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RSocketGraphQlClient}.
- * This auto-configuration creates {@link RSocketGraphQlClient.Builder} prototype beans,
- * as the builders are stateful and should not be reused to build client instances with
- * different configurations.
+ * This auto-configuration creates
+ * {@link org.springframework.graphql.client.RSocketGraphQlClient.Builder
+ * RSocketGraphQlClient.Builder} prototype beans, as the builders are stateful and should
+ * not be reused to build client instances with different configurations.
  *
  * @author Brian Clozel
  * @since 2.7.0

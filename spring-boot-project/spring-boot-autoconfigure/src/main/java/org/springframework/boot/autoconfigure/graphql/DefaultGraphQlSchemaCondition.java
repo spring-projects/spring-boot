@@ -58,7 +58,6 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 		boolean match = false;
 		List<ConditionMessage> messages = new ArrayList<>(2);
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnGraphQlSchema.class);
-
 		Binder binder = Binder.get(context.getEnvironment());
 		GraphQlProperties.Schema schema = binder.bind("spring.graphql.schema", GraphQlProperties.Schema.class)
 				.orElse(new GraphQlProperties.Schema());

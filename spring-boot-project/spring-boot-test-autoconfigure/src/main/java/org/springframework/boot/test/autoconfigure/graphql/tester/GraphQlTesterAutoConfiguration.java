@@ -51,8 +51,7 @@ public class GraphQlTesterAutoConfiguration {
 			ObjectProvider<ObjectMapper> objectMapperProvider) {
 		ExecutionGraphQlServiceTester.Builder<?> builder = ExecutionGraphQlServiceTester.builder(graphQlService);
 		objectMapperProvider.ifAvailable((objectMapper) -> {
-			final MediaType[] mediaTypes = new MediaType[] { MediaType.APPLICATION_JSON,
-					MediaType.APPLICATION_GRAPHQL };
+			MediaType[] mediaTypes = new MediaType[] { MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL };
 			builder.encoder(new Jackson2JsonEncoder(objectMapper, mediaTypes));
 			builder.decoder(new Jackson2JsonDecoder(objectMapper, mediaTypes));
 		});
