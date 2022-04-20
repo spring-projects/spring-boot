@@ -22,11 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.RetriableCommitFailedException;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import reactor.kafka.receiver.KafkaReceiver;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -105,8 +100,8 @@ public class ReactiveKafkaProperties {
 		private int atmostOnceCommitAheadSize;
 
 		/**
-		 * Configures the maximum number of consecutive non-fatal RetriableCommitFailedException
-		 * commit failures that are tolerated.
+		 * Configures the maximum number of consecutive non-fatal
+		 * RetriableCommitFailedException commit failures that are tolerated.
 		 */
 		private int maxCommitAttempts;
 
