@@ -16,24 +16,22 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
-
-import reactor.kafka.receiver.KafkaReceiver;
-import reactor.kafka.receiver.ReceiverOptions;
-import reactor.kafka.sender.KafkaSender;
-import reactor.kafka.sender.SenderOptions;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
+import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.sender.KafkaSender;
+import reactor.kafka.sender.SenderOptions;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Reactive client of Apache
@@ -43,17 +41,15 @@ import org.springframework.context.annotation.Bean;
  * @since 2.7.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ KafkaReceiver.class, KafkaSender.class })
+@ConditionalOnClass({KafkaReceiver.class, KafkaSender.class})
 @ConditionalOnBean(KafkaProperties.class)
 @EnableConfigurationProperties(ReactiveKafkaProperties.class)
 public class ReactiveKafkaAutoConfiguration {
-
 	private final KafkaProperties kafkaProperties;
-
 	private final ReactiveKafkaProperties reactiveKafkaProperties;
+	private static final PropertyMapper map = PropertyMapper.get();
 
-	public ReactiveKafkaAutoConfiguration(KafkaProperties kafkaProperties,
-			ReactiveKafkaProperties reactiveKafkaProperties) {
+	public ReactiveKafkaAutoConfiguration(KafkaProperties kafkaProperties, ReactiveKafkaProperties reactiveKafkaProperties) {
 		this.kafkaProperties = kafkaProperties;
 		this.reactiveKafkaProperties = reactiveKafkaProperties;
 	}
@@ -62,47 +58,18 @@ public class ReactiveKafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ReceiverOptions.class)
 	public <K, V> ReceiverOptions<K, V> receiverOptions() {
 		Map<String, Object> properties = this.kafkaProperties.buildConsumerProperties();
-		properties.putAll(this.reactiveKafkaProperties.buildReceiverProperties());
 		ReceiverOptions<K, V> receiverOptions = ReceiverOptions.create(properties);
-		int atmostOnceCommitAheadSize = this.reactiveKafkaProperties.getReceiver().getAtmostOnceCommitAheadSize();
-		if (atmostOnceCommitAheadSize >= 0) {
-			receiverOptions = receiverOptions.atmostOnceCommitAheadSize(atmostOnceCommitAheadSize);
-		}
-		Optional<Duration> closeTimeout = Optional
-				.ofNullable(this.reactiveKafkaProperties.getReceiver().getCloseTimeout());
-		if (closeTimeout.isPresent()) {
-			receiverOptions = receiverOptions.closeTimeout(closeTimeout.get());
-		}
-		Optional<Duration> pollTimeout = Optional
-				.ofNullable(this.reactiveKafkaProperties.getReceiver().getPollTimeout());
-		if (pollTimeout.isPresent()) {
-			receiverOptions = receiverOptions.pollTimeout(pollTimeout.get());
-		}
-		int maxDeferredCommits = this.reactiveKafkaProperties.getReceiver().getMaxDeferredCommits();
-		if (maxDeferredCommits >= 0) {
-			receiverOptions = receiverOptions.maxDeferredCommits(maxDeferredCommits);
-		}
-		int maxCommitAttempts = this.reactiveKafkaProperties.getReceiver().getMaxCommitAttempts();
-		if (maxCommitAttempts >= 0) {
-			receiverOptions = receiverOptions.maxCommitAttempts(maxCommitAttempts);
-		}
-		int commitBatchSize = this.reactiveKafkaProperties.getReceiver().getCommitBatchSize();
-		if (commitBatchSize >= 0) {
-			receiverOptions = receiverOptions.commitBatchSize(commitBatchSize);
-		}
-		Duration commitInterval = this.reactiveKafkaProperties.getReceiver().getCommitInterval();
-		if (commitInterval != null) {
-			receiverOptions = receiverOptions.commitInterval(commitInterval);
-		}
-		Collection<String> subscribeTopics = this.reactiveKafkaProperties.getReceiver().getSubscribeTopics();
-		if (subscribeTopics != null) {
-			receiverOptions = receiverOptions.subscription(subscribeTopics);
-		}
-		else {
-			Pattern subscribePattern = this.reactiveKafkaProperties.getReceiver().getSubscribePattern();
-			if (subscribePattern != null) {
-				receiverOptions = receiverOptions.subscription(subscribePattern);
-			}
+		ReactiveKafkaProperties.Receiver receiverProperties = this.reactiveKafkaProperties.getReceiver();
+		receiverOptions = setPropertyWhenGreaterThanZero(receiverProperties.getAtmostOnceCommitAheadSize(), receiverOptions::atmostOnceCommitAheadSize, receiverOptions);
+		receiverOptions = setPropertyWhenGreaterThanZero(receiverProperties.getMaxDeferredCommits(), receiverOptions::maxDeferredCommits, receiverOptions);
+		receiverOptions = setPropertyWhenGreaterThanZero(receiverProperties.getMaxCommitAttempts(), receiverOptions::maxCommitAttempts, receiverOptions);
+		receiverOptions = setPropertyWhenGreaterThanZero(receiverProperties.getCommitBatchSize(), receiverOptions::commitBatchSize, receiverOptions);
+		receiverOptions = setPropertyWhenNonNull(receiverProperties.getCloseTimeout(), receiverOptions::closeTimeout, receiverOptions);
+		receiverOptions = setPropertyWhenNonNull(receiverProperties.getPollTimeout(), receiverOptions::pollTimeout, receiverOptions);
+		receiverOptions = setPropertyWhenNonNull(receiverProperties.getCommitInterval(), receiverOptions::commitInterval, receiverOptions);
+		receiverOptions = setPropertyWhenNonNull(receiverProperties.getSubscribeTopics(), receiverOptions::subscription, receiverOptions);
+		if (Optional.ofNullable(receiverProperties.getSubscribeTopics()).isEmpty()) {
+			receiverOptions = setPropertyWhenNonNull(receiverProperties.getSubscribePattern(), receiverOptions::subscription, receiverOptions);
 		}
 		return receiverOptions;
 	}
@@ -110,19 +77,30 @@ public class ReactiveKafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SenderOptions.class)
 	public <K, V> SenderOptions<K, V> senderOptions() {
-		Map<String, Object> properties = this.kafkaProperties.buildProducerProperties();
-		properties.putAll(this.reactiveKafkaProperties.buildSenderProperties());
-		SenderOptions<K, V> senderOptions = SenderOptions.<K, V>create(properties);
-		Duration closeTimeout = this.reactiveKafkaProperties.getSender().getCloseTimeout();
-		if (closeTimeout != null) {
-			senderOptions = senderOptions.closeTimeout(closeTimeout);
-		}
-		int maxInFlight = this.reactiveKafkaProperties.getSender().getMaxInFlight();
-		if (maxInFlight >= 0) {
-			senderOptions = senderOptions.maxInFlight(maxInFlight);
-		}
-		senderOptions = senderOptions.stopOnError(this.reactiveKafkaProperties.getSender().isStopOnError());
+		Map<String, Object> properties = kafkaProperties.buildProducerProperties();
+		SenderOptions<K, V> senderOptions = SenderOptions.create(properties);
+		ReactiveKafkaProperties.Sender senderProperties = this.reactiveKafkaProperties.getSender();
+		senderOptions = map.from(senderProperties.getCloseTimeout()).toInstance(senderOptions::closeTimeout);
+		senderOptions = setPropertyWhenGreaterThanZero(senderProperties.getMaxInFlight(), senderOptions::maxInFlight, senderOptions);
+		senderOptions = map.from(senderProperties.isStopOnError()).toInstance(senderOptions::stopOnError);
 		return senderOptions;
 	}
 
+	private <T> T setPropertyWhenGreaterThanZero(Integer property, Function<Integer, T> function, T options) {
+		if (property <= 0) {
+			return options;
+		}
+		return map.from(property)
+				.when(i -> i > 0)
+				.toInstance(function);
+	}
+
+	private <S, T> T setPropertyWhenNonNull(S property, Function<S, T> function, T options) {
+		if (Optional.ofNullable(property).isEmpty()) {
+			return options;
+		}
+		return map.from(property)
+				.whenNonNull()
+				.toInstance(function);
+	}
 }

@@ -16,20 +16,17 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.RetriableCommitFailedException;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import reactor.kafka.receiver.KafkaReceiver;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.RetriableCommitFailedException;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import reactor.kafka.receiver.KafkaReceiver;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Configuration properties for Project Reactor for Apache Kafka.
@@ -63,41 +60,6 @@ public class ReactiveKafkaProperties {
 
 	public Sender getSender() {
 		return this.sender;
-	}
-
-	private Map<String, Object> buildCommonProperties() {
-		Map<String, Object> commonProperties = new HashMap<>();
-		if (!CollectionUtils.isEmpty(this.properties)) {
-			commonProperties.putAll(this.properties);
-		}
-		return commonProperties;
-	}
-
-	/**
-	 * Create an initial map of consumer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default kafkaReceiver bean.
-	 * @return the consumer properties initialized with the customizations defined on this
-	 * instance
-	 */
-	public Map<String, Object> buildReceiverProperties() {
-		Map<String, Object> receiverProperties = buildCommonProperties();
-		receiverProperties.putAll(this.receiver.buildProperties());
-		return receiverProperties;
-	}
-
-	/**
-	 * Create an initial map of producer properties from the state of this instance. This
-	 * allows you to add additional properties, if necessary, and override the default
-	 * kafkaSender bean.
-	 * @return the producer properties initialized with the customizations defined on this
-	 * instance
-	 */
-	public Map<String, Object> buildSenderProperties() {
-		Map<String, Object> senderProperties = buildCommonProperties();
-		senderProperties.putAll(this.sender.buildProperties());
-		return senderProperties;
 	}
 
 	public static class Receiver {
@@ -234,22 +196,6 @@ public class ReactiveKafkaProperties {
 		public void setMaxDeferredCommits(int maxDeferredCommits) {
 			this.maxDeferredCommits = maxDeferredCommits;
 		}
-
-		public Map<String, Object> buildProperties() {
-			Properties receiverProperties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getPollTimeout).asInt(Duration::toMillis).to(receiverProperties.in("pollTimeout"));
-			map.from(this::getCloseTimeout).asInt(Duration::toMillis).to(receiverProperties.in("closeTimeout"));
-			map.from(this::getCommitInterval).asInt(Duration::toMillis).to(receiverProperties.in("commitInterval"));
-			map.from(this::getCommitBatchSize).to(receiverProperties.in("commitBatchSize"));
-			map.from(this::getAtmostOnceCommitAheadSize).to(receiverProperties.in("atmostOnceCommitAheadSize"));
-			map.from(this::getMaxCommitAttempts).to(receiverProperties.in("maxCommitAttempts"));
-			map.from(this::getMaxDeferredCommits).to(receiverProperties.in("maxDeferredCommits"));
-			map.from(this::getSubscribeTopics).to(receiverProperties.in("subscribeTopics"));
-			map.from(this::getSubscribePattern).to(receiverProperties.in("subscribePattern"));
-			return receiverProperties;
-		}
-
 	}
 
 	public static class Sender {
@@ -309,16 +255,6 @@ public class ReactiveKafkaProperties {
 		public Map<String, String> getProperties() {
 			return this.properties;
 		}
-
-		public Map<String, Object> buildProperties() {
-			Properties senderProperties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getCloseTimeout).asInt(Duration::toMillis).to(senderProperties.in("closeTimeout"));
-			map.from(this::isStopOnError).to(senderProperties.in("stopOnError"));
-			map.from(this::getMaxInFlight).to(senderProperties.in("maxInFlight"));
-			return senderProperties;
-		}
-
 	}
 
 	@SuppressWarnings("serial")
@@ -335,7 +271,5 @@ public class ReactiveKafkaProperties {
 			putAll(properties);
 			return this;
 		}
-
 	}
-
 }
