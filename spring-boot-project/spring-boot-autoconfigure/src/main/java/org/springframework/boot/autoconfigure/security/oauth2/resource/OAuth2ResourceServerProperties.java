@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -75,7 +77,7 @@ public class OAuth2ResourceServerProperties {
 		/**
 		 * Identifies the recipients that the JWT is intended for.
 		 */
-		private String audience;
+		private List<String> audiences = new ArrayList<>();
 
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
@@ -109,12 +111,12 @@ public class OAuth2ResourceServerProperties {
 			this.publicKeyLocation = publicKeyLocation;
 		}
 
-		public String getAudience() {
-			return this.audience;
+		public List<String> getAudiences() {
+			return this.audiences;
 		}
 
-		public void setAudience(String audience) {
-			this.audience = audience;
+		public void setAudiences(List<String> audiences) {
+			this.audiences = audiences;
 		}
 
 		public String readPublicKey() throws IOException {
