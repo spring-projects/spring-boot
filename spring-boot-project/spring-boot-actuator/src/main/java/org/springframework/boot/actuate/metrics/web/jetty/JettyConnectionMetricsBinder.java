@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.metrics.web.jetty;
 
 import java.util.Collections;
 
+import io.micrometer.binder.jetty.JettyConnectionMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics;
 import org.eclipse.jetty.server.Server;
 
 /**

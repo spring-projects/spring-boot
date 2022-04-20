@@ -20,8 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 
+import io.micrometer.binder.cache.JCacheMetrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.binder.cache.JCacheMetrics;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

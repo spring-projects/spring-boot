@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -81,8 +80,6 @@ import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -407,15 +404,13 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void defaultLocaleCharsetMappingsAreOverridden() throws IOException {
+	void defaultLocaleCharsetMappingsAreOverridden() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
-		Properties charsetMapperDefault = PropertiesLoaderUtils
-				.loadProperties(new ClassPathResource("CharsetMapperDefault.properties", CharsetMapper.class));
-		for (String language : charsetMapperDefault.stringPropertyNames()) {
-			assertThat(getCharset(new Locale(language))).isEqualTo(StandardCharsets.UTF_8);
-		}
+		assertThat(getCharset(Locale.ENGLISH)).isEqualTo(StandardCharsets.UTF_8);
+		assertThat(getCharset(Locale.FRENCH)).isEqualTo(StandardCharsets.UTF_8);
+		assertThat(getCharset(Locale.JAPANESE)).isEqualTo(StandardCharsets.UTF_8);
 	}
 
 	@Test

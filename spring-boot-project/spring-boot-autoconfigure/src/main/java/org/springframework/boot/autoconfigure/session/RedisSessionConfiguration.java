@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
-import org.springframework.session.data.redis.config.annotation.web.http.RedisIndexedHttpSessionConfiguration;
+import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 
 /**
  * Redis backed session configuration.
@@ -66,7 +66,7 @@ class RedisSessionConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class SpringBootRedisHttpSessionConfiguration extends RedisIndexedHttpSessionConfiguration {
+	public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
 
 		@Autowired
 		public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,

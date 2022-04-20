@@ -17,13 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
 
 import com.mongodb.MongoClientSettings;
+import io.micrometer.binder.mongodb.DefaultMongoCommandTagsProvider;
+import io.micrometer.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
+import io.micrometer.binder.mongodb.MongoCommandTagsProvider;
+import io.micrometer.binder.mongodb.MongoConnectionPoolTagsProvider;
+import io.micrometer.binder.mongodb.MongoMetricsCommandListener;
+import io.micrometer.binder.mongodb.MongoMetricsConnectionPoolListener;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;

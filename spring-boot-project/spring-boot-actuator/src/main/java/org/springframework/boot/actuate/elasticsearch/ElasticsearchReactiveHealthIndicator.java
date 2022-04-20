@@ -26,8 +26,6 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -64,16 +62,12 @@ public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealth
 	}
 
 	private Mono<Health> doHealthCheck(Health.Builder builder, ClientResponse response) {
-		HttpStatusCode httpStatusCode = response.statusCode();
-		HttpStatus httpStatus = HttpStatus.resolve(httpStatusCode.value());
-		if (httpStatusCode.is2xxSuccessful()) {
+		if (response.statusCode().is2xxSuccessful()) {
 			return response.bodyToMono(STRING_OBJECT_MAP).map((body) -> getHealth(builder, body));
 		}
 		builder.down();
-		builder.withDetail("statusCode", httpStatusCode.value());
-		if (httpStatus != null) {
-			builder.withDetail("reasonPhrase", httpStatus.getReasonPhrase());
-		}
+		builder.withDetail("statusCode", response.rawStatusCode());
+		builder.withDetail("reasonPhrase", response.statusCode().getReasonPhrase());
 		return response.releaseBody().thenReturn(builder.build());
 	}
 

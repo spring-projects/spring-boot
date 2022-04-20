@@ -16,7 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
+import java.time.Duration;
+
 import com.wavefront.sdk.common.WavefrontSender;
+import com.wavefront.sdk.common.clients.WavefrontClient.Builder;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
@@ -25,15 +28,16 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontProperties.Sender;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Wavefront.
@@ -45,17 +49,29 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
-		after = { MetricsAutoConfiguration.class, WavefrontAutoConfiguration.class })
-@ConditionalOnBean({ Clock.class, WavefrontSender.class })
+		after = MetricsAutoConfiguration.class)
+@ConditionalOnBean(Clock.class)
 @ConditionalOnClass({ WavefrontMeterRegistry.class, WavefrontSender.class })
 @ConditionalOnEnabledMetricsExport("wavefront")
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontMetricsExportAutoConfiguration {
 
+	private final WavefrontProperties properties;
+
+	public WavefrontMetricsExportAutoConfiguration(WavefrontProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public WavefrontConfig wavefrontConfig(WavefrontProperties properties) {
-		return new WavefrontPropertiesConfigAdapter(properties);
+	public WavefrontConfig wavefrontConfig() {
+		return new WavefrontPropertiesConfigAdapter(this.properties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public WavefrontSender wavefrontSender(WavefrontConfig wavefrontConfig) {
+		return createWavefrontSender(wavefrontConfig);
 	}
 
 	@Bean
@@ -63,6 +79,16 @@ public class WavefrontMetricsExportAutoConfiguration {
 	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig, Clock clock,
 			WavefrontSender wavefrontSender) {
 		return WavefrontMeterRegistry.builder(wavefrontConfig).clock(clock).wavefrontSender(wavefrontSender).build();
+	}
+
+	private WavefrontSender createWavefrontSender(WavefrontConfig wavefrontConfig) {
+		Builder builder = WavefrontMeterRegistry.getDefaultSenderBuilder(wavefrontConfig);
+		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Sender sender = this.properties.getSender();
+		mapper.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);
+		mapper.from(sender.getFlushInterval()).asInt(Duration::getSeconds).to(builder::flushIntervalSeconds);
+		mapper.from(sender.getMessageSize()).asInt(DataSize::toBytes).to(builder::messageSizeBytes);
+		return builder.build();
 	}
 
 }

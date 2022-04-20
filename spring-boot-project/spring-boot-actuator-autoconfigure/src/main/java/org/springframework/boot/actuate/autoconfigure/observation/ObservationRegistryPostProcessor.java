@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
-import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
+import io.micrometer.observation.Observation.GlobalTagsProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -38,7 +38,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<ObservationPredicate> observationPredicates;
 
-	private final ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders;
+	private final ObjectProvider<GlobalTagsProvider<?>> tagProviders;
 
 	private final ObjectProvider<ObservationHandler<?>> observationHandlers;
 
@@ -48,7 +48,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders,
+			ObjectProvider<GlobalTagsProvider<?>> tagProviders,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		this.observationRegistryCustomizers = observationRegistryCustomizers;

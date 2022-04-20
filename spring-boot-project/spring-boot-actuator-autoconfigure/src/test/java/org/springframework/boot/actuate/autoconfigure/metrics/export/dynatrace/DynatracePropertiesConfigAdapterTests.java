@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,13 +126,6 @@ class DynatracePropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesUseDynatraceInstrumentsIsSetAdapterUseDynatraceInstrumentsReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.getV2().setUseDynatraceSummaryInstruments(false);
-		assertThat(new DynatracePropertiesConfigAdapter(properties).useDynatraceSummaryInstruments()).isFalse();
-	}
-
-	@Test
 	void whenPropertiesDefaultDimensionsIsSetAdapterDefaultDimensionsReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		HashMap<String, String> defaultDimensions = new HashMap<>();
@@ -155,7 +148,6 @@ class DynatracePropertiesConfigAdapterTests {
 		assertThat(properties.getV2().getMetricKeyPrefix()).isNull();
 		assertThat(properties.getV2().isEnrichWithDynatraceMetadata()).isTrue();
 		assertThat(properties.getV2().getDefaultDimensions()).isNull();
-		assertThat(properties.getV2().isUseDynatraceSummaryInstruments()).isTrue();
 		assertThat(properties.getDeviceId()).isNull();
 		assertThat(properties.getTechnologyType()).isEqualTo("java");
 		assertThat(properties.getGroup()).isNull();

@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -55,17 +57,18 @@ import org.springframework.util.ClassUtils;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @author Scott Frederick
  */
-class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyzer<NoSuchBeanDefinitionException> {
+class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyzer<NoSuchBeanDefinitionException>
+		implements BeanFactoryAware {
 
-	private final ConfigurableListableBeanFactory beanFactory;
+	private ConfigurableListableBeanFactory beanFactory;
 
-	private final MetadataReaderFactory metadataReaderFactory;
+	private MetadataReaderFactory metadataReaderFactory;
 
-	private final ConditionEvaluationReport report;
+	private ConditionEvaluationReport report;
 
-	NoSuchBeanDefinitionFailureAnalyzer(BeanFactory beanFactory) {
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 		this.metadataReaderFactory = new CachingMetadataReaderFactory(this.beanFactory.getBeanClassLoader());

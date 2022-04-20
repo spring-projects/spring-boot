@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-class SpringBootVersionTests {
+public class SpringBootVersionTests {
 
 	@Test
 	void getVersionShouldReturnVersionMatchingGradleProperties() throws IOException {

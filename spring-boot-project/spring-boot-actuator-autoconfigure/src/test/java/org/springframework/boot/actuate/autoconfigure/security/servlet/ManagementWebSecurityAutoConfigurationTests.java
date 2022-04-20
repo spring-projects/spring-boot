@@ -136,10 +136,10 @@ class ManagementWebSecurityAutoConfigurationTests {
 	void backOffIfSaml2RelyingPartyAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class))
 				.withPropertyValues(
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.sign-request=false",
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.verification.credentials[0].certificate-location=classpath:saml/certificate-location")
+						"spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
+						"spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.sign-request=false",
+						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location")
 				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
 						.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}

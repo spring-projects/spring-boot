@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Remote SAML Identity Provider.
 		 */
-		private final AssertingParty assertingParty = new AssertingParty();
+		private final Identityprovider identityprovider = new Identityprovider();
 
 		public String getEntityId() {
 			return this.entityId;
@@ -89,8 +89,8 @@ public class Saml2RelyingPartyProperties {
 			return this.decryption;
 		}
 
-		public AssertingParty getAssertingParty() {
-			return this.assertingParty;
+		public Identityprovider getIdentityprovider() {
+			return this.identityprovider;
 		}
 
 		public static class Acs {
@@ -224,7 +224,7 @@ public class Saml2RelyingPartyProperties {
 	/**
 	 * Represents a remote Identity Provider.
 	 */
-	public static class AssertingParty {
+	public static class Identityprovider {
 
 		/**
 		 * Unique identifier for the identity provider.

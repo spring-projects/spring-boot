@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.metrics.web.tomcat;
 
 import java.util.Collections;
 
+import io.micrometer.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;

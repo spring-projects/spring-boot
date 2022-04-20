@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,10 +100,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof ResponseStatusException) {
-			HttpStatus httpStatus = HttpStatus.resolve(((ResponseStatusException) error).getStatusCode().value());
-			if (httpStatus != null) {
-				return httpStatus;
-			}
+			return ((ResponseStatusException) error).getStatus();
 		}
 		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}

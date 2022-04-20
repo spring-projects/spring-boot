@@ -123,7 +123,7 @@ The preceding example sets the value of the `example` project property to `custo
 [[running-your-application.reloading-resources]]
 == Reloading Resources
 If devtools has been added to your project it will automatically monitor your application's classpath for changes.
-Note that modified files need to be recompiled for the classpath to update in order to trigger reloading with devtools.
+Note that modified files need to be recompiled for the classpath to update inorder to trigger reloading with devtools.
 For more details on using devtools, refer to {spring-boot-reference}#using.devtools.restart[this section of the reference documentation].
 
 Alternatively, you can configure `bootRun` such that your application's static resources are loaded from their source location:

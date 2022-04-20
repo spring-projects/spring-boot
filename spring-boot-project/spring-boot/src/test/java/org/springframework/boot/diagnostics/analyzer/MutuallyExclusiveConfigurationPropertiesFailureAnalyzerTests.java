@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MutuallyExclusiveConfigurationPropertiesFailureAnalyzer}.
  *
  * @author Andy Wilkinson
- * @author Scott Frederick
  */
 class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 
@@ -50,7 +49,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
-		FailureAnalysis failureAnalysis = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(null)
+		FailureAnalysis failureAnalysis = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer()
 				.analyze(failure);
 		assertThat(failureAnalysis).isNull();
 	}
@@ -113,8 +112,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 	}
 
 	private FailureAnalysis performAnalysis(MutuallyExclusiveConfigurationPropertiesException failure) {
-		MutuallyExclusiveConfigurationPropertiesFailureAnalyzer analyzer = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(
-				this.environment);
+		MutuallyExclusiveConfigurationPropertiesFailureAnalyzer analyzer = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer();
+		analyzer.setEnvironment(this.environment);
 		return analyzer.analyze(failure);
 	}
 

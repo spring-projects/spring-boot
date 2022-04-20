@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.binder.logging.LogbackMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

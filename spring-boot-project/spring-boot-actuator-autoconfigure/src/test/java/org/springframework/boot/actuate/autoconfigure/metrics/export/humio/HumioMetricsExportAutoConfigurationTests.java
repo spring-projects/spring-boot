@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.humio;
 
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.humio.HumioConfig;
 import io.micrometer.humio.HumioMeterRegistry;
 import org.junit.jupiter.api.Test;

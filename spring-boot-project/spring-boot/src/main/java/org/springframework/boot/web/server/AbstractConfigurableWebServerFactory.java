@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.util.Assert;
  * @author Ivan Sopov
  * @author Eddú Meléndez
  * @author Brian Clozel
- * @author Scott Frederick
  * @since 2.0.0
  */
 public abstract class AbstractConfigurableWebServerFactory implements ConfigurableWebServerFactory {
@@ -178,18 +177,6 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 */
 	public Shutdown getShutdown() {
 		return this.shutdown;
-	}
-
-	/**
-	 * Return the provided {@link SslStoreProvider} or create one using {@link Ssl}
-	 * properties.
-	 * @return the {@code SslStoreProvider}
-	 */
-	public final SslStoreProvider getOrCreateSslStoreProvider() {
-		if (this.sslStoreProvider != null) {
-			return this.sslStoreProvider;
-		}
-		return CertificateFileSslStoreProvider.from(this.ssl);
 	}
 
 	/**

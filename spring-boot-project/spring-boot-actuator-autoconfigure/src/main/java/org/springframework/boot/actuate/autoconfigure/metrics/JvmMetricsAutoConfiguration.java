@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import io.micrometer.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.binder.jvm.JvmGcMetrics;
+import io.micrometer.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

@@ -44,8 +44,8 @@ class CacheMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager").meter();
-					registry.get("cache.gets").tags("name", "cache2").tags("cache.manager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache1").tags("cacheManager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache2").tags("cacheManager", "cacheManager").meter();
 				});
 	}
 
@@ -54,8 +54,8 @@ class CacheMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager").meter();
-					registry.get("cache.gets").tags("name", "cache2").tags("cache.manager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache1").tags("cacheManager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache2").tags("cacheManager", "cacheManager").meter();
 				});
 	}
 
@@ -64,9 +64,9 @@ class CacheMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.cache.type=simple", "spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager")
+					assertThat(registry.find("cache.gets").tags("name", "cache1").tags("cacheManager", "cacheManager")
 							.meter()).isNull();
-					assertThat(registry.find("cache.gets").tags("name", "cache2").tags("cache.manager", "cacheManager")
+					assertThat(registry.find("cache.gets").tags("name", "cache2").tags("cacheManager", "cacheManager")
 							.meter()).isNull();
 				});
 	}
@@ -77,7 +77,7 @@ class CacheMetricsAutoConfigurationTests {
 				"spring.cache.cache-names=cache1").run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("cache.requests").tags("name", "cache1")
-							.tags("cache.manager", "cacheManager").meter()).isNull();
+							.tags("cacheManager", "cacheManager").meter()).isNull();
 				});
 	}
 

@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
 
 @DataElasticsearchTest
-class MyDataElasticsearchTests {
+public class MyDataElasticsearchTests {
 
 	@Autowired
 	@SuppressWarnings("unused")

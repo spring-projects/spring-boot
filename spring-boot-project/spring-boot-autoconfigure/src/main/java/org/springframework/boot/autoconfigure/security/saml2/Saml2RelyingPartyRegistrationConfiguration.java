@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Decryption;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Identityprovider.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -72,19 +71,19 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean usingMetadata = StringUtils.hasText(properties.getAssertingParty().getMetadataUri());
+		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
 		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
-				.fromMetadataLocation(properties.getAssertingParty().getMetadataUri()).registrationId(id)
+				.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri()).registrationId(id)
 				: RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
-		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingParty(), usingMetadata));
+		builder.assertingPartyDetails(mapIdentityProvider(properties, usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
 		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
 				.map(this::asDecryptionCredential).forEach(credentials::add));
 		builder.assertingPartyDetails((details) -> details
-				.verificationX509Credentials((credentials) -> properties.getAssertingParty().getVerification()
+				.verificationX509Credentials((credentials) -> properties.getIdentityprovider().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
 		builder.entityId(properties.getEntityId());
 		RelyingPartyRegistration registration = builder.build();
@@ -93,14 +92,16 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return registration;
 	}
 
-	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty,
+	private Consumer<AssertingPartyDetails.Builder> mapIdentityProvider(Registration properties,
 			boolean usingMetadata) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
 		return (details) -> {
-			map.from(assertingParty::getEntityId).to(details::entityId);
-			map.from(assertingParty.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
-			map.from(assertingParty.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
-			map.from(assertingParty.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
+			map.from(identityprovider::getEntityId).to(details::entityId);
+			map.from(identityprovider.getSinglesignon()::getBinding).whenNonNull()
+					.to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
+			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
 					.to(details::wantAuthnRequestsSigned);
 		};
 	}

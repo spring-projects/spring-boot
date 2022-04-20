@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -82,19 +81,6 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	@Test
 	void allDataSourcesCanBeInstrumented() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withUserConfiguration(TwoDataSourcesConfiguration.class).run((context) -> {
-					context.getBean("firstDataSource", DataSource.class).getConnection().getMetaData();
-					context.getBean("secondOne", DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("jdbc.connections.max").tags("name", "first").meter();
-					registry.get("jdbc.connections.max").tags("name", "secondOne").meter();
-				});
-	}
-
-	@Test
-	void allDataSourcesCanBeInstrumentedWithLazyInitialization() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class)).withInitializer(
-				(context) -> context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
 				.withUserConfiguration(TwoDataSourcesConfiguration.class).run((context) -> {
 					context.getBean("firstDataSource", DataSource.class).getConnection().getMetaData();
 					context.getBean("secondOne", DataSource.class).getConnection().getMetaData();
@@ -178,21 +164,6 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.get("hikaricp.connections").meter().getId().getTags())
 							.containsExactly(Tag.of("pool", "firstDataSource"));
-				});
-	}
-
-	@Test
-	void allHikariDataSourcesCanBeInstrumentedWhenUsingLazyInitialization() {
-		this.contextRunner.withUserConfiguration(TwoHikariDataSourcesConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withInitializer((context) -> context
-						.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
-				.run((context) -> {
-					context.getBean("firstDataSource", DataSource.class).getConnection();
-					context.getBean("secondOne", DataSource.class).getConnection();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("hikaricp.connections").tags("pool", "firstDataSource").meter();
-					registry.get("hikaricp.connections").tags("pool", "secondOne").meter();
 				});
 	}
 

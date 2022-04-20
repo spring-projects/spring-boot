@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.micrometer.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.apache.tomcat.util.modeler.Registry;
 import org.junit.jupiter.api.Test;

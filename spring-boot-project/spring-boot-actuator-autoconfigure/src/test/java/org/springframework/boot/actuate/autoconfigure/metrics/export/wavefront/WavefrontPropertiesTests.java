@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.wavefront;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import io.micrometer.wavefront.WavefrontConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WavefrontProperties.Metrics.Export}.
+ * Tests for {@link WavefrontProperties}.
  *
  * @author Stephane Nicoll
- * @author Moritz Halbritter
  */
-class WavefrontPropertiesMetricsExportTests {
+class WavefrontPropertiesTests extends PushRegistryPropertiesTests {
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void defaultValuesAreConsistent() {
-		WavefrontProperties.Metrics.Export properties = new WavefrontProperties.Metrics.Export();
+		WavefrontProperties properties = new WavefrontProperties();
 		WavefrontConfig config = WavefrontConfig.DEFAULT_DIRECT;
-		assertThat(properties.getConnectTimeout()).isEqualTo(config.connectTimeout());
+		assertStepRegistryDefaultValues(properties, config);
+		assertThat(properties.getUri().toString()).isEqualTo(config.uri());
 		assertThat(properties.getGlobalPrefix()).isEqualTo(config.globalPrefix());
-		assertThat(properties.getReadTimeout()).isEqualTo(config.readTimeout());
-		assertThat(properties.getStep()).isEqualTo(config.step());
-		assertThat(properties.isEnabled()).isEqualTo(config.enabled());
 	}
 
 }

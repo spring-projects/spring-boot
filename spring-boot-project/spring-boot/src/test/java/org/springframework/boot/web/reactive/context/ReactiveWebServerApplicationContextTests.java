@@ -61,7 +61,7 @@ class ReactiveWebServerApplicationContextTests {
 	void whenThereIsNoWebServerFactoryBeanThenContextRefreshWillFail() {
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
 				.withMessageContaining(
-						"Unable to start ReactiveWebServerApplicationContext due to missing ReactiveWebServerFactory bean");
+						"Unable to start ReactiveWebApplicationContext due to missing ReactiveWebServerFactory bean");
 	}
 
 	@Test

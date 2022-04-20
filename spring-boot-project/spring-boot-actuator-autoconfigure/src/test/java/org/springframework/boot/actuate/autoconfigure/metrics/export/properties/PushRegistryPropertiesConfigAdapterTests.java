@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public abstract class PushRegistryPropertiesConfigAdapterTests<P extends PushReg
 	}
 
 	@Test
-	protected void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
+	void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
 		P properties = createProperties();
 		properties.setBatchSize(10042);
 		assertThat(createConfigAdapter(properties).batchSize()).isEqualTo(10042);

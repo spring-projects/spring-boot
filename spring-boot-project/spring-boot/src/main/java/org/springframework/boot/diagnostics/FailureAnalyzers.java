@@ -90,9 +90,9 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(awareAnalyzers.stream()
 					.map((analyzer) -> analyzer.getClass().getName()).collect(Collectors.toList()));
 			logger.warn(LogMessage.format(
-					"FailureAnalyzers [%s] implement BeanFactoryAware or EnvironmentAware. "
+					"FailureAnalyzers [%s] implement BeanFactoryAware or EnvironmentAware."
 							+ "Support for these interfaces on FailureAnalyzers is deprecated, "
-							+ "and will be removed in a future release. "
+							+ "and will be removed in a future release."
 							+ "Instead provide a constructor that accepts BeanFactory or Environment parameters.",
 					awareAnalyzerNames));
 			if (context == null) {

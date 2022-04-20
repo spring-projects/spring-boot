@@ -90,11 +90,6 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 		return get(v2(V2::isEnrichWithDynatraceMetadata), DynatraceConfig.super::enrichWithDynatraceMetadata);
 	}
 
-	@Override
-	public boolean useDynatraceSummaryInstruments() {
-		return get(v2(V2::isUseDynatraceSummaryInstruments), DynatraceConfig.super::useDynatraceSummaryInstruments);
-	}
-
 	private <V> Function<DynatraceProperties, V> v1(Function<V1, V> getter) {
 		return (properties) -> getter.apply(properties.getV1());
 	}

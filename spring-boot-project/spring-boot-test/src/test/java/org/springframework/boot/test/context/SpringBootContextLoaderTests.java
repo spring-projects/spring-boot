@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -37,7 +36,6 @@ import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -148,20 +146,6 @@ class SpringBootContextLoaderTests {
 		assertThat(last).startsWith("Config resource");
 	}
 
-	@Test
-	void whenEnvironmentChangesWebApplicationTypeToNoneThenContextTypeChangesAccordingly() {
-		TestContext context = new ExposedTestContextManager(ChangingWebApplicationTypeToNone.class)
-				.getExposedTestContext();
-		assertThat(context.getApplicationContext()).isNotInstanceOf(WebApplicationContext.class);
-	}
-
-	@Test
-	void whenEnvironmentChangesWebApplicationTypeToReactiveThenContextTypeChangesAccordingly() {
-		TestContext context = new ExposedTestContextManager(ChangingWebApplicationTypeToReactive.class)
-				.getExposedTestContext();
-		assertThat(context.getApplicationContext()).isInstanceOf(GenericReactiveWebApplicationContext.class);
-	}
-
 	private String[] getActiveProfiles(Class<?> testClass) {
 		TestContext testContext = new ExposedTestContextManager(testClass).getExposedTestContext();
 		ApplicationContext applicationContext = testContext.getApplicationContext();
@@ -241,16 +225,6 @@ class SpringBootContextLoaderTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
-
-	}
-
-	@SpringBootTest(classes = Config.class, args = "--spring.main.web-application-type=none")
-	static class ChangingWebApplicationTypeToNone {
-
-	}
-
-	@SpringBootTest(classes = Config.class, args = "--spring.main.web-application-type=reactive")
-	static class ChangingWebApplicationTypeToReactive {
 
 	}
 

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import io.micrometer.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;

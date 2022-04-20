@@ -252,8 +252,9 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 
 [[data.nosql.elasticsearch.connecting-using-rest]]
 ==== Connecting to Elasticsearch using REST clients
-Elasticsearch ships https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients] that you can use to query a cluster: the low-level client from the `org.elasticsearch.client:elasticsearch-rest-client` module and the high-level client from the `org.elasticsearch.client:elasticsearch-high-level-client` module.
-Additionally, Spring Boot provides support for a reactive client, based on Spring Framework's `WebClient`, from the `org.springframework.data:spring-data-elasticsearch` module.
+Elasticsearch ships https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients] that you can use to query a cluster: the "Low Level" client and the "High Level" client.
+Spring Boot provides support for the "High Level" client, which ships with `org.elasticsearch.client:elasticsearch-rest-high-level-client`.
+Additionally, Spring Boot provides support for a reactive client, based on Spring Framework's `WebClient`, that ships with `org.springframework.data:spring-data-elasticsearch`.
 By default, the clients will target `http://localhost:9200`.
 You can use `spring.elasticsearch.*` properties to further tune how the clients are configured, as shown in the following example:
 
@@ -268,16 +269,14 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 ----
 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
-===== Connecting to Elasticsearch using RestClient
-If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
-If you have `elasticsearch-rest-high-level-client` on the classpath a `RestHighLevelClient` bean will be auto-configured as well.
-Following Elasticsearch's deprecation of `RestHighLevelClient`, its auto-configuration is deprecated and will be removed in a future release.
-In addition to the properties described previously, to fine-tune the `RestClient` and `RestHighLevelClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
-To take full control over the clients' configuration, define a `RestClientBuilder` bean.
+===== Connecting to Elasticsearch using RestHighLevelClient
+If you have `elasticsearch-rest-high-level-client` on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean.
+In addition to the properties described previously, to fine-tune the `RestHighLevelClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
+To take full control over its registration, define a `RestClientBuilder` bean.
 
+TIP: If your application needs access to a "Low Level" `RestClient`, you can get it by calling `client.getLowLevelClient()` on the auto-configured `RestHighLevelClient`.
 
-
-Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestClient` bean.
+Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestHighLevelClient` bean.
 You can further tune how `Sniffer` is configured, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]

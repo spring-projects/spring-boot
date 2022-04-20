@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.metrics.system;
 import java.io.File;
 import java.util.List;
 
+import io.micrometer.binder.system.DiskSpaceMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.binder.system.DiskSpaceMetrics;
 
 import org.springframework.util.Assert;
 

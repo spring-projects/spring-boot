@@ -97,7 +97,8 @@ class ThymeleafReactiveAutoConfigurationTests {
 								MediaType.APPLICATION_ATOM_XML, new MediaType("application", "javascript"),
 								new MediaType("application", "ecmascript"), new MediaType("text", "javascript"),
 								new MediaType("text", "ecmascript"), MediaType.APPLICATION_JSON,
-								new MediaType("text", "css"), MediaType.TEXT_PLAIN, MediaType.TEXT_EVENT_STREAM));
+								new MediaType("text", "css"), MediaType.TEXT_PLAIN, MediaType.TEXT_EVENT_STREAM)
+						.satisfies(System.out::println));
 	}
 
 	@Test

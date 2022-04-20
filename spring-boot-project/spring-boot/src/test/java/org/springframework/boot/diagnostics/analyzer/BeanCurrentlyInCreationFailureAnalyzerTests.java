@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,10 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Tests for {@link BeanCurrentlyInCreationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
- * @author Scott Frederick
  */
 class BeanCurrentlyInCreationFailureAnalyzerTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	private final BeanCurrentlyInCreationFailureAnalyzer analyzer = new BeanCurrentlyInCreationFailureAnalyzer(
-			this.context.getBeanFactory());
+	private final BeanCurrentlyInCreationFailureAnalyzer analyzer = new BeanCurrentlyInCreationFailureAnalyzer();
 
 	@Test
 	void cyclicBeanMethods() throws IOException {
@@ -135,13 +131,13 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	void cycleWithCircularReferencesAllowed() {
+	void cycleWithCircularReferencesAllowed() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CyclicBeanMethodsConfiguration.class, true);
 		assertThat(analysis.getAction()).contains("Despite circular references being allowed");
 	}
 
 	@Test
-	void cycleWithCircularReferencesProhibited() {
+	void cycleWithCircularReferencesProhibited() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CyclicBeanMethodsConfiguration.class, false);
 		assertThat(analysis.getAction()).contains("As a last resort");
 	}
@@ -163,12 +159,13 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	private Exception createFailure(Class<?> configuration, boolean allowCircularReferences) {
-		try {
-			this.context.register(configuration);
-			AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) this.context
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(configuration);
+			AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) context
 					.getBeanFactory();
+			this.analyzer.setBeanFactory(beanFactory);
 			beanFactory.setAllowCircularReferences(allowCircularReferences);
-			this.context.refresh();
+			context.refresh();
 			fail("Expected failure did not occur");
 			return null;
 		}
