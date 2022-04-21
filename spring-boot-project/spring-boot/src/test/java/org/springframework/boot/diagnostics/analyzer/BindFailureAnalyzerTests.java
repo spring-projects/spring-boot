@@ -80,7 +80,7 @@ class BindFailureAnalyzerTests {
 	}
 
 	@Test // gh-27028
-	void bindExceptionDueToClassNotFoundConvertionFailure() {
+	void bindExceptionDueToClassNotFoundConversionFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
 				"test.foo.type=com.example.Missing");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.type", "com.example.Missing",

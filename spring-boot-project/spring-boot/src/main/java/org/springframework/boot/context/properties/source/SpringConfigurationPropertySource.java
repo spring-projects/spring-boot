@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * getConfigurationProperty} call attempts to
  * {@link PropertyMapper#map(ConfigurationPropertyName) map} the
  * {@link ConfigurationPropertyName} to one or more {@code String} based names. This
- * allows fast property resolution for well formed property sources.
+ * allows fast property resolution for well-formed property sources.
  * <p>
  * When possible the {@link SpringIterableConfigurationPropertySource} will be used in
  * preference to this implementation since it supports full "relaxed" style resolution.

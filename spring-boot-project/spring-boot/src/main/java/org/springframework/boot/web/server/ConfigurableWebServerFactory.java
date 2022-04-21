@@ -31,7 +31,7 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 
 	/**
 	 * Sets the port that the web server should listen on. If not specified port '8080'
-	 * will be used. Use port -1 to disable auto-start (i.e start the web application
+	 * will be used. Use port -1 to disable auto-start (i.e. start the web application
 	 * context but not have it listen to any port).
 	 * @param port the port to set
 	 */
