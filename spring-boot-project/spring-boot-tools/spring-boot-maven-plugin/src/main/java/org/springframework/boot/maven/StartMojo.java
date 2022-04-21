@@ -69,7 +69,7 @@ public class StartMojo extends AbstractRunMojo {
 	private int jmxPort;
 
 	/**
-	 * The number of milli-seconds to wait between each attempt to check if the spring
+	 * The number of milliseconds to wait between each attempt to check if the spring
 	 * application is ready.
 	 */
 	@Parameter(property = "spring-boot.start.wait", defaultValue = "500")

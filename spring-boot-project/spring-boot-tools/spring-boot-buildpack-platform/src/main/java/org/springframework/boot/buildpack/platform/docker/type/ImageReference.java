@@ -155,7 +155,7 @@ public final class ImageReference {
 
 	/**
 	 * Return an {@link ImageReference} containing either a tag or a digest. If neither
-	 * the digest or the tag has been defined then tag {@code latest} is used.
+	 * the digest nor the tag has been defined then tag {@code latest} is used.
 	 * @return the image reference in tagged or digest form
 	 */
 	public ImageReference inTaggedOrDigestForm() {

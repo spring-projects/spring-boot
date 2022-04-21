@@ -64,7 +64,7 @@ class BuildpackReferenceTests {
 	}
 
 	@Test
-	void hasPrefixWhenPrifixMismatchReturnsFalse() {
+	void hasPrefixWhenPrefixMismatchReturnsFalse() {
 		BuildpackReference reference = BuildpackReference.of("test");
 		assertThat(reference.hasPrefix("st")).isFalse();
 	}
