@@ -264,7 +264,7 @@ public class CassandraProperties {
 		private DefaultConsistencyLevel serialConsistency;
 
 		/**
-		 * How many rows will be retrieved simultaneously in a single network roundtrip.
+		 * How many rows will be retrieved simultaneously in a single network round-trip.
 		 */
 		private int pageSize;
 

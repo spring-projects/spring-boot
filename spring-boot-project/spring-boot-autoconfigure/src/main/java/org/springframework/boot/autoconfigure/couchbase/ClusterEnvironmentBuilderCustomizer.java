@@ -22,8 +22,7 @@ import com.couchbase.client.java.env.ClusterEnvironment;
  * Callback interface that can be implemented by beans wishing to customize the
  * {@link ClusterEnvironment} via a
  * {@link com.couchbase.client.java.env.ClusterEnvironment.Builder
- * ClusterEnvironment.Builder} whilst retaining default auto-configuration.whilst
- * retaining default auto-configuration.
+ * ClusterEnvironment.Builder} whilst retaining default auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 2.3.0

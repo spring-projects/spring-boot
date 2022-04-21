@@ -32,7 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GsonProperties {
 
 	/**
-	 * Whether to generate non executable JSON by prefixing the output with some special
+	 * Whether to generate non-executable JSON by prefixing the output with some special
 	 * text.
 	 */
 	private Boolean generateNonExecutableJson;
