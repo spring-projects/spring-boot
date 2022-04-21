@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -41,6 +43,8 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.retrytopic.DestinationTopic;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.condition.EmbeddedKafkaCondition;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -53,12 +57,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Tomaz Fernandes
  */
 @DisabledOnOs(OS.WINDOWS)
 @EmbeddedKafka(topics = KafkaAutoConfigurationIntegrationTests.TEST_TOPIC)
 class KafkaAutoConfigurationIntegrationTests {
 
 	static final String TEST_TOPIC = "testTopic";
+	static final String TEST_RETRY_TOPIC = "testRetryTopic";
 
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
@@ -87,6 +93,27 @@ class KafkaAutoConfigurationIntegrationTests {
 		Producer producer = producerFactory.createProducer();
 		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
 		producer.close();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void testEndToEndWithRetryTopics() throws Exception {
+		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
+				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
+				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms",
+				"spring.kafka.consumer.auto-offset-reset=earliest");
+		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
+		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)
+				.containsExactly(0L, 100L, 200L, 300L, 300L, 0L);
+		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
+		template.send(TEST_RETRY_TOPIC, "foo", "bar");
+		RetryListener listener = this.context.getBean(RetryListener.class);
+		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
+		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived).containsExactly("foo",
+				"bar");
+		assertThat(listener).extracting(RetryListener::getTopics).asList().hasSize(5).containsSequence("testRetryTopic",
+				"testRetryTopic-retry-0", "testRetryTopic-retry-1", "testRetryTopic-retry-2", "testRetryTopic-retry-3");
 	}
 
 	@Test
@@ -122,6 +149,11 @@ class KafkaAutoConfigurationIntegrationTests {
 		}
 
 		@Bean
+		RetryListener retryListener() {
+			return new RetryListener();
+		}
+
+		@Bean
 		NewTopic adminCreated() {
 			return TopicBuilder.name(ADMIN_CREATED_TOPIC).partitions(10).replicas(1).build();
 		}
@@ -153,6 +185,40 @@ class KafkaAutoConfigurationIntegrationTests {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();
+		}
+
+	}
+
+	static class RetryListener {
+
+		private final CountDownLatch latch = new CountDownLatch(5);
+
+		private final List<String> topics = new ArrayList<>();
+
+		private volatile String received;
+
+		private volatile String key;
+
+		@KafkaListener(topics = TEST_RETRY_TOPIC)
+		void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key,
+				@Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+			this.received = foo;
+			this.key = key;
+			this.topics.add(topic);
+			this.latch.countDown();
+			throw new RuntimeException("Test exception");
+		}
+
+		private List<String> getTopics() {
+			return this.topics;
+		}
+
+		private String getReceived() {
+			return this.received;
+		}
+
+		private String getKey() {
+			return this.key;
 		}
 
 	}

@@ -53,6 +53,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @author Artem Bilan
  * @author Nakul Mishra
+ * @author Tomaz Fernandes
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -92,6 +93,8 @@ public class KafkaProperties {
 	private final Template template = new Template();
 
 	private final Security security = new Security();
+
+	private final Retry retry = new Retry();
 
 	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
@@ -147,6 +150,10 @@ public class KafkaProperties {
 
 	public Security getSecurity() {
 		return this.security;
+	}
+
+	public Retry getRetry() {
+		return this.retry;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
@@ -1334,6 +1341,104 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
 			return properties;
+		}
+
+	}
+
+	public static class Retry {
+
+		private final Topic topic = new Topic();
+
+		public Topic getTopic() {
+			return this.topic;
+		}
+
+		/**
+		 * Properties for non-blocking, topic-based retries.
+		 */
+		public static class Topic {
+
+			/**
+			 * Whether to enable topic-based non-blocking retries.
+			 */
+			private boolean enabled;
+
+			/**
+			 * Total number of processing attempts made before sending the message to the
+			 * DLT.
+			 */
+			private int attempts = 3;
+
+			/**
+			 * Canonical backoff period. Used as an initial value in the exponential case,
+			 * and as a minimum value in the uniform case.
+			 */
+			private Duration delay = Duration.ofSeconds(1);
+
+			/**
+			 * Multiplier to use for generating the next backoff delay.
+			 */
+			private double multiplier = 0.0;
+
+			/**
+			 * Maximum wait between retries. If less than the delay then the default of 30
+			 * seconds is applied.
+			 */
+			private Duration maxDelay = Duration.ZERO;
+
+			/**
+			 * Whether to have the backoff delays.
+			 */
+			private boolean randomBackOff = false;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public int getAttempts() {
+				return this.attempts;
+			}
+
+			public void setAttempts(int attempts) {
+				this.attempts = attempts;
+			}
+
+			public Duration getDelay() {
+				return this.delay;
+			}
+
+			public void setDelay(Duration delay) {
+				this.delay = delay;
+			}
+
+			public double getMultiplier() {
+				return this.multiplier;
+			}
+
+			public void setMultiplier(double multiplier) {
+				this.multiplier = multiplier;
+			}
+
+			public Duration getMaxDelay() {
+				return this.maxDelay;
+			}
+
+			public void setMaxDelay(Duration maxDelay) {
+				this.maxDelay = maxDelay;
+			}
+
+			public boolean isRandomBackOff() {
+				return this.randomBackOff;
+			}
+
+			public void setRandomBackOff(boolean randomBackOff) {
+				this.randomBackOff = randomBackOff;
+			}
+
 		}
 
 	}
