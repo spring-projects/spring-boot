@@ -254,7 +254,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "8.5.8") {
+	library("Flyway", "8.5.9") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
@@ -594,7 +594,7 @@ bom {
 			]
 		}
 	}
-	library("Janino", "3.1.6") {
+	library("Janino", "3.1.7") {
 		group("org.codehaus.janino") {
 			modules = [
 				"commons-compiler",
@@ -934,7 +934,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Javadoc Plugin", "3.3.2") {
+	library("Maven Javadoc Plugin", "3.4.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-javadoc-plugin"
