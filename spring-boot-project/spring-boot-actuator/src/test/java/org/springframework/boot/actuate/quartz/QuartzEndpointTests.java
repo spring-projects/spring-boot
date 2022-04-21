@@ -659,7 +659,7 @@ class QuartzEndpointTests {
 	}
 
 	@Test
-	void quartzJobWithSensitiveDataMapAndCustomSanitizier() throws SchedulerException {
+	void quartzJobWithSensitiveDataMapAndCustomSanitizer() throws SchedulerException {
 		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").usingJobData("test", "value")
 				.usingJobData("secret", "value").build();
 		mockJobs(job);

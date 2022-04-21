@@ -357,7 +357,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		/**
 		 * Create a new {@link OperationKey} instance.
 		 * @param key the underlying key for the operation
-		 * @param description a human readable description of the key
+		 * @param description a human-readable description of the key
 		 */
 		public OperationKey(Object key, Supplier<String> description) {
 			Assert.notNull(key, "Key must not be null");

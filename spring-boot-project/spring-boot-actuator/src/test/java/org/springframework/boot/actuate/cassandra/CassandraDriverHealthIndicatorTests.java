@@ -133,7 +133,7 @@ class CassandraDriverHealthIndicatorTests {
 	}
 
 	@Test
-	void healthWithcassandraDownShouldReturnDown() {
+	void healthWithCassandraDownShouldReturnDown() {
 		CqlSession session = mock(CqlSession.class);
 		given(session.getMetadata()).willThrow(new DriverTimeoutException("Test Exception"));
 		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);

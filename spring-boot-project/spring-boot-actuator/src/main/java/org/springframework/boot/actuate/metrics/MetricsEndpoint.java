@@ -225,7 +225,7 @@ public class MetricsEndpoint {
 	}
 
 	/**
-	 * A set of tags for further dimensional drilldown and their potential values.
+	 * A set of tags for further dimensional drill-down and their potential values.
 	 */
 	public static final class AvailableTag {
 
