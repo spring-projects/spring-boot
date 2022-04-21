@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,7 +36,6 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
-import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
@@ -146,21 +147,30 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
-	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaOperations<Object, Object> kafkaOperations) {
+	@ConditionalOnSingleCandidate(KafkaTemplate.class)
+	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
 		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
 				.maxAttempts(retryTopic.getAttempts()).useSingleTopicForFixedDelays().suffixTopicsWithIndexValues()
 				.doNotAutoCreateRetryTopics();
 		setBackOffPolicy(builder, retryTopic);
-		return builder.create(kafkaOperations);
+		return builder.create(kafkaTemplate);
 	}
 
 	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {
-		PropertyMapper.get().from(retryTopic.getDelayMillis()).whenEqualTo(0L).toCall(builder::noBackoff);
-		PropertyMapper.get().from(retryTopic.getDelayMillis()).when((delay) -> delay > 0)
-				.toCall(() -> builder.customBackoff((SleepingBackOffPolicy<?>) BackOffPolicyBuilder.newBuilder()
-						.delay(retryTopic.getDelayMillis()).maxDelay(retryTopic.getMaxDelayMillis())
-						.multiplier(retryTopic.getMultiplier()).random(retryTopic.isRandomBackOff()).build()));
+		long delay = (retryTopic.getDelay() != null) ? retryTopic.getDelay().toMillis() : 0;
+		if (delay > 0) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			BackOffPolicyBuilder backOffPolicy = BackOffPolicyBuilder.newBuilder();
+			map.from(delay).to(backOffPolicy::delay);
+			map.from(retryTopic.getMaxDelay()).as(Duration::toMillis).to(backOffPolicy::maxDelay);
+			map.from(retryTopic.getMultiplier()).to(backOffPolicy::multiplier);
+			map.from(retryTopic.isRandomBackOff()).to(backOffPolicy::random);
+			builder.customBackoff((SleepingBackOffPolicy<?>) backOffPolicy.build());
+		}
+		else {
+			builder.noBackoff();
+		}
 	}
 
 }
