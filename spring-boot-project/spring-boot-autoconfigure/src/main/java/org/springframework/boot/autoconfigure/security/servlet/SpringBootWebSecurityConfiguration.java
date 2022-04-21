@@ -34,7 +34,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 
@@ -45,13 +44,12 @@ import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@SuppressWarnings("deprecation")
 class SpringBootWebSecurityConfiguration {
 
 	/**
 	 * The default configuration for web security. It relies on Spring Security's
 	 * content-negotiation strategy to determine what sort of authentication to use. If
-	 * the user specifies their own {@link WebSecurityConfigurerAdapter} or
+	 * the user specifies their own {@code WebSecurityConfigurerAdapter} or
 	 * {@link SecurityFilterChain} bean, this will back-off completely and the users
 	 * should specify all the bits that they want to configure as part of the custom
 	 * security configuration.
