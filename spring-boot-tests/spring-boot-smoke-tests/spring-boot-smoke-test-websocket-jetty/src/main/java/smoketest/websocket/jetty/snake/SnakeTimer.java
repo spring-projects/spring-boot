@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Sets up the timer for the multi-player snake game WebSocket example.
+ * Sets up the timer for the multiplayer snake game WebSocket example.
  */
 public final class SnakeTimer {
 

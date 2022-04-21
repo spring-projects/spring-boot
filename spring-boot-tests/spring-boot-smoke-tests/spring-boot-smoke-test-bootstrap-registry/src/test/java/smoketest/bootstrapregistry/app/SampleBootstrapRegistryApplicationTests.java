@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleBootstrapRegistryApplicationTests {
 
 	@Test
-	void testBootrapper(CapturedOutput output) {
+	void testBootstrapper(CapturedOutput output) {
 		SampleBootstrapRegistryApplication.main(new String[0]);
 		assertThat(output).contains("svn my-data from svn / example.com[secret]")
 				.contains("client smoketest.bootstrapregistry.app.MySubversionClient");
