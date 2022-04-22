@@ -461,7 +461,8 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.listener.log-container-config=true", "spring.kafka.listener.missing-topics-fatal=true",
 				"spring.kafka.jaas.enabled=true", "spring.kafka.listener.immediate-stop=true",
 				"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
-				"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
+				"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true",
+				"spring.kafka.listener.async-acks=true")
 				.run((context) -> {
 					DefaultKafkaProducerFactory<?, ?> producerFactory = context
 							.getBean(DefaultKafkaProducerFactory.class);
@@ -477,6 +478,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(kafkaListenerContainerFactory.getConsumerFactory()).isEqualTo(consumerFactory);
 					ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
 					assertThat(containerProperties.getAckMode()).isEqualTo(AckMode.MANUAL);
+					assertThat(containerProperties.isAsyncAcks()).isEqualTo(true);
 					assertThat(containerProperties.getClientId()).isEqualTo("client");
 					assertThat(containerProperties.getAckCount()).isEqualTo(123);
 					assertThat(containerProperties.getAckTime()).isEqualTo(456L);
