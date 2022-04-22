@@ -882,7 +882,9 @@ public class KafkaProperties {
 		private AckMode ackMode;
 
 		/**
-		 * Support for asynchronous record acknowledgments. Only applies with ContainerProperties.AckMode.MANUAL or ContainerProperties.AckMode.MANUAL_IMMEDIATE.
+		 * Support for asynchronous record acknowledgments. Only applies with
+		 * ContainerProperties.AckMode.MANUAL or
+		 * ContainerProperties.AckMode.MANUAL_IMMEDIATE.
 		 */
 		private Boolean asyncAcks;
 
