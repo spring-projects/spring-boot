@@ -166,6 +166,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getAckMode).to(container::setAckMode);
+		map.from(properties::getAsyncAcks).to(container::setAsyncAcks);
 		map.from(properties::getClientId).to(container::setClientId);
 		map.from(properties::getAckCount).to(container::setAckCount);
 		map.from(properties::getAckTime).as(Duration::toMillis).to(container::setAckTime);
