@@ -96,8 +96,7 @@ class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	void defaultDatabaseIsSet() {
-		this.contextRunner
-				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb", "spring.sql.init.mode:never:never")
+		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:h2:mem:testdb", "spring.sql.init.mode:never")
 				.run((context) -> {
 					HibernateJpaVendorAdapter bean = context.getBean(HibernateJpaVendorAdapter.class);
 					Database database = (Database) ReflectionTestUtils.getField(bean, "database");
