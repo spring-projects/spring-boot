@@ -203,7 +203,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 		@SuppressWarnings("deprecation")
 		private <T> T get(String name, Function<AssertingParty, T> getter) {
-			T newValue = getter.apply(this.registration.getAssertingParty());
+			T newValue = getter.apply(this.registration.getAssertingparty());
 			if (newValue != null) {
 				return newValue;
 			}
@@ -211,7 +211,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			if (deprecatedValue != null) {
 				logger.warn(LogMessage.format(
 						"Property 'spring.security.saml2.relyingparty.registration.identityprovider.%1$s.%2$s' is deprecated, "
-								+ "please use 'spring.security.saml2.relyingparty.registration.asserting-party.%1$s.%2$s' instead",
+								+ "please use 'spring.security.saml2.relyingparty.registration.assertingparty.%1$s.%2$s' instead",
 						this.id, name));
 				return deprecatedValue;
 			}

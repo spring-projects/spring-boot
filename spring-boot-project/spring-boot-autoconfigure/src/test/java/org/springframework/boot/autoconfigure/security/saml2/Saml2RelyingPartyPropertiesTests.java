@@ -41,26 +41,26 @@ class Saml2RelyingPartyPropertiesTests {
 
 	@Test
 	void customizeSsoUrl() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.url",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.url",
 				"https://simplesaml-for-spring-saml/SSOService.php");
 		assertThat(
-				this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getSinglesignon().getUrl())
+				this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon().getUrl())
 						.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
 	}
 
 	@Test
 	void customizeSsoBinding() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.binding",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.binding",
 				"post");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getSinglesignon()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
 				.getBinding()).isEqualTo(Saml2MessageBinding.POST);
 	}
 
 	@Test
 	void customizeSsoSignRequests() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.single-sign-on.sign-request",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request",
 				"false");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getSinglesignon()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
 				.getSignRequest()).isEqualTo(false);
 	}
 
@@ -80,9 +80,9 @@ class Saml2RelyingPartyPropertiesTests {
 
 	@Test
 	void customizeAssertingPartyMetadataUri() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.asserting-party.metadata-uri",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.metadata-uri",
 				"https://idp.example.org/metadata");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingParty().getMetadataUri())
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getMetadataUri())
 				.isEqualTo("https://idp.example.org/metadata");
 	}
 

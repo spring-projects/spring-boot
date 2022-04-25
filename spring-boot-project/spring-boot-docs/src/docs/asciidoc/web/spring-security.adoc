@@ -262,7 +262,7 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"
-	            asserting-party:
+	            assertingparty:
 	              verification:
 	                credentials:
 	                - certificate-location: "path-to-verification-cert"
@@ -278,7 +278,7 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"
-                asserting-party:
+                assertingparty:
                   verification:
                     credentials:
                     - certificate-location: "path-to-other-verification-cert"

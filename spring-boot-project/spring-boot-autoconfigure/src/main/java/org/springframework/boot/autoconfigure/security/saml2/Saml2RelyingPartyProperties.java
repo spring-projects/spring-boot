@@ -68,11 +68,11 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Remote SAML Identity Provider.
 		 */
-		private final AssertingParty assertingParty = new AssertingParty();
+		private final AssertingParty assertingparty = new AssertingParty();
 
 		/**
 		 * Remote SAML Identity Provider.
-		 * @deprecated use {@link #assertingParty}
+		 * @deprecated use {@link #assertingparty}
 		 */
 		@Deprecated
 		private final AssertingParty identityprovider = new AssertingParty();
@@ -97,14 +97,14 @@ public class Saml2RelyingPartyProperties {
 			return this.decryption;
 		}
 
-		public AssertingParty getAssertingParty() {
-			return this.assertingParty;
+		public AssertingParty getAssertingparty() {
+			return this.assertingparty;
 		}
 
 		/**
 		 * Remote SAML Identity Provider.
 		 * @return remote SAML Identity Provider
-		 * @deprecated use {@link #getAssertingParty()}
+		 * @deprecated use {@link #getAssertingparty()}
 		 */
 		@Deprecated
 		public AssertingParty getIdentityprovider() {
