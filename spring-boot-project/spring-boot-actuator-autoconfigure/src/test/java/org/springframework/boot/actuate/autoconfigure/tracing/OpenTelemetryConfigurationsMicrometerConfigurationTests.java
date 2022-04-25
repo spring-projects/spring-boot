@@ -17,10 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
+import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
+import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.MicrometerConfiguration;
@@ -44,26 +48,39 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.withUserConfiguration(TracerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(OtelTracer.class);
-			assertThat(context).hasSingleBean(EventPublisher.class);
-			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-		});
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class, OpenTelemetryConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(OtelTracer.class);
+					assertThat(context).hasSingleBean(EventPublisher.class);
+					assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
+					assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
+					assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
+				});
 	}
 
 	@Test
 	void shouldNotSupplyBeansIfMicrometerTracingBridgeOtelIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.tracing.otel"))
-				.withUserConfiguration(TracerConfiguration.class).run((context) -> {
+				.withUserConfiguration(TracerConfiguration.class, OpenTelemetryConfiguration.class).run((context) -> {
 					assertThat(context).doesNotHaveBean(OtelTracer.class);
 					assertThat(context).doesNotHaveBean(EventPublisher.class);
 					assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
+					assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
+					assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
 				});
 	}
 
 	@Test
-	void shouldNotSupplyOtelTracerIfTracerIsMissing() {
+	void shouldNotSupplyBeansIfTracerIsMissing() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(OtelTracer.class));
+	}
+
+	@Test
+	void shouldNotSupplyBeansIfOpenTelemetryIsMissing() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
+			assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
+		});
 	}
 
 	@Test
@@ -75,6 +92,10 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasBean("customOtelCurrentTraceContext");
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
+			assertThat(context).hasBean("customOtelHttpClientHandler");
+			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
+			assertThat(context).hasBean("customOtelHttpServerHandler");
+			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 		});
 	}
 
@@ -96,6 +117,16 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			return Mockito.mock(OtelCurrentTraceContext.class);
 		}
 
+		@Bean
+		OtelHttpClientHandler customOtelHttpClientHandler() {
+			return Mockito.mock(OtelHttpClientHandler.class);
+		}
+
+		@Bean
+		OtelHttpServerHandler customOtelHttpServerHandler() {
+			return Mockito.mock(OtelHttpServerHandler.class);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -104,6 +135,16 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 		@Bean
 		Tracer tracer() {
 			return Mockito.mock(Tracer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class OpenTelemetryConfiguration {
+
+		@Bean
+		OpenTelemetry openTelemetry() {
+			return Mockito.mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
 		}
 
 	}

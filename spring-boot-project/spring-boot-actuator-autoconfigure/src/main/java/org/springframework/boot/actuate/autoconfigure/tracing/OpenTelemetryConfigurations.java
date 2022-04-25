@@ -17,10 +17,16 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import io.micrometer.tracing.SamplerFunction;
+import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
+import io.micrometer.tracing.otel.bridge.DefaultHttpServerAttributesExtractor;
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
+import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
+import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.opentelemetry.api.OpenTelemetry;
@@ -144,6 +150,22 @@ class OpenTelemetryConfigurations {
 		@ConditionalOnMissingBean
 		OtelCurrentTraceContext otelCurrentTraceContext() {
 			return new OtelCurrentTraceContext();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnBean(OpenTelemetry.class)
+		OtelHttpClientHandler otelHttpClientHandler(OpenTelemetry openTelemetry) {
+			return new OtelHttpClientHandler(openTelemetry, null, null, SamplerFunction.deferDecision(),
+					new DefaultHttpClientAttributesGetter());
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnBean(OpenTelemetry.class)
+		OtelHttpServerHandler otelHttpServerHandler(OpenTelemetry openTelemetry) {
+			return new OtelHttpServerHandler(openTelemetry, null, null, Pattern.compile(""),
+					new DefaultHttpServerAttributesExtractor());
 		}
 
 	}

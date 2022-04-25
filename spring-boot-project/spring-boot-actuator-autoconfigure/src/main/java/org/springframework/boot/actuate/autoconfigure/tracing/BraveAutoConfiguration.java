@@ -22,6 +22,13 @@ import brave.Tracing;
 import brave.Tracing.Builder;
 import brave.TracingCustomizer;
 import brave.handler.SpanHandler;
+import brave.http.HttpClientHandler;
+import brave.http.HttpClientRequest;
+import brave.http.HttpClientResponse;
+import brave.http.HttpServerHandler;
+import brave.http.HttpServerRequest;
+import brave.http.HttpServerResponse;
+import brave.http.HttpTracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
@@ -31,6 +38,8 @@ import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
+import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
+import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -107,6 +116,24 @@ public class BraveAutoConfiguration {
 		return Sampler.create(properties.getSampling().getProbability());
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public HttpTracing httpTracing(Tracing tracing) {
+		return HttpTracing.newBuilder(tracing).build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler(HttpTracing httpTracing) {
+		return HttpServerHandler.create(httpTracing);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler(HttpTracing httpTracing) {
+		return HttpClientHandler.create(httpTracing);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(BraveTracer.class)
 	static class BraveMicrometer {
@@ -122,6 +149,20 @@ public class BraveAutoConfiguration {
 		@ConditionalOnMissingBean
 		BraveBaggageManager braveBaggageManager() {
 			return new BraveBaggageManager();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		BraveHttpServerHandler braveHttpServerHandler(
+				HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler) {
+			return new BraveHttpServerHandler(httpServerHandler);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		BraveHttpClientHandler braveHttpClientHandler(
+				HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
+			return new BraveHttpClientHandler(httpClientHandler);
 		}
 
 	}

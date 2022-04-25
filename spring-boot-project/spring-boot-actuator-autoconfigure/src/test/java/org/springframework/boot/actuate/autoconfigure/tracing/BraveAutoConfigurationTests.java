@@ -18,12 +18,22 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import brave.Tracer;
 import brave.Tracing;
+import brave.http.HttpClientHandler;
+import brave.http.HttpClientRequest;
+import brave.http.HttpClientResponse;
+import brave.http.HttpServerHandler;
+import brave.http.HttpServerRequest;
+import brave.http.HttpServerResponse;
+import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.Propagation.Factory;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
+import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
+import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -52,6 +62,9 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(CurrentTraceContext.class);
 			assertThat(context).hasSingleBean(Factory.class);
 			assertThat(context).hasSingleBean(Sampler.class);
+			assertThat(context).hasSingleBean(HttpTracing.class);
+			assertThat(context).hasSingleBean(HttpServerHandler.class);
+			assertThat(context).hasSingleBean(HttpClientHandler.class);
 		});
 	}
 
@@ -68,6 +81,12 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Factory.class);
 			assertThat(context).hasBean("customSampler");
 			assertThat(context).hasSingleBean(Sampler.class);
+			assertThat(context).hasBean("customHttpTracing");
+			assertThat(context).hasSingleBean(HttpTracing.class);
+			assertThat(context).hasBean("customHttpServerHandler");
+			assertThat(context).hasSingleBean(HttpServerHandler.class);
+			assertThat(context).hasBean("customHttpClientHandler");
+			assertThat(context).hasSingleBean(HttpClientHandler.class);
 		});
 	}
 
@@ -76,6 +95,8 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BraveTracer.class);
 			assertThat(context).hasSingleBean(BraveBaggageManager.class);
+			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
+			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
 	}
 
@@ -86,6 +107,10 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(BraveTracer.class);
 			assertThat(context).hasBean("customBraveBaggageManager");
 			assertThat(context).hasSingleBean(BraveBaggageManager.class);
+			assertThat(context).hasBean("customBraveHttpServerHandler");
+			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
+			assertThat(context).hasBean("customBraveHttpClientHandler");
+			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
 	}
 
@@ -97,6 +122,9 @@ class BraveAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(CurrentTraceContext.class);
 			assertThat(context).doesNotHaveBean(Factory.class);
 			assertThat(context).doesNotHaveBean(Sampler.class);
+			assertThat(context).doesNotHaveBean(HttpTracing.class);
+			assertThat(context).doesNotHaveBean(HttpServerHandler.class);
+			assertThat(context).doesNotHaveBean(HttpClientHandler.class);
 		});
 	}
 
@@ -105,6 +133,8 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer")).run((context) -> {
 			assertThat(context).doesNotHaveBean(BraveTracer.class);
 			assertThat(context).doesNotHaveBean(BraveBaggageManager.class);
+			assertThat(context).doesNotHaveBean(BraveHttpServerHandler.class);
+			assertThat(context).doesNotHaveBean(BraveHttpClientHandler.class);
 		});
 	}
 
@@ -136,6 +166,23 @@ class BraveAutoConfigurationTests {
 			return Mockito.mock(Sampler.class);
 		}
 
+		@Bean
+		HttpTracing customHttpTracing() {
+			return Mockito.mock(HttpTracing.class);
+		}
+
+		@Bean
+		HttpServerHandler<HttpServerRequest, HttpServerResponse> customHttpServerHandler() {
+			HttpTracing httpTracing = Mockito.mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpServerHandler.create(httpTracing);
+		}
+
+		@Bean
+		HttpClientHandler<HttpClientRequest, HttpClientResponse> customHttpClientHandler() {
+			HttpTracing httpTracing = Mockito.mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpClientHandler.create(httpTracing);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -149,6 +196,16 @@ class BraveAutoConfigurationTests {
 		@Bean
 		BraveBaggageManager customBraveBaggageManager() {
 			return Mockito.mock(BraveBaggageManager.class);
+		}
+
+		@Bean
+		BraveHttpServerHandler customBraveHttpServerHandler() {
+			return Mockito.mock(BraveHttpServerHandler.class);
+		}
+
+		@Bean
+		BraveHttpClientHandler customBraveHttpClientHandler() {
+			return Mockito.mock(BraveHttpClientHandler.class);
 		}
 
 	}
