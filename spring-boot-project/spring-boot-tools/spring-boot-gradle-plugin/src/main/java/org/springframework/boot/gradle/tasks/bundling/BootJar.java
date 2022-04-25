@@ -110,7 +110,8 @@ public class BootJar extends Jar implements BootArchive {
 	private void moveMetaInfToRoot(CopySpec spec) {
 		spec.eachFile((file) -> {
 			String path = file.getRelativeSourcePath().getPathString();
-			if (path.startsWith("META-INF/") && !path.equals("META-INF/aop.xml") && !path.endsWith(".kotlin_module")) {
+			if (path.startsWith("META-INF/") && !path.equals("META-INF/aop.xml") && !path.endsWith(".kotlin_module")
+					&& !path.startsWith("META-INF/services/")) {
 				this.support.moveToRoot(file);
 			}
 		});

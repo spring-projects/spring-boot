@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -446,7 +446,8 @@ public abstract class Packager {
 		private boolean isTransformable(JarArchiveEntry entry) {
 			String name = entry.getName();
 			if (name.startsWith("META-INF/")) {
-				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module");
+				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module")
+						|| name.startsWith("META-INF/services/");
 			}
 			return !name.startsWith("BOOT-INF/") && !name.equals("module-info.class");
 		}

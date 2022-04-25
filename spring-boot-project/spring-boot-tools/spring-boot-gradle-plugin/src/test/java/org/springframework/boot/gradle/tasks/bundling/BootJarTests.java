@@ -163,6 +163,27 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		}
 	}
 
+	@Test
+	void metaInfServicesEntryIsPackagedBeneathClassesDirectory() throws IOException {
+		getTask().getMainClass().set("com.example.Main");
+		File classpathDirectory = new File(this.temp, "classes");
+		File service = new File(classpathDirectory, "META-INF/services/com.example.Service");
+		service.getParentFile().mkdirs();
+		service.createNewFile();
+		File applicationClass = new File(classpathDirectory, "com/example/Application.class");
+		applicationClass.getParentFile().mkdirs();
+		applicationClass.createNewFile();
+		getTask().classpath(classpathDirectory);
+		executeTask();
+		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getEntry("BOOT-INF/classes/com/example/Application.class")).isNotNull();
+			assertThat(jarFile.getEntry("com/example/Application.class")).isNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/services/com.example.Service")).isNotNull();
+			assertThat(jarFile.getEntry("META-INF/services/com.example.Service")).isNull();
+		}
+
+	}
+
 	private File createPopulatedJar() throws IOException {
 		addContent();
 		executeTask();
