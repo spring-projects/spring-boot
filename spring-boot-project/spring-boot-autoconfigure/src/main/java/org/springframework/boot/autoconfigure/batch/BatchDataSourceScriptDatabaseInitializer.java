@@ -78,7 +78,6 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 
 	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.ORACLE, "oracle10g");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
 		if (StringUtils.hasText(properties.getPlatform())) {
 			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());

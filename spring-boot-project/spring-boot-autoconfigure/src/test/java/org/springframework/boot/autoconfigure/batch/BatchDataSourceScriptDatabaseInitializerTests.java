@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -66,7 +65,6 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 	@EnumSource(value = DatabaseDriver.class, mode = Mode.EXCLUDE,
 			names = { "FIREBIRD", "INFORMIX", "JTDS", "PHOENIX", "REDSHIFT", "TERADATA", "TESTCONTAINERS", "UNKNOWN" })
 	void batchSchemaCanBeLocated(DatabaseDriver driver) throws IOException, SQLException {
-		Assume.assumeFalse("gh-30564", driver == DatabaseDriver.ORACLE);
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 		BatchProperties properties = new BatchProperties();
 		DataSource dataSource = mock(DataSource.class);
