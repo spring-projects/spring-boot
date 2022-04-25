@@ -18,54 +18,53 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import zipkin2.Call;
 
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * A Zipkin {@link HttpSender} which uses {@link RestTemplate} for HTTP communication.
+ * A Zipkin {@link HttpSender} which uses {@link WebClient} for HTTP communication.
  *
- * @author Moritz Halbritter
  * @author Stefan Bratanov
  */
-class ZipkinRestTemplateSender extends HttpSender {
+class ZipkinWebClientSender extends HttpSender {
 
 	private final String endpoint;
 
-	private final RestTemplate restTemplate;
+	private final WebClient webClient;
 
-	ZipkinRestTemplateSender(String endpoint, RestTemplate restTemplate) {
+	ZipkinWebClientSender(String endpoint, WebClient webClient) {
 		this.endpoint = endpoint;
-		this.restTemplate = restTemplate;
+		this.webClient = webClient;
 	}
 
 	@Override
 	public HttpPostCall sendSpans(byte[] batchedEncodedSpans) {
-		return new RestTemplateHttpPostCall(this.endpoint, batchedEncodedSpans, this.restTemplate);
+		return new WebClientHttpPostCall(this.endpoint, batchedEncodedSpans, this.webClient);
 	}
 
-	private static class RestTemplateHttpPostCall extends HttpPostCall {
+	private static class WebClientHttpPostCall extends HttpPostCall {
 
 		private final String endpoint;
 
-		private final RestTemplate restTemplate;
+		private final WebClient webClient;
 
-		RestTemplateHttpPostCall(String endpoint, byte[] body, RestTemplate restTemplate) {
+		WebClientHttpPostCall(String endpoint, byte[] body, WebClient webClient) {
 			super(body);
 			this.endpoint = endpoint;
-			this.restTemplate = restTemplate;
+			this.webClient = webClient;
 		}
 
 		@Override
 		void post(byte[] body, HttpHeaders defaultHeaders) {
-			HttpEntity<byte[]> request = new HttpEntity<>(body, defaultHeaders);
-			this.restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
+			this.webClient.post().uri(this.endpoint).headers((headers) -> headers.addAll(defaultHeaders))
+					.bodyValue(body).retrieve().toBodilessEntity().subscribe((__) -> {
+					}, (__) -> {
+					});
 		}
 
 		@Override
 		public Call<Void> clone() {
-			return new RestTemplateHttpPostCall(this.endpoint, this.body, this.restTemplate);
+			return new WebClientHttpPostCall(this.endpoint, this.body, this.webClient);
 		}
 
 	}

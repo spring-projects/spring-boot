@@ -16,7 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
+import reactor.netty.http.client.HttpClient;
 import zipkin2.Span;
 import zipkin2.codec.BytesEncoder;
 import zipkin2.reporter.AsyncReporter;
@@ -28,12 +31,17 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Configurations for Zipkin. Those are imported by {@link ZipkinAutoConfiguration}.
@@ -61,6 +69,20 @@ class ZipkinConfigurations {
 					.build();
 		}
 
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnBean(WebClient.Builder.class)
+	@ConditionalOnMissingClass("zipkin2.reporter.urlconnection.URLConnectionSender")
+	Sender webClientSender(ZipkinProperties properties, WebClient.Builder webClientBuilder) {
+		HttpClient client = HttpClient.create()
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) properties.getConnectTimeout().toMillis())
+				.doOnConnected((conn) -> conn
+						.addHandlerLast(new ReadTimeoutHandler((int) properties.getReadTimeout().toSeconds())));
+		WebClient webClient = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client)).build();
+		return new ZipkinWebClientSender(properties.getEndpoint(), webClient);
 	}
 
 	@Configuration(proxyBeanMethods = false)
