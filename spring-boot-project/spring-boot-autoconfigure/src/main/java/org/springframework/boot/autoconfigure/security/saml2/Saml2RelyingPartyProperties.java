@@ -68,7 +68,7 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Remote SAML Identity Provider.
 		 */
-		private final AssertingParty assertingParty = new AssertingParty();
+		private final AssertingParty assertingparty = new AssertingParty();
 
 		public String getEntityId() {
 			return this.entityId;
@@ -90,8 +90,8 @@ public class Saml2RelyingPartyProperties {
 			return this.decryption;
 		}
 
-		public AssertingParty getAssertingParty() {
-			return this.assertingParty;
+		public AssertingParty getAssertingparty() {
+			return this.assertingparty;
 		}
 
 		public static class Acs {

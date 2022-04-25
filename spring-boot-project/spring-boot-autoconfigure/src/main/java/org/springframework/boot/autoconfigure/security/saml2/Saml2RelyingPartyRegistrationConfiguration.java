@@ -73,19 +73,19 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean usingMetadata = StringUtils.hasText(properties.getAssertingParty().getMetadataUri());
+		boolean usingMetadata = StringUtils.hasText(properties.getAssertingparty().getMetadataUri());
 		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
-				.fromMetadataLocation(properties.getAssertingParty().getMetadataUri()).registrationId(id)
+				.fromMetadataLocation(properties.getAssertingparty().getMetadataUri()).registrationId(id)
 				: RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
-		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingParty(), usingMetadata));
+		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingparty(), usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
 		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
 				.map(this::asDecryptionCredential).forEach(credentials::add));
 		builder.assertingPartyDetails((details) -> details
-				.verificationX509Credentials((credentials) -> properties.getAssertingParty().getVerification()
+				.verificationX509Credentials((credentials) -> properties.getAssertingparty().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
 		builder.entityId(properties.getEntityId());
 		RelyingPartyRegistration registration = builder.build();

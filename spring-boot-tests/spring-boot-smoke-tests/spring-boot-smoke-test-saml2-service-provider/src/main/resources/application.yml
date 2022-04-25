@@ -8,7 +8,7 @@ spring:
               credentials:
               - private-key-location: "classpath:saml/privatekey.txt"
                 certificate-location: "classpath:saml/certificate.txt"
-            asserting-party:
+            assertingparty:
               verification:
                 credentials:
                   - certificate-location: "classpath:saml/certificate.txt"
@@ -21,7 +21,7 @@ spring:
               credentials:
               - private-key-location: "classpath:saml/privatekey.txt"
                 certificate-location: "classpath:saml/certificate.txt"
-            asserting-party:
+            assertingparty:
               verification:
                 credentials:
                   - certificate-location: "classpath:saml/certificate.txt"
