@@ -28,6 +28,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -86,6 +87,16 @@ class BindFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).contains(failure("test.foo.type", "com.example.Missing",
 				"\"test.foo.type\" from property source \"test\"",
 				"failed to convert java.lang.String to java.lang.Class<?> (caused by java.lang.ClassNotFoundException: com.example.Missing"));
+	}
+
+	@Test
+	void bindExceptionDueToMapConversionFailure() {
+		FailureAnalysis analysis = performAnalysis(LoggingLevelFailureConfiguration.class, "logging.level=debug");
+		assertThat(analysis.getDescription()).contains(failure("logging.level", "debug",
+				"\"logging.level\" from property source \"test\"",
+				"org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting "
+						+ "from type [java.lang.String] to type [java.util.Map<java.lang.String, "
+						+ "org.springframework.boot.logging.LogLevel>]"));
 	}
 
 	private static String failure(String property, String value, String origin, String reason) {
@@ -147,6 +158,11 @@ class BindFailureAnalyzerTests {
 
 	@EnableConfigurationProperties(NestedFailureProperties.class)
 	static class NestedFailureConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(LoggingProperties.class)
+	static class LoggingLevelFailureConfiguration {
 
 	}
 
@@ -233,6 +249,21 @@ class BindFailureAnalyzerTests {
 
 		void setValue(String value) {
 			throw new RuntimeException("This is a failure");
+		}
+
+	}
+
+	@ConfigurationProperties("logging")
+	static class LoggingProperties {
+
+		private Map<String, LogLevel> level = new HashMap<>();
+
+		Map<String, LogLevel> getLevel() {
+			return this.level;
+		}
+
+		void setLevel(Map<String, LogLevel> level) {
+			this.level = level;
 		}
 
 	}
