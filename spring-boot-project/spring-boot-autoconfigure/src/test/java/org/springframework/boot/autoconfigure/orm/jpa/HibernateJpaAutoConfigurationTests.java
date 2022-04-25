@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import javax.sql.DataSource;
@@ -600,7 +600,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 		static class EventCapturingApplicationListener implements ApplicationListener<ApplicationEvent> {
 
-			private final List<ApplicationEvent> events = new CopyOnWriteArrayList<>();
+			private final List<ApplicationEvent> events = new ArrayList<>();
 
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
