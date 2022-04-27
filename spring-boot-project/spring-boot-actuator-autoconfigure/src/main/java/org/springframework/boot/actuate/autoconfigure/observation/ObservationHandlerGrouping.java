@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.observation;
 
 import java.util.Collection;
 
+import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationRegistry.ObservationConfig;
 
@@ -34,6 +35,6 @@ interface ObservationHandlerGrouping {
 	 * @param handlers the list of observation handlers
 	 * @param config the config to apply the handlers to
 	 */
-	void apply(Collection<ObservationHandler<?>> handlers, ObservationConfig config);
+	void apply(Collection<ObservationHandler<Context>> handlers, ObservationConfig config);
 
 }

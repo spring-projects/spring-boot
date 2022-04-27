@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.observation;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
@@ -49,7 +50,7 @@ public class ObservationAutoConfiguration {
 			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders,
-			ObjectProvider<ObservationHandler<?>> observationHandlers,
+			ObjectProvider<ObservationHandler<Context>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates, tagProviders,
 				observationHandlers, observationHandlerGrouping);
