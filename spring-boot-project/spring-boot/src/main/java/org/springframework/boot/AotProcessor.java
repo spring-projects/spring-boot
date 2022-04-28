@@ -57,18 +57,29 @@ public class AotProcessor {
 
 	private final Path resourceOutput;
 
+	private final String groupId;
+
+	private final String artifactId;
+
 	/**
 	 * Create a new processor for the specified application and settings.
 	 * @param application the application main class
 	 * @param applicationArgs the arguments to provide to the main method
 	 * @param sourceOutput the location of generated sources
 	 * @param resourceOutput the location of generated resources
+	 * @param groupId the group ID of the application, used to locate
+	 * native-image.properties
+	 * @param artifactId the artifact ID of the application, used to locate
+	 * native-image.properties
 	 */
-	public AotProcessor(Class<?> application, String[] applicationArgs, Path sourceOutput, Path resourceOutput) {
+	public AotProcessor(Class<?> application, String[] applicationArgs, Path sourceOutput, Path resourceOutput,
+			String groupId, String artifactId) {
 		this.application = application;
 		this.applicationArgs = applicationArgs;
 		this.sourceOutput = sourceOutput;
 		this.resourceOutput = resourceOutput;
+		this.groupId = groupId;
+		this.artifactId = artifactId;
 	}
 
 	/**
@@ -123,7 +134,8 @@ public class AotProcessor {
 	}
 
 	private void writeGeneratedResources(RuntimeHints hints) {
-		FileNativeConfigurationWriter writer = new FileNativeConfigurationWriter(this.resourceOutput);
+		FileNativeConfigurationWriter writer = new FileNativeConfigurationWriter(this.resourceOutput, this.groupId,
+				this.artifactId);
 		writer.write(hints);
 	}
 
@@ -137,7 +149,8 @@ public class AotProcessor {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Args = ");
 		sb.append(String.join(String.format(" \\%n"), args));
-		Path file = this.resourceOutput.resolve("META-INF/native-image/native-image.properties");
+		Path file = this.resourceOutput
+				.resolve("META-INF/native-image/" + this.groupId + "/" + this.artifactId + "/native-image.properties");
 		try {
 			if (!Files.exists(file)) {
 				Files.createDirectories(file.getParent());
@@ -151,17 +164,21 @@ public class AotProcessor {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length < 3) {
+		int requiredArgs = 5;
+		if (args.length < requiredArgs) {
 			throw new IllegalArgumentException("Usage: " + AotProcessor.class.getName()
-					+ " <applicationName> <sourceOutput> <resourceOutput> <originalArgs...>");
+					+ " <applicationName> <sourceOutput> <resourceOutput> <groupId> <artifactId> <originalArgs...>");
 		}
 		String applicationName = args[0];
 		Path sourceOutput = Paths.get(args[1]);
 		Path resourceOutput = Paths.get(args[2]);
-		String[] applicationArgs = (args.length > 3) ? Arrays.copyOfRange(args, 3, args.length) : new String[0];
-
+		String groupId = args[3];
+		String artifactId = args[4];
+		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
+				: new String[0];
 		Class<?> application = Class.forName(applicationName);
-		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput);
+		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput, groupId,
+				artifactId);
 		aotProcess.process();
 	}
 
