@@ -1495,6 +1495,7 @@
         "replacement": "management.prometheus.metrics.export.descriptions"
       }
     },
+
     {
       "name": "management.metrics.export.prometheus.enabled",
       "type": "java.lang.Boolean",

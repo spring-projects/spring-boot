@@ -14,6 +14,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<actuator#actuator.metrics.export.jmx,JMX>>
 - <<actuator#actuator.metrics.export.kairos,KairosDB>>
 - <<actuator#actuator.metrics.export.newrelic,New Relic>>
+- <<actuator#actuator.metrics.export.otlp,OpenTelemetry>>
 - <<actuator#actuator.metrics.export.prometheus,Prometheus>>
 - <<actuator#actuator.metrics.export.signalfx,SignalFx>>
 - <<actuator#actuator.metrics.export.simple,Simple (in-memory)>>
@@ -434,6 +435,22 @@ By default, metrics are published through REST calls, but you can also use the J
 ----
 
 Finally, you can take full control by defining your own `NewRelicClientProvider` bean.
+
+
+
+[[actuator.metrics.export.otlp]]
+==== OpenTelemetry
+By default, metrics are exported to {micrometer-registry-docs}/otlp[OpenTelemetry] running on your local machine.
+You can provide the location of the https://opentelemetry.io/[OpenTelemtry metric endpoint] to use by using:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  otlp:
+	    metrics:
+	      export:
+	        uri: "https://otlp.example.com:4318/v1/metrics"
+----
 
 
 
