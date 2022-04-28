@@ -449,7 +449,7 @@ You can provide the location of the https://opentelemetry.io/[OpenTelemtry metri
 	  otlp:
 	    metrics:
 	      export:
-	        uri: "https://otlp.example.com:4318/v1/metrics"
+	        url: "https://otlp.example.com:4318/v1/metrics"
 ----
 
 
