@@ -638,6 +638,7 @@ The following JVM metrics are provided:
 * Statistics related to garbage collection
 * Thread utilization
 * The number of classes loaded and unloaded
+* JVM version information
 
 
 
