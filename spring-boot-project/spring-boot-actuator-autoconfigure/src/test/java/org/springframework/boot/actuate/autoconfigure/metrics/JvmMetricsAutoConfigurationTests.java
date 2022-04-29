@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 class JvmMetricsAutoConfigurationTests {
 
@@ -79,10 +81,17 @@ class JvmMetricsAutoConfigurationTests {
 				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customClassLoaderMetrics")));
 	}
 
+	@Test
+	void allowsCustomJvmInfoMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomJvmInfoMetricsConfiguration.class)
+				.run(assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmInfoMetrics")));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertMetricsBeans() {
 		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 				.hasSingleBean(JvmHeapPressureMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class);
+				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class)
+				.hasSingleBean(JvmInfoMetrics.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -131,6 +140,16 @@ class JvmMetricsAutoConfigurationTests {
 		@Bean
 		ClassLoaderMetrics customClassLoaderMetrics() {
 			return new ClassLoaderMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmInfoMetricsConfiguration {
+
+		@Bean
+		JvmInfoMetrics customJvmInfoMetrics() {
+			return new JvmInfoMetrics();
 		}
 
 	}
