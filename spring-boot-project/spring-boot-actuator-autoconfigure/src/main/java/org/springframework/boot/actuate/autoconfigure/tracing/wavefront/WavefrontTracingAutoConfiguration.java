@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Wavefront.
+ * {@link EnableAutoConfiguration Auto-configuration} for Wavefront tracing.
  *
  * @author Moritz Halbritter
  * @since 3.0.0
