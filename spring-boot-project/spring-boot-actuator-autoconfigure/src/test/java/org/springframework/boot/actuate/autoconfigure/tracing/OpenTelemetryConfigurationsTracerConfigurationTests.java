@@ -64,14 +64,13 @@ class OpenTelemetryConfigurationsTracerConfigurationTests {
 					assertThat(context).hasBean("customTracer");
 					assertThat(context).hasSingleBean(Tracer.class);
 				});
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	private static class OpenTelemetryConfiguration {
 
 		@Bean
-		OpenTelemetry tracer() {
+		OpenTelemetry openTelemetry() {
 			return Mockito.mock(OpenTelemetry.class);
 		}
 
