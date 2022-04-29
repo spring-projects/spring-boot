@@ -99,12 +99,12 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresGlobalTagsProvider() {
-		this.contextRunner.withUserConfiguration(GlobalTagsProviders.class).run((context) -> {
+	void autoConfiguresGlobalKeyValuesProvider() {
+		this.contextRunner.withUserConfiguration(GlobalKeyValuesProviders.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Context micrometerContext = new Context();
 			Observation.start("test-observation", micrometerContext, observationRegistry).stop();
-			assertThat(micrometerContext.getAllKeyValues()).containsExactly(KeyValue.of("tag1", "value1"));
+			assertThat(micrometerContext.getAllKeyValues()).containsExactly(KeyValue.of("key1", "value1"));
 		});
 	}
 
@@ -161,10 +161,10 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class GlobalTagsProviders {
+	static class GlobalKeyValuesProviders {
 
 		@Bean
-		Observation.GlobalKeyValuesProvider<?> customTagsProvider() {
+		Observation.GlobalKeyValuesProvider<?> customKeyValuesProvider() {
 			return new GlobalKeyValuesProvider<>() {
 				@Override
 				public boolean supportsContext(Context context) {
@@ -173,7 +173,7 @@ class ObservationAutoConfigurationTests {
 
 				@Override
 				public KeyValues getLowCardinalityKeyValues(Context context) {
-					return KeyValues.of("tag1", "value1");
+					return KeyValues.of("key1", "value1");
 				}
 			};
 		}
