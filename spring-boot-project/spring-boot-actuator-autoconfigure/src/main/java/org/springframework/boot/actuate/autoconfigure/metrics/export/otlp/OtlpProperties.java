@@ -23,8 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring OTLP metrics
  * export.
  *
- * @author Jon Schneider
- * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 3.0.0
  */
 @ConfigurationProperties(prefix = "management.otlp.metrics.export")
