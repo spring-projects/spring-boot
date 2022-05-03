@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -350,7 +350,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		JarEntryCertification[] certifications = this.certifications;
 		if (certifications == null) {
 			certifications = new JarEntryCertification[this.size];
-			// We fallback to use JarInputStream to obtain the certs. This isn't that
+			// We fall back to use JarInputStream to obtain the certs. This isn't that
 			// fast, but hopefully doesn't happen too often.
 			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
 				java.util.jar.JarEntry certifiedEntry = null;

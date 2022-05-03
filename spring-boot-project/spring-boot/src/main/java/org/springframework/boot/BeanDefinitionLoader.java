@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -251,7 +251,7 @@ class BeanDefinitionLoader {
 		if (resource instanceof ClassPathResource) {
 			// A simple package without a '.' may accidentally get loaded as an XML
 			// document if we're not careful. The result of getInputStream() will be
-			// a file list of the package content. We double check here that it's not
+			// a file list of the package content. We double-check here that it's not
 			// actually a package.
 			String path = ((ClassPathResource) resource).getPath();
 			if (path.indexOf('.') == -1) {

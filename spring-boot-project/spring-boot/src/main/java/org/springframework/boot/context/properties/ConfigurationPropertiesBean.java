@@ -203,7 +203,7 @@ public final class ConfigurationPropertiesBean {
 	 * @param applicationContext the source application context
 	 * @param bean the bean to consider
 	 * @param beanName the bean name
-	 * @return a configuration properties bean or {@code null} if the neither the bean or
+	 * @return a configuration properties bean or {@code null} if the neither the bean nor
 	 * factory method are annotated with
 	 * {@link ConfigurationProperties @ConfigurationProperties}
 	 */

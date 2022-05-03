@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class ConfigTreeConfigDataLocationResolverTests {
 	}
 
 	@Test
-	void resolveWilcardPattern() throws Exception {
+	void resolveWildcardPattern() throws Exception {
 		File directoryA = new File(this.temp, "a");
 		File directoryB = new File(this.temp, "b");
 		directoryA.mkdirs();

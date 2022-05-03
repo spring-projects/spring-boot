@@ -28,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests that profiles are activited in the correct order from an
+ * Tests that profiles are activated in the correct order from an
  * {@link EnvironmentPostProcessor}.
  *
  * @author Madhura Bhave
