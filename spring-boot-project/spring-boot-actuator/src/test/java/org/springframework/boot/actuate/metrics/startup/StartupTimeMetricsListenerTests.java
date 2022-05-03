@@ -73,9 +73,9 @@ class StartupTimeMetricsListenerTests {
 	void metricRecordedWithoutMainAppClassTag() {
 		SpringApplication application = mock(SpringApplication.class);
 		this.listener.onApplicationEvent(new ApplicationStartedEvent(application, null, null, Duration.ofSeconds(2)));
-		TimeGauge applicationStartedGague = this.registry.find("application.started.time").timeGauge();
-		assertThat(applicationStartedGague).isNotNull();
-		assertThat(applicationStartedGague.getId().getTags()).isEmpty();
+		TimeGauge applicationStartedGauge = this.registry.find("application.started.time").timeGauge();
+		assertThat(applicationStartedGauge).isNotNull();
+		assertThat(applicationStartedGauge.getId().getTags()).isEmpty();
 	}
 
 	@Test

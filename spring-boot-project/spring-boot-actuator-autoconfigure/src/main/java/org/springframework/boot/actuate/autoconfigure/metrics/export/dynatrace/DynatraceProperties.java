@@ -43,7 +43,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	private String apiToken;
 
 	/**
-	 * URI to ship metrics to. Should be used for SaaS, self managed instances or to
+	 * URI to ship metrics to. Should be used for SaaS, self-managed instances or to
 	 * en-route through an internal proxy.
 	 */
 	private String uri;

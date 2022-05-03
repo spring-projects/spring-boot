@@ -80,7 +80,7 @@ class RunningDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootRunSystemPropetry() {
+	void bootRunSystemProperty() {
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-system-property")
 				.build("-Pexample=custom", "configuredSystemProperties").getOutput())
 						.contains("com.example.property = custom");
