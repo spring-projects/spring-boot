@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class StartMojo extends AbstractRunMojo {
 	private int jmxPort = 9001;
 
 	/**
-	 * The number of milli-seconds to wait between each attempt to check if the spring
+	 * The number of milliseconds to wait between each attempt to check if the spring
 	 * application is ready.
 	 */
 	@Parameter

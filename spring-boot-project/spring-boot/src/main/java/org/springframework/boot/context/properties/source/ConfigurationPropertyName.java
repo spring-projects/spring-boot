@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 /**
  * A configuration property name composed of elements separated by dots. User created
  * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
- * must be lower-case and must start with an alpha-numeric character. The "{@code -}" is
+ * must be lower-case and must start with an alphanumeric character. The "{@code -}" is
  * used purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
  * equivalent.
  * <p>
@@ -448,7 +448,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		int i2 = 0;
 		while (i1 < l1) {
 			if (i2 >= l2) {
-				return remainderIsNotAlphaNumberic(e1, i, i1);
+				return remainderIsNotAlphanumeric(e1, i, i1);
 			}
 			char ch1 = indexed1 ? e1.charAt(i, i1) : Character.toLowerCase(e1.charAt(i, i1));
 			char ch2 = indexed2 ? e2.charAt(i, i2) : Character.toLowerCase(e2.charAt(i, i2));
@@ -467,12 +467,12 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 		}
 		if (i2 < l2) {
-			return remainderIsNotAlphaNumberic(e2, i, i2);
+			return remainderIsNotAlphanumeric(e2, i, i2);
 		}
 		return true;
 	}
 
-	private boolean remainderIsNotAlphaNumberic(Elements elements, int element, int index) {
+	private boolean remainderIsNotAlphanumeric(Elements elements, int element, int index) {
 		if (elements.getType(element).isIndexed()) {
 			return false;
 		}
@@ -1049,7 +1049,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		DASHED(false),
 
 		/**
-		 * The element contains non uniform characters and will need to be converted.
+		 * The element contains non-uniform characters and will need to be converted.
 		 */
 		NON_UNIFORM(false),
 

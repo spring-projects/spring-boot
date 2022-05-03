@@ -56,12 +56,12 @@ class SampleSessionWebFluxApplicationTests {
 			return response.bodyToMono(String.class)
 					.map((sessionId) -> Tuples.of(response.cookies().getFirst("SESSION").getValue(), sessionId));
 		}).flatMap((tuple) -> {
-			String sesssionCookie = tuple.getT1();
-			return client.get().cookie("SESSION", sesssionCookie).exchangeToMono((response) -> {
+			String sessionCookie = tuple.getT1();
+			return client.get().cookie("SESSION", sessionCookie).exchangeToMono((response) -> {
 				assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 				return response.bodyToMono(String.class)
 						.doOnNext((sessionId) -> assertThat(sessionId).isEqualTo(tuple.getT2()))
-						.thenReturn(sesssionCookie);
+						.thenReturn(sessionCookie);
 			});
 		}).delayElement(Duration.ofSeconds(10))
 				.flatMap((sessionCookie) -> client.get().cookie("SESSION", sessionCookie).exchangeToMono((response) -> {

@@ -29,8 +29,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * Helper class to build Gradle {@link Project Projects} for test fixtures. Wraps
- * functionality of Gradle's own {@link ProjectBuilder} in order to workaround an issue on
- * JDK 17 and 18.
+ * functionality of Gradle's own {@link ProjectBuilder} in order to work around an issue
+ * on JDK 17 and 18.
  *
  * @author Christoph Dreis
  * @see <a href="https://github.com/gradle/gradle/issues/16857">Gradle Support JDK 17</a>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public abstract class CompilerAutoConfiguration {
 	 * Strategy method used to determine when compiler auto-configuration should be
 	 * applied. Defaults to always.
 	 * @param classNode the class node
-	 * @return {@code true} if the compiler should be auto configured using this class. If
+	 * @return {@code true} if the compiler should be auto-configured using this class. If
 	 * this method returns {@code false} no other strategy methods will be called.
 	 */
 	public boolean matches(ClassNode classNode) {

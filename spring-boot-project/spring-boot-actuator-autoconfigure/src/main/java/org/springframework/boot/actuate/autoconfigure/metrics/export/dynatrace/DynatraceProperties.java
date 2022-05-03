@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	private String technologyType = "java";
 
 	/**
-	 * URI to ship metrics to. Should be used for SaaS, self managed instances or to
+	 * URI to ship metrics to. Should be used for SaaS, self-managed instances or to
 	 * en-route through an internal proxy.
 	 */
 	private String uri;
