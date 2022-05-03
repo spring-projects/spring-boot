@@ -75,7 +75,7 @@ class RabbitStreamConfigurationTests {
 	}
 
 	@Test
-	void whenCustomEnvironmenIsDefinedThenAutoConfiguredEnvironmentBacksOff() {
+	void whenCustomEnvironmentIsDefinedThenAutoConfiguredEnvironmentBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomEnvironmentConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Environment.class);
 			assertThat(context.getBean(Environment.class))

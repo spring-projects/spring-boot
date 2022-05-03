@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -357,7 +357,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		/**
 		 * Create a new {@link OperationKey} instance.
 		 * @param key the underlying key for the operation
-		 * @param description a human readable description of the key
+		 * @param description a human-readable description of the key
 		 */
 		public OperationKey(Object key, Supplier<String> description) {
 			Assert.notNull(key, "Key must not be null");

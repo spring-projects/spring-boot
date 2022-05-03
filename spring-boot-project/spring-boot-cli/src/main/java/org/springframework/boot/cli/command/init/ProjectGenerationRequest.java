@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The type of project to generate. Should match one of the advertized type that the
+	 * The type of project to generate. Should match one of the advertised type that the
 	 * service supports. If not set, the default is retrieved from the service metadata.
 	 * @return the project type
 	 */
