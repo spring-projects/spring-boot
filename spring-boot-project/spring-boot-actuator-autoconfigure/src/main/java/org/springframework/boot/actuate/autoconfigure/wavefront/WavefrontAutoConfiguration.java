@@ -34,8 +34,8 @@ import org.springframework.util.unit.DataSize;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Wavefront common infrastructure.
- * Metrics are auto-configured in {@link WavefrontMetricsExportAutoConfiguration}, tracing
- * is auto-configured in {@link WavefrontTracingAutoConfiguration}.
+ * Metrics are auto-configured in {@link WavefrontMetricsExportAutoConfiguration}, and
+ * tracing is auto-configured in {@link WavefrontTracingAutoConfiguration}.
  *
  * @author Moritz Halbritter
  * @since 3.0.0

@@ -41,13 +41,14 @@ public class WavefrontProperties {
 	private URI uri = URI.create("https://longboard.wavefront.com");
 
 	/**
-	 * Unique identifier for the app instance that is the source of metrics being
-	 * published to Wavefront. Defaults to the local host name.
+	 * Unique identifier for the app instance that is the source of metrics and traces
+	 * being published to Wavefront. Defaults to the local host name.
 	 */
 	private String source;
 
 	/**
-	 * API token used when publishing metrics directly to the Wavefront API host.
+	 * API token used when publishing metrics and traces directly to the Wavefront API
+	 * host.
 	 */
 	private String apiToken;
 

@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontPropert
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Metrics.Export;
 
 /**
- * Adapter to convert {@link WavefrontProperties.Metrics} to a {@link WavefrontConfig}.
+ * Adapter to convert {@link WavefrontProperties} to a {@link WavefrontConfig}.
  *
  * @author Jon Schneider
  * @author Moritz Halbritter

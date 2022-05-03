@@ -61,15 +61,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyRestTemplateSenderIfNoBuilderIsAvailable() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(ZipkinRestTemplateSender.class);
-			assertThat(context).hasSingleBean(Sender.class);
-			assertThat(context).hasSingleBean(URLConnectionSender.class);
-		});
-	}
-
-	@Test
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context).hasBean("customSender");
