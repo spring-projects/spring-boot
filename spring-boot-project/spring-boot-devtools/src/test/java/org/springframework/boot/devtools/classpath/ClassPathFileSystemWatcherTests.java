@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -116,7 +117,7 @@ class ClassPathFileSystemWatcherTests {
 
 	static class Listener implements ApplicationListener<ClassPathChangedEvent> {
 
-		private List<ClassPathChangedEvent> events = new ArrayList<>();
+		private List<ClassPathChangedEvent> events = new CopyOnWriteArrayList<>();
 
 		@Override
 		public void onApplicationEvent(ClassPathChangedEvent event) {
