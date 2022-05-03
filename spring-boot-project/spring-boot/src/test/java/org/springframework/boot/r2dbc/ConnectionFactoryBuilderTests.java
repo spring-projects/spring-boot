@@ -139,9 +139,9 @@ class ConnectionFactoryBuilderTests {
 
 	@Test
 	void buildWhenDerivedWithNewDatabaseReturnsNewConnectionFactory() {
-		String intialDatabaseName = UUID.randomUUID().toString();
+		String initialDatabaseName = UUID.randomUUID().toString();
 		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
-				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(intialDatabaseName)).build();
+				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(initialDatabaseName)).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		String derivedDatabaseName = UUID.randomUUID().toString();
 		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,7 +213,7 @@ public final class Metadata {
 					.filter((item) -> item.isOfItemType(this.itemType) && name.equals(item.getName()))
 					.collect(Collectors.toList());
 			if (candidates.size() > 1) {
-				throw new IllegalStateException("More that one metadata item with name '" + name + "': " + candidates);
+				throw new IllegalStateException("More than one metadata item with name '" + name + "': " + candidates);
 			}
 			return (candidates.size() == 1) ? candidates.get(0) : null;
 		}
