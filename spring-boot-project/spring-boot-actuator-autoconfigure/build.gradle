@@ -67,6 +67,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-jmx")
 	optional("io.micrometer:micrometer-registry-kairos")
 	optional("io.micrometer:micrometer-registry-new-relic")
+	optional("io.micrometer:micrometer-registry-otlp")
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.micrometer:micrometer-registry-stackdriver") {
 		exclude group: "commons-logging", module: "commons-logging"
