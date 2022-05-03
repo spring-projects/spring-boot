@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,7 @@ public class InfluxMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock,
-			InfluxProperties influxProperties) {
+	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
 		return InfluxMeterRegistry.builder(influxConfig).clock(clock).httpClient(
 				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
 				.build();
