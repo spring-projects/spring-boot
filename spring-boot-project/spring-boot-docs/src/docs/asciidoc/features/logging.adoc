@@ -107,7 +107,7 @@ For example, to make the text yellow, use the following setting:
 
 [source,indent=0,subs="verbatim"]
 ----
-	%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow}
+	%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){yellow}
 ----
 
 The following colors and styles are supported:
