@@ -59,7 +59,7 @@ class SanitizerTests {
 	@Test
 	void whenAdditionalKeysAreAddedValuesOfBothThemAndTheDefaultKeysAreSanitized() {
 		Sanitizer sanitizer = new Sanitizer();
-		sanitizer.keysToSanitize("find", "confidential");
+		sanitizer.keysToSanitize("find", "confidential", "my-uri");
 		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
@@ -70,6 +70,7 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("confidential", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-uri", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("private", "secret")).isEqualTo("secret");
 	}
 

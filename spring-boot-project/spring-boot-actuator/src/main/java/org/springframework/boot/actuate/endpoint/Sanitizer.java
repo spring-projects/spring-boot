@@ -132,11 +132,12 @@ public class Sanitizer {
 	 */
 	public void keysToSanitize(String... keysToSanitize) {
 		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		int existingKeys = this.keysToSanitize.length;
-		this.keysToSanitize = Arrays.copyOf(this.keysToSanitize, this.keysToSanitize.length + keysToSanitize.length);
+		Pattern[] keyPatterns = new Pattern[this.keysToSanitize.length + keysToSanitize.length];
 		for (int i = 0; i < keysToSanitize.length; i++) {
-			this.keysToSanitize[i + existingKeys] = getPattern(keysToSanitize[i]);
+			keyPatterns[i] = getPattern(keysToSanitize[i]);
 		}
+		System.arraycopy(this.keysToSanitize, 0, keyPatterns, keysToSanitize.length, this.keysToSanitize.length);
+		this.keysToSanitize = keyPatterns;
 	}
 
 	private Pattern getPattern(String value) {
