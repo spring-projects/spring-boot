@@ -151,7 +151,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 
 	/**
 	 * Set the {@link MultipartConfigElement multi-part configuration}.
-	 * @param multipartConfig the multi-part configuration to set or {@code null}
+	 * @param multipartConfig the multipart configuration to set or {@code null}
 	 */
 	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
 		this.multipartConfig = multipartConfig;

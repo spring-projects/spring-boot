@@ -42,13 +42,13 @@ import org.springframework.util.StringUtils;
 
 /**
  * An {@link EnvironmentPostProcessor} that knows where to find VCAP (a.k.a. Cloud
- * Foundry) meta data in the existing environment. It parses out the VCAP_APPLICATION and
- * VCAP_SERVICES meta data and dumps it in a form that is easily consumed by
- * {@link Environment} users. If the app is running in Cloud Foundry then both meta data
+ * Foundry) metadata in the existing environment. It parses out the VCAP_APPLICATION and
+ * VCAP_SERVICES metadata and dumps it in a form that is easily consumed by
+ * {@link Environment} users. If the app is running in Cloud Foundry then both metadata
  * items are JSON objects encoded in OS environment variables. VCAP_APPLICATION is a
  * shallow hash with basic information about the application (name, instance id, instance
  * index, etc.), and VCAP_SERVICES is a hash of lists where the keys are service labels
- * and the values are lists of hashes of service instance meta data. Examples are:
+ * and the values are lists of hashes of service instance metadata. Examples are:
  *
  * <pre class="code">
  * VCAP_APPLICATION: {"instance_id":"2ce0ac627a6c8e47e936d829a3a47b5b","instance_index":0,

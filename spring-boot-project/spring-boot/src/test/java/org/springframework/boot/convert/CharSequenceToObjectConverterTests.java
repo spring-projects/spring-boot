@@ -57,8 +57,8 @@ class CharSequenceToObjectConverterTests {
 		StringBuilder source = new StringBuilder("1,2,3");
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(StringBuilder.class);
 		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class));
-		List<String> conveted = (List<String>) conversionService.convert(source, sourceType, targetType);
-		assertThat(conveted).containsExactly("1", "2", "3");
+		List<String> converted = (List<String>) conversionService.convert(source, sourceType, targetType);
+		assertThat(converted).containsExactly("1", "2", "3");
 	}
 
 	@Test
@@ -69,8 +69,8 @@ class CharSequenceToObjectConverterTests {
 		StringBuilder source = new StringBuilder("1,2,3");
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(StringBuilder.class);
 		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class));
-		List<String> conveted = (List<String>) conversionService.convert(source, sourceType, targetType);
-		assertThat(conveted).containsExactly("1", "2", "3");
+		List<String> converted = (List<String>) conversionService.convert(source, sourceType, targetType);
+		assertThat(converted).containsExactly("1", "2", "3");
 	}
 
 	static Stream<? extends Arguments> conversionServices() {

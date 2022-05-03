@@ -350,7 +350,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		JarEntryCertification[] certifications = this.certifications;
 		if (certifications == null) {
 			certifications = new JarEntryCertification[this.size];
-			// We fallback to use JarInputStream to obtain the certs. This isn't that
+			// We fall back to use JarInputStream to obtain the certs. This isn't that
 			// fast, but hopefully doesn't happen too often.
 			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
 				java.util.jar.JarEntry certifiedEntry = null;

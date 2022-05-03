@@ -50,7 +50,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	 * @param <S> the availability state type
 	 * @param applicationAvailability the application availability
 	 * @param stateType the availability state type
-	 * @param statusMappings consumer used to setup the status mappings
+	 * @param statusMappings consumer used to set up the status mappings
 	 */
 	public <S extends AvailabilityState> AvailabilityStateHealthIndicator(
 			ApplicationAvailability applicationAvailability, Class<S> stateType,

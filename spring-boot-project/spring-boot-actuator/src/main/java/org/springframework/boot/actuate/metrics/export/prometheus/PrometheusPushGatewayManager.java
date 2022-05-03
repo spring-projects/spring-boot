@@ -115,7 +115,7 @@ public class PrometheusPushGatewayManager {
 			this.pushGateway.delete(this.job, this.groupingKey);
 		}
 		catch (Throwable ex) {
-			logger.warn("Unexpected exception thrown while deleting metrics from Promethues Pushgateway", ex);
+			logger.warn("Unexpected exception thrown while deleting metrics from Prometheus Pushgateway", ex);
 		}
 	}
 

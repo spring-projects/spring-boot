@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto configuration for WebSocket reactive server in Tomcat, Jetty or Undertow. Requires
+ * Auto-configuration for WebSocket reactive server in Tomcat, Jetty or Undertow. Requires
  * the appropriate WebSocket modules to be on the classpath.
  * <p>
  * If Tomcat's WebSocket support is detected on the classpath we add a customizer that

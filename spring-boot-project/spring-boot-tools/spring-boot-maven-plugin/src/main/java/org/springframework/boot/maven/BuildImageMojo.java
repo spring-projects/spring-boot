@@ -179,7 +179,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private LayoutFactory layoutFactory;
 
 	/**
-	 * Return the type of archive that should be used when buiding the image.
+	 * Return the type of archive that should be used when building the image.
 	 * @return the value of the {@code layout} parameter, or {@code null} if the parameter
 	 * is not provided
 	 */

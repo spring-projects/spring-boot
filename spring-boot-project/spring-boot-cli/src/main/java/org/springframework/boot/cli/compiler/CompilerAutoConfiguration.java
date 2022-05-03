@@ -37,7 +37,7 @@ public abstract class CompilerAutoConfiguration {
 	 * Strategy method used to determine when compiler auto-configuration should be
 	 * applied. Defaults to always.
 	 * @param classNode the class node
-	 * @return {@code true} if the compiler should be auto configured using this class. If
+	 * @return {@code true} if the compiler should be auto-configured using this class. If
 	 * this method returns {@code false} no other strategy methods will be called.
 	 */
 	public boolean matches(ClassNode classNode) {

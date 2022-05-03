@@ -37,7 +37,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 
 /**
  * {@link ApplicationListener} to trigger early initialization in a background thread of
- * time consuming tasks.
+ * time-consuming tasks.
  * <p>
  * Set the {@link #IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME} system property to
  * {@code true} to disable this mechanism and let such initialization happen in the

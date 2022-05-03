@@ -191,7 +191,7 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The type of project to generate. Should match one of the advertized type that the
+	 * The type of project to generate. Should match one of the advertised type that the
 	 * service supports. If not set, the default is retrieved from the service metadata.
 	 * @return the project type
 	 */

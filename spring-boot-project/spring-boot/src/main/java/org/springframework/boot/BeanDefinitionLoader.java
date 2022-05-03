@@ -248,7 +248,7 @@ class BeanDefinitionLoader {
 		if (resource instanceof ClassPathResource) {
 			// A simple package without a '.' may accidentally get loaded as an XML
 			// document if we're not careful. The result of getInputStream() will be
-			// a file list of the package content. We double check here that it's not
+			// a file list of the package content. We double-check here that it's not
 			// actually a package.
 			String path = ((ClassPathResource) resource).getPath();
 			if (path.indexOf('.') == -1) {

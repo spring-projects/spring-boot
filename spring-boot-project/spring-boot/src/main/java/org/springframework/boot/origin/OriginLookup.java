@@ -59,7 +59,7 @@ public interface OriginLookup<K> {
 	}
 
 	/**
-	 * Attempt to lookup the origin from the given source. If the source is not a
+	 * Attempt to look up the origin from the given source. If the source is not a
 	 * {@link OriginLookup} or if an exception occurs during lookup then {@code null} is
 	 * returned.
 	 * @param source the source object

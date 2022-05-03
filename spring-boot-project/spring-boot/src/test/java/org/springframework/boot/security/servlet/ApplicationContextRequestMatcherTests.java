@@ -221,7 +221,7 @@ class ApplicationContextRequestMatcherTests {
 		private volatile Throwable ex;
 
 		@Override
-		public void uncaughtException(Thread thead, Throwable ex) {
+		public void uncaughtException(Thread thread, Throwable ex) {
 			this.ex = ex;
 		}
 

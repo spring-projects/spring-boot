@@ -65,7 +65,7 @@ class ConfigTreeConfigDataLocationResolverTests {
 	}
 
 	@Test
-	void resolveWilcardPattern() throws Exception {
+	void resolveWildcardPattern() throws Exception {
 		File directoryA = new File(this.temp, "a");
 		File directoryB = new File(this.temp, "b");
 		directoryA.mkdirs();
