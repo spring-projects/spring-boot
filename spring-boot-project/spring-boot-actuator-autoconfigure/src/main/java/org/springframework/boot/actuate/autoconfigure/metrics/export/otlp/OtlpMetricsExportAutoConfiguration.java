@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
-import io.micrometer.influx.InfluxConfig;
-import io.micrometer.influx.InfluxMeterRegistry;
+import io.micrometer.registry.otlp.OtlpConfig;
+import io.micrometer.registry.otlp.OtlpMeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -34,40 +33,36 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Influx.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to OTLP.
  *
- * @author Jon Schneider
- * @author Artsiom Yudovin
- * @since 2.0.0
+ * @author Eddú Meléndez
+ * @since 3.0.0
  */
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
 		after = MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
-@ConditionalOnClass(InfluxMeterRegistry.class)
-@ConditionalOnEnabledMetricsExport("influx")
-@EnableConfigurationProperties(InfluxProperties.class)
-public class InfluxMetricsExportAutoConfiguration {
+@ConditionalOnClass(OtlpMeterRegistry.class)
+@ConditionalOnEnabledMetricsExport("otlp")
+@EnableConfigurationProperties(OtlpProperties.class)
+public class OtlpMetricsExportAutoConfiguration {
 
-	private final InfluxProperties properties;
+	private final OtlpProperties properties;
 
-	public InfluxMetricsExportAutoConfiguration(InfluxProperties properties) {
+	public OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxConfig influxConfig() {
-		return new InfluxPropertiesConfigAdapter(this.properties);
+	public OtlpConfig otlpConfig() {
+		return new OtlpPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
-		return InfluxMeterRegistry.builder(influxConfig).clock(clock).httpClient(
-				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
-				.build();
-
+	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
+		return new OtlpMeterRegistry(otlpConfig, clock);
 	}
 
 }

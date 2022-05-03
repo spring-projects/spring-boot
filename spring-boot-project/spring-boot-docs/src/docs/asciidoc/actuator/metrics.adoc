@@ -14,6 +14,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<actuator#actuator.metrics.export.jmx,JMX>>
 - <<actuator#actuator.metrics.export.kairos,KairosDB>>
 - <<actuator#actuator.metrics.export.newrelic,New Relic>>
+- <<actuator#actuator.metrics.export.otlp,OpenTelemetry>>
 - <<actuator#actuator.metrics.export.prometheus,Prometheus>>
 - <<actuator#actuator.metrics.export.signalfx,SignalFx>>
 - <<actuator#actuator.metrics.export.simple,Simple (in-memory)>>
@@ -437,6 +438,22 @@ Finally, you can take full control by defining your own `NewRelicClientProvider`
 
 
 
+[[actuator.metrics.export.otlp]]
+==== OpenTelemetry
+By default, metrics are exported to {micrometer-registry-docs}/otlp[OpenTelemetry] running on your local machine.
+You can provide the location of the https://opentelemetry.io/[OpenTelemtry metric endpoint] to use by using:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  otlp:
+	    metrics:
+	      export:
+	        url: "https://otlp.example.com:4318/v1/metrics"
+----
+
+
+
 [[actuator.metrics.export.prometheus]]
 ==== Prometheus
 {micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
@@ -589,7 +606,7 @@ If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, 
 ----
 	management:
 	  wavefront:
-        api-token: "YOUR_API_TOKEN"
+	    api-token: "YOUR_API_TOKEN"
 ----
 
 Alternatively, you can use a Wavefront sidecar or an internal proxy in your environment to forward metrics data to the Wavefront API host:
@@ -598,7 +615,7 @@ Alternatively, you can use a Wavefront sidecar or an internal proxy in your envi
 ----
 	management:
 	  wavefront:
-        uri: "proxy://localhost:2878"
+	    uri: "proxy://localhost:2878"
 ----
 
 NOTE: If you publish metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the Wavefront documentation]), the host must be in the `proxy://HOST:PORT` format.

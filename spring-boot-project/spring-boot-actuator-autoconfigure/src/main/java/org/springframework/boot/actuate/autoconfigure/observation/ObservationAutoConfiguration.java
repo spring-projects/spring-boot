@@ -49,11 +49,11 @@ public class ObservationAutoConfiguration {
 	static ObservationRegistryPostProcessor observationRegistryPostProcessor(
 			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders,
+			ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders,
 			ObjectProvider<ObservationHandler<Context>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
-		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates, tagProviders,
-				observationHandlers, observationHandlerGrouping);
+		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
+				keyValuesProviders, observationHandlers, observationHandlerGrouping);
 	}
 
 	@Bean

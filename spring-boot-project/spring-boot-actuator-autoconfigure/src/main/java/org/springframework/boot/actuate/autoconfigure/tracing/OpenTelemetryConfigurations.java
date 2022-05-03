@@ -54,7 +54,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * Configurations for Open Telemetry. Those are imported by
+ * Configurations for OpenTelemetry. Those are imported by
  * {@link OpenTelemetryAutoConfiguration}.
  *
  * @author Moritz Halbritter

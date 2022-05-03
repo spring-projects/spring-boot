@@ -31,7 +31,7 @@ import org.springframework.boot.util.LambdaSafe;
  * Configurer to apply {@link ObservationRegistryCustomizer customizers} to
  * {@link ObservationRegistry observation registries}. Installs
  * {@link ObservationPredicate observation predicates} and {@link GlobalKeyValuesProvider
- * global tag providers} into the {@link ObservationRegistry}. Also uses a
+ * global key values providers} into the {@link ObservationRegistry}. Also uses a
  * {@link ObservationHandlerGrouping} to group handlers, which are then added to the
  * {@link ObservationRegistry}.
  *
@@ -43,7 +43,7 @@ class ObservationRegistryConfigurer {
 
 	private final ObjectProvider<ObservationPredicate> observationPredicates;
 
-	private final ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders;
+	private final ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders;
 
 	private final ObjectProvider<ObservationHandler<Context>> observationHandlers;
 
@@ -51,19 +51,19 @@ class ObservationRegistryConfigurer {
 
 	ObservationRegistryConfigurer(ObjectProvider<ObservationRegistryCustomizer<?>> customizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalKeyValuesProvider<?>> tagProviders,
+			ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders,
 			ObjectProvider<ObservationHandler<Context>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		this.customizers = customizers;
 		this.observationPredicates = observationPredicates;
-		this.tagProviders = tagProviders;
+		this.keyValuesProviders = keyValuesProviders;
 		this.observationHandlers = observationHandlers;
 		this.observationHandlerGrouping = observationHandlerGrouping;
 	}
 
 	void configure(ObservationRegistry registry) {
 		registerObservationPredicates(registry);
-		registerGlobalTagsProvider(registry);
+		registerGlobalKeyValuesProviders(registry);
 		registerHandlers(registry);
 		customize(registry);
 	}
@@ -78,9 +78,9 @@ class ObservationRegistryConfigurer {
 				(observationPredicate) -> registry.observationConfig().observationPredicate(observationPredicate));
 	}
 
-	private void registerGlobalTagsProvider(ObservationRegistry registry) {
-		this.tagProviders.orderedStream()
-				.forEach((tagProvider) -> registry.observationConfig().keyValuesProvider(tagProvider));
+	private void registerGlobalKeyValuesProviders(ObservationRegistry registry) {
+		this.keyValuesProviders.orderedStream()
+				.forEach((keyValuesProvider) -> registry.observationConfig().keyValuesProvider(keyValuesProvider));
 	}
 
 	@SuppressWarnings("unchecked")
