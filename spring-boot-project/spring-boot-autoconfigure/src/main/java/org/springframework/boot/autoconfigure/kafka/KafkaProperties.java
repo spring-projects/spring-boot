@@ -882,9 +882,8 @@ public class KafkaProperties {
 		private AckMode ackMode;
 
 		/**
-		 * Support for asynchronous record acknowledgments. Only applies with
-		 * ContainerProperties.AckMode.MANUAL or
-		 * ContainerProperties.AckMode.MANUAL_IMMEDIATE.
+		 * Support for asynchronous record acknowledgements. Only applies when
+		 * spring.kafka.listener.ack-mode is manual or manual-immediate.
 		 */
 		private Boolean asyncAcks;
 
