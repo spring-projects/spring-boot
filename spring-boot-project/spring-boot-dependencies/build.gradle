@@ -24,13 +24,6 @@ bom {
 			]
 		}
 	}
-	library("AppEngine SDK", "1.9.96") {
-		group("com.google.appengine") {
-			modules = [
-				"appengine-api-1.0-sdk"
-			]
-		}
-	}
 	library("Artemis", "2.20.0") {
 		group("org.apache.activemq") {
 			modules = [

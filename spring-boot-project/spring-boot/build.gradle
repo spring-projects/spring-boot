@@ -103,9 +103,6 @@ dependencies {
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("com.google.appengine:appengine-api-1.0-sdk") {
-		exclude group: "javax.inject", module: "javax.inject"
-	}
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")

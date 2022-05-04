@@ -32,8 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
