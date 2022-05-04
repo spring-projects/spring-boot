@@ -1093,6 +1093,13 @@ bom {
 			]
 		}
 	}
+	library("Pooled JMS", "3.0.0") {
+		group("org.messaginghub") {
+			modules = [
+				"pooled-jms"
+			]
+		}
+	}
 	library("Postgresql", "42.3.3") {
 		group("org.postgresql") {
 			modules = [

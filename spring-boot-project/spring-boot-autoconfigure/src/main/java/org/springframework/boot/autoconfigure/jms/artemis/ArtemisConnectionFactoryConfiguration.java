@@ -18,11 +18,14 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,6 +78,21 @@ class ArtemisConnectionFactoryConfiguration {
 		private ActiveMQConnectionFactory createConnectionFactory() {
 			return new ArtemisConnectionFactoryFactory(this.beanFactory, this.properties)
 					.createConnectionFactory(ActiveMQConnectionFactory.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ JmsPoolConnectionFactory.class, PooledObject.class })
+	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "true")
+	static class PooledConnectionFactoryConfiguration {
+
+		@Bean(destroyMethod = "stop")
+		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties) {
+			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties)
+					.createConnectionFactory(ActiveMQConnectionFactory.class);
+			return new JmsPoolConnectionFactoryFactory(properties.getPool())
+					.createPooledConnectionFactory(connectionFactory);
 		}
 
 	}
