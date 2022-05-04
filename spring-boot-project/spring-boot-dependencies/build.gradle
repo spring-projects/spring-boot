@@ -1596,7 +1596,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "3.60.0") {
+	library("Selenium HtmlUnit", "3.61.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
