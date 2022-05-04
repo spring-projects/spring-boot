@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.validation.beanvalidation.customize;
+package org.springframework.boot.autoconfigure.validation;
 
 import jakarta.validation.Configuration;
 
@@ -22,12 +22,15 @@ import jakarta.validation.Configuration;
  * Callback interface that can be used to customize {@link Configuration}.
  *
  * @author Dang Zhicairang
- * @since 2.6.2
- * @see AddValueExtractorCustomizer
+ * @since 3.0.0
  */
 @FunctionalInterface
-public interface Customizer {
+public interface ValidationConfigurationCustomizer {
 
+	/**
+	 * Customize the given {@code configuration}.
+	 * @param configuration the configuration to customize
+	 */
 	void customize(Configuration<?> configuration);
 
 }
