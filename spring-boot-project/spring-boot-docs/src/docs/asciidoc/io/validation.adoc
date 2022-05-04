@@ -11,3 +11,6 @@ include::code:MyBean[]
 The application's `MessageSource` is used when resolving `+{parameters}+` in constraint messages.
 This allows you to use <<features.adoc#features.internationalization,your application's `messages.properties` files>> for Bean Validation messages.
 Once the parameters have been resolved, message interpolation is completed using Bean Validation's default interpolator.
+
+To customize the `Configuration` used to build the `ValidatorFactory`, define a `ValidationConfigurationCustomizer` bean.
+When multiple customizer beans are defined, they are called in order based on their `@Order` annotation or `Ordered` implementation.

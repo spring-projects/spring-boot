@@ -56,8 +56,11 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean(Validator.class)
-	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext) {
+	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext,
+			ObjectProvider<ValidationConfigurationCustomizer> customizers) {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
+		factoryBean.setConfigurationInitializer((configuration) -> customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(configuration)));
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;
