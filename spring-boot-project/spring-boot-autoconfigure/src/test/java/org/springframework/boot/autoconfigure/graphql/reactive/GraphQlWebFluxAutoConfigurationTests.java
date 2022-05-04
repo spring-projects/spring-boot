@@ -75,7 +75,7 @@ class GraphQlWebFluxAutoConfigurationTests {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
-					.expectHeader().contentType("application/graphql+json").expectBody().jsonPath("data.bookById.name")
+					.expectHeader().contentType("application/json").expectBody().jsonPath("data.bookById.name")
 					.isEqualTo("GraphQL for beginners");
 		});
 	}
@@ -151,8 +151,8 @@ class GraphQlWebFluxAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = WebTestClient.bindToApplicationContext(context).configureClient()
 					.defaultHeaders((headers) -> {
-						headers.setContentType(MediaType.APPLICATION_GRAPHQL);
-						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_GRAPHQL));
+						headers.setContentType(MediaType.APPLICATION_JSON);
+						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 					}).baseUrl(BASE_URL).build();
 			consumer.accept(client);
 		});

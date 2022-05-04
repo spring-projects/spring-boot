@@ -51,7 +51,7 @@ public class RSocketGraphQlClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public RSocketGraphQlClient.Builder<?> rsocketGraphQlClientBuilder(
 			RSocketRequester.Builder rsocketRequesterBuilder) {
-		return RSocketGraphQlClient.builder(rsocketRequesterBuilder.dataMimeType(MimeTypeUtils.APPLICATION_GRAPHQL));
+		return RSocketGraphQlClient.builder(rsocketRequesterBuilder.dataMimeType(MimeTypeUtils.APPLICATION_JSON));
 	}
 
 }
