@@ -195,10 +195,10 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		File generatedHelpMojoDir = new File(project.getBuildDir(), "generated/sources/helpMojo");
 		SourceSet mainSourceSet = getMainSourceSet(project);
 		project.getTasks().withType(Javadoc.class, this::setJavadocOptions);
-		FormatHelpMojoSource copyFormattedHelpMojoSourceTask = createFormatHelpMojoSourceTask(project,
-				generateHelpMojoTask, generatedHelpMojoDir);
-		project.getTasks().getByName(mainSourceSet.getCompileJavaTaskName()).dependsOn(copyFormattedHelpMojoSourceTask);
-		mainSourceSet.java((javaSources) -> javaSources.srcDir(copyFormattedHelpMojoSourceTask));
+		FormatHelpMojoSource formattedHelpMojoSource = createFormatHelpMojoSource(project, generateHelpMojoTask,
+				generatedHelpMojoDir);
+		project.getTasks().getByName(mainSourceSet.getCompileJavaTaskName()).dependsOn(formattedHelpMojoSource);
+		mainSourceSet.java((javaSources) -> javaSources.srcDir(formattedHelpMojoSource));
 		Sync pluginDescriptorInputs = createSyncPluginDescriptorInputs(project, pluginDescriptorDir, mainSourceSet);
 		pluginDescriptorInputs.dependsOn(mainSourceSet.getClassesTaskName());
 		MavenExec task = createGeneratePluginDescriptorTask(project, pluginDescriptorDir);
@@ -217,7 +217,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		options.addMultilineStringsOption("tag").setValue(Arrays.asList("goal:X", "requiresProject:X", "threadSafe:X"));
 	}
 
-	private FormatHelpMojoSource createFormatHelpMojoSourceTask(Project project, MavenExec generateHelpMojoTask,
+	private FormatHelpMojoSource createFormatHelpMojoSource(Project project, MavenExec generateHelpMojoTask,
 			File generatedHelpMojoDir) {
 		FormatHelpMojoSource formatHelpMojoSource = project.getTasks().create("formatHelpMojoSource",
 				FormatHelpMojoSource.class);
@@ -227,7 +227,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private Sync createSyncPluginDescriptorInputs(Project project, File destination, SourceSet sourceSet) {
-		Sync pluginDescriptorInputs = project.getTasks().create("copyPluginDescriptorInputs", Sync.class);
+		Sync pluginDescriptorInputs = project.getTasks().create("syncPluginDescriptorInputs", Sync.class);
 		pluginDescriptorInputs.setDestinationDir(destination);
 		File pomFile = new File(project.getProjectDir(), "src/maven/resources/pom.xml");
 		pluginDescriptorInputs.from(pomFile, (copy) -> replaceVersionPlaceholder(copy, project));

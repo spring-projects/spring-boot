@@ -165,7 +165,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	 * {@link WritableResource}.
 	 * @param resource the tracked resource
 	 * @param origin the origin of the resource
-	 * @return a {@link OriginTrackedWritableResource} instance
+	 * @return an {@link OriginTrackedWritableResource} instance
 	 */
 	public static OriginTrackedWritableResource of(WritableResource resource, Origin origin) {
 		return (OriginTrackedWritableResource) of((Resource) resource, origin);
@@ -176,7 +176,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	 * {@link Resource}.
 	 * @param resource the tracked resource
 	 * @param origin the origin of the resource
-	 * @return a {@link OriginTrackedResource} instance
+	 * @return an {@link OriginTrackedResource} instance
 	 */
 	public static OriginTrackedResource of(Resource resource, Origin origin) {
 		if (resource instanceof WritableResource) {

@@ -24,7 +24,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
@@ -160,14 +159,7 @@ class SslConnectorCustomizerTests {
 		customizer.customize(connector);
 		this.tomcat.start();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler().findSslHostConfigs()[0];
-		sslHostConfig.getCertificates(true);
-		SSLHostConfig sslHostConfigWithDefaults = new SSLHostConfig();
-		sslHostConfigWithDefaults.getCertificates(true);
 		assertThat(sslHostConfig.getTruststore()).isEqualTo(trustStore);
-		System.out.println(sslHostConfig.getCertificates(false).stream()
-				.map(SSLHostConfigCertificate::getCertificateFile).collect(Collectors.toList()));
-		System.out.println(sslHostConfigWithDefaults.getCertificates(false).stream()
-				.map(SSLHostConfigCertificate::getCertificateFile).collect(Collectors.toList()));
 	}
 
 	@Test

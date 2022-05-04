@@ -131,7 +131,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOG_FILE_BEAN_NAME = "springBootLogFile";
 
 	/**
-	 * The name of the{@link LoggerGroups} bean.
+	 * The name of the {@link LoggerGroups} bean.
 	 * @since 2.2.0
 	 */
 	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
