@@ -882,6 +882,12 @@ public class KafkaProperties {
 		private AckMode ackMode;
 
 		/**
+		 * Support for asynchronous record acknowledgements. Only applies when
+		 * spring.kafka.listener.ack-mode is manual or manual-immediate.
+		 */
+		private Boolean asyncAcks;
+
+		/**
 		 * Prefix for the listener's consumer client.id property.
 		 */
 		private String clientId;
@@ -967,6 +973,14 @@ public class KafkaProperties {
 
 		public void setAckMode(AckMode ackMode) {
 			this.ackMode = ackMode;
+		}
+
+		public Boolean getAsyncAcks() {
+			return this.asyncAcks;
+		}
+
+		public void setAsyncAcks(Boolean asyncAcks) {
+			this.asyncAcks = asyncAcks;
 		}
 
 		public String getClientId() {
