@@ -30,7 +30,7 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Configures a {@link OpaqueTokenIntrospector} when a token introspection endpoint is
+ * Configures an {@link OpaqueTokenIntrospector} when a token introspection endpoint is
  * available. Also configures a {@link SecurityFilterChain} if a
  * {@link OpaqueTokenIntrospector} bean is found.
  *

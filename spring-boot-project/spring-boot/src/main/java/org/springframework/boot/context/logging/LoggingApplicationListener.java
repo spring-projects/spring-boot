@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOG_FILE_BEAN_NAME = "springBootLogFile";
 
 	/**
-	 * The name of the{@link LoggerGroups} bean.
+	 * The name of the {@link LoggerGroups} bean.
 	 * @since 2.2.0
 	 */
 	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
