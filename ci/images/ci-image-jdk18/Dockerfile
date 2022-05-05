@@ -1,4 +1,4 @@
-FROM ubuntu:focal-20220415
+FROM ubuntu:focal-20220426
 
 ADD setup.sh /setup.sh
 ADD get-jdk-url.sh /get-jdk-url.sh
