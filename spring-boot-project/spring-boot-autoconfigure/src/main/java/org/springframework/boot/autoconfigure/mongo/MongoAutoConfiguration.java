@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
@@ -66,9 +65,8 @@ public class MongoAutoConfiguration {
 		}
 
 		@Bean
-		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
-				Environment environment) {
-			return new MongoPropertiesClientSettingsBuilderCustomizer(properties, environment);
+		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties) {
+			return new MongoPropertiesClientSettingsBuilderCustomizer(properties);
 		}
 
 	}

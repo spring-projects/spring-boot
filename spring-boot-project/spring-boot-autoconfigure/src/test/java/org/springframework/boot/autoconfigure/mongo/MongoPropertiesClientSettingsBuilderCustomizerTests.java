@@ -24,8 +24,6 @@ import com.mongodb.ServerAddress;
 import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.mock.env.MockEnvironment;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -36,8 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoPropertiesClientSettingsBuilderCustomizerTests {
 
 	private final MongoProperties properties = new MongoProperties();
-
-	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	void portCanBeCustomized() {
@@ -142,16 +138,6 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	}
 
 	@Test
-	void uriIsIgnoredInEmbeddedMode() {
-		this.properties.setUri("mongodb://mongo.example.com:1234/mydb");
-		this.environment.setProperty("local.mongo.port", "4000");
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 4000);
-	}
-
-	@Test
 	void uriOverridesUsernameAndPassword() {
 		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		this.properties.setUsername("user");
@@ -191,7 +177,7 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 
 	private MongoClientSettings customizeSettings() {
 		MongoClientSettings.Builder settings = MongoClientSettings.builder();
-		new MongoPropertiesClientSettingsBuilderCustomizer(this.properties, this.environment).customize(settings);
+		new MongoPropertiesClientSettingsBuilderCustomizer(this.properties).customize(settings);
 		return settings.build();
 	}
 

@@ -24,7 +24,6 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 
 /**
  * A {@link MongoClientSettingsBuilderCustomizer} that applies properties from a
@@ -37,13 +36,10 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private final MongoProperties properties;
 
-	private final Environment environment;
-
 	private int order = 0;
 
-	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties, Environment environment) {
+	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties) {
 		this.properties = properties;
-		this.environment = environment;
 	}
 
 	@Override
@@ -59,10 +55,6 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyHostAndPort(MongoClientSettings.Builder settings) {
-		if (getEmbeddedPort() != null) {
-			settings.applyConnectionString(new ConnectionString("mongodb://localhost:" + getEmbeddedPort()));
-			return;
-		}
 		if (this.properties.getUri() != null) {
 			settings.applyConnectionString(new ConnectionString(this.properties.getUri()));
 			return;
@@ -96,16 +88,6 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private <V> V getOrDefault(V value, V defaultValue) {
 		return (value != null) ? value : defaultValue;
-	}
-
-	private Integer getEmbeddedPort() {
-		if (this.environment != null) {
-			String localPort = this.environment.getProperty("local.mongo.port");
-			if (localPort != null) {
-				return Integer.valueOf(localPort);
-			}
-		}
-		return null;
 	}
 
 	@Override
