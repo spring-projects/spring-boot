@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,21 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -47,8 +48,10 @@ class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		List<AnnotationAttributes> allAnnotationAttributes = annotationAttributesFromMultiValueMap(
-				metadata.getAllAnnotationAttributes(ConditionalOnProperty.class.getName()));
+		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
+				.stream(ConditionalOnProperty.class.getName())
+				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
+				.map(MergedAnnotation::asAnnotationAttributes).collect(Collectors.toList());
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
@@ -59,29 +62,6 @@ class OnPropertyCondition extends SpringBootCondition {
 			return ConditionOutcome.noMatch(ConditionMessage.of(noMatch));
 		}
 		return ConditionOutcome.match(ConditionMessage.of(match));
-	}
-
-	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(
-			MultiValueMap<String, Object> multiValueMap) {
-		List<Map<String, Object>> maps = new ArrayList<>();
-		multiValueMap.forEach((key, value) -> {
-			for (int i = 0; i < value.size(); i++) {
-				Map<String, Object> map;
-				if (i < maps.size()) {
-					map = maps.get(i);
-				}
-				else {
-					map = new HashMap<>();
-					maps.add(map);
-				}
-				map.put(key, value.get(i));
-			}
-		});
-		List<AnnotationAttributes> annotationAttributes = new ArrayList<>(maps.size());
-		for (Map<String, Object> map : maps) {
-			annotationAttributes.add(AnnotationAttributes.fromMap(map));
-		}
-		return annotationAttributes;
 	}
 
 	private ConditionOutcome determineOutcome(AnnotationAttributes annotationAttributes, PropertyResolver resolver) {
