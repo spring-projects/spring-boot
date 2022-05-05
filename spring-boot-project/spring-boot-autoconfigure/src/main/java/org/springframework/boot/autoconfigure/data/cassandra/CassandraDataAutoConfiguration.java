@@ -108,7 +108,7 @@ public class CassandraDataAutoConfiguration {
 		session.setSession(this.session);
 		session.setConverter(converter);
 		Binder binder = Binder.get(environment);
-		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
+		binder.bind("spring.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
 		return session;
 	}
 

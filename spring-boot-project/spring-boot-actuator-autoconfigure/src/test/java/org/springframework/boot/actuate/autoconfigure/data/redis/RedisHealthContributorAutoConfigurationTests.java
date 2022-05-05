@@ -14,39 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.mongo;
+package org.springframework.boot.actuate.autoconfigure.data.redis;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.mongo.MongoHealthIndicator;
+import org.springframework.boot.actuate.data.redis.RedisHealthIndicator;
+import org.springframework.boot.actuate.data.redis.RedisReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MongoHealthContributorAutoConfiguration}
+ * Tests for {@link RedisHealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-class MongoHealthContributorAutoConfigurationTests {
+@ClassPathExclusions({ "reactor-core*.jar", "lettuce-core*.jar" })
+class RedisHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-					MongoHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
+					RedisHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RedisHealthIndicator.class)
+				.doesNotHaveBean(RedisReactiveHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(MongoHealthIndicator.class));
+		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(RedisHealthIndicator.class)
+						.doesNotHaveBean(RedisReactiveHealthIndicator.class));
 	}
 
 }

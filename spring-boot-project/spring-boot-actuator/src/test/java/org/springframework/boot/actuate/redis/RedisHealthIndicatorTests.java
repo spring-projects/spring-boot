@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.data.redis.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.redis.RedisConnectionFailureException;

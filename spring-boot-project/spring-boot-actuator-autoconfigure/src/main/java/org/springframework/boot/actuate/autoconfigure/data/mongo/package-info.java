@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Redis.
+ * Auto-configuration for actuator MongoDB concerns dependent on Spring Data.
  */
-package org.springframework.boot.actuate.redis;
+package org.springframework.boot.actuate.autoconfigure.data.mongo;

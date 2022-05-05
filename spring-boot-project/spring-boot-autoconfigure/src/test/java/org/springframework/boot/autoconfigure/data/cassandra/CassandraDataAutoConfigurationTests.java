@@ -110,7 +110,7 @@ class CassandraDataAutoConfigurationTests {
 
 	void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test").applyTo(ctx);
+		TestPropertyValues.of("spring.cassandra.keyspaceName:boot_test").applyTo(ctx);
 		if (!ObjectUtils.isEmpty(config)) {
 			ctx.register(config);
 		}

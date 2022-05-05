@@ -102,7 +102,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
 		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
-				"spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort(),
+				"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort(),
 				"server.reactive.session.cookie.name:JSESSIONID", "server.reactive.session.cookie.domain:.example.com",
 				"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
 				"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",

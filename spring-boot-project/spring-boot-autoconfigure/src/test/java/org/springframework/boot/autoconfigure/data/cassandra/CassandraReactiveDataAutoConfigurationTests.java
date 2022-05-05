@@ -54,13 +54,13 @@ class CassandraReactiveDataAutoConfigurationTests {
 
 	@Test
 	void templateExists() {
-		load("spring.data.cassandra.keyspaceName:boot_test");
+		load("spring.cassandra.keyspaceName:boot_test");
 		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test
 	void entityScanShouldSetManagedTypes() {
-		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
+		load(EntityScanConfig.class, "spring.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
 		assertThat(managedTypes.toList()).containsOnly(City.class);
@@ -68,7 +68,7 @@ class CassandraReactiveDataAutoConfigurationTests {
 
 	@Test
 	void userTypeResolverShouldBeSet() {
-		load("spring.data.cassandra.keyspaceName:boot_test");
+		load("spring.cassandra.keyspaceName:boot_test");
 		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
 		assertThat(cassandraConverter).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
 	}

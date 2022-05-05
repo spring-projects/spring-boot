@@ -20,6 +20,7 @@ import com.mongodb.MongoException;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.data.mongo.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.mongodb.core.MongoTemplate;

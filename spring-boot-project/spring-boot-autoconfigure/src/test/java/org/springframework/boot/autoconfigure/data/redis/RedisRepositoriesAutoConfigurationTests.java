@@ -54,7 +54,8 @@ class RedisRepositoriesAutoConfigurationTests {
 
 	@BeforeEach
 	void setUp() {
-		TestPropertyValues.of("spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort())
+		TestPropertyValues
+				.of("spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 				.applyTo(this.context.getEnvironment());
 	}
 

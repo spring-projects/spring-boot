@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.redis;
+package org.springframework.boot.actuate.autoconfigure.data.redis;
 
 import java.util.Map;
 
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
+import reactor.core.publisher.Flux;
+
+import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.redis.RedisHealthIndicator;
+import org.springframework.boot.actuate.data.redis.RedisReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link RedisHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link RedisReactiveHealthIndicator}.
  *
  * @author Christian Dupuis
  * @author Richard Santana
@@ -40,17 +43,24 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  * @author Mark Paluch
  * @since 2.1.0
  */
-@AutoConfiguration(after = { RedisAutoConfiguration.class, RedisReactiveHealthContributorAutoConfiguration.class })
-@ConditionalOnClass(RedisConnectionFactory.class)
-@ConditionalOnBean(RedisConnectionFactory.class)
+@AutoConfiguration(after = RedisReactiveAutoConfiguration.class)
+@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, Flux.class })
+@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("redis")
-public class RedisHealthContributorAutoConfiguration
-		extends CompositeHealthContributorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
+public class RedisReactiveHealthContributorAutoConfiguration extends
+		CompositeReactiveHealthContributorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
+
+	private final Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories;
+
+	RedisReactiveHealthContributorAutoConfiguration(
+			Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories) {
+		this.redisConnectionFactories = redisConnectionFactories;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "redisHealthIndicator", "redisHealthContributor" })
-	public HealthContributor redisHealthContributor(Map<String, RedisConnectionFactory> redisConnectionFactories) {
-		return createContributor(redisConnectionFactories);
+	public ReactiveHealthContributor redisHealthContributor() {
+		return createContributor(this.redisConnectionFactories);
 	}
 
 }

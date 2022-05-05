@@ -90,8 +90,8 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testOverrideRedisConfiguration() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1",
-				"spring.redis.lettuce.shutdown-timeout:500").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.database:1",
+				"spring.data.redis.lettuce.shutdown-timeout:500").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getDatabase()).isEqualTo(1);
@@ -122,9 +122,8 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisUrlConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.redis.host:foo", "spring.redis.url:redis://user:password@example:33")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo",
+				"spring.data.redis.url:redis://user:password@example:33").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("example");
 					assertThat(cf.getPort()).isEqualTo(33);
@@ -136,10 +135,9 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testOverrideUrlRedisConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.redis.host:foo", "spring.redis.password:xyz", "spring.redis.port:1000",
-						"spring.redis.ssl:false", "spring.redis.url:rediss://user:password@example:33")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
+				"spring.data.redis.port:1000", "spring.data.redis.ssl:false",
+				"spring.data.redis.url:rediss://user:password@example:33").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("example");
 					assertThat(cf.getPort()).isEqualTo(33);
@@ -151,7 +149,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testPasswordInUrlWithColon() {
-		this.contextRunner.withPropertyValues("spring.redis.url:redis://:pass:word@example:33").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.url:redis://:pass:word@example:33").run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("example");
 			assertThat(cf.getPort()).isEqualTo(33);
@@ -162,19 +160,20 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testPasswordInUrlStartsWithColon() {
-		this.contextRunner.withPropertyValues("spring.redis.url:redis://user::pass:word@example:33").run((context) -> {
-			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-			assertThat(cf.getHostName()).isEqualTo("example");
-			assertThat(cf.getPort()).isEqualTo(33);
-			assertThat(getUserName(cf)).isEqualTo("user");
-			assertThat(cf.getPassword()).isEqualTo(":pass:word");
-		});
+		this.contextRunner.withPropertyValues("spring.data.redis.url:redis://user::pass:word@example:33")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("example");
+					assertThat(cf.getPort()).isEqualTo(33);
+					assertThat(getUserName(cf)).isEqualTo("user");
+					assertThat(cf.getPassword()).isEqualTo(":pass:word");
+				});
 	}
 
 	@Test
 	void testRedisConfigurationUsePoolByDefault() {
 		Pool defaultPool = new RedisProperties().getLettuce().getPool();
-		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo").run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("foo");
 			GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(cf).getPoolConfig();
@@ -187,10 +186,11 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithCustomPoolSettings() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
-				"spring.redis.lettuce.pool.max-idle:4", "spring.redis.lettuce.pool.max-active:16",
-				"spring.redis.lettuce.pool.max-wait:2000", "spring.redis.lettuce.pool.time-between-eviction-runs:30000",
-				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.lettuce.pool.min-idle:1",
+				"spring.data.redis.lettuce.pool.max-idle:4", "spring.data.redis.lettuce.pool.max-active:16",
+				"spring.data.redis.lettuce.pool.max-wait:2000",
+				"spring.data.redis.lettuce.pool.time-between-eviction-runs:30000",
+				"spring.data.redis.lettuce.shutdown-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(cf).getPoolConfig();
@@ -205,7 +205,8 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationDisabledPool() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.enabled:false")
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.lettuce.pool.enabled:false")
 				.run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
@@ -215,8 +216,8 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithTimeoutAndConnectTimeout() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:250",
-				"spring.redis.connect-timeout:1000").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:250",
+				"spring.data.redis.connect-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getTimeout()).isEqualTo(250);
@@ -227,7 +228,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithDefaultTimeouts() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo").run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("foo");
 			assertThat(cf.getTimeout()).isEqualTo(60000);
@@ -246,7 +247,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClientName() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.client-name:spring-boot")
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.client-name:spring-boot")
 				.run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
@@ -256,7 +257,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void connectionFactoryWithJedisClientType() {
-		this.contextRunner.withPropertyValues("spring.redis.client-type:jedis").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.client-type:jedis").run((context) -> {
 			assertThat(context).hasSingleBean(RedisConnectionFactory.class);
 			assertThat(context.getBean(RedisConnectionFactory.class)).isInstanceOf(JedisConnectionFactory.class);
 		});
@@ -264,7 +265,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void connectionFactoryWithLettuceClientType() {
-		this.contextRunner.withPropertyValues("spring.redis.client-type:lettuce").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.client-type:lettuce").run((context) -> {
 			assertThat(context).hasSingleBean(RedisConnectionFactory.class);
 			assertThat(context.getBean(RedisConnectionFactory.class)).isInstanceOf(LettuceConnectionFactory.class);
 		});
@@ -274,16 +275,18 @@ class RedisAutoConfigurationTests {
 	void testRedisConfigurationWithSentinel() {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
 		this.contextRunner
-				.withPropertyValues("spring.redis.sentinel.master:mymaster",
-						"spring.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
+				.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
+						"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
 				.run((context) -> assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
 						.isTrue());
 	}
 
 	@Test
 	void testRedisConfigurationWithSentinelAndDatabase() {
-		this.contextRunner.withPropertyValues("spring.redis.database:1", "spring.redis.sentinel.master:mymaster",
-				"spring.redis.sentinel.nodes:127.0.0.1:26379, 127.0.0.1:26380").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.database:1", "spring.data.redis.sentinel.master:mymaster",
+						"spring.data.redis.sentinel.nodes:127.0.0.1:26379, 127.0.0.1:26380")
+				.run((context) -> {
 					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
 					assertThat(connectionFactory.getDatabase()).isEqualTo(1);
 					assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
@@ -293,9 +296,9 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithSentinelAndAuthentication() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.username=user", "spring.redis.password=password",
-						"spring.redis.sentinel.master:mymaster",
-						"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
+				.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
+						"spring.data.redis.sentinel.master:mymaster",
+						"spring.data.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
 				.run(assertSentinelConfiguration("user", "password", (sentinelConfiguration) -> {
 					assertThat(sentinelConfiguration.getSentinelPassword().isPresent()).isFalse();
 					Set<RedisNode> sentinels = sentinelConfiguration.getSentinels();
@@ -307,9 +310,9 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithSentinelPasswordAndDataNodePassword() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.password=password", "spring.redis.sentinel.password=secret",
-						"spring.redis.sentinel.master:mymaster",
-						"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
+				.withPropertyValues("spring.data.redis.password=password", "spring.data.redis.sentinel.password=secret",
+						"spring.data.redis.sentinel.master:mymaster",
+						"spring.data.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
 				.run(assertSentinelConfiguration(null, "password", (sentinelConfiguration) -> {
 					assertThat(sentinelConfiguration.getSentinelUsername()).isNull();
 					assertThat(new String(sentinelConfiguration.getSentinelPassword().get())).isEqualTo("secret");
@@ -322,10 +325,10 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithSentinelAuthenticationAndDataNodeAuthentication() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.username=username", "spring.redis.password=password",
-						"spring.redis.sentinel.username=sentinel", "spring.redis.sentinel.password=secret",
-						"spring.redis.sentinel.master:mymaster",
-						"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
+				.withPropertyValues("spring.data.redis.username=username", "spring.data.redis.password=password",
+						"spring.data.redis.sentinel.username=sentinel", "spring.data.redis.sentinel.password=secret",
+						"spring.data.redis.sentinel.master:mymaster",
+						"spring.data.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
 				.run(assertSentinelConfiguration("username", "password", (sentinelConfiguration) -> {
 					assertThat(sentinelConfiguration.getSentinelUsername()).isEqualTo("sentinel");
 					assertThat(new String(sentinelConfiguration.getSentinelPassword().get())).isEqualTo("secret");
@@ -347,9 +350,8 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisSentinelUrlConfiguration() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.redis.url=redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster")
+		this.contextRunner.withPropertyValues(
+				"spring.data.redis.url=redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster")
 				.run((context) -> assertThatIllegalStateException()
 						.isThrownBy(() -> context.getBean(LettuceConnectionFactory.class))
 						.withRootCauseInstanceOf(RedisUrlSyntaxException.class).havingRootCause().withMessageContaining(
@@ -359,8 +361,8 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithCluster() {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
-		this.contextRunner.withPropertyValues("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1)).run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1)).run((context) -> {
 					RedisClusterConfiguration clusterConfiguration = context.getBean(LettuceConnectionFactory.class)
 							.getClusterConfiguration();
 					assertThat(clusterConfiguration.getClusterNodes()).hasSize(2);
@@ -374,9 +376,9 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithClusterAndAuthentication() {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
-		this.contextRunner.withPropertyValues("spring.redis.username=user", "spring.redis.password=password",
-				"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1)).run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
+				"spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+				"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1)).run((context) -> {
 					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
 					assertThat(getUserName(connectionFactory)).isEqualTo("user");
 					assertThat(connectionFactory.getPassword()).isEqualTo("password");
@@ -395,7 +397,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterCreateClusterClientOptions() {
-		this.contextRunner.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
+		this.contextRunner.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
 				.run(assertClientOptions(ClusterClientOptions.class, (options) -> {
 					assertThat(options.getTimeoutOptions().isApplyConnectionTimeout()).isTrue();
 					assertThat(options.getTimeoutOptions().isTimeoutCommands()).isTrue();
@@ -405,8 +407,8 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithClusterRefreshPeriod() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.period=30s")
+				.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.data.redis.lettuce.cluster.refresh.period=30s")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().getRefreshPeriod())
 								.hasSeconds(30)));
@@ -415,8 +417,8 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithClusterAdaptiveRefresh() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.adaptive=true")
+				.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.data.redis.lettuce.cluster.refresh.adaptive=true")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().getAdaptiveRefreshTriggers())
 								.isEqualTo(EnumSet.allOf(RefreshTrigger.class))));
@@ -424,15 +426,15 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterRefreshPeriodHasNoEffectWithNonClusteredConfiguration() {
-		this.contextRunner.withPropertyValues("spring.redis.cluster.refresh.period=30s").run(assertClientOptions(
+		this.contextRunner.withPropertyValues("spring.data.redis.cluster.refresh.period=30s").run(assertClientOptions(
 				ClientOptions.class, (options) -> assertThat(options.getClass()).isEqualTo(ClientOptions.class)));
 	}
 
 	@Test
 	void testRedisConfigurationWithClusterDynamicRefreshSourcesEnabled() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.dynamic-refresh-sources=true")
+				.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.data.redis.lettuce.cluster.refresh.dynamic-refresh-sources=true")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
 								.isTrue()));
@@ -441,8 +443,8 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithClusterDynamicRefreshSourcesDisabled() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.dynamic-refresh-sources=false")
+				.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.data.redis.lettuce.cluster.refresh.dynamic-refresh-sources=false")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
 								.isFalse()));
@@ -451,8 +453,8 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testRedisConfigurationWithClusterDynamicSourcesUnspecifiedUsesDefault() {
 		this.contextRunner
-				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.dynamic-sources=")
+				.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.data.redis.lettuce.cluster.refresh.dynamic-sources=")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
 								.isEqualTo(ClusterTopologyRefreshOptions.DEFAULT_DYNAMIC_REFRESH_SOURCES)));

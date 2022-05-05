@@ -685,7 +685,7 @@ with the `key` listed in the following table:
 | Checks that a mail server is up.
 
 | `mongo`
-| {spring-boot-actuator-module-code}/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
+| {spring-boot-actuator-module-code}/data/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
 | Checks that a Mongo database is up.
 
 | `neo4j`
@@ -701,7 +701,7 @@ with the `key` listed in the following table:
 | Checks that a Rabbit server is up.
 
 | `redis`
-| {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
+| {spring-boot-actuator-module-code}/data/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
 |===
 
@@ -833,11 +833,11 @@ When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndic
 | Checks that a Couchbase cluster is up.
 
 | `elasticsearch`
-| {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchReactiveHealthIndicator.java[`ElasticsearchReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/data/elasticsearch/ElasticsearchReactiveHealthIndicator.java[`ElasticsearchReactiveHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
 | `mongo`
-| {spring-boot-actuator-module-code}/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/data/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
 | Checks that a Mongo database is up.
 
 | `neo4j`
@@ -845,7 +845,7 @@ When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndic
 | Checks that a Neo4j database is up.
 
 | `redis`
-| {spring-boot-actuator-module-code}/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/data/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
 | Checks that a Redis server is up.
 |===
 

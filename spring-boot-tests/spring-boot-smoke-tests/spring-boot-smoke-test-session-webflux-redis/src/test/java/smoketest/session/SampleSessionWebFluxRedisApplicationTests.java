@@ -56,8 +56,8 @@ class SampleSessionWebFluxRedisApplicationTests {
 
 	@DynamicPropertySource
 	static void applicationProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.host", redis::getHost);
-		registry.add("spring.redis.port", redis::getFirstMappedPort);
+		registry.add("spring.data.redis.host", redis::getHost);
+		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
 	}
 
 	@Test

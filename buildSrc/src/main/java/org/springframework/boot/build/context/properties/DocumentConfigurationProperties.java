@@ -125,13 +125,13 @@ public class DocumentConfigurationProperties extends DefaultTask {
 
 	private void dataPrefixes(Config config) {
 		config.accept("spring.couchbase");
+		config.accept("spring.cassandra");
 		config.accept("spring.elasticsearch");
 		config.accept("spring.h2");
 		config.accept("spring.influx");
 		config.accept("spring.ldap");
 		config.accept("spring.mongodb");
 		config.accept("spring.neo4j");
-		config.accept("spring.redis");
 		config.accept("spring.dao");
 		config.accept("spring.data");
 		config.accept("spring.datasource");

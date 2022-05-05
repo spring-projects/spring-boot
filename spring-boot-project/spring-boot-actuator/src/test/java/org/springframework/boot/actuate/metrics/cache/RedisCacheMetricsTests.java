@@ -56,7 +56,7 @@ class RedisCacheMetricsTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, CacheAutoConfiguration.class))
 			.withUserConfiguration(CachingConfiguration.class).withPropertyValues(
-					"spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort(),
+					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort(),
 					"spring.cache.type=redis", "spring.cache.redis.enable-statistics=true");
 
 	@Test

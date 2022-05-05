@@ -52,12 +52,9 @@ class CassandraDataAutoConfigurationIntegrationTests {
 			.withConfiguration(
 					AutoConfigurations.of(CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class))
 			.withPropertyValues(
-					"spring.data.cassandra.contact-points:" + cassandra.getHost() + ":"
-							+ cassandra.getFirstMappedPort(),
-					"spring.data.cassandra.local-datacenter=datacenter1",
-					"spring.data.cassandra.connection.connect-timeout=60s",
-					"spring.data.cassandra.connection.init-query-timeout=60s",
-					"spring.data.cassandra.request.timeout=60s")
+					"spring.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
+					"spring.cassandra.local-datacenter=datacenter1", "spring.cassandra.connection.connect-timeout=60s",
+					"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s")
 			.withInitializer((context) -> AutoConfigurationPackages.register((BeanDefinitionRegistry) context,
 					City.class.getPackage().getName()));
 
@@ -70,7 +67,7 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	@Test
 	void hasRecreateSchemaActionSet() {
 		this.contextRunner.withUserConfiguration(KeyspaceTestConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.schemaAction=recreate_drop_unused")
+				.withPropertyValues("spring.cassandra.schemaAction=recreate_drop_unused")
 				.run((context) -> assertThat(context.getBean(SessionFactoryFactoryBean.class))
 						.hasFieldOrPropertyWithValue("schemaAction", SchemaAction.RECREATE_DROP_UNUSED));
 	}
