@@ -39,7 +39,7 @@ public class AotGenerateTests {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
 			assertThat(collectRelativeFileNames(aotDirectory.resolve("sources")))
-					.containsOnly("org/test/SampleApplication__ApplicationContextInitializer.java");
+					.contains("org/test/SampleApplication__ApplicationContextInitializer.java");
 			assertThat(collectRelativeFileNames(aotDirectory.resolve("resources"))).containsOnly(
 					"META-INF/native-image/org.springframework.boot.maven.it/aot/reflect-config.json",
 					"META-INF/native-image/org.springframework.boot.maven.it/aot/native-image.properties");

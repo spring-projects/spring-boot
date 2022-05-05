@@ -42,6 +42,8 @@ public class GenerateAotSources extends JavaExec {
 
 	private final DirectoryProperty resourcesDir;
 
+	private final DirectoryProperty classesDir;
+
 	private final Property<String> groupId;
 
 	private final Property<String> artifactId;
@@ -50,6 +52,7 @@ public class GenerateAotSources extends JavaExec {
 		this.applicationClass = getProject().getObjects().property(String.class);
 		this.sourcesDir = getProject().getObjects().directoryProperty();
 		this.resourcesDir = getProject().getObjects().directoryProperty();
+		this.classesDir = getProject().getObjects().directoryProperty();
 		this.groupId = getProject().getObjects().property(String.class);
 		this.artifactId = getProject().getObjects().property(String.class);
 		getMainClass().set("org.springframework.boot.AotProcessor");
@@ -80,6 +83,11 @@ public class GenerateAotSources extends JavaExec {
 		return this.resourcesDir;
 	}
 
+	@OutputDirectory
+	public DirectoryProperty getClassesDir() {
+		return this.classesDir;
+	}
+
 	@Override
 	@TaskAction
 	public void exec() {
@@ -87,6 +95,7 @@ public class GenerateAotSources extends JavaExec {
 		args.add(this.applicationClass.get());
 		args.add(this.sourcesDir.getAsFile().get().getAbsolutePath());
 		args.add(this.resourcesDir.getAsFile().get().getAbsolutePath());
+		args.add(this.classesDir.getAsFile().get().getAbsolutePath());
 		args.addAll(super.getArgs());
 		this.setArgs(args);
 		super.exec();

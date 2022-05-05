@@ -24,18 +24,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
-import org.springframework.aot.generator.DefaultGeneratedTypeContext;
-import org.springframework.aot.generator.GeneratedType;
-import org.springframework.aot.generator.GeneratedTypeReference;
+import org.springframework.aot.generate.DefaultGenerationContext;
+import org.springframework.aot.generate.FileSystemGeneratedFiles;
+import org.springframework.aot.generate.GeneratedFiles.Kind;
+import org.springframework.aot.hint.ExecutableHint;
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.nativex.FileNativeConfigurationWriter;
-import org.springframework.context.generator.ApplicationContextAotGenerator;
+import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
-import org.springframework.javapoet.JavaFile;
 import org.springframework.util.Assert;
 
 /**
@@ -45,9 +46,13 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.0
  */
 public class AotProcessor {
+
+	private static final Consumer<ExecutableHint.Builder> INVOKE_CONSTRUCTOR_HINT = (hint) -> hint
+			.setModes(ExecutableMode.INVOKE);
 
 	private final Class<?> application;
 
@@ -56,6 +61,8 @@ public class AotProcessor {
 	private final Path sourceOutput;
 
 	private final Path resourceOutput;
+
+	private final Path classOutput;
 
 	private final String groupId;
 
@@ -67,17 +74,19 @@ public class AotProcessor {
 	 * @param applicationArgs the arguments to provide to the main method
 	 * @param sourceOutput the location of generated sources
 	 * @param resourceOutput the location of generated resources
+	 * @param classOutput the location of generated classes
 	 * @param groupId the group ID of the application, used to locate
 	 * native-image.properties
 	 * @param artifactId the artifact ID of the application, used to locate
 	 * native-image.properties
 	 */
 	public AotProcessor(Class<?> application, String[] applicationArgs, Path sourceOutput, Path resourceOutput,
-			String groupId, String artifactId) {
+			Path classOutput, String groupId, String artifactId) {
 		this.application = application;
 		this.applicationArgs = applicationArgs;
 		this.sourceOutput = sourceOutput;
 		this.resourceOutput = resourceOutput;
+		this.classOutput = classOutput;
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 	}
@@ -104,36 +113,39 @@ public class AotProcessor {
 	}
 
 	private void performAotProcessing(GenericApplicationContext applicationContext) {
-		DefaultGeneratedTypeContext generationContext = new DefaultGeneratedTypeContext(
-				this.application.getPackageName(), (packageName) -> GeneratedType.of(ClassName.get(packageName,
-						this.application.getSimpleName() + "__ApplicationContextInitializer")));
+		FileSystemGeneratedFiles generatedFiles = new FileSystemGeneratedFiles(this::getRoot);
+		DefaultGenerationContext generationContext = new DefaultGenerationContext(generatedFiles);
 		ApplicationContextAotGenerator generator = new ApplicationContextAotGenerator();
-		generator.generateApplicationContext(applicationContext, generationContext);
-
-		// Register reflection hint for entry point as we access it via reflection
-		generationContext.runtimeHints().reflection()
-				.registerType(GeneratedTypeReference.of(generationContext.getMainGeneratedType().getClassName()),
-						(hint) -> hint.onReachableType(TypeReference.of(this.application)).withConstructor(
-								Collections.emptyList(),
-								(constructorHint) -> constructorHint.setModes(ExecutableMode.INVOKE)));
-
-		writeGeneratedSources(generationContext.toJavaFiles());
-		writeGeneratedResources(generationContext.runtimeHints());
+		ClassName generatedInitializerClassName = generationContext.getClassNameGenerator()
+				.generateClassName(this.application, "ApplicationContextInitializer");
+		generator.generateApplicationContext(applicationContext, generationContext, generatedInitializerClassName);
+		registerEntryPointHint(generationContext, generatedInitializerClassName);
+		generationContext.writeGeneratedContent();
+		writeHints(generationContext.getRuntimeHints());
 		writeNativeImageProperties();
 	}
 
-	private void writeGeneratedSources(List<JavaFile> sources) {
-		for (JavaFile source : sources) {
-			try {
-				source.writeTo(this.sourceOutput);
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Failed to write " + source.typeSpec.name, ex);
-			}
-		}
+	private void registerEntryPointHint(DefaultGenerationContext generationContext,
+			ClassName generatedInitializerClassName) {
+		TypeReference generatedType = TypeReference.of(generatedInitializerClassName.canonicalName());
+		TypeReference applicationType = TypeReference.of(this.application);
+		generationContext.getRuntimeHints().reflection().registerType(generatedType, (hint) -> hint
+				.onReachableType(applicationType).withConstructor(Collections.emptyList(), INVOKE_CONSTRUCTOR_HINT));
 	}
 
-	private void writeGeneratedResources(RuntimeHints hints) {
+	private Path getRoot(Kind kind) {
+		switch (kind) {
+		case SOURCE:
+			return this.sourceOutput;
+		case RESOURCE:
+			return this.resourceOutput;
+		case CLASS:
+			return this.classOutput;
+		}
+		throw new IllegalStateException("Unsupported kind " + kind);
+	}
+
+	private void writeHints(RuntimeHints hints) {
 		FileNativeConfigurationWriter writer = new FileNativeConfigurationWriter(this.resourceOutput, this.groupId,
 				this.artifactId);
 		writer.write(hints);
@@ -164,21 +176,22 @@ public class AotProcessor {
 	}
 
 	public static void main(String[] args) throws Exception {
-		int requiredArgs = 5;
+		int requiredArgs = 6;
 		if (args.length < requiredArgs) {
 			throw new IllegalArgumentException("Usage: " + AotProcessor.class.getName()
-					+ " <applicationName> <sourceOutput> <resourceOutput> <groupId> <artifactId> <originalArgs...>");
+					+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		}
 		String applicationName = args[0];
 		Path sourceOutput = Paths.get(args[1]);
 		Path resourceOutput = Paths.get(args[2]);
-		String groupId = args[3];
-		String artifactId = args[4];
+		Path classOutput = Paths.get(args[3]);
+		String groupId = args[4];
+		String artifactId = args[5];
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
 		Class<?> application = Class.forName(applicationName);
-		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput, groupId,
-				artifactId);
+		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput,
+				classOutput, groupId, artifactId);
 		aotProcess.process();
 	}
 

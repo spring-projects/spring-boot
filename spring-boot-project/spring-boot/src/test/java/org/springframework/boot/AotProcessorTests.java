@@ -45,7 +45,7 @@ class AotProcessorTests {
 	void processApplicationInvokesRunMethod(@TempDir Path directory) {
 		String[] arguments = new String[] { "1", "2" };
 		AotProcessor processor = new AotProcessor(SampleApplication.class, arguments, directory.resolve("source"),
-				directory.resolve("resource"), "com.example", "example");
+				directory.resolve("resource"), directory.resolve("class"), "com.example", "example");
 		processor.process();
 		assertThat(SampleApplication.argsHolder).isEqualTo(arguments);
 		assertThat(directory).satisfies(hasGeneratedAssetsForSampleApplication());
@@ -54,7 +54,7 @@ class AotProcessorTests {
 	@Test
 	void processApplicationWithMainMethodThatDoesNotRun(@TempDir Path directory) {
 		AotProcessor processor = new AotProcessor(BrokenApplication.class, new String[0], directory.resolve("source"),
-				directory.resolve("resource"), "com.example", "example");
+				directory.resolve("resource"), directory.resolve("class"), "com.example", "example");
 		assertThatIllegalArgumentException().isThrownBy(processor::process)
 				.withMessageContaining("Does it run a SpringApplication?");
 		assertThat(directory).isEmptyDirectory();
@@ -63,8 +63,8 @@ class AotProcessorTests {
 	@Test
 	void invokeMainParseArgumentsAndInvokesRunMethod(@TempDir Path directory) throws Exception {
 		String[] mainArguments = new String[] { SampleApplication.class.getName(),
-				directory.resolve("source").toString(), directory.resolve("resource").toString(), "com.example",
-				"example", "1", "2" };
+				directory.resolve("source").toString(), directory.resolve("resource").toString(),
+				directory.resolve("class").toString(), "com.example", "example", "1", "2" };
 		AotProcessor.main(mainArguments);
 		assertThat(SampleApplication.argsHolder).containsExactly("1", "2");
 		assertThat(directory).satisfies(hasGeneratedAssetsForSampleApplication());
@@ -78,8 +78,8 @@ class AotProcessorTests {
 
 	private Consumer<Path> hasGeneratedAssetsForSampleApplication() {
 		return (directory) -> {
-			assertThat(directory
-					.resolve("source/org/springframework/boot/SampleApplication__ApplicationContextInitializer.java"))
+			assertThat(directory.resolve(
+					"source/org/springframework/boot/AotProcessorTests_SampleApplication__ApplicationContextInitializer.java"))
 							.exists().isRegularFile();
 			assertThat(directory.resolve("resource/META-INF/native-image/com.example/example/reflect-config.json"))
 					.exists().isRegularFile();

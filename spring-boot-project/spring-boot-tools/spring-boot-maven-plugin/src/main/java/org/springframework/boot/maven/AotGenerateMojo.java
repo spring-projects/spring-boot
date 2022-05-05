@@ -73,6 +73,12 @@ public class AotGenerateMojo extends AbstractRunMojo {
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/resources", required = true)
 	private File generatedResources;
 
+	/**
+	 * Directory containing the generated classes.
+	 */
+	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
+	private File generatedClasses;
+
 	@Override
 	protected void run(File workingDirectory, String startClassName, Map<String, String> environmentVariables)
 			throws MojoExecutionException, MojoFailureException {
@@ -90,6 +96,7 @@ public class AotGenerateMojo extends AbstractRunMojo {
 	private void deletePreviousAotAssets() {
 		FileSystemUtils.deleteRecursively(this.generatedSources);
 		FileSystemUtils.deleteRecursively(this.generatedResources);
+		FileSystemUtils.deleteRecursively(this.generatedClasses);
 	}
 
 	private void generateAotAssets(File workingDirectory, String startClassName,
@@ -102,6 +109,7 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		args.add(startClassName);
 		args.add(this.generatedSources.toString());
 		args.add(this.generatedResources.toString());
+		args.add(this.generatedClasses.toString());
 		args.add(this.project.getGroupId());
 		args.add(this.project.getArtifactId());
 		addArgs(args);
