@@ -27,7 +27,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotation.Adapt;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
@@ -49,12 +48,10 @@ class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		Adapt[] adaptations = Adapt.values(false, true);
 		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
 				.stream(ConditionalOnProperty.class.getName())
 				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-				.map((annotation) -> annotation.asAnnotationAttributes(adaptations)).collect(Collectors.toList());
-
+				.map(MergedAnnotation::asAnnotationAttributes).collect(Collectors.toList());
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {

@@ -260,6 +260,12 @@ class ConditionalOnPropertyTests {
 	}
 
 	@Test
+	void metaAndDirectAnnotationWithAliasConditionDoesNotMatchWhenOnlyDirectPropertyIsSet() {
+		load(MetaAnnotationAndDirectAnnotationWithAlias.class, "my.other.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
 	void metaAndDirectAnnotationWithAliasConditionMatchesWhenBothPropertiesAreSet() {
 		load(MetaAnnotationAndDirectAnnotationWithAlias.class, "my.feature.enabled=true",
 				"my.other.feature.enabled=true");
