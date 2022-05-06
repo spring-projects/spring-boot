@@ -71,8 +71,18 @@ class BinderTests {
 
 	@Test
 	void createWhenSourcesIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((ConfigurationPropertySource[]) null))
+				.withMessageContaining("Sources must not be null");
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
 				.withMessageContaining("Sources must not be null");
+	}
+
+	@Test
+	void createWhenSourcesContainNullValuesShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(new ConfigurationPropertySource[] { null }))
+				.withMessageContaining("Sources cannot contain null values");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(Collections.singletonList(null)))
+				.withMessageContaining("Sources cannot contain null values");
 	}
 
 	@Test
