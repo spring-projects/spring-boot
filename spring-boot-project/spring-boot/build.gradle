@@ -52,6 +52,7 @@ dependencies {
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
+	optional("org.apache.logging.log4j:log4j-jul")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.apache.tomcat:tomcat-jdbc")
