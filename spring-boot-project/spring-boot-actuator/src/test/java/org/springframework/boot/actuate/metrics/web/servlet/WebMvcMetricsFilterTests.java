@@ -42,7 +42,6 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import io.micrometer.core.lang.NonNull;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
@@ -356,8 +355,7 @@ class WebMvcMetricsFilterTests {
 					clock);
 			r.config().meterFilter(new MeterFilter() {
 				@Override
-				@NonNull
-				public MeterFilterReply accept(@NonNull Meter.Id id) {
+				public MeterFilterReply accept(Meter.Id id) {
 					for (Tag tag : id.getTags()) {
 						if (tag.getKey().equals("uri")
 								&& (tag.getValue().contains("histogram") || tag.getValue().contains("percentiles"))) {
