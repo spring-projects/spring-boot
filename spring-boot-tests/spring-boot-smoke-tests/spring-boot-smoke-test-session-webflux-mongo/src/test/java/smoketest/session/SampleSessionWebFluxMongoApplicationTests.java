@@ -20,33 +20,46 @@ import java.time.Duration;
 import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link SampleSessionWebFluxApplication}.
+ * Integration tests for {@link SampleSessionWebFluxMongoApplication}.
  *
  * @author Vedran Pavic
+ * @author Scott Frederick
  */
 @SpringBootTest(properties = "spring.session.timeout:10", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DisabledOnOs(os = OS.LINUX, architecture = "aarch64",
-		disabledReason = "Embedded Mongo doesn't support Linux aarch64, see https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/379")
-class SampleSessionWebFluxApplicationTests {
+@Testcontainers(disabledWithoutDocker = true)
+class SampleSessionWebFluxMongoApplicationTests {
+
+	@Container
+	private static final MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	@LocalServerPort
 	private int port;
 
 	@Autowired
 	private WebClient.Builder webClientBuilder;
+
+	@DynamicPropertySource
+	static void applicationProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.mongodb.uri", mongo::getReplicaSetUrl);
+	}
 
 	@Test
 	void userDefinedMappingsSecureByDefault() {
