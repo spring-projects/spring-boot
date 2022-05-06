@@ -73,7 +73,6 @@ org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
 org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration

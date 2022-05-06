@@ -1685,13 +1685,6 @@
       "defaultValue": false
     },
     {
-      "name": "spring.mongodb.embedded.features",
-      "deprecation": {
-        "level": "error",
-        "reason": "Feature support has been removed from Embedded Mongo. A custom MongodConfig bean should be defined instead."
-      }
-    },
-    {
       "name": "spring.mustache.prefix",
       "defaultValue": "classpath:/templates/"
     },

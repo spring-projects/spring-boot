@@ -265,8 +265,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		if (securityVersion.endsWith("-SNAPSHOT")) {
 			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
 		}
-		attributes	"embedded-mongo-version": versionConstraints["de.flapdoodle.embed:de.flapdoodle.embed.mongo"],
-					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+		attributes  "jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
 					"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
 					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],

@@ -240,13 +240,6 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "3.4.5") {
-		group("de.flapdoodle.embed") {
-			modules = [
-				"de.flapdoodle.embed.mongo"
-			]
-		}
-	}
 	library("Flyway", "8.5.9") {
 		group("org.flywaydb") {
 			modules = [
