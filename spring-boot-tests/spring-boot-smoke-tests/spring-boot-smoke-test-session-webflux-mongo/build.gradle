@@ -1,0 +1,20 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Session WebFlux MongoDB smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
+
+	runtimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb-reactive"))
+	runtimeOnly("org.springframework.session:spring-session-data-mongodb")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.testcontainers:mongodb")
+	testImplementation("org.testcontainers:testcontainers")
+	testImplementation("org.testcontainers:junit-jupiter")
+}
