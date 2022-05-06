@@ -96,6 +96,8 @@ public class GenerateAotSources extends JavaExec {
 		args.add(this.sourcesDir.getAsFile().get().getAbsolutePath());
 		args.add(this.resourcesDir.getAsFile().get().getAbsolutePath());
 		args.add(this.classesDir.getAsFile().get().getAbsolutePath());
+		args.add(this.groupId.get());
+		args.add(this.artifactId.get());
 		args.addAll(super.getArgs());
 		this.setArgs(args);
 		super.exec();

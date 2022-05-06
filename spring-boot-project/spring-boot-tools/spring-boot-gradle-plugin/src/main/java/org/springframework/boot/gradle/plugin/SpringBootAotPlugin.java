@@ -22,9 +22,11 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.file.Directory;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -82,10 +84,14 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 				.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
 		TaskProvider<GenerateAotSources> generateAotSources = project.getTasks()
 				.register(GENERATE_AOT_SOURCES_TASK_NAME, GenerateAotSources.class, (task) -> {
+					Provider<Directory> generatedClasses = project.getLayout().getBuildDirectory()
+							.dir(GENERATE_AOT_SOURCES_TASK_NAME);
+					aotSourceSet.getOutput().dir(generatedClasses);
 					task.getApplicationClass().set(resolveMainClassName.flatMap((thing) -> thing.readMainClassName()));
 					task.setClasspath(aotSourceSet.getCompileClasspath());
 					task.getSourcesDir().set(aotSourceSet.getJava().getSrcDirs().iterator().next());
 					task.getResourcesDir().set(aotSourceSet.getResources().getSrcDirs().iterator().next());
+					task.getClassesDir().set(generatedClasses);
 					task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
 					task.getArtifactId().set(project.provider(() -> project.getName()));
 				});
