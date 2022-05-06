@@ -408,6 +408,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			return this.operation.handle(exchange, body);
 		}
 
+		@Override
+		public String toString() {
+			return this.operation.toString();
+		}
+
 	}
 
 	/**
@@ -424,6 +429,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@ResponseBody
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
+		}
+
+		@Override
+		public String toString() {
+			return this.operation.toString();
 		}
 
 	}
