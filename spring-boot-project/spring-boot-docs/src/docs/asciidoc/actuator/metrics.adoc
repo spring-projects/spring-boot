@@ -121,24 +121,47 @@ To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provi
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	management:
-      datadog:
-        metrics:
-	      export:
-	        api-key: "YOUR_KEY"
+  management:
+    datadog:
+      metrics:
+        export:
+          api-key: "YOUR_KEY"
+----
+
+If you additionally provide an application key (optional), then metadata such as meter descriptions, types, and base units will also be exported:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+  management:
+    datadog:
+      metrics:
+        export:
+          api-key: "YOUR_API_KEY"
+          application-key: "YOUR_APPLICATION_KEY"
+----
+
+By default, metrics are sent to the Datadog US https://docs.datadoghq.com/getting_started/site[site] (`https://api.datadoghq.com`).
+In case your Datadog project is hosted on one of the other sites, or you need to send metrics through a proxy, change the API base URL accordingly:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+  management:
+    datadog:
+      metrics:
+        export:
+          uri: "https://api.datadoghq.eu"
 ----
 
 You can also change the interval at which metrics are sent to Datadog:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	management:
-	  datadog:
-	    metrics:
-	      export:
-	        step: "30s"
+  management:
+    datadog:
+      metrics:
+        export:
+          step: "30s"
 ----
-
 
 
 [[actuator.metrics.export.dynatrace]]
