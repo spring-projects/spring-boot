@@ -24,9 +24,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -655,6 +657,13 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		Map<String, String> mimeMappings = new HashMap<>();
 		for (String extension : context.findMimeMappings()) {
 			mimeMappings.put(extension, context.findMimeMapping(extension));
+		}
+		// Tomcat mappings get overwritten by Boot's mappings, so
+		// re-adding them manually in the test to ensure new Tomcat mappings are not
+		// missed
+		Tomcat.addDefaultMimeTypeMappings(context);
+		for (String extension : context.findMimeMappings()) {
+			mimeMappings.putIfAbsent(extension, context.findMimeMapping(extension));
 		}
 		return mimeMappings;
 	}
