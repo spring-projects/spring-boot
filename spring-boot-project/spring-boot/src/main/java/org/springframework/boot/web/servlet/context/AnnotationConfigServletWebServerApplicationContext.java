@@ -23,9 +23,6 @@ import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.ApplicationContextFactory;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.AnnotationConfigUtils;
@@ -207,20 +204,6 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 		if (!this.annotatedClasses.isEmpty()) {
 			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
-	}
-
-	/**
-	 * {@link ApplicationContextFactory} registered in {@code spring.factories} to support
-	 * {@link AnnotationConfigServletWebServerApplicationContext}.
-	 */
-	static class Factory implements ApplicationContextFactory {
-
-		@Override
-		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
-			return (webApplicationType != WebApplicationType.SERVLET) ? null
-					: new AnnotationConfigServletWebServerApplicationContext();
-		}
-
 	}
 
 }

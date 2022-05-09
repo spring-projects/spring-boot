@@ -21,8 +21,8 @@ org.springframework.boot.context.config.StandardConfigDataLoader
 
 # Application Context Factories
 org.springframework.boot.ApplicationContextFactory=\
-org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext.Factory,\
-org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext.Factory
+org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContextFactory,\
+org.springframework.boot.web.servlet.context.ServletWebServerApplicationContextFactory
 
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
