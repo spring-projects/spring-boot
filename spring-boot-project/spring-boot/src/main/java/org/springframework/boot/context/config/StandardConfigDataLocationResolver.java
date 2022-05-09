@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.springframework.boot.context.config.LocationResourceLoader.ResourceType;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.PropertySourceLoader;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -79,12 +80,13 @@ public class StandardConfigDataLocationResolver
 
 	/**
 	 * Create a new {@link StandardConfigDataLocationResolver} instance.
-	 * @param logger the logger to use
+	 * @param logFactory the factory for loggers to use
 	 * @param binder a binder backed by the initial {@link Environment}
 	 * @param resourceLoader a {@link ResourceLoader} used to load resources
 	 */
-	public StandardConfigDataLocationResolver(Log logger, Binder binder, ResourceLoader resourceLoader) {
-		this.logger = logger;
+	public StandardConfigDataLocationResolver(DeferredLogFactory logFactory, Binder binder,
+			ResourceLoader resourceLoader) {
+		this.logger = logFactory.getLog(StandardConfigDataLocationResolver.class);
 		this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
 				getClass().getClassLoader());
 		this.configNames = getConfigNames(binder);

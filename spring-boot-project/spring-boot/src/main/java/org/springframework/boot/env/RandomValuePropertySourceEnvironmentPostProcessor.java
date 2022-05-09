@@ -19,6 +19,7 @@ package org.springframework.boot.env;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
@@ -39,10 +40,11 @@ public class RandomValuePropertySourceEnvironmentPostProcessor implements Enviro
 
 	/**
 	 * Create a new {@link RandomValuePropertySourceEnvironmentPostProcessor} instance.
-	 * @param logger the logger to use
+	 * @param logFactory the log factory to use
+	 * @since 3.0.0
 	 */
-	public RandomValuePropertySourceEnvironmentPostProcessor(Log logger) {
-		this.logger = logger;
+	public RandomValuePropertySourceEnvironmentPostProcessor(DeferredLogFactory logFactory) {
+		this.logger = logFactory.getLog(RandomValuePropertySourceEnvironmentPostProcessor.class);
 	}
 
 	@Override

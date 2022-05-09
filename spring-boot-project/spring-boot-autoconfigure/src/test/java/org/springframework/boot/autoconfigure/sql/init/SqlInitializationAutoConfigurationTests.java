@@ -70,7 +70,7 @@ class SqlInitializationAutoConfigurationTests {
 	@Test
 	void whenConnectionFactoryIsAvailableAndModeIsNeverThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
+				.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 				.withPropertyValues("spring.sql.init.mode:never")
 				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}

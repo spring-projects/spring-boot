@@ -70,7 +70,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 		this(logFactory, bootstrapContext, null);
 	}
 
-	public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
+	private ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext,
 			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		this.logFactory = logFactory;
