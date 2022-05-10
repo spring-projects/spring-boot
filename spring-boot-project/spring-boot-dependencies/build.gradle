@@ -1298,7 +1298,7 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "4.5.0") {
+	library("Mockito", "4.5.1") {
 		group("org.mockito") {
 			imports = [
 				"mockito-bom"
