@@ -1,0 +1,2 @@
+org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor
