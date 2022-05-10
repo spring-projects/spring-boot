@@ -73,7 +73,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		return null;
 	}
 
-	private static class ConfigurationPropertiesReflectionHintsContribution
+	private static final class ConfigurationPropertiesReflectionHintsContribution
 			implements BeanFactoryInitializationAotContribution {
 
 		private final Iterable<Class<?>> types;
@@ -96,7 +96,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 	 * Process a given type for binding purposes, discovering any nested type it may
 	 * expose via a property.
 	 */
-	private static class TypeProcessor {
+	private static final class TypeProcessor {
 
 		private static final BeanInfoFactory beanInfoFactory = new ExtendedBeanInfoFactory();
 
@@ -115,7 +115,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 			this.seen = seen;
 		}
 
-		public static void processConfigurationProperties(Class<?> type, RuntimeHints runtimeHints) {
+		private static void processConfigurationProperties(Class<?> type, RuntimeHints runtimeHints) {
 			new TypeProcessor(type, getBindConstructor(type, false), new HashSet<>()).process(runtimeHints);
 		}
 
