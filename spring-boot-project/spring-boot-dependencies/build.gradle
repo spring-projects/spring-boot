@@ -531,7 +531,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Transaction", "2.0.0") {
+	library("Jakarta Transaction", "2.0.1") {
 		group("jakarta.transaction") {
 			modules = [
 				"jakarta.transaction-api"
