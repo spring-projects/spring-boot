@@ -1153,7 +1153,7 @@ bom {
 			]
 		}
 	}
-	library("REST Assured", "5.0.0") {
+	library("REST Assured", "5.0.1") {
 		group("io.rest-assured") {
 			modules = [
 				"json-path",
