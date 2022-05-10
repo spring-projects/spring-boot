@@ -229,8 +229,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		File docBase = (documentRoot != null) ? documentRoot : createTempDir("tomcat-docbase");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader((this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
-				: ClassUtils.getDefaultClassLoader());
+		ClassLoader parentClassLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
+				: ClassUtils.getDefaultClassLoader();
+		context.setParentClassLoader(parentClassLoader);
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		try {
@@ -241,7 +242,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		configureTldPatterns(context);
 		WebappLoader loader = new WebappLoader();
-		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
 		loader.setDelegate(true);
 		context.setLoader(loader);
 		if (isRegisterDefaultServlet()) {
