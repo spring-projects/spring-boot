@@ -1395,7 +1395,7 @@ bom {
 			]
 		}
 	}
-	library("Postgresql", "42.3.4") {
+	library("Postgresql", "42.3.5") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
