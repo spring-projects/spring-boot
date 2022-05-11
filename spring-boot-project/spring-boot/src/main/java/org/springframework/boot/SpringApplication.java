@@ -409,9 +409,10 @@ public class SpringApplication {
 	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
 		if (NativeDetector.inNativeImage()) {
 			try {
-				Class<?> aClass = Class.forName(this.mainApplicationClass.getName() + "__ApplicationContextInitializer",
-						true, getClassLoader());
-				ApplicationContextInitializer<?> initializer = (ApplicationContextInitializer<?>) aClass
+				Class<?> initializerClass = Class.forName(
+						this.mainApplicationClass.getName() + "__ApplicationContextInitializer", true,
+						getClassLoader());
+				ApplicationContextInitializer<?> initializer = (ApplicationContextInitializer<?>) initializerClass
 						.getDeclaredConstructor().newInstance();
 				initializers.add(0, initializer);
 			}

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * Low-level hooks that can observe a {@link SpringApplication} and modify its behavior.
@@ -33,7 +34,6 @@ final class SpringApplicationHooks {
 	private static final ThreadLocal<Hooks> hooks = ThreadLocal.withInitial(Hooks::new);
 
 	private SpringApplicationHooks() {
-
 	}
 
 	/**
@@ -44,10 +44,10 @@ final class SpringApplicationHooks {
 	 * @return the result of the action
 	 * @throws Exception if a failure occurs while performing the action
 	 */
-	static <T> T withHook(Hook hook, Action<T> action) throws Exception {
+	static <T> T withHook(Hook hook, ThrowingSupplier<T> action) throws Exception {
 		hooks.get().add(hook);
 		try {
-			return action.perform();
+			return action.getWithException();
 		}
 		finally {
 			hooks.get().remove(hook);
@@ -84,7 +84,6 @@ final class SpringApplicationHooks {
 		 * @param application the application that is being run
 		 */
 		default void preRun(SpringApplication application) {
-
 		}
 
 		/**
@@ -95,7 +94,6 @@ final class SpringApplicationHooks {
 		 * @param context the application's context
 		 */
 		default void postRun(SpringApplication application, ConfigurableApplicationContext context) {
-
 		}
 
 		/**
@@ -107,24 +105,6 @@ final class SpringApplicationHooks {
 		default boolean preRefresh(SpringApplication application, ConfigurableApplicationContext context) {
 			return true;
 		}
-
-	}
-
-	/**
-	 * An action that can be performed with a hook attached.
-	 * <p>
-	 * <strong>For internal use only.</strong>
-	 *
-	 * @param <T> the type of the action's result
-	 */
-	interface Action<T> {
-
-		/**
-		 * Perform the action.
-		 * @return the result of the action
-		 * @throws Exception if a failure occurs
-		 */
-		T perform() throws Exception;
 
 	}
 
