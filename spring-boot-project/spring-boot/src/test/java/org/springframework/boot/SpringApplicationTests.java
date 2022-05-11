@@ -53,7 +53,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
-import org.springframework.boot.SpringApplicationHooks.Action;
 import org.springframework.boot.SpringApplicationHooks.Hook;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
@@ -115,6 +114,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
@@ -1270,7 +1270,8 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		given(hook.preRefresh(eq(application), any(ConfigurableApplicationContext.class))).willReturn(true);
-		this.context = SpringApplicationHooks.withHook(hook, (Action<ConfigurableApplicationContext>) application::run);
+		this.context = SpringApplicationHooks.withHook(hook,
+				(ThrowingSupplier<ConfigurableApplicationContext>) application::run);
 		then(hook).should().preRun(application);
 		then(hook).should().preRefresh(application, this.context);
 		then(hook).should().postRun(application, this.context);
@@ -1282,7 +1283,8 @@ class SpringApplicationTests {
 		Hook hook = mock(Hook.class);
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = SpringApplicationHooks.withHook(hook, (Action<ConfigurableApplicationContext>) application::run);
+		this.context = SpringApplicationHooks.withHook(hook,
+				(ThrowingSupplier<ConfigurableApplicationContext>) application::run);
 		then(hook).should().preRun(application);
 		then(hook).should().preRefresh(application, this.context);
 		then(hook).should().postRun(application, this.context);
