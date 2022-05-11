@@ -42,6 +42,7 @@ public class AotGenerateTests {
 					.contains("org/test/SampleApplication__ApplicationContextInitializer.java");
 			assertThat(collectRelativeFileNames(aotDirectory.resolve("resources"))).containsOnly(
 					"META-INF/native-image/org.springframework.boot.maven.it/aot/reflect-config.json",
+					"META-INF/native-image/org.springframework.boot.maven.it/aot/resource-config.json",
 					"META-INF/native-image/org.springframework.boot.maven.it/aot/native-image.properties");
 		});
 	}
@@ -61,6 +62,7 @@ public class AotGenerateTests {
 			Path classesDirectory = project.toPath().resolve("target/classes/META-INF/native-image");
 			assertThat(collectRelativeFileNames(classesDirectory)).contains(
 					"org.springframework.boot.maven.it/aot/reflect-config.json",
+					"org.springframework.boot.maven.it/aot/resource-config.json",
 					"org.springframework.boot.maven.it/aot/native-image.properties");
 		});
 	}
