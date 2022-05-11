@@ -74,6 +74,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -437,21 +438,19 @@ public class SpringApplication {
 	}
 
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
-		SpringFactoriesLoader.ArgumentResolver argumentResolver = SpringFactoriesLoader.ArgumentResolver
-				.of(SpringApplication.class, this).and(String[].class, args);
-		return new SpringApplicationRunListeners(logger,
-				getSpringFactoriesInstances(SpringApplicationRunListener.class, argumentResolver),
-				this.applicationStartup);
+		ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
+		argumentResolver = argumentResolver.and(String[].class, args);
+		Collection<SpringApplicationRunListener> listeners = getSpringFactoriesInstances(
+				SpringApplicationRunListener.class, argumentResolver);
+		return new SpringApplicationRunListeners(logger, listeners, this.applicationStartup);
 	}
 
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, null);
 	}
 
-	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
-			SpringFactoriesLoader.ArgumentResolver argumentResolver) {
-		ClassLoader classLoader = getClassLoader();
-		return SpringFactoriesLoader.forDefaultResourceLocation(classLoader).load(type, argumentResolver);
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
+		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader()).load(type, argumentResolver);
 	}
 
 	private ConfigurableEnvironment getOrCreateEnvironment() {
@@ -802,8 +801,7 @@ public class SpringApplication {
 
 	private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
 		try {
-			SpringFactoriesLoader.ArgumentResolver argumentResolver = SpringFactoriesLoader.ArgumentResolver
-					.of(ConfigurableApplicationContext.class, context);
+			ArgumentResolver argumentResolver = ArgumentResolver.of(ConfigurableApplicationContext.class, context);
 			return getSpringFactoriesInstances(SpringBootExceptionReporter.class, argumentResolver);
 		}
 		catch (Throwable ex) {

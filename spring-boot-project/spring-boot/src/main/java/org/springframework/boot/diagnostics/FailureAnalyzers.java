@@ -67,11 +67,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 
 	private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
 			SpringFactoriesLoader springFactoriesLoader) {
-		ArgumentResolver argumentResolver = (context != null) ? ArgumentResolver
-				.of(BeanFactory.class, context.getBeanFactory()).and(Environment.class, context.getEnvironment())
-				: null;
-		List<FailureAnalyzer> analyzers = springFactoriesLoader.load(FailureAnalyzer.class, argumentResolver,
-				FailureHandler.logging(logger));
+		List<FailureAnalyzer> analyzers = springFactoriesLoader.load(FailureAnalyzer.class,
+				getArgumentResolver(context), FailureHandler.logging(logger));
 		List<FailureAnalyzer> awareAnalyzers = analyzers.stream()
 				.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
 				.toList();
@@ -99,6 +96,15 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 			});
 		}
 		return analyzers;
+	}
+
+	private static ArgumentResolver getArgumentResolver(ConfigurableApplicationContext context) {
+		if (context == null) {
+			return null;
+		}
+		ArgumentResolver argumentResolver = ArgumentResolver.of(BeanFactory.class, context.getBeanFactory());
+		argumentResolver = argumentResolver.and(Environment.class, context.getEnvironment());
+		return argumentResolver;
 	}
 
 	@Override

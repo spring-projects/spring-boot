@@ -23,6 +23,7 @@ import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 
 /**
  * An {@link EnvironmentPostProcessorsFactory} that uses {@link SpringFactoriesLoader}.
@@ -40,9 +41,10 @@ class SpringFactoriesEnvironmentPostProcessorsFactory implements EnvironmentPost
 	@Override
 	public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext) {
-		SpringFactoriesLoader.ArgumentResolver argumentResolver = SpringFactoriesLoader.ArgumentResolver
-				.of(DeferredLogFactory.class, logFactory).and(ConfigurableBootstrapContext.class, bootstrapContext)
-				.and(BootstrapContext.class, bootstrapContext).and(BootstrapRegistry.class, bootstrapContext);
+		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory);
+		argumentResolver = argumentResolver.and(ConfigurableBootstrapContext.class, bootstrapContext);
+		argumentResolver = argumentResolver.and(BootstrapContext.class, bootstrapContext);
+		argumentResolver = argumentResolver.and(BootstrapRegistry.class, bootstrapContext);
 		return this.loader.load(EnvironmentPostProcessor.class, argumentResolver);
 	}
 

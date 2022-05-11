@@ -39,6 +39,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -150,8 +151,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 		}
 
 		private <T> List<T> getDetectors(ConfigurableListableBeanFactory beanFactory, Class<T> type) {
-			SpringFactoriesLoader.ArgumentResolver argumentResolver = SpringFactoriesLoader.ArgumentResolver
-					.of(Environment.class, this.environment);
+			ArgumentResolver argumentResolver = ArgumentResolver.of(Environment.class, this.environment);
 			return SpringFactoriesLoader.forDefaultResourceLocation(beanFactory.getBeanClassLoader()).load(type,
 					argumentResolver);
 		}

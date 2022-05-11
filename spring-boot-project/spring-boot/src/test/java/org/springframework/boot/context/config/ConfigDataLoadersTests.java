@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -36,6 +37,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
@@ -70,6 +72,16 @@ class ConfigDataLoadersTests {
 		assertThat(list).hasSize(1);
 		DeferredLogFactoryConfigDataLoader loader = (DeferredLogFactoryConfigDataLoader) list.get(0);
 		assertThat(loader.getLogFactory()).isSameAs(this.logFactory);
+	}
+
+	@Test
+	void createWhenLoaderHasLogParameterThrowsException() throws Exception {
+		MockSpringFactoriesLoader springFactoriesLoader = new MockSpringFactoriesLoader();
+		springFactoriesLoader.add(ConfigDataLoader.class, LogConfigDataLoader.class);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ConfigDataLoaders(this.logFactory, this.bootstrapContext, springFactoriesLoader))
+				.havingCause().isInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining("use DeferredLogFactory");
 	}
 
 	@Test
@@ -171,6 +183,21 @@ class ConfigDataLoadersTests {
 
 		DeferredLogFactory getLogFactory() {
 			return this.logFactory;
+		}
+
+	}
+
+	static class LogConfigDataLoader implements ConfigDataLoader<ConfigDataResource> {
+
+		final Log logger;
+
+		LogConfigDataLoader(Log logger) {
+			this.logger = logger;
+		}
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource) throws IOException {
+			throw new AssertionError("Unexpected call");
 		}
 
 	}
