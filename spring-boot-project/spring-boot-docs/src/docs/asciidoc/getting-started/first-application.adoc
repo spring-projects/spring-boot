@@ -207,7 +207,7 @@ You should see output similar to the following:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started MyApplication in 2.222 seconds (JVM running for 6.514)
+	........ Started MyApplication in 2.222 seconds (process running for 6.514)
 ----
 
 If you open a web browser to `http://localhost:8080`, you should see the following output:
@@ -307,7 +307,7 @@ To run that application, use the `java -jar` command, as follows:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started MyApplication in 2.536 seconds (JVM running for 2.864)
+	........ Started MyApplication in 2.536 seconds (process running for 2.864)
 ----
 
 As before, to exit the application, press `ctrl-c`.

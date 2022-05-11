@@ -61,7 +61,7 @@ class StartupInfoLoggerTests {
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		then(this.log).should().info(captor.capture());
 		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()
-				+ " in \\d+\\.\\d{1,3} seconds \\(JVM running for \\d+\\.\\d{1,3}\\)");
+				+ " in \\d+\\.\\d{1,3} seconds \\(process running for \\d+\\.\\d{1,3}\\)");
 	}
 
 }
