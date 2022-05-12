@@ -145,7 +145,7 @@ If you additionally provide an application key (optional), then metadata such as
 ----
 
 By default, metrics are sent to the Datadog US https://docs.datadoghq.com/getting_started/site[site] (`https://api.datadoghq.com`).
-In case your Datadog project is hosted on one of the other sites, or you need to send metrics through a proxy, change the API base URL accordingly:
+If your Datadog project is hosted on one of the other sites, or you need to send metrics through a proxy, configure the URI accordingly:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
