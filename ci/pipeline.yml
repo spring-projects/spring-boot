@@ -13,8 +13,7 @@ anchors:
     GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
     GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
   docker-hub-task-params: &docker-hub-task-params
-    DOCKER_HUB_USERNAME: ((docker-hub-username))
-    DOCKER_HUB_PASSWORD: ((docker-hub-password))
+    DOCKER_HUB_MIRROR: ((docker-hub-mirror))
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
     GITHUB_ORGANIZATION: spring-projects
