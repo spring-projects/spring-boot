@@ -1795,7 +1795,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "2021.2.0-RC1") {
+	library("Spring Session Bom", "2021.2.0-SNAPSHOT") {
 		prohibit("[2022.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
