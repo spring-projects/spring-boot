@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @author Verónica Vásquez
  * @author Eddú Meléndez
  * @since 2.2.0
- * @deprecated since 2.7.0 for removal in 2.9.0 in favor of
+ * @deprecated since 2.7.0 for removal in 3.0.0 in favor of
  * {@code org.springframework.boot.test.rsocket.LocalRSocketServerPort}
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })

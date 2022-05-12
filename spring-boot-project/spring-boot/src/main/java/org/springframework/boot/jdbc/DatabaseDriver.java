@@ -78,7 +78,7 @@ public enum DatabaseDriver {
 
 	/**
 	 * Google App Engine.
-	 * @deprecated since 2.7.0 for removal in 2.9.0 without replacement following the
+	 * @deprecated since 2.7.0 for removal in 3.0.0 without replacement following the
 	 * removal of AppEngineDriver from version 2.0 of the AppEngine API SDK.
 	 */
 	@Deprecated

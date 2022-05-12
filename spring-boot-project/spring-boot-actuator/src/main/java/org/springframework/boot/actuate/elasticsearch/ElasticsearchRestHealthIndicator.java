@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  * @author Brian Clozel
  * @author Filip Hrisafov
  * @since 2.1.1
- * @deprecated since 2.7.0 for removal in 2.9.0 in favor of
+ * @deprecated since 2.7.0 for removal in 3.0.0 in favor of
  * {@link ElasticsearchRestClientHealthIndicator}
  */
 @Deprecated
