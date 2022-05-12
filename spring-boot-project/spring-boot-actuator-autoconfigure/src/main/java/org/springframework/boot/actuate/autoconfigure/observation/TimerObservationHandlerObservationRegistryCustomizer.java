@@ -21,7 +21,7 @@ import io.micrometer.core.instrument.observation.TimerObservationHandler;
 import io.micrometer.observation.ObservationRegistry;
 
 /**
- * Registers the {@link TimerObservationHandler} with a {@link ObservationRegistry}.
+ * Registers the {@link TimerObservationHandler} with an {@link ObservationRegistry}.
  *
  * @author Moritz Halbritter
  */
