@@ -1677,7 +1677,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.5") {
+	library("Spring Batch", "4.3.6-SNAPSHOT") {
 		prohibit("[5.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
