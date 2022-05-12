@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.Map;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -34,12 +36,25 @@ public class OtlpProperties extends StepRegistryProperties {
 	 */
 	private String url = "http://localhost:4318/v1/metrics";
 
+	/**
+	 * Monitored resource's attributes.
+	 */
+	private Map<String, String> resourceAttributes;
+
 	public String getUrl() {
 		return this.url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public Map<String, String> getResourceAttributes() {
+		return this.resourceAttributes;
+	}
+
+	public void setResourceAttributes(Map<String, String> resourceAttributes) {
+		this.resourceAttributes = resourceAttributes;
 	}
 
 }
