@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-class OtlpPropertiesConfigAdapterTest {
+class OtlpPropertiesConfigAdapterTests {
 
 	@Test
 	void whenPropertiesUrlIsSetAdapterProjectIdReturnsIt() {
