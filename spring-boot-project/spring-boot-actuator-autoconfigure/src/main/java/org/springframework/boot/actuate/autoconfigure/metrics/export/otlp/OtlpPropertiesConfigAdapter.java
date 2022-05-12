@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.Map;
+
 import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
@@ -39,6 +41,11 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	@Override
 	public String url() {
 		return get(OtlpProperties::getUrl, OtlpConfig.super::url);
+	}
+
+	@Override
+	public Map<String, String> resourceAttributes() {
+		return get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes);
 	}
 
 }
