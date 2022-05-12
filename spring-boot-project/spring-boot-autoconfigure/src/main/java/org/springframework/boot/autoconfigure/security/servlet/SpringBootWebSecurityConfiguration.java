@@ -88,7 +88,7 @@ class SpringBootWebSecurityConfiguration {
 	}
 
 	/**
-	 * Adds the{@link EnableWebSecurity @EnableWebSecurity} annotation if Spring Security
+	 * Adds the {@link EnableWebSecurity @EnableWebSecurity} annotation if Spring Security
 	 * is on the classpath. This will make sure that the annotation is present with
 	 * default security auto-configuration and also if the user adds custom security and
 	 * forgets to add the annotation. If {@link EnableWebSecurity @EnableWebSecurity} has

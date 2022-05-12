@@ -1324,8 +1324,8 @@ public class SpringApplication {
 	 * print stack traces of any encountered. Applies the specified
 	 * {@link ExitCodeGenerator ExitCodeGenerators} in addition to any Spring beans that
 	 * implement {@link ExitCodeGenerator}. When multiple generators are available, the
-	 * first non-zero exit code is used. Generators ordered based on their {@link Ordered}
-	 * implementation and {@link Order @Order} annotation.
+	 * first non-zero exit code is used. Generators are ordered based on their
+	 * {@link Ordered} implementation and {@link Order @Order} annotation.
 	 * @param context the context to close if possible
 	 * @param exitCodeGenerators exit code generators
 	 * @return the outcome (0 if successful)
