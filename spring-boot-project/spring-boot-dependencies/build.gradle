@@ -813,7 +813,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.2.11") {
+	library("Logback", "1.3.0-alpha15") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -1289,7 +1289,7 @@ bom {
 			]
 		}
 	}
-	library("SLF4J", "1.7.36") {
+	library("SLF4J", "2.0.0-alpha7") {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",
