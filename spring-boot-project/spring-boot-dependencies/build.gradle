@@ -1741,7 +1741,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "2.4.0-SNAPSHOT") {
+	library("Spring LDAP", "2.4.0") {
 		prohibit("[3.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
