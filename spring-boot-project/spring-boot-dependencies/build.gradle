@@ -1052,16 +1052,8 @@ bom {
 	}
 	library("OkHttp", "4.9.3") {
 		group("com.squareup.okhttp3") {
-			modules = [
-				"logging-interceptor",
-				"mockwebserver",
-				"okcurl",
-				"okhttp",
-				"okhttp-brotli",
-				"okhttp-dnsoverhttps",
-				"okhttp-sse",
-				"okhttp-tls",
-				"okhttp-urlconnection"
+			imports = [
+				"okhttp-bom"
 			]
 		}
 	}
