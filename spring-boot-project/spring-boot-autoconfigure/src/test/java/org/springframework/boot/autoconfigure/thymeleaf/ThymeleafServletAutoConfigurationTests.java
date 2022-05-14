@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafView;
@@ -84,6 +85,12 @@ class ThymeleafServletAutoConfigurationTests {
 	void autoConfigurationBackOffWithoutThymeleafSpring() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.thymeleaf.spring6"))
 				.run((context) -> assertThat(context).doesNotHaveBean(TemplateEngine.class));
+	}
+
+	@Test
+	void autoConfigurationWhenSpringSecurityNotPresentShouldNotAddSecurityDialect() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security"))
+				.run((context) -> assertThat(context).doesNotHaveBean(SpringSecurityDialect.class));
 	}
 
 	@Test
