@@ -79,7 +79,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		if (providers.containsKey(providerId)) {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
-			if (issuer != null) {
+			if (StringUtils.hasText(issuer)) {
 				Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
