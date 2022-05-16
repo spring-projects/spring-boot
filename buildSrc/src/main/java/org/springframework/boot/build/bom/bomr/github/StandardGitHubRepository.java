@@ -23,6 +23,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException.Forbidden;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -56,8 +58,16 @@ final class StandardGitHubRepository implements GitHubRepository {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
-		ResponseEntity<Map> response = this.rest.postForEntity("issues", requestBody, Map.class);
-		return (Integer) response.getBody().get("number");
+		try {
+			ResponseEntity<Map> response = this.rest.postForEntity("issues", requestBody, Map.class);
+			return (Integer) response.getBody().get("number");
+		}
+		catch (RestClientException ex) {
+			if (ex instanceof Forbidden) {
+				System.out.println("Received 403 response with headers " + ((Forbidden) ex).getResponseHeaders());
+			}
+			throw ex;
+		}
 	}
 
 	@Override
