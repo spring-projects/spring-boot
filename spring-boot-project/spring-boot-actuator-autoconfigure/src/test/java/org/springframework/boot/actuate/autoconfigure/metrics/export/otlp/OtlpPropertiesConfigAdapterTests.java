@@ -30,14 +30,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OtlpPropertiesConfigAdapterTests {
 
 	@Test
-	void whenPropertiesUrlIsSetAdapterProjectIdReturnsIt() {
+	void whenPropertiesUrlIsSetAdapterUrlReturnsIt() {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setUrl("http://another-url:4318/v1/metrics");
 		assertThat(new OtlpPropertiesConfigAdapter(properties).url()).isEqualTo("http://another-url:4318/v1/metrics");
 	}
 
 	@Test
-	void whenPropertiesResourceTypeIsSetAdapterResourceTypeReturnsIt() {
+	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setResourceAttributes(Map.of("service.name", "boot-service"));
 		assertThat(new OtlpPropertiesConfigAdapter(properties).resourceAttributes()).containsEntry("service.name",
