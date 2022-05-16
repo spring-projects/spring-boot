@@ -1047,7 +1047,7 @@ bom {
 			]
 		}
 	}
-	library("Kafka", "3.1.0") {
+	library("Kafka", "3.1.1") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect",
