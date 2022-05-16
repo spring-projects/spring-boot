@@ -155,8 +155,8 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		try (StandardJavaFileManager fm = compiler.getStandardFileManager(null, null, null)) {
 			List<String> options = List.of("-cp",
-					Arrays.stream(classpathUrls).map(URL::toString).collect(Collectors.joining(":")), "-d",
-					this.classesDirectory.toPath().toAbsolutePath().toString());
+					Arrays.stream(classpathUrls).map(URL::toString).collect(Collectors.joining(File.pathSeparator)),
+					"-d", this.classesDirectory.toPath().toAbsolutePath().toString());
 			Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromPaths(sourceFiles);
 			Errors errors = new Errors();
 			CompilationTask task = compiler.getTask(null, fm, errors, options, null, compilationUnits);
