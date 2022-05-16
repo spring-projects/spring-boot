@@ -1312,26 +1312,27 @@ bom {
 			]
 		}
 	}
-	library("Solr", "8.11.1") {
+	library("Solr", "9.0.0") {
 		group("org.apache.solr") {
 			modules = [
 				"solr-analysis-extras",
 				"solr-analytics",
-				"solr-cell",
 				"solr-core",
-				"solr-dataimporthandler",
-				"solr-dataimporthandler-extras",
+				"solr-extraction",
 				"solr-gcs-repository",
+				"solr-hadoop-auth",
+				"solr-hdfs",
 				"solr-jaegertracer-configurator",
+				"solr-jwt-auth",
 				"solr-langid",
 				"solr-ltr",
 				"solr-prometheus-exporter",
 				"solr-s3-repository",
+				"solr-scripting",
 				"solr-solrj" {
 					exclude group: "org.slf4j", module: "jcl-over-slf4j"
 				},
-				"solr-test-framework",
-				"solr-velocity"
+				"solr-test-framework"
 			]
 		}
 	}

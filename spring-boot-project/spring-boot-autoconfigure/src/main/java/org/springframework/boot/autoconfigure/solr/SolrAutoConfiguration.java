@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.Http2SolrClient;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ HttpSolrClient.class, CloudSolrClient.class })
+@ConditionalOnClass({ Http2SolrClient.class, CloudSolrClient.class })
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
@@ -48,7 +48,7 @@ public class SolrAutoConfiguration {
 		if (StringUtils.hasText(properties.getZkHost())) {
 			return new CloudSolrClient.Builder(Arrays.asList(properties.getZkHost()), Optional.empty()).build();
 		}
-		return new HttpSolrClient.Builder(properties.getHost()).build();
+		return new Http2SolrClient.Builder(properties.getHost()).build();
 	}
 
 }
