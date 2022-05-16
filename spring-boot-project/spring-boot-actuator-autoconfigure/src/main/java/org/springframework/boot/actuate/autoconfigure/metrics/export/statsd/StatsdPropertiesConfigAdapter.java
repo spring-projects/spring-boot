@@ -82,8 +82,18 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	}
 
 	@Override
+	public Duration step() {
+		return get(StatsdProperties::getStep, StatsdConfig.super::step);
+	}
+
+	@Override
 	public boolean publishUnchangedMeters() {
 		return get(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
+	}
+
+	@Override
+	public boolean buffered() {
+		return get(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
 	}
 
 }
