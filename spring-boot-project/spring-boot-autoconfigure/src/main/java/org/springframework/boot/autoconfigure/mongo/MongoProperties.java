@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
 
@@ -208,6 +211,26 @@ public class MongoProperties {
 		this.autoIndexCreation = autoIndexCreation;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		MongoProperties that = (MongoProperties) o;
+		return Objects.equals(host, that.host) && Objects.equals(port, that.port) && Objects.equals(uri, that.uri) && Objects.equals(database, that.database) && Objects.equals(authenticationDatabase, that.authenticationDatabase) && Objects.equals(gridfs, that.gridfs) && Objects.equals(username, that.username) && Arrays.equals(password, that.password) && Objects.equals(replicaSetName, that.replicaSetName) && Objects.equals(fieldNamingStrategy, that.fieldNamingStrategy) && uuidRepresentation == that.uuidRepresentation && Objects.equals(autoIndexCreation, that.autoIndexCreation);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(host, port, uri, database, authenticationDatabase, gridfs, username, replicaSetName,
+				fieldNamingStrategy, uuidRepresentation, autoIndexCreation);
+		result = 31 * result + Arrays.hashCode(password);
+		return result;
+	}
+
 	public static class Gridfs {
 
 		/**
@@ -234,6 +257,23 @@ public class MongoProperties {
 
 		public void setBucket(String bucket) {
 			this.bucket = bucket;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			Gridfs gridfs = (Gridfs) o;
+			return Objects.equals(database, gridfs.database) && Objects.equals(bucket, gridfs.bucket);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(database, bucket);
 		}
 
 	}
