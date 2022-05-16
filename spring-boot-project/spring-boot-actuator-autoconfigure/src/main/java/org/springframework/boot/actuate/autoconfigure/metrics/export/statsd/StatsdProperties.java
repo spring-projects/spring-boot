@@ -72,6 +72,13 @@ public class StatsdProperties {
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
 	/**
+	 * The step size to use in computing windowed statistics like max. The default is 1
+	 * minute. To get the most out of these statistics, align the step interval to be
+	 * close to your scrape interval.
+	 */
+	private Duration step = Duration.ofMinutes(1);
+
+	/**
 	 * Whether to send unchanged meters to the StatsD server.
 	 */
 	private boolean publishUnchangedMeters = true;
@@ -135,6 +142,14 @@ public class StatsdProperties {
 
 	public void setPollingFrequency(Duration pollingFrequency) {
 		this.pollingFrequency = pollingFrequency;
+	}
+
+	public Duration getStep() {
+		return this.step;
+	}
+
+	public void setStep(Duration step) {
+		this.step = step;
 	}
 
 	public boolean isPublishUnchangedMeters() {

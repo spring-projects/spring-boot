@@ -83,6 +83,13 @@ class StatsdPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
+		StatsdProperties properties = new StatsdProperties();
+		properties.setStep(Duration.ofSeconds(1));
+		assertThat(new StatsdPropertiesConfigAdapter(properties).step()).isEqualTo(properties.getStep());
+	}
+
+	@Test
 	void whenPropertiesPublishUnchangedMetersIsSetAdapterPublishUnchangedMetersReturnsIt() {
 		StatsdProperties properties = new StatsdProperties();
 		properties.setPublishUnchangedMeters(false);
