@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,8 @@ public class StatsdProperties {
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
 	/**
-	 * The step size to use in computing windowed statistics like max. The default is 1
-	 * minute. To get the most out of these statistics, align the step interval to be
-	 * close to your scrape interval.
+	 * Step size to use in computing windowed statistics like max. To get the most out of
+	 * these statistics, align the step interval to be close to your scrape interval.
 	 */
 	private Duration step = Duration.ofMinutes(1);
 
