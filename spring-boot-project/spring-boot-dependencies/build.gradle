@@ -268,6 +268,9 @@ bom {
 		}
 	}
 	library("Glassfish EL", "4.0.2") {
+		prohibit("[5.0.0-M1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("org.glassfish") {
 			modules = [
 				"jakarta.el"
@@ -275,6 +278,9 @@ bom {
 		}
 	}
 	library("Glassfish JAXB", "3.0.2") {
+		prohibit("[3.1.0-M1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("org.glassfish.jaxb") {
 			modules = [
 				"codemodel",
@@ -362,6 +368,9 @@ bom {
 		}
 	}
 	library("Hibernate Validator", "7.0.4.Final") {
+		prohibit("[8.0.0.Alpha1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("org.hibernate.validator") {
 			modules = [
 				"hibernate-validator",
@@ -457,6 +466,9 @@ bom {
 		}
 	}
 	library("Jakarta Activation", "2.0.1") {
+		prohibit("[2.1.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("com.sun.activation") {
 			modules = [
 				"jakarta.activation"
@@ -469,6 +481,9 @@ bom {
 		}
 	}
 	library("Jakarta Annotation", "2.0.0") {
+		prohibit("[2.1.0-B1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.annotation") {
 			modules = [
 				"jakarta.annotation-api"
@@ -483,6 +498,9 @@ bom {
 		}
 	}
 	library("Jakarta Json", "2.0.1") {
+		prohibit("[2.1.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.json") {
 			modules = [
 				"jakarta.json-api"
@@ -490,6 +508,9 @@ bom {
 		}
 	}
 	library("Jakarta Json Bind", "2.0.0") {
+		prohibit("[3.0.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.json.bind") {
 			modules = [
 				"jakarta.json.bind-api"
@@ -497,6 +518,9 @@ bom {
 		}
 	}
 	library("Jakarta Mail", "2.0.1") {
+		prohibit("[2.1.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
@@ -511,6 +535,9 @@ bom {
 		}
 	}
 	library("Jakarta Persistence", "3.0.0") {
+		prohibit("[3.1.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.persistence") {
 			modules = [
 				"jakarta.persistence-api"
@@ -546,6 +573,9 @@ bom {
 		}
 	}
 	library("Jakarta WebSocket", "2.0.0") {
+		prohibit("[2.1.0,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.websocket") {
 			modules = [
 				"jakarta.websocket-api"
@@ -553,6 +583,9 @@ bom {
 		}
 	}
 	library("Jakarta WS RS", "3.0.0") {
+		prohibit("[3.1.0,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.ws.rs") {
 			modules = [
 				"jakarta.ws.rs-api"
@@ -560,6 +593,9 @@ bom {
 		}
 	}
 	library("Jakarta XML Bind", "3.0.1") {
+		prohibit("[4.0.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
@@ -567,6 +603,9 @@ bom {
 		}
 	}
 	library("Jakarta XML SOAP", "2.0.1") {
+		prohibit("[3.0.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.xml.soap") {
 			modules = [
 					"jakarta.xml.soap-api"
@@ -574,6 +613,9 @@ bom {
 		}
 	}
 	library("Jakarta XML WS", "3.0.1") {
+		prohibit("[4.0.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.xml.ws") {
 			modules = [
 				"jakarta.xml.ws-api"
@@ -1246,6 +1288,9 @@ bom {
 		}
 	}
 	library("SAAJ Impl", "2.0.1") {
+		prohibit("[3.0.0-M1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("com.sun.xml.messaging.saaj") {
 			modules = [
 				"saaj-impl"
@@ -1571,6 +1616,9 @@ bom {
 		}
 	}
 	library("Yasson", "2.0.4") {
+		prohibit("[3.0.0-RC1,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("org.eclipse") {
 			modules = [
 				"yasson"
