@@ -32,7 +32,7 @@ bom {
 				"artemis-core-client",
 				"artemis-jakarta-client",
 				"artemis-jakarta-server",
-				"artemis-jakarta-service-extensions"
+				"artemis-jakarta-service-extensions",
 				"artemis-jdbc-store",
 				"artemis-journal",
 				"artemis-quorum-api",
