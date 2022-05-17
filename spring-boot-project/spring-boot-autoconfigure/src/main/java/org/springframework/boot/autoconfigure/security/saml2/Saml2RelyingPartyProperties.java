@@ -65,6 +65,8 @@ public class Saml2RelyingPartyProperties {
 
 		private final Decryption decryption = new Decryption();
 
+		private final Singlelogout singlelogout = new Singlelogout();
+
 		/**
 		 * Remote SAML Identity Provider.
 		 */
@@ -92,6 +94,10 @@ public class Saml2RelyingPartyProperties {
 
 		public AssertingParty getAssertingparty() {
 			return this.assertingparty;
+		}
+
+		public Singlelogout getSinglelogout() {
+			return this.singlelogout;
 		}
 
 		public static class Acs {
@@ -241,6 +247,8 @@ public class Saml2RelyingPartyProperties {
 
 		private final Verification verification = new Verification();
 
+		private final Singlelogout singlelogout = new Singlelogout();
+
 		public String getEntityId() {
 			return this.entityId;
 		}
@@ -263,6 +271,10 @@ public class Saml2RelyingPartyProperties {
 
 		public Verification getVerification() {
 			return this.verification;
+		}
+
+		public Singlelogout getSinglelogout() {
+			return this.singlelogout;
 		}
 
 		/**
@@ -347,6 +359,52 @@ public class Saml2RelyingPartyProperties {
 
 			}
 
+		}
+
+	}
+
+	/**
+	 * Single logout details.
+	 */
+	public static class Singlelogout {
+
+		/**
+		 * Location where SAML2 LogoutRequest gets sent to.
+		 */
+		private String url;
+
+		/**
+		 * Location where SAML2 LogoutResponse gets sent to.
+		 */
+		private String responseUrl;
+
+		/**
+		 * Whether to redirect or post logout requests.
+		 */
+		private Saml2MessageBinding binding;
+
+		public String getUrl() {
+			return this.url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public String getResponseUrl() {
+			return this.responseUrl;
+		}
+
+		public void setResponseUrl(String responseUrl) {
+			this.responseUrl = responseUrl;
+		}
+
+		public Saml2MessageBinding getBinding() {
+			return this.binding;
+		}
+
+		public void setBinding(Saml2MessageBinding binding) {
+			this.binding = binding;
 		}
 
 	}

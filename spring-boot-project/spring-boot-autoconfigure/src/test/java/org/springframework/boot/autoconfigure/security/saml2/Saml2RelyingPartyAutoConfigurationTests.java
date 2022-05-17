@@ -42,6 +42,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
+import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -102,6 +103,17 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration.getDecryptionX509Credentials()).hasSize(1);
 			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).isNotNull();
 			assertThat(registration.getEntityId()).isEqualTo("{baseUrl}/saml2/foo-entity-id");
+			assertThat(registration.getSingleLogoutServiceLocation())
+					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SLOService.php");
+			assertThat(registration.getSingleLogoutServiceResponseLocation())
+					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/");
+			assertThat(registration.getSingleLogoutServiceBinding()).isEqualTo(Saml2MessageBinding.POST);
+			assertThat(registration.getAssertingPartyDetails().getSingleLogoutServiceLocation())
+					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SLOService.php");
+			assertThat(registration.getAssertingPartyDetails().getSingleLogoutServiceResponseLocation())
+					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/");
+			assertThat(registration.getAssertingPartyDetails().getSingleLogoutServiceBinding())
+					.isEqualTo(Saml2MessageBinding.POST);
 		});
 	}
 
@@ -214,6 +226,12 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(SecurityFilterChain.class));
 	}
 
+	@Test
+	void samlLogoutShouldBeConfigured() {
+		this.contextRunner.withPropertyValues(getPropertyValues())
+				.run((context) -> assertThat(hasFilter(context, Saml2LogoutRequestFilter.class)).isTrue());
+	}
+
 	private String[] getPropertyValuesWithoutSigningCredentials(boolean signRequests) {
 		return new String[] { PREFIX
 				+ ".foo.assertingparty.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
@@ -237,11 +255,17 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:saml/certificate-location",
 				PREFIX + ".foo.decryption.credentials[0].private-key-location=classpath:saml/private-key-location",
 				PREFIX + ".foo.decryption.credentials[0].certificate-location=classpath:saml/certificate-location",
+				PREFIX + ".foo.singlelogout.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SLOService.php",
+				PREFIX + ".foo.singlelogout.response-url=https://simplesaml-for-spring-saml.cfapps.io/",
+				PREFIX + ".foo.singlelogout.binding=post",
 				PREFIX + ".foo.assertingparty.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
 				PREFIX + ".foo.assertingparty.singlesignon.binding=post",
 				PREFIX + ".foo.assertingparty.singlesignon.sign-request=false",
 				PREFIX + ".foo.assertingparty.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo.assertingparty.verification.credentials[0].certificate-location=classpath:saml/certificate-location",
+				PREFIX + ".foo.asserting-party.singlelogout.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SLOService.php",
+				PREFIX + ".foo.asserting-party.singlelogout.response-url=https://simplesaml-for-spring-saml.cfapps.io/",
+				PREFIX + ".foo.asserting-party.singlelogout.binding=post",
 				PREFIX + ".foo.entity-id={baseUrl}/saml2/foo-entity-id",
 				PREFIX + ".foo.acs.location={baseUrl}/login/saml2/foo-entity-id",
 				PREFIX + ".foo.acs.binding=redirect" };

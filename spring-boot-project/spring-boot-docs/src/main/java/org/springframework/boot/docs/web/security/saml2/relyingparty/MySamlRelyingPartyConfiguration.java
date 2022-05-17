@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.saml2;
+package org.springframework.boot.docs.web.security.saml2.relyingparty;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * {@link SecurityFilterChain} configuration for Spring Security's relying party SAML
- * support.
- *
- * @author Madhura Bhave
- */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnDefaultWebSecurity
-@ConditionalOnBean(RelyingPartyRegistrationRepository.class)
-class Saml2LoginConfiguration {
+public class MySamlRelyingPartyConfiguration {
 
 	@Bean
-	SecurityFilterChain samlSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests((requests) -> requests.anyRequest().authenticated()).saml2Login();
-		http.saml2Logout();
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.authorizeRequests().anyRequest().authenticated();
+		http.saml2Login();
+		http.saml2Logout((saml2) -> saml2.logoutRequest((request) -> request.logoutUrl("/SLOService.saml2"))
+				.logoutResponse((response) -> response.logoutUrl("/SLOService.saml2")));
 		return http.build();
 	}
 

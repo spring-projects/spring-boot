@@ -87,6 +87,9 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		builder.assertingPartyDetails((details) -> details
 				.verificationX509Credentials((credentials) -> properties.getAssertingparty().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
+		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
+		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
+		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
 		builder.entityId(properties.getEntityId());
 		RelyingPartyRegistration registration = builder.build();
 		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
@@ -103,6 +106,9 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			map.from(assertingParty.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
 			map.from(assertingParty.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
 					.to(details::wantAuthnRequestsSigned);
+			map.from(assertingParty.getSinglelogout()::getUrl).to(details::singleLogoutServiceLocation);
+			map.from(assertingParty.getSinglelogout()::getResponseUrl).to(details::singleLogoutServiceResponseLocation);
+			map.from(assertingParty.getSinglelogout()::getBinding).to(details::singleLogoutServiceBinding);
 		};
 	}
 
