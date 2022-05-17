@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogbackRuntimeHintsRegistrarTests {
 
 	@Test
-	void registersHintsForTypesCheckedByLogbackLoggingSystem() throws Exception {
+	void registersHintsForTypesCheckedByLogbackLoggingSystem() {
 		ReflectionHints reflection = registerHints();
 		assertThat(reflection.getTypeHint(LoggerContext.class)).isNotNull();
 		assertThat(reflection.getTypeHint(SLF4JBridgeHandler.class)).isNotNull();
@@ -55,14 +55,12 @@ class LogbackRuntimeHintsRegistrarTests {
 
 	@Test
 	void registersHintsForBuiltInLogbackConverters() throws Exception {
-		RuntimeHints hints = new RuntimeHints();
-		new LogbackRuntimeHintsRegistrar().registerHints(hints, getClass().getClassLoader());
 		ReflectionHints reflection = registerHints();
 		assertThat(logbackConverters()).allSatisfy(registeredForPublicConstructorInvocation(reflection));
 	}
 
 	@Test
-	void registersHintsForSpringBootConverters() throws IOException, ClassNotFoundException, LinkageError {
+	void registersHintsForSpringBootConverters() throws LinkageError {
 		ReflectionHints reflection = registerHints();
 		assertThat(List.of(ColorConverter.class, ExtendedWhitespaceThrowableProxyConverter.class,
 				WhitespaceThrowableProxyConverter.class))
