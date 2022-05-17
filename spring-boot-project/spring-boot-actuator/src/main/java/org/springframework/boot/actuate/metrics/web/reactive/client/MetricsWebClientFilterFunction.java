@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
 import reactor.util.context.Context;
@@ -38,12 +40,15 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
  *
  * @author Brian Clozel
  * @author Tadaya Tsuyukubo
+ * @author Scott Frederick
  * @since 2.1.0
  */
 public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
 	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class.getName()
 			+ ".START_TIME";
+
+	private static final Log logger = LogFactory.getLog(MetricsWebClientFilterFunction.class);
 
 	private final MeterRegistry meterRegistry;
 
@@ -83,20 +88,25 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 		return Mono.deferContextual((ctx) -> responseMono.doOnEach((signal) -> {
 			if (signal.isOnNext() || signal.isOnError()) {
 				responseReceived.set(true);
-				Iterable<Tag> tags = this.tagProvider.tags(request, signal.get(), signal.getThrowable());
-				recordTimer(tags, getStartTime(ctx));
+				recordTimer(request, signal.get(), signal.getThrowable(), getStartTime(ctx));
 			}
 		}).doFinally((signalType) -> {
 			if (!responseReceived.get() && SignalType.CANCEL.equals(signalType)) {
-				Iterable<Tag> tags = this.tagProvider.tags(request, null, null);
-				recordTimer(tags, getStartTime(ctx));
+				recordTimer(request, null, null, getStartTime(ctx));
 			}
 		}));
 	}
 
-	private void recordTimer(Iterable<Tag> tags, Long startTime) {
-		this.autoTimer.builder(this.metricName).tags(tags).description("Timer of WebClient operation")
-				.register(this.meterRegistry).record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+	private void recordTimer(ClientRequest request, ClientResponse response, Throwable error, Long startTime) {
+		try {
+			Iterable<Tag> tags = this.tagProvider.tags(request, response, error);
+			this.autoTimer.builder(this.metricName).tags(tags).description("Timer of WebClient operation")
+					.register(this.meterRegistry).record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+		}
+		catch (Exception ex) {
+			logger.warn("Failed to record timer metrics", ex);
+			// Allow request-response exchange to continue, unaffected by metrics problem
+		}
 	}
 
 	private Long getStartTime(ContextView context) {
