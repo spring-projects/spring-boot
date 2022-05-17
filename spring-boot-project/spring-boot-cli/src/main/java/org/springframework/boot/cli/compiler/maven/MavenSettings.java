@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class MavenSettings {
 	private MirrorSelector createMirrorSelector(Settings settings) {
 		DefaultMirrorSelector selector = new DefaultMirrorSelector();
 		for (Mirror mirror : settings.getMirrors()) {
-			selector.add(mirror.getId(), mirror.getUrl(), mirror.getLayout(), false, mirror.getMirrorOf(),
+			selector.add(mirror.getId(), mirror.getUrl(), mirror.getLayout(), false, false, mirror.getMirrorOf(),
 					mirror.getMirrorOfLayouts());
 		}
 		return selector;
