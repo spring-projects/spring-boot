@@ -45,7 +45,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.loader.tools.RunProcess;
-import org.springframework.util.FileSystemUtils;
 
 /**
  * Invoke the AOT engine on the application.
@@ -83,7 +82,6 @@ public class AotGenerateMojo extends AbstractRunMojo {
 	protected void run(File workingDirectory, String startClassName, Map<String, String> environmentVariables)
 			throws MojoExecutionException, MojoFailureException {
 		try {
-			deletePreviousAotAssets();
 			generateAotAssets(workingDirectory, startClassName, environmentVariables);
 			compileSourceFiles(getClassPathUrls());
 			copyNativeConfiguration(this.generatedResources.toPath());
@@ -91,12 +89,6 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
-	}
-
-	private void deletePreviousAotAssets() {
-		FileSystemUtils.deleteRecursively(this.generatedSources);
-		FileSystemUtils.deleteRecursively(this.generatedResources);
-		FileSystemUtils.deleteRecursively(this.generatedClasses);
 	}
 
 	private void generateAotAssets(File workingDirectory, String startClassName,

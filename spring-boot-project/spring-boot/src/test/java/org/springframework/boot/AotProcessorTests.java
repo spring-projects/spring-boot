@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -74,6 +76,29 @@ class AotProcessorTests {
 	void invokeMainWithMissingArguments() {
 		assertThatIllegalArgumentException().isThrownBy(() -> AotProcessor.main(new String[] { "Test" }))
 				.withMessageContaining("Usage:");
+	}
+
+	@Test
+	void processingDeletesExistingOutput(@TempDir Path directory) throws IOException {
+		Path sourceOutput = directory.resolve("source");
+		Path resourceOutput = directory.resolve("resource");
+		Path classOutput = directory.resolve("class");
+		Path existingSourceOutput = createExisting(sourceOutput);
+		Path existingResourceOutput = createExisting(resourceOutput);
+		Path existingClassOutput = createExisting(classOutput);
+		AotProcessor processor = new AotProcessor(SampleApplication.class, new String[0], sourceOutput, resourceOutput,
+				classOutput, "com.example", "example");
+		processor.process();
+		assertThat(existingSourceOutput).doesNotExist();
+		assertThat(existingResourceOutput).doesNotExist();
+		assertThat(existingClassOutput).doesNotExist();
+	}
+
+	private Path createExisting(Path directory) throws IOException {
+		Path existing = directory.resolve("existing");
+		Files.createDirectories(directory);
+		Files.createFile(existing);
+		return existing;
 	}
 
 	private Consumer<Path> hasGeneratedAssetsForSampleApplication() {

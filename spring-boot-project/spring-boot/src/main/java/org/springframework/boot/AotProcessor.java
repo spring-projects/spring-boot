@@ -38,6 +38,7 @@ import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
 import org.springframework.util.Assert;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * Entry point for AOT processing of a {@link SpringApplication}.
@@ -95,12 +96,28 @@ public class AotProcessor {
 	 * Trigger the processing of the application managed by this instance.
 	 */
 	public void process() {
+		deleteExistingOutput();
 		AotProcessingHook hook = new AotProcessingHook();
 		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
 		GenericApplicationContext applicationContext = hook.getApplicationContext();
 		Assert.notNull(applicationContext, "No application context available after calling main method of '"
 				+ this.application.getName() + "'. Does it run a SpringApplication?");
 		performAotProcessing(applicationContext);
+	}
+
+	private void deleteExistingOutput() {
+		deleteExistingOutput(this.sourceOutput, this.resourceOutput, this.classOutput);
+	}
+
+	private void deleteExistingOutput(Path... paths) {
+		for (Path path : paths) {
+			try {
+				FileSystemUtils.deleteRecursively(path);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException("Failed to delete existing output in '" + path + "'");
+			}
+		}
 	}
 
 	private void callApplicationMainMethod() {
