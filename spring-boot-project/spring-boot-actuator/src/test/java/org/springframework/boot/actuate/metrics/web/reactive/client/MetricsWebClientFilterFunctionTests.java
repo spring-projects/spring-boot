@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.core.instrument.simple.SimpleConfig;
@@ -49,6 +51,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link MetricsWebClientFilterFunction}
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  */
 class MetricsWebClientFilterFunctionTests {
 
@@ -58,6 +61,8 @@ class MetricsWebClientFilterFunctionTests {
 
 	private MetricsWebClientFilterFunction filterFunction;
 
+	private final FaultyTagsProvider tagsProvider = new FaultyTagsProvider();
+
 	private ClientResponse response;
 
 	private ExchangeFunction exchange;
@@ -65,8 +70,8 @@ class MetricsWebClientFilterFunctionTests {
 	@BeforeEach
 	void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
-		this.filterFunction = new MetricsWebClientFilterFunction(this.registry,
-				new DefaultWebClientExchangeTagsProvider(), "http.client.requests", AutoTimer.ENABLED);
+		this.filterFunction = new MetricsWebClientFilterFunction(this.registry, this.tagsProvider,
+				"http.client.requests", AutoTimer.ENABLED);
 		this.response = mock(ClientResponse.class);
 		this.exchange = (r) -> Mono.just(this.response);
 	}
@@ -157,6 +162,33 @@ class MetricsWebClientFilterFunctionTests {
 				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR").timer();
 		assertThat(timer.count()).isEqualTo(2);
 		assertThat(timer.max(TimeUnit.MILLISECONDS)).isLessThan(2000);
+	}
+
+	@Test
+	void whenMetricsRecordingFailsThenFilteringSucceeds() {
+		ClientRequest request = ClientRequest
+				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		this.tagsProvider.failOnce();
+		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(5));
+	}
+
+	static class FaultyTagsProvider extends DefaultWebClientExchangeTagsProvider {
+
+		private final AtomicBoolean fail = new AtomicBoolean(false);
+
+		@Override
+		public Iterable<Tag> tags(ClientRequest request, ClientResponse response, Throwable throwable) {
+			if (this.fail.compareAndSet(true, false)) {
+				throw new RuntimeException();
+			}
+			return super.tags(request, response, throwable);
+		}
+
+		void failOnce() {
+			this.fail.set(true);
+		}
+
 	}
 
 }
