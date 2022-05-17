@@ -8,12 +8,18 @@ anchors:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
+    registry_mirror:
+      host: ((docker-hub-mirror))
+      username: ((docker-hub-mirror-username))
+      password: ((docker-hub-mirror-password))
   gradle-enterprise-task-params: &gradle-enterprise-task-params
     GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
     GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
     GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
   docker-hub-task-params: &docker-hub-task-params
     DOCKER_HUB_MIRROR: ((docker-hub-mirror))
+    DOCKER_HUB_USERNAME: ((docker-hub-username))
+    DOCKER_HUB_PASSWORD: ((docker-hub-password))
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
     GITHUB_ORGANIZATION: spring-projects
@@ -38,7 +44,6 @@ anchors:
     file: git-repo/ci/tasks/build-project.yml
     params:
       BRANCH: ((branch))
-      DOCKER_HUB_MIRROR: ((docker-hub-mirror))
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
   run-system-tests-task-params: &run-system-tests-task-params
