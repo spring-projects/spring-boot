@@ -102,13 +102,16 @@ bom {
 			]
 		}
 	}
-	library("Maven Resolver", "1.6.1") {
+	library("Maven Resolver", "1.6.3") {
 		group("org.apache.maven.resolver") {
 			modules = [
+				"maven-resolver-api",
 				"maven-resolver-connector-basic",
 				"maven-resolver-impl",
+				"maven-resolver-spi",
 				"maven-resolver-transport-file",
-				"maven-resolver-transport-http"
+				"maven-resolver-transport-http",
+				"maven-resolver-util"
 			]
 		}
 	}
