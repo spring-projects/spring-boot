@@ -66,7 +66,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	@Test
 	void autoConfigurationShouldBeConditionalOnRelyingPartyRegistrationRepositoryClass() {
 		this.contextRunner.withPropertyValues(getPropertyValues(false)).withClassLoader(new FilteredClassLoader(
-						"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository"))
+				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository"))
 				.run((context) -> assertThat(context).doesNotHaveBean(RelyingPartyRegistrationRepository.class));
 	}
 
@@ -74,7 +74,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	@Deprecated
 	void autoConfigurationShouldBeConditionalOnRelyingPartyRegistrationRepositoryClassDeprecated() {
 		this.contextRunner.withPropertyValues(getPropertyValues(true)).withClassLoader(new FilteredClassLoader(
-						"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository"))
+				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository"))
 				.run((context) -> assertThat(context).doesNotHaveBean(RelyingPartyRegistrationRepository.class));
 	}
 
@@ -264,12 +264,12 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
 			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl,
 					PREFIX + ".foo.assertingparty.singlesignon.binding=redirect").run((context) -> {
-				RelyingPartyRegistrationRepository repository = context
-						.getBean(RelyingPartyRegistrationRepository.class);
-				RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
-				assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
-						.isEqualTo(Saml2MessageBinding.REDIRECT);
-			});
+						RelyingPartyRegistrationRepository repository = context
+								.getBean(RelyingPartyRegistrationRepository.class);
+						RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+						assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
+								.isEqualTo(Saml2MessageBinding.REDIRECT);
+					});
 		}
 	}
 
@@ -282,12 +282,12 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
 			this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-uri=" + metadataUrl,
 					PREFIX + ".foo.identityprovider.singlesignon.binding=redirect").run((context) -> {
-				RelyingPartyRegistrationRepository repository = context
-						.getBean(RelyingPartyRegistrationRepository.class);
-				RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
-				assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
-						.isEqualTo(Saml2MessageBinding.REDIRECT);
-			});
+						RelyingPartyRegistrationRepository repository = context
+								.getBean(RelyingPartyRegistrationRepository.class);
+						RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+						assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
+								.isEqualTo(Saml2MessageBinding.REDIRECT);
+					});
 		}
 	}
 
@@ -405,7 +405,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				PREFIX + ".foo." + assertingParty
 						+ ".entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo." + assertingParty
-						+ ".verification.credentials[0].certificate-location=classpath:saml/certificate-location"};
+						+ ".verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}
 
 	private String[] getPropertyValuesWithoutSsoBinding(boolean useDeprecated) {
@@ -417,7 +417,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				PREFIX + ".foo." + assertingParty
 						+ ".entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo." + assertingParty
-						+ ".verification.credentials[0].certificate-location=classpath:saml/certificate-location"};
+						+ ".verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}
 
 	private String[] getPropertyValues(boolean useDeprecated) {
@@ -443,7 +443,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				PREFIX + ".foo.asserting-party.singlelogout.binding=post",
 				PREFIX + ".foo.entity-id={baseUrl}/saml2/foo-entity-id",
 				PREFIX + ".foo.acs.location={baseUrl}/login/saml2/foo-entity-id",
-				PREFIX + ".foo.acs.binding=redirect"};
+				PREFIX + ".foo.acs.binding=redirect" };
 	}
 
 	private boolean hasFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
