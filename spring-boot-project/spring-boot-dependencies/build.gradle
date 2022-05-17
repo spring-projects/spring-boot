@@ -80,6 +80,7 @@ bom {
 				"artemis-core-client" {
 					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
 				},
+				"artemis-jdbc-store",
 				"artemis-jms-client" {
 					exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
 				},
