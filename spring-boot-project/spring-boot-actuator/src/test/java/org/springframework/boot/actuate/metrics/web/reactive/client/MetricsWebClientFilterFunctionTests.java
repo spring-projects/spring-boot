@@ -168,7 +168,7 @@ class MetricsWebClientFilterFunctionTests {
 	void whenMetricsRecordingFailsThenFilteringSucceeds() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.tagsProvider.failOnce();
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(5));
 	}
