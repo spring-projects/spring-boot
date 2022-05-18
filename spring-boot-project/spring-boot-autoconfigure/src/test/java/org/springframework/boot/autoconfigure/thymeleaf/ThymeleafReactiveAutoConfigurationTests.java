@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.extras.springsecurity6.util.SpringSecurityContextUtils;
 import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
@@ -37,6 +38,7 @@ import org.thymeleaf.spring6.web.webflux.SpringWebFluxWebApplication;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -216,6 +218,12 @@ class ThymeleafReactiveAutoConfigurationTests {
 			String result = engine.process("security-dialect", attrs);
 			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
 		});
+	}
+
+	@Test
+	void securityDialectAutoConfigurationBacksOffWithoutSpringSecurity() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security"))
+				.run((context) -> assertThat(context).doesNotHaveBean(SpringSecurityDialect.class));
 	}
 
 	@Test
