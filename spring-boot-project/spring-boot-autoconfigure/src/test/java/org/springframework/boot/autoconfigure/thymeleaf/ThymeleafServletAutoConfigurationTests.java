@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
@@ -229,6 +230,12 @@ class ThymeleafServletAutoConfigurationTests {
 				SecurityContextHolder.clearContext();
 			}
 		});
+	}
+
+	@Test
+	void securityDialectAutoConfigurationBacksOffWithoutSpringSecurity() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security"))
+				.run((context) -> assertThat(context).doesNotHaveBean(SpringSecurityDialect.class));
 	}
 
 	@Test
