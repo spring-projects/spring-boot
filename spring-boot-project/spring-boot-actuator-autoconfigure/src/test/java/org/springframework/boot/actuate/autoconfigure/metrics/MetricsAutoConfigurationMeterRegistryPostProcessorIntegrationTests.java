@@ -41,11 +41,12 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MeterRegistryConfigurer}.
+ * Integration tests for {@link MeterRegistryPostProcessor} configured by
+ * {@link MetricsAutoConfiguration}.
  *
  * @author Jon Schneider
  */
-class MeterRegistryConfigurerIntegrationTests {
+class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
@@ -68,7 +69,6 @@ class MeterRegistryConfigurerIntegrationTests {
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						SimpleMetricsExportAutoConfiguration.class))
 				.withUserConfiguration(TestConfiguration.class).run((context) -> {
-
 				});
 	}
 

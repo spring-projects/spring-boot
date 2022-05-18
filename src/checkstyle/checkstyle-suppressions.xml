@@ -11,7 +11,7 @@
 	<suppress files="LogbackLoggingSystem\.java" checks="IllegalImport" />
 	<suppress files="LogbackLoggingSystemTests\.java" checks="IllegalImport" />
 	<suppress files="LogbackConfigurationAotContributionTests\.java" checks="IllegalImport" />
-	<suppress files="MeterRegistryConfigurerIntegrationTests\.java" checks="IllegalImport" />
+	<suppress files="MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests\.java" checks="IllegalImport" message="LoggerFactory"/>
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
 	<suppress files=".+Application\.java" checks="HideUtilityClassConstructor" />
