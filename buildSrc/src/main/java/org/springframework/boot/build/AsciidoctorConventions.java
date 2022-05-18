@@ -106,7 +106,7 @@ class AsciidoctorConventions {
 	private void createAsciidoctorExtensionsConfiguration(Project project) {
 		project.getConfigurations().create(EXTENSIONS_CONFIGURATION_NAME, (configuration) -> {
 			project.getConfigurations().matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
-					.all((dependencyManagement) -> configuration.extendsFrom(dependencyManagement));
+					.all(configuration::extendsFrom);
 			configuration.getDependencies().add(project.getDependencies()
 					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.3"));
 			configuration.getDependencies()
