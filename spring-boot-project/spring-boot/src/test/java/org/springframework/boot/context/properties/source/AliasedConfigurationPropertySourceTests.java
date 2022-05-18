@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
+import org.mockito.invocation.InvocationOnMock;
 
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 
@@ -119,7 +120,7 @@ class AliasedConfigurationPropertySourceTests {
 
 	private ConfigurationPropertySource mockConfigurationPropertySource() {
 		ConfigurationPropertySource mock = mock(ConfigurationPropertySource.class);
-		given(mock.withAliases(any())).willAnswer((invocation) -> invocation.callRealMethod());
+		given(mock.withAliases(any())).willAnswer(InvocationOnMock::callRealMethod);
 		return mock;
 	}
 
