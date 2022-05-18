@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,7 +295,7 @@ public class UndertowWebServer implements WebServer {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		this.gracefulShutdownCallback.set(callback);
 		this.gracefulShutdown.shutdown();
-		this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
+		this.gracefulShutdown.addShutdownListener(this::notifyGracefulCallback);
 	}
 
 	private void notifyGracefulCallback(boolean success) {
