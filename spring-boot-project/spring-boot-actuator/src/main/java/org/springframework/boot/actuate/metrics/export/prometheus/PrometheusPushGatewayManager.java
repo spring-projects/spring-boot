@@ -110,6 +110,15 @@ public class PrometheusPushGatewayManager {
 		}
 	}
 
+	private void put() {
+		try {
+			this.pushGateway.push(this.registry, this.job, this.groupingKey);
+		}
+		catch (Throwable ex) {
+			logger.warn("Unexpected exception thrown while pushing metrics to Prometheus Pushgateway", ex);
+		}
+	}
+
 	private void delete() {
 		try {
 			this.pushGateway.delete(this.job, this.groupingKey);
@@ -135,6 +144,9 @@ public class PrometheusPushGatewayManager {
 		case PUSH:
 			push();
 			break;
+		case PUT:
+			put();
+			break;
 		case DELETE:
 			delete();
 			break;
@@ -152,9 +164,14 @@ public class PrometheusPushGatewayManager {
 		NONE,
 
 		/**
-		 * Perform a 'push' before shutdown.
+		 * Perform a 'push' with POST method before shutdown.
 		 */
 		PUSH,
+
+		/**
+		 * Perform a 'push' with PUT method before shutdown.
+		 */
+		PUT,
 
 		/**
 		 * Perform a 'delete' before shutdown.
