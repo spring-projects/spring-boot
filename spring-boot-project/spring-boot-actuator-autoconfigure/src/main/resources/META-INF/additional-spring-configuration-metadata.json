@@ -268,12 +268,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.solr.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Solr health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.status.order",
       "defaultValue": [
         "DOWN",

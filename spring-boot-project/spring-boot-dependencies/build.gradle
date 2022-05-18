@@ -1360,29 +1360,6 @@ bom {
 			]
 		}
 	}
-	library("Solr", "8.11.1") {
-		group("org.apache.solr") {
-			modules = [
-				"solr-analysis-extras",
-				"solr-analytics",
-				"solr-cell",
-				"solr-core",
-				"solr-dataimporthandler",
-				"solr-dataimporthandler-extras",
-				"solr-gcs-repository",
-				"solr-jaegertracer-configurator",
-				"solr-langid",
-				"solr-ltr",
-				"solr-prometheus-exporter",
-				"solr-s3-repository",
-				"solr-solrj" {
-					exclude group: "org.slf4j", module: "jcl-over-slf4j"
-				},
-				"solr-test-framework",
-				"solr-velocity"
-			]
-		}
-	}
 	library("Spring AMQP", "3.0.0-M3") {
 		group("org.springframework.amqp") {
 			modules = [

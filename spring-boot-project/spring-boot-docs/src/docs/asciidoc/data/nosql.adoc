@@ -11,7 +11,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
 
-Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Solr, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
+Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
 You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {spring-data}.
@@ -193,25 +193,6 @@ To enable transaction management, the following bean must be defined in your con
 
 include::code:MyNeo4jConfiguration[]
 ====
-
-
-
-[[data.nosql.solr]]
-=== Solr
-https://lucene.apache.org/solr/[Apache Solr] is a search engine.
-Spring Boot offers basic auto-configuration for the Solr 5 client library.
-
-
-
-[[data.nosql.solr.connecting]]
-==== Connecting to Solr
-You can inject an auto-configured `SolrClient` instance as you would any other Spring bean.
-By default, the instance tries to connect to a server at `http://localhost:8983/solr`.
-The following example shows how to inject a Solr bean:
-
-include::code:MyBean[]
-
-If you add your own `@Bean` of type `SolrClient`, it replaces the default.
 
 
 

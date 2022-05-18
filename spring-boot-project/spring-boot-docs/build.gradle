@@ -95,10 +95,6 @@ dependencies {
 	}
 	implementation("org.apache.kafka:kafka-streams")
 	implementation("org.apache.logging.log4j:log4j-to-slf4j")
-	implementation("org.apache.solr:solr-solrj") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
 	implementation("org.cache2k:cache2k-spring")

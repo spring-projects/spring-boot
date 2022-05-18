@@ -93,9 +93,6 @@ dependencies {
 	}
 	optional("org.apache.kafka:kafka-clients")
 	optional("org.apache.kafka:kafka-streams")
-	optional("org.apache.solr:solr-solrj") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
