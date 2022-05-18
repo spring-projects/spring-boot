@@ -232,6 +232,12 @@ publishing.publications.withType(MavenPublication) {
 											delegate.goal('aot-generate')
 										}
 									}
+									execution {
+										delegate.id('repackage')
+										configuration {
+											delegate.classifier('exec')
+										}
+									}
 								}
 							}
 							plugin {
