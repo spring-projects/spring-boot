@@ -254,6 +254,7 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenBindingWithDefaultsInXmlShouldBind() {
+		removeSystemProperties();
 		load(new Class<?>[] { BasicConfiguration.class, DefaultsInXmlConfiguration.class });
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.name).isEqualTo("bar");
