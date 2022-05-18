@@ -1251,6 +1251,16 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	void movesConfigClassPropertySourcesToEnd() {
+		SpringApplication application = new SpringApplication(PropertySourceConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setDefaultProperties(Collections.singletonMap("test.name", "test"));
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().getProperty("test.name"))
+				.isEqualTo("spring-application-config-property-source");
+	}
+
+	@Test
 	void deregistersShutdownHookForFailedApplicationContext() {
 		SpringApplication application = new SpringApplication(BrokenPostConstructConfig.class);
 		List<ApplicationEvent> events = new ArrayList<>();
@@ -1663,6 +1673,12 @@ class SpringApplicationTests {
 		NotLazyBean(AtomicInteger counter) {
 			counter.getAndIncrement();
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@org.springframework.context.annotation.PropertySource("classpath:spring-application-config-property-source.properties")
+	static class PropertySourceConfig {
 
 	}
 
