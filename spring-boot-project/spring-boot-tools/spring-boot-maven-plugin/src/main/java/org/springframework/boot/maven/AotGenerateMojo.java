@@ -23,11 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
@@ -83,7 +81,7 @@ public class AotGenerateMojo extends AbstractRunMojo {
 			throws MojoExecutionException, MojoFailureException {
 		try {
 			generateAotAssets(workingDirectory, startClassName, environmentVariables);
-			compileSourceFiles(getClassPathUrls());
+			compileSourceFiles();
 			copyNativeConfiguration(this.generatedResources.toPath());
 		}
 		catch (Exception ex) {
@@ -139,16 +137,17 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		}
 	}
 
-	private void compileSourceFiles(URL[] classpathUrls) throws IOException {
+	private void compileSourceFiles() throws IOException, MojoExecutionException {
 		List<Path> sourceFiles = Files.walk(this.generatedSources.toPath()).filter(Files::isRegularFile).toList();
 		if (sourceFiles.isEmpty()) {
 			return;
 		}
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		try (StandardJavaFileManager fm = compiler.getStandardFileManager(null, null, null)) {
-			List<String> options = List.of("-cp",
-					Arrays.stream(classpathUrls).map(URL::toString).collect(Collectors.joining(File.pathSeparator)),
-					"-d", this.classesDirectory.toPath().toAbsolutePath().toString());
+			List<String> options = new ArrayList<>();
+			addClasspath(options);
+			options.add("-d");
+			options.add(this.classesDirectory.toPath().toAbsolutePath().toString());
 			Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromPaths(sourceFiles);
 			Errors errors = new Errors();
 			CompilationTask task = compiler.getTask(null, fm, errors, options, null, compilationUnits);

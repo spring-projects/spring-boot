@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the Maven plugin's AOT support.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @ExtendWith(MavenBuildExtension.class)
 public class AotGenerateTests {
@@ -38,12 +39,15 @@ public class AotGenerateTests {
 	void whenAotRunsSourcesAreGenerated(MavenBuild mavenBuild) {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
-			assertThat(collectRelativeFileNames(aotDirectory.resolve("sources")))
-					.contains("org/test/SampleApplication__ApplicationContextInitializer.java");
-			assertThat(collectRelativeFileNames(aotDirectory.resolve("resources"))).containsOnly(
-					"META-INF/native-image/org.springframework.boot.maven.it/aot/reflect-config.json",
-					"META-INF/native-image/org.springframework.boot.maven.it/aot/resource-config.json",
-					"META-INF/native-image/org.springframework.boot.maven.it/aot/native-image.properties");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+					.contains(Path.of("org", "test", "SampleApplication__ApplicationContextInitializer.java"));
+			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).containsOnly(
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
+							"reflect-config.json"),
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
+							"resource-config.json"),
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
+							"native-image.properties"));
 		});
 	}
 
@@ -51,8 +55,8 @@ public class AotGenerateTests {
 	void whenAotRunsSourcesAreCompiled(MavenBuild mavenBuild) {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path classesDirectory = project.toPath().resolve("target/classes");
-			assertThat(collectRelativeFileNames(classesDirectory))
-					.contains("org/test/SampleApplication__ApplicationContextInitializer.class");
+			assertThat(collectRelativePaths(classesDirectory))
+					.contains(Path.of("org", "test", "SampleApplication__ApplicationContextInitializer.class"));
 		});
 	}
 
@@ -60,17 +64,17 @@ public class AotGenerateTests {
 	void whenAotRunsResourcesAreCopiedToTargetClasses(MavenBuild mavenBuild) {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path classesDirectory = project.toPath().resolve("target/classes/META-INF/native-image");
-			assertThat(collectRelativeFileNames(classesDirectory)).contains(
-					"org.springframework.boot.maven.it/aot/reflect-config.json",
-					"org.springframework.boot.maven.it/aot/resource-config.json",
-					"org.springframework.boot.maven.it/aot/native-image.properties");
+			assertThat(collectRelativePaths(classesDirectory)).contains(
+					Path.of("org.springframework.boot.maven.it", "aot", "reflect-config.json"),
+					Path.of("org.springframework.boot.maven.it", "aot", "resource-config.json"),
+					Path.of("org.springframework.boot.maven.it", "aot", "native-image.properties"));
 		});
 	}
 
-	Stream<String> collectRelativeFileNames(Path sourceDirectory) {
+	Stream<Path> collectRelativePaths(Path sourceDirectory) {
 		try {
 			return Files.walk(sourceDirectory).filter(Files::isRegularFile)
-					.map((path) -> path.subpath(sourceDirectory.getNameCount(), path.getNameCount()).toString());
+					.map((path) -> path.subpath(sourceDirectory.getNameCount(), path.getNameCount()));
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
