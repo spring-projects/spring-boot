@@ -91,7 +91,7 @@ class WarPluginAction implements PluginApplicationAction {
 							.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
 									? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 				});
-		bootWarProvider.map((bootWar) -> bootWar.getClasspath());
+		bootWarProvider.map(War::getClasspath);
 		return bootWarProvider;
 	}
 

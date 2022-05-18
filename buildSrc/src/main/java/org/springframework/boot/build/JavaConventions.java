@@ -160,8 +160,8 @@ class JavaConventions {
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
-			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
-			project.getTasks().withType(CheckFormat.class, (checkFormat) -> test.mustRunAfter(checkFormat));
+			project.getTasks().withType(Checkstyle.class, test::mustRunAfter);
+			project.getTasks().withType(CheckFormat.class, test::mustRunAfter);
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
