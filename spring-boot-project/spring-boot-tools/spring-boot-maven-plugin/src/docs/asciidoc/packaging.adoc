@@ -102,7 +102,7 @@ Any content not claimed by an earlier block remains available for subsequent blo
 The `<into>` block claims content using nested `<include>` and `<exclude>` elements.
 The `<application>` section uses Ant-style path matching for include/exclude expressions.
 The `<dependencies>` section uses `group:artifact[:version]` patterns.
-It also provides `<includeModuleDependencies />` and `<excludeModuleDependencies />` elements that can be used to include or exclude local module dependencies.
+It also provides `<includeProjectDependencies />` and `<excludeProjectDependencies />` elements that can be used to include or exclude local module dependencies.
 
 If no `<include>` is defined, then all content (not claimed by an earlier block) is considered.
 

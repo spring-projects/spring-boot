@@ -10,7 +10,7 @@
 	</application>
 	<dependencies>
 		<into layer="application">
-			<includeModuleDependencies />
+			<includeProjectDependencies />
 		</into>
 		<into layer="snapshot-dependencies">
 			<include>*:*:*-SNAPSHOT</include>

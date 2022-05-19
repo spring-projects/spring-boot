@@ -15,10 +15,10 @@
 	<dependencies>
 		<into layer="snapshot-dependencies">
 			<include>*:*:*-SNAPSHOT</include>
-			<excludeModuleDependencies/>
+			<excludeProjectDependencies/>
 		</into>
 		<into layer="application">
-			<includeModuleDependencies/>
+			<includeProjectDependencies/>
 		</into>
 		<into layer="my-deps">
 			<include>com.acme:*</include>

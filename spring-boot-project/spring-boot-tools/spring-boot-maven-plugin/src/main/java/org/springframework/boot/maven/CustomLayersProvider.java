@@ -98,15 +98,15 @@ class CustomLayersProvider {
 		Layer layer = new Layer(element.getAttribute("layer"));
 		List<String> includes = getChildNodeTextContent(element, "include");
 		List<String> excludes = getChildNodeTextContent(element, "exclude");
-		Element includeModuleDependencies = getChildElement(element, "includeModuleDependencies");
-		Element excludeModuleDependencies = getChildElement(element, "excludeModuleDependencies");
+		Element includeProjectDependencies = getChildElement(element, "includeProjectDependencies");
+		Element excludeProjectDependencies = getChildElement(element, "excludeProjectDependencies");
 		List<ContentFilter<Library>> includeFilters = includes.stream().map(filterFactory).collect(Collectors.toList());
-		if (includeModuleDependencies != null) {
+		if (includeProjectDependencies != null) {
 			includeFilters = new ArrayList<>(includeFilters);
 			includeFilters.add(Library::isLocal);
 		}
 		List<ContentFilter<Library>> excludeFilters = excludes.stream().map(filterFactory).collect(Collectors.toList());
-		if (excludeModuleDependencies != null) {
+		if (excludeProjectDependencies != null) {
 			excludeFilters = new ArrayList<>(excludeFilters);
 			excludeFilters.add(Library::isLocal);
 		}
