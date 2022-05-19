@@ -1376,11 +1376,8 @@ bom {
 	}
 	library("Spring Batch", "5.0.0-M3") {
 		group("org.springframework.batch") {
-			modules = [
-				"spring-batch-core",
-				"spring-batch-infrastructure",
-				"spring-batch-integration",
-				"spring-batch-test"
+			imports = [
+				"spring-batch-bom"
 			]
 		}
 	}
