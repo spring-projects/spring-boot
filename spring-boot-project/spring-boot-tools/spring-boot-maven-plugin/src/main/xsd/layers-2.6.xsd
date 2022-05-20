@@ -6,9 +6,9 @@
 	<xsd:element name="layers" type="layersType" />
 	<xsd:complexType name="layersType">
 		<xsd:sequence>
-			<xsd:element name="application" type="applicationType" />
-			<xsd:element name="dependencies" type="dependenciesType" />
-			<xsd:element name="layerOrder" type="layerOrderType" />
+			<xsd:element name="application" type="applicationType" minOccurs="0"/>
+			<xsd:element name="dependencies" type="dependenciesType" minOccurs="0"/>
+			<xsd:element name="layerOrder" type="layerOrderType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="applicationType">
@@ -78,21 +78,21 @@
 		<xsd:complexContent>
 			<xsd:extension base="intoType">
 				<xsd:choice minOccurs="0">
-					<xsd:element type="xsd:string" name="includeProjectDependencies" minOccurs="0">
+					<xsd:element type="xsd:string" name="includeModuleDependencies" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation><![CDATA[
 	Include dependencies on other modules in the build.
 							]]></xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element type="xsd:string" name="excludeProjectDependencies" minOccurs="0">
+					<xsd:element type="xsd:string" name="excludeModuleDependencies" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation><![CDATA[
 	Exclude dependencies on other modules in the build.
 							]]></xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-				</xsd:choice>				
+				</xsd:choice>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
