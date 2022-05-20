@@ -225,6 +225,7 @@ When using the Dynatrace v2 API, the following optional features are available (
 * Enrich with Dynatrace metadata: If a OneAgent or Dynatrace operator is running, enrich metrics with additional metadata (for example, about the host, process, or pod).
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
 If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
+* Use Dynatrace Summary instruments: In some cases the Micrometer Dynatrace registry created metrics that were rejected. In Micrometer 1.9.x, this was fixed by introducing Dynatrace-specific summary instruments. Setting this toggle to false forces Micrometer to fall back to the behavior that was the default before 1.9.x. It should only be used when encountering problems while migrating from 1.8.x to 1.9.x.
 
 It is possible to not specify a URI and API token, as shown in the following example.
 In this scenario, the automatically configured endpoint is used:
@@ -242,6 +243,7 @@ In this scenario, the automatically configured endpoint is used:
 	          default-dimensions:
 	            key1: "value1"
 	            key2: "value2"
+	          use-dynatrace-summary-instruments: true # (default: true)
 ----
 
 [[actuator.metrics.export.dynatrace.v1-api]]
