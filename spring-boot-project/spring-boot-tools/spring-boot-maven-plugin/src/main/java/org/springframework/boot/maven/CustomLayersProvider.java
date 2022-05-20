@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,24 @@
 
 package org.springframework.boot.maven;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
@@ -45,11 +53,33 @@ import org.springframework.boot.loader.tools.layer.LibraryContentFilter;
 class CustomLayersProvider {
 
 	CustomLayers getLayers(Document document) {
+		validate(document);
 		Element root = document.getDocumentElement();
 		List<ContentSelector<String>> applicationSelectors = getApplicationSelectors(root);
 		List<ContentSelector<Library>> librarySelectors = getLibrarySelectors(root);
 		List<Layer> layers = getLayers(root);
 		return new CustomLayers(layers, applicationSelectors, librarySelectors);
+	}
+
+	private void validate(Document document) {
+		Schema schema = loadSchema();
+		try {
+			Validator validator = schema.newValidator();
+			validator.validate(new DOMSource(document));
+		}
+		catch (SAXException | IOException ex) {
+			throw new IllegalStateException("Invalid layers.xml configuration", ex);
+		}
+	}
+
+	private Schema loadSchema() {
+		try {
+			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			return factory.newSchema(getClass().getResource("layers.xsd"));
+		}
+		catch (SAXException ex) {
+			throw new IllegalStateException("Unable to load layers XSD");
+		}
 	}
 
 	private List<ContentSelector<String>> getApplicationSelectors(Element root) {
