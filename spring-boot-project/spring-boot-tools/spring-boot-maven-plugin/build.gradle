@@ -67,6 +67,11 @@ dependencies {
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
 
+ext {
+	versionElements = version.split("\\.")
+	xsdVersion = versionElements[0] + "." + versionElements[1]
+}
+
 syncDocumentationSourceForAsciidoctor {
 	from(documentPluginGoals) {
 		into "asciidoc/goals"
@@ -74,6 +79,9 @@ syncDocumentationSourceForAsciidoctor {
 }
 
 sourceSets {
+	main {
+		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
+	}
 	intTest {
 		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
 	}
@@ -81,8 +89,7 @@ sourceSets {
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	doFirst {
-		def versionEl = version.split("\\.")
-		attributes "spring-boot-xsd-version": versionEl[0] + '.' + versionEl[1]
+		attributes "spring-boot-xsd-version" : project.ext.xsdVersion
 	}
 }
 
@@ -130,6 +137,12 @@ task zip(type: Zip) {
 	from(javadoc) {
 		into "api"
 	}
+}
+
+task xsdResources(type: Sync) {
+	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
+	into "${buildDir}/generated/resources/xsd/org/springframework/boot/maven"
+	rename { fileName -> "layers.xsd" }
 }
 
 prepareMavenBinaries {
