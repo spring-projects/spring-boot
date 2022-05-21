@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -32,13 +33,18 @@ public class DevProfileSecurityConfiguration {
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
-		// @formatter:off
-		return http.requestMatcher(PathRequest.toH2Console())
-				// ... configuration for authorization
-				.csrf().disable()
-				.headers().frameOptions().sameOrigin().and()
-				.build();
-		// @formatter:on
+		http.requestMatcher(PathRequest.toH2Console());
+		http.authorizeRequests(yourCustomAuthorization());
+		http.csrf((csrf) -> csrf.disable());
+		http.headers((headers) -> headers.frameOptions().sameOrigin());
+		return http.build();
 	}
+
+	// tag::customizer[]
+	<T> Customizer<T> yourCustomAuthorization() {
+		return (t) -> {
+		};
+	}
+	// end::customizer[]
 
 }

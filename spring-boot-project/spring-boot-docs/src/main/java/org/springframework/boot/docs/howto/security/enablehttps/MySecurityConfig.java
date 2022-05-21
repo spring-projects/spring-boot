@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class MySecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// Customize the application security ...
-		http.requiresChannel().anyRequest().requiresSecure();
+		http.requiresChannel((channel) -> channel.anyRequest().requiresSecure());
 		return http.build();
 	}
 
