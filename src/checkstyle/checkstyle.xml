@@ -58,4 +58,5 @@
 			<property name="requireSinceTag" value="true" />
 		</module>
 	</module>
+	<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck"/>
 </module>

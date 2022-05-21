@@ -60,4 +60,10 @@
 	<suppress files="DeprecatedReactiveElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
+	<suppress files="SpringBootVersion" checks="JavadocPackageCheck" />
+	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocPackageCheck" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocPackageCheck" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocPackageCheck" />
+	<suppress files="[\\/]spring-boot-system-tests[\\/]" checks="JavadocPackageCheck" />
+	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="JavadocPackageCheck" />
 </suppressions>
