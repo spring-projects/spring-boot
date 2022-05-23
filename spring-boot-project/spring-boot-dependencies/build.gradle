@@ -1029,13 +1029,6 @@ bom {
 			]
 		}
 	}
-	library("MIMEPull", "1.10.0") {
-		group("org.jvnet.mimepull") {
-			modules = [
-				"mimepull"
-			]
-		}
-	}
 	library("Mockito", "4.5.1") {
 		group("org.mockito") {
 			imports = [
