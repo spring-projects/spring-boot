@@ -122,12 +122,32 @@ class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void filterRegistrationBacksOff() {
-		this.contextRunner.withUserConfiguration(TestWebMvcMetricsFilterConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-			assertThat(context.getBean(FilterRegistrationBean.class))
-					.isSameAs(context.getBean("testWebMvcMetricsFilter"));
-		});
+	void filterRegistrationBacksOffWithAnotherWebMvcMetricsFilterRegistration() {
+		this.contextRunner.withUserConfiguration(TestWebMvcMetricsFilterRegistrationConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+					assertThat(context.getBean(FilterRegistrationBean.class))
+							.isSameAs(context.getBean("testWebMvcMetricsFilter"));
+				});
+	}
+
+	@Test
+	void filterRegistrationBacksOffWithAnotherWebMvcMetricsFilter() {
+		this.contextRunner.withUserConfiguration(TestWebMvcMetricsFilterConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class)
+						.hasSingleBean(WebMvcMetricsFilter.class));
+	}
+
+	@Test
+	void filterRegistrationDoesNotBackOffWithOtherFilterRegistration() {
+		this.contextRunner.withUserConfiguration(TestFilterRegistrationConfiguration.class)
+				.run((context) -> assertThat(context).hasBean("testFilter").hasBean("webMvcMetricsFilter"));
+	}
+
+	@Test
+	void filterRegistrationDoesNotBackOffWithOtherFilter() {
+		this.contextRunner.withUserConfiguration(TestFilterConfiguration.class)
+				.run((context) -> assertThat(context).hasBean("testFilter").hasBean("webMvcMetricsFilter"));
 	}
 
 	@Test
@@ -258,12 +278,43 @@ class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TestWebMvcMetricsFilterConfiguration {
+	static class TestWebMvcMetricsFilterRegistrationConfiguration {
 
 		@Bean
 		@SuppressWarnings("unchecked")
 		FilterRegistrationBean<WebMvcMetricsFilter> testWebMvcMetricsFilter() {
 			return mock(FilterRegistrationBean.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestWebMvcMetricsFilterConfiguration {
+
+		@Bean
+		WebMvcMetricsFilter testWebMvcMetricsFilter() {
+			return new WebMvcMetricsFilter(null, null, null, null);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestFilterRegistrationConfiguration {
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		FilterRegistrationBean<Filter> testFilter() {
+			return mock(FilterRegistrationBean.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestFilterConfiguration {
+
+		@Bean
+		Filter testFilter() {
+			return mock(Filter.class);
 		}
 
 	}
