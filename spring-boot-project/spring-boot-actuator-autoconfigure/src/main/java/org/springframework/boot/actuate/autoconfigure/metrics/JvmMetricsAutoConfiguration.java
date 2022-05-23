@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmCompilationMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
@@ -77,6 +78,12 @@ public class JvmMetricsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public JvmInfoMetrics jvmInfoMetrics() {
 		return new JvmInfoMetrics();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JvmCompilationMetrics jvmCompilationMetrics() {
+		return new JvmCompilationMetrics();
 	}
 
 }
