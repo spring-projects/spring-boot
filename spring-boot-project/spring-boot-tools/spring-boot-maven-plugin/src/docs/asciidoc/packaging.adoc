@@ -71,7 +71,7 @@ include::../maven/packaging/disable-layers-pom.xml[tags=disable-layers]
 
 
 
-[[packaging.layers.configuration=]]
+[[packaging.layers.configuration]]
 === Custom Layers Configuration
 Depending on your application, you may want to tune how layers are created and add new ones.
 This can be done using a separate configuration file that should be registered as shown below:
