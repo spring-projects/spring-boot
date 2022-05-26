@@ -124,26 +124,27 @@ class MvcWebEndpointIntegrationTests
 	private RequestMatchResult getMatchResult(String servletPath, boolean isPatternParser) {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServletPath(servletPath);
-		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-		if (isPatternParser) {
-			context.register(WebMvcConfiguration.class);
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
+			if (isPatternParser) {
+				context.register(WebMvcConfiguration.class);
+			}
+			else {
+				context.register(PathMatcherWebMvcConfiguration.class);
+			}
+			context.register(TestEndpointConfiguration.class);
+			context.refresh();
+			WebMvcEndpointHandlerMapping bean = context.getBean(WebMvcEndpointHandlerMapping.class);
+			try {
+				// Setup request attributes
+				ServletRequestPathUtils.parseAndCache(request);
+				// Trigger initLookupPath
+				bean.getHandler(request);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			return bean.match(request, "/spring");
 		}
-		else {
-			context.register(PathMatcherWebMvcConfiguration.class);
-		}
-		context.register(TestEndpointConfiguration.class);
-		context.refresh();
-		WebMvcEndpointHandlerMapping bean = context.getBean(WebMvcEndpointHandlerMapping.class);
-		try {
-			// Setup request attributes
-			ServletRequestPathUtils.parseAndCache(request);
-			// Trigger initLookupPath
-			bean.getHandler(request);
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		return bean.match(request, "/spring");
 	}
 
 	@Override

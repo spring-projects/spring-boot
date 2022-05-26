@@ -163,7 +163,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 		});
 	}
 
-	@SuppressWarnings("deprecation")
 	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
 		this.singlePublishedArtifact.addJarCandidate(bootJar);
 	}

@@ -149,7 +149,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
-					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+					jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(2);
@@ -171,7 +171,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
-					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+					jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(3);
@@ -194,7 +194,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
-					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+					jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(4);
@@ -433,7 +433,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void autoConfigurationShouldConfigureAudienceAndIssuerJwtValidatorIfPropertyProvided() throws Exception {
 		this.server = new MockWebServer();
@@ -502,7 +501,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void autoConfigurationShouldConfigureAudienceValidatorIfPropertyProvidedAndPublicKey() throws Exception {
 		this.server = new MockWebServer();

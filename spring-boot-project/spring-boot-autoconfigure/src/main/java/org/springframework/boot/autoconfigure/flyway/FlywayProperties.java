@@ -49,13 +49,6 @@ public class FlywayProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Whether to check that migration scripts location exists. Should be set to false
-	 * when using a wildcard location or a remote-hosted location such as S3 or GCS.
-	 */
-	@Deprecated
-	private boolean checkLocation = true;
-
-	/**
 	 * Whether to fail if a location of migration scripts doesn't exist.
 	 */
 	private boolean failOnMissingLocations;

@@ -157,7 +157,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					ReactiveJwtDecoder reactiveJwtDecoder = reactiveJwtDecoderSupplier.block(TIMEOUT);
+					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(1);
@@ -180,7 +180,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					ReactiveJwtDecoder reactiveJwtDecoder = reactiveJwtDecoderSupplier.block(TIMEOUT);
+					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(2);
@@ -203,7 +203,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					ReactiveJwtDecoder reactiveJwtDecoder = reactiveJwtDecoderSupplier.block(TIMEOUT);
+					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(3);
@@ -420,7 +420,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void autoConfigurationShouldConfigureIssuerAndAudienceJwtValidatorIfPropertyProvided() throws Exception {
 		this.server = new MockWebServer();
@@ -490,7 +489,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void autoConfigurationShouldConfigureAudienceValidatorIfPropertyProvidedAndPublicKey() throws Exception {
 		this.server = new MockWebServer();
