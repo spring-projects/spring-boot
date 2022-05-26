@@ -188,7 +188,7 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private void waitForForkedSpringApplication() throws IOException, MojoFailureException, MojoExecutionException {
+	private void waitForForkedSpringApplication() throws IOException, MojoExecutionException {
 		try {
 			getLog().debug("Connecting to local MBeanServer at port " + this.jmxPort);
 			try (JMXConnector connector = execute(this.wait, this.maxAttempts, new CreateJmxConnector(this.jmxPort))) {
@@ -210,7 +210,7 @@ public class StartMojo extends AbstractRunMojo {
 	}
 
 	private void doWaitForSpringApplication(MBeanServerConnection connection)
-			throws IOException, MojoExecutionException, MojoFailureException {
+			throws MojoExecutionException, MojoFailureException {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(connection, this.jmxName);
 		try {
 			execute(this.wait, this.maxAttempts, () -> (client.isReady() ? true : null));

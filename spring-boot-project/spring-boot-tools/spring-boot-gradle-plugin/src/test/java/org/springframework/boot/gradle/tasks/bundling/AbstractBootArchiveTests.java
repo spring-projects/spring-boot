@@ -112,16 +112,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	@BeforeEach
 	void createTask() {
-		try {
-			File projectDir = new File(this.temp, "project");
-			projectDir.mkdirs();
-			this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).build();
-			this.project.setDescription("Test project for " + this.taskClass.getSimpleName());
-			this.task = configure(this.project.getTasks().create("testArchive", this.taskClass));
-		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		File projectDir = new File(this.temp, "project");
+		projectDir.mkdirs();
+		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).build();
+		this.project.setDescription("Test project for " + this.taskClass.getSimpleName());
+		this.task = configure(this.project.getTasks().create("testArchive", this.taskClass));
 	}
 
 	@Test
@@ -586,7 +581,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		return file;
 	}
 
-	private T configure(T task) throws IOException {
+	private T configure(T task) {
 		AbstractArchiveTask archiveTask = task;
 		archiveTask.getArchiveBaseName().set("test");
 		File destination = new File(this.temp, "destination");

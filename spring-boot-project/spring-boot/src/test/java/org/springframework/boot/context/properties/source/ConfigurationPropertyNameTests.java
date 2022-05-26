@@ -723,12 +723,12 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	void hasIndexedElementWhenHasIndexedElementReturnsTrue() throws Exception {
+	void hasIndexedElementWhenHasIndexedElementReturnsTrue() {
 		assertThat(ConfigurationPropertyName.of("foo[bar]").hasIndexedElement()).isTrue();
 	}
 
 	@Test
-	void hasIndexedElementWhenHasNoIndexedElementReturnsFalse() throws Exception {
+	void hasIndexedElementWhenHasNoIndexedElementReturnsFalse() {
 		assertThat(ConfigurationPropertyName.of("foo.bar").hasIndexedElement()).isFalse();
 	}
 

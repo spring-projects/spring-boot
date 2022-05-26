@@ -35,7 +35,6 @@ import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResult;
@@ -119,7 +118,7 @@ public class MavenResolverGrapeEngine implements GrapeEngine {
 				classLoader.addURL(file.toURI().toURL());
 			}
 		}
-		catch (ArtifactResolutionException | MalformedURLException ex) {
+		catch (MalformedURLException ex) {
 			throw new DependencyResolutionFailedException(ex);
 		}
 		return null;
@@ -286,7 +285,7 @@ public class MavenResolverGrapeEngine implements GrapeEngine {
 		}
 	}
 
-	private List<File> resolve(List<Dependency> dependencies) throws ArtifactResolutionException {
+	private List<File> resolve(List<Dependency> dependencies) {
 		try {
 			CollectRequest collectRequest = getCollectRequest(dependencies);
 			DependencyRequest dependencyRequest = getDependencyRequest(collectRequest);

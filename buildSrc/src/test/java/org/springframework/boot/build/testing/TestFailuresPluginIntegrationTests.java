@@ -44,12 +44,12 @@ class TestFailuresPluginIntegrationTests {
 	private File projectDir;
 
 	@BeforeEach
-	void setup(@TempDir File projectDir) throws IOException {
+	void setup(@TempDir File projectDir) {
 		this.projectDir = projectDir;
 	}
 
 	@Test
-	void singleProject() throws IOException {
+	void singleProject() {
 		createProject(this.projectDir);
 		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
 				.withArguments("build").withPluginClasspath().buildAndFail();
@@ -59,7 +59,7 @@ class TestFailuresPluginIntegrationTests {
 	}
 
 	@Test
-	void multiProject() throws IOException {
+	void multiProject() {
 		createMultiProjectBuild();
 		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
 				.withArguments("build").withPluginClasspath().buildAndFail();
@@ -69,7 +69,7 @@ class TestFailuresPluginIntegrationTests {
 	}
 
 	@Test
-	void multiProjectContinue() throws IOException {
+	void multiProjectContinue() {
 		createMultiProjectBuild();
 		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
 				.withArguments("build", "--continue").withPluginClasspath().buildAndFail();
@@ -81,7 +81,7 @@ class TestFailuresPluginIntegrationTests {
 	}
 
 	@Test
-	void multiProjectParallel() throws IOException {
+	void multiProjectParallel() {
 		createMultiProjectBuild();
 		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
 				.withArguments("build", "--parallel", "--stacktrace").withPluginClasspath().buildAndFail();

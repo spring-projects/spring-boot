@@ -92,7 +92,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	protected TestJarFile testJarFile;
 
 	@BeforeEach
-	void setup() throws IOException {
+	void setup() {
 		this.testJarFile = new TestJarFile(this.tempDir);
 	}
 
@@ -628,7 +628,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		return new Library(null, file, scope, null, unpackRequired, false, included);
 	}
 
-	protected final P createPackager() throws IOException {
+	protected final P createPackager() {
 		return createPackager(this.testJarFile.getFile());
 	}
 

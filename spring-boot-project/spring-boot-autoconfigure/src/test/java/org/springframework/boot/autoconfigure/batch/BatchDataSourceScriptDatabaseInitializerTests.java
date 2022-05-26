@@ -64,7 +64,7 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 	@ParameterizedTest
 	@EnumSource(value = DatabaseDriver.class, mode = Mode.EXCLUDE, names = { "FIREBIRD", "GAE", "HANA", "INFORMIX",
 			"JTDS", "PHOENIX", "REDSHIFT", "TERADATA", "TESTCONTAINERS", "UNKNOWN" })
-	void batchSchemaCanBeLocated(DatabaseDriver driver) throws IOException, SQLException {
+	void batchSchemaCanBeLocated(DatabaseDriver driver) throws SQLException {
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 		BatchProperties properties = new BatchProperties();
 		DataSource dataSource = mock(DataSource.class);
