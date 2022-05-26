@@ -17,14 +17,14 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocVariable" />
-	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType|JavadocVariable" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocPackage|JavadocType|JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-docs[\\/].*jooq" checks="AvoidStaticImport" />
 	<suppress files="[\\/]spring-boot-docs[\\/].*MyRoutingConfiguration\.java" checks="AvoidStaticImport"/>
-	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocPackage|JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" id="mainCodeIllegalImportCheck" />
-	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocPackage|JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
 	<suppress files="Ansi.*\.java" checks="JavadocVariable" />
 	<suppress files="Ansi.*\.java" checks="JavadocStyle" />
@@ -49,7 +49,9 @@
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]spring-boot-smoke-test-testng[\\/]" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-gradle-test-support[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="JavadocPackage" />
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]src[\\/]systemTest[\\/]java[\\/]" checks="JavadocPackage" />
 	<suppress files="[\\/]src[\\/]systemTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
@@ -60,4 +62,5 @@
 	<suppress files="DeprecatedReactiveElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
+	<suppress files="SpringBootVersion" checks="JavadocPackage" />
 </suppressions>
