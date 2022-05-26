@@ -320,12 +320,12 @@ public class Restarter {
 		System.runFinalization();
 	}
 
-	private void cleanupCaches() throws Exception {
+	private void cleanupCaches() {
 		Introspector.flushCaches();
 		cleanupKnownCaches();
 	}
 
-	private void cleanupKnownCaches() throws Exception {
+	private void cleanupKnownCaches() {
 		// Whilst not strictly necessary it helps to cleanup soft reference caches
 		// early rather than waiting for memory limits to be reached
 		ResolvableType.clearCache();
@@ -334,13 +334,13 @@ public class Restarter {
 		clearAnnotationUtilsCache();
 	}
 
-	private void cleanCachedIntrospectionResultsCache() throws Exception {
+	private void cleanCachedIntrospectionResultsCache() {
 		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
 		clear(CachedIntrospectionResults.class, "strongClassCache");
 		clear(CachedIntrospectionResults.class, "softClassCache");
 	}
 
-	private void clearAnnotationUtilsCache() throws Exception {
+	private void clearAnnotationUtilsCache() {
 		try {
 			AnnotationUtils.clearCache();
 		}
@@ -350,7 +350,7 @@ public class Restarter {
 		}
 	}
 
-	private void clear(Class<?> type, String fieldName) throws Exception {
+	private void clear(Class<?> type, String fieldName) {
 		try {
 			Field field = type.getDeclaredField(fieldName);
 			field.setAccessible(true);

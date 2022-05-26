@@ -100,7 +100,7 @@ class SpringApplicationShutdownHookTests {
 	}
 
 	@Test
-	void runDueToExitDuringRefreshWhenContextHasBeenClosedDoesNotDeadlock() throws InterruptedException {
+	void runDueToExitDuringRefreshWhenContextHasBeenClosedDoesNotDeadlock() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		shutdownHook.registerApplicationContext(context);

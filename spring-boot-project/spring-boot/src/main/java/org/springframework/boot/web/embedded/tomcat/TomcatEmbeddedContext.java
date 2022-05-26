@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import jakarta.servlet.ServletException;
 import org.apache.catalina.Container;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
@@ -59,7 +58,7 @@ class TomcatEmbeddedContext extends StandardContext {
 		super.setManager(manager);
 	}
 
-	void deferredLoadOnStartup() throws LifecycleException {
+	void deferredLoadOnStartup() {
 		doWithThreadContextClassLoader(getLoader().getClassLoader(),
 				() -> getLoadOnStartupWrappers(findChildren()).forEach(this::load));
 	}

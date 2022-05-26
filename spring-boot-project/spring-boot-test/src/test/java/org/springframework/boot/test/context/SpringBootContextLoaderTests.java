@@ -135,7 +135,7 @@ class SpringBootContextLoaderTests {
 	}
 
 	@Test
-	void propertySourceOrdering() throws Exception {
+	void propertySourceOrdering() {
 		TestContext context = new ExposedTestContextManager(PropertySourceOrdering.class).getExposedTestContext();
 		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getApplicationContext()
 				.getEnvironment();

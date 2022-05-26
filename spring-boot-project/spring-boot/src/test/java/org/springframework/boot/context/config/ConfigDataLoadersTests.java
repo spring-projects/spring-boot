@@ -75,7 +75,7 @@ class ConfigDataLoadersTests {
 	}
 
 	@Test
-	void createWhenLoaderHasLogParameterThrowsException() throws Exception {
+	void createWhenLoaderHasLogParameterThrowsException() {
 		MockSpringFactoriesLoader springFactoriesLoader = new MockSpringFactoriesLoader();
 		springFactoriesLoader.add(ConfigDataLoader.class, LogConfigDataLoader.class);
 		assertThatIllegalArgumentException()

@@ -371,7 +371,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void tomcatMaxHttpPostSizeMatchesConnectorDefault() throws Exception {
+	void tomcatMaxHttpPostSizeMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
 				.isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
@@ -383,13 +383,13 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() throws Exception {
+	void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
 				.isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
 
 	@Test
-	void tomcatUriEncodingMatchesConnectorDefault() throws Exception {
+	void tomcatUriEncodingMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getUriEncoding().name())
 				.isEqualTo(getDefaultConnector().getURIEncoding());
 	}

@@ -90,7 +90,7 @@ class ZipkinRestTemplateSenderTests {
 	}
 
 	@Test
-	void sendSpansShouldThrowOnHttpFailure() throws IOException {
+	void sendSpansShouldThrowOnHttpFailure() {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 		assertThatThrownBy(() -> this.sut.sendSpans(List.of()).execute())

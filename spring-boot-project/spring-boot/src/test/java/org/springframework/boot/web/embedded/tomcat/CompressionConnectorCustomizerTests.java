@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http2.Http2Protocol;
@@ -53,7 +52,7 @@ class CompressionConnectorCustomizerTests {
 	}
 
 	@Test
-	void shouldCustomizeCompression() throws LifecycleException {
+	void shouldCustomizeCompression() {
 		CompressionConnectorCustomizer compressionConnectorCustomizer = new CompressionConnectorCustomizer(
 				this.compression);
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");

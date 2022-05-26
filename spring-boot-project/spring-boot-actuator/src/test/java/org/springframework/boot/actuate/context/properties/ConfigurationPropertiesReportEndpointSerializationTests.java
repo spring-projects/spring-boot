@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -249,7 +249,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void endpointResponseUsesToStringOfCharSequenceAsPropertyValue() throws IOException {
+	void endpointResponseUsesToStringOfCharSequenceAsPropertyValue() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withInitializer((context) -> {
 			ConfigurableEnvironment environment = context.getEnvironment();
 			environment.getPropertySources().addFirst(new MapPropertySource("test",
@@ -267,7 +267,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void endpointResponseUsesPlaceholderForComplexValueAsPropertyValue() throws IOException {
+	void endpointResponseUsesPlaceholderForComplexValueAsPropertyValue() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withInitializer((context) -> {
 			ConfigurableEnvironment environment = context.getEnvironment();
 			environment.getPropertySources().addFirst(new MapPropertySource("test",
