@@ -98,15 +98,15 @@ public class PrometheusPushGatewayManager {
 		this.groupingKey = groupingKey;
 		this.shutdownOperation = (shutdownOperation != null) ? shutdownOperation : ShutdownOperation.NONE;
 		this.scheduler = scheduler;
-		this.scheduled = this.scheduler.scheduleAtFixedRate(this::push, pushRate);
+		this.scheduled = this.scheduler.scheduleAtFixedRate(this::post, pushRate);
 	}
 
-	private void push() {
+	private void post() {
 		try {
 			this.pushGateway.pushAdd(this.registry, this.job, this.groupingKey);
 		}
 		catch (Throwable ex) {
-			logger.warn("Unexpected exception thrown while pushing metrics to Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown by POST of metrics to Prometheus Pushgateway", ex);
 		}
 	}
 
@@ -115,7 +115,7 @@ public class PrometheusPushGatewayManager {
 			this.pushGateway.push(this.registry, this.job, this.groupingKey);
 		}
 		catch (Throwable ex) {
-			logger.warn("Unexpected exception thrown while pushing metrics to Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown by PUT of metrics to Prometheus Pushgateway", ex);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class PrometheusPushGatewayManager {
 			this.pushGateway.delete(this.job, this.groupingKey);
 		}
 		catch (Throwable ex) {
-			logger.warn("Unexpected exception thrown while deleting metrics from Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown by DELETE of metrics from Prometheus Pushgateway", ex);
 		}
 	}
 
@@ -142,7 +142,8 @@ public class PrometheusPushGatewayManager {
 		this.scheduled.cancel(false);
 		switch (shutdownOperation) {
 		case PUSH:
-			push();
+		case POST:
+			post();
 			break;
 		case PUT:
 			put();
@@ -164,17 +165,24 @@ public class PrometheusPushGatewayManager {
 		NONE,
 
 		/**
-		 * Perform a 'push' with POST method before shutdown.
+		 * Perform a POST before shutdown.
 		 */
+		POST,
+
+		/**
+		 * Perform a POST before shutdown.
+		 * @deprecated since 3.0.0 for removal in 3.2.0 in favor of {@link #POST}.
+		 */
+		@Deprecated
 		PUSH,
 
 		/**
-		 * Perform a 'push' with PUT method before shutdown.
+		 * Perform a PUT before shutdown.
 		 */
 		PUT,
 
 		/**
-		 * Perform a 'delete' before shutdown.
+		 * Perform a DELETE before shutdown.
 		 */
 		DELETE
 
