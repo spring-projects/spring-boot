@@ -141,7 +141,7 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	static class SecurityConfig {
 
 		@Bean
-		SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) throws Exception {
+		SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
 			return http.csrf((spec) -> spec.disable())
 					// Demonstrate that method security works
 					// Best practice to use both for defense in depth

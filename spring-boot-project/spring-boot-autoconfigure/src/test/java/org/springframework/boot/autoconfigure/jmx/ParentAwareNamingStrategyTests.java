@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jmx;
 
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ class ParentAwareNamingStrategyTests {
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	void objectNameMatchesManagedResourceByDefault() throws MalformedObjectNameException {
+	void objectNameMatchesManagedResourceByDefault() {
 		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((context) -> {
 			ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
 			strategy.setApplicationContext(context);
@@ -48,7 +47,7 @@ class ParentAwareNamingStrategyTests {
 	}
 
 	@Test
-	void uniqueObjectNameAddsIdentityProperty() throws MalformedObjectNameException {
+	void uniqueObjectNameAddsIdentityProperty() {
 		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((context) -> {
 			ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
 			strategy.setApplicationContext(context);
@@ -62,7 +61,7 @@ class ParentAwareNamingStrategyTests {
 	}
 
 	@Test
-	void sameBeanInParentContextAddsContextProperty() throws MalformedObjectNameException {
+	void sameBeanInParentContextAddsContextProperty() {
 		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((parent) -> this.contextRunner
 				.withBean("testManagedResource", TestManagedResource.class).withParent(parent).run((context) -> {
 					ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
@@ -77,7 +76,7 @@ class ParentAwareNamingStrategyTests {
 	}
 
 	@Test
-	void uniqueObjectNameAndSameBeanInParentContextOnlyAddsIdentityProperty() throws MalformedObjectNameException {
+	void uniqueObjectNameAndSameBeanInParentContextOnlyAddsIdentityProperty() {
 		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((parent) -> this.contextRunner
 				.withBean("testManagedResource", TestManagedResource.class).withParent(parent).run((context) -> {
 					ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(

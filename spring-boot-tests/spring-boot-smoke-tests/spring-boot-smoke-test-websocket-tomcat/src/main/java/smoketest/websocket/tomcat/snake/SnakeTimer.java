@@ -80,7 +80,7 @@ public final class SnakeTimer {
 		broadcast(String.format("{'type': 'update', 'data' : [%s]}", sb.toString()));
 	}
 
-	public static void broadcast(String message) throws Exception {
+	public static void broadcast(String message) {
 		Collection<Snake> snakes = new CopyOnWriteArrayList<>(SnakeTimer.getSnakes());
 		for (Snake snake : snakes) {
 			try {

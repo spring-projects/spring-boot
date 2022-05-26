@@ -240,21 +240,16 @@ public class JerseyEndpointResourceFactory {
 				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
-			try {
-				if (!(response instanceof WebEndpointResponse)) {
-					return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
-				}
-				WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
-				return Response.status(webEndpointResponse.getStatus())
-						.header("Content-Type", webEndpointResponse.getContentType())
-						.entity(convertIfNecessary(webEndpointResponse.getBody())).build();
+			if (!(response instanceof WebEndpointResponse)) {
+				return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
 			}
-			catch (IOException ex) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-			}
+			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
+			return Response.status(webEndpointResponse.getStatus())
+					.header("Content-Type", webEndpointResponse.getContentType())
+					.entity(convertIfNecessary(webEndpointResponse.getBody())).build();
 		}
 
-		private Object convertIfNecessary(Object body) throws IOException {
+		private Object convertIfNecessary(Object body) {
 			for (Function<Object, Object> converter : BODY_CONVERTERS) {
 				body = converter.apply(body);
 			}

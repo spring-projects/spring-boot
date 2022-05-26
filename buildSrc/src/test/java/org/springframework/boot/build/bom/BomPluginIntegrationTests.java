@@ -45,7 +45,7 @@ class BomPluginIntegrationTests {
 	private File buildFile;
 
 	@BeforeEach
-	void setup(@TempDir File projectDir) throws IOException {
+	void setup(@TempDir File projectDir) {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
 	}

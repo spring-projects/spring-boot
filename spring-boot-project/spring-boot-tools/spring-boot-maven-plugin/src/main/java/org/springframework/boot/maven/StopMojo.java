@@ -115,14 +115,14 @@ public class StopMojo extends AbstractMojo {
 		return true;
 	}
 
-	private void stopForkedProcess() throws IOException, MojoFailureException, MojoExecutionException {
+	private void stopForkedProcess() throws IOException, MojoExecutionException {
 		try (JMXConnector connector = SpringApplicationAdminClient.connect(this.jmxPort)) {
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
 			doStop(connection);
 		}
 	}
 
-	private void stop() throws IOException, MojoFailureException, MojoExecutionException {
+	private void stop() throws IOException, MojoExecutionException {
 		doStop(ManagementFactory.getPlatformMBeanServer());
 	}
 

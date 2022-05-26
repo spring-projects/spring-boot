@@ -105,7 +105,7 @@ class RestTemplateExchangeTagsTests {
 	}
 
 	@Test
-	void clientNameTagIsHostOfRequestUri() throws IOException {
+	void clientNameTagIsHostOfRequestUri() {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(request.getURI()).willReturn(URI.create("https://example.org"));
 		Tag tag = RestTemplateExchangeTags.clientName(request);

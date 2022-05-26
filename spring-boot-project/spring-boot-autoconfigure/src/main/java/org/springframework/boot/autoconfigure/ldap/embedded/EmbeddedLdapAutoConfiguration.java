@@ -126,7 +126,7 @@ public class EmbeddedLdapAutoConfiguration {
 		}
 	}
 
-	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
+	private void importLdif(ApplicationContext applicationContext) {
 		String location = this.embeddedProperties.getLdif();
 		if (StringUtils.hasText(location)) {
 			try {

@@ -33,7 +33,7 @@ import static org.mockito.Mockito.never;
 class OptionalLiveReloadServerTests {
 
 	@Test
-	void nullServer() throws Exception {
+	void nullServer() {
 		OptionalLiveReloadServer server = new OptionalLiveReloadServer(null);
 		server.startServer();
 		server.triggerReload();

@@ -47,7 +47,7 @@ class SpyBeanWithJdkProxyTests {
 	private ExampleRepository repository;
 
 	@Test
-	void jdkProxyCanBeSpied() throws Exception {
+	void jdkProxyCanBeSpied() {
 		Example example = this.service.find("id");
 		assertThat(example.id).isEqualTo("id");
 		then(this.repository).should().find("id");
