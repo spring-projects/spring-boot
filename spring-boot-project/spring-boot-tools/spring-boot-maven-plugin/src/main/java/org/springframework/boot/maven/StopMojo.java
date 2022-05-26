@@ -82,7 +82,6 @@ public class StopMojo extends AbstractMojo {
 	private boolean skip;
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
 			getLog().debug("skipping stop as per configuration.");

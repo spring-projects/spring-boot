@@ -477,7 +477,6 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void loadWhenEnvironmentPrefixSetShouldBind() {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		sources.replace(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,

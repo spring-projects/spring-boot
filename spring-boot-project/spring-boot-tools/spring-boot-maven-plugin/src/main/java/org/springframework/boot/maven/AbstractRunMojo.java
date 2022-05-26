@@ -248,7 +248,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return this.workingDirectory != null;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		boolean fork = isFork();
 		this.project.getProperties().setProperty("_spring.boot.fork.enabled", Boolean.toString(fork));

@@ -455,9 +455,11 @@ class Saml2RelyingPartyAutoConfigurationTests {
 
 	private void setupMockResponse(MockWebServer server, Resource resourceBody) throws Exception {
 		try (InputStream metadataSource = resourceBody.getInputStream()) {
-			Buffer metadataBuffer = new Buffer().readFrom(metadataSource);
-			MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
-			server.enqueue(metadataResponse);
+			try (Buffer metadataBuffer = new Buffer()) {
+				metadataBuffer.readFrom(metadataSource);
+				MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
+				server.enqueue(metadataResponse);
+			}
 		}
 	}
 

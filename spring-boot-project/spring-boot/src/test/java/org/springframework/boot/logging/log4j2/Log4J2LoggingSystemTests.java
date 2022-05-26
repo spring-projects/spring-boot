@@ -439,6 +439,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	 */
 	static class Nested {
 
+		@SuppressWarnings("unused")
 		private static final Log logger = LogFactory.getLog(Nested.class);
 
 	}

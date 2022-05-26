@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class Repackager extends Packager {
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
 			throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
-		Layout layout = getLayout(); // get layout early
+		getLayout(); // get layout early
 		destination = destination.getAbsoluteFile();
 		File source = getSource();
 		if (isAlreadyPackaged() && source.equals(destination)) {

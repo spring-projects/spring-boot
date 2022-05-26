@@ -506,6 +506,7 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	@Deprecated
+	@SuppressWarnings("deprecation")
 	void logOnlyRecordMetadataProperty() {
 		this.contextRunner.withPropertyValues("spring.kafka.listener.only-log-record-metadata=true").run((context) -> {
 			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context

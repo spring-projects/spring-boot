@@ -38,9 +38,6 @@ class SampleHazelcast3ApplicationTests {
 	@Autowired
 	private CacheManager cacheManager;
 
-	@Autowired
-	private CountryRepository countryRepository;
-
 	@Test
 	void cacheManagerIsUsingHazelcast() {
 		assertThat(this.cacheManager).isInstanceOf(HazelcastCacheManager.class);

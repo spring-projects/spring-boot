@@ -49,16 +49,6 @@ public class ArtemisProperties {
 	private String brokerUrl;
 
 	/**
-	 * Artemis broker host.
-	 */
-	private String host;
-
-	/**
-	 * Artemis broker port.
-	 */
-	private int port = 61616;
-
-	/**
 	 * Login user of the broker.
 	 */
 	private String user;

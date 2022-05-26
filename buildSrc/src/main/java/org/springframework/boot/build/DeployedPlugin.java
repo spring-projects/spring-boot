@@ -38,6 +38,7 @@ public class DeployedPlugin implements Plugin<Project> {
 	public static final String GENERATE_POM_TASK_NAME = "generatePomFileForMavenPublication";
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		project.getPlugins().apply(MavenRepositoryPlugin.class);
