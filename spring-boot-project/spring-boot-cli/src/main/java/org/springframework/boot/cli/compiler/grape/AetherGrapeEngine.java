@@ -32,7 +32,7 @@ import org.eclipse.aether.repository.RemoteRepository;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 1.0.0
- * @deprecated since 2.5.9 for removal in 2.8.0 in favor of
+ * @deprecated since 2.5.9 for removal in 3.0.0 in favor of
  * {@link MavenResolverGrapeEngine}
  */
 @Deprecated
