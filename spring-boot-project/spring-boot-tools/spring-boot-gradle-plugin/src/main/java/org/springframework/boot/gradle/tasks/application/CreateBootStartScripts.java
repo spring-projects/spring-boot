@@ -25,7 +25,7 @@ import org.gradle.jvm.application.tasks.CreateStartScripts;
  *
  * @author Andy Wilkinson
  * @since 2.0.0
- * @deprecated since 2.5.10 for removal in 2.8.0 in favor of {@link CreateStartScripts}.
+ * @deprecated since 2.5.10 for removal in 3.0.0 in favor of {@link CreateStartScripts}.
  */
 @Deprecated
 public class CreateBootStartScripts extends CreateStartScripts {

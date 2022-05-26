@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,7 +197,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	 * Load the configuration from the given {@code location}.
 	 * @param location the location
 	 * @param logFile log file configuration
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
 	 * {@link #loadConfiguration(String, LogFile, List)}
 	 */
 	@Deprecated

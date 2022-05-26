@@ -40,7 +40,7 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
  *
  * @author Andy Wilkinson
  * @since 1.0.0
- * @deprecated since 2.5.9 for removal in 2.8.0 in favor of
+ * @deprecated since 2.5.9 for removal in 3.0.0 in favor of
  * {@link MavenResolverGrapeEngineFactory}
  */
 @Deprecated

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 	 * @param environment the environment containing the properties
 	 * @param prefix the property prefix to bind
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
 	 * {@link #IncludeExcludeEndpointFilter(Class, Environment, String, String[])}
 	 */
 	@Deprecated
@@ -103,7 +103,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 	 * @param include the include patterns
 	 * @param exclude the exclude patterns
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
 	 * {@link #IncludeExcludeEndpointFilter(Class, Environment, String, String[])}
 	 */
 	@Deprecated
@@ -174,7 +174,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 
 	/**
 	 * Default include patterns that can be used.
-	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of {@link EndpointExposure}.
+	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of {@link EndpointExposure}.
 	 */
 	@Deprecated
 	public enum DefaultIncludes {

@@ -169,7 +169,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
 	 * structure.
 	 * @param mapper the object mapper
-	 * @deprecated since 2.6 for removal in 2.8 in favor of
+	 * @deprecated since 2.6 for removal in 3.0 in favor of
 	 * {@link #configureJsonMapper(com.fasterxml.jackson.databind.json.JsonMapper.Builder)}
 	 */
 	@Deprecated
