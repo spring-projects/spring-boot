@@ -8,6 +8,11 @@ repositories {
 	mavenCentral()
 	gradlePluginPortal()
 	maven { url "https://repo.spring.io/release" }
+	mavenLocal {
+		content {
+			includeGroup "io.spring.javaformat"
+		}
+	}
 }
 
 sourceCompatibility = 17
@@ -33,8 +38,6 @@ dependencies {
 }
 
 checkstyle {
-	def archive = configurations.checkstyle.filter { it.name.startsWith("spring-javaformat-checkstyle")}
-	config = resources.text.fromArchiveEntry(archive, "io/spring/javaformat/checkstyle/checkstyle.xml")
 	toolVersion = 8.11
 }
 
