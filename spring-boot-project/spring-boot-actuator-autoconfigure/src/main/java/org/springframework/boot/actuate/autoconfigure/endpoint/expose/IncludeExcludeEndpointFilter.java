@@ -241,10 +241,6 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 			return this.matchesAll || this.endpointIds.contains(endpointId);
 		}
 
-		static EndpointPatterns forExposure(EndpointExposure exposure) {
-			return (exposure != null) ? new EndpointPatterns(exposure.getDefaultIncludes()) : null;
-		}
-
 	}
 
 }

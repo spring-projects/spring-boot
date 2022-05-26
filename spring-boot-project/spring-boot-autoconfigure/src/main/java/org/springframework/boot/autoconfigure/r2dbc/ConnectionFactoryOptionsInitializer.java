@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,15 @@ import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
 import org.springframework.util.StringUtils;
 
 /**
- * Initialize a {@link ConnectionFactoryOptions.Builder} based on {@link R2dbcProperties}.
+ * Initialize a {@link Builder} based on {@link R2dbcProperties}.
  *
  * @author Stephane Nicoll
  */
 class ConnectionFactoryOptionsInitializer {
 
 	/**
-	 * Initialize a {@link io.r2dbc.spi.ConnectionFactoryOptions.Builder
-	 * ConnectionFactoryOptions.Builder} using the specified properties.
+	 * Initialize a {@link Builder ConnectionFactoryOptions.Builder} using the specified
+	 * properties.
 	 * @param properties the properties to use to initialize the builder
 	 * @param embeddedDatabaseConnection the embedded connection to use as a fallback
 	 * @return an initialized builder

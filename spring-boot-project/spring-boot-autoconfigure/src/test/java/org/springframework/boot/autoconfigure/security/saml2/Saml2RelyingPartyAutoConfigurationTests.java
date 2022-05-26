@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -257,9 +257,11 @@ class Saml2RelyingPartyAutoConfigurationTests {
 
 	private void setupMockResponse(MockWebServer server, Resource resourceBody) throws Exception {
 		try (InputStream metadataSource = resourceBody.getInputStream()) {
-			Buffer metadataBuffer = new Buffer().readFrom(metadataSource);
-			MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
-			server.enqueue(metadataResponse);
+			try (Buffer metadataBuffer = new Buffer()) {
+				metadataBuffer.readFrom(metadataSource);
+				MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
+				server.enqueue(metadataResponse);
+			}
 		}
 	}
 

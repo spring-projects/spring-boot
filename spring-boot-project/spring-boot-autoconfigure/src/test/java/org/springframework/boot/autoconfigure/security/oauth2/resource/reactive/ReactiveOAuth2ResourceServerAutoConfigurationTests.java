@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					ReactiveJwtDecoder reactiveJwtDecoder = reactiveJwtDecoderSupplier.block();
+					reactiveJwtDecoderSupplier.block();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(1);
@@ -171,7 +171,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					ReactiveJwtDecoder reactiveJwtDecoder = reactiveJwtDecoderSupplier.block();
+					reactiveJwtDecoderSupplier.block();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(2);
@@ -194,7 +194,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					ReactiveJwtDecoder reactiveJwtDecoder = reactiveJwtDecoderSupplier.block();
+					reactiveJwtDecoderSupplier.block();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(3);

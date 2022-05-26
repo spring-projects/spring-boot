@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.ClientResources.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link ClientResources} via a {@link ClientResources.Builder} whilst retaining default
+ * {@link ClientResources} via a {@link Builder} whilst retaining default
  * auto-configuration.
  *
  * @author Stephane Nicoll
@@ -29,9 +30,9 @@ import io.lettuce.core.resource.ClientResources;
 public interface ClientResourcesBuilderCustomizer {
 
 	/**
-	 * Customize the {@link ClientResources.Builder}.
+	 * Customize the {@link Builder}.
 	 * @param clientResourcesBuilder the builder to customize
 	 */
-	void customize(ClientResources.Builder clientResourcesBuilder);
+	void customize(Builder clientResourcesBuilder);
 
 }

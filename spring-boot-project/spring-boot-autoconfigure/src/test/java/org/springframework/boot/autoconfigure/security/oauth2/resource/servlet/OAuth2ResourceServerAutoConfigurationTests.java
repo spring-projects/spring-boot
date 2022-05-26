@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
-					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+					jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(2);
@@ -166,7 +166,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
-					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+					jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(3);
@@ -189,7 +189,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 					Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 							.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
-					JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+					jwtDecoderSupplier.get();
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(4);
