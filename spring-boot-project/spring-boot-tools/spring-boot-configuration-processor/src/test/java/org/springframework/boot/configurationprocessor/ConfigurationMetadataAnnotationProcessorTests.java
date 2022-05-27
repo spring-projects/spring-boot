@@ -80,7 +80,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	@Test
 	void supportedAnnotations() {
 		assertThat(new ConfigurationMetadataAnnotationProcessor().getSupportedAnnotationTypes())
-				.containsExactlyInAnyOrder("org.springframework.boot.context.properties.ConfigurationProperties",
+				.containsExactlyInAnyOrder("org.springframework.boot.autoconfigure.AutoConfiguration",
+						"org.springframework.boot.context.properties.ConfigurationProperties",
 						"org.springframework.context.annotation.Configuration",
 						"org.springframework.boot.actuate.endpoint.annotation.Endpoint",
 						"org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint",
