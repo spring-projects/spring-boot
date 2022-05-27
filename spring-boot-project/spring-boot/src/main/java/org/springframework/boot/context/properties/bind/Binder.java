@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class Binder {
 	 * @param sources the sources used for binding
 	 */
 	public Binder(ConfigurationPropertySource... sources) {
-		this(Arrays.asList(sources), null, null, null);
+		this((sources != null) ? Arrays.asList(sources) : null, null, null, null);
 	}
 
 	/**
@@ -182,6 +182,9 @@ public class Binder {
 			List<ConversionService> conversionServices, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
 		Assert.notNull(sources, "Sources must not be null");
+		for (ConfigurationPropertySource source : sources) {
+			Assert.notNull(source, "Sources must not contain null elements");
+		}
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
 		this.bindConverter = BindConverter.get(conversionServices, propertyEditorInitializer);
