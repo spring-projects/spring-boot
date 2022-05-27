@@ -203,6 +203,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		mappings.add("xul", "application/vnd.mozilla.xul+xml");
 		mappings.add("xwd", "image/x-xwindowdump");
 		mappings.add("vsd", "application/vnd.visio");
+		mappings.add("wasm", "application/wasm");
 		mappings.add("wav", "audio/x-wav");
 		mappings.add("wbmp", "image/vnd.wap.wbmp");
 		mappings.add("wml", "text/vnd.wap.wml");
