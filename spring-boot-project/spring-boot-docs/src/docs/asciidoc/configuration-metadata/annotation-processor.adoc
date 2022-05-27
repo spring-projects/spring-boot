@@ -59,6 +59,29 @@ You could also let the AspectJ plugin run all the processing and disable annotat
 ----
 ====
 
+[NOTE]
+====
+If you are also using lombok in your project, you need to make sure that the `lombok` dependency is placed before the `spring-boot-configuration-processor` dependency.
+Otherwise, combining `lombok` annotations with `spring-boot-configuration-processor` annotations will not have the desired result.
+
+[source,xml,indent=0,subs="verbatim"]
+----
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <scope>provided</scope>
+    </dependency>
+
+    ...............
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-configuration-processor</artifactId>
+        <optional>true</optional>
+    </dependency>
+----
+====
+
 
 
 [[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation]]
