@@ -182,7 +182,9 @@ public class Binder {
 			List<ConversionService> conversionServices, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
 		Assert.notNull(sources, "Sources must not be null");
-		sources.forEach((source) -> Assert.notNull(source, "Sources cannot contain null values"));
+		for (ConfigurationPropertySource source : sources) {
+			Assert.notNull(source, "Sources must not contain null elements");
+		}
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
 		this.bindConverter = BindConverter.get(conversionServices, propertyEditorInitializer);
