@@ -51,7 +51,7 @@ class OnExpressionCondition extends SpringBootCondition {
 		return ConditionOutcome.noMatch(messageBuilder.because("no BeanFactory available."));
 	}
 
-	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
+	private boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
