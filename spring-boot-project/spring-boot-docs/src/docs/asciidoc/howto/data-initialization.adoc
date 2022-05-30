@@ -200,7 +200,7 @@ Spring Boot will automatically detect beans of the following types that initiali
 - `SpringLiquibase`
 
 If you are using a third-party starter for a database initialization library, it may provide a detector such that beans of other types are also detected automatically.
-To have other beans be detected, register an implementation of `DatabaseInitializerDetector` in `META-INF/spring-factories`.
+To have other beans be detected, register an implementation of `DatabaseInitializerDetector` in `META-INF/spring.factories`.
 
 
 
@@ -215,5 +215,5 @@ Spring Boot will automatically detect beans of the following types that depends 
 - `NamedParameterJdbcOperations`
 
 If you are using a third-party starter data access library, it may provide a detector such that beans of other types are also detected automatically.
-To have other beans be detected, register an implementation of `DependsOnDatabaseInitializationDetector` in `META-INF/spring-factories`.
+To have other beans be detected, register an implementation of `DependsOnDatabaseInitializationDetector` in `META-INF/spring.factories`.
 Alternatively, annotate the bean's class or its `@Bean` method with `@DependsOnDatabaseInitialization`.
