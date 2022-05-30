@@ -49,6 +49,7 @@ import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.artifacts.LenientConfiguration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvableDependencies;
@@ -663,7 +664,9 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example",
 				"second-project-library", "1.0.0.SNAPSHOT"));
 		ResolvedConfiguration resolvedConfiguration = mock(ResolvedConfiguration.class);
-		given(resolvedConfiguration.getResolvedArtifacts()).willReturn(artifacts);
+		LenientConfiguration lenientConfiguration = mock(LenientConfiguration.class);
+		given(resolvedConfiguration.getLenientConfiguration()).willReturn(lenientConfiguration);
+		given(lenientConfiguration.getArtifacts()).willReturn(artifacts);
 		Configuration configuration = mock(Configuration.class);
 		given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
 		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
