@@ -193,10 +193,8 @@ task aggregatedJavadoc(type: Javadoc) {
 		options {
 			author = true
 			docTitle = "Spring Boot ${project.version} API"
-			encoding = "UTF-8"
 			memberLevel = "protected"
 			outputLevel = "quiet"
-			source = "1.8"
 			splitIndex = true
 			stylesheetFile = file("src/main/javadoc/spring-javadoc.css")
 			use = true
