@@ -32,6 +32,7 @@ import org.springframework.aot.generate.FileSystemGeneratedFiles;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
 import org.springframework.aot.hint.ExecutableHint;
 import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.nativex.FileNativeConfigurationWriter;
@@ -155,8 +156,11 @@ public class AotProcessor {
 			ClassName generatedInitializerClassName) {
 		TypeReference generatedType = TypeReference.of(generatedInitializerClassName.canonicalName());
 		TypeReference applicationType = TypeReference.of(this.application);
-		generationContext.getRuntimeHints().reflection().registerType(generatedType, (hint) -> hint
-				.onReachableType(applicationType).withConstructor(Collections.emptyList(), INVOKE_CONSTRUCTOR_HINT));
+		ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
+		reflection.registerType(applicationType, (hint) -> {
+		});
+		reflection.registerType(generatedType, (hint) -> hint.onReachableType(applicationType)
+				.withConstructor(Collections.emptyList(), INVOKE_CONSTRUCTOR_HINT));
 	}
 
 	private Path getRoot(Kind kind) {
