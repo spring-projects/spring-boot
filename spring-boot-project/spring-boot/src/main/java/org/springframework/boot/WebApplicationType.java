@@ -16,6 +16,9 @@
 
 package org.springframework.boot;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -63,6 +66,26 @@ public enum WebApplicationType {
 			}
 		}
 		return WebApplicationType.SERVLET;
+	}
+
+	static class WebApplicationTypeRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			for (String servletIndicatorClass : SERVLET_INDICATOR_CLASSES) {
+				registerTypeIfPresent(servletIndicatorClass, classLoader, hints);
+			}
+			registerTypeIfPresent(WEBFLUX_INDICATOR_CLASS, classLoader, hints);
+			registerTypeIfPresent(WEBMVC_INDICATOR_CLASS, classLoader, hints);
+		}
+
+		private void registerTypeIfPresent(String typeName, ClassLoader classLoader, RuntimeHints hints) {
+			if (ClassUtils.isPresent(typeName, classLoader)) {
+				hints.reflection().registerType(TypeReference.of(typeName), (hint) -> {
+				});
+			}
+		}
+
 	}
 
 }

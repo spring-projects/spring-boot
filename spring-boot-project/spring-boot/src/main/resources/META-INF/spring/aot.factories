@@ -1,4 +1,5 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
-org.springframework.boot.logging.logback.LogbackRuntimeHintsRegistrar
+org.springframework.boot.logging.logback.LogbackRuntimeHintsRegistrar,\
+org.springframework.boot.WebApplicationType.WebApplicationTypeRuntimeHintsRegistrar
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor
