@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,7 @@ import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.nativex.FileNativeConfigurationWriter;
+import org.springframework.boot.AotProcessingHook.MainMethodSilentExitException;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
@@ -123,6 +125,13 @@ public class AotProcessor {
 	private void callApplicationMainMethod() {
 		try {
 			this.application.getMethod("main", String[].class).invoke(null, new Object[] { this.applicationArgs });
+		}
+		catch (InvocationTargetException ex) {
+			Throwable targetException = ex.getTargetException();
+			if (!(targetException instanceof MainMethodSilentExitException)) {
+				throw (targetException instanceof RuntimeException runtimeEx) ? runtimeEx
+						: new RuntimeException(targetException);
+			}
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);

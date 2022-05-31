@@ -39,8 +39,21 @@ class AotProcessingHook implements Hook {
 		return false;
 	}
 
+	@Override
+	public void postRun(SpringApplication application, ConfigurableApplicationContext context) {
+		throw new MainMethodSilentExitException();
+	}
+
 	GenericApplicationContext getApplicationContext() {
 		return this.context;
+	}
+
+	/**
+	 * Internal exception used to prevent main method to continue once
+	 * {@code SpringApplication#run} completes.
+	 */
+	static class MainMethodSilentExitException extends RuntimeException {
+
 	}
 
 }
