@@ -36,7 +36,9 @@ import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.nativex.FileNativeConfigurationWriter;
-import org.springframework.boot.AotProcessingHook.MainMethodSilentExitException;
+import org.springframework.boot.SpringApplicationHooks.Hook;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
@@ -100,7 +102,7 @@ public class AotProcessor {
 	 */
 	public void process() {
 		deleteExistingOutput();
-		AotProcessingHook hook = new AotProcessingHook();
+		AotProcessorHook hook = new AotProcessorHook();
 		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
 		GenericApplicationContext applicationContext = hook.getApplicationContext();
 		Assert.notNull(applicationContext, "No application context available after calling main method of '"
@@ -129,7 +131,7 @@ public class AotProcessor {
 		}
 		catch (InvocationTargetException ex) {
 			Throwable targetException = ex.getTargetException();
-			if (!(targetException instanceof MainMethodSilentExitException)) {
+			if (!(targetException instanceof SilentExitException)) {
 				throw (targetException instanceof RuntimeException runtimeEx) ? runtimeEx
 						: new RuntimeException(targetException);
 			}
@@ -223,6 +225,42 @@ public class AotProcessor {
 		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput,
 				classOutput, groupId, artifactId);
 		aotProcess.process();
+	}
+
+	/**
+	 * Hook used to capture the {@link ApplicationContext} and trigger early exit of main
+	 * method.
+	 */
+	private static class AotProcessorHook implements Hook {
+
+		private GenericApplicationContext context;
+
+		@Override
+		public boolean preRefresh(SpringApplication application, ConfigurableApplicationContext context) {
+			Assert.isInstanceOf(GenericApplicationContext.class, context,
+					() -> "AOT processing requires a GenericApplicationContext but got a "
+							+ context.getClass().getName());
+			this.context = (GenericApplicationContext) context;
+			return false;
+		}
+
+		@Override
+		public void postRun(SpringApplication application, ConfigurableApplicationContext context) {
+			throw new SilentExitException();
+		}
+
+		GenericApplicationContext getApplicationContext() {
+			return this.context;
+		}
+
+	}
+
+	/**
+	 * Internal exception used to prevent main method to continue once
+	 * {@code SpringApplication#run} completes.
+	 */
+	private static class SilentExitException extends RuntimeException {
+
 	}
 
 }
