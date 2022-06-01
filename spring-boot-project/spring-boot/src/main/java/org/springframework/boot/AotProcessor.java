@@ -131,7 +131,7 @@ public class AotProcessor {
 		}
 		catch (InvocationTargetException ex) {
 			Throwable targetException = ex.getTargetException();
-			if (!(targetException instanceof SilentExitException)) {
+			if (!(targetException instanceof MainMethodSilentExitException)) {
 				throw (targetException instanceof RuntimeException runtimeEx) ? runtimeEx
 						: new RuntimeException(targetException);
 			}
@@ -246,7 +246,7 @@ public class AotProcessor {
 
 		@Override
 		public void postRun(SpringApplication application, ConfigurableApplicationContext context) {
-			throw new SilentExitException();
+			throw new MainMethodSilentExitException();
 		}
 
 		GenericApplicationContext getApplicationContext() {
@@ -259,7 +259,7 @@ public class AotProcessor {
 	 * Internal exception used to prevent main method to continue once
 	 * {@code SpringApplication#run} completes.
 	 */
-	private static class SilentExitException extends RuntimeException {
+	private static class MainMethodSilentExitException extends RuntimeException {
 
 	}
 
