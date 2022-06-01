@@ -126,7 +126,8 @@ public class CassandraAutoConfiguration {
 
 	private Config applyDefaultFallback(Config config) {
 		ConfigFactory.invalidateCaches();
-		return ConfigFactory.defaultOverrides().withFallback(config).withFallback(ConfigFactory.defaultReference())
+		return ConfigFactory.defaultOverrides().withFallback(config)
+				.withFallback(mapConfig(CassandraProperties.defaults())).withFallback(ConfigFactory.defaultReference())
 				.resolve();
 	}
 
@@ -153,9 +154,9 @@ public class CassandraAutoConfiguration {
 		mapPoolingOptions(properties, options);
 		mapRequestOptions(properties, options);
 		mapControlConnectionOptions(properties, options);
-		map.from(mapContactPoints(properties))
+		map.from(mapContactPoints(properties)).whenNonNull()
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
-		map.from(properties.getLocalDatacenter()).to(
+		map.from(properties.getLocalDatacenter()).whenHasText().to(
 				(localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
 		return options.build();
 	}
@@ -210,7 +211,8 @@ public class CassandraAutoConfiguration {
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties) {
-		return properties.getContactPoints().stream()
+		List<String> contactPoints = properties.getContactPoints();
+		return (contactPoints == null) ? null : contactPoints.stream()
 				.map((candidate) -> formatContactPoint(candidate, properties.getPort())).collect(Collectors.toList());
 	}
 

@@ -38,6 +38,16 @@ import org.springframework.core.io.Resource;
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
 
+	static CassandraProperties defaults() {
+		CassandraProperties properties = new CassandraProperties();
+
+		properties.setContactPoints(new ArrayList<>(Collections.singleton("127.0.0.1:9042")));
+		properties.setCompression(Compression.NONE);
+		properties.getControlconnection().setTimeout(Duration.ofSeconds(5));
+
+		return properties;
+	}
+
 	/**
 	 * Location of the configuration file to use.
 	 */
@@ -57,7 +67,7 @@ public class CassandraProperties {
 	 * Cluster node addresses in the form 'host:port', or a simple 'host' to use the
 	 * configured port.
 	 */
-	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("127.0.0.1:9042"));
+	private List<String> contactPoints;
 
 	/**
 	 * Port to use if a contact point does not specify one.
@@ -83,7 +93,7 @@ public class CassandraProperties {
 	/**
 	 * Compression supported by the Cassandra binary protocol.
 	 */
-	private Compression compression = Compression.NONE;
+	private Compression compression;
 
 	/**
 	 * Schema action to take at startup.
@@ -141,6 +151,10 @@ public class CassandraProperties {
 
 	public List<String> getContactPoints() {
 		return this.contactPoints;
+	}
+
+	public void setContactPoints(List<String> contactPoints) {
+		this.contactPoints = contactPoints;
 	}
 
 	public int getPort() {
@@ -266,7 +280,7 @@ public class CassandraProperties {
 		/**
 		 * How many rows will be retrieved simultaneously in a single network round-trip.
 		 */
-		private int pageSize;
+		private Integer pageSize;
 
 		private final Throttler throttler = new Throttler();
 
@@ -294,7 +308,7 @@ public class CassandraProperties {
 			this.serialConsistency = serialConsistency;
 		}
 
-		public int getPageSize() {
+		public Integer getPageSize() {
 			return this.pageSize;
 		}
 
@@ -347,7 +361,7 @@ public class CassandraProperties {
 		/**
 		 * Timeout to use for control queries.
 		 */
-		private Duration timeout = Duration.ofSeconds(5);
+		private Duration timeout;
 
 		public Duration getTimeout() {
 			return this.timeout;
@@ -370,17 +384,17 @@ public class CassandraProperties {
 		 * Maximum number of requests that can be enqueued when the throttling threshold
 		 * is exceeded.
 		 */
-		private int maxQueueSize;
+		private Integer maxQueueSize;
 
 		/**
 		 * Maximum number of requests that are allowed to execute in parallel.
 		 */
-		private int maxConcurrentRequests;
+		private Integer maxConcurrentRequests;
 
 		/**
 		 * Maximum allowed request rate.
 		 */
-		private int maxRequestsPerSecond;
+		private Integer maxRequestsPerSecond;
 
 		/**
 		 * How often the throttler attempts to dequeue requests. Set this high enough that
@@ -397,7 +411,7 @@ public class CassandraProperties {
 			this.type = type;
 		}
 
-		public int getMaxQueueSize() {
+		public Integer getMaxQueueSize() {
 			return this.maxQueueSize;
 		}
 
@@ -405,7 +419,7 @@ public class CassandraProperties {
 			this.maxQueueSize = maxQueueSize;
 		}
 
-		public int getMaxConcurrentRequests() {
+		public Integer getMaxConcurrentRequests() {
 			return this.maxConcurrentRequests;
 		}
 
@@ -413,7 +427,7 @@ public class CassandraProperties {
 			this.maxConcurrentRequests = maxConcurrentRequests;
 		}
 
-		public int getMaxRequestsPerSecond() {
+		public Integer getMaxRequestsPerSecond() {
 			return this.maxRequestsPerSecond;
 		}
 
