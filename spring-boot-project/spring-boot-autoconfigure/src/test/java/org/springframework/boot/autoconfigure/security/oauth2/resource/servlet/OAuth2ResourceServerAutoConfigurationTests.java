@@ -19,12 +19,15 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +37,9 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -118,17 +124,22 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	void autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm() {
+	static Stream<Arguments> autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm() { return Stream.of(
+		Arguments.of("single", Collections.singleton(JWSAlgorithm.RS384), "RS384"),
+		Arguments.of("multiple",            Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512,ES512"),
+		Arguments.of("multiple+whitespace", Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512, ES512")
+	);}
+	@ParameterizedTest(name="{0}")@MethodSource
+	void autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm(
+			@SuppressWarnings("unused") String desc, Collection<JWSAlgorithm> expected, String propValue) {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
-						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS384")
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithm="+propValue)
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
 					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlgs",
-							Collections.singleton(JWSAlgorithm.RS384));
+					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlgs", new HashSet<>(expected));
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 				});
 	}

@@ -21,11 +21,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +36,9 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -115,16 +119,22 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
+	static Stream<Arguments> autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() { return Stream.of(
+		Arguments.of("single", Collections.singleton(JWSAlgorithm.RS384), "RS384"),
+		Arguments.of("multiple",            Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512,ES512"),
+		Arguments.of("multiple+whitespace", Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512, ES512")
+	);}
 	@SuppressWarnings("unchecked")
-	@Test
-	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() {
+	@ParameterizedTest(name="{0}")@MethodSource
+	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm(
+			@SuppressWarnings("unused") String desc, Collection<JWSAlgorithm> expected, String propValue) {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
-						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS512")
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithm="+propValue)
 				.run((context) -> {
 					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
 					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
-							.matches((algorithms) -> ((Set<JWSAlgorithm>) algorithms).contains(JWSAlgorithm.RS512));
+							.isEqualTo(new HashSet<>(expected));
 				});
 	}
 

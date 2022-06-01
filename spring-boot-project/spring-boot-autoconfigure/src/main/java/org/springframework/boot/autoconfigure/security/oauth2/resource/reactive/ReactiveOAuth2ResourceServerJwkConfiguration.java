@@ -20,6 +20,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI
@@ -79,7 +81,12 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		ReactiveJwtDecoder jwtDecoder() {
 			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = NimbusReactiveJwtDecoder
 					.withJwkSetUri(this.properties.getJwkSetUri())
-					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+					.jwsAlgorithms(algorithms ->
+						Arrays.stream(StringUtils.commaDelimitedListToStringArray(this.properties.getJwsAlgorithm()))
+								.map(String::trim)
+								.map(SignatureAlgorithm::from)
+								.forEach(algorithms::add)
+					).build();
 			String issuerUri = this.properties.getIssuerUri();
 			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
 					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;

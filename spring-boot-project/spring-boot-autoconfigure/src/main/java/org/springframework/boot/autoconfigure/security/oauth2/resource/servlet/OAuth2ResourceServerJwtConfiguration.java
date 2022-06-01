@@ -20,6 +20,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configures a {@link JwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI or Public
@@ -78,7 +80,12 @@ class OAuth2ResourceServerJwtConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		JwtDecoder jwtDecoderByJwkKeySetUri() {
 			NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+					.jwsAlgorithms(algorithms ->
+						Arrays.stream(StringUtils.commaDelimitedListToStringArray(this.properties.getJwsAlgorithm()))
+								.map(String::trim)
+								.map(SignatureAlgorithm::from)
+								.forEach(algorithms::add)
+					).build();
 			String issuerUri = this.properties.getIssuerUri();
 			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
 					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;
