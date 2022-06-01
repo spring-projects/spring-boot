@@ -119,18 +119,20 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	static Stream<Arguments> autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() { return Stream.of(
-		Arguments.of("single", Collections.singleton(JWSAlgorithm.RS384), "RS384"),
-		Arguments.of("multiple",            Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512,ES512"),
-		Arguments.of("multiple+whitespace", Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512, ES512")
-	);}
-	@SuppressWarnings("unchecked")
-	@ParameterizedTest(name="{0}")@MethodSource
+	static Stream<Arguments> autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() {
+		return Stream.of(
+			Arguments.of("single", Collections.singleton(JWSAlgorithm.RS384), "RS384"),
+			Arguments.of("multiple",            Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512,ES512"),
+			Arguments.of("multiple+whitespace", Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512, ES512")
+		);
+	}
+	@ParameterizedTest(name = "{0}")
+	@MethodSource
 	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm(
 			@SuppressWarnings("unused") String desc, Collection<JWSAlgorithm> expected, String propValue) {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
-						"spring.security.oauth2.resourceserver.jwt.jws-algorithm="+propValue)
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=" + propValue)
 				.run((context) -> {
 					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
 					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")

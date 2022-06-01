@@ -80,7 +80,7 @@ class OAuth2ResourceServerJwtConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		JwtDecoder jwtDecoderByJwkKeySetUri() {
 			NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-					.jwsAlgorithms(algorithms ->
+					.jwsAlgorithms((algorithms) ->
 						Arrays.stream(StringUtils.commaDelimitedListToStringArray(this.properties.getJwsAlgorithm()))
 								.map(String::trim)
 								.map(SignatureAlgorithm::from)

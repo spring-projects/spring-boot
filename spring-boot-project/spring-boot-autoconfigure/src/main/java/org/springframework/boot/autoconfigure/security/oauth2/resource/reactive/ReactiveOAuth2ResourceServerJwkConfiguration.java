@@ -81,7 +81,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		ReactiveJwtDecoder jwtDecoder() {
 			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = NimbusReactiveJwtDecoder
 					.withJwkSetUri(this.properties.getJwkSetUri())
-					.jwsAlgorithms(algorithms ->
+					.jwsAlgorithms((algorithms) ->
 						Arrays.stream(StringUtils.commaDelimitedListToStringArray(this.properties.getJwsAlgorithm()))
 								.map(String::trim)
 								.map(SignatureAlgorithm::from)
