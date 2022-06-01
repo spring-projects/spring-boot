@@ -76,6 +76,7 @@ class OAuth2ResourceServerJwtConfiguration {
 			this.properties = properties.getJwt();
 		}
 
+		// @formatter:off
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		JwtDecoder jwtDecoderByJwkKeySetUri() {
@@ -92,6 +93,7 @@ class OAuth2ResourceServerJwtConfiguration {
 			nimbusJwtDecoder.setJwtValidator(getValidators(defaultValidator));
 			return nimbusJwtDecoder;
 		}
+		// @formatter:on
 
 		private OAuth2TokenValidator<Jwt> getValidators(Supplier<OAuth2TokenValidator<Jwt>> defaultValidator) {
 			OAuth2TokenValidator<Jwt> defaultValidators = defaultValidator.get();

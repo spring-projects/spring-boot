@@ -119,6 +119,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
+	// @formatter:off
 	static Stream<Arguments> autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() {
 		return Stream.of(
 			Arguments.of("single", Collections.singleton(JWSAlgorithm.RS384), "RS384"),
@@ -126,6 +127,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			Arguments.of("multiple+whitespace", Arrays.asList(JWSAlgorithm.RS512, JWSAlgorithm.ES512), "RS512, ES512")
 		);
 	}
+	// @formatter:on
 	@ParameterizedTest(name = "{0}")
 	@MethodSource
 	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm(

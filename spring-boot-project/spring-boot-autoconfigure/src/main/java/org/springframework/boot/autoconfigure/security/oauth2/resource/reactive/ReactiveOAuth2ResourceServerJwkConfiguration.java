@@ -76,6 +76,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			this.properties = properties.getJwt();
 		}
 
+		// @formatter:off
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		ReactiveJwtDecoder jwtDecoder() {
@@ -93,6 +94,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			nimbusReactiveJwtDecoder.setJwtValidator(getValidators(defaultValidator));
 			return nimbusReactiveJwtDecoder;
 		}
+		// @formatter:on
 
 		private OAuth2TokenValidator<Jwt> getValidators(Supplier<OAuth2TokenValidator<Jwt>> defaultValidator) {
 			OAuth2TokenValidator<Jwt> defaultValidators = defaultValidator.get();
