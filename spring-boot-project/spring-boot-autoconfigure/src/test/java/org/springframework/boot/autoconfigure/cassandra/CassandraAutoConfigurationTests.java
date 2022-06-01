@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
+import java.util.List;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -28,6 +29,7 @@ import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
 import com.datastax.oss.driver.internal.core.session.throttling.ConcurrencyLimitingRequestThrottler;
 import com.datastax.oss.driver.internal.core.session.throttling.PassThroughRequestThrottler;
 import com.datastax.oss.driver.internal.core.session.throttling.RateLimitingRequestThrottler;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -242,6 +244,44 @@ class CassandraAutoConfigurationTests {
 					assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
 							.getDuration(DefaultDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofMillis(500));
 				});
+	}
+
+	@Test // gh-31025
+	void driverConfigLoaderWithConfigOverridesDefaults() {
+		String configLocation = "org/springframework/boot/autoconfigure/cassandra/override-defaults.conf";
+		this.contextRunner.withPropertyValues("spring.data.cassandra.config=" + configLocation).run((context) -> {
+				assertThat(context).hasSingleBean(DriverConfigLoader.class);
+
+				SoftAssertions softly = new SoftAssertions();
+
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getString(DefaultDriverOption.SESSION_NAME)).isEqualTo("advanced session");
+
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getDuration(DefaultDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofSeconds(2)); // default
+
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getStringList(DefaultDriverOption.CONTACT_POINTS)).isEqualTo(List.of("1.2.3.4:5678"));
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getBoolean(DefaultDriverOption.RESOLVE_CONTACT_POINTS)).isFalse();
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getInt(DefaultDriverOption.REQUEST_PAGE_SIZE)).isEqualTo(11);
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER)).isEqualTo("datacenter1");
+
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS)).isEqualTo(22);
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND)).isEqualTo(33);
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(44);
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getDuration(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT)).isEqualTo(Duration.ofMillis(5555));
+				softly.assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+						.getString(DefaultDriverOption.PROTOCOL_COMPRESSION)).isEqualTo("SNAPPY");
+
+				softly.assertAll();
+		});
 	}
 
 	@Test
