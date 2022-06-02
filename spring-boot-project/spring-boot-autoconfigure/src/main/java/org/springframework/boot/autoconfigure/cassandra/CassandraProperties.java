@@ -40,16 +40,14 @@ public class CassandraProperties {
 
 	static CassandraProperties defaults() {
 		var properties = new CassandraProperties();
-		properties.setContactPoints(new ArrayList<>(Collections.singleton("127.0.0.1:9042")));
-		properties.setPort(9042);
-		properties.setCompression(Compression.NONE);
-		properties.setSchemaAction("none");
-		properties.setSsl(false);
 
+		properties.setContactPoints(new ArrayList<>(Collections.singleton("127.0.0.1:9042")));
+		properties.setCompression(Compression.NONE);
 		properties.getControlconnection().setTimeout(Duration.ofSeconds(5));
 
 		return properties;
 	}
+
 	/**
 	 * Location of the configuration file to use.
 	 */
@@ -74,7 +72,7 @@ public class CassandraProperties {
 	/**
 	 * Port to use if a contact point does not specify one.
 	 */
-	private Integer port;
+	private int port = 9042;
 
 	/**
 	 * Datacenter that is considered "local". Contact points should be from this
@@ -100,12 +98,12 @@ public class CassandraProperties {
 	/**
 	 * Schema action to take at startup.
 	 */
-	private String schemaAction;
+	private String schemaAction = "none";
 
 	/**
 	 * Enable SSL support.
 	 */
-	private Boolean ssl;
+	private boolean ssl = false;
 
 	/**
 	 * Connection configuration.
@@ -159,7 +157,7 @@ public class CassandraProperties {
 		this.contactPoints = contactPoints;
 	}
 
-	public Integer getPort() {
+	public int getPort() {
 		return this.port;
 	}
 
@@ -199,7 +197,7 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	public Boolean isSsl() {
+	public boolean isSsl() {
 		return this.ssl;
 	}
 
