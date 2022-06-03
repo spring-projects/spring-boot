@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -59,10 +60,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.aot.ApplicationContextAotInitializer;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
@@ -401,7 +402,7 @@ public class SpringApplication {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
-		if (!NativeDetector.inNativeImage()) {
+		if (!AotDetector.useGeneratedArtifacts()) {
 			// Load the sources
 			Set<Object> sources = getAllSources();
 			Assert.notEmpty(sources, "Sources must not be empty");
@@ -411,18 +412,13 @@ public class SpringApplication {
 	}
 
 	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
-		if (NativeDetector.inNativeImage()) {
-			try {
-				Class<?> initializerClass = Class.forName(
-						this.mainApplicationClass.getName() + "__ApplicationContextInitializer", true,
-						getClassLoader());
-				ApplicationContextInitializer<?> initializer = (ApplicationContextInitializer<?>) initializerClass
-						.getDeclaredConstructor().newInstance();
-				initializers.add(0, initializer);
+		if (AotDetector.useGeneratedArtifacts()) {
+			String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
+			if (logger.isDebugEnabled()) {
+				logger.debug("Using AOT generated initializer: " + initializerClassName);
 			}
-			catch (Exception ex) {
-				throw new IllegalArgumentException("Failed to load AOT-generated ApplicationContextInitializer", ex);
-			}
+			initializers.add(0,
+					(context) -> new ApplicationContextAotInitializer().initialize(context, initializerClassName));
 		}
 	}
 
