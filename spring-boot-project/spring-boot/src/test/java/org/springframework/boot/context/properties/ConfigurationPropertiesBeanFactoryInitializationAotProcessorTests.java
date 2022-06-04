@@ -37,6 +37,7 @@ import org.springframework.beans.factory.aot.AotFactoriesLoader;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -61,7 +62,6 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		assertThat(new AotFactoriesLoader(new DefaultListableBeanFactory())
 				.load(BeanFactoryInitializationAotProcessor.class))
 						.anyMatch(ConfigurationPropertiesBeanFactoryInitializationAotProcessor.class::isInstance);
-
 	}
 
 	@Test
@@ -69,6 +69,15 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("test", new RootBeanDefinition(String.class));
 		assertThat(this.processor.processAheadOfTime(beanFactory)).isNull();
+	}
+
+	@Test
+	void processManuallyRegisteredSingleton() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("test", new SampleProperties());
+		RuntimeHints runtimeHints = process(beanFactory);
+		assertThat(runtimeHints.reflection().typeHints()).singleElement()
+				.satisfies(javaBeanBinding(SampleProperties.class));
 	}
 
 	@Test
@@ -245,6 +254,10 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		for (Class<?> type : types) {
 			beanFactory.registerBeanDefinition(type.getName(), new RootBeanDefinition(type));
 		}
+		return process(beanFactory);
+	}
+
+	private RuntimeHints process(ConfigurableListableBeanFactory beanFactory) {
 		BeanFactoryInitializationAotContribution contribution = this.processor.processAheadOfTime(beanFactory);
 		assertThat(contribution).isNotNull();
 		GenerationContext generationContext = new DefaultGenerationContext(new InMemoryGeneratedFiles());
