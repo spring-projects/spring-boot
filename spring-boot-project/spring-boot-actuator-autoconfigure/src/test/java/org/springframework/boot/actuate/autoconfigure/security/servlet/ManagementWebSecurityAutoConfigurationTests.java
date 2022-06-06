@@ -179,7 +179,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> {
+			http.authorizeHttpRequests((requests) -> {
 				requests.antMatchers("/foo").permitAll();
 				requests.anyRequest().authenticated();
 			});
@@ -194,7 +194,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-			return http.antMatcher("/**").authorizeRequests((authorize) -> authorize.anyRequest().authenticated())
+			return http.antMatcher("/**").authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 					.build();
 		}
 
@@ -206,8 +206,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 		@Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
 		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) throws Exception {
-			return http.requestMatcher(new AntPathRequestMatcher("/**")).authorizeRequests().anyRequest().anonymous()
-					.and().csrf().disable().build();
+			return http.requestMatcher(new AntPathRequestMatcher("/**")).authorizeHttpRequests().anyRequest()
+					.anonymous().and().csrf().disable().build();
 		}
 
 	}

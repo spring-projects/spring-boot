@@ -41,7 +41,7 @@ public class SecurityConfiguration {
 	@Bean
 	SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		// @formatter:off
-		http.authorizeRequests()
+		http.authorizeHttpRequests()
 				.requestMatchers(EndpointRequest.to("health")).permitAll()
 				.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
 				.antMatchers("/**").hasRole("USER")

@@ -160,7 +160,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 			return http.csrf((c) -> c.disable())
 					// Demonstrate that method security works
 					// Best practice to use both for defense in depth
-					.authorizeRequests((requests) -> requests.anyRequest().permitAll()).httpBasic(withDefaults())
+					.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll()).httpBasic(withDefaults())
 					.build();
 		}
 
