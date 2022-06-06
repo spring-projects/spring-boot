@@ -55,7 +55,7 @@ public class SecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests((requests) -> {
+		http.authorizeHttpRequests((requests) -> {
 			requests.mvcMatchers("/actuator/beans").hasRole("BEANS");
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))

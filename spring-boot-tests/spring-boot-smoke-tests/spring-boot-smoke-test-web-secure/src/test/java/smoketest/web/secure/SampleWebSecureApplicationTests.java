@@ -95,7 +95,7 @@ class SampleWebSecureApplicationTests {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeRequests((requests) -> {
+			http.authorizeHttpRequests((requests) -> {
 				requests.antMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
 			});

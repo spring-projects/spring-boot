@@ -277,7 +277,7 @@ class RemoteDevToolsAutoConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/foo/**").authorizeRequests().anyRequest().authenticated().and().httpBasic();
+			http.antMatcher("/foo/**").authorizeHttpRequests().anyRequest().authenticated().and().httpBasic();
 		}
 
 	}

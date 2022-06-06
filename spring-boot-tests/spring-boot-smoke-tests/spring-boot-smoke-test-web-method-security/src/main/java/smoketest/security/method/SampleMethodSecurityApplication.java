@@ -69,8 +69,8 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeRequests((requests) -> requests.anyRequest().fullyAuthenticated()
-					.filterSecurityInterceptorOncePerRequest(true));
+			http.authorizeHttpRequests(
+					(requests) -> requests.anyRequest().fullyAuthenticated().shouldFilterAllDispatcherTypes(false));
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			http.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access"));
 			return http.build();
@@ -86,8 +86,8 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
 			http.csrf().disable();
 			http.requestMatcher(EndpointRequest.toAnyEndpoint());
-			http.authorizeRequests(
-					(requests) -> requests.anyRequest().authenticated().filterSecurityInterceptorOncePerRequest(true));
+			http.authorizeHttpRequests(
+					(requests) -> requests.anyRequest().authenticated().shouldFilterAllDispatcherTypes(false));
 			http.httpBasic();
 			return http.build();
 		}

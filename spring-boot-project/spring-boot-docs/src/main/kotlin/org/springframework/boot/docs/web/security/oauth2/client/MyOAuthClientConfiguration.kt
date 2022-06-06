@@ -26,7 +26,7 @@ class MyOAuthClientConfiguration {
 
 	@Bean
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-		http.authorizeRequests().anyRequest().authenticated()
+		http.authorizeHttpRequests().anyRequest().authenticated()
 		http.oauth2Login().redirectionEndpoint().baseUri("custom-callback")
 		return http.build()
 	}

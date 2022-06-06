@@ -58,7 +58,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests((requests) -> {
+		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();
 		});
