@@ -1415,7 +1415,6 @@ bom {
 			modules = [
 				"spring-ldap-core",
 				"spring-ldap-core-tiger",
-				"spring-ldap-ldif-batch",
 				"spring-ldap-ldif-core",
 				"spring-ldap-odm",
 				"spring-ldap-test"
