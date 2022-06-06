@@ -22,7 +22,6 @@ import org.apache.kafka.common.config.SslConfigs;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Cleanup;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.IsolationLevel;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.core.io.ClassPathResource;
@@ -44,11 +43,11 @@ class KafkaPropertiesTests {
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
 		org.apache.kafka.common.IsolationLevel[] original = org.apache.kafka.common.IsolationLevel.values();
-		assertThat(original).extracting(Enum::name).containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
-				IsolationLevel.READ_COMMITTED.name());
-		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
-				IsolationLevel.READ_COMMITTED.id());
-		assertThat(original).hasSize(IsolationLevel.values().length);
+		assertThat(original).extracting(Enum::name).containsExactly(Consumer.IsolationLevel.READ_UNCOMMITTED.name(),
+				Consumer.IsolationLevel.READ_COMMITTED.name());
+		assertThat(original).extracting("id").containsExactly(Consumer.IsolationLevel.READ_UNCOMMITTED.id(),
+				Consumer.IsolationLevel.READ_COMMITTED.id());
+		assertThat(original).hasSize(Consumer.IsolationLevel.values().length);
 	}
 
 	@Test
