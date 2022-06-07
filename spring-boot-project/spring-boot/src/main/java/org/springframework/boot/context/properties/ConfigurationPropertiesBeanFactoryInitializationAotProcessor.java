@@ -34,6 +34,7 @@ import java.util.Set;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.support.RuntimeHintsUtils;
 import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
@@ -86,6 +87,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
+			RuntimeHintsUtils.registerAnnotation(generationContext.getRuntimeHints(), ConfigurationProperties.class);
 			for (Class<?> type : this.types) {
 				TypeProcessor.processConfigurationProperties(type, generationContext.getRuntimeHints());
 			}
