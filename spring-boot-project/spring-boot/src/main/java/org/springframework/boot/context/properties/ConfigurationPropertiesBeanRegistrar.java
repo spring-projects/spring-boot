@@ -93,20 +93,10 @@ final class ConfigurationPropertiesBeanRegistrar {
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		definition.setAttribute(BindMethod.class.getName(), bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
-			definition.setInstanceSupplier(() -> createValueObject(beanName, type));
+			definition.setInstanceSupplier(
+					() -> ConstructorBindingValueSupplier.createValueObject(this.beanFactory, beanName, type));
 		}
 		return definition;
-	}
-
-	private Object createValueObject(String beanName, Class<?> beanType) {
-		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(beanType, beanName);
-		ConfigurationPropertiesBinder binder = ConfigurationPropertiesBinder.get(this.beanFactory);
-		try {
-			return binder.bindOrCreate(bean);
-		}
-		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(bean, ex);
-		}
 	}
 
 }
