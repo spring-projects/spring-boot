@@ -91,6 +91,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	@ConfigurationProperties("test")
 	public static class ValueObjectSampleBean {
 
+		@SuppressWarnings("unused")
 		private final String name;
 
 		ValueObjectSampleBean(String name) {

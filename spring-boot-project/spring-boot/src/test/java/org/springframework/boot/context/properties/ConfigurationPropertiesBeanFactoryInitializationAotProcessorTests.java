@@ -327,6 +327,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@ConfigurationProperties
 	public static class SampleImmutableProperties {
 
+		@SuppressWarnings("unused")
 		private final String name;
 
 		SampleImmutableProperties(String name) {
@@ -338,6 +339,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@ConfigurationProperties
 	public static class SampleImmutablePropertiesWithSeveralConstructors {
 
+		@SuppressWarnings("unused")
 		private final String name;
 
 		@ConstructorBinding
@@ -354,6 +356,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@ConfigurationProperties
 	public static class SampleImmutablePropertiesWithList {
 
+		@SuppressWarnings("unused")
 		private final List<Person> family;
 
 		SampleImmutablePropertiesWithList(List<Person> family) {
@@ -472,8 +475,10 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	public static class Person {
 
+		@SuppressWarnings("unused")
 		private final String firstName;
 
+		@SuppressWarnings("unused")
 		private final String lastName;
 
 		@NestedConfigurationProperty
@@ -503,6 +508,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	public static class ImmutableRecursive {
 
+		@SuppressWarnings("unused")
 		private ImmutableRecursive recursive;
 
 		ImmutableRecursive(ImmutableRecursive recursive) {
