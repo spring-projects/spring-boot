@@ -19,9 +19,11 @@ package org.springframework.boot.autoconfigure.kafka;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -56,6 +58,8 @@ public class KafkaProperties extends KafkaPropertiesBaseWithBootstrapServersAndP
 
 	private final Jaas jaas = new Jaas();
 
+	private final Reactor reactor = new Reactor();
+
 	private final Template template = new Template();
 
 	private final Retry retry = new Retry();
@@ -78,6 +82,10 @@ public class KafkaProperties extends KafkaPropertiesBaseWithBootstrapServersAndP
 
 	public Jaas getJaas() {
 		return this.jaas;
+	}
+
+	public Reactor getReactor() {
+		return this.reactor;
 	}
 
 	public Template getTemplate() {
@@ -120,6 +128,46 @@ public class KafkaProperties extends KafkaPropertiesBaseWithBootstrapServersAndP
 		// spring.kafka.streams.<common-props>
 		// spring.kafka.streams.<specific-props>
 		properties.putAll(this.streams.buildProperties());
+		return properties;
+	}
+
+	/**
+	 * Create an initial map of Reactor consumer properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary.
+	 * @return the reactor consumer properties initialized with the customizations defined on this
+	 * instance
+	 */
+	public Map<String, Object> buildReactorConsumerProperties() {
+		// spring.kafka.<common-props>
+		// spring.kafka.consumer.<common-props>
+		// spring.kafka.consumer.<specific-props>
+		Map<String, Object> properties = this.buildConsumerProperties();
+
+		// spring.kafka.reactor.<common-props>
+		// spring.kafka.reactor.consumer.<common-props>
+		// spring.kafka.reactor.consumer.<specific-props>
+		properties.putAll(this.reactor.buildConsumerProperties());
+		return properties;
+	}
+
+	/**
+	 * Create an initial map of Reactor producer properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary.
+	 * @return the reactor producer properties initialized with the customizations defined on this
+	 * instance
+	 */
+	public Map<String, Object> buildReactorProducerProperties() {
+		// spring.kafka.<common-props>
+		// spring.kafka.producer.<common-props>
+		// spring.kafka.producer.<specific-props>
+		Map<String, Object> properties = this.buildProducerProperties();
+
+		// spring.kafka.reactor.<common-props>
+		// spring.kafka.reactor.producer.<common-props>
+		// spring.kafka.reactor.producer.<specific-props>
+		properties.putAll(this.reactor.buildProducerProperties());
 		return properties;
 	}
 
@@ -240,6 +288,193 @@ public class KafkaProperties extends KafkaPropertiesBaseWithBootstrapServersAndP
 			return properties;
 		}
 
+	}
+
+	/**
+	 * Configuration properties for ReactorKafka.
+	 */
+	public static class Reactor extends KafkaPropertiesBaseWithBootstrapServersAndProducerConsumer {
+
+		private final Receiver receiver = new Receiver();
+
+		private final Sender sender = new Sender();
+
+		public Receiver getReceiver() {
+			return this.receiver;
+		}
+
+		public Sender getSender() {
+			return this.sender;
+		}
+
+		public static class Receiver {
+
+			/**
+			 * Sets the timeout for each KafkaConsumer's poll operation duration.
+			 */
+			private Duration pollTimeout;
+
+			/**
+			 * Sets timeout for graceful shutdown of the KafkaConsumer.
+			 */
+			private Duration closeTimeout;
+
+			/**
+			 * Sets subscription using group management to the specified collection of topics.
+			 */
+			private Collection<String> subscribeTopics;
+
+			/**
+			 * Sets subscription using group management to the specified pattern.
+			 */
+			private Pattern subscribePattern;
+
+			/**
+			 * Configures commit interval for automatic commits. At least one commit operation
+			 * is attempted within this interval if records are consumed and acknowledged.
+			 */
+			private Duration commitInterval;
+
+			/**
+			 * Configures commit batch size for automatic commits. At least one commit
+			 * operation is attempted when the number of acknowledged uncommitted offsets
+			 * reaches this batch size.
+			 */
+			private int commitBatchSize;
+
+			/**
+			 * Configures commit ahead size per partition for at-most-once delivery. Before
+			 * dispatching each record, an offset ahead by this size may be committed.
+			 */
+			private int atmostOnceCommitAheadSize;
+
+			/**
+			 * Configures the maximum number of consecutive non-fatal
+			 * RetriableCommitFailedException commit failures that are tolerated.
+			 */
+			private int maxCommitAttempts;
+
+			/**
+			 * The limit for the number of deferred commits to pause the consumer until the
+			 * deferred commits are reduced.
+			 */
+			private int maxDeferredCommits;
+
+			public Duration getPollTimeout() {
+				return this.pollTimeout;
+			}
+
+			public void setPollTimeout(Duration pollTimeout) {
+				this.pollTimeout = pollTimeout;
+			}
+
+			public Duration getCloseTimeout() {
+				return this.closeTimeout;
+			}
+
+			public void setCloseTimeout(Duration closeTimeout) {
+				this.closeTimeout = closeTimeout;
+			}
+
+			public Collection<String> getSubscribeTopics() {
+				return this.subscribeTopics;
+			}
+
+			public void setSubscribeTopics(Collection<String> subscribeTopics) {
+				this.subscribeTopics = subscribeTopics;
+			}
+
+			public Pattern getSubscribePattern() {
+				return this.subscribePattern;
+			}
+
+			public void setSubscribePattern(Pattern subscribePattern) {
+				this.subscribePattern = subscribePattern;
+			}
+
+			public Duration getCommitInterval() {
+				return this.commitInterval;
+			}
+
+			public void setCommitInterval(Duration commitInterval) {
+				this.commitInterval = commitInterval;
+			}
+
+			public int getCommitBatchSize() {
+				return this.commitBatchSize;
+			}
+
+			public void setCommitBatchSize(int commitBatchSize) {
+				this.commitBatchSize = commitBatchSize;
+			}
+
+			public int getAtmostOnceCommitAheadSize() {
+				return this.atmostOnceCommitAheadSize;
+			}
+
+			public void setAtmostOnceCommitAheadSize(int atmostOnceCommitAheadSize) {
+				this.atmostOnceCommitAheadSize = atmostOnceCommitAheadSize;
+			}
+
+			public int getMaxCommitAttempts() {
+				return this.maxCommitAttempts;
+			}
+
+			public void setMaxCommitAttempts(int maxCommitAttempts) {
+				this.maxCommitAttempts = maxCommitAttempts;
+			}
+
+			public int getMaxDeferredCommits() {
+				return this.maxDeferredCommits;
+			}
+
+			public void setMaxDeferredCommits(int maxDeferredCommits) {
+				this.maxDeferredCommits = maxDeferredCommits;
+			}
+
+		}
+
+		public static class Sender {
+			/**
+			 * Configures the maximum number of in-flight records that are fetched from the
+			 * outbound record publisher while acknowledgements are pending.
+			 */
+			private int maxInFlight;
+
+			/**
+			 * Configures error handling behaviour for the KafkaSender's send function.
+			 */
+			private boolean stopOnError;
+
+			/**
+			 * Configures the timeout for graceful shutdown of this sender.
+			 */
+			private Duration closeTimeout;
+
+			public int getMaxInFlight() {
+				return this.maxInFlight;
+			}
+
+			public void setMaxInFlight(int maxInFlight) {
+				this.maxInFlight = maxInFlight;
+			}
+
+			public boolean isStopOnError() {
+				return this.stopOnError;
+			}
+
+			public void setStopOnError(boolean stopOnError) {
+				this.stopOnError = stopOnError;
+			}
+
+			public Duration getCloseTimeout() {
+				return this.closeTimeout;
+			}
+
+			public void setCloseTimeout(Duration closeTimeout) {
+				this.closeTimeout = closeTimeout;
+			}
+		}
 	}
 
 	public static class Template {

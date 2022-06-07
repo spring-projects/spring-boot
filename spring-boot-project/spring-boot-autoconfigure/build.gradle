@@ -222,6 +222,7 @@ dependencies {
 	optional("org.thymeleaf.extras:thymeleaf-extras-java8time")
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
 	optional("redis.clients:jedis")
+	optional("io.projectreactor.kafka:reactor-kafka")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
