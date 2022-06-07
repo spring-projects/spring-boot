@@ -37,7 +37,7 @@ import org.springframework.javapoet.CodeBlock;
  * {@link BeanRegistrationAotProcessor} for immutable configuration properties.
  *
  * @author Stephane Nicoll
- * @see ConstructorBindingValueSupplier
+ * @see ConstructorBound
  */
 class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
@@ -83,8 +83,8 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 						builder.addStatement("$T beanFactory = registeredBean.getBeanFactory()", BeanFactory.class);
 						builder.addStatement("$T beanName = registeredBean.getBeanName()", String.class);
 						builder.addStatement("$T<?> beanClass = registeredBean.getBeanClass()", Class.class);
-						builder.addStatement("return ($T) $T.createValueObject(beanFactory, beanName, beanClass)",
-								beanClass, ConstructorBindingValueSupplier.class);
+						builder.addStatement("return ($T) $T.from(beanFactory, beanName, beanClass)", beanClass,
+								ConstructorBound.class);
 					});
 			return CodeBlock.of("$T.of($T::$L)", InstanceSupplier.class, beanRegistrationCode.getClassName(),
 					method.getName());

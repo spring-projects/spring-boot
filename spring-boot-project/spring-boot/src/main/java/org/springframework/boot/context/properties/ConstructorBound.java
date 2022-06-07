@@ -23,20 +23,20 @@ import org.springframework.beans.factory.BeanFactory;
  * injection.
  *
  * @author Stephane Nicoll
- * @since 6.0
+ * @since 3.0
  * @see ConstructorBinding
  */
-public abstract class ConstructorBindingValueSupplier {
+public abstract class ConstructorBound {
 
 	/**
-	 * Return an immutable {@link ConfigurationProperties} instance for the specified
-	 * {@code beanType}.
+	 * Create an immutable {@link ConfigurationProperties} instance for the specified
+	 * {@code beanName} and {@code beanType} using the specified {@link BeanFactory}.
 	 * @param beanFactory the bean factory to use
 	 * @param beanName the name of the bean
 	 * @param beanType the type of the bean
-	 * @return a new instance
+	 * @return an instance from the specified bean
 	 */
-	public static Object createValueObject(BeanFactory beanFactory, String beanName, Class<?> beanType) {
+	public static Object from(BeanFactory beanFactory, String beanName, Class<?> beanType) {
 		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(beanType, beanName);
 		ConfigurationPropertiesBinder binder = ConfigurationPropertiesBinder.get(beanFactory);
 		try {
