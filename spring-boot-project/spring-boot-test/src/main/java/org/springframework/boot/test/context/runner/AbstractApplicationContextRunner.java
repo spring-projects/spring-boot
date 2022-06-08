@@ -402,12 +402,12 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			((DefaultResourceLoader) context).setClassLoader(this.runnerConfiguration.classLoader);
 		}
 		this.runnerConfiguration.environmentProperties.applyTo(context);
+		this.runnerConfiguration.beanRegistrations.forEach((registration) -> registration.apply(context));
+		this.runnerConfiguration.initializers.forEach((initializer) -> initializer.initialize(context));
 		Class<?>[] classes = Configurations.getClasses(this.runnerConfiguration.configurations);
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
 		}
-		this.runnerConfiguration.beanRegistrations.forEach((registration) -> registration.apply(context));
-		this.runnerConfiguration.initializers.forEach((initializer) -> initializer.initialize(context));
 		context.refresh();
 	}
 
