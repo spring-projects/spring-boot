@@ -409,7 +409,7 @@ You can use `@DataCassandraTest` to test Cassandra applications.
 By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Cassandra with Spring Boot, see "<<data#data.nosql.cassandra>>", earlier in this chapter.)
+(For more about using Cassandra with Spring Boot, see "<<data#data.nosql.cassandra>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -425,7 +425,7 @@ You can use `@DataCouchbaseTest` to test Couchbase applications.
 By default, it configures a `CouchbaseTemplate` or `ReactiveCouchbaseTemplate`, scans for `@Document` classes, and configures Spring Data Couchbase repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCouchbaseTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Couchbase with Spring Boot, see "<<data#data.nosql.couchbase>>", earlier in this chapter.)
+(For more about using Couchbase with Spring Boot, see "<<data#data.nosql.couchbase>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataCouchbaseTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -441,7 +441,7 @@ You can use `@DataElasticsearchTest` to test Elasticsearch applications.
 By default, it configures an `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Elasticsearch with Spring Boot, see "<<data#data.nosql.elasticsearch>>", earlier in this chapter.)
+(For more about using Elasticsearch with Spring Boot, see "<<data#data.nosql.elasticsearch>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataElasticsearchTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -530,7 +530,7 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
 If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
-(For more about using jOOQ with Spring Boot, see "<<data#data.sql.jooq>>", earlier in this chapter.)
+(For more about using jOOQ with Spring Boot, see "<<data#data.sql.jooq>>".)
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -552,7 +552,7 @@ You can use `@DataMongoTest` to test MongoDB applications.
 By default, it configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using MongoDB with Spring Boot, see "<<data#data.nosql.mongodb>>", earlier in this chapter.)
+(For more about using MongoDB with Spring Boot, see "<<data#data.nosql.mongodb>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -568,7 +568,7 @@ You can use `@DataNeo4jTest` to test Neo4j applications.
 By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Neo4J with Spring Boot, see "<<data#data.nosql.neo4j>>", earlier in this chapter.)
+(For more about using Neo4J with Spring Boot, see "<<data#data.nosql.neo4j>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -593,7 +593,7 @@ You can use `@DataRedisTest` to test Redis applications.
 By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataRedisTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Redis with Spring Boot, see "<<data#data.nosql.redis>>", earlier in this chapter.)
+(For more about using Redis with Spring Boot, see "<<data#data.nosql.redis>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -609,7 +609,7 @@ You can use `@DataLdapTest` to test LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for `@Entry` classes, and configures Spring Data LDAP repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataLdapTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using LDAP with Spring Boot, see "<<data#data.nosql.ldap>>", earlier in this chapter.)
+(For more about using LDAP with Spring Boot, see "<<data#data.nosql.ldap>>".)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
 
@@ -708,7 +708,7 @@ include::code:MyRestDocsConfiguration[]
 ===== Auto-configured Spring Web Services Client Tests
 You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
 By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
-(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>".)
 
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
@@ -723,7 +723,7 @@ include::code:MyWebServiceClientTests[]
 ===== Auto-configured Spring Web Services Server Tests
 You can use `@WebServiceServerTest` to test applications that implement web services using the Spring Web Services project.
 By default, it configures a `MockWebServiceClient` bean that can be used to call your web service endpoints.
-(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>", earlier in this chapter.)
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>".)
 
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
