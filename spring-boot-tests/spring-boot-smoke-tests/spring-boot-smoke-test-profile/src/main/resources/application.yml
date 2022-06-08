@@ -1,6 +1,6 @@
-name: Phil
+test.name: Phil
 
 ---
 
 spring.config.activate.on-profile: goodbye | dev
-name: Everyone
+test.name: Everyone
