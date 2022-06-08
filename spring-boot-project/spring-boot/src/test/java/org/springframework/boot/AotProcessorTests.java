@@ -109,6 +109,12 @@ class AotProcessorTests {
 			assertThat(directory.resolve(
 					"source/org/springframework/boot/AotProcessorTests_SampleApplication__ApplicationContextInitializer.java"))
 							.exists().isRegularFile();
+			assertThat(directory.resolve(
+					"source/org/springframework/boot/AotProcessorTests_SampleApplication__BeanDefinitions.java"))
+							.exists().isRegularFile();
+			assertThat(directory.resolve(
+					"source/org/springframework/boot/AotProcessorTests_SampleApplication__BeanFactoryRegistrations.java"))
+							.exists().isRegularFile();
 			assertThat(directory.resolve("resource/META-INF/native-image/com.example/example/reflect-config.json"))
 					.exists().isRegularFile();
 			Path nativeImagePropertiesFile = directory
