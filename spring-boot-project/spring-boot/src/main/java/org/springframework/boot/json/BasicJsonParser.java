@@ -16,10 +16,7 @@
 
 package org.springframework.boot.json;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.util.StringUtils;
 
@@ -100,6 +97,9 @@ public class BasicJsonParser extends AbstractJsonParser {
 		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
 		for (String pair : tokenize(json)) {
 			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
+			if (values == null) {
+				throw new JsonParseException();
+			}
 			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
 			Object value = parseInternal(values[1]);
 			map.put(key, value);
