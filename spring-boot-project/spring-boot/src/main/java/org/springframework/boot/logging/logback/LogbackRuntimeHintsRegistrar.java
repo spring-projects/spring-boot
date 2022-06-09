@@ -62,22 +62,25 @@ import org.springframework.util.ClassUtils;
  */
 class LogbackRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
+	private static final Consumer<Builder> DEFAULT_HINT = (hint) -> {
+	};
+
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		if (!ClassUtils.isPresent("ch.qos.logback.classic.LoggerContext", classLoader)) {
 			return;
 		}
 		ReflectionHints reflection = hints.reflection();
-		registerHintsForLogbackLoggingSystemTypeChecks(reflection);
+		registerHintsForLogbackLoggingSystemTypeChecks(reflection, classLoader);
 		registerHintsForBuiltInLogbackConverters(reflection);
 		registerHintsForSpringBootConverters(reflection);
 	}
 
-	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection) {
-		Consumer<Builder> defaultHint = (hint) -> {
-		};
-		reflection.registerType(LoggerContext.class, defaultHint);
-		reflection.registerType(SLF4JBridgeHandler.class, defaultHint);
+	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
+		reflection.registerType(LoggerContext.class, DEFAULT_HINT);
+		if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", classLoader)) {
+			reflection.registerType(SLF4JBridgeHandler.class, DEFAULT_HINT);
+		}
 	}
 
 	private void registerHintsForBuiltInLogbackConverters(ReflectionHints reflection) {
