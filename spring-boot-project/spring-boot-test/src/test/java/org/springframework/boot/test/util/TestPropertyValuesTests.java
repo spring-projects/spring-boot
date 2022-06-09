@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,11 +141,17 @@ class TestPropertyValuesTests {
 	}
 
 	@Test
-	void applyToSystemPropertiesShouldSetSystemProperties() {
+	void applyToSystemPropertiesWithCallableShouldSetSystemProperties() {
 		TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
 			assertThat(System.getProperty("foo")).isEqualTo("bar");
 			return null;
 		});
+	}
+
+	@Test
+	void applyToSystemPropertiesWithRunnableShouldSetSystemProperties() {
+		TestPropertyValues.of("foo=bar")
+				.applyToSystemProperties(() -> assertThat(System.getProperty("foo")).isEqualTo("bar"));
 	}
 
 	@Test
