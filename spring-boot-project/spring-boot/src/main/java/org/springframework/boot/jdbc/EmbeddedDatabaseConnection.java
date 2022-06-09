@@ -53,7 +53,8 @@ public enum EmbeddedDatabaseConnection {
 	 * H2 Database Connection.
 	 */
 	H2(EmbeddedDatabaseType.H2, DatabaseDriver.H2.getDriverClassName(),
-			"jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", (url) -> url.contains(":h2:mem")),
+			"jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;OPTIMIZE_REUSE_RESULTS=FALSE",
+			(url) -> url.contains(":h2:mem")),
 
 	/**
 	 * Derby Database Connection.
