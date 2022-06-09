@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -41,14 +41,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveElasticsearchRestClientAutoConfiguration}.
+ * Tests for {@link ReactiveElasticsearchClientAutoConfiguration}.
  *
  * @author Brian Clozel
  */
-class ReactiveElasticsearchRestClientAutoConfigurationTests {
+class ReactiveElasticsearchClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchClientAutoConfiguration.class));
 
 	@Test
 	void configureShouldCreateDefaultBeans() {

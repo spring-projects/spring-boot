@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.net.URI;
 import java.time.Duration;
@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -47,18 +46,17 @@ import org.springframework.web.reactive.function.client.WebClient;
  * clients.
  *
  * @author Brian Clozel
- * @since 2.2.0
+ * @since 3.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveRestClients.class, WebClient.class, HttpClient.class })
-@EnableConfigurationProperties({ ElasticsearchProperties.class, ReactiveElasticsearchRestClientProperties.class })
-public class ReactiveElasticsearchRestClientAutoConfiguration {
+@EnableConfigurationProperties(ElasticsearchProperties.class)
+public class ReactiveElasticsearchClientAutoConfiguration {
 
 	private final ConsolidatedProperties properties;
 
-	ReactiveElasticsearchRestClientAutoConfiguration(ElasticsearchProperties properties,
-			ReactiveElasticsearchRestClientProperties restClientProperties) {
-		this.properties = new ConsolidatedProperties(properties, restClientProperties);
+	ReactiveElasticsearchClientAutoConfiguration(ElasticsearchProperties properties) {
+		this.properties = new ConsolidatedProperties(properties);
 	}
 
 	@Bean
@@ -98,14 +96,10 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 
 		private final ElasticsearchProperties properties;
 
-		private final ReactiveElasticsearchRestClientProperties restClientProperties;
-
 		private final List<URI> uris;
 
-		private ConsolidatedProperties(ElasticsearchProperties properties,
-				ReactiveElasticsearchRestClientProperties restClientProperties) {
+		private ConsolidatedProperties(ElasticsearchProperties properties) {
 			this.properties = properties;
-			this.restClientProperties = restClientProperties;
 			this.uris = properties.getUris().stream().map((s) -> s.startsWith("http") ? s : "http://" + s)
 					.map(URI::create).collect(Collectors.toList());
 		}
@@ -145,7 +139,7 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 		}
 
 		private DataSize getMaxInMemorySize() {
-			return this.restClientProperties.getMaxInMemorySize();
+			return this.properties.getWebclient().getMaxInMemorySize();
 		}
 
 		private String getPathPrefix() {

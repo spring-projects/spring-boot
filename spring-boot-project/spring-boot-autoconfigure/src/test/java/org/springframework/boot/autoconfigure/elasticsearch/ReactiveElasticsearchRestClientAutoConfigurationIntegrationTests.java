@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ReactiveElasticsearchRestClientAutoConfiguration}.
+ * Integration tests for {@link ReactiveElasticsearchClientAutoConfiguration}.
  *
  * @author Brian Clozel
  */
@@ -48,7 +48,7 @@ class ReactiveElasticsearchRestClientAutoConfigurationIntegrationTests {
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchClientAutoConfiguration.class));
 
 	@Test
 	void restClientCanQueryElasticsearchNode() {

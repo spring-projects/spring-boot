@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Configuration properties for Elasticsearch.
@@ -61,6 +62,10 @@ public class ElasticsearchProperties {
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 */
 	private String pathPrefix;
+
+	private final Restclient restclient = new Restclient();
+
+	private final Webclient webclient = new Webclient();
 
 	public List<String> getUris() {
 		return this.uris;
@@ -108,6 +113,72 @@ public class ElasticsearchProperties {
 
 	public void setPathPrefix(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
+	}
+
+	public Restclient getRestclient() {
+		return this.restclient;
+	}
+
+	public Webclient getWebclient() {
+		return this.webclient;
+	}
+
+	public static class Restclient {
+
+		private final Sniffer sniffer = new Sniffer();
+
+		public Sniffer getSniffer() {
+			return this.sniffer;
+		}
+
+		public static class Sniffer {
+
+			/**
+			 * Interval between consecutive ordinary sniff executions.
+			 */
+			private Duration interval = Duration.ofMinutes(5);
+
+			/**
+			 * Delay of a sniff execution scheduled after a failure.
+			 */
+			private Duration delayAfterFailure = Duration.ofMinutes(1);
+
+			public Duration getInterval() {
+				return this.interval;
+			}
+
+			public void setInterval(Duration interval) {
+				this.interval = interval;
+			}
+
+			public Duration getDelayAfterFailure() {
+				return this.delayAfterFailure;
+			}
+
+			public void setDelayAfterFailure(Duration delayAfterFailure) {
+				this.delayAfterFailure = delayAfterFailure;
+			}
+
+		}
+
+	}
+
+	public static class Webclient {
+
+		/**
+		 * Limit on the number of bytes that can be buffered whenever the input stream
+		 * needs to be aggregated.
+		 */
+		private DataSize maxInMemorySize;
+
+		public DataSize getMaxInMemorySize() {
+			return this.maxInMemorySize;
+		}
+
+		public void setMaxInMemorySize(DataSize maxInMemorySize) {
+			this.maxInMemorySize = maxInMemorySize;
+		}
+
 	}
 
 }
