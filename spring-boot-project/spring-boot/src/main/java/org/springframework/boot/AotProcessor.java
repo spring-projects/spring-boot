@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.springframework.aot.generate.DefaultGenerationContext;
@@ -59,6 +61,8 @@ public class AotProcessor {
 
 	private static final Consumer<ExecutableHint.Builder> INVOKE_CONSTRUCTOR_HINT = (hint) -> hint
 			.setModes(ExecutableMode.INVOKE);
+
+	private static final Map<ApplicationContext, AotProcessor> aotProcessors = new ConcurrentHashMap<>();
 
 	private final Class<?> application;
 
@@ -98,16 +102,30 @@ public class AotProcessor {
 	}
 
 	/**
+	 * Return the application class being processed.
+	 * @return the application class
+	 */
+	public Class<?> getApplication() {
+		return this.application;
+	}
+
+	/**
 	 * Trigger the processing of the application managed by this instance.
 	 */
-	public void process() {
+	void process() {
 		deleteExistingOutput();
 		AotProcessorHook hook = new AotProcessorHook();
 		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
 		GenericApplicationContext applicationContext = hook.getApplicationContext();
 		Assert.notNull(applicationContext, "No application context available after calling main method of '"
 				+ this.application.getName() + "'. Does it run a SpringApplication?");
-		performAotProcessing(applicationContext);
+		aotProcessors.put(applicationContext, this);
+		try {
+			performAotProcessing(applicationContext);
+		}
+		finally {
+			aotProcessors.remove(applicationContext);
+		}
 	}
 
 	private void deleteExistingOutput() {
@@ -210,10 +228,8 @@ public class AotProcessor {
 
 	public static void main(String[] args) throws Exception {
 		int requiredArgs = 6;
-		if (args.length < requiredArgs) {
-			throw new IllegalArgumentException("Usage: " + AotProcessor.class.getName()
-					+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
-		}
+		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + AotProcessor.class.getName()
+				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		String applicationName = args[0];
 		Path sourceOutput = Paths.get(args[1]);
 		Path resourceOutput = Paths.get(args[2]);
@@ -223,9 +239,18 @@ public class AotProcessor {
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
 		Class<?> application = Class.forName(applicationName);
-		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput,
-				classOutput, groupId, artifactId);
-		aotProcess.process();
+		new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput, classOutput, groupId, artifactId)
+				.process();
+	}
+
+	/**
+	 * Return the AOT processor that is actively processing the given
+	 * {@link ApplicationContext}.
+	 * @param applicationContext the application context to check
+	 * @return the {@link AotProcessor} or {@code null}
+	 */
+	public static AotProcessor getActive(ApplicationContext applicationContext) {
+		return aotProcessors.get(applicationContext);
 	}
 
 	/**
