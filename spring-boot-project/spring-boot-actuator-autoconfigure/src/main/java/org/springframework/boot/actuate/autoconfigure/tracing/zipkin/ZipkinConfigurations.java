@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import brave.handler.SpanHandler;
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import zipkin2.Span;
 import zipkin2.codec.BytesEncoder;
@@ -87,8 +86,8 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Reporter.class)
-		SpanHandler zipkinSpanHandler(Reporter<Span> spanReporter) {
-			return ZipkinSpanHandler.newBuilder(spanReporter).build();
+		ZipkinSpanHandler zipkinSpanHandler(Reporter<Span> spanReporter) {
+			return (ZipkinSpanHandler) ZipkinSpanHandler.newBuilder(spanReporter).build();
 		}
 
 	}
