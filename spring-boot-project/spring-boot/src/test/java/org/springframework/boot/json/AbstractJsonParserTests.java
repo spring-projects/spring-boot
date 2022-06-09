@@ -38,13 +38,6 @@ abstract class AbstractJsonParserTests {
 	protected abstract JsonParser getParser();
 
 	@Test
-	void malformedJson() {
-		String input = "[tru,erqett,{\"foo\":fatrue,true,true,true,tr''ue}]";
-		List<Object> list = this.parser.parseList(input);
-		assertThat(list).hasSize(3);
-	}
-
-	@Test
 	void simpleMap() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1}");
 		assertThat(map).hasSize(2);
