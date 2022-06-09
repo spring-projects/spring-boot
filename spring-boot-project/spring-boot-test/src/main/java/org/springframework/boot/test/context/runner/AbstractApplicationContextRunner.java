@@ -337,14 +337,30 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF run(ContextConsumer<? super A> consumer) {
-		withContextClassLoader(this.runnerConfiguration.classLoader,
-				() -> this.runnerConfiguration.systemProperties.applyToSystemProperties(() -> {
-					try (A context = createAssertableContext()) {
-						accept(consumer, context);
-					}
-					return null;
-				}));
+		withContextClassLoader(this.runnerConfiguration.classLoader, () -> this.runnerConfiguration.systemProperties
+				.applyToSystemProperties(() -> consumeAssertableContext(true, consumer)));
 		return (SELF) this;
+	}
+
+	/**
+	 * Prepare a new {@link ApplicationContext} based on the current state of this loader.
+	 * The context is consumed by the specified {@code consumer} and closed upon
+	 * completion. Unlike {@link #run(ContextConsumer)}, this method does not refresh the
+	 * consumed context.
+	 * @param consumer the consumer of the created {@link ApplicationContext}
+	 * @return this instance
+	 */
+	@SuppressWarnings("unchecked")
+	public SELF prepare(ContextConsumer<? super A> consumer) {
+		withContextClassLoader(this.runnerConfiguration.classLoader, () -> this.runnerConfiguration.systemProperties
+				.applyToSystemProperties(() -> consumeAssertableContext(false, consumer)));
+		return (SELF) this;
+	}
+
+	private void consumeAssertableContext(boolean refresh, ContextConsumer<? super A> consumer) {
+		try (A context = createAssertableContext(refresh)) {
+			accept(consumer, context);
+		}
 	}
 
 	private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
@@ -365,14 +381,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	@SuppressWarnings("unchecked")
-	private A createAssertableContext() {
+	private A createAssertableContext(boolean refresh) {
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return ApplicationContextAssertProvider.get(assertType, contextType, this::createAndLoadContext);
+		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh));
 	}
 
-	private C createAndLoadContext() {
+	private C createAndLoadContext(boolean refresh) {
 		C context = this.runnerConfiguration.contextFactory.get();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
@@ -384,7 +400,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			}
 		}
 		try {
-			configureContext(context);
+			configureContext(context, refresh);
 			return context;
 		}
 		catch (RuntimeException ex) {
@@ -393,7 +409,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	private void configureContext(C context) {
+	private void configureContext(C context, boolean refresh) {
 		if (this.runnerConfiguration.parent != null) {
 			context.setParent(this.runnerConfiguration.parent);
 		}
@@ -408,7 +424,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
 		}
-		context.refresh();
+		if (refresh) {
+			context.refresh();
+		}
 	}
 
 	private void accept(ContextConsumer<? super A> consumer, A context) {

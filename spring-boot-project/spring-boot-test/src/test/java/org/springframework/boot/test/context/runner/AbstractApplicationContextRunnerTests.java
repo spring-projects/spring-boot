@@ -47,6 +47,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -236,6 +237,16 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 		get().withInitializer((context) -> context.getEnvironment().setActiveProfiles("test"))
 				.withUserConfiguration(ProfileConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(ProfileConfig.class));
+	}
+
+	@Test
+	void prepareDoesNotRefreshContext() {
+		get().withUserConfiguration(FooConfig.class).prepare((context) -> {
+			assertThatIllegalStateException().isThrownBy(() -> context.getBean(String.class))
+					.withMessageContaining("not been refreshed");
+			context.getSourceApplicationContext().refresh();
+			assertThat(context.getBean(String.class)).isEqualTo("foo");
+		});
 	}
 
 	protected abstract T get();
