@@ -23,7 +23,7 @@ import org.springframework.beans.factory.BeanFactory;
  * injection.
  *
  * @author Stephane Nicoll
- * @since 3.0
+ * @since 3.0.0
  * @see ConstructorBinding
  */
 public abstract class ConstructorBound {

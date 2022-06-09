@@ -45,7 +45,7 @@ public final class ManagementContextFactory {
 
 	private final Class<? extends WebServerFactory> webServerFactoryClass;
 
-	private Class<?>[] autoConfigurationClasses;
+	private final Class<?>[] autoConfigurationClasses;
 
 	public ManagementContextFactory(WebApplicationType webApplicationType,
 			Class<? extends WebServerFactory> webServerFactoryClass, Class<?>... autoConfigurationClasses) {
