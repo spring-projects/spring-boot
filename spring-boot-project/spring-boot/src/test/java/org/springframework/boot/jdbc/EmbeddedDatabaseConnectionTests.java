@@ -46,7 +46,7 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void h2CustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.H2.getUrl("mydb"))
-				.isEqualTo("jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+				.isEqualTo("jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;OPTIMIZE_REUSE_RESULTS=FALSE");
 	}
 
 	@Test
