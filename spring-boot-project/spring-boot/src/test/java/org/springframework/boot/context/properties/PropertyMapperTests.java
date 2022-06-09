@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Chris Bono
  */
 class PropertyMapperTests {
 
@@ -205,6 +206,24 @@ class PropertyMapperTests {
 	void whenWhenValueMatchesShouldSupportChainedCalls() {
 		String result = this.map.from("123").when((s) -> s.contains("2")).when("123"::equals).toInstance(String::new);
 		assertThat(result).isEqualTo("123");
+	}
+
+	@Test
+	void whenValueNotFilteredIsInstanceWithDefaultShouldReturnFactoryInstance() {
+		String result = this.map.from("123").when((s) -> s.contains("2")).toInstance(String::new, "foo");
+		assertThat(result).isEqualTo("123");
+	}
+
+	@Test
+	void whenValueFilteredIsInstanceWithDefaultShouldReturnDefault() {
+		String result = this.map.from("123").when((s) -> s.contains("x")).toInstance(String::new, "foo");
+		assertThat(result).isEqualTo("foo");
+	}
+
+	@Test
+	void whenValueFilteredIsInstanceWithNullDefaultShouldReturnNull() {
+		String result = this.map.from("123").when((s) -> s.contains("x")).toInstance(String::new, null);
+		assertThat(result).isNull();
 	}
 
 	static class Count<T> implements Supplier<T> {
