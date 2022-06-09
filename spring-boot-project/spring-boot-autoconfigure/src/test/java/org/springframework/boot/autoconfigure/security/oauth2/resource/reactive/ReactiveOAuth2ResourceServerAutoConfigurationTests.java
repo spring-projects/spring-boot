@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSAlgorithm;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -114,6 +115,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	@Deprecated
 	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
@@ -126,6 +128,33 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingSingleJwsAlgorithm() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS512")
+				.run((context) -> {
+					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
+					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
+							.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
+							.containsExactlyInAnyOrder(JWSAlgorithm.RS512);
+				});
+	}
+
+	@Test
+	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingMultipleJwsAlgorithms() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS256, RS384, RS512")
+				.run((context) -> {
+					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
+					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
+							.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
+							.containsExactlyInAnyOrder(JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
+				});
+	}
+
+	@Test
+	@Deprecated
 	void autoConfigurationUsingPublicKeyValueShouldConfigureResourceServerUsingJwsAlgorithm() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
@@ -133,6 +162,29 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
 					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.jwsKeySelector.expectedJWSAlg")
 							.isEqualTo(JWSAlgorithm.RS384);
+				});
+	}
+
+	@Test
+	void autoConfigurationUsingPublicKeyValueShouldConfigureResourceServerUsingSingleJwsAlgorithm() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+				"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS384").run((context) -> {
+					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
+					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.jwsKeySelector.expectedJWSAlg")
+							.isEqualTo(JWSAlgorithm.RS384);
+				});
+	}
+
+	@Test
+	void autoConfigurationUsingPublicKeyValueWithMultipleJwsAlgorithmsShouldFail() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+				"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RSA256,RS384").run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure()).hasRootCauseMessage(
+							"Creating a JWT decoder using a public key requires exactly one JWS algorithm but 2 were "
+									+ "configured");
 				});
 	}
 

@@ -2059,6 +2059,11 @@
       "defaultValue": -100
     },
     {
+      "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
+      "description": "JSON Web Algorithm used for verifying the digital signatures.",
+      "defaultValue": "RS256"
+    },
+    {
       "name": "spring.session.hazelcast.flush-mode",
       "defaultValue": "on-save"
     },
