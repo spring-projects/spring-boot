@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,11 +112,11 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			SslConfigurationValidator.validateKeyAlias(keyStore, ssl.getKeyAlias());
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword().toCharArray() : null;
-			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
-				keyPassword = ssl.getKeyStorePassword().toCharArray();
+			String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
+			if (keyPassword == null) {
+				keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword() : ssl.getKeyStorePassword();
 			}
-			keyManagerFactory.init(keyStore, keyPassword);
+			keyManagerFactory.init(keyStore, (keyPassword != null) ? keyPassword.toCharArray() : null);
 			if (ssl.getKeyAlias() != null) {
 				return getConfigurableAliasKeyManagers(ssl, keyManagerFactory.getKeyManagers());
 			}

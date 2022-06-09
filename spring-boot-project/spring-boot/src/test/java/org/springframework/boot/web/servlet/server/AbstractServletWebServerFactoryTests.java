@@ -732,7 +732,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		ssl.setCertificate(cert);
 		ssl.setCertificatePrivateKey(privateKey);
 		ssl.setTrustCertificate(cert);
-		ssl.setKeyStorePassword("secret");
 		return ssl;
 	}
 
