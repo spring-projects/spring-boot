@@ -77,7 +77,7 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 
 [[web.security.oauth2.client]]
 ==== Client
-If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2/Open ID Connect clients.
+If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up OAuth2/Open ID Connect clients.
 This configuration makes use of the properties under `OAuth2ClientProperties`.
 The same properties are applicable to both servlet and reactive applications.
 
@@ -121,7 +121,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 ----
 
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.
-The provider needs to be configured with an `issuer-uri` which is the URI that the it asserts as its Issuer Identifier.
+The provider needs to be configured with an `issuer-uri` which is the URI that it asserts as its Issuer Identifier.
 For example, if the `issuer-uri` provided is "https://example.com", then an `OpenID Provider Configuration Request` will be made to "https://example.com/.well-known/openid-configuration".
 The result is expected to be an `OpenID Provider Configuration Response`.
 The following example shows how an OpenID Connect Provider can be configured with the `issuer-uri`:
