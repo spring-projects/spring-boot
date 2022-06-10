@@ -253,6 +253,7 @@ public class WebMvcAutoConfiguration {
 			configurer.setUseSuffixPatternMatch(this.mvcProperties.getPathmatch().isUseSuffixPattern());
 			configurer.setUseRegisteredSuffixPatternMatch(
 					this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
+			configurer.setUseTrailingSlashMatch(this.mvcProperties.getPathmatch().isUseTrailingSlashMatch());
 			this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
 				String servletUrlMapping = dispatcherPath.getServletUrlMapping();
 				if (servletUrlMapping.equals("/") && singleDispatcherServlet()) {

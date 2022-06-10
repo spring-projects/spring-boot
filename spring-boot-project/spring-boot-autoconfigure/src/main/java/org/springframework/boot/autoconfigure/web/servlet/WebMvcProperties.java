@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Brian Clozel
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.mvc")
@@ -419,6 +420,11 @@ public class WebMvcProperties {
 		 */
 		private boolean useRegisteredSuffixPattern = false;
 
+		/**
+		 * Whether optional trailing slashing match is enabled.
+		 */
+		private boolean useTrailingSlashMatch = true;
+
 		public MatchingStrategy getMatchingStrategy() {
 			return this.matchingStrategy;
 		}
@@ -449,6 +455,14 @@ public class WebMvcProperties {
 		@Deprecated
 		public void setUseRegisteredSuffixPattern(boolean useRegisteredSuffixPattern) {
 			this.useRegisteredSuffixPattern = useRegisteredSuffixPattern;
+		}
+
+		public boolean isUseTrailingSlashMatch() {
+			return this.useTrailingSlashMatch;
+		}
+
+		public void setUseTrailingSlashMatch(boolean useTrailingSlashMatch) {
+			this.useTrailingSlashMatch = useTrailingSlashMatch;
 		}
 
 	}

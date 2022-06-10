@@ -146,6 +146,7 @@ import static org.mockito.Mockito.mock;
  * @author Kristine Jetzke
  * @author Artsiom Yudovin
  * @author Scott Frederick
+ * @author Vedran Pavic
  */
 class WebMvcAutoConfigurationTests {
 
@@ -831,8 +832,10 @@ class WebMvcAutoConfigurationTests {
 	void defaultPathMatching() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+			assertThat(handlerMapping.usesPathPatterns()).isTrue();
 			assertThat(handlerMapping.useSuffixPatternMatch()).isFalse();
 			assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isFalse();
+			assertThat(handlerMapping.getPatternParser().isMatchOptionalTrailingSeparator()).isTrue();
 		});
 	}
 
@@ -855,6 +858,26 @@ class WebMvcAutoConfigurationTests {
 				.run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
 					assertThat(handlerMapping.usesPathPatterns()).isTrue();
+				});
+	}
+
+	@Test
+	void disableTrailingSlashMatchWithPathPatternParser() {
+		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy=path-pattern-parser",
+				"spring.mvc.pathmatch.use-trailing-slash-match=false").run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+					assertThat(handlerMapping.usesPathPatterns()).isTrue();
+					assertThat(handlerMapping.getPatternParser().isMatchOptionalTrailingSeparator()).isFalse();
+				});
+	}
+
+	@Test
+	void disableTrailingSlashMatchWithAntPathMatcher() {
+		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy=ant-path-matcher",
+				"spring.mvc.pathmatch.use-trailing-slash-match=false").run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+					assertThat(handlerMapping.usesPathPatterns()).isFalse();
+					assertThat(handlerMapping.useTrailingSlashMatch()).isFalse();
 				});
 	}
 
