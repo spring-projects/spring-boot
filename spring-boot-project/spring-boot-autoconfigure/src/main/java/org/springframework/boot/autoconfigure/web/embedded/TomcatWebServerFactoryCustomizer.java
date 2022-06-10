@@ -280,11 +280,6 @@ public class TomcatWebServerFactoryCustomizer
 			if (handler instanceof AbstractHttp11Protocol) {
 				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
 				protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
-				for (UpgradeProtocol upgradeProtocol : protocol.findUpgradeProtocols()) {
-					if (upgradeProtocol instanceof Http2Protocol) {
-						((Http2Protocol) upgradeProtocol).setMaxHeaderSize(maxHttpHeaderSize);
-					}
-				}
 			}
 		});
 	}
