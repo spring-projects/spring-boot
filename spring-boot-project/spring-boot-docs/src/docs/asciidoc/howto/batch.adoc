@@ -22,8 +22,10 @@ For more info about Spring Batch, see the {spring-batch}[Spring Batch project pa
 === Running Spring Batch Jobs on Startup
 Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` to one of your `@Configuration` classes.
 
-By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
-You can narrow down to a specific job or jobs by specifying `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
+If a single `Job` is found in the application context, it is executed on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
+If multiple `Job`s are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
+
+To disable running a `Job` found in the application content, set the configprop:spring.batch.job.enabled[] to `false.`
 
 See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[@EnableBatchProcessing] for more details.
 

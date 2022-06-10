@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +54,6 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
-import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -86,7 +86,7 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 
 	private JobRegistry jobRegistry;
 
-	private String jobNames;
+	private String jobName;
 
 	private Collection<Job> jobs = Collections.emptySet();
 
@@ -110,6 +110,13 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		this.jobRepository = jobRepository;
 	}
 
+	@PostConstruct
+	public void validate() {
+		if (this.jobs.size() > 1 && !StringUtils.hasText(this.jobName)) {
+			throw new IllegalArgumentException("Job name must be specified in case of multiple jobs");
+		}
+	}
+
 	public void setOrder(int order) {
 		this.order = order;
 	}
@@ -129,8 +136,8 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		this.jobRegistry = jobRegistry;
 	}
 
-	public void setJobNames(String jobNames) {
-		this.jobNames = jobNames;
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 
 	@Autowired(required = false)
@@ -162,9 +169,8 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 
 	private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
 		for (Job job : this.jobs) {
-			if (StringUtils.hasText(this.jobNames)) {
-				String[] jobsToRun = this.jobNames.split(",");
-				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
+			if (StringUtils.hasText(this.jobName)) {
+				if (!this.jobName.equals(job.getName())) {
 					logger.debug(LogMessage.format("Skipped job: %s", job.getName()));
 					continue;
 				}
@@ -174,19 +180,15 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 	}
 
 	private void executeRegisteredJobs(JobParameters jobParameters) throws JobExecutionException {
-		if (this.jobRegistry != null && StringUtils.hasText(this.jobNames)) {
-			String[] jobsToRun = this.jobNames.split(",");
-			for (String jobName : jobsToRun) {
-				try {
-					Job job = this.jobRegistry.getJob(jobName);
-					if (this.jobs.contains(job)) {
-						continue;
-					}
+		if (this.jobRegistry != null && StringUtils.hasText(this.jobName)) {
+			try {
+				Job job = this.jobRegistry.getJob(this.jobName);
+				if (!this.jobs.contains(job)) {
 					execute(job, jobParameters);
 				}
-				catch (NoSuchJobException ex) {
-					logger.debug(LogMessage.format("No job found in registry for job name: %s", jobName));
-				}
+			}
+			catch (NoSuchJobException ex) {
+				logger.debug(LogMessage.format("No job found in registry for job name: %s", this.jobName));
 			}
 		}
 	}
