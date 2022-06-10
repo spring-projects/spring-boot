@@ -138,6 +138,20 @@ class BraveAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldNotSupplyBraveBeansIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(Tracing.class);
+			assertThat(context).doesNotHaveBean(Tracer.class);
+			assertThat(context).doesNotHaveBean(CurrentTraceContext.class);
+			assertThat(context).doesNotHaveBean(Factory.class);
+			assertThat(context).doesNotHaveBean(Sampler.class);
+			assertThat(context).doesNotHaveBean(HttpTracing.class);
+			assertThat(context).doesNotHaveBean(HttpServerHandler.class);
+			assertThat(context).doesNotHaveBean(HttpClientHandler.class);
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomBraveConfiguration {
 

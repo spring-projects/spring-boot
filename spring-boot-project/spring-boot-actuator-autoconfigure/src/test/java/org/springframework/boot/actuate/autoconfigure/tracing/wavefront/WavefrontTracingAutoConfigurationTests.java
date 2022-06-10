@@ -80,6 +80,18 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldNotSupplyBeansIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+				.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(ApplicationTags.class);
+					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
+					assertThat(context).doesNotHaveBean(SpanMetrics.class);
+					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
+					assertThat(context).doesNotHaveBean(WavefrontOtelSpanHandler.class);
+				});
+	}
+
+	@Test
 	void shouldSupplyMeterRegistrySpanMetricsIfMeterRegistryIsAvailable() {
 		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class, MeterRegistryConfiguration.class)
 				.run((context) -> {

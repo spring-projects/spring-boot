@@ -21,6 +21,7 @@ import zipkin2.codec.BytesEncoder;
 import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.Sender;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.ReporterConfiguration;
@@ -46,6 +47,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(Sender.class)
 @Import({ SenderConfiguration.class, ReporterConfiguration.class, BraveConfiguration.class,
 		OpenTelemetryConfiguration.class })
+@ConditionalOnEnabledTracing
 public class ZipkinAutoConfiguration {
 
 	@Bean

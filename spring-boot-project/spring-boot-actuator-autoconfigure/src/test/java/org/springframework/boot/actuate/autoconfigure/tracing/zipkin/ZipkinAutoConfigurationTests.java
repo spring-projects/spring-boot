@@ -58,6 +58,12 @@ class ZipkinAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldNotSupplyBeansIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomConfiguration {
 

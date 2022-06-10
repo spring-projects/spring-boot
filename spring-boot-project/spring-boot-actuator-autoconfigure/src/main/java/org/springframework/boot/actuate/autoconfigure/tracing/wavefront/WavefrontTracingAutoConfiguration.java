@@ -30,6 +30,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Tracing;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontSenderConfiguration;
@@ -54,6 +55,7 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(WavefrontProperties.class)
 @ConditionalOnBean(WavefrontSender.class)
 @Import(WavefrontSenderConfiguration.class)
+@ConditionalOnEnabledTracing
 public class WavefrontTracingAutoConfiguration {
 
 	/**
