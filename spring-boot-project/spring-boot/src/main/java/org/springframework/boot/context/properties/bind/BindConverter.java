@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,10 @@ final class BindConverter {
 		for (ConversionService delegate : this.delegates) {
 			try {
 				if (delegate.canConvert(sourceType, targetType)) {
-					return delegate.convert(source, sourceType, targetType);
+					Object converted = delegate.convert(source, sourceType, targetType);
+					if (targetType.getType().isInstance(converted)) {
+						return converted;
+					}
 				}
 			}
 			catch (ConversionException ex) {
