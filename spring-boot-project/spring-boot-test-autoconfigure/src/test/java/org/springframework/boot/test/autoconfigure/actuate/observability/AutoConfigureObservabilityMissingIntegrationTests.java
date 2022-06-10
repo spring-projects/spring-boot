@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.actuate.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.observability;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -28,25 +30,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test to verify behaviour when
- * {@link AutoConfigureMetrics @AutoConfigureMetrics} is present on the test class.
+ * {@link AutoConfigureObservability @AutoConfigureObservability} is not present on the
+ * test class.
  *
  * @author Chris Bono
+ * @author Moritz Halbritter
  */
-@SuppressWarnings("deprecation")
 @SpringBootTest
-@AutoConfigureMetrics
-class AutoConfigureMetricsPresentIntegrationTests {
+class AutoConfigureObservabilityMissingIntegrationTests {
 
 	@Test
-	void customizerDoesNotDisableAvailableMeterRegistriesWhenAnnotationPresent(
+	void customizerRunsAndOnlyEnablesSimpleMeterRegistryWhenNoAnnotationPresent(
 			@Autowired ApplicationContext applicationContext) {
-		assertThat(applicationContext.getBeansOfType(PrometheusMeterRegistry.class)).hasSize(1);
+		assertThat(applicationContext.getBean(MeterRegistry.class)).isInstanceOf(SimpleMeterRegistry.class);
+		assertThat(applicationContext.getBeansOfType(PrometheusMeterRegistry.class)).isEmpty();
 	}
 
 	@Test
-	void customizerDoesNotSetExclusionPropertiesWhenAnnotationPresent(@Autowired Environment environment) {
-		assertThat(environment.containsProperty("management.defaults.metrics.export.enabled")).isFalse();
-		assertThat(environment.containsProperty("management.simple.metrics.export.enabled")).isFalse();
+	void customizerRunsAndSetsExclusionPropertiesWhenNoAnnotationPresent(@Autowired Environment environment) {
+		assertThat(environment.getProperty("management.defaults.metrics.export.enabled")).isEqualTo("false");
+		assertThat(environment.getProperty("management.simple.metrics.export.enabled")).isEqualTo("true");
+		assertThat(environment.getProperty("management.tracing.enabled")).isEqualTo("false");
 	}
 
 }

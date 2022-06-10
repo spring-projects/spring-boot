@@ -226,7 +226,7 @@ include::code:MyJmxTests[]
 ==== Using Metrics
 Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using `@SpringBootTest`.
 
-If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureMetrics`.
+If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureObservability`.
 
 
 

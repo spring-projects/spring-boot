@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.actuate.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.observability;
 
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -28,14 +28,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test to verify behaviour when
- * {@link AutoConfigureMetrics @AutoConfigureMetrics} is present on the test class.
+ * {@link AutoConfigureObservability @AutoConfigureObservability} is present on the test
+ * class.
  *
  * @author Chris Bono
+ * @author Moritz Halbritter
  */
-@SuppressWarnings("deprecation")
 @SpringBootTest
-@AutoConfigureMetrics
-class AutoConfigureMetricsPresentIntegrationTests {
+@AutoConfigureObservability
+class AutoConfigureObservabilityPresentIntegrationTests {
 
 	@Test
 	void customizerDoesNotDisableAvailableMeterRegistriesWhenAnnotationPresent(
@@ -47,6 +48,7 @@ class AutoConfigureMetricsPresentIntegrationTests {
 	void customizerDoesNotSetExclusionPropertiesWhenAnnotationPresent(@Autowired Environment environment) {
 		assertThat(environment.containsProperty("management.defaults.metrics.export.enabled")).isFalse();
 		assertThat(environment.containsProperty("management.simple.metrics.export.enabled")).isFalse();
+		assertThat(environment.containsProperty("management.tracing.enabled")).isFalse();
 	}
 
 }

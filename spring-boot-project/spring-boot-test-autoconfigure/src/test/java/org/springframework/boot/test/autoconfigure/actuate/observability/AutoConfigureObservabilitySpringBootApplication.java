@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.actuate.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.observability;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -25,13 +25,14 @@ import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfigurati
 
 /**
  * Example {@link SpringBootApplication @SpringBootApplication} for use with
- * {@link AutoConfigureMetrics @AutoConfigureMetrics} tests.
+ * {@link AutoConfigureObservability @AutoConfigureObservability} tests.
  *
  * @author Chris Bono
+ * @author Moritz Halbritter
  */
 @SpringBootConfiguration
-@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, MongoAutoConfiguration.class,
-		MongoReactiveAutoConfiguration.class })
-class AutoConfigureMetricsSpringBootApplication {
+@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+		MongoAutoConfiguration.class })
+class AutoConfigureObservabilitySpringBootApplication {
 
 }

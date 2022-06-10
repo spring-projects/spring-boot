@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.actuate.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.observability;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,22 +23,29 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
-
 /**
- * Annotation that can be applied to a test class to enable auto-configuration for metrics
- * exporters.
+ * Annotation that can be applied to a test class to enable auto-configuration for
+ * observability.
  *
- * @author Chris Bono
- * @since 2.4.0
- * @deprecated use {@link AutoConfigureObservability} instead
+ * @author Moritz Halbritter
+ * @since 3.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Deprecated
-@AutoConfigureObservability(tracing = false)
-public @interface AutoConfigureMetrics {
+public @interface AutoConfigureObservability {
+
+	/**
+	 * Whether metrics should be enabled in the test.
+	 * @return whether metrics should be enabled in the test
+	 */
+	boolean metrics() default true;
+
+	/**
+	 * Whether tracing should be enabled in the test.
+	 * @return whether metrics should be enabled in the test
+	 */
+	boolean tracing() default true;
 
 }
