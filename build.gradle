@@ -32,11 +32,6 @@ allprojects {
 		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
-		mavenLocal {
-			content {
-				includeGroup "io.spring.javaformat"
-			}
-		}
 	}
 
 	configurations.all {
