@@ -102,7 +102,7 @@ class R2dbcAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.r2dbc.url:r2dbc:pool:h2:mem:///" + randomDatabaseName() + "?maxSize=12",
 						"spring.r2dbc.pool.max-size=15")
-				.run((context) -> assertThat(context).getFailure().getRootCause()
+				.run((context) -> assertThat(context).getFailure().rootCause()
 						.isInstanceOf(MultipleConnectionPoolConfigurationsException.class));
 	}
 
@@ -111,7 +111,7 @@ class R2dbcAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.r2dbc.url:r2dbc:pool:h2:mem:///" + randomDatabaseName() + "?maxSize=12",
 						"spring.r2dbc.pool.enabled=false")
-				.run((context) -> assertThat(context).getFailure().getRootCause()
+				.run((context) -> assertThat(context).getFailure().rootCause()
 						.isInstanceOf(MultipleConnectionPoolConfigurationsException.class));
 	}
 

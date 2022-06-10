@@ -863,7 +863,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.mvc.pathmatch.matching-strategy:path_pattern_parser",
 						"spring.mvc.pathmatch.use-suffix-pattern:true")
-				.run((context) -> assertThat(context.getStartupFailure()).getRootCause()
+				.run((context) -> assertThat(context.getStartupFailure()).rootCause()
 						.isInstanceOf(IncompatibleConfigurationException.class));
 	}
 

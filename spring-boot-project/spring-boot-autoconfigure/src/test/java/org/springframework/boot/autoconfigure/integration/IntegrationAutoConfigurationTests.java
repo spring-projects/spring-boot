@@ -433,7 +433,7 @@ class IntegrationAutoConfigurationTests {
 						"spring.integration.poller.fixed-delay=1s")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
-						.getRootCause()
+						.rootCause()
 						.asInstanceOf(
 								InstanceOfAssertFactories.type(MutuallyExclusiveConfigurationPropertiesException.class))
 						.satisfies((ex) -> {
