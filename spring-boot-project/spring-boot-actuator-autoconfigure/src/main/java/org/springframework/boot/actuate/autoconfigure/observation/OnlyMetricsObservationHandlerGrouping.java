@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
-import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationRegistry.ObservationConfig;
@@ -39,9 +38,10 @@ import io.micrometer.observation.ObservationRegistry.ObservationConfig;
 class OnlyMetricsObservationHandlerGrouping implements ObservationHandlerGrouping {
 
 	@Override
-	public void apply(Collection<ObservationHandler<Context>> handlers, ObservationConfig config) {
-		List<ObservationHandler<Context>> meterObservationHandlers = new ArrayList<>();
-		for (ObservationHandler<Context> handler : handlers) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void apply(Collection<ObservationHandler<?>> handlers, ObservationConfig config) {
+		List<ObservationHandler<?>> meterObservationHandlers = new ArrayList<>();
+		for (ObservationHandler<?> handler : handlers) {
 			if (handler instanceof MeterObservationHandler<?>) {
 				meterObservationHandlers.add(handler);
 			}
@@ -50,8 +50,10 @@ class OnlyMetricsObservationHandlerGrouping implements ObservationHandlerGroupin
 			}
 		}
 
+		// The ugly raw casts can be removed once
+		// https://github.com/micrometer-metrics/tracing/issues/27 is resolved
 		if (!meterObservationHandlers.isEmpty()) {
-			config.observationHandler(new FirstMatchingCompositeObservationHandler(meterObservationHandlers));
+			config.observationHandler(new FirstMatchingCompositeObservationHandler((List) meterObservationHandlers));
 		}
 	}
 

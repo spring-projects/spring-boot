@@ -127,6 +127,19 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfiguresObservationHandlerWithCustomContext() {
+		this.contextRunner.withUserConfiguration(ObservationHandlerWithCustomContextConfiguration.class)
+				.run((context) -> {
+					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+					List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
+					CustomContext customContext = new CustomContext();
+					Observation.start("test-observation", customContext, observationRegistry);
+					assertThat(handlers).hasSize(1);
+					assertThat(handlers.get(0)).isInstanceOf(ObservationHandlerWithCustomContext.class);
+				});
+	}
+
+	@Test
 	void autoConfiguresObservationHandlerWhenTracingIsActive() {
 		this.tracingContextRunner.withUserConfiguration(ObservationHandlersTracing.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
@@ -218,6 +231,17 @@ class ObservationAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(CalledHandlersConfiguration.class)
+	static class ObservationHandlerWithCustomContextConfiguration {
+
+		@Bean
+		ObservationHandlerWithCustomContext observationHandlerWithCustomContext(CalledHandlers calledHandlers) {
+			return new ObservationHandlerWithCustomContext(calledHandlers);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(CalledHandlersConfiguration.class)
 	static class ObservationHandlersTracing {
 
 		@Bean
@@ -295,6 +319,30 @@ class ObservationAutoConfigurationTests {
 		public boolean supportsContext(Context context) {
 			return true;
 		}
+
+	}
+
+	private static class ObservationHandlerWithCustomContext implements ObservationHandler<CustomContext> {
+
+		private final CalledHandlers calledHandlers;
+
+		ObservationHandlerWithCustomContext(CalledHandlers calledHandlers) {
+			this.calledHandlers = calledHandlers;
+		}
+
+		@Override
+		public void onStart(CustomContext context) {
+			this.calledHandlers.onCalled(this);
+		}
+
+		@Override
+		public boolean supportsContext(Context context) {
+			return context instanceof CustomContext;
+		}
+
+	}
+
+	private static class CustomContext extends Context {
 
 	}
 
