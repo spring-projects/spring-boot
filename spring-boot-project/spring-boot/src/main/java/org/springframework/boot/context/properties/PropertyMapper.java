@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -310,20 +311,18 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Complete the mapping by creating a new instance from the non-filtered value or
-		 * using the specified default instance when the value is filtered.
+		 * Complete the mapping by creating a new instance from the non-filtered value.
 		 * @param <R> the resulting type
 		 * @param factory the factory used to create the instance
-		 * @param defaultInstance the instance to use if the value has been filtered
-		 * @return the instance
+		 * @return the created instance or empty when the value is filtered
 		 */
-		public <R> R toInstance(Function<T, R> factory, R defaultInstance) {
+		public <R> Optional<R> toOptionalInstance(Function<T, R> factory) {
 			Assert.notNull(factory, "Factory must not be null");
 			T value = this.supplier.get();
 			if (!this.predicate.test(value)) {
-				return defaultInstance;
+				return Optional.empty();
 			}
-			return factory.apply(value);
+			return Optional.ofNullable(factory.apply(value));
 		}
 
 		/**
