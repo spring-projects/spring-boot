@@ -23,27 +23,26 @@ import com.wavefront.sdk.common.clients.WavefrontClient.Builder;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Wavefront common infrastructure.
- * Metrics are auto-configured in {@link WavefrontMetricsExportAutoConfiguration}, and
- * tracing is auto-configured in {@link WavefrontTracingAutoConfiguration}.
+ * Configuration for Wavefront common infrastructure. This configuration is imported from
+ * {@link WavefrontMetricsExportAutoConfiguration} and
+ * {@link WavefrontTracingAutoConfiguration}.
  *
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-@AutoConfiguration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WavefrontSender.class)
 @EnableConfigurationProperties(WavefrontProperties.class)
-public class WavefrontAutoConfiguration {
+public class WavefrontSenderConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

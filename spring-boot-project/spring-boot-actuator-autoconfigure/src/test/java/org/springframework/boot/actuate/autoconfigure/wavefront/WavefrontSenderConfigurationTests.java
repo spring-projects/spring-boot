@@ -33,14 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WavefrontAutoConfiguration}.
+ * Tests for {@link WavefrontSenderConfiguration}.
  *
  * @author Moritz Halbritter
  */
-class WavefrontAutoConfigurationTests {
+class WavefrontSenderConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WavefrontAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(WavefrontSenderConfiguration.class));
 
 	@Test
 	void shouldNotFailIfWavefrontIsMissing() {
