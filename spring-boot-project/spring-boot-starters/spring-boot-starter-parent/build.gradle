@@ -199,11 +199,17 @@ publishing.publications.withType(MavenPublication) {
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
 												delegate.resource('META-INF/spring.handlers')
 											}
-											transformer(implementation: 'org.springframework.boot.maven.PropertiesMergingResourceTransformer') {
-												delegate.resource('META-INF/spring.factories')
-											}
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
 												delegate.resource('META-INF/spring.schemas')
+											}
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
+												delegate.resource('META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports')
+											}
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
+												delegate.resource('META-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports')
+											}
+											transformer(implementation: 'org.springframework.boot.maven.PropertiesMergingResourceTransformer') {
+												delegate.resource('META-INF/spring.factories')
 											}
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ServicesResourceTransformer')
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ManifestResourceTransformer') {
