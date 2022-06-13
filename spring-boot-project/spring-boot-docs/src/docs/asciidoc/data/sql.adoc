@@ -351,7 +351,7 @@ In simple setups, a `SecurityFilterChain` like the following can be used:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/data/sql/h2webconsole/springsecurity/DevProfileSecurityConfiguration.java[]
+include::{docs-java}/data/sql/h2webconsole/springsecurity/DevProfileSecurityConfiguration.java[tag=!customizer]
 ----
 
 WARNING: The H2 console is only intended for use during development.
