@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
@@ -106,6 +107,7 @@ public class GraphQlWebMvcAutoConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
 			GraphQlSource graphQlSource, GraphQlProperties properties) {
 		String path = properties.getPath();

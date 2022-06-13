@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.graphql.servlet;
 
+import java.util.Map;
+
 import graphql.schema.idl.TypeRuntimeWiring;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
@@ -40,6 +43,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.function.RouterFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -153,6 +157,17 @@ class GraphQlWebMvcAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class));
 	}
 
+	@Test
+	void routerFunctionShouldHaveOrderZero() throws Exception {
+		this.contextRunner.withUserConfiguration(CustomRouterFunctions.class).run((context) -> {
+			Map<String, ?> beans = context.getBeansOfType(RouterFunction.class);
+			Object[] ordered = context.getBeanProvider(RouterFunction.class).orderedStream().toArray();
+			assertThat(beans.get("before")).isSameAs(ordered[0]);
+			assertThat(beans.get("graphQlRouterFunction")).isSameAs(ordered[1]);
+			assertThat(beans.get("after")).isSameAs(ordered[2]);
+		});
+	}
+
 	private void testWith(MockMvcConsumer mockMvcConsumer) {
 		this.contextRunner.run((context) -> {
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).defaultRequest(
@@ -186,6 +201,23 @@ class GraphQlWebMvcAutoConfigurationTests {
 		WebGraphQlInterceptor customWebGraphQlInterceptor() {
 			return (webInput, interceptorChain) -> interceptorChain.next(webInput)
 					.doOnNext((output) -> output.getResponseHeaders().add("X-Custom-Header", "42"));
+		}
+
+	}
+
+	@Configuration
+	static class CustomRouterFunctions {
+
+		@Bean
+		@Order(-1)
+		RouterFunction<?> before() {
+			return (r) -> null;
+		}
+
+		@Bean
+		@Order(1)
+		RouterFunction<?> after() {
+			return (r) -> null;
 		}
 
 	}
