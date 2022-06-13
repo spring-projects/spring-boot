@@ -22,16 +22,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration(proxyBeanMethods = false)
 public class MyWebFluxSecurityConfiguration {
 
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		http.authorizeExchange((spec) -> {
-			spec.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-			spec.pathMatchers("/foo", "/bar").authenticated();
+		http.authorizeExchange((exchange) -> {
+			exchange.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
+			exchange.pathMatchers("/foo", "/bar").authenticated();
 		});
-		http.formLogin();
+		http.formLogin(withDefaults());
 		return http.build();
 	}
 
