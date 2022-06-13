@@ -28,11 +28,11 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -43,23 +43,36 @@ import org.springframework.web.client.RestTemplate;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(ZipkinProperties.class)
+	@Import({ UrlConnectionSenderConfiguration.class, RestTemplateSenderConfiguration.class })
 	static class SenderConfiguration {
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(URLConnectionSender.class)
+	@EnableConfigurationProperties(ZipkinProperties.class)
+	static class UrlConnectionSenderConfiguration {
+
 		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnClass(URLConnectionSender.class)
-		Sender urlConnectionSender(ZipkinProperties properties) {
+		@ConditionalOnMissingBean(Sender.class)
+		URLConnectionSender urlConnectionSender(ZipkinProperties properties) {
 			return URLConnectionSender.newBuilder().connectTimeout((int) properties.getConnectTimeout().getSeconds())
 					.readTimeout((int) properties.getReadTimeout().getSeconds()).endpoint(properties.getEndpoint())
 					.build();
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(RestTemplate.class)
+	@EnableConfigurationProperties(ZipkinProperties.class)
+	static class RestTemplateSenderConfiguration {
+
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(Sender.class)
 		@ConditionalOnBean(RestTemplateBuilder.class)
-		@ConditionalOnMissingClass("zipkin2.reporter.urlconnection.URLConnectionSender")
-		Sender restTemplateSender(ZipkinProperties properties, RestTemplateBuilder restTemplateBuilder) {
+		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
+				RestTemplateBuilder restTemplateBuilder) {
 			RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(properties.getConnectTimeout())
 					.setReadTimeout(properties.getReadTimeout()).build();
 			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplate);
@@ -73,7 +86,7 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Sender.class)
-		Reporter<Span> spanReporter(Sender sender, BytesEncoder<Span> encoder) {
+		AsyncReporter<Span> spanReporter(Sender sender, BytesEncoder<Span> encoder) {
 			return AsyncReporter.builder(sender).build(encoder);
 		}
 
