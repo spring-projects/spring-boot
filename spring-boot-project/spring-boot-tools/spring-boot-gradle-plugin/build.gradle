@@ -97,6 +97,8 @@ javadoc {
 		splitIndex = true
 		use = true
 		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
+		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc/"
+		links "https://docs.oracle.com/javase/8/docs/api/"
 	}
 }
 
