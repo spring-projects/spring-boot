@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,14 +188,14 @@ class HealthEndpointWebIntegrationTests {
 		@Bean
 		HealthEndpoint healthEndpoint(HealthContributorRegistry healthContributorRegistry,
 				HealthEndpointGroups healthEndpointGroups) {
-			return new HealthEndpoint(healthContributorRegistry, healthEndpointGroups);
+			return new HealthEndpoint(healthContributorRegistry, healthEndpointGroups, null);
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.SERVLET)
 		HealthEndpointWebExtension healthWebEndpointExtension(HealthContributorRegistry healthContributorRegistry,
 				HealthEndpointGroups healthEndpointGroups) {
-			return new HealthEndpointWebExtension(healthContributorRegistry, healthEndpointGroups);
+			return new HealthEndpointWebExtension(healthContributorRegistry, healthEndpointGroups, null);
 		}
 
 		@Bean
@@ -203,7 +203,8 @@ class HealthEndpointWebIntegrationTests {
 		ReactiveHealthEndpointWebExtension reactiveHealthWebEndpointExtension(
 				ReactiveHealthContributorRegistry reactiveHealthContributorRegistry,
 				HealthEndpointGroups healthEndpointGroups) {
-			return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, healthEndpointGroups);
+			return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, healthEndpointGroups,
+					null);
 		}
 
 		@Bean

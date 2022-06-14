@@ -72,8 +72,9 @@ class HealthEndpointWebExtensionConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	HealthEndpointWebExtension healthEndpointWebExtension(HealthContributorRegistry healthContributorRegistry,
-			HealthEndpointGroups groups) {
-		return new HealthEndpointWebExtension(healthContributorRegistry, groups);
+			HealthEndpointGroups groups, HealthEndpointProperties properties) {
+		return new HealthEndpointWebExtension(healthContributorRegistry, groups,
+				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
 	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
