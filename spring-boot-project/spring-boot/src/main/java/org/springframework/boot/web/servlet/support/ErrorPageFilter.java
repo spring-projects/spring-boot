@@ -44,7 +44,6 @@ import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.NestedServletException;
 
 /**
  * A Servlet {@link Filter} that provides an {@link ErrorPageRegistry} for non-embedded
@@ -133,8 +132,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 		}
 		catch (Throwable ex) {
 			Throwable exceptionToHandle = ex;
-			if (ex instanceof NestedServletException) {
-				Throwable rootCause = ((NestedServletException) ex).getRootCause();
+			if (ex instanceof ServletException) {
+				Throwable rootCause = ((ServletException) ex).getRootCause();
 				if (rootCause != null) {
 					exceptionToHandle = rootCause;
 				}

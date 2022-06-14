@@ -78,7 +78,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
-import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -191,7 +190,8 @@ class WebMvcMetricsFilterTests {
 		assertThatCode(() -> this.mvc
 				.perform(get("/api/filterError").header(CustomBehaviorFilter.TEST_SERVLET_EXCEPTION_HEADER, "throw")))
 						.isInstanceOf(ServletException.class);
-		Id meterId = this.registry.get("http.server.requests").tags("exception", "ServletException").timer().getId();
+		Id meterId = this.registry.get("http.server.requests").tags("exception", "IllegalStateException").timer()
+				.getId();
 		assertThat(meterId.getTag("status")).isEqualTo("500");
 	}
 
@@ -253,8 +253,7 @@ class WebMvcMetricsFilterTests {
 	void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
 				.andExpect(request().asyncStarted()).andReturn();
-		assertThatExceptionOfType(NestedServletException.class)
-				.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
+		assertThatExceptionOfType(ServletException.class).isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
 				.withRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.get("http.server.requests").tags("uri", "/api/c1/completableFutureException").timer()
 				.count()).isEqualTo(1);
@@ -553,7 +552,7 @@ class WebMvcMetricsFilterTests {
 				return;
 			}
 			if (request.getHeader(TEST_SERVLET_EXCEPTION_HEADER) != null) {
-				throw new ServletException();
+				throw new ServletException(new IllegalStateException());
 			}
 			filterChain.doFilter(request, response);
 		}

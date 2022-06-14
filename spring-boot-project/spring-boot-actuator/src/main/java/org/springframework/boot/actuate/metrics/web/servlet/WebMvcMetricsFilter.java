@@ -40,7 +40,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.util.NestedServletException;
 
 /**
  * Intercepts incoming HTTP requests handled by Spring MVC handlers and records metrics
@@ -104,13 +103,13 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		}
 		catch (Exception ex) {
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			record(timingContext, request, response, unwrapNestedServletException(ex));
+			record(timingContext, request, response, unwrapServletException(ex));
 			throw ex;
 		}
 	}
 
-	private Throwable unwrapNestedServletException(Throwable ex) {
-		return (ex instanceof NestedServletException) ? ex.getCause() : ex;
+	private Throwable unwrapServletException(Throwable ex) {
+		return (ex instanceof ServletException) ? ex.getCause() : ex;
 	}
 
 	private TimingContext startAndAttachTimingContext(HttpServletRequest request) {
