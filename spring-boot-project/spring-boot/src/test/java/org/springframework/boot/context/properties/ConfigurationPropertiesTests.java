@@ -749,7 +749,7 @@ class ConfigurationPropertiesTests {
 				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz"))
 				.withMessageContaining("Could not bind properties to "
 						+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
-						+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
+						+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false");
 	}
 
 	@Test
@@ -810,8 +810,8 @@ class ConfigurationPropertiesTests {
 	@Test
 	void loadWhenConfigurationPropertiesInjectsAnotherBeanShouldNotFail() {
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(OtherInjectPropertiesConfiguration.class))
-				.withMessageContaining(OtherInjectedProperties.class.getName())
+				.isThrownBy(() -> load(OtherInjectPropertiesConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class).withMessageContaining(OtherInjectedProperties.class.getName())
 				.withMessageContaining("Failed to bind properties under 'test'");
 	}
 

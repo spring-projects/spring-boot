@@ -204,6 +204,7 @@ class ServletWebServerApplicationContextTests {
 	@Test
 	void missingServletWebServerFactory() {
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+				.havingRootCause()
 				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to missing "
 						+ "ServletWebServerFactory bean");
 	}
@@ -214,7 +215,7 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
+				.havingRootCause().withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
 						+ "multiple ServletWebServerFactory beans");
 
 	}

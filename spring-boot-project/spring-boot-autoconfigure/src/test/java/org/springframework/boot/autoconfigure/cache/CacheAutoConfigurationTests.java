@@ -125,8 +125,8 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	void notSupportedCachingMode() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=foobar")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
-						.hasMessageContaining("Failed to bind properties under 'spring.cache.type'"));
+				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class).rootCause()
+						.hasMessageContaining("No enum constant").hasMessageContaining("foobar"));
 	}
 
 	@Test

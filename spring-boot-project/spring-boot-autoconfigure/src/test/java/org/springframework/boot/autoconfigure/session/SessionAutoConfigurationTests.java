@@ -63,8 +63,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	void contextFailsIfMultipleStoresAreAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasRootCauseInstanceOf(NonUniqueSessionRepositoryException.class);
-			assertThat(context).getFailure()
+			assertThat(context).getFailure().rootCause().isInstanceOf(NonUniqueSessionRepositoryException.class)
 					.hasMessageContaining("Multiple session repository candidates are available");
 		});
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,8 @@ class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfig
 	void severalCandidatesWithNoSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasRootCauseInstanceOf(NonUniqueSessionRepositoryException.class);
-			assertThat(context).getFailure()
-					.hasMessageContaining("Multiple session repository candidates are available");
-			assertThat(context).getFailure()
+			assertThat(context).getFailure().rootCause().isInstanceOf(NonUniqueSessionRepositoryException.class)
+					.hasMessageContaining("Multiple session repository candidates are available")
 					.hasMessageContaining("set the 'spring.session.store-type' property accordingly");
 		});
 	}
