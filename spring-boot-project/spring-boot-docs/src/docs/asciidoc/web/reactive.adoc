@@ -30,22 +30,6 @@ This behavior has been chosen because many Spring developers add `spring-boot-st
 You can still enforce your choice by setting the chosen application type to `SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
 
 
-"`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
-
-include::code:MyRoutingConfiguration[]
-
-include::code:MyUserHandler[]
-
-WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
-
-TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
-Beans can be ordered if you need to apply a precedence.
-
-To get started, add the `spring-boot-starter-webflux` module to your application.
-
-NOTE: Adding both `spring-boot-starter-web` and `spring-boot-starter-webflux` modules in your application results in Spring Boot auto-configuring Spring MVC, not WebFlux.
-This behavior has been chosen because many Spring developers add `spring-boot-starter-webflux` to their Spring MVC application to use the reactive `WebClient`.
-You can still enforce your choice by setting the chosen application type to `SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
 
 [[web.reactive.webflux.auto-configuration]]
 ==== Spring WebFlux Auto-configuration
