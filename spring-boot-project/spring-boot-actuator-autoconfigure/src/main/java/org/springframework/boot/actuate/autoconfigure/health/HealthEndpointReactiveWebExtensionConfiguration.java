@@ -53,8 +53,10 @@ class HealthEndpointReactiveWebExtensionConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(HealthEndpoint.class)
 	ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
-			ReactiveHealthContributorRegistry reactiveHealthContributorRegistry, HealthEndpointGroups groups) {
-		return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, groups);
+			ReactiveHealthContributorRegistry reactiveHealthContributorRegistry, HealthEndpointGroups groups,
+			HealthEndpointProperties properties) {
+		return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, groups,
+				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
 	@Configuration(proxyBeanMethods = false)

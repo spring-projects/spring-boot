@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,13 +35,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 /**
  * Base class for {@link HealthEndpointSupport} tests.
  *
+ * @param <S> the support type
  * @param <R> the registry type
  * @param <C> the contributor type
  * @param <T> the contributed health component type
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T> {
+abstract class HealthEndpointSupportTests<S extends HealthEndpointSupport<C, T>, R extends ContributorRegistry<C>, C, T> {
 
 	final R registry;
 
@@ -352,7 +354,11 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		assertThat(result).isEqualTo(null);
 	}
 
-	protected abstract HealthEndpointSupport<C, T> create(R registry, HealthEndpointGroups groups);
+	protected final S create(R registry, HealthEndpointGroups groups) {
+		return create(registry, groups, null);
+	}
+
+	protected abstract S create(R registry, HealthEndpointGroups groups, Duration slowIndicatorLoggingThreshold);
 
 	protected abstract R createRegistry();
 
