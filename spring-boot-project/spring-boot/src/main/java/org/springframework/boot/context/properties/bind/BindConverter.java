@@ -42,7 +42,6 @@ import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -107,10 +106,7 @@ final class BindConverter {
 		for (ConversionService delegate : this.delegates) {
 			try {
 				if (delegate.canConvert(sourceType, targetType)) {
-					Object converted = delegate.convert(source, sourceType, targetType);
-					if (ClassUtils.isAssignableValue(targetType.getType(), converted)) {
-						return converted;
-					}
+					return delegate.convert(source, sourceType, targetType);
 				}
 			}
 			catch (ConversionException ex) {
