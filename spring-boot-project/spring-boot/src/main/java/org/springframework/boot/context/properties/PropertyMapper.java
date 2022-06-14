@@ -311,7 +311,7 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Complete the mapping by creating a new instance from the non-filtered value.
+		 * Complete the mapping by creating a new instance
 		 * @param <R> the resulting type
 		 * @param factory the factory used to create the instance
 		 * @return the created instance or empty when the value is filtered
