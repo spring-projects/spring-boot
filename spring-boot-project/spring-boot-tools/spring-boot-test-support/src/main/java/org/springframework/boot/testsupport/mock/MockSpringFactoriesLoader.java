@@ -79,24 +79,28 @@ public class MockSpringFactoriesLoader extends SpringFactoriesLoader {
 	 * @param factoryType the factory type class
 	 * @param factoryImplementations the implementation classes
 	 * @param <T> the factory type
+	 * @return {@code this}, to facilitate method chaining
 	 */
 	@SafeVarargs
-	public final <T> void add(Class<T> factoryType, Class<? extends T>... factoryImplementations) {
+	public final <T> MockSpringFactoriesLoader add(Class<T> factoryType, Class<? extends T>... factoryImplementations) {
 		for (Class<? extends T> factoryImplementation : factoryImplementations) {
 			add(factoryType.getName(), factoryImplementation.getName());
 		}
+		return this;
 	}
 
 	/**
 	 * Add factory implementations to this instance.
 	 * @param factoryType the factory type class name
 	 * @param factoryImplementations the implementation class names
+	 * @return {@code this}, to facilitate method chaining
 	 */
-	public void add(String factoryType, String... factoryImplementations) {
+	public MockSpringFactoriesLoader add(String factoryType, String... factoryImplementations) {
 		List<String> implementations = this.factories.computeIfAbsent(factoryType, (key) -> new ArrayList<>());
 		for (String factoryImplementation : factoryImplementations) {
 			implementations.add(factoryImplementation);
 		}
+		return this;
 	}
 
 	/**
@@ -104,10 +108,11 @@ public class MockSpringFactoriesLoader extends SpringFactoriesLoader {
 	 * @param factoryType the factory type class
 	 * @param factoryInstances the implementation instances to add
 	 * @param <T> the factory type
+	 * @return {@code this}, to facilitate method chaining
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> void addInstance(Class<T> factoryType, T... factoryInstances) {
-		addInstance(factoryType.getName(), factoryInstances);
+	public <T> MockSpringFactoriesLoader addInstance(Class<T> factoryType, T... factoryInstances) {
+		return addInstance(factoryType.getName(), factoryInstances);
 	}
 
 	/**
@@ -115,9 +120,10 @@ public class MockSpringFactoriesLoader extends SpringFactoriesLoader {
 	 * @param factoryType the factory type class name
 	 * @param factoryInstance the implementation instances to add
 	 * @param <T> the factory instance type
+	 * @return {@code this}, to facilitate method chaining
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> void addInstance(String factoryType, T... factoryInstance) {
+	public <T> MockSpringFactoriesLoader addInstance(String factoryType, T... factoryInstance) {
 		List<String> implementations = this.factories.computeIfAbsent(factoryType, (key) -> new ArrayList<>());
 		for (T factoryImplementation : factoryInstance) {
 			String reference = "!" + factoryType + ":" + factoryImplementation.getClass().getName()
@@ -125,6 +131,7 @@ public class MockSpringFactoriesLoader extends SpringFactoriesLoader {
 			implementations.add(reference);
 			this.implementations.put(reference, factoryImplementation);
 		}
+		return this;
 	}
 
 }

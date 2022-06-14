@@ -62,7 +62,7 @@ public class StandardConfigDataLocationResolver
 
 	static final String CONFIG_NAME_PROPERTY = "spring.config.name";
 
-	private static final String[] DEFAULT_CONFIG_NAMES = { "application" };
+	static final String[] DEFAULT_CONFIG_NAMES = { "application" };
 
 	private static final Pattern URL_PREFIX = Pattern.compile("^([a-zA-Z][a-zA-Z0-9*]*?:)(.*$)");
 
