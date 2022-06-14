@@ -455,6 +455,15 @@ The use of placeholders with and without defaults is shown in the following exam
 
 Assuming that the `username` property has not been set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
 
+[NOTE]
+====
+You should always refer to property names in the placeholder using their canonical form (kebab-case using only lowercase letters).
+This will allow Spring Boot to use the same logic as it does when <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>> `@ConfigurationProperties`.
+
+For example, `${demo.item-price}` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
+If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+====
+
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
 See the _<<howto#howto.properties-and-configuration.short-command-line-arguments>>_ how-to for details.
 
@@ -1171,10 +1180,14 @@ The following table summarizes the features that are supported by `@Configuratio
 |===
 
 [[features.external-config.typesafe-configuration-properties.vs-value-annotation.note]]
-NOTE: If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
-This will allow Spring Boot to use the same logic as it does when relaxed binding `@ConfigurationProperties`.
+[NOTE]
+====
+If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
+This will allow Spring Boot to use the same logic as it does when <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>> `@ConfigurationProperties`.
+
 For example, `@Value("{demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
 If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+====
 
 If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
 Doing so will provide you with structured, type-safe object that you can inject into your own beans.
