@@ -14,6 +14,8 @@ dependencies {
 	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
+	app("org.bouncycastle:bcprov-jdk15on:1.70")
 
 	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -39,6 +41,18 @@ task buildApp(type: GradleBuild) {
 	tasks  = ["build"]
 }
 
+task syncSignedJarUnpackAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-loader-tests-signed-jar-unpack-app")
+	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-signed-jar-unpack-app")
+}
+
+task buildSignedJarUnpackApp(type: GradleBuild) {
+	dependsOn syncSignedJarUnpackAppSource, syncMavenRepository
+	dir = "${buildDir}/spring-boot-loader-tests-signed-jar-unpack-app"
+	startParameter.buildCacheEnabled = false
+	tasks  = ["build"]
+}
+
 intTest {
-	dependsOn buildApp
+	dependsOn buildApp, buildSignedJarUnpackApp
 }

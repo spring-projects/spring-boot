@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.security.Permission;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Supplier;
@@ -93,6 +96,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private volatile JarFileWrapper wrapper;
 
+	private final List<JarFile> nestedJars = Collections.synchronizedList(new ArrayList<>());
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -128,9 +133,6 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
 			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
-		if (System.getSecurityManager() == null) {
-			super.close();
-		}
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
@@ -142,8 +144,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		}
 		catch (RuntimeException ex) {
 			try {
-				this.rootFile.close();
-				super.close();
+				close();
 			}
 			catch (IOException ioex) {
 			}
@@ -188,8 +189,13 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	JarFileWrapper getWrapper() throws IOException {
 		JarFileWrapper wrapper = this.wrapper;
 		if (wrapper == null) {
-			wrapper = new JarFileWrapper(this);
-			this.wrapper = wrapper;
+			synchronized (this) {
+				if (this.wrapper != null) {
+					return this.wrapper;
+				}
+				wrapper = new JarFileWrapper(this);
+				this.wrapper = wrapper;
+			}
 		}
 		return wrapper;
 	}
@@ -334,8 +340,10 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 							+ "mechanism used to create your executable jar file");
 		}
 		RandomAccessData entryData = this.entries.getEntryData(entry.getName());
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(), entryData,
+		JarFile nestedJar = new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(), entryData,
 				JarFileType.NESTED_JAR);
+		this.nestedJars.add(nestedJar);
+		return nestedJar;
 	}
 
 	@Override
@@ -355,11 +363,19 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		if (this.closed) {
 			return;
 		}
-		super.close();
-		if (this.type == JarFileType.DIRECT) {
-			this.rootFile.close();
+		synchronized (this) {
+			super.close();
+			if (this.type == JarFileType.DIRECT) {
+				this.rootFile.close();
+			}
+			if (this.wrapper != null) {
+				this.wrapper.close();
+			}
+			for (JarFile nestedJar : this.nestedJars) {
+				nestedJar.close();
+			}
+			this.closed = true;
 		}
-		this.closed = true;
 	}
 
 	private void ensureOpen() {
