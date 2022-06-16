@@ -18,5 +18,5 @@ dependencies {
 }
 
 bootJar {
-	requiresUnpack '**/bcprov-jdk15on-*.jar'
+	requiresUnpack '**/bcprov-jdk18on-*.jar'
 }
