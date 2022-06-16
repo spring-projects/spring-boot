@@ -32,8 +32,8 @@ import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
-import org.springframework.boot.testsupport.mock.MockSpringFactoriesLoader;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.mock.MockSpringFactoriesLoader;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -28,8 +28,8 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.YamlPropertySourceLoader;
-import org.springframework.boot.testsupport.mock.MockSpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.mock.MockSpringFactoriesLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -121,8 +121,14 @@ class ConfigDataLocationRuntimeHintsRegistrarTests {
 		}
 
 		TestConfigDataLocationRuntimeHintsRegistrar() {
-			this(new MockSpringFactoriesLoader().add(PropertySourceLoader.class, PropertiesPropertySourceLoader.class,
-					YamlPropertySourceLoader.class));
+			this(springFactoriesLoader());
+		}
+
+		private static MockSpringFactoriesLoader springFactoriesLoader() {
+			MockSpringFactoriesLoader springFactoriesLoader = new MockSpringFactoriesLoader();
+			springFactoriesLoader.add(PropertySourceLoader.class, PropertiesPropertySourceLoader.class,
+					YamlPropertySourceLoader.class);
+			return springFactoriesLoader;
 		}
 
 		@Override

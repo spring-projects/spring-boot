@@ -130,6 +130,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-context-support")
+	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.data:spring-data-r2dbc")
 	testImplementation("org.xerial:sqlite-jdbc")
