@@ -302,7 +302,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
-						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=NOT_VALID")
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=NOT_VALID")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasMessageContaining("signatureAlgorithm cannot be null"));
 	}
