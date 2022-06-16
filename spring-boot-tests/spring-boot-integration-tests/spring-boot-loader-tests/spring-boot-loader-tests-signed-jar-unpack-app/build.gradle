@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+	implementation("org.bouncycastle:bcprov-jdk18on:1.71")
 }
 
 bootJar {
