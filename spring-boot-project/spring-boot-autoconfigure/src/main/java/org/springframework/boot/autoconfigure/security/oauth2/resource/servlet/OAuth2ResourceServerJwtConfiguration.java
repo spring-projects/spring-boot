@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -78,12 +79,18 @@ class OAuth2ResourceServerJwtConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		JwtDecoder jwtDecoderByJwkKeySetUri() {
 			NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+					.jwsAlgorithms(this::jwsAlgorithms).build();
 			String issuerUri = this.properties.getIssuerUri();
 			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
 					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;
 			nimbusJwtDecoder.setJwtValidator(getValidators(defaultValidator));
 			return nimbusJwtDecoder;
+		}
+
+		private void jwsAlgorithms(Set<SignatureAlgorithm> signatureAlgorithms) {
+			for (String algorithm : this.properties.getJwsAlgorithms()) {
+				signatureAlgorithms.add(SignatureAlgorithm.from(algorithm));
+			}
 		}
 
 		private OAuth2TokenValidator<Jwt> getValidators(Supplier<OAuth2TokenValidator<Jwt>> defaultValidator) {
@@ -105,7 +112,7 @@ class OAuth2ResourceServerJwtConfiguration {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 			NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey)
-					.signatureAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+					.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm())).build();
 			jwtDecoder.setJwtValidator(getValidators(JwtValidators::createDefault));
 			return jwtDecoder;
 		}
@@ -113,6 +120,17 @@ class OAuth2ResourceServerJwtConfiguration {
 		private byte[] getKeySpec(String keyValue) {
 			keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
 			return Base64.getMimeDecoder().decode(keyValue);
+		}
+
+		private String exactlyOneAlgorithm() {
+			List<String> algorithms = this.properties.getJwsAlgorithms();
+			int count = (algorithms != null) ? algorithms.size() : 0;
+			if (count != 1) {
+				throw new IllegalStateException(
+						"Creating a JWT decoder using a public key requires exactly one JWS algorithm but " + count
+								+ " were configured");
+			}
+			return algorithms.get(0);
 		}
 
 		@Bean

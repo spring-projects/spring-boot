@@ -2050,6 +2050,14 @@
       "defaultValue": -100
     },
     {
+      "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.security.oauth2.resourceserver.jwt.jws-algorithms",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.session.hazelcast.flush-mode",
       "defaultValue": "on-save"
     },
