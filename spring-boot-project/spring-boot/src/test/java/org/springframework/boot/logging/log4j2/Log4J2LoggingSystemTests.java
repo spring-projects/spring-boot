@@ -40,7 +40,6 @@ import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -50,6 +49,8 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
@@ -74,6 +75,8 @@ import static org.mockito.Mockito.times;
  * @author Madhura Bhave
  */
 @ExtendWith(OutputCaptureExtension.class)
+@ClassPathExclusions("logback-*.jar")
+@ClassPathOverrides("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
 class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
@@ -247,11 +250,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	@Disabled("Uses Logback unintentionally")
 	void loggingThatUsesJulIsCaptured(CapturedOutput output) {
+		String name = getClass().getName();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(getClass().getName());
+		this.loggingSystem.setLogLevel(name, LogLevel.TRACE);
+		java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(name);
 		julLogger.setLevel(java.util.logging.Level.INFO);
 		julLogger.severe("Hello world");
 		assertThat(output).contains("Hello world");

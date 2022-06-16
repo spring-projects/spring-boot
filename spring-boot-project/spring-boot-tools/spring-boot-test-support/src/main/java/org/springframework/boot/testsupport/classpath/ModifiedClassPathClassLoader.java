@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -242,11 +242,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		private final AntPathMatcher matcher = new AntPathMatcher();
 
 		private ClassPathEntryFilter(MergedAnnotation<ClassPathExclusions> annotation) {
-			this.exclusions = new ArrayList<>();
-			this.exclusions.add("log4j-*.jar");
-			if (annotation.isPresent()) {
-				this.exclusions.addAll(Arrays.asList(annotation.getStringArray(MergedAnnotation.VALUE)));
-			}
+			this.exclusions = annotation.getValue(MergedAnnotation.VALUE, String[].class).map(Arrays::asList)
+					.orElse(Collections.emptyList());
 		}
 
 		private boolean isExcluded(URL url) {
