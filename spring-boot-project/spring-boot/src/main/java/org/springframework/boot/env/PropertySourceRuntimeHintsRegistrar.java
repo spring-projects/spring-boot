@@ -30,7 +30,7 @@ class PropertySourceRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		hints.reflection().registerTypeIfPresent(classLoader, "org.yaml.snakeyaml.Yaml",
-				hint -> hint.onReachableType(TypeReference.of(YamlPropertySourceLoader.class)));
+				(hint) -> hint.onReachableType(TypeReference.of(YamlPropertySourceLoader.class)));
 	}
 
 }
