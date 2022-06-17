@@ -31,7 +31,7 @@ import org.gradle.api.tasks.TaskAction;
  * Custom {@link JavaExec} task for generating sources ahead of time.
  *
  * @author Andy Wilkinson
- * @since 3.0
+ * @since 3.0.0
  */
 @CacheableTask
 public class GenerateAotSources extends JavaExec {

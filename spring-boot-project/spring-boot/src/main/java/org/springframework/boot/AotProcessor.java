@@ -55,7 +55,7 @@ import org.springframework.util.FileSystemUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.0
+ * @since 3.0.0
  */
 public class AotProcessor {
 
