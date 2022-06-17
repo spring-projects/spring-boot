@@ -1,5 +1,6 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
 org.springframework.boot.context.config.ConfigDataLocationRuntimeHintsRegistrar,\
+org.springframework.boot.env.PropertySourceRuntimeHintsRegistrar,\
 org.springframework.boot.logging.logback.LogbackRuntimeHintsRegistrar,\
 org.springframework.boot.WebApplicationType.WebApplicationTypeRuntimeHintsRegistrar
 
