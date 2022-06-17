@@ -57,19 +57,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private static final int BASE_VERSION = 8;
 
-	private static final int RUNTIME_VERSION;
-
-	static {
-		int version;
-		try {
-			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
-			version = (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
-		}
-		catch (Throwable ex) {
-			version = BASE_VERSION;
-		}
-		RUNTIME_VERSION = version;
-	}
+	private static final int RUNTIME_VERSION = Runtime.version().feature();
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
@@ -110,9 +98,6 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	JarFileEntries(JarFile jarFile, JarEntryFilter filter) {
 		this.jarFile = jarFile;
 		this.filter = filter;
-		if (RUNTIME_VERSION == BASE_VERSION) {
-			this.multiReleaseJar = false;
-		}
 	}
 
 	@Override
