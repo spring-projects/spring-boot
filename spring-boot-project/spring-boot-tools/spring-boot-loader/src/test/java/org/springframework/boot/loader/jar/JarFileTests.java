@@ -560,7 +560,7 @@ class JarFileTests {
 			assertThat(entry.getName()).isEqualTo("multi-release.dat");
 			InputStream inputStream = multiRelease.getInputStream(entry);
 			assertThat(inputStream.available()).isEqualTo(1);
-			assertThat(inputStream.read()).isEqualTo(getJavaVersion());
+			assertThat(inputStream.read()).isEqualTo(Runtime.version().feature());
 		}
 	}
 
@@ -730,16 +730,6 @@ class JarFileTests {
 
 	private void assertThatZipFileClosedIsThrownBy(ThrowingCallable throwingCallable) {
 		assertThatIllegalStateException().isThrownBy(throwingCallable).withMessage("zip file closed");
-	}
-
-	private int getJavaVersion() {
-		try {
-			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
-			return (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
-		}
-		catch (Throwable ex) {
-			return 8;
-		}
 	}
 
 }
