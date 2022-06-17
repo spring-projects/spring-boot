@@ -327,7 +327,7 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "3.4.5") {
+	library("Embedded Mongo", "3.4.6") {
 		group("de.flapdoodle.embed") {
 			modules = [
 				"de.flapdoodle.embed.mongo"
