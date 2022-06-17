@@ -10,7 +10,7 @@ trap 'report_error $? $LINENO' ERR
 case "$JDK_VERSION" in
 	java17)
 		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=17"
-		 ISSUE_TITLE="Upgrade Java 17 version in CI image"
+		 ISSUE_TITLE="Upgrade Java 17 version in CI image and .sdkmanrc"
 	;;
 	java18)
 		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=18"
