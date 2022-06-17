@@ -952,7 +952,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.14.15") {
+	library("jOOQ", "3.14.16") {
 		prohibit("[3.15.0,)") {
 			because "it requires Java 11"
 		}
