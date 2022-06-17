@@ -1300,7 +1300,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.6.0") {
+	library("MongoDB", "4.6.1") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
