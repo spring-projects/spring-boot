@@ -52,34 +52,32 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 			.withStartupTimeout(Duration.ofMinutes(5));
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+					JdbcIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 					SessionAutoConfiguration.class))
 			.withPropertyValues("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl());
 
 	@Test
 	void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
-				.run(validateSpringSessionUsesMongo("sessions"));
+		this.contextRunner.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
-	void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-						JdbcIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
+	void mongoTakesPrecedenceOverJdbcAndHazelcast() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(RedisIndexedSessionRepository.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
 	void defaultConfigWithCustomTimeout() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "spring.session.timeout=1m")
+		this.contextRunner.withPropertyValues("spring.session.timeout=1m")
 				.run(validateSpringSessionUsesMongo("sessions", Duration.ofMinutes(1)));
 	}
 
 	@Test
 	void mongoSessionStoreWithCustomizations() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo")
+		this.contextRunner.withPropertyValues("spring.session.mongodb.collection-name=foo")
 				.run(validateSpringSessionUsesMongo("foo"));
 	}
 
