@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import brave.handler.SpanHandler;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import zipkin2.Span;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.brave.ZipkinSpanHandler;
@@ -31,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link BraveConfiguration}.
@@ -85,7 +85,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		@Bean
 		@SuppressWarnings("unchecked")
 		Reporter<Span> reporter() {
-			return Mockito.mock(Reporter.class);
+			return mock(Reporter.class);
 		}
 
 	}
@@ -96,7 +96,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		@Bean
 		@SuppressWarnings("unchecked")
 		ZipkinSpanHandler customZipkinSpanHandler() {
-			return (ZipkinSpanHandler) ZipkinSpanHandler.create(Mockito.mock(Reporter.class));
+			return (ZipkinSpanHandler) ZipkinSpanHandler.create(mock(Reporter.class));
 		}
 
 	}
@@ -106,7 +106,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 
 		@Bean
 		SpanHandler customSpanHandler() {
-			return Mockito.mock(SpanHandler.class);
+			return mock(SpanHandler.class);
 		}
 
 	}

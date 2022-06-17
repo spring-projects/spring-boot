@@ -36,7 +36,6 @@ import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingObservationHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -49,6 +48,7 @@ import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ObservationAutoConfiguration}.
@@ -290,7 +290,7 @@ class ObservationAutoConfigurationTests {
 
 	private static class CustomTracingObservationHandler implements TracingObservationHandler<Context> {
 
-		private final Tracer tracer = Mockito.mock(Tracer.class, Answers.RETURNS_MOCKS);
+		private final Tracer tracer = mock(Tracer.class, Answers.RETURNS_MOCKS);
 
 		private final String name;
 

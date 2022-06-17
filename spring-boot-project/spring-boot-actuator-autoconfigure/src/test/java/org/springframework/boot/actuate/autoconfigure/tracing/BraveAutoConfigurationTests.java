@@ -34,7 +34,6 @@ import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -43,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link BraveAutoConfiguration}.
@@ -157,43 +157,43 @@ class BraveAutoConfigurationTests {
 
 		@Bean
 		Tracing customTracing() {
-			return Mockito.mock(Tracing.class);
+			return mock(Tracing.class);
 		}
 
 		@Bean
 		Tracer customTracer() {
-			return Mockito.mock(Tracer.class);
+			return mock(Tracer.class);
 		}
 
 		@Bean
 		CurrentTraceContext customCurrentTraceContext() {
-			return Mockito.mock(CurrentTraceContext.class);
+			return mock(CurrentTraceContext.class);
 		}
 
 		@Bean
 		Factory customFactory() {
-			return Mockito.mock(Factory.class);
+			return mock(Factory.class);
 		}
 
 		@Bean
 		Sampler customSampler() {
-			return Mockito.mock(Sampler.class);
+			return mock(Sampler.class);
 		}
 
 		@Bean
 		HttpTracing customHttpTracing() {
-			return Mockito.mock(HttpTracing.class);
+			return mock(HttpTracing.class);
 		}
 
 		@Bean
 		HttpServerHandler<HttpServerRequest, HttpServerResponse> customHttpServerHandler() {
-			HttpTracing httpTracing = Mockito.mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
 			return HttpServerHandler.create(httpTracing);
 		}
 
 		@Bean
 		HttpClientHandler<HttpClientRequest, HttpClientResponse> customHttpClientHandler() {
-			HttpTracing httpTracing = Mockito.mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
 			return HttpClientHandler.create(httpTracing);
 		}
 
@@ -204,22 +204,22 @@ class BraveAutoConfigurationTests {
 
 		@Bean
 		BraveTracer customBraveTracer() {
-			return Mockito.mock(BraveTracer.class);
+			return mock(BraveTracer.class);
 		}
 
 		@Bean
 		BraveBaggageManager customBraveBaggageManager() {
-			return Mockito.mock(BraveBaggageManager.class);
+			return mock(BraveBaggageManager.class);
 		}
 
 		@Bean
 		BraveHttpServerHandler customBraveHttpServerHandler() {
-			return Mockito.mock(BraveHttpServerHandler.class);
+			return mock(BraveHttpServerHandler.class);
 		}
 
 		@Bean
 		BraveHttpClientHandler customBraveHttpClientHandler() {
-			return Mockito.mock(BraveHttpClientHandler.class);
+			return mock(BraveHttpClientHandler.class);
 		}
 
 	}
