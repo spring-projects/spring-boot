@@ -25,7 +25,6 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.MicrometerConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -35,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MicrometerConfiguration}.
@@ -104,27 +104,27 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 
 		@Bean
 		OtelTracer customOtelTracer() {
-			return Mockito.mock(OtelTracer.class);
+			return mock(OtelTracer.class);
 		}
 
 		@Bean
 		EventPublisher customEventPublisher() {
-			return Mockito.mock(EventPublisher.class);
+			return mock(EventPublisher.class);
 		}
 
 		@Bean
 		OtelCurrentTraceContext customOtelCurrentTraceContext() {
-			return Mockito.mock(OtelCurrentTraceContext.class);
+			return mock(OtelCurrentTraceContext.class);
 		}
 
 		@Bean
 		OtelHttpClientHandler customOtelHttpClientHandler() {
-			return Mockito.mock(OtelHttpClientHandler.class);
+			return mock(OtelHttpClientHandler.class);
 		}
 
 		@Bean
 		OtelHttpServerHandler customOtelHttpServerHandler() {
-			return Mockito.mock(OtelHttpServerHandler.class);
+			return mock(OtelHttpServerHandler.class);
 		}
 
 	}
@@ -134,7 +134,7 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 
 		@Bean
 		Tracer tracer() {
-			return Mockito.mock(Tracer.class);
+			return mock(Tracer.class);
 		}
 
 	}
@@ -144,7 +144,7 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 
 		@Bean
 		OpenTelemetry openTelemetry() {
-			return Mockito.mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
+			return mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
 		}
 
 	}

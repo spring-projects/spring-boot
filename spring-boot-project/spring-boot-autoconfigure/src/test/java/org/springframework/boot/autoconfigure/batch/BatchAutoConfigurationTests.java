@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -614,7 +613,7 @@ class BatchAutoConfigurationTests {
 
 		@Bean
 		Job job2() {
-			return Mockito.mock(Job.class);
+			return mock(Job.class);
 		}
 
 	}
