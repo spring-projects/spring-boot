@@ -25,7 +25,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
  * {@link RuntimeHintsRegistrar} for default locations of web resources.
  *
  * @author Stephane Nicoll
- * @since 3.0
+ * @since 3.0.0
  */
 public class WebResourcesRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 

@@ -103,7 +103,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	/**
 	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
 	 * @param logFactory the log factory to use
-	 * @since 3.0
+	 * @since 3.0.0
 	 */
 	public CloudFoundryVcapEnvironmentPostProcessor(DeferredLogFactory logFactory) {
 		this.logger = logFactory.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
