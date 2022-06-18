@@ -114,10 +114,9 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
-					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlgs",
-							Collections.singleton(JWSAlgorithm.RS256));
+					assertThat(jwtDecoder).extracting("jwtProcessor.jwsKeySelector.jwsAlgs")
+							.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
+							.containsExactlyInAnyOrder(JWSAlgorithm.RS256);
 				});
 	}
 
@@ -144,9 +143,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS384")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
-					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).extracting("jwsAlgs")
+					assertThat(jwtDecoder).extracting("jwtProcessor.jwsKeySelector.jwsAlgs")
 							.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
 							.containsExactlyInAnyOrder(JWSAlgorithm.RS384);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -160,9 +157,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS256, RS384, RS512")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
-					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).extracting("jwsAlgs")
+					assertThat(jwtDecoder).extracting("jwtProcessor.jwsKeySelector.jwsAlgs")
 							.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
 							.containsExactlyInAnyOrder(JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -472,11 +467,9 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
-							.getField(jwtDecoder, "jwtValidator");
-					Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
-							.getField(jwtValidator, "tokenValidators");
-					assertThat(tokenValidators).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
+					assertThat(jwtDecoder).extracting("jwtValidator.tokenValidators")
+							.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
+							.hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 				});
 	}
 
@@ -494,13 +487,11 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
-							.getField(jwtDecoder, "jwtValidator");
-					Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
-							.getField(jwtValidator, "tokenValidators");
-					assertThat(tokenValidators).hasExactlyElementsOfTypes(JwtTimestampValidator.class);
-					assertThat(tokenValidators).doesNotHaveAnyElementsOfTypes(JwtClaimValidator.class);
-					assertThat(tokenValidators).doesNotHaveAnyElementsOfTypes(JwtIssuerValidator.class);
+					assertThat(jwtDecoder).extracting("jwtValidator.tokenValidators")
+							.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
+							.hasExactlyElementsOfTypes(JwtTimestampValidator.class)
+							.doesNotHaveAnyElementsOfTypes(JwtClaimValidator.class)
+							.doesNotHaveAnyElementsOfTypes(JwtIssuerValidator.class);
 				});
 	}
 
@@ -565,10 +556,10 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		assertThat(delegates).hasAtLeastOneElementOfType(JwtClaimValidator.class);
 		OAuth2TokenValidator<Jwt> delegatingValidator = delegates.stream()
 				.filter((v) -> v instanceof DelegatingOAuth2TokenValidator).findFirst().get();
-		Collection<OAuth2TokenValidator<Jwt>> nestedDelegates = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
-				.getField(delegatingValidator, "tokenValidators");
 		if (issuerUri != null) {
-			assertThat(nestedDelegates).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
+			assertThat(delegatingValidator).extracting("tokenValidators")
+					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
+					.hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 		}
 	}
 
