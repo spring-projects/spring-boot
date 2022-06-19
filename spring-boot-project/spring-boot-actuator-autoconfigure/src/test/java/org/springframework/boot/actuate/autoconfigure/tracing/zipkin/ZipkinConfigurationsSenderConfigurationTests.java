@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import zipkin2.reporter.Sender;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
@@ -30,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SenderConfiguration}.
@@ -83,7 +83,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 
 		@Bean
 		Sender customSender() {
-			return Mockito.mock(Sender.class);
+			return mock(Sender.class);
 		}
 
 	}

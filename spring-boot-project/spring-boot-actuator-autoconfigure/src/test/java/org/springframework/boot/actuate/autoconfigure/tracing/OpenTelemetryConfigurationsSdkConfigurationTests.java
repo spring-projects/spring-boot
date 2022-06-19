@@ -22,7 +22,6 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.SdkConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -31,6 +30,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SdkConfiguration}.
@@ -84,7 +84,7 @@ class OpenTelemetryConfigurationsSdkConfigurationTests {
 
 		@Bean
 		OpenTelemetry customOpenTelemetry() {
-			return Mockito.mock(OpenTelemetry.class);
+			return mock(OpenTelemetry.class);
 		}
 
 		@Bean
@@ -94,17 +94,17 @@ class OpenTelemetryConfigurationsSdkConfigurationTests {
 
 		@Bean
 		ContextPropagators customContextPropagators() {
-			return Mockito.mock(ContextPropagators.class);
+			return mock(ContextPropagators.class);
 		}
 
 		@Bean
 		Sampler customSampler() {
-			return Mockito.mock(Sampler.class);
+			return mock(Sampler.class);
 		}
 
 		@Bean
 		SpanProcessor customSpanProcessor() {
-			return Mockito.mock(SpanProcessor.class);
+			return mock(SpanProcessor.class);
 		}
 
 	}
