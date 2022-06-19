@@ -29,6 +29,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
+ * Tests for {@link OnTracingEnabledCondition}.
+ *
  * @author Moritz Halbritter
  */
 class OnTracingEnabledConditionTests {
