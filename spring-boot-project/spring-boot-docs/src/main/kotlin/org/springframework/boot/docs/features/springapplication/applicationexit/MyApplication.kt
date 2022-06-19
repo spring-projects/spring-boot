@@ -32,5 +32,5 @@ class MyApplication {
 }
 
 fun main(args: Array<String>) {
-	SpringApplication.run(MyApplication::class.java, *args)
+	exitProcess(SpringApplication.exit(SpringApplication.run(MyApplication::class.java, *args)))
 }
