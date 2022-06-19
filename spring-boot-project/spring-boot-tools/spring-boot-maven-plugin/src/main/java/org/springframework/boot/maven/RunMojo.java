@@ -17,7 +17,6 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -56,20 +55,8 @@ public class RunMojo extends AbstractApplicationRunMojo {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (this.optimizedLaunch) {
 			jvmArguments.getArgs().addFirst("-XX:TieredStopAtLevel=1");
-			if (!isJava13OrLater()) {
-				jvmArguments.getArgs().addFirst("-Xverify:none");
-			}
 		}
 		return jvmArguments;
-	}
-
-	private boolean isJava13OrLater() {
-		for (Method method : String.class.getMethods()) {
-			if (method.getName().equals("stripIndent")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
