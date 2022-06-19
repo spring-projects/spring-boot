@@ -349,6 +349,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * consumed context.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 * @return this instance
+	 * @since 3.0
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF prepare(ContextConsumer<? super A> consumer) {
