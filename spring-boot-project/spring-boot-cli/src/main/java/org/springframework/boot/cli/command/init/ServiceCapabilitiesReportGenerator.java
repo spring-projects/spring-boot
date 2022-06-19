@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,9 +65,9 @@ class ServiceCapabilitiesReportGenerator {
 	private String generateHelp(String url, InitializrServiceMetadata metadata) {
 		String header = "Capabilities of " + url;
 		StringBuilder report = new StringBuilder();
-		report.append(repeat("=", header.length())).append(NEW_LINE);
+		report.append("=".repeat(header.length())).append(NEW_LINE);
 		report.append(header).append(NEW_LINE);
-		report.append(repeat("=", header.length())).append(NEW_LINE);
+		report.append("=".repeat(header.length())).append(NEW_LINE);
 		report.append(NEW_LINE);
 		reportAvailableDependencies(metadata, report);
 		report.append(NEW_LINE);
@@ -137,14 +137,6 @@ class ServiceCapabilitiesReportGenerator {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);
 			report.append(defaultsKey).append(": ").append(defaultsValue).append(NEW_LINE);
 		}
-	}
-
-	private static String repeat(String s, int count) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < count; i++) {
-			sb.append(s);
-		}
-		return sb.toString();
 	}
 
 }

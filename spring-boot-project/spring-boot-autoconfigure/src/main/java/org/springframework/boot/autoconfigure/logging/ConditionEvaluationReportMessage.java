@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,9 @@ public class ConditionEvaluationReportMessage {
 	}
 
 	private StringBuilder getLogMessage(ConditionEvaluationReport report, String title) {
+		String separator = "=".repeat(title.length());
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%n%n%n"));
-		StringBuilder separator = new StringBuilder();
-		for (int i = 0; i < title.length(); i++) {
-			separator.append("=");
-		}
 		message.append(String.format("%s%n", separator));
 		message.append(String.format("%s%n", title));
 		message.append(String.format("%s%n%n%n", separator));
