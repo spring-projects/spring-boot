@@ -17,15 +17,16 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import zipkin2.CheckResult;
 import zipkin2.reporter.ClosedSenderException;
+import zipkin2.reporter.Sender;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -44,20 +45,19 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link ZipkinRestTemplateSender}.
  *
  * @author Moritz Halbritter
+ * @author Stefan Bratanov
  */
-class ZipkinRestTemplateSenderTests {
+class ZipkinRestTemplateSenderTests extends ZipkinSenderTests {
 
 	private static final String ZIPKIN_URL = "http://localhost:9411/api/v2/spans";
 
 	private MockRestServiceServer mockServer;
 
-	private ZipkinRestTemplateSender sut;
-
-	@BeforeEach
-	void setUp() {
+	@Override
+	Sender getZipkinSender() {
 		RestTemplate restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(restTemplate);
-		this.sut = new ZipkinRestTemplateSender(ZIPKIN_URL, restTemplate);
+		return new ZipkinRestTemplateSender(ZIPKIN_URL, restTemplate);
 	}
 
 	@AfterEach
@@ -69,42 +69,51 @@ class ZipkinRestTemplateSenderTests {
 	void checkShouldSendEmptySpanList() {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().string("[]")).andRespond(withStatus(HttpStatus.ACCEPTED));
-		assertThat(this.sut.check()).isEqualTo(CheckResult.OK);
+		assertThat(this.senderUnderTest.check()).isEqualTo(CheckResult.OK);
 	}
 
 	@Test
 	void checkShouldNotRaiseException() {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
-		CheckResult result = this.sut.check();
+		CheckResult result = this.senderUnderTest.check();
 		assertThat(result.ok()).isFalse();
 		assertThat(result.error()).hasMessageContaining("500 Internal Server Error");
 	}
 
-	@Test
-	void sendSpansShouldSendSpansToZipkin() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void sendSpansShouldSendSpansToZipkin(boolean async) {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType("application/json")).andExpect(content().string("[span1,span2]"))
 				.andRespond(withStatus(HttpStatus.ACCEPTED));
-		this.sut.sendSpans(List.of(toByteArray("span1"), toByteArray("span2"))).execute();
+		this.makeRequest(List.of(toByteArray("span1"), toByteArray("span2")), async);
 	}
 
-	@Test
-	void sendSpansShouldThrowOnHttpFailure() {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void sendSpansShouldHandleHttpFailures(boolean async) {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
-		assertThatThrownBy(() -> this.sut.sendSpans(List.of()).execute())
-				.hasMessageContaining("500 Internal Server Error");
+		if (async) {
+			CallbackResult callbackResult = this.makeAsyncRequest(List.of());
+			assertThat(callbackResult.isSuccess()).isFalse();
+			assertThat(callbackResult.getError()).isNotNull().hasMessageContaining("500 Internal Server Error");
+		}
+		else {
+			assertThatThrownBy(() -> this.makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
+		}
 	}
 
 	@Test
 	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.sut.close();
-		assertThatThrownBy(() -> this.sut.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
+		this.senderUnderTest.close();
+		assertThatThrownBy(() -> this.senderUnderTest.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
 	}
 
-	@Test
-	void sendSpansShouldCompressData() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void sendSpansShouldCompressData(boolean async) {
 		String uncompressed = "a".repeat(10000);
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()
@@ -112,11 +121,7 @@ class ZipkinRestTemplateSenderTests {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andExpect(header("Content-Encoding", "gzip")).andExpect(content().contentType("application/json"))
 				.andExpect(content().bytes(compressed)).andRespond(withStatus(HttpStatus.ACCEPTED));
-		this.sut.sendSpans(List.of(toByteArray(uncompressed))).execute();
-	}
-
-	private byte[] toByteArray(String input) {
-		return input.getBytes(StandardCharsets.UTF_8);
+		this.makeRequest(List.of(toByteArray(uncompressed)), async);
 	}
 
 }

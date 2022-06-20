@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.util.concurrent.CompletableFuture;
+
 import zipkin2.Call;
+import zipkin2.Callback;
 
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
@@ -58,14 +60,27 @@ class ZipkinRestTemplateSender extends HttpSender {
 		}
 
 		@Override
-		void post(byte[] body, HttpHeaders defaultHeaders) {
-			HttpEntity<byte[]> request = new HttpEntity<>(body, defaultHeaders);
-			this.restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
+		public Call<Void> clone() {
+			return new RestTemplateHttpPostCall(this.endpoint, getBody(), this.restTemplate);
 		}
 
 		@Override
-		public Call<Void> clone() {
-			return new RestTemplateHttpPostCall(this.endpoint, this.body, this.restTemplate);
+		protected Void doExecute() {
+			HttpEntity<byte[]> request = new HttpEntity<>(getBody(), getDefaultHeaders());
+			restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
+			return null;
+		}
+
+		@Override
+		protected void doEnqueue(Callback<Void> callback) {
+			CompletableFuture.supplyAsync(this::doExecute).whenComplete((__, throwable) -> {
+				if (throwable != null) {
+					callback.onError(throwable);
+				}
+				else {
+					callback.onSuccess(null);
+				}
+			});
 		}
 
 	}

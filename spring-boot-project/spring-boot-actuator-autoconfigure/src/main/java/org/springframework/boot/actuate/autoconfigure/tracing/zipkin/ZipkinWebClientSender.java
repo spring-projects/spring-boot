@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import reactor.core.publisher.Mono;
 import zipkin2.Call;
+import zipkin2.Callback;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -55,16 +57,24 @@ class ZipkinWebClientSender extends HttpSender {
 		}
 
 		@Override
-		void post(byte[] body, HttpHeaders defaultHeaders) {
-			this.webClient.post().uri(this.endpoint).headers((headers) -> headers.addAll(defaultHeaders))
-					.bodyValue(body).retrieve().toBodilessEntity().subscribe((__) -> {
-					}, (__) -> {
-					});
+		public Call<Void> clone() {
+			return new WebClientHttpPostCall(this.endpoint, getBody(), this.webClient);
 		}
 
 		@Override
-		public Call<Void> clone() {
-			return new WebClientHttpPostCall(this.endpoint, this.body, this.webClient);
+		protected Void doExecute() {
+			sendRequest().block();
+			return null;
+		}
+
+		@Override
+		protected void doEnqueue(Callback<Void> callback) {
+			sendRequest().subscribe(__ -> callback.onSuccess(null), callback::onError);
+		}
+
+		private Mono<ResponseEntity<Void>> sendRequest() {
+			return this.webClient.post().uri(this.endpoint).headers((headers) -> headers.addAll(getDefaultHeaders()))
+					.bodyValue(getBody()).retrieve().toBodilessEntity();
 		}
 
 	}

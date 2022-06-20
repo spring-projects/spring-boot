@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,10 +27,12 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import zipkin2.CheckResult;
 import zipkin2.reporter.ClosedSenderException;
+import zipkin2.reporter.Sender;
 
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -43,13 +44,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Stefan Bratanov
  */
-class ZipkinWebClientSenderTests {
+class ZipkinWebClientSenderTests extends ZipkinSenderTests {
 
-	public static MockWebServer mockBackEnd;
+	private static MockWebServer mockBackEnd;
 
-	private static String ZIPKIN_URL;
-
-	private ZipkinWebClientSender sut;
+	public static String ZIPKIN_URL;
 
 	@BeforeAll
 	static void beforeAll() throws IOException {
@@ -63,16 +62,16 @@ class ZipkinWebClientSenderTests {
 		mockBackEnd.shutdown();
 	}
 
-	@BeforeEach
-	void setUp() {
+	@Override
+	Sender getZipkinSender() {
 		WebClient webClient = WebClient.builder().build();
-		this.sut = new ZipkinWebClientSender(ZIPKIN_URL, webClient);
+		return new ZipkinWebClientSender(ZIPKIN_URL, webClient);
 	}
 
 	@Test
 	void checkShouldSendEmptySpanList() {
 		mockBackEnd.enqueue(new MockResponse());
-		assertThat(this.sut.check()).isEqualTo(CheckResult.OK);
+		assertThat(this.senderUnderTest.check()).isEqualTo(CheckResult.OK);
 
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
@@ -81,18 +80,21 @@ class ZipkinWebClientSenderTests {
 	}
 
 	@Test
-	void checkShouldNotRaiseExceptionBecauseItIsNotBlocking() {
+	void checkShouldNotRaiseException() {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
-		CheckResult result = this.sut.check();
-		assertThat(result.ok()).isTrue();
+		CheckResult result = this.senderUnderTest.check();
+		assertThat(result.ok()).isFalse();
+		assertThat(result.error()).hasMessageContaining("500 Internal Server Error");
 
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
 	}
 
-	@Test
-	void sendSpansShouldSendSpansToZipkin() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void sendSpansShouldSendSpansToZipkin(boolean async) {
 		mockBackEnd.enqueue(new MockResponse());
-		this.sut.sendSpans(List.of(toByteArray("span1"), toByteArray("span2"))).execute();
+		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
+		this.makeRequest(encodedSpans, async);
 
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
@@ -101,29 +103,39 @@ class ZipkinWebClientSenderTests {
 		});
 	}
 
-	@Test
-	void sendSpansShouldNotThrowOnHttpFailureBecauseItIsNonBlocking() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void sendSpansShouldHandleHttpFailures(boolean async) {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
-		this.sut.sendSpans(List.of()).execute();
+		if (async) {
+			CallbackResult callbackResult = this.makeAsyncRequest(List.of());
+			assertThat(callbackResult.isSuccess()).isFalse();
+			assertThat(callbackResult.getError()).isNotNull().hasMessageContaining("500 Internal Server Error");
+		}
+		else {
+			assertThatThrownBy(() -> this.makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
+		}
 
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
 	}
 
 	@Test
 	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.sut.close();
-		assertThatThrownBy(() -> this.sut.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
+		this.senderUnderTest.close();
+		assertThatThrownBy(() -> this.senderUnderTest.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
 	}
 
-	@Test
-	void sendSpansShouldCompressData() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void sendSpansShouldCompressData(boolean async) {
 		String uncompressed = "a".repeat(10000);
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()
 				.decode("H4sIAAAAAAAA/+3BMQ0AAAwDIKFLj/k3UR8NcA8AAAAAAAAAAAADUsAZfeASJwAA");
 
 		mockBackEnd.enqueue(new MockResponse());
-		this.sut.sendSpans(List.of(toByteArray(uncompressed))).execute();
+
+		this.makeRequest(List.of(toByteArray(uncompressed)), async);
 
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
@@ -142,10 +154,6 @@ class ZipkinWebClientSenderTests {
 		catch (InterruptedException ex) {
 			Assertions.fail(ex);
 		}
-	}
-
-	private byte[] toByteArray(String input) {
-		return input.getBytes(StandardCharsets.UTF_8);
 	}
 
 }

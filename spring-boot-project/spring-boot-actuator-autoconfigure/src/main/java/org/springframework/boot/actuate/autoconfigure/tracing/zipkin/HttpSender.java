@@ -18,11 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import zipkin2.Call;
-import zipkin2.Callback;
 import zipkin2.CheckResult;
 import zipkin2.codec.Encoding;
 import zipkin2.reporter.BytesMessageEncoder;
@@ -43,7 +43,7 @@ abstract class HttpSender extends Sender {
 
 	private static final DataSize MESSAGE_MAX_BYTES = DataSize.ofKilobytes(512);
 
-	volatile boolean closed;
+	private volatile boolean closed;
 
 	@Override
 	public Encoding encoding() {
@@ -99,61 +99,42 @@ abstract class HttpSender extends Sender {
 
 	abstract static class HttpPostCall extends Call.Base<Void> {
 
-		byte[] body;
-
-		protected HttpPostCall(byte[] body) {
-			this.body = body;
-		}
-
 		/**
 		 * Only use gzip compression on data which is bigger than this in bytes.
 		 */
 		private static final DataSize COMPRESSION_THRESHOLD = DataSize.ofKilobytes(1);
 
-		/**
-		 * Implementations should send a POST request.
-		 * @param body the body to send as bytes
-		 * @param defaultHeaders the headers for the POST request. They can be further
-		 * modified if necessary.
-		 */
-		abstract void post(byte[] body, HttpHeaders defaultHeaders);
+		private final byte[] body;
 
-		@Override
-		protected Void doExecute() throws IOException {
+		public HttpPostCall(byte[] body) {
+			this.body = body;
+		}
+
+		public byte[] getBody() {
+			return needsCompression() ? compress(this.body) : this.body;
+		}
+
+		public HttpHeaders getDefaultHeaders() {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("b3", "0");
 			headers.set("Content-Type", "application/json");
-			byte[] body;
 			if (needsCompression()) {
 				headers.set("Content-Encoding", "gzip");
-				body = compress(this.body);
 			}
-			else {
-				body = this.body;
-			}
-			post(body, headers);
-			return null;
-		}
-
-		@Override
-		protected void doEnqueue(Callback<Void> callback) {
-			try {
-				doExecute();
-				callback.onSuccess(null);
-			}
-			catch (IOException | RuntimeException ex) {
-				callback.onError(ex);
-			}
+			return headers;
 		}
 
 		private boolean needsCompression() {
 			return this.body.length > COMPRESSION_THRESHOLD.toBytes();
 		}
 
-		private byte[] compress(byte[] input) throws IOException {
+		private byte[] compress(byte[] input) {
 			ByteArrayOutputStream result = new ByteArrayOutputStream();
 			try (GZIPOutputStream gzip = new GZIPOutputStream(result)) {
 				gzip.write(input);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
 			}
 			return result.toByteArray();
 		}
