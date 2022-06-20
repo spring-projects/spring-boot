@@ -67,7 +67,7 @@ class ZipkinRestTemplateSender extends HttpSender {
 		@Override
 		protected Void doExecute() {
 			HttpEntity<byte[]> request = new HttpEntity<>(getBody(), getDefaultHeaders());
-			restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
+			this.restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
 			return null;
 		}
 

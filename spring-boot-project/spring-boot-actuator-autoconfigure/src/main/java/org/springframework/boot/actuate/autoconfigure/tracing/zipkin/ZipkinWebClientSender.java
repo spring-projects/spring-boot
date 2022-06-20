@@ -69,7 +69,7 @@ class ZipkinWebClientSender extends HttpSender {
 
 		@Override
 		protected void doEnqueue(Callback<Void> callback) {
-			sendRequest().subscribe(__ -> callback.onSuccess(null), callback::onError);
+			sendRequest().subscribe((__) -> callback.onSuccess(null), callback::onError);
 		}
 
 		private Mono<ResponseEntity<Void>> sendRequest() {

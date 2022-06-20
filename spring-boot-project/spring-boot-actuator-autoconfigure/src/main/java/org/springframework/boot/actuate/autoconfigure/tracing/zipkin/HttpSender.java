@@ -106,19 +106,19 @@ abstract class HttpSender extends Sender {
 
 		private final byte[] body;
 
-		public HttpPostCall(byte[] body) {
+		HttpPostCall(byte[] body) {
 			this.body = body;
 		}
 
-		public byte[] getBody() {
+		protected byte[] getBody() {
 			return getBody(true);
 		}
 
-		public byte[] getBody(boolean compressIfNeeded) {
-			return compressIfNeeded && needsCompression() ? compress(this.body) : this.body;
+		protected byte[] getBody(boolean compressIfNeeded) {
+			return (compressIfNeeded && needsCompression()) ? compress(this.body) : this.body;
 		}
 
-		public HttpHeaders getDefaultHeaders() {
+		protected HttpHeaders getDefaultHeaders() {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("b3", "0");
 			headers.set("Content-Type", "application/json");
