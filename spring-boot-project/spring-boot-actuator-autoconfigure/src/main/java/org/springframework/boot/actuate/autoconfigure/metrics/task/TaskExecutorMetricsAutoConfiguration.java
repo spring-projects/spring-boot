@@ -54,11 +54,11 @@ public class TaskExecutorMetricsAutoConfiguration {
 	@Autowired
 	public void bindTaskExecutorsToRegistry(Map<String, Executor> executors, MeterRegistry registry) {
 		executors.forEach((beanName, executor) -> {
-			if (executor instanceof ThreadPoolTaskExecutor) {
-				monitor(registry, safeGetThreadPoolExecutor((ThreadPoolTaskExecutor) executor), beanName);
+			if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+				monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskExecutor), beanName);
 			}
-			else if (executor instanceof ThreadPoolTaskScheduler) {
-				monitor(registry, safeGetThreadPoolExecutor((ThreadPoolTaskScheduler) executor), beanName);
+			else if (executor instanceof ThreadPoolTaskScheduler threadPoolTaskScheduler) {
+				monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskScheduler), beanName);
 			}
 		});
 	}

@@ -487,8 +487,8 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	static <T> T getBean(T object) {
-		if (object instanceof RuntimeException) {
-			throw (RuntimeException) object;
+		if (object instanceof RuntimeException runtimeException) {
+			throw runtimeException;
 		}
 		return object;
 	}

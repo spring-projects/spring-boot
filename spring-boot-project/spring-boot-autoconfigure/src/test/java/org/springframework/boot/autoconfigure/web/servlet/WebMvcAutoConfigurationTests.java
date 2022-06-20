@@ -1021,16 +1021,16 @@ class WebMvcAutoConfigurationTests {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
 		for (Object handler : handlerMap.values()) {
-			if (handler instanceof ResourceHttpRequestHandler) {
-				handlerConsumer.accept((ResourceHttpRequestHandler) handler);
+			if (handler instanceof ResourceHttpRequestHandler resourceHandler) {
+				handlerConsumer.accept(resourceHandler);
 			}
 		}
 	}
 
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
 		Object bean = context.getBean("resourceHandlerMapping");
-		if (bean instanceof HandlerMapping) {
-			return getMappingLocations(context, (HandlerMapping) bean);
+		if (bean instanceof HandlerMapping handlerMapping) {
+			return getMappingLocations(context, handlerMapping);
 		}
 		assertThat(bean.toString()).isEqualTo("null");
 		return Collections.emptyMap();
@@ -1066,8 +1066,8 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	protected Map<String, Object> getHandlerMap(HandlerMapping mapping) {
-		if (mapping instanceof SimpleUrlHandlerMapping) {
-			return ((SimpleUrlHandlerMapping) mapping).getHandlerMap();
+		if (mapping instanceof SimpleUrlHandlerMapping handlerMapping) {
+			return handlerMapping.getHandlerMap();
 		}
 		return Collections.emptyMap();
 	}

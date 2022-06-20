@@ -341,9 +341,9 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 
 			@Override
 			public Object postProcessAfterInitialization(Object bean, String beanName) {
-				if (bean instanceof HikariDataSource) {
+				if (bean instanceof HikariDataSource dataSource) {
 					try {
-						((HikariDataSource) bean).getConnection().close();
+						dataSource.getConnection().close();
 					}
 					catch (SQLException ex) {
 						throw new IllegalStateException(ex);

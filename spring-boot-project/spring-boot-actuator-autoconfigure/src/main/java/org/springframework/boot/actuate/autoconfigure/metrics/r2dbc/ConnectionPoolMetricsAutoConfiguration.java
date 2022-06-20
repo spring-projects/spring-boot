@@ -60,8 +60,8 @@ public class ConnectionPoolMetricsAutoConfiguration {
 	}
 
 	private ConnectionPool extractPool(Object candidate) {
-		if (candidate instanceof ConnectionPool) {
-			return (ConnectionPool) candidate;
+		if (candidate instanceof ConnectionPool connectionPool) {
+			return connectionPool;
 		}
 		if (candidate instanceof Wrapped) {
 			return extractPool(((Wrapped<?>) candidate).unwrap());

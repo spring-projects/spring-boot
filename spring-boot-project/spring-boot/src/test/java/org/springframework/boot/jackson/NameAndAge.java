@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public final class NameAndAge extends Name {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof NameAndAge) {
-			NameAndAge other = (NameAndAge) obj;
+		if (obj instanceof NameAndAge other) {
 			boolean rtn = true;
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.age, other.age);

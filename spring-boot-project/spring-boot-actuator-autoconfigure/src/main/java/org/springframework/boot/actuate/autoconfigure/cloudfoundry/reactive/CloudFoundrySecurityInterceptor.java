@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,8 +93,7 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	private Mono<SecurityResponse> getErrorResponse(Throwable throwable) {
-		if (throwable instanceof CloudFoundryAuthorizationException) {
-			CloudFoundryAuthorizationException cfException = (CloudFoundryAuthorizationException) throwable;
+		if (throwable instanceof CloudFoundryAuthorizationException cfException) {
 			return Mono.just(new SecurityResponse(cfException.getStatusCode(),
 					"{\"security_error\":\"" + cfException.getMessage() + "\"}"));
 		}

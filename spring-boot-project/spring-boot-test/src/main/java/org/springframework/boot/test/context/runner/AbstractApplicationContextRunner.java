@@ -392,11 +392,10 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	private C createAndLoadContext(boolean refresh) {
 		C context = this.runnerConfiguration.contextFactory.get();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
-			((AbstractAutowireCapableBeanFactory) beanFactory)
-					.setAllowCircularReferences(this.runnerConfiguration.allowCircularReferences);
-			if (beanFactory instanceof DefaultListableBeanFactory) {
-				((DefaultListableBeanFactory) beanFactory)
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			autowireCapableBeanFactory.setAllowCircularReferences(this.runnerConfiguration.allowCircularReferences);
+			if (beanFactory instanceof DefaultListableBeanFactory listableBeanFactory) {
+				listableBeanFactory
 						.setAllowBeanDefinitionOverriding(this.runnerConfiguration.allowBeanDefinitionOverriding);
 			}
 		}

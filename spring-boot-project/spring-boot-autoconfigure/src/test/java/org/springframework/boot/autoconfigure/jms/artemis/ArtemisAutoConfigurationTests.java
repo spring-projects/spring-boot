@@ -376,8 +376,8 @@ class ArtemisAutoConfigurationTests {
 		assertThat(transportConfig.getFactoryClassName()).isEqualTo(NettyConnectorFactory.class.getName());
 		assertThat(transportConfig.getParams().get("host")).isEqualTo(host);
 		Object transportConfigPort = transportConfig.getParams().get("port");
-		if (transportConfigPort instanceof String) {
-			transportConfigPort = Integer.parseInt((String) transportConfigPort);
+		if (transportConfigPort instanceof String portString) {
+			transportConfigPort = Integer.parseInt(portString);
 		}
 		assertThat(transportConfigPort).isEqualTo(port);
 		return transportConfig;

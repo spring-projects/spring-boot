@@ -71,8 +71,8 @@ class ConfigDataLocationResolvers {
 		List<ConfigDataLocationResolver<?>> reordered = new ArrayList<>(resolvers.size());
 		StandardConfigDataLocationResolver resourceResolver = null;
 		for (ConfigDataLocationResolver<?> resolver : resolvers) {
-			if (resolver instanceof StandardConfigDataLocationResolver) {
-				resourceResolver = (StandardConfigDataLocationResolver) resolver;
+			if (resolver instanceof StandardConfigDataLocationResolver configDataLocationResolver) {
+				resourceResolver = configDataLocationResolver;
 			}
 			else {
 				reordered.add(resolver);

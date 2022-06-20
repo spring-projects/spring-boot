@@ -62,8 +62,8 @@ public class ManagementContextAutoConfiguration {
 		public void afterSingletonsInstantiated() {
 			verifySslConfiguration();
 			verifyAddressConfiguration();
-			if (this.environment instanceof ConfigurableEnvironment) {
-				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.environment);
+			if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
+				addLocalManagementPortPropertyAlias(configurableEnvironment);
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,14 +222,14 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		}
 
 		private Environment getEnvironment(SpringApplicationEvent event) {
-			if (event instanceof ApplicationEnvironmentPreparedEvent) {
-				return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
+			if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
+				return environmentPreparedEvent.getEnvironment();
 			}
-			if (event instanceof ApplicationPreparedEvent) {
-				return ((ApplicationPreparedEvent) event).getApplicationContext().getEnvironment();
+			if (event instanceof ApplicationPreparedEvent preparedEvent) {
+				return preparedEvent.getApplicationContext().getEnvironment();
 			}
-			if (event instanceof ApplicationReadyEvent) {
-				return ((ApplicationReadyEvent) event).getApplicationContext().getEnvironment();
+			if (event instanceof ApplicationReadyEvent readyEvent) {
+				return readyEvent.getApplicationContext().getEnvironment();
 			}
 			return null;
 		}

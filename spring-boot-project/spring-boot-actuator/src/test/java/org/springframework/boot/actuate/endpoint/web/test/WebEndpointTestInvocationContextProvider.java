@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,8 +183,8 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		private int determinePort() {
-			if (this.context instanceof AnnotationConfigServletWebServerApplicationContext) {
-				return ((AnnotationConfigServletWebServerApplicationContext) this.context).getWebServer().getPort();
+			if (this.context instanceof AnnotationConfigServletWebServerApplicationContext webServerContext) {
+				return webServerContext.getWebServer().getPort();
 			}
 			return this.context.getBean(PortHolder.class).getPort();
 		}

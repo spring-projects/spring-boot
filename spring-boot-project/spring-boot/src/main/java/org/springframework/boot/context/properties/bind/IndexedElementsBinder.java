@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,10 +116,10 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private MultiValueMap<String, ConfigurationPropertyName> getKnownIndexedChildren(ConfigurationPropertySource source,
 			ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationPropertyName> children = new LinkedMultiValueMap<>();
-		if (!(source instanceof IterableConfigurationPropertySource)) {
+		if (!(source instanceof IterableConfigurationPropertySource iterableSource)) {
 			return children;
 		}
-		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source.filter(root::isAncestorOf)) {
+		for (ConfigurationPropertyName name : iterableSource.filter(root::isAncestorOf)) {
 			ConfigurationPropertyName choppedName = name.chop(root.getNumberOfElements() + 1);
 			if (choppedName.isLastElementIndexed()) {
 				String key = choppedName.getLastElement(Form.UNIFORM);

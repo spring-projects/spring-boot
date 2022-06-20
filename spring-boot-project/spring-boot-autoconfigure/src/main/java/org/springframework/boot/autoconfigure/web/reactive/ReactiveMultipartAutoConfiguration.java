@@ -52,8 +52,7 @@ public class ReactiveMultipartAutoConfiguration {
 	@Order(0)
 	CodecCustomizer defaultPartHttpMessageReaderCustomizer(ReactiveMultipartProperties multipartProperties) {
 		return (configurer) -> configurer.defaultCodecs().configureDefaultCodec((codec) -> {
-			if (codec instanceof DefaultPartHttpMessageReader) {
-				DefaultPartHttpMessageReader defaultPartHttpMessageReader = (DefaultPartHttpMessageReader) codec;
+			if (codec instanceof DefaultPartHttpMessageReader defaultPartHttpMessageReader) {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(multipartProperties::getMaxInMemorySize).asInt(DataSize::toBytes)
 						.to(defaultPartHttpMessageReader::setMaxInMemorySize);

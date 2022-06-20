@@ -150,8 +150,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
-			if (source instanceof IterableConfigurationPropertySource) {
-				for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source) {
+			if (source instanceof IterableConfigurationPropertySource iterableSource) {
+				for (ConfigurationPropertyName name : iterableSource) {
 					Bindable<?> valueBindable = getValueBindable(name);
 					ConfigurationPropertyName entryName = getEntryName(source, name);
 					Object key = getContext().getConverter().convert(getKeyName(entryName), this.keyType);

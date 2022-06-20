@@ -87,11 +87,11 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 						.collect(Collectors.toList());
 			}
 			awareAnalyzers.forEach((analyzer) -> {
-				if (analyzer instanceof BeanFactoryAware) {
-					((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
+				if (analyzer instanceof BeanFactoryAware beanFactoryAware) {
+					beanFactoryAware.setBeanFactory(context.getBeanFactory());
 				}
-				if (analyzer instanceof EnvironmentAware) {
-					((EnvironmentAware) analyzer).setEnvironment(context.getEnvironment());
+				if (analyzer instanceof EnvironmentAware environmentAware) {
+					environmentAware.setEnvironment(context.getEnvironment());
 				}
 			});
 		}

@@ -205,8 +205,8 @@ public abstract class Packager {
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
 		Layout layout = getLayout();
-		if (layout instanceof CustomLoaderLayout) {
-			((CustomLoaderLayout) getLayout()).writeLoadedClasses(writer);
+		if (layout instanceof CustomLoaderLayout customLoaderLayout) {
+			customLoaderLayout.writeLoadedClasses(writer);
 		}
 		else if (layout.isExecutable()) {
 			writer.writeLoaderClasses();
@@ -223,8 +223,8 @@ public abstract class Packager {
 	}
 
 	private EntryTransformer getEntityTransformer() {
-		if (getLayout() instanceof RepackagingLayout) {
-			return new RepackagingEntryTransformer((RepackagingLayout) getLayout());
+		if (getLayout() instanceof RepackagingLayout repackagingLayout) {
+			return new RepackagingEntryTransformer(repackagingLayout);
 		}
 		return EntryTransformer.NONE;
 	}
@@ -349,8 +349,8 @@ public abstract class Packager {
 
 	private void addBootAttributesForLayout(Attributes attributes) {
 		Layout layout = getLayout();
-		if (layout instanceof RepackagingLayout) {
-			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, ((RepackagingLayout) layout).getRepackagedClassesLocation());
+		if (layout instanceof RepackagingLayout repackagingLayout) {
+			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, repackagingLayout.getRepackagedClassesLocation());
 		}
 		else {
 			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getClassesLocation());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ public final class DataSourceUnwrapper {
 		}
 		if (AopUtils.isAopProxy(dataSource)) {
 			Object proxyTarget = AopProxyUtils.getSingletonTarget(dataSource);
-			if (proxyTarget instanceof DataSource) {
-				return unwrap((DataSource) proxyTarget, unwrapInterface, target);
+			if (proxyTarget instanceof DataSource proxyDataSource) {
+				return unwrap(proxyDataSource, unwrapInterface, target);
 			}
 		}
 		return null;
@@ -105,8 +105,8 @@ public final class DataSourceUnwrapper {
 	private static class DelegatingDataSourceUnwrapper {
 
 		private static DataSource getTargetDataSource(DataSource dataSource) {
-			if (dataSource instanceof DelegatingDataSource) {
-				return ((DelegatingDataSource) dataSource).getTargetDataSource();
+			if (dataSource instanceof DelegatingDataSource delegatingDataSource) {
+				return delegatingDataSource.getTargetDataSource();
 			}
 			return null;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,9 +149,9 @@ public class LoggingSystemProperties {
 	}
 
 	private PropertyResolver getPropertyResolver() {
-		if (this.environment instanceof ConfigurableEnvironment) {
+		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
-					((ConfigurableEnvironment) this.environment).getPropertySources());
+					configurableEnvironment.getPropertySources());
 			resolver.setConversionService(((ConfigurableEnvironment) this.environment).getConversionService());
 			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;

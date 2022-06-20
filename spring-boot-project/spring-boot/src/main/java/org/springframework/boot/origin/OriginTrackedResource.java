@@ -179,8 +179,8 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	 * @return an {@link OriginTrackedResource} instance
 	 */
 	public static OriginTrackedResource of(Resource resource, Origin origin) {
-		if (resource instanceof WritableResource) {
-			return new OriginTrackedWritableResource((WritableResource) resource, origin);
+		if (resource instanceof WritableResource writableResource) {
+			return new OriginTrackedWritableResource(writableResource, origin);
 		}
 		return new OriginTrackedResource(resource, origin);
 	}

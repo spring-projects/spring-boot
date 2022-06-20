@@ -249,9 +249,9 @@ class UndertowWebServerFactoryCustomizerTests {
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		willAnswer((invocation) -> {
 			Object argument = invocation.getArgument(0);
-			Arrays.stream((argument instanceof UndertowBuilderCustomizer)
-					? new UndertowBuilderCustomizer[] { (UndertowBuilderCustomizer) argument }
-					: (UndertowBuilderCustomizer[]) argument).forEach((customizer) -> customizer.customize(builder));
+			Arrays.stream((argument instanceof UndertowBuilderCustomizer undertowCustomizer)
+					? new UndertowBuilderCustomizer[] { undertowCustomizer } : (UndertowBuilderCustomizer[]) argument)
+					.forEach((customizer) -> customizer.customize(builder));
 			return null;
 		}).given(factory).addBuilderCustomizers(any());
 		return factory;

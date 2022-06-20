@@ -521,11 +521,11 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	private WebAppContext findWebAppContext(Handler handler) {
-		if (handler instanceof WebAppContext) {
-			return (WebAppContext) handler;
+		if (handler instanceof WebAppContext webAppContext) {
+			return webAppContext;
 		}
-		if (handler instanceof HandlerWrapper) {
-			return findWebAppContext(((HandlerWrapper) handler).getHandler());
+		if (handler instanceof HandlerWrapper wrapper) {
+			return findWebAppContext(wrapper.getHandler());
 		}
 		throw new IllegalStateException("No WebAppContext found");
 	}

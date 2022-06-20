@@ -56,8 +56,8 @@ class ServiceCapabilitiesReportGenerator {
 	 */
 	String generate(String url) throws IOException {
 		Object content = this.initializrService.loadServiceCapabilities(url);
-		if (content instanceof InitializrServiceMetadata) {
-			return generateHelp(url, (InitializrServiceMetadata) content);
+		if (content instanceof InitializrServiceMetadata metadata) {
+			return generateHelp(url, metadata);
 		}
 		return content.toString();
 	}

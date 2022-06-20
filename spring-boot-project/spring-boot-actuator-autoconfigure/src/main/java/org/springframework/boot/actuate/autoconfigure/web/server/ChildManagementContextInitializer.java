@@ -205,11 +205,11 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {
-			if (event instanceof ContextClosedEvent) {
-				onContextClosedEvent((ContextClosedEvent) event);
+			if (event instanceof ContextClosedEvent contextClosedEvent) {
+				onContextClosedEvent(contextClosedEvent);
 			}
-			if (event instanceof ApplicationFailedEvent) {
-				onApplicationFailedEvent((ApplicationFailedEvent) event);
+			if (event instanceof ApplicationFailedEvent applicationFailedEvent) {
+				onApplicationFailedEvent(applicationFailedEvent);
 			}
 		}
 

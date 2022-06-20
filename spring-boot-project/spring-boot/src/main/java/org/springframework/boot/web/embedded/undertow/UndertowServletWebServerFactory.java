@@ -327,8 +327,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
-		if (manager.getDeployment() instanceof DeploymentImpl) {
-			removeSuperfluousMimeMappings((DeploymentImpl) manager.getDeployment(), deployment);
+		if (manager.getDeployment() instanceof DeploymentImpl managerDeployment) {
+			removeSuperfluousMimeMappings(managerDeployment, deployment);
 		}
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		Duration timeoutDuration = getSession().getTimeout();

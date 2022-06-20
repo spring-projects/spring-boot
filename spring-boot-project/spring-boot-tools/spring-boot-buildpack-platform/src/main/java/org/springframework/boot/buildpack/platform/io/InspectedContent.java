@@ -55,11 +55,11 @@ public class InspectedContent implements Content {
 
 	@Override
 	public void writeTo(OutputStream outputStream) throws IOException {
-		if (this.content instanceof byte[]) {
-			FileCopyUtils.copy((byte[]) this.content, outputStream);
+		if (this.content instanceof byte[] bytes) {
+			FileCopyUtils.copy(bytes, outputStream);
 		}
-		else if (this.content instanceof File) {
-			InputStream inputStream = new FileInputStream((File) this.content);
+		else if (this.content instanceof File file) {
+			InputStream inputStream = new FileInputStream(file);
 			FileCopyUtils.copy(inputStream, outputStream);
 		}
 		else {
