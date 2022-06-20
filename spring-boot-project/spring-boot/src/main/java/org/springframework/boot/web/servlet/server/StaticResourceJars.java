@@ -107,7 +107,7 @@ class StaticResourceJars {
 	}
 
 	private void addUrlConnection(List<URL> urls, URL url, URLConnection connection) {
-		if (connection instanceof JarURLConnection && isResourcesJar((JarURLConnection) connection)) {
+		if (connection instanceof JarURLConnection jarURLConnection && isResourcesJar(jarURLConnection)) {
 			urls.add(url);
 		}
 	}

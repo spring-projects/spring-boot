@@ -89,7 +89,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
 			ResolvableType elementType, Object value) {
-		if (value == null || value instanceof CharSequence && ((CharSequence) value).length() == 0) {
+		if (value == null || (value instanceof CharSequence charSequence && charSequence.isEmpty())) {
 			return;
 		}
 		Object aggregate = convert(value, aggregateType, target.getAnnotations());
