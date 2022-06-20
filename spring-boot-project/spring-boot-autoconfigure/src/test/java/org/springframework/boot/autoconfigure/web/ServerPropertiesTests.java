@@ -494,11 +494,7 @@ class ServerPropertiesTests {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			StringBuilder data = new StringBuilder();
-			for (int i = 0; i < 250000; i++) {
-				data.append("a");
-			}
-			body.add("data", data.toString());
+			body.add("data", "a".repeat(250000));
 			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
 			assertThat(failure.get()).isNotNull();
