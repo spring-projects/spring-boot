@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,11 +67,11 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	public void registerJsonComponents() {
 		BeanFactory beanFactory = this.beanFactory;
 		while (beanFactory != null) {
-			if (beanFactory instanceof ListableBeanFactory) {
-				addJsonBeans((ListableBeanFactory) beanFactory);
+			if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
+				addJsonBeans(listableBeanFactory);
 			}
-			beanFactory = (beanFactory instanceof HierarchicalBeanFactory)
-					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory() : null;
+			beanFactory = (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory)
+					? hierarchicalBeanFactory.getParentBeanFactory() : null;
 		}
 	}
 

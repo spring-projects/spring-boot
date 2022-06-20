@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,8 +163,7 @@ class InitializrServiceMetadata {
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
 			Object o = root.get(key);
-			if (o instanceof JSONObject) {
-				JSONObject child = (JSONObject) o;
+			if (o instanceof JSONObject child) {
 				if (child.has(DEFAULT_ATTRIBUTE)) {
 					result.put(key, child.getString(DEFAULT_ATTRIBUTE));
 				}
@@ -212,8 +211,8 @@ class InitializrServiceMetadata {
 		for (Iterator<?> iterator = json.keys(); iterator.hasNext();) {
 			String key = (String) iterator.next();
 			Object value = json.get(key);
-			if (value instanceof String) {
-				result.put(key, (String) value);
+			if (value instanceof String string) {
+				result.put(key, string);
 			}
 		}
 		return result;

@@ -94,11 +94,11 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartedEvent) {
-			onApplicationStarted((ApplicationStartedEvent) event);
+		if (event instanceof ApplicationStartedEvent startedEvent) {
+			onApplicationStarted(startedEvent);
 		}
-		if (event instanceof ApplicationReadyEvent) {
-			onApplicationReady((ApplicationReadyEvent) event);
+		if (event instanceof ApplicationReadyEvent readyEvent) {
+			onApplicationReady(readyEvent);
 		}
 	}
 

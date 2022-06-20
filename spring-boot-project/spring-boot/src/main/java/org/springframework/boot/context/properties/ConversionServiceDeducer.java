@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ class ConversionServiceDeducer {
 			return Collections.singletonList(this.applicationContext
 					.getBean(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
 		}
-		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			return getConversionServices((ConfigurableApplicationContext) this.applicationContext);
+		if (this.applicationContext instanceof ConfigurableApplicationContext configurableContext) {
+			return getConversionServices(configurableContext);
 		}
 		return null;
 	}

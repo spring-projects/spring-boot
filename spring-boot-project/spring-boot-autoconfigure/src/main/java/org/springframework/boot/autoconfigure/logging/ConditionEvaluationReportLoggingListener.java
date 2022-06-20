@@ -25,7 +25,6 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
@@ -101,13 +100,13 @@ public class ConditionEvaluationReportLoggingListener
 
 	protected void onApplicationEvent(ApplicationEvent event) {
 		ConfigurableApplicationContext initializerApplicationContext = this.applicationContext;
-		if (event instanceof ContextRefreshedEvent) {
-			if (((ApplicationContextEvent) event).getApplicationContext() == initializerApplicationContext) {
+		if (event instanceof ContextRefreshedEvent contextRefreshedEvent) {
+			if (contextRefreshedEvent.getApplicationContext() == initializerApplicationContext) {
 				logAutoConfigurationReport();
 			}
 		}
-		else if (event instanceof ApplicationFailedEvent
-				&& ((ApplicationFailedEvent) event).getApplicationContext() == initializerApplicationContext) {
+		else if (event instanceof ApplicationFailedEvent applicationFailedEvent
+				&& applicationFailedEvent.getApplicationContext() == initializerApplicationContext) {
 			logAutoConfigurationReport(true);
 		}
 	}

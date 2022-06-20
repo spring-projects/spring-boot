@@ -120,10 +120,10 @@ class AsciidoctorConventions {
 		configureOptions(asciidoctorTask);
 		asciidoctorTask.baseDirFollowsSourceDir();
 		createSyncDocumentationSourceTask(project, asciidoctorTask);
-		if (asciidoctorTask instanceof AsciidoctorTask) {
-			boolean pdf = asciidoctorTask.getName().toLowerCase().contains("pdf");
+		if (asciidoctorTask instanceof AsciidoctorTask task) {
+			boolean pdf = task.getName().toLowerCase().contains("pdf");
 			String backend = (!pdf) ? "spring-html" : "spring-pdf";
-			((AsciidoctorTask) asciidoctorTask).outputOptions((outputOptions) -> outputOptions.backends(backend));
+			task.outputOptions((outputOptions) -> outputOptions.backends(backend));
 		}
 	}
 

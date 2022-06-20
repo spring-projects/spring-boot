@@ -90,8 +90,8 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	private Throwable mapError(Throwable throwable) {
-		if (throwable instanceof WebClientResponseException) {
-			HttpStatusCode statusCode = ((WebClientResponseException) throwable).getStatusCode();
+		if (throwable instanceof WebClientResponseException webClientResponseException) {
+			HttpStatusCode statusCode = webClientResponseException.getStatusCode();
 			if (statusCode.equals(HttpStatus.FORBIDDEN)) {
 				return new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED, "Access denied");
 			}

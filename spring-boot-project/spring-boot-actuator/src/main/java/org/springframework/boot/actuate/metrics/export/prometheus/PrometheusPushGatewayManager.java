@@ -136,8 +136,8 @@ public class PrometheusPushGatewayManager {
 	}
 
 	private void shutdown(ShutdownOperation shutdownOperation) {
-		if (this.scheduler instanceof PushGatewayTaskScheduler) {
-			((PushGatewayTaskScheduler) this.scheduler).shutdown();
+		if (this.scheduler instanceof PushGatewayTaskScheduler pushGatewayTaskScheduler) {
+			pushGatewayTaskScheduler.shutdown();
 		}
 		this.scheduled.cancel(false);
 		switch (shutdownOperation) {

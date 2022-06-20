@@ -56,8 +56,8 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private void doHealthCheck(Health.Builder builder, RedisConnection connection) {
-		if (connection instanceof RedisClusterConnection) {
-			RedisHealth.fromClusterInfo(builder, ((RedisClusterConnection) connection).clusterGetClusterInfo());
+		if (connection instanceof RedisClusterConnection clusterConnection) {
+			RedisHealth.fromClusterInfo(builder, clusterConnection.clusterGetClusterInfo());
 		}
 		else {
 			RedisHealth.up(builder, connection.serverCommands().info());

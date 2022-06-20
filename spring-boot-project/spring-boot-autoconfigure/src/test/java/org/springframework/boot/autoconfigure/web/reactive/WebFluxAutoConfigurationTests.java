@@ -427,8 +427,8 @@ class WebFluxAutoConfigurationTests {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 			assertThat(handlerMap).hasSize(2);
 			for (Object handler : handlerMap.values()) {
-				if (handler instanceof ResourceWebHandler) {
-					assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
+				if (handler instanceof ResourceWebHandler resourceWebHandler) {
+					assertThat(resourceWebHandler.getCacheControl()).usingRecursiveComparison()
 							.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS));
 				}
 			}
@@ -444,8 +444,8 @@ class WebFluxAutoConfigurationTests {
 					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
-						if (handler instanceof ResourceWebHandler) {
-							assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
+						if (handler instanceof ResourceWebHandler resourceWebHandler) {
+							assertThat(resourceWebHandler.getCacheControl()).usingRecursiveComparison()
 									.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
 						}
 					}
@@ -459,8 +459,8 @@ class WebFluxAutoConfigurationTests {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 			assertThat(handlerMap).hasSize(2);
 			for (Object handler : handlerMap.values()) {
-				if (handler instanceof ResourceWebHandler) {
-					assertThat(((ResourceWebHandler) handler).isUseLastModified()).isFalse();
+				if (handler instanceof ResourceWebHandler resourceWebHandler) {
+					assertThat(resourceWebHandler.isUseLastModified()).isFalse();
 				}
 			}
 		});
@@ -635,8 +635,8 @@ class WebFluxAutoConfigurationTests {
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
 		HandlerMapping mapping = context.getBean("resourceHandlerMapping", HandlerMapping.class);
-		if (mapping instanceof SimpleUrlHandlerMapping) {
-			return ((SimpleUrlHandlerMapping) mapping).getHandlerMap();
+		if (mapping instanceof SimpleUrlHandlerMapping simpleMapping) {
+			return simpleMapping.getHandlerMap();
 		}
 		return Collections.emptyMap();
 	}

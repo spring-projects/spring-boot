@@ -97,11 +97,12 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		PropertySource<?> source = getPropertySource();
-		if (source.getSource() instanceof Random) {
+		Object underlyingSource = source.getSource();
+		if (underlyingSource instanceof Random) {
 			return containsDescendantOfForRandom("random", name);
 		}
-		if (source.getSource() instanceof PropertySource<?>
-				&& ((PropertySource<?>) source.getSource()).getSource() instanceof Random) {
+		if (underlyingSource instanceof PropertySource<?> underlyingPropertySource
+				&& underlyingPropertySource.getSource() instanceof Random) {
 			// Assume wrapped random sources use the source name as the prefix
 			return containsDescendantOfForRandom(source.getName(), name);
 		}

@@ -60,8 +60,8 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof ObservationRegistry) {
-			getConfigurer().configure((ObservationRegistry) bean);
+		if (bean instanceof ObservationRegistry registry) {
+			getConfigurer().configure(registry);
 		}
 		return bean;
 	}
