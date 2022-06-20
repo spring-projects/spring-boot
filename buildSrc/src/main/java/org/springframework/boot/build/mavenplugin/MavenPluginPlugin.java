@@ -309,7 +309,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			Path outputLocation = this.outputDir.toPath().resolve(relativePath);
 			try {
 				Files.createDirectories(outputLocation.getParent());
-				Files.write(outputLocation, edit.getFormattedContent().getBytes(StandardCharsets.UTF_8));
+				Files.writeString(outputLocation, edit.getFormattedContent());
 			}
 			catch (Exception ex) {
 				throw new TaskExecutionException(this, ex);

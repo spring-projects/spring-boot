@@ -297,8 +297,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		Files.write(customScript.toPath(), Arrays.asList("custom script"), StandardOpenOption.CREATE);
 		this.task.launchScript((configuration) -> configuration.setScript(customScript));
 		executeTask();
-		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
-				.startsWith("custom script".getBytes());
+		assertThat(Files.readString(this.task.getArchiveFile().get().getAsFile().toPath())).startsWith("custom script");
 	}
 
 	@Test
@@ -310,10 +309,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			configuration.getProperties().put("initInfoDescription", "description");
 		});
 		executeTask();
-		byte[] bytes = Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath());
-		assertThat(bytes).containsSequence("Provides:          provides".getBytes());
-		assertThat(bytes).containsSequence("Short-Description: short description".getBytes());
-		assertThat(bytes).containsSequence("Description:       description".getBytes());
+		String content = Files.readString(this.task.getArchiveFile().get().getAsFile().toPath());
+		assertThat(content).containsSequence("Provides:          provides");
+		assertThat(content).containsSequence("Short-Description: short description");
+		assertThat(content).containsSequence("Description:       description");
 	}
 
 	@Test
