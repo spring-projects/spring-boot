@@ -97,7 +97,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		@Override
 		public Object getData() throws NoSuchElementException {
 			Object data = super.getData();
-			if (data instanceof CharSequence && ((CharSequence) data).length() == 0) {
+			if (data instanceof CharSequence charSequence && charSequence.isEmpty()) {
 				return null;
 			}
 			return data;
