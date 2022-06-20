@@ -18,7 +18,6 @@ package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -122,8 +121,8 @@ public class ResolveMainClassName extends DefaultTask {
 		File outputFile = this.outputFile.getAsFile().get();
 		outputFile.getParentFile().mkdirs();
 		String mainClassName = resolveMainClassName();
-		Files.write(outputFile.toPath(), mainClassName.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE,
-				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		Files.writeString(outputFile.toPath(), mainClassName, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	private String resolveMainClassName() {
@@ -158,7 +157,7 @@ public class ResolveMainClassName extends DefaultTask {
 			}
 			Path output = file.getAsFile().toPath();
 			try {
-				return new String(Files.readAllBytes(output), StandardCharsets.UTF_8);
+				return Files.readString(output);
 			}
 			catch (IOException ex) {
 				throw new RuntimeException("Failed to read main class name from '" + output + "'");
