@@ -61,7 +61,7 @@ class ZipkinRestTemplateSender extends HttpSender {
 
 		@Override
 		public Call<Void> clone() {
-			return new RestTemplateHttpPostCall(this.endpoint, getBody(), this.restTemplate);
+			return new RestTemplateHttpPostCall(this.endpoint, getBody(false), this.restTemplate);
 		}
 
 		@Override

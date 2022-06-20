@@ -111,7 +111,11 @@ abstract class HttpSender extends Sender {
 		}
 
 		public byte[] getBody() {
-			return needsCompression() ? compress(this.body) : this.body;
+			return getBody(true);
+		}
+
+		public byte[] getBody(boolean compressIfNeeded) {
+			return compressIfNeeded && needsCompression() ? compress(this.body) : this.body;
 		}
 
 		public HttpHeaders getDefaultHeaders() {
