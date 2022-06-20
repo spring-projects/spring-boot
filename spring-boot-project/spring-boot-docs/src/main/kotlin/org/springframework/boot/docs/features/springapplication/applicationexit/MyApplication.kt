@@ -21,6 +21,8 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 
+import kotlin.system.exitProcess
+
 @SpringBootApplication
 class MyApplication {
 
@@ -32,5 +34,6 @@ class MyApplication {
 }
 
 fun main(args: Array<String>) {
-	exitProcess(SpringApplication.exit(SpringApplication.run(MyApplication::class.java, *args)))
+	exitProcess(SpringApplication.exit(
+		SpringApplication.run(MyApplication::class.java, *args)))
 }
