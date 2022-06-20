@@ -71,8 +71,8 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
-		if (beanFactory instanceof ListableBeanFactory
-				&& ((ListableBeanFactory) beanFactory).containsBeanDefinition(name)) {
+		if (beanFactory instanceof ListableBeanFactory listableBeanFactory
+				&& listableBeanFactory.containsBeanDefinition(name)) {
 			return true;
 		}
 		if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {

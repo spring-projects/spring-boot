@@ -81,8 +81,8 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 	}
 
 	private boolean isRunningInEmbeddedWebServer() {
-		return this.applicationContext instanceof WebApplicationContext
-				&& ((WebApplicationContext) this.applicationContext).getServletContext() == null;
+		return this.applicationContext instanceof WebApplicationContext webApplicationContext
+				&& webApplicationContext.getServletContext() == null;
 	}
 
 	private ClassPathScanningCandidateComponentProvider createComponentProvider() {
