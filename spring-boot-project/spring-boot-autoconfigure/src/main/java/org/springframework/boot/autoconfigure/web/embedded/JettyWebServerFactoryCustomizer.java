@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,8 +108,8 @@ public class JettyWebServerFactoryCustomizer
 	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
 			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
-				if (connector instanceof AbstractConnector) {
-					((AbstractConnector) connector).setIdleTimeout(connectionTimeout.toMillis());
+				if (connector instanceof AbstractConnector abstractConnector) {
+					abstractConnector.setIdleTimeout(connectionTimeout.toMillis());
 				}
 			}
 		});
@@ -125,14 +125,14 @@ public class JettyWebServerFactoryCustomizer
 
 			private void setHandlerMaxHttpFormPostSize(Handler... handlers) {
 				for (Handler handler : handlers) {
-					if (handler instanceof ContextHandler) {
-						((ContextHandler) handler).setMaxFormContentSize(maxHttpFormPostSize);
+					if (handler instanceof ContextHandler contextHandler) {
+						contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
 					}
-					else if (handler instanceof HandlerWrapper) {
-						setHandlerMaxHttpFormPostSize(((HandlerWrapper) handler).getHandler());
+					else if (handler instanceof HandlerWrapper wrapper) {
+						setHandlerMaxHttpFormPostSize(wrapper.getHandler());
 					}
-					else if (handler instanceof HandlerCollection) {
-						setHandlerMaxHttpFormPostSize(((HandlerCollection) handler).getHandlers());
+					else if (handler instanceof HandlerCollection collection) {
+						setHandlerMaxHttpFormPostSize(collection.getHandlers());
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,8 +225,8 @@ final class ResolveDependencyCoordinatesTransformationTests {
 
 	private Object getGrabAnnotationMemberAsString(String memberName) {
 		Expression expression = this.grabAnnotation.getMember(memberName);
-		if (expression instanceof ConstantExpression) {
-			return ((ConstantExpression) expression).getValue();
+		if (expression instanceof ConstantExpression constantExpression) {
+			return constantExpression.getValue();
 		}
 		else if (expression == null) {
 			return null;

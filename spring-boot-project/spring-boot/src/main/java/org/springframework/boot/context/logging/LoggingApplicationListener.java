@@ -209,17 +209,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartingEvent) {
-			onApplicationStartingEvent((ApplicationStartingEvent) event);
+		if (event instanceof ApplicationStartingEvent startingEvent) {
+			onApplicationStartingEvent(startingEvent);
 		}
-		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+		else if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent(environmentPreparedEvent);
 		}
-		else if (event instanceof ApplicationPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		else if (event instanceof ApplicationPreparedEvent preparedEvent) {
+			onApplicationPreparedEvent(preparedEvent);
 		}
-		else if (event instanceof ContextClosedEvent
-				&& ((ContextClosedEvent) event).getApplicationContext().getParent() == null) {
+		else if (event instanceof ContextClosedEvent contextClosedEvent
+				&& contextClosedEvent.getApplicationContext().getParent() == null) {
 			onContextClosedEvent();
 		}
 		else if (event instanceof ApplicationFailedEvent) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ class MockBeanContextCachingTests {
 		Map<MergedContextConfiguration, ApplicationContext> contexts = (Map<MergedContextConfiguration, ApplicationContext>) ReflectionTestUtils
 				.getField(this.contextCache, "contextMap");
 		for (ApplicationContext context : contexts.values()) {
-			if (context instanceof ConfigurableApplicationContext) {
-				((ConfigurableApplicationContext) context).close();
+			if (context instanceof ConfigurableApplicationContext configurableContext) {
+				configurableContext.close();
 			}
 		}
 		this.contextCache.clear();

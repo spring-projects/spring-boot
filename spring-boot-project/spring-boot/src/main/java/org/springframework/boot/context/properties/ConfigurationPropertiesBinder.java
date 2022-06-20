@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,8 +144,8 @@ class ConfigurationPropertiesBinder {
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
 			validators.add(getJsr303Validator());
 		}
-		if (target.getValue() != null && target.getValue().get() instanceof Validator) {
-			validators.add((Validator) target.getValue().get());
+		if (target.getValue() != null && target.getValue().get() instanceof Validator validator) {
+			validators.add(validator);
 		}
 		return validators;
 	}
@@ -184,8 +184,8 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
-		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
+		if (this.applicationContext instanceof ConfigurableApplicationContext configurableContext) {
+			return configurableContext.getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,11 +94,11 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	}
 
 	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
-		if (context instanceof BeanDefinitionRegistry) {
-			return (BeanDefinitionRegistry) context;
+		if (context instanceof BeanDefinitionRegistry beanDefinitionRegistry) {
+			return beanDefinitionRegistry;
 		}
-		if (context instanceof AbstractApplicationContext) {
-			return (BeanDefinitionRegistry) ((AbstractApplicationContext) context).getBeanFactory();
+		if (context instanceof AbstractApplicationContext abstractContext) {
+			return (BeanDefinitionRegistry) abstractContext.getBeanFactory();
 		}
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
@@ -284,8 +284,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		}
 
 		private Class<?>[] getImports(Annotation annotation) {
-			if (annotation instanceof Import) {
-				return ((Import) annotation).value();
+			if (annotation instanceof Import importAnnotation) {
+				return importAnnotation.value();
 			}
 			return NO_IMPORTS;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,8 +114,8 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 					return fetchNext();
 				}
 				PropertySource<?> candidate = this.iterators.peek().next();
-				if (candidate.getSource() instanceof ConfigurableEnvironment) {
-					push((ConfigurableEnvironment) candidate.getSource());
+				if (candidate.getSource() instanceof ConfigurableEnvironment configurableEnvironment) {
+					push(configurableEnvironment);
 					return fetchNext();
 				}
 				if (isIgnored(candidate)) {

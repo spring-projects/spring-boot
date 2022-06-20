@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,8 +113,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 					return constructTrackedObject(node, super.constructObject(node));
 				}
 			}
-			if (node instanceof MappingNode) {
-				replaceMappingNodeKeys((MappingNode) node);
+			if (node instanceof MappingNode mappingNode) {
+				replaceMappingNodeKeys(mappingNode);
 			}
 			return super.constructObject(node);
 		}
@@ -156,8 +156,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private static Node get(Node node) {
-			if (node instanceof ScalarNode) {
-				return new KeyScalarNode((ScalarNode) node);
+			if (node instanceof ScalarNode scalarNode) {
+				return new KeyScalarNode(scalarNode);
 			}
 			return node;
 		}

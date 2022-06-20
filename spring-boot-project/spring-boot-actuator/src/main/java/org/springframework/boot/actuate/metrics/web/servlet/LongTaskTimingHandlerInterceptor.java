@@ -109,10 +109,10 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private Set<Timed> getTimedAnnotations(Object handler) {
-		if (!(handler instanceof HandlerMethod)) {
-			return Collections.emptySet();
+		if (handler instanceof HandlerMethod handlerMethod) {
+			return getTimedAnnotations(handlerMethod);
 		}
-		return getTimedAnnotations((HandlerMethod) handler);
+		return Collections.emptySet();
 	}
 
 	private Set<Timed> getTimedAnnotations(HandlerMethod handler) {

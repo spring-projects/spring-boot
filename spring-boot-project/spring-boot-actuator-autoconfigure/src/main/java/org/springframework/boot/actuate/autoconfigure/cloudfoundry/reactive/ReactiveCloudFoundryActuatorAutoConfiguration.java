@@ -164,8 +164,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof WebFilterChainProxy) {
-				return postProcess((WebFilterChainProxy) bean);
+			if (bean instanceof WebFilterChainProxy webFilterChainProxy) {
+				return postProcess(webFilterChainProxy);
 			}
 			return bean;
 		}

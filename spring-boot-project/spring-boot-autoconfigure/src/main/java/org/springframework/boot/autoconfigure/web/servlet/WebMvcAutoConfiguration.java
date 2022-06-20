@@ -237,8 +237,8 @@ public class WebMvcAutoConfiguration {
 			if (this.beanFactory.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
 				Object taskExecutor = this.beanFactory
 						.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
-				if (taskExecutor instanceof AsyncTaskExecutor) {
-					configurer.setTaskExecutor(((AsyncTaskExecutor) taskExecutor));
+				if (taskExecutor instanceof AsyncTaskExecutor asyncTaskExecutor) {
+					configurer.setTaskExecutor(asyncTaskExecutor);
 				}
 			}
 			Duration timeout = this.mvcProperties.getAsync().getRequestTimeout();
@@ -559,8 +559,8 @@ public class WebMvcAutoConfiguration {
 			super.extendHandlerExceptionResolvers(exceptionResolvers);
 			if (this.mvcProperties.isLogResolvedException()) {
 				for (HandlerExceptionResolver resolver : exceptionResolvers) {
-					if (resolver instanceof AbstractHandlerExceptionResolver) {
-						((AbstractHandlerExceptionResolver) resolver).setWarnLogCategory(resolver.getClass().getName());
+					if (resolver instanceof AbstractHandlerExceptionResolver abstractResolver) {
+						abstractResolver.setWarnLogCategory(resolver.getClass().getName());
 					}
 				}
 			}

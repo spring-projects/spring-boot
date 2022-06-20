@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,9 +77,9 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private void assertEnumerablePropertySource() {
-		if (getPropertySource() instanceof MapPropertySource) {
+		if (getPropertySource() instanceof MapPropertySource mapSource) {
 			try {
-				((MapPropertySource) getPropertySource()).getSource().size();
+				mapSource.getSource().size();
 			}
 			catch (UnsupportedOperationException ex) {
 				throw new IllegalArgumentException("PropertySource must be fully enumerable");

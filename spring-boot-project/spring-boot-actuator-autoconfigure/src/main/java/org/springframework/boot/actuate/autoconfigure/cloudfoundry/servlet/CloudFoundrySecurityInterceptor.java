@@ -77,8 +77,7 @@ class CloudFoundrySecurityInterceptor {
 		}
 		catch (Exception ex) {
 			logger.error(ex);
-			if (ex instanceof CloudFoundryAuthorizationException) {
-				CloudFoundryAuthorizationException cfException = (CloudFoundryAuthorizationException) ex;
+			if (ex instanceof CloudFoundryAuthorizationException cfException) {
 				return new SecurityResponse(cfException.getStatusCode(),
 						"{\"security_error\":\"" + cfException.getMessage() + "\"}");
 			}

@@ -142,8 +142,8 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 
 	private MethodMetadata getFactoryMethodMetadata(String beanName) {
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
-		if (beanDefinition instanceof AnnotatedBeanDefinition) {
-			return ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
+		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+			return annotatedBeanDefinition.getFactoryMethodMetadata();
 		}
 		return null;
 	}

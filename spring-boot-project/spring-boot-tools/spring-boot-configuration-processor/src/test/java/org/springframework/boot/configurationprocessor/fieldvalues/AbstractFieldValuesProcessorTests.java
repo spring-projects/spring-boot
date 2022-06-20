@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,9 +126,9 @@ public abstract class AbstractFieldValuesProcessorTests {
 		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 			for (TypeElement annotation : annotations) {
 				for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-					if (element instanceof TypeElement) {
+					if (element instanceof TypeElement typeElement) {
 						try {
-							this.values.putAll(this.processor.getFieldValues((TypeElement) element));
+							this.values.putAll(this.processor.getFieldValues(typeElement));
 						}
 						catch (Exception ex) {
 							throw new IllegalStateException(ex);

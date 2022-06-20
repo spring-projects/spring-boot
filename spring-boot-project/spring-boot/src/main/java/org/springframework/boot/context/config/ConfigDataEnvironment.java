@@ -250,8 +250,8 @@ class ConfigDataEnvironment {
 			return new ConfigDataActivationContext(this.environment, initialBinder);
 		}
 		catch (BindException ex) {
-			if (ex.getCause() instanceof InactiveConfigDataAccessException) {
-				throw (InactiveConfigDataAccessException) ex.getCause();
+			if (ex.getCause() instanceof InactiveConfigDataAccessException inactiveException) {
+				throw inactiveException;
 			}
 			throw ex;
 		}
@@ -278,8 +278,8 @@ class ConfigDataEnvironment {
 			return activationContext.withProfiles(profiles);
 		}
 		catch (BindException ex) {
-			if (ex.getCause() instanceof InactiveConfigDataAccessException) {
-				throw (InactiveConfigDataAccessException) ex.getCause();
+			if (ex.getCause() instanceof InactiveConfigDataAccessException inactiveException) {
+				throw inactiveException;
 			}
 			throw ex;
 		}

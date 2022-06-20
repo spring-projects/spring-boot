@@ -296,8 +296,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 			@Override
 			public void initialize(ConfigurableApplicationContext applicationContext) {
-				if (applicationContext instanceof ConfigurableWebApplicationContext) {
-					this.delegate.initialize((ConfigurableWebApplicationContext) applicationContext);
+				if (applicationContext instanceof ConfigurableWebApplicationContext webApplicationContext) {
+					this.delegate.initialize(webApplicationContext);
 				}
 			}
 

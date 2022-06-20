@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @since 2.1.8
 	 */
 	static boolean hasServerNamespace(ApplicationContext context, String serverNamespace) {
-		return (context instanceof WebServerApplicationContext) && ObjectUtils
-				.nullSafeEquals(((WebServerApplicationContext) context).getServerNamespace(), serverNamespace);
+		return (context instanceof WebServerApplicationContext webServerApplicationContext)
+				&& ObjectUtils.nullSafeEquals(webServerApplicationContext.getServerNamespace(), serverNamespace);
 	}
 
 	/**
@@ -67,8 +67,8 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @since 2.6.0
 	 */
 	static String getServerNamespace(ApplicationContext context) {
-		return (context instanceof WebServerApplicationContext)
-				? ((WebServerApplicationContext) context).getServerNamespace() : null;
+		return (context instanceof WebServerApplicationContext configurableContext)
+				? configurableContext.getServerNamespace() : null;
 
 	}
 

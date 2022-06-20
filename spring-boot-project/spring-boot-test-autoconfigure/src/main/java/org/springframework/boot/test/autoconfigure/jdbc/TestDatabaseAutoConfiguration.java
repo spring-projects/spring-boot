@@ -172,12 +172,11 @@ public class TestDatabaseAutoConfiguration {
 
 		EmbeddedDataSourceFactory(Environment environment) {
 			this.environment = environment;
-			if (environment instanceof ConfigurableEnvironment) {
+			if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
 				Map<String, Object> source = new HashMap<>();
 				source.put("spring.datasource.schema-username", "");
 				source.put("spring.sql.init.username", "");
-				((ConfigurableEnvironment) environment).getPropertySources()
-						.addFirst(new MapPropertySource("testDatabase", source));
+				configurableEnvironment.getPropertySources().addFirst(new MapPropertySource("testDatabase", source));
 			}
 		}
 

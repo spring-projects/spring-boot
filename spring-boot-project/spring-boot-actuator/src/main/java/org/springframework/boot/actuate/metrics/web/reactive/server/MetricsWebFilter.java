@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,8 +118,7 @@ public class MetricsWebFilter implements WebFilter {
 	}
 
 	private Set<Timed> getTimedAnnotations(Object handler) {
-		if (handler instanceof HandlerMethod) {
-			HandlerMethod handlerMethod = (HandlerMethod) handler;
+		if (handler instanceof HandlerMethod handlerMethod) {
 			return TimedAnnotations.get(handlerMethod.getMethod(), handlerMethod.getBeanType());
 		}
 		return Collections.emptySet();

@@ -278,8 +278,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
 		ensureOpen();
-		if (entry instanceof JarEntry) {
-			return this.entries.getInputStream((JarEntry) entry);
+		if (entry instanceof JarEntry jarEntry) {
+			return this.entries.getInputStream(jarEntry);
 		}
 		return getInputStream((entry != null) ? entry.getName() : null);
 	}

@@ -391,11 +391,10 @@ public class SpringApplication {
 		if (printedBanner != null) {
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
-		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
-			((AbstractAutowireCapableBeanFactory) beanFactory).setAllowCircularReferences(this.allowCircularReferences);
-			if (beanFactory instanceof DefaultListableBeanFactory) {
-				((DefaultListableBeanFactory) beanFactory)
-						.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			autowireCapableBeanFactory.setAllowCircularReferences(this.allowCircularReferences);
+			if (beanFactory instanceof DefaultListableBeanFactory listableBeanFactory) {
+				listableBeanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 			}
 		}
 		if (this.lazyInitialization) {
@@ -582,11 +581,11 @@ public class SpringApplication {
 					this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
-			if (context instanceof GenericApplicationContext) {
-				((GenericApplicationContext) context).setResourceLoader(this.resourceLoader);
+			if (context instanceof GenericApplicationContext genericApplicationContext) {
+				genericApplicationContext.setResourceLoader(this.resourceLoader);
 			}
-			if (context instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader.getClassLoader());
+			if (context instanceof DefaultResourceLoader defaultResourceLoader) {
+				defaultResourceLoader.setClassLoader(this.resourceLoader.getClassLoader());
 			}
 		}
 		if (this.addConversionService) {
@@ -709,11 +708,11 @@ public class SpringApplication {
 	 * @return the BeanDefinitionRegistry if it can be determined
 	 */
 	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
-		if (context instanceof BeanDefinitionRegistry) {
-			return (BeanDefinitionRegistry) context;
+		if (context instanceof BeanDefinitionRegistry registry) {
+			return registry;
 		}
-		if (context instanceof AbstractApplicationContext) {
-			return (BeanDefinitionRegistry) ((AbstractApplicationContext) context).getBeanFactory();
+		if (context instanceof AbstractApplicationContext abstractApplicationContext) {
+			return (BeanDefinitionRegistry) abstractApplicationContext.getBeanFactory();
 		}
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
@@ -750,11 +749,11 @@ public class SpringApplication {
 		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
 		for (Object runner : new LinkedHashSet<>(runners)) {
-			if (runner instanceof ApplicationRunner) {
-				callRunner((ApplicationRunner) runner, args);
+			if (runner instanceof ApplicationRunner applicationRunner) {
+				callRunner(applicationRunner, args);
 			}
-			if (runner instanceof CommandLineRunner) {
-				callRunner((CommandLineRunner) runner, args);
+			if (runner instanceof CommandLineRunner commandLineRunner) {
+				callRunner(commandLineRunner, args);
 			}
 		}
 	}
@@ -875,8 +874,8 @@ public class SpringApplication {
 		if (exception == null) {
 			return 0;
 		}
-		if (exception instanceof ExitCodeGenerator) {
-			return ((ExitCodeGenerator) exception).getExitCode();
+		if (exception instanceof ExitCodeGenerator generator) {
+			return generator.getExitCode();
 		}
 		return getExitCodeFromExitCodeGeneratorException(exception.getCause());
 	}
@@ -1362,8 +1361,7 @@ public class SpringApplication {
 	}
 
 	private static void close(ApplicationContext context) {
-		if (context instanceof ConfigurableApplicationContext) {
-			ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
+		if (context instanceof ConfigurableApplicationContext closable) {
 			closable.close();
 		}
 	}

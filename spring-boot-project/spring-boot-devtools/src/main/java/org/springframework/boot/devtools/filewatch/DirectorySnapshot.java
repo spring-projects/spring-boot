@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,8 +119,8 @@ class DirectorySnapshot {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof DirectorySnapshot) {
-			return equals((DirectorySnapshot) obj, null);
+		if (obj instanceof DirectorySnapshot other) {
+			return equals(other, null);
 		}
 		return super.equals(obj);
 	}

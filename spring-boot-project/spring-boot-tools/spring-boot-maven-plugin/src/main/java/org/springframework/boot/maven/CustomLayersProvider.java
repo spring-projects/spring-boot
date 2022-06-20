@@ -108,8 +108,8 @@ class CustomLayersProvider {
 		NodeList children = element.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node child = children.item(i);
-			if (child instanceof Element) {
-				ContentSelector<T> selector = selectorFactory.apply((Element) child);
+			if (child instanceof Element childElement) {
+				ContentSelector<T> selector = selectorFactory.apply(childElement);
 				selectors.add(selector);
 			}
 		}

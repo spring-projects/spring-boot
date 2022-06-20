@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 			return deserializeObject(jp, ctxt, codec, tree);
 		}
 		catch (Exception ex) {
-			if (ex instanceof IOException) {
-				throw (IOException) ex;
+			if (ex instanceof IOException ioException) {
+				throw ioException;
 			}
 			throw new JsonMappingException(jp, "Object deserialize error", ex);
 		}

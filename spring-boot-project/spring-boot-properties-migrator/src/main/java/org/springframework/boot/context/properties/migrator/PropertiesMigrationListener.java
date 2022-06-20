@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ public class PropertiesMigrationListener implements ApplicationListener<SpringAp
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (event instanceof ApplicationPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		if (event instanceof ApplicationPreparedEvent preparedEvent) {
+			onApplicationPreparedEvent(preparedEvent);
 		}
 		if (event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent) {
 			logLegacyPropertiesReport();

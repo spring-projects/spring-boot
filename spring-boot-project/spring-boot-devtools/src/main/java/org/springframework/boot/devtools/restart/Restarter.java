@@ -411,8 +411,8 @@ public class Restarter {
 		if (applicationContext != null && applicationContext.getParent() != null) {
 			return;
 		}
-		if (applicationContext instanceof GenericApplicationContext) {
-			prepare((GenericApplicationContext) applicationContext);
+		if (applicationContext instanceof GenericApplicationContext genericContext) {
+			prepare(genericContext);
 		}
 		this.rootContexts.add(applicationContext);
 	}
