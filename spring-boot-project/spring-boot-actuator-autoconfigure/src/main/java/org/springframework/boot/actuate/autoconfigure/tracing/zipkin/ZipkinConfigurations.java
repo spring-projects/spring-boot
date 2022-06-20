@@ -31,7 +31,6 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -40,7 +39,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -51,7 +49,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ UrlConnectionSenderConfiguration.class, RestTemplateSenderConfiguration.class })
+	@Import({ UrlConnectionSenderConfiguration.class, RestTemplateSenderConfiguration.class,
+			WebClientSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
@@ -71,20 +70,6 @@ class ZipkinConfigurations {
 
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	@ConditionalOnBean(WebClient.Builder.class)
-	@ConditionalOnMissingClass("zipkin2.reporter.urlconnection.URLConnectionSender")
-	Sender webClientSender(ZipkinProperties properties, WebClient.Builder webClientBuilder) {
-		HttpClient client = HttpClient.create()
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) properties.getConnectTimeout().toMillis())
-				.doOnConnected((conn) -> conn
-						.addHandlerLast(new ReadTimeoutHandler((int) properties.getReadTimeout().toSeconds())));
-		WebClient webClient = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client)).build();
-		return new ZipkinWebClientSender(properties.getEndpoint(), webClient);
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RestTemplate.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
@@ -98,6 +83,25 @@ class ZipkinConfigurations {
 			RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(properties.getConnectTimeout())
 					.setReadTimeout(properties.getReadTimeout()).build();
 			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplate);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@EnableConfigurationProperties(ZipkinProperties.class)
+	static class WebClientSenderConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(Sender.class)
+		@ConditionalOnBean(WebClient.Builder.class)
+		ZipkinWebClientSender webClientSender(ZipkinProperties properties, WebClient.Builder webClientBuilder) {
+			HttpClient client = HttpClient.create()
+					.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) properties.getConnectTimeout().toMillis())
+					.doOnConnected((conn) -> conn
+							.addHandlerLast(new ReadTimeoutHandler((int) properties.getReadTimeout().toSeconds())));
+			WebClient webClient = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client)).build();
+			return new ZipkinWebClientSender(properties.getEndpoint(), webClient);
 		}
 
 	}
