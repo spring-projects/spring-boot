@@ -31,7 +31,8 @@ import org.springframework.boot.test.autoconfigure.actuate.observability.AutoCon
  *
  * @author Chris Bono
  * @since 2.4.0
- * @deprecated use {@link AutoConfigureObservability} instead
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link AutoConfigureObservability @AutoConfigureObservability}
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

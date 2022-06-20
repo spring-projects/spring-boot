@@ -28,8 +28,8 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 
 /**
- * {@link ContextCustomizerFactory} that globally disables metrics export unless
- * {@link AutoConfigureObservability} is set on the test class.
+ * {@link ContextCustomizerFactory} that globally disables metrics export and tracing
+ * unless {@link AutoConfigureObservability} is set on the test class.
  *
  * @author Chris Bono
  * @author Moritz Halbritter

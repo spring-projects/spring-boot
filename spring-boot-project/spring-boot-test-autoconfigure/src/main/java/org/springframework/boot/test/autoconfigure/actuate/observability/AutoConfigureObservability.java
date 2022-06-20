@@ -44,7 +44,7 @@ public @interface AutoConfigureObservability {
 
 	/**
 	 * Whether tracing should be enabled in the test.
-	 * @return whether metrics should be enabled in the test
+	 * @return whether tracing should be enabled in the test
 	 */
 	boolean tracing() default true;
 
