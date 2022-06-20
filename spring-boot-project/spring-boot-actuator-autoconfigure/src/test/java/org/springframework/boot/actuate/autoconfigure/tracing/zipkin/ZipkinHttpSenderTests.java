@@ -10,18 +10,21 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import zipkin2.Callback;
+import zipkin2.reporter.ClosedSenderException;
 import zipkin2.reporter.Sender;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Abstract base test class which is used for testing the different implementations of the
- * Zipkin {@link Sender}.
+ * {@link HttpSender}.
  *
  * @author Stefan Bratanov
  */
-abstract class ZipkinSenderTests {
+abstract class ZipkinHttpSenderTests {
 
 	protected Sender senderUnderTest;
 
@@ -30,6 +33,12 @@ abstract class ZipkinSenderTests {
 	@BeforeEach
 	void setUp() {
 		this.senderUnderTest = getZipkinSender();
+	}
+
+	@Test
+	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
+		this.senderUnderTest.close();
+		assertThatThrownBy(() -> this.senderUnderTest.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
 	}
 
 	protected void makeRequest(List<byte[]> encodedSpans, boolean async) {

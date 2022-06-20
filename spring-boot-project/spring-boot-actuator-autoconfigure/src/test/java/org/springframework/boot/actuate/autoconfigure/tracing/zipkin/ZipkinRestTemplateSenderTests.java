@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import zipkin2.CheckResult;
-import zipkin2.reporter.ClosedSenderException;
 import zipkin2.reporter.Sender;
 
 import org.springframework.http.HttpMethod;
@@ -47,7 +45,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Moritz Halbritter
  * @author Stefan Bratanov
  */
-class ZipkinRestTemplateSenderTests extends ZipkinSenderTests {
+class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 
 	private static final String ZIPKIN_URL = "http://localhost:9411/api/v2/spans";
 
@@ -103,12 +101,6 @@ class ZipkinRestTemplateSenderTests extends ZipkinSenderTests {
 		else {
 			assertThatThrownBy(() -> this.makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
 		}
-	}
-
-	@Test
-	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.senderUnderTest.close();
-		assertThatThrownBy(() -> this.senderUnderTest.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
 	}
 
 	@ParameterizedTest

@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import zipkin2.CheckResult;
-import zipkin2.reporter.ClosedSenderException;
 import zipkin2.reporter.Sender;
 
 import org.springframework.web.reactive.function.client.WebClient;
@@ -44,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Stefan Bratanov
  */
-class ZipkinWebClientSenderTests extends ZipkinSenderTests {
+class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	private static MockWebServer mockBackEnd;
 
@@ -117,12 +116,6 @@ class ZipkinWebClientSenderTests extends ZipkinSenderTests {
 		}
 
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
-	}
-
-	@Test
-	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.senderUnderTest.close();
-		assertThatThrownBy(() -> this.senderUnderTest.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
 	}
 
 	@ParameterizedTest
