@@ -19,6 +19,7 @@ package org.springframework.boot.docs.features.springapplication.applicationexit
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 
 import kotlin.system.exitProcess
@@ -27,13 +28,11 @@ import kotlin.system.exitProcess
 class MyApplication {
 
 	@Bean
-	fun exitCodeGenerator(): ExitCodeGenerator? {
-		return ExitCodeGenerator { 42 }
-	}
+	fun exitCodeGenerator() = ExitCodeGenerator { 42 }
 
 }
 
 fun main(args: Array<String>) {
 	exitProcess(SpringApplication.exit(
-		SpringApplication.run(MyApplication::class.java, *args)))
+		runApplication<MyApplication>(*args)))
 }
