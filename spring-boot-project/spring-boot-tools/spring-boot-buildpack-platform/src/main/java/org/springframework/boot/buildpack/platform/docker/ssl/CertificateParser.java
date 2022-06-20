@@ -18,7 +18,6 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.cert.CertificateException;
@@ -76,7 +75,7 @@ final class CertificateParser {
 
 	private static void readCertificates(Path path, CertificateFactory factory, Consumer<X509Certificate> consumer) {
 		try {
-			String text = readText(path);
+			String text = Files.readString(path);
 			Matcher matcher = PATTERN.matcher(text);
 			while (matcher.find()) {
 				String encodedText = matcher.group(1);
@@ -90,11 +89,6 @@ final class CertificateParser {
 		catch (CertificateException | IOException ex) {
 			throw new IllegalStateException("Error reading certificate from '" + path + "' : " + ex.getMessage(), ex);
 		}
-	}
-
-	private static String readText(Path path) throws IOException {
-		byte[] bytes = Files.readAllBytes(path);
-		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
 	private static byte[] decodeBase64(String content) {
