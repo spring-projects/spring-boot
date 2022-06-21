@@ -73,14 +73,13 @@ class ZipkinRestTemplateSender extends HttpSender {
 
 		@Override
 		protected void doEnqueue(Callback<Void> callback) {
-			CompletableFuture.supplyAsync(this::doExecute).whenComplete((__, throwable) -> {
-				if (throwable != null) {
-					callback.onError(throwable);
-				}
-				else {
-					callback.onSuccess(null);
-				}
-			});
+			try {
+				doExecute();
+				callback.onSuccess(null);
+			}
+			catch (Exception ex) {
+				callback.onError(ex);
+			}
 		}
 
 	}
