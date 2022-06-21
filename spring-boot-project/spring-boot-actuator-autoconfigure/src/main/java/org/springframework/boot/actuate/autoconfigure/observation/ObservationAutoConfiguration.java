@@ -75,7 +75,7 @@ public class ObservationAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("io.micrometer.tracing.handler.TracingObservationHandler")
-	static class OnlyMetricsTracingConfiguration {
+	static class OnlyMetricsConfiguration {
 
 		@Bean
 		OnlyMetricsObservationHandlerGrouping onlyMetricsObservationHandlerGrouping() {
