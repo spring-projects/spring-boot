@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 		if (roundEnv.processingOver()) {
 			try {
-				writeMetaData();
+				writeMetadata();
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to write metadata", ex);
@@ -324,7 +324,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return null;
 	}
 
-	protected ConfigurationMetadata writeMetaData() throws Exception {
+	protected ConfigurationMetadata writeMetadata() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
