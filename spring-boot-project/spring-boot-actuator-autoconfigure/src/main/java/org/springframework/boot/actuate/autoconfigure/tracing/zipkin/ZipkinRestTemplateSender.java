@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.util.concurrent.CompletableFuture;
-
 import zipkin2.Call;
 import zipkin2.Callback;
 
