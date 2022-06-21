@@ -111,7 +111,9 @@ public class GraphQlAutoConfiguration {
 			return Arrays.asList(resolver.getResources(pattern));
 		}
 		catch (IOException ex) {
-			logger.debug("Could not resolve schema location: '" + pattern + "'", ex);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Could not resolve schema location: '" + pattern + "'", ex);
+			}
 			return Collections.emptyList();
 		}
 	}

@@ -106,7 +106,9 @@ public class GraphQlWebFluxAutoConfiguration {
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
 			GraphQlSource graphQlSource, GraphQlProperties properties) {
 		String path = properties.getPath();
-		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		if (logger.isInfoEnabled()) {
+			logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		}
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder = builder.GET(path, this::onlyAllowPost);
 		builder = builder.POST(path, SUPPORTS_MEDIATYPES, httpHandler::handleRequest);
@@ -167,7 +169,9 @@ public class GraphQlWebFluxAutoConfiguration {
 		public HandlerMapping graphQlWebSocketEndpoint(GraphQlWebSocketHandler graphQlWebSocketHandler,
 				GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
-			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
+			if (logger.isInfoEnabled()) {
+				logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
+			}
 			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 			mapping.setHandlerPredicate(new WebSocketUpgradeHandlerPredicate());
 			mapping.setUrlMap(Collections.singletonMap(path, graphQlWebSocketHandler));

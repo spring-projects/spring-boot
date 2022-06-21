@@ -111,7 +111,9 @@ public class GraphQlWebMvcAutoConfiguration {
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
 			GraphQlSource graphQlSource, GraphQlProperties properties) {
 		String path = properties.getPath();
-		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		if (logger.isInfoEnabled()) {
+			logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
+		}
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder = builder.GET(path, this::onlyAllowPost);
 		builder = builder.POST(path, RequestPredicates.contentType(SUPPORTED_MEDIA_TYPES)
@@ -188,7 +190,9 @@ public class GraphQlWebMvcAutoConfiguration {
 		@Bean
 		public HandlerMapping graphQlWebSocketMapping(GraphQlWebSocketHandler handler, GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
-			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
+			if (logger.isInfoEnabled()) {
+				logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
+			}
 			WebSocketHandlerMapping mapping = new WebSocketHandlerMapping();
 			mapping.setWebSocketUpgradeMatch(true);
 			mapping.setUrlMap(Collections.singletonMap(path,
