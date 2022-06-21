@@ -41,6 +41,7 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
@@ -111,7 +112,7 @@ public class GraphQlAutoConfiguration {
 			return Arrays.asList(resolver.getResources(pattern));
 		}
 		catch (IOException ex) {
-			logger.debug("Could not resolve schema location: '" + pattern + "'", ex);
+			logger.debug(LogMessage.format("Could not resolve schema location: '%s'", pattern), ex);
 			return Collections.emptyList();
 		}
 	}
