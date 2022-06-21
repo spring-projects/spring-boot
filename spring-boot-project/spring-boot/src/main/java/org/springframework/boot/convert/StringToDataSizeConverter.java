@@ -23,6 +23,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -54,7 +55,7 @@ final class StringToDataSizeConverter implements GenericConverter {
 	}
 
 	private DataSize convert(String source, DataUnit unit) {
-		return DataSize.parse(source, unit);
+		return DataSize.parse(StringUtils.trimAllWhitespace(source), unit);
 	}
 
 }

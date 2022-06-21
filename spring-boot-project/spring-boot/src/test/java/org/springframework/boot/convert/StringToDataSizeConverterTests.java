@@ -86,6 +86,14 @@ class StringToDataSizeConverterTests {
 	}
 
 	@ConversionServiceTest
+	void convertWithSpacesInValidUnitShouldWork(ConversionService conversionService) {
+		assertThat(convert(conversionService, " 1 0 ", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(conversionService, " +10 ", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(conversionService, " - 1 0", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(-10));
+		assertThat(convert(conversionService, " 10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+	}
+
+	@ConversionServiceTest
 	void convertWhenBadFormatShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert(conversionService, "10WB"))
 				.havingCause().isInstanceOf(IllegalArgumentException.class)
