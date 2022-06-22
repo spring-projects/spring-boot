@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
@@ -38,6 +40,7 @@ import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolv
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Guirong Hu
  */
 class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 
@@ -57,8 +60,16 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
-		List<HandlerExceptionResolver> list = new ArrayList<>(
-				this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+		List<HandlerExceptionResolver> list = new ArrayList<>();
+		BeanFactory beanFactory = this.beanFactory;
+		while (beanFactory != null) {
+			if (beanFactory instanceof ListableBeanFactory) {
+				list.addAll(
+						((ListableBeanFactory) beanFactory).getBeansOfType(HandlerExceptionResolver.class).values());
+			}
+			beanFactory = (beanFactory instanceof HierarchicalBeanFactory)
+					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory() : null;
+		}
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		if (list.isEmpty()) {
