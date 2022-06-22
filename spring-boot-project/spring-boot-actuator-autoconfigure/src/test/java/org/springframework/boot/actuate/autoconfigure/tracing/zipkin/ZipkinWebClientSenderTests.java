@@ -25,7 +25,6 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,15 +61,15 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	}
 
 	@Override
-	Sender getZipkinSender() {
+	Sender createSut() {
 		WebClient webClient = WebClient.builder().build();
 		return new ZipkinWebClientSender(ZIPKIN_URL, webClient);
 	}
 
 	@Test
-	void checkShouldSendEmptySpanList() {
+	void checkShouldSendEmptySpanList() throws InterruptedException {
 		mockBackEnd.enqueue(new MockResponse());
-		assertThat(this.senderUnderTest.check()).isEqualTo(CheckResult.OK);
+		assertThat(this.sut.check()).isEqualTo(CheckResult.OK);
 
 		requestAssertions((request) -> {
 			assertThat(request.getMethod()).isEqualTo("POST");
@@ -79,9 +78,9 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	}
 
 	@Test
-	void checkShouldNotRaiseException() {
+	void checkShouldNotRaiseException() throws InterruptedException {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
-		CheckResult result = this.senderUnderTest.check();
+		CheckResult result = this.sut.check();
 		assertThat(result.ok()).isFalse();
 		assertThat(result.error()).hasMessageContaining("500 Internal Server Error");
 
@@ -90,7 +89,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
-	void sendSpansShouldSendSpansToZipkin(boolean async) {
+	void sendSpansShouldSendSpansToZipkin(boolean async) throws IOException, InterruptedException {
 		mockBackEnd.enqueue(new MockResponse());
 		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
 		this.makeRequest(encodedSpans, async);
@@ -104,12 +103,12 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
-	void sendSpansShouldHandleHttpFailures(boolean async) {
+	void sendSpansShouldHandleHttpFailures(boolean async) throws InterruptedException {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
 		if (async) {
 			CallbackResult callbackResult = this.makeAsyncRequest(List.of());
-			assertThat(callbackResult.isSuccess()).isFalse();
-			assertThat(callbackResult.getError()).isNotNull().hasMessageContaining("500 Internal Server Error");
+			assertThat(callbackResult.success()).isFalse();
+			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
 		}
 		else {
 			assertThatThrownBy(() -> this.makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
@@ -120,7 +119,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
-	void sendSpansShouldCompressData(boolean async) {
+	void sendSpansShouldCompressData(boolean async) throws IOException, InterruptedException {
 		String uncompressed = "a".repeat(10000);
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()
@@ -139,14 +138,9 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	}
 
-	private void requestAssertions(Consumer<RecordedRequest> assertions) {
-		try {
-			RecordedRequest request = mockBackEnd.takeRequest();
-			assertThat(request).satisfies(assertions);
-		}
-		catch (InterruptedException ex) {
-			Assertions.fail(ex);
-		}
+	private void requestAssertions(Consumer<RecordedRequest> assertions) throws InterruptedException {
+		RecordedRequest request = mockBackEnd.takeRequest();
+		assertThat(request).satisfies(assertions);
 	}
 
 }

@@ -58,7 +58,7 @@ class ZipkinWebClientSender extends HttpSender {
 
 		@Override
 		public Call<Void> clone() {
-			return new WebClientHttpPostCall(this.endpoint, getBody(false), this.webClient);
+			return new WebClientHttpPostCall(this.endpoint, getUncompressedBody(), this.webClient);
 		}
 
 		@Override

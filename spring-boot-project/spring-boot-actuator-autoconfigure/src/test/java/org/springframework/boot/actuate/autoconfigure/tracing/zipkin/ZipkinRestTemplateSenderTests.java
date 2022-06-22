@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
@@ -52,7 +53,7 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 	private MockRestServiceServer mockServer;
 
 	@Override
-	Sender getZipkinSender() {
+	Sender createSut() {
 		RestTemplate restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(restTemplate);
 		return new ZipkinRestTemplateSender(ZIPKIN_URL, restTemplate);
@@ -67,21 +68,21 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 	void checkShouldSendEmptySpanList() {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().string("[]")).andRespond(withStatus(HttpStatus.ACCEPTED));
-		assertThat(this.senderUnderTest.check()).isEqualTo(CheckResult.OK);
+		assertThat(this.sut.check()).isEqualTo(CheckResult.OK);
 	}
 
 	@Test
 	void checkShouldNotRaiseException() {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
-		CheckResult result = this.senderUnderTest.check();
+		CheckResult result = this.sut.check();
 		assertThat(result.ok()).isFalse();
 		assertThat(result.error()).hasMessageContaining("500 Internal Server Error");
 	}
 
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
-	void sendSpansShouldSendSpansToZipkin(boolean async) {
+	void sendSpansShouldSendSpansToZipkin(boolean async) throws IOException {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType("application/json")).andExpect(content().string("[span1,span2]"))
 				.andRespond(withStatus(HttpStatus.ACCEPTED));
@@ -95,8 +96,8 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 		if (async) {
 			CallbackResult callbackResult = this.makeAsyncRequest(List.of());
-			assertThat(callbackResult.isSuccess()).isFalse();
-			assertThat(callbackResult.getError()).isNotNull().hasMessageContaining("500 Internal Server Error");
+			assertThat(callbackResult.success()).isFalse();
+			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
 		}
 		else {
 			assertThatThrownBy(() -> this.makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
@@ -105,7 +106,7 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
-	void sendSpansShouldCompressData(boolean async) {
+	void sendSpansShouldCompressData(boolean async) throws IOException {
 		String uncompressed = "a".repeat(10000);
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()

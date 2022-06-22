@@ -41,6 +41,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Configurations for Zipkin. Those are imported by {@link ZipkinAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Stefan Bratanov
  */
 class ZipkinConfigurations {
 

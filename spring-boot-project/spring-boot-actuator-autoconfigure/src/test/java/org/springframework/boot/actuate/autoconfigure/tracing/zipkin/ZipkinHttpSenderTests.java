@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import zipkin2.Callback;
@@ -42,39 +41,34 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 abstract class ZipkinHttpSenderTests {
 
-	protected Sender senderUnderTest;
+	protected Sender sut;
 
-	abstract Sender getZipkinSender();
+	abstract Sender createSut();
 
 	@BeforeEach
 	void setUp() {
-		this.senderUnderTest = getZipkinSender();
+		this.sut = createSut();
 	}
 
 	@Test
 	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.senderUnderTest.close();
-		assertThatThrownBy(() -> this.senderUnderTest.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
+		this.sut.close();
+		assertThatThrownBy(() -> this.sut.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
 	}
 
-	protected void makeRequest(List<byte[]> encodedSpans, boolean async) {
+	protected void makeRequest(List<byte[]> encodedSpans, boolean async) throws IOException {
 		if (async) {
 			CallbackResult callbackResult = this.makeAsyncRequest(encodedSpans);
-			assertThat(callbackResult.isSuccess()).isTrue();
+			assertThat(callbackResult.success()).isTrue();
 		}
 		else {
-			try {
-				this.makeSyncRequest(encodedSpans);
-			}
-			catch (IOException ex) {
-				Assertions.fail(ex);
-			}
+			this.makeSyncRequest(encodedSpans);
 		}
 	}
 
 	protected CallbackResult makeAsyncRequest(List<byte[]> encodedSpans) {
 		AtomicReference<CallbackResult> callbackResult = new AtomicReference<>();
-		this.senderUnderTest.sendSpans(encodedSpans).enqueue(new Callback<>() {
+		this.sut.sendSpans(encodedSpans).enqueue(new Callback<>() {
 			@Override
 			public void onSuccess(Void value) {
 				callbackResult.set(new CallbackResult(true, null));
@@ -89,32 +83,14 @@ abstract class ZipkinHttpSenderTests {
 	}
 
 	protected void makeSyncRequest(List<byte[]> encodedSpans) throws IOException {
-		this.senderUnderTest.sendSpans(encodedSpans).execute();
+		this.sut.sendSpans(encodedSpans).execute();
 	}
 
 	protected byte[] toByteArray(String input) {
 		return input.getBytes(StandardCharsets.UTF_8);
 	}
 
-	protected static final class CallbackResult {
-
-		private final boolean isSuccess;
-
-		private final Throwable error;
-
-		private CallbackResult(boolean isSuccess, Throwable error) {
-			this.isSuccess = isSuccess;
-			this.error = error;
-		}
-
-		public boolean isSuccess() {
-			return this.isSuccess;
-		}
-
-		public Throwable getError() {
-			return this.error;
-		}
-
+	record CallbackResult(boolean success, Throwable error) {
 	}
 
 }
