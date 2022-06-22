@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.json;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
@@ -38,6 +39,18 @@ class YamlJsonParserTests extends AbstractJsonParserTests {
 		assertThatExceptionOfType(ConstructorException.class)
 				.isThrownBy(() -> getParser().parseMap("{value: !!java.net.URL [\"http://localhost:9000/\"]}"))
 				.withCauseInstanceOf(IllegalStateException.class);
+	}
+
+	@Test
+	@Override
+	@Disabled("SnakeYaml does not fail when a map is malformed")
+	void listWithMalformedMap() {
+	}
+
+	@Test
+	@Override
+	@Disabled("SnakeYaml does not fail when a map has a key with no value")
+	void mapWithKeyAndNoValue() {
 	}
 
 }
