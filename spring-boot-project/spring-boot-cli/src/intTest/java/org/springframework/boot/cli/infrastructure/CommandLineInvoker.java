@@ -95,6 +95,7 @@ public final class CommandLineInvoker {
 						file.getParentFile().mkdirs();
 						try (FileOutputStream output = new FileOutputStream(file)) {
 							input.transferTo(output);
+							output.flush();
 							if (entry.getName().endsWith("/bin/spring")) {
 								file.setExecutable(true);
 							}
