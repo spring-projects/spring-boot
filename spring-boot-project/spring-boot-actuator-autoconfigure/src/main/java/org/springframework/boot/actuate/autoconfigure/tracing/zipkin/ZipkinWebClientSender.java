@@ -16,68 +16,65 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import reactor.core.publisher.Mono;
 import zipkin2.Call;
 import zipkin2.Callback;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * A {@link HttpSender} which uses {@link RestTemplate} for HTTP communication.
+ * A {@link HttpSender} which uses {@link WebClient} for HTTP communication.
  *
- * @author Moritz Halbritter
  * @author Stefan Bratanov
  */
-class ZipkinRestTemplateSender extends HttpSender {
+class ZipkinWebClientSender extends HttpSender {
 
 	private final String endpoint;
 
-	private final RestTemplate restTemplate;
+	private final WebClient webClient;
 
-	ZipkinRestTemplateSender(String endpoint, RestTemplate restTemplate) {
+	ZipkinWebClientSender(String endpoint, WebClient webClient) {
 		this.endpoint = endpoint;
-		this.restTemplate = restTemplate;
+		this.webClient = webClient;
 	}
 
 	@Override
 	public HttpPostCall sendSpans(byte[] batchedEncodedSpans) {
-		return new RestTemplateHttpPostCall(this.endpoint, batchedEncodedSpans, this.restTemplate);
+		return new WebClientHttpPostCall(this.endpoint, batchedEncodedSpans, this.webClient);
 	}
 
-	private static class RestTemplateHttpPostCall extends HttpPostCall {
+	private static class WebClientHttpPostCall extends HttpPostCall {
 
 		private final String endpoint;
 
-		private final RestTemplate restTemplate;
+		private final WebClient webClient;
 
-		RestTemplateHttpPostCall(String endpoint, byte[] body, RestTemplate restTemplate) {
+		WebClientHttpPostCall(String endpoint, byte[] body, WebClient webClient) {
 			super(body);
 			this.endpoint = endpoint;
-			this.restTemplate = restTemplate;
+			this.webClient = webClient;
 		}
 
 		@Override
 		public Call<Void> clone() {
-			return new RestTemplateHttpPostCall(this.endpoint, getUncompressedBody(), this.restTemplate);
+			return new WebClientHttpPostCall(this.endpoint, getUncompressedBody(), this.webClient);
 		}
 
 		@Override
 		protected Void doExecute() {
-			HttpEntity<byte[]> request = new HttpEntity<>(getBody(), getDefaultHeaders());
-			this.restTemplate.exchange(this.endpoint, HttpMethod.POST, request, Void.class);
+			sendRequest().block();
 			return null;
 		}
 
 		@Override
 		protected void doEnqueue(Callback<Void> callback) {
-			try {
-				doExecute();
-				callback.onSuccess(null);
-			}
-			catch (Exception ex) {
-				callback.onError(ex);
-			}
+			sendRequest().subscribe((__) -> callback.onSuccess(null), callback::onError);
+		}
+
+		private Mono<ResponseEntity<Void>> sendRequest() {
+			return this.webClient.post().uri(this.endpoint).headers((headers) -> headers.addAll(getDefaultHeaders()))
+					.bodyValue(getBody()).retrieve().toBodilessEntity();
 		}
 
 	}
