@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -48,14 +49,17 @@ import org.springframework.util.StringUtils;
  * Default user {@link Configuration @Configuration} for a reactive web application.
  * Configures a {@link ReactiveUserDetailsService} with a default user and generated
  * password. This backs-off completely if there is a bean of type
- * {@link ReactiveUserDetailsService} or {@link ReactiveAuthenticationManager}.
+ * {@link ReactiveUserDetailsService}, {@link ReactiveAuthenticationManager}, or
+ * {@link ReactiveAuthenticationManagerResolver}.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @AutoConfiguration(after = RSocketMessagingAutoConfiguration.class)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
-@ConditionalOnMissingBean(value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class },
+@ConditionalOnMissingBean(
+		value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class,
+				ReactiveAuthenticationManagerResolver.class },
 		type = { "org.springframework.security.oauth2.jwt.ReactiveJwtDecoder",
 				"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
 @Conditional(ReactiveUserDetailsServiceAutoConfiguration.ReactiveUserDetailsServiceCondition.class)
