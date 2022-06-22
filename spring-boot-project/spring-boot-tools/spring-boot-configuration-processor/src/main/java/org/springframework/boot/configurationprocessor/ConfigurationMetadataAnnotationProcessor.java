@@ -180,7 +180,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 		if (roundEnv.processingOver()) {
 			try {
-				writeMetaData();
+				writeMetadata();
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to write metadata", ex);
@@ -327,7 +327,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return null;
 	}
 
-	protected ConfigurationMetadata writeMetaData() throws Exception {
+	protected ConfigurationMetadata writeMetadata() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
