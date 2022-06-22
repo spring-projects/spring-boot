@@ -1627,7 +1627,7 @@ bom {
 			]
 		}
 	}
-	library("Solr", "8.11.1") {
+	library("Solr", "8.11.2") {
 		group("org.apache.solr") {
 			modules = [
 				"solr-analysis-extras",
