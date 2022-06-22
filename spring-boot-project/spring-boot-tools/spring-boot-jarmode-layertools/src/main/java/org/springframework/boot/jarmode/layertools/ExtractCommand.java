@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StreamUtils;
 
 /**
  * The {@code 'extract'} tools command.
@@ -95,7 +94,8 @@ class ExtractCommand extends Command {
 						+ "'. Verify the contents of your archive.");
 		mkParentDirs(file);
 		try (OutputStream out = new FileOutputStream(file)) {
-			StreamUtils.copy(zip, out);
+			zip.transferTo(out);
+			out.flush();
 		}
 		try {
 			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,7 +68,8 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 							+ (file.isDirectory() ? "/" : "")));
 			if (file.isFile()) {
 				try (FileInputStream input = new FileInputStream(file)) {
-					StreamUtils.copy(input, output);
+					input.transferTo(output);
+					output.flush();
 				}
 			}
 			output.closeEntry();

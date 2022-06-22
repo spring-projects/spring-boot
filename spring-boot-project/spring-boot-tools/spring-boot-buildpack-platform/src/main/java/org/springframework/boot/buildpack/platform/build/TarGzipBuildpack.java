@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
-import org.springframework.util.StreamUtils;
 
 /**
  * A {@link Buildpack} that references a buildpack contained in a local gzipped tar
@@ -94,7 +93,8 @@ final class TarGzipBuildpack implements Buildpack {
 			while (entry != null) {
 				entry.setName(basePath + "/" + entry.getName());
 				output.putArchiveEntry(entry);
-				StreamUtils.copy(tar, output);
+				tar.transferTo(output);
+				output.flush();
 				output.closeArchiveEntry();
 				entry = tar.getNextTarEntry();
 			}

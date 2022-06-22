@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import java.util.zip.ZipInputStream;
 
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.Assert;
-import org.springframework.util.StreamUtils;
 
 /**
  * Utility to invoke the command line in the same way as a user would, i.e. via the shell
@@ -95,7 +94,7 @@ public final class CommandLineInvoker {
 					else {
 						file.getParentFile().mkdirs();
 						try (FileOutputStream output = new FileOutputStream(file)) {
-							StreamUtils.copy(input, output);
+							input.transferTo(output);
 							if (entry.getName().endsWith("/bin/spring")) {
 								file.setExecutable(true);
 							}

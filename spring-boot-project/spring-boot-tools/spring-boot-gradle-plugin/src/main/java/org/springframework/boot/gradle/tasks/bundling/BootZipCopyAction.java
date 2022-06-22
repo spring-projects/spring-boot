@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.util.Assert;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -433,7 +432,8 @@ class BootZipCopyAction implements CopyAction {
 		 */
 		static ZipEntryContentWriter fromInputStream(InputStream in) {
 			return (out) -> {
-				StreamUtils.copy(in, out);
+				in.transferTo(out);
+				out.flush();
 				in.close();
 			};
 		}

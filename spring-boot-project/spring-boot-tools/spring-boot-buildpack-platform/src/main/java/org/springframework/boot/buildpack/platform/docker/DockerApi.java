@@ -44,7 +44,6 @@ import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.buildpack.platform.json.JsonStream;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -266,7 +265,10 @@ public class DockerApi {
 				TarArchiveEntry entry = tar.getNextTarEntry();
 				while (entry != null) {
 					if (entry.getName().endsWith("/layer.tar")) {
-						TarArchive archive = (out) -> StreamUtils.copy(tar, out);
+						TarArchive archive = (out) -> {
+							tar.transferTo(out);
+							out.flush();
+						};
 						exports.accept(entry.getName(), archive);
 					}
 					entry = tar.getNextTarEntry();

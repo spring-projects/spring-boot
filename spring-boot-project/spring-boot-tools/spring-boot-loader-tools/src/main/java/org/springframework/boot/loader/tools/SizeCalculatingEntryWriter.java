@@ -55,8 +55,10 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 	@Override
 	public void write(OutputStream outputStream) throws IOException {
-		InputStream inputStream = getContentInputStream();
-		copy(inputStream, outputStream);
+		try (InputStream inputStream = getContentInputStream()) {
+			inputStream.transferTo(outputStream);
+			outputStream.flush();
+		}
 	}
 
 	private InputStream getContentInputStream() throws FileNotFoundException {
@@ -64,15 +66,6 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 			return new FileInputStream(file);
 		}
 		return new ByteArrayInputStream((byte[]) this.content);
-	}
-
-	private void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
-		try {
-			StreamUtils.copy(inputStream, outputStream);
-		}
-		finally {
-			inputStream.close();
-		}
 	}
 
 	@Override

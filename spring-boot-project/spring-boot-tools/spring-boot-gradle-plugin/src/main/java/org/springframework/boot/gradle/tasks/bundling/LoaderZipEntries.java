@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -28,8 +26,6 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.file.FileTreeElement;
-
-import org.springframework.util.StreamUtils;
 
 /**
  * Internal utility used to copy entries from the {@code spring-boot-loader.jar}.
@@ -75,7 +71,8 @@ class LoaderZipEntries {
 	private void writeClass(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
 		prepareEntry(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 		out.putArchiveEntry(entry);
-		copy(in, out);
+		in.transferTo(out);
+		out.flush();
 		out.closeArchiveEntry();
 	}
 
@@ -84,10 +81,6 @@ class LoaderZipEntries {
 			entry.setTime(this.entryTime);
 		}
 		entry.setUnixMode(unixMode);
-	}
-
-	private void copy(InputStream in, OutputStream out) throws IOException {
-		StreamUtils.copy(in, out);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.jar.JarFile;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -146,7 +145,8 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 			}
 			else {
 				FileOutputStream extractedOutputStream = new FileOutputStream(extracted);
-				StreamUtils.copy(jarFile.getInputStream(jarEntry), extractedOutputStream);
+				jarFile.getInputStream(jarEntry).transferTo(extractedOutputStream);
+				extractedOutputStream.flush();
 				extractedOutputStream.close();
 			}
 		}

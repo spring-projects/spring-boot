@@ -602,7 +602,8 @@ class JarFileTests {
 				storedEntry.setMethod(ZipEntry.STORED);
 				jarOutput.putNextEntry(storedEntry);
 				try (FileInputStream entryIn = new FileInputStream(entry)) {
-					StreamUtils.copy(entryIn, jarOutput);
+					entryIn.transferTo(jarOutput);
+					jarOutput.flush();
 				}
 				jarOutput.closeEntry();
 			}
