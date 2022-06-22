@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,36 +46,45 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	@Autowired
 	private ListableBeanFactory beanFactory;
 
-	private List<HandlerExceptionResolver> resolvers;
+	private transient List<HandlerExceptionResolver> resolvers;
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
 			Exception ex) {
-		if (this.resolvers == null) {
-			this.resolvers = extractResolvers();
+		for (HandlerExceptionResolver resolver : getResolvers()) {
+			ModelAndView resolved = resolver.resolveException(request, response, handler, ex);
+			if (resolved != null) {
+				return resolved;
+			}
 		}
-		return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		return null;
 	}
 
-	private List<HandlerExceptionResolver> extractResolvers() {
-		List<HandlerExceptionResolver> list = new ArrayList<>();
-		BeanFactory beanFactory = this.beanFactory;
-		while (beanFactory != null) {
-			if (beanFactory instanceof ListableBeanFactory) {
-				list.addAll(
-						((ListableBeanFactory) beanFactory).getBeansOfType(HandlerExceptionResolver.class).values());
+	private List<HandlerExceptionResolver> getResolvers() {
+		List<HandlerExceptionResolver> resolvers = this.resolvers;
+		if (resolvers == null) {
+			resolvers = new ArrayList<>();
+			collectResolverBeans(resolvers, this.beanFactory);
+			resolvers.remove(this);
+			AnnotationAwareOrderComparator.sort(resolvers);
+			if (resolvers.isEmpty()) {
+				resolvers.add(new DefaultErrorAttributes());
+				resolvers.add(new DefaultHandlerExceptionResolver());
 			}
-			beanFactory = (beanFactory instanceof HierarchicalBeanFactory)
-					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory() : null;
+			this.resolvers = resolvers;
 		}
-		list.remove(this);
-		AnnotationAwareOrderComparator.sort(list);
-		if (list.isEmpty()) {
-			list.add(new DefaultErrorAttributes());
-			list.add(new DefaultHandlerExceptionResolver());
+		return resolvers;
+	}
+
+	private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, BeanFactory beanFactory) {
+		if (beanFactory instanceof ListableBeanFactory) {
+			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+			resolvers.addAll(listableBeanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		}
-		return list;
+		if (beanFactory instanceof HierarchicalBeanFactory) {
+			HierarchicalBeanFactory hierarchicalBeanFactory = (HierarchicalBeanFactory) beanFactory;
+			collectResolverBeans(resolvers, hierarchicalBeanFactory.getParentBeanFactory());
+		}
 	}
 
 }
