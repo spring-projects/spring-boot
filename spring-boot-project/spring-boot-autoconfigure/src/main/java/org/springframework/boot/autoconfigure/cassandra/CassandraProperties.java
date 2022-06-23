@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
@@ -37,16 +35,6 @@ import org.springframework.core.io.Resource;
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
-
-	static CassandraProperties defaults() {
-		CassandraProperties properties = new CassandraProperties();
-
-		properties.setContactPoints(new ArrayList<>(Collections.singleton("127.0.0.1:9042")));
-		properties.setCompression(Compression.NONE);
-		properties.getControlconnection().setTimeout(Duration.ofSeconds(5));
-
-		return properties;
-	}
 
 	/**
 	 * Location of the configuration file to use.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cassandra;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +64,22 @@ import org.springframework.core.io.Resource;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Steffen F. Qvistgaard
+ * @author Ittay Stern
  * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ CqlSession.class })
 @EnableConfigurationProperties(CassandraProperties.class)
 public class CassandraAutoConfiguration {
+
+	private static final Config SPRING_BOOT_DEFAULTS;
+	static {
+		CassandraDriverOptions options = new CassandraDriverOptions();
+		options.add(DefaultDriverOption.CONTACT_POINTS, Collections.singletonList("127.0.0.1:9042"));
+		options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, "none");
+		options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, (int) Duration.ofSeconds(5).toMillis());
+		SPRING_BOOT_DEFAULTS = options.build();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -118,43 +129,41 @@ public class CassandraAutoConfiguration {
 	}
 
 	private Config cassandraConfiguration(CassandraProperties properties) {
-		Config config = mapConfig(properties);
-		Resource configFile = properties.getConfig();
-		return (configFile != null) ? applyDefaultFallback(config.withFallback(loadConfig(configFile)))
-				: applyDefaultFallback(config);
-	}
-
-	private Config applyDefaultFallback(Config config) {
 		ConfigFactory.invalidateCaches();
-		return ConfigFactory.defaultOverrides().withFallback(config)
-				.withFallback(mapConfig(CassandraProperties.defaults())).withFallback(ConfigFactory.defaultReference())
-				.resolve();
+		Config config = ConfigFactory.defaultOverrides();
+		config = config.withFallback(mapConfig(properties));
+		if (properties.getConfig() != null) {
+			config = config.withFallback(loadConfig(properties.getConfig()));
+		}
+		config = config.withFallback(SPRING_BOOT_DEFAULTS);
+		config = config.withFallback(ConfigFactory.defaultReference());
+		return config.resolve();
 	}
 
-	private Config loadConfig(Resource config) {
+	private Config loadConfig(Resource resource) {
 		try {
-			return ConfigFactory.parseURL(config.getURL());
+			return ConfigFactory.parseURL(resource.getURL());
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Failed to load cassandra configuration from " + config, ex);
+			throw new IllegalStateException("Failed to load cassandra configuration from " + resource, ex);
 		}
 	}
 
 	private Config mapConfig(CassandraProperties properties) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
-		PropertyMapper map = PropertyMapper.get();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties.getSessionName()).whenHasText()
 				.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
-		map.from(properties::getUsername).whenNonNull()
+		map.from(properties::getUsername)
 				.to((username) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, username)
 						.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, properties.getPassword()));
-		map.from(properties::getCompression).whenNonNull()
+		map.from(properties::getCompression)
 				.to((compression) -> options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, compression));
 		mapConnectionOptions(properties, options);
 		mapPoolingOptions(properties, options);
 		mapRequestOptions(properties, options);
 		mapControlConnectionOptions(properties, options);
-		map.from(mapContactPoints(properties)).whenNonNull()
+		map.from(mapContactPoints(properties))
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
 		map.from(properties.getLocalDatacenter()).whenHasText().to(
 				(localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
@@ -211,9 +220,12 @@ public class CassandraAutoConfiguration {
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties) {
-		List<String> contactPoints = properties.getContactPoints();
-		return (contactPoints == null) ? null : contactPoints.stream()
-				.map((candidate) -> formatContactPoint(candidate, properties.getPort())).collect(Collectors.toList());
+		if (properties.getContactPoints() != null) {
+			return properties.getContactPoints().stream()
+					.map((candidate) -> formatContactPoint(candidate, properties.getPort()))
+					.collect(Collectors.toList());
+		}
+		return null;
 	}
 
 	private String formatContactPoint(String candidate, int port) {
