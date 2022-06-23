@@ -109,7 +109,8 @@ public class MetricsWebFilter implements WebFilter {
 			Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
 			long duration = System.nanoTime() - start;
 			AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-					(builder) -> builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS));
+					(builder) -> builder.description("Duration of requests made to HTTP Server").tags(tags)
+							.register(this.registry).record(duration, TimeUnit.NANOSECONDS));
 		}
 		catch (Exception ex) {
 			logger.warn("Failed to record timer metrics", ex);
