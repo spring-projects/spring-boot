@@ -909,7 +909,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "9.4.47.v20220610") {
+	library("Jetty", "9.4.48.v20220622") {
 		prohibit("[10.0.0-alpha0,)") {
 			because "it requires Java 11"
 		}
