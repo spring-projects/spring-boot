@@ -493,6 +493,10 @@
       "defaultValue": "5s"
     },
     {
+      "name": "spring.data.cassandra.controlconnection.timeout",
+      "defaultValue": "5s"
+    },
+    {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
         "127.0.0.1:9042"
