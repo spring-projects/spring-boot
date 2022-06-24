@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InheritanceMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	void childProperties() throws Exception {
+	void childProperties() {
 		ConfigurationMetadata metadata = compile(ChildPropertiesConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("inheritance").fromSource(ChildPropertiesConfig.class));
 		assertThat(metadata).has(Metadata.withGroup("inheritance.nest").fromSource(ChildProperties.class));
@@ -45,7 +45,7 @@ class InheritanceMetadataGenerationTests extends AbstractMetadataGenerationTests
 	}
 
 	@Test
-	void overrideChildProperties() throws Exception {
+	void overrideChildProperties() {
 		ConfigurationMetadata metadata = compile(OverrideChildPropertiesConfig.class);
 		assertThat(metadata).has(Metadata.withGroup("inheritance").fromSource(OverrideChildPropertiesConfig.class));
 		assertThat(metadata).has(Metadata.withGroup("inheritance.nest").fromSource(OverrideChildProperties.class));
