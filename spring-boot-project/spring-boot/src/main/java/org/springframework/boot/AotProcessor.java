@@ -167,15 +167,11 @@ public class AotProcessor {
 	}
 
 	private Path getRoot(Kind kind) {
-		switch (kind) {
-			case SOURCE:
-				return this.sourceOutput;
-			case RESOURCE:
-				return this.resourceOutput;
-			case CLASS:
-				return this.classOutput;
-		}
-		throw new IllegalStateException("Unsupported kind " + kind);
+		return switch (kind) {
+			case SOURCE -> this.sourceOutput;
+			case RESOURCE -> this.resourceOutput;
+			case CLASS -> this.classOutput;
+		};
 	}
 
 	private void writeHints(RuntimeHints hints) {
