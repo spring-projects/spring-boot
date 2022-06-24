@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,5 +40,14 @@ public interface SslStoreProvider {
 	 * @throws Exception on load error
 	 */
 	KeyStore getTrustStore() throws Exception;
+
+	/**
+	 * Return the password of the private key in the key store.
+	 * @return the key password
+	 * @since 2.7.1
+	 */
+	default String getKeyPassword() {
+		return null;
+	}
 
 }

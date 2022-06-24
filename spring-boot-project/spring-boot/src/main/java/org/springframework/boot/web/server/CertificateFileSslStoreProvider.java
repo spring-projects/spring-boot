@@ -32,7 +32,11 @@ import java.security.cert.X509Certificate;
  */
 public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 
-	private static final char[] NO_PASSWORD = {};
+	/**
+	 * The password of the private key entry in the {@link #getKeyStore provided
+	 * KeyStore}.
+	 */
+	private static final String KEY_PASSWORD = "";
 
 	private static final String DEFAULT_KEY_ALIAS = "spring-boot-web";
 
@@ -45,7 +49,7 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	@Override
 	public KeyStore getKeyStore() throws Exception {
 		return createKeyStore(this.ssl.getCertificate(), this.ssl.getCertificatePrivateKey(),
-				this.ssl.getKeyStorePassword(), this.ssl.getKeyStoreType(), this.ssl.getKeyAlias());
+				this.ssl.getKeyStoreType(), this.ssl.getKeyAlias());
 	}
 
 	@Override
@@ -54,7 +58,12 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 			return null;
 		}
 		return createKeyStore(this.ssl.getTrustCertificate(), this.ssl.getTrustCertificatePrivateKey(),
-				this.ssl.getTrustStorePassword(), this.ssl.getTrustStoreType(), this.ssl.getKeyAlias());
+				this.ssl.getTrustStoreType(), this.ssl.getKeyAlias());
+	}
+
+	@Override
+	public String getKeyPassword() {
+		return KEY_PASSWORD;
 	}
 
 	/**
@@ -62,20 +71,18 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	 * specified file path and an optional private key.
 	 * @param certPath the path to the certificate authority file
 	 * @param keyPath the path to the private file
-	 * @param password the key store password
 	 * @param storeType the {@code KeyStore} type to create
 	 * @param keyAlias the alias to use when adding keys to the {@code KeyStore}
 	 * @return the {@code KeyStore}
 	 */
-	private KeyStore createKeyStore(String certPath, String keyPath, String password, String storeType,
-			String keyAlias) {
+	private KeyStore createKeyStore(String certPath, String keyPath, String storeType, String keyAlias) {
 		try {
 			KeyStore keyStore = KeyStore.getInstance((storeType != null) ? storeType : KeyStore.getDefaultType());
 			keyStore.load(null);
 			X509Certificate[] certificates = CertificateParser.parse(certPath);
 			PrivateKey privateKey = (keyPath != null) ? PrivateKeyParser.parse(keyPath) : null;
 			try {
-				addCertificates(keyStore, certificates, privateKey, password, keyAlias);
+				addCertificates(keyStore, certificates, privateKey, keyAlias);
 			}
 			catch (KeyStoreException ex) {
 				throw new IllegalStateException("Error adding certificates to KeyStore: " + ex.getMessage(), ex);
@@ -88,11 +95,10 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	}
 
 	private void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey,
-			String password, String keyAlias) throws KeyStoreException {
+			String keyAlias) throws KeyStoreException {
 		String alias = (keyAlias != null) ? keyAlias : DEFAULT_KEY_ALIAS;
 		if (privateKey != null) {
-			keyStore.setKeyEntry(alias, privateKey, ((password != null) ? password.toCharArray() : NO_PASSWORD),
-					certificates);
+			keyStore.setKeyEntry(alias, privateKey, KEY_PASSWORD.toCharArray(), certificates);
 		}
 		else {
 			for (int index = 0; index < certificates.length; index++) {
@@ -102,9 +108,10 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	}
 
 	/**
-	 * Create a {@link SslStoreProvider} if the appropriate SSL properties are configured.
+	 * Create an {@link SslStoreProvider} if the appropriate SSL properties are
+	 * configured.
 	 * @param ssl the SSL properties
-	 * @return a {@code SslStoreProvider} or {@code null}
+	 * @return an {@code SslStoreProvider} or {@code null}
 	 */
 	public static SslStoreProvider from(Ssl ssl) {
 		if (ssl != null && ssl.isEnabled()) {
