@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class StartupInfoLogger {
+public class StartupInfoLogger {
 
 	private static final Log logger = LogFactory.getLog(StartupInfoLogger.class);
 
