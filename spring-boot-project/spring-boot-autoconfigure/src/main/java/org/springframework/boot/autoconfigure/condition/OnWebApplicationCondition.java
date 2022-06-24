@@ -99,14 +99,11 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
 	private ConditionOutcome isWebApplication(ConditionContext context, AnnotatedTypeMetadata metadata,
 			boolean required) {
-		switch (deduceType(metadata)) {
-			case SERVLET:
-				return isServletWebApplication(context);
-			case REACTIVE:
-				return isReactiveWebApplication(context);
-			default:
-				return isAnyWebApplication(context, required);
-		}
+		return switch (deduceType(metadata)) {
+			case SERVLET -> isServletWebApplication(context);
+			case REACTIVE -> isReactiveWebApplication(context);
+			default -> isAnyWebApplication(context, required);
+		};
 	}
 
 	private ConditionOutcome isAnyWebApplication(ConditionContext context, boolean required) {

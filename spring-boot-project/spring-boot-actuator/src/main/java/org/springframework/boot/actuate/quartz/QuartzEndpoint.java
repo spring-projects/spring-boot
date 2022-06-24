@@ -265,26 +265,16 @@ public class QuartzEndpoint {
 	}
 
 	private static TemporalUnit temporalUnit(IntervalUnit unit) {
-		switch (unit) {
-			case DAY:
-				return ChronoUnit.DAYS;
-			case HOUR:
-				return ChronoUnit.HOURS;
-			case MINUTE:
-				return ChronoUnit.MINUTES;
-			case MONTH:
-				return ChronoUnit.MONTHS;
-			case SECOND:
-				return ChronoUnit.SECONDS;
-			case MILLISECOND:
-				return ChronoUnit.MILLIS;
-			case WEEK:
-				return ChronoUnit.WEEKS;
-			case YEAR:
-				return ChronoUnit.YEARS;
-			default:
-				throw new IllegalArgumentException("Unknown IntervalUnit");
-		}
+		return switch (unit) {
+			case DAY -> ChronoUnit.DAYS;
+			case HOUR -> ChronoUnit.HOURS;
+			case MINUTE -> ChronoUnit.MINUTES;
+			case MONTH -> ChronoUnit.MONTHS;
+			case SECOND -> ChronoUnit.SECONDS;
+			case MILLISECOND -> ChronoUnit.MILLIS;
+			case WEEK -> ChronoUnit.WEEKS;
+			case YEAR -> ChronoUnit.YEARS;
+		};
 	}
 
 	/**
