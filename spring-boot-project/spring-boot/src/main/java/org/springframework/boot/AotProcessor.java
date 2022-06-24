@@ -168,12 +168,12 @@ public class AotProcessor {
 
 	private Path getRoot(Kind kind) {
 		switch (kind) {
-		case SOURCE:
-			return this.sourceOutput;
-		case RESOURCE:
-			return this.resourceOutput;
-		case CLASS:
-			return this.classOutput;
+			case SOURCE:
+				return this.sourceOutput;
+			case RESOURCE:
+				return this.resourceOutput;
+			case CLASS:
+				return this.classOutput;
 		}
 		throw new IllegalStateException("Unsupported kind " + kind);
 	}

@@ -91,22 +91,22 @@ public class JSONTokener {
 	public Object nextValue() throws JSONException {
 		int c = nextCleanInternal();
 		switch (c) {
-		case -1:
-			throw syntaxError("End of input");
+			case -1:
+				throw syntaxError("End of input");
 
-		case '{':
-			return readObject();
+			case '{':
+				return readObject();
 
-		case '[':
-			return readArray();
+			case '[':
+				return readArray();
 
-		case '\'':
-		case '"':
-			return nextString((char) c);
+			case '\'':
+			case '"':
+				return nextString((char) c);
 
-		default:
-			this.pos--;
-			return readLiteral();
+			default:
+				this.pos--;
+				return readLiteral();
 		}
 	}
 
@@ -114,50 +114,50 @@ public class JSONTokener {
 		while (this.pos < this.in.length()) {
 			int c = this.in.charAt(this.pos++);
 			switch (c) {
-			case '\t':
-			case ' ':
-			case '\n':
-			case '\r':
-				continue;
-
-			case '/':
-				if (this.pos == this.in.length()) {
-					return c;
-				}
-
-				char peek = this.in.charAt(this.pos);
-				switch (peek) {
-				case '*':
-					// skip a /* c-style comment */
-					this.pos++;
-					int commentEnd = this.in.indexOf("*/", this.pos);
-					if (commentEnd == -1) {
-						throw syntaxError("Unterminated comment");
-					}
-					this.pos = commentEnd + 2;
+				case '\t':
+				case ' ':
+				case '\n':
+				case '\r':
 					continue;
 
 				case '/':
-					// skip a // end-of-line comment
-					this.pos++;
+					if (this.pos == this.in.length()) {
+						return c;
+					}
+
+					char peek = this.in.charAt(this.pos);
+					switch (peek) {
+						case '*':
+							// skip a /* c-style comment */
+							this.pos++;
+							int commentEnd = this.in.indexOf("*/", this.pos);
+							if (commentEnd == -1) {
+								throw syntaxError("Unterminated comment");
+							}
+							this.pos = commentEnd + 2;
+							continue;
+
+						case '/':
+							// skip a // end-of-line comment
+							this.pos++;
+							skipToEndOfLine();
+							continue;
+
+						default:
+							return c;
+					}
+
+				case '#':
+					/*
+					 * Skip a # hash end-of-line comment. The JSON RFC doesn't specify
+					 * this behavior, but it's required to parse existing documents. See
+					 * https://b/2571423.
+					 */
 					skipToEndOfLine();
 					continue;
 
 				default:
 					return c;
-				}
-
-			case '#':
-				/*
-				 * Skip a # hash end-of-line comment. The JSON RFC doesn't specify this
-				 * behavior, but it's required to parse existing documents. See
-				 * https://b/2571423.
-				 */
-				skipToEndOfLine();
-				continue;
-
-			default:
-				return c;
 			}
 		}
 
@@ -239,34 +239,34 @@ public class JSONTokener {
 	private char readEscapeCharacter() throws JSONException {
 		char escaped = this.in.charAt(this.pos++);
 		switch (escaped) {
-		case 'u':
-			if (this.pos + 4 > this.in.length()) {
-				throw syntaxError("Unterminated escape sequence");
-			}
-			String hex = this.in.substring(this.pos, this.pos + 4);
-			this.pos += 4;
-			return (char) Integer.parseInt(hex, 16);
+			case 'u':
+				if (this.pos + 4 > this.in.length()) {
+					throw syntaxError("Unterminated escape sequence");
+				}
+				String hex = this.in.substring(this.pos, this.pos + 4);
+				this.pos += 4;
+				return (char) Integer.parseInt(hex, 16);
 
-		case 't':
-			return '\t';
+			case 't':
+				return '\t';
 
-		case 'b':
-			return '\b';
+			case 'b':
+				return '\b';
 
-		case 'n':
-			return '\n';
+			case 'n':
+				return '\n';
 
-		case 'r':
-			return '\r';
+			case 'r':
+				return '\r';
 
-		case 'f':
-			return '\f';
+			case 'f':
+				return '\f';
 
-		case '\'':
-		case '"':
-		case '\\':
-		default:
-			return escaped;
+			case '\'':
+			case '"':
+			case '\\':
+			default:
+				return escaped;
 		}
 	}
 
@@ -396,13 +396,13 @@ public class JSONTokener {
 			result.put((String) name, nextValue());
 
 			switch (nextCleanInternal()) {
-			case '}':
-				return result;
-			case ';':
-			case ',':
-				continue;
-			default:
-				throw syntaxError("Unterminated object");
+				case '}':
+					return result;
+				case ';':
+				case ',':
+					continue;
+				default:
+					throw syntaxError("Unterminated object");
 			}
 		}
 	}
@@ -422,34 +422,34 @@ public class JSONTokener {
 
 		while (true) {
 			switch (nextCleanInternal()) {
-			case -1:
-				throw syntaxError("Unterminated array");
-			case ']':
-				if (hasTrailingSeparator) {
+				case -1:
+					throw syntaxError("Unterminated array");
+				case ']':
+					if (hasTrailingSeparator) {
+						result.put(null);
+					}
+					return result;
+				case ',':
+				case ';':
+					/* A separator without a value first means "null". */
 					result.put(null);
-				}
-				return result;
-			case ',':
-			case ';':
-				/* A separator without a value first means "null". */
-				result.put(null);
-				hasTrailingSeparator = true;
-				continue;
-			default:
-				this.pos--;
+					hasTrailingSeparator = true;
+					continue;
+				default:
+					this.pos--;
 			}
 
 			result.put(nextValue());
 
 			switch (nextCleanInternal()) {
-			case ']':
-				return result;
-			case ',':
-			case ';':
-				hasTrailingSeparator = true;
-				continue;
-			default:
-				throw syntaxError("Unterminated array");
+				case ']':
+					return result;
+				case ',':
+				case ';':
+					hasTrailingSeparator = true;
+					continue;
+				default:
+					throw syntaxError("Unterminated array");
 			}
 		}
 	}

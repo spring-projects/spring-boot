@@ -141,16 +141,16 @@ public class PrometheusPushGatewayManager {
 		}
 		this.scheduled.cancel(false);
 		switch (shutdownOperation) {
-		case PUSH:
-		case POST:
-			post();
-			break;
-		case PUT:
-			put();
-			break;
-		case DELETE:
-			delete();
-			break;
+			case PUSH:
+			case POST:
+				post();
+				break;
+			case PUT:
+				put();
+				break;
+			case DELETE:
+				delete();
+				break;
 		}
 	}
 

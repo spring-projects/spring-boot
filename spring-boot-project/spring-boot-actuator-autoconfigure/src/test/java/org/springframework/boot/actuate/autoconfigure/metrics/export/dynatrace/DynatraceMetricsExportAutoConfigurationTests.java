@@ -137,14 +137,14 @@ class DynatraceMetricsExportAutoConfigurationTests {
 		DynatraceConfig customConfig() {
 			return (key) -> {
 				switch (key) {
-				case "dynatrace.uri":
-					return "https://dynatrace.example.com";
-				case "dynatrace.apiToken":
-					return "abcde";
-				case "dynatrace.deviceId":
-					return "test";
-				default:
-					return null;
+					case "dynatrace.uri":
+						return "https://dynatrace.example.com";
+					case "dynatrace.apiToken":
+						return "abcde";
+					case "dynatrace.deviceId":
+						return "test";
+					default:
+						return null;
 				}
 			};
 		}

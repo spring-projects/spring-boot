@@ -363,12 +363,12 @@ public class SpringApplication {
 
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
 		switch (this.webApplicationType) {
-		case SERVLET:
-			return ApplicationServletEnvironment.class;
-		case REACTIVE:
-			return ApplicationReactiveWebEnvironment.class;
-		default:
-			return ApplicationEnvironment.class;
+			case SERVLET:
+				return ApplicationServletEnvironment.class;
+			case REACTIVE:
+				return ApplicationReactiveWebEnvironment.class;
+			default:
+				return ApplicationEnvironment.class;
 		}
 	}
 
@@ -458,12 +458,12 @@ public class SpringApplication {
 			return this.environment;
 		}
 		switch (this.webApplicationType) {
-		case SERVLET:
-			return new ApplicationServletEnvironment();
-		case REACTIVE:
-			return new ApplicationReactiveWebEnvironment();
-		default:
-			return new ApplicationEnvironment();
+			case SERVLET:
+				return new ApplicationServletEnvironment();
+			case REACTIVE:
+				return new ApplicationReactiveWebEnvironment();
+			default:
+				return new ApplicationEnvironment();
 		}
 	}
 
