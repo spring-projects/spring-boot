@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,14 +137,14 @@ class DynatraceMetricsExportAutoConfigurationTests {
 		DynatraceConfig customConfig() {
 			return (key) -> {
 				switch (key) {
-				case "dynatrace.uri":
-					return "https://dynatrace.example.com";
-				case "dynatrace.apiToken":
-					return "abcde";
-				case "dynatrace.deviceId":
-					return "test";
-				default:
-					return null;
+					case "dynatrace.uri":
+						return "https://dynatrace.example.com";
+					case "dynatrace.apiToken":
+						return "abcde";
+					case "dynatrace.deviceId":
+						return "test";
+					default:
+						return null;
 				}
 			};
 		}

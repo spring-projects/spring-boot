@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,19 +188,20 @@ public class Neo4jAutoConfiguration {
 	private TrustStrategy createTrustStrategy(Neo4jProperties.Security securityProperties, String propertyName,
 			Security.TrustStrategy strategy) {
 		switch (strategy) {
-		case TRUST_ALL_CERTIFICATES:
-			return TrustStrategy.trustAllCertificates();
-		case TRUST_SYSTEM_CA_SIGNED_CERTIFICATES:
-			return TrustStrategy.trustSystemCertificates();
-		case TRUST_CUSTOM_CA_SIGNED_CERTIFICATES:
-			File certFile = securityProperties.getCertFile();
-			if (certFile == null || !certFile.isFile()) {
+			case TRUST_ALL_CERTIFICATES:
+				return TrustStrategy.trustAllCertificates();
+			case TRUST_SYSTEM_CA_SIGNED_CERTIFICATES:
+				return TrustStrategy.trustSystemCertificates();
+			case TRUST_CUSTOM_CA_SIGNED_CERTIFICATES:
+				File certFile = securityProperties.getCertFile();
+				if (certFile == null || !certFile.isFile()) {
+					throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(),
+							"Configured trust strategy requires a certificate file.");
+				}
+				return TrustStrategy.trustCustomCertificateSignedBy(certFile);
+			default:
 				throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(),
-						"Configured trust strategy requires a certificate file.");
-			}
-			return TrustStrategy.trustCustomCertificateSignedBy(certFile);
-		default:
-			throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(), "Unknown strategy.");
+						"Unknown strategy.");
 		}
 	}
 

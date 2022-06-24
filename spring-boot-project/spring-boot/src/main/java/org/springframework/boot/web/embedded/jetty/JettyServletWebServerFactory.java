@@ -717,12 +717,12 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 			private String getSameSiteComment(SameSite sameSite) {
 				switch (sameSite) {
-				case NONE:
-					return HttpCookie.SAME_SITE_NONE_COMMENT;
-				case LAX:
-					return HttpCookie.SAME_SITE_LAX_COMMENT;
-				case STRICT:
-					return HttpCookie.SAME_SITE_STRICT_COMMENT;
+					case NONE:
+						return HttpCookie.SAME_SITE_NONE_COMMENT;
+					case LAX:
+						return HttpCookie.SAME_SITE_LAX_COMMENT;
+					case STRICT:
+						return HttpCookie.SAME_SITE_STRICT_COMMENT;
 				}
 				throw new IllegalStateException("Unsupported SameSite value " + sameSite);
 			}

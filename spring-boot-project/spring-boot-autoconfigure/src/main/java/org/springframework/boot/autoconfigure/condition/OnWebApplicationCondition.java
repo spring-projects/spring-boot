@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,12 +100,12 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 	private ConditionOutcome isWebApplication(ConditionContext context, AnnotatedTypeMetadata metadata,
 			boolean required) {
 		switch (deduceType(metadata)) {
-		case SERVLET:
-			return isServletWebApplication(context);
-		case REACTIVE:
-			return isReactiveWebApplication(context);
-		default:
-			return isAnyWebApplication(context, required);
+			case SERVLET:
+				return isServletWebApplication(context);
+			case REACTIVE:
+				return isReactiveWebApplication(context);
+			default:
+				return isAnyWebApplication(context, required);
 		}
 	}
 

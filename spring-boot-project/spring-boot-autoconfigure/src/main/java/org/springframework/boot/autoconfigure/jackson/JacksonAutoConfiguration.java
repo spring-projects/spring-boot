@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -305,17 +305,17 @@ public class JacksonAutoConfiguration {
 				if (strategy != null) {
 					builder.postConfigurer((objectMapper) -> {
 						switch (strategy) {
-						case USE_PROPERTIES_BASED:
-							objectMapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
-							break;
-						case USE_DELEGATING:
-							objectMapper.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
-							break;
-						case EXPLICIT_ONLY:
-							objectMapper.setConstructorDetector(ConstructorDetector.EXPLICIT_ONLY);
-							break;
-						default:
-							objectMapper.setConstructorDetector(ConstructorDetector.DEFAULT);
+							case USE_PROPERTIES_BASED:
+								objectMapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
+								break;
+							case USE_DELEGATING:
+								objectMapper.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
+								break;
+							case EXPLICIT_ONLY:
+								objectMapper.setConstructorDetector(ConstructorDetector.EXPLICIT_ONLY);
+								break;
+							default:
+								objectMapper.setConstructorDetector(ConstructorDetector.DEFAULT);
 						}
 					});
 				}

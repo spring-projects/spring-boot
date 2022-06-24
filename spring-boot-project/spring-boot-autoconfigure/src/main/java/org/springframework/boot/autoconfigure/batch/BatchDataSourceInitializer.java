@@ -49,13 +49,13 @@ public class BatchDataSourceInitializer extends org.springframework.boot.jdbc.Ab
 	protected org.springframework.boot.jdbc.DataSourceInitializationMode getMode() {
 		DatabaseInitializationMode mode = this.jdbcProperties.getInitializeSchema();
 		switch (mode) {
-		case ALWAYS:
-			return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
-		case EMBEDDED:
-			return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
-		case NEVER:
-		default:
-			return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
+			case ALWAYS:
+				return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
+			case EMBEDDED:
+				return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
+			case NEVER:
+			default:
+				return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
 		}
 	}
 

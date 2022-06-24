@@ -47,13 +47,13 @@ public class IntegrationDataSourceInitializer extends org.springframework.boot.j
 	protected org.springframework.boot.jdbc.DataSourceInitializationMode getMode() {
 		DatabaseInitializationMode mode = this.properties.getInitializeSchema();
 		switch (mode) {
-		case ALWAYS:
-			return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
-		case EMBEDDED:
-			return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
-		case NEVER:
-		default:
-			return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
+			case ALWAYS:
+				return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
+			case EMBEDDED:
+				return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
+			case NEVER:
+			default:
+				return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
 		}
 	}
 
