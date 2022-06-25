@@ -155,7 +155,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private Timer.Builder getTimer(Builder builder, Object handler, HttpServletRequest request,
 			HttpServletResponse response, Throwable exception) {
-		return builder.description("Duration of requests made to HTTP Server")
+		return builder.description("Duration of HTTP server request handling")
 				.tags(this.tagsProvider.getTags(request, response, handler, exception));
 	}
 
