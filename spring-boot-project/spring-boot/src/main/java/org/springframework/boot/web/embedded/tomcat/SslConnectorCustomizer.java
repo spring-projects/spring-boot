@@ -93,6 +93,10 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		configureEnabledProtocols(protocol, ssl);
 		if (sslStoreProvider != null) {
 			configureSslStoreProvider(protocol, sslHostConfig, certificate, sslStoreProvider);
+			String keyPassword = sslStoreProvider.getKeyPassword();
+			if (keyPassword != null) {
+				certificate.setCertificateKeyPassword(keyPassword);
+			}
 		}
 		else {
 			configureSslKeyStore(certificate, ssl);

@@ -25,10 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import org.springframework.aot.generate.ClassNameGenerator;
 import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.FileSystemGeneratedFiles;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
@@ -61,8 +60,6 @@ public class AotProcessor {
 
 	private static final Consumer<ExecutableHint.Builder> INVOKE_CONSTRUCTOR_HINT = (hint) -> hint
 			.setModes(ExecutableMode.INVOKE);
-
-	private static final Map<ApplicationContext, AotProcessor> aotProcessors = new ConcurrentHashMap<>();
 
 	private final Class<?> application;
 
@@ -102,30 +99,16 @@ public class AotProcessor {
 	}
 
 	/**
-	 * Return the application class being processed.
-	 * @return the application class
-	 */
-	public Class<?> getApplication() {
-		return this.application;
-	}
-
-	/**
 	 * Trigger the processing of the application managed by this instance.
 	 */
-	void process() {
+	public void process() {
 		deleteExistingOutput();
 		AotProcessorHook hook = new AotProcessorHook();
 		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
 		GenericApplicationContext applicationContext = hook.getApplicationContext();
 		Assert.notNull(applicationContext, "No application context available after calling main method of '"
 				+ this.application.getName() + "'. Does it run a SpringApplication?");
-		aotProcessors.put(applicationContext, this);
-		try {
-			performAotProcessing(applicationContext);
-		}
-		finally {
-			aotProcessors.remove(applicationContext);
-		}
+		performAotProcessing(applicationContext);
 	}
 
 	private void deleteExistingOutput() {
@@ -161,12 +144,11 @@ public class AotProcessor {
 
 	private void performAotProcessing(GenericApplicationContext applicationContext) {
 		FileSystemGeneratedFiles generatedFiles = new FileSystemGeneratedFiles(this::getRoot);
-		DefaultGenerationContext generationContext = new DefaultGenerationContext(generatedFiles);
+		DefaultGenerationContext generationContext = new DefaultGenerationContext(
+				new ClassNameGenerator(this.application), generatedFiles);
 		ApplicationContextAotGenerator generator = new ApplicationContextAotGenerator();
-		ClassName generatedInitializerClassName = generationContext.getClassNameGenerator()
-				.generateClassName(this.application, "ApplicationContextInitializer");
-		generator.generateApplicationContext(applicationContext, this.application, "", generationContext,
-				generatedInitializerClassName);
+		ClassName generatedInitializerClassName = generator.generateApplicationContext(applicationContext,
+				generationContext);
 		registerEntryPointHint(generationContext, generatedInitializerClassName);
 		generationContext.writeGeneratedContent();
 		writeHints(generationContext.getRuntimeHints());
@@ -185,15 +167,11 @@ public class AotProcessor {
 	}
 
 	private Path getRoot(Kind kind) {
-		switch (kind) {
-		case SOURCE:
-			return this.sourceOutput;
-		case RESOURCE:
-			return this.resourceOutput;
-		case CLASS:
-			return this.classOutput;
-		}
-		throw new IllegalStateException("Unsupported kind " + kind);
+		return switch (kind) {
+			case SOURCE -> this.sourceOutput;
+			case RESOURCE -> this.resourceOutput;
+			case CLASS -> this.classOutput;
+		};
 	}
 
 	private void writeHints(RuntimeHints hints) {
@@ -241,16 +219,6 @@ public class AotProcessor {
 		Class<?> application = Class.forName(applicationName);
 		new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput, classOutput, groupId, artifactId)
 				.process();
-	}
-
-	/**
-	 * Return the AOT processor that is actively processing the given
-	 * {@link ApplicationContext}.
-	 * @param applicationContext the application context to check
-	 * @return the {@link AotProcessor} or {@code null}
-	 */
-	public static AotProcessor getActive(ApplicationContext applicationContext) {
-		return aotProcessors.get(applicationContext);
 	}
 
 	/**

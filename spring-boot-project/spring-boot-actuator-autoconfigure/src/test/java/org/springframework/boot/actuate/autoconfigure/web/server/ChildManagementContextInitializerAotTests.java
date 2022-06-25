@@ -25,13 +25,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.aot.generate.ClassNameGenerator;
 import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
-import org.springframework.aot.generate.MethodGenerator;
-import org.springframework.aot.generate.MethodReference;
 import org.springframework.aot.test.generator.compile.CompileWithTargetClassAccess;
 import org.springframework.aot.test.generator.compile.TestCompiler;
-import org.springframework.beans.factory.aot.BeanRegistrationCode;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
@@ -79,10 +77,10 @@ class ChildManagementContextInitializerAotTests {
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").prepare((context) -> {
 			InMemoryGeneratedFiles generatedFiles = new InMemoryGeneratedFiles();
-			DefaultGenerationContext generationContext = new DefaultGenerationContext(generatedFiles);
-			ClassName className = ClassName.get("com.example", "TestInitializer");
-			new ApplicationContextAotGenerator().generateApplicationContext(
-					(GenericApplicationContext) context.getSourceApplicationContext(), generationContext, className);
+			DefaultGenerationContext generationContext = new DefaultGenerationContext(
+					new ClassNameGenerator(TestTarget.class), generatedFiles);
+			ClassName className = new ApplicationContextAotGenerator().generateApplicationContext(
+					(GenericApplicationContext) context.getSourceApplicationContext(), generationContext);
 			generationContext.writeGeneratedContent();
 			TestCompiler compiler = TestCompiler.forSystem();
 			compiler.withFiles(generatedFiles).compile((compiled) -> {
@@ -105,21 +103,7 @@ class ChildManagementContextInitializerAotTests {
 		};
 	}
 
-	static class MockBeanRegistrationCode implements BeanRegistrationCode {
-
-		@Override
-		public ClassName getClassName() {
-			return null;
-		}
-
-		@Override
-		public MethodGenerator getMethodGenerator() {
-			return null;
-		}
-
-		@Override
-		public void addInstancePostProcessor(MethodReference methodReference) {
-		}
+	static class TestTarget {
 
 	}
 

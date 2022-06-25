@@ -285,7 +285,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		ssl.setTrustCertificate("classpath:test-cert.pem");
-		ssl.setKeyStorePassword("secret");
 		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector("test.p12", "secret"));
 	}
 

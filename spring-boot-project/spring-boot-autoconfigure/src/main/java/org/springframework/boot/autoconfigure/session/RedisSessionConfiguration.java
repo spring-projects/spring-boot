@@ -53,14 +53,10 @@ class RedisSessionConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
-		switch (redisSessionProperties.getConfigureAction()) {
-		case NOTIFY_KEYSPACE_EVENTS:
-			return new ConfigureNotifyKeyspaceEventsAction();
-		case NONE:
-			return ConfigureRedisAction.NO_OP;
-		}
-		throw new IllegalStateException(
-				"Unsupported redis configure action '" + redisSessionProperties.getConfigureAction() + "'.");
+		return switch (redisSessionProperties.getConfigureAction()) {
+			case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsAction();
+			case NONE -> ConfigureRedisAction.NO_OP;
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)

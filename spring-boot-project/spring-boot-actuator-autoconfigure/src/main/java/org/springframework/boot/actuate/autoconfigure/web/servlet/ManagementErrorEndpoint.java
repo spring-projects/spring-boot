@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,36 +76,27 @@ public class ManagementErrorEndpoint {
 	}
 
 	private boolean includeStackTrace(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeStacktrace()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return getBooleanParameter(request, "trace");
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeStacktrace()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "trace");
+			default -> false;
+		};
 	}
 
 	private boolean includeMessage(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeMessage()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return getBooleanParameter(request, "message");
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeMessage()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "message");
+			default -> false;
+		};
 	}
 
 	private boolean includeBindingErrors(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeBindingErrors()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return getBooleanParameter(request, "errors");
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeBindingErrors()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "errors");
+			default -> false;
+		};
 	}
 
 	protected boolean getBooleanParameter(ServletWebRequest request, String parameterName) {

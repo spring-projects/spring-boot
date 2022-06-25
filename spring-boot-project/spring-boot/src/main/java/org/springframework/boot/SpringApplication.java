@@ -362,14 +362,11 @@ public class SpringApplication {
 	}
 
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
-		switch (this.webApplicationType) {
-		case SERVLET:
-			return ApplicationServletEnvironment.class;
-		case REACTIVE:
-			return ApplicationReactiveWebEnvironment.class;
-		default:
-			return ApplicationEnvironment.class;
-		}
+		return switch (this.webApplicationType) {
+			case SERVLET -> ApplicationServletEnvironment.class;
+			case REACTIVE -> ApplicationReactiveWebEnvironment.class;
+			default -> ApplicationEnvironment.class;
+		};
 	}
 
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
@@ -457,14 +454,11 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		switch (this.webApplicationType) {
-		case SERVLET:
-			return new ApplicationServletEnvironment();
-		case REACTIVE:
-			return new ApplicationReactiveWebEnvironment();
-		default:
-			return new ApplicationEnvironment();
-		}
+		return switch (this.webApplicationType) {
+			case SERVLET -> new ApplicationServletEnvironment();
+			case REACTIVE -> new ApplicationReactiveWebEnvironment();
+			default -> new ApplicationEnvironment();
+		};
 	}
 
 	/**

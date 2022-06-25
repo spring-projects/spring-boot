@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,14 +173,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeStacktrace()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return isTraceEnabled(request);
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeStacktrace()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isTraceEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -190,14 +187,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the message attribute should be included
 	 */
 	protected boolean isIncludeMessage(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeMessage()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return isMessageEnabled(request);
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeMessage()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isMessageEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -207,14 +201,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the errors attribute should be included
 	 */
 	protected boolean isIncludeBindingErrors(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeBindingErrors()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return isBindingErrorsEnabled(request);
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeBindingErrors()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isBindingErrorsEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**

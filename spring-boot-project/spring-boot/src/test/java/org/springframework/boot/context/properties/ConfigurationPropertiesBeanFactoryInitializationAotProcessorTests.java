@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.generate.ClassNameGenerator;
 import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
@@ -267,7 +268,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	private RuntimeHints process(ConfigurableListableBeanFactory beanFactory) {
 		BeanFactoryInitializationAotContribution contribution = this.processor.processAheadOfTime(beanFactory);
 		assertThat(contribution).isNotNull();
-		GenerationContext generationContext = new DefaultGenerationContext(new InMemoryGeneratedFiles());
+		GenerationContext generationContext = new DefaultGenerationContext(new ClassNameGenerator(Object.class),
+				new InMemoryGeneratedFiles());
 		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
 		return generationContext.getRuntimeHints();
 	}

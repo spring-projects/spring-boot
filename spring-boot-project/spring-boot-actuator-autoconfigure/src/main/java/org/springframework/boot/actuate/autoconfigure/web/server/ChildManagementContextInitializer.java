@@ -30,7 +30,6 @@ import org.springframework.beans.factory.aot.BeanRegistrationCode;
 import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
-import org.springframework.boot.AotProcessor;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -96,10 +95,9 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 		BeanFactory parentBeanFactory = ((ConfigurableApplicationContext) this.parentContext).getBeanFactory();
 		if (registeredBean.getBeanClass().equals(getClass())
 				&& registeredBean.getBeanFactory().equals(parentBeanFactory)) {
-			AotProcessor activeAotProcessor = AotProcessor.getActive(this.parentContext);
 			ConfigurableApplicationContext managementContext = createManagementContext();
 			registerBeans(managementContext);
-			return new AotContribution(activeAotProcessor, managementContext);
+			return new AotContribution(managementContext);
 		}
 		return null;
 	}
@@ -155,23 +153,18 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 	 */
 	private static class AotContribution implements BeanRegistrationAotContribution {
 
-		private final AotProcessor activeAotProcessor;
-
 		private final GenericApplicationContext managementContext;
 
-		AotContribution(AotProcessor activeAotProcessor, ConfigurableApplicationContext managementContext) {
+		AotContribution(ConfigurableApplicationContext managementContext) {
 			Assert.isInstanceOf(GenericApplicationContext.class, managementContext);
-			this.activeAotProcessor = activeAotProcessor;
 			this.managementContext = (GenericApplicationContext) managementContext;
 		}
 
 		@Override
 		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
-			Class<?> target = (this.activeAotProcessor != null) ? this.activeAotProcessor.getApplication() : null;
-			ClassName generatedInitializerClassName = generationContext.getClassNameGenerator()
-					.generateClassName(target, "ManagementContextRegistrations");
-			new ApplicationContextAotGenerator().generateApplicationContext(this.managementContext, target,
-					"Management", generationContext, generatedInitializerClassName);
+			GenerationContext managementGenerationContext = generationContext.withName("Management");
+			ClassName generatedInitializerClassName = new ApplicationContextAotGenerator()
+					.generateApplicationContext(this.managementContext, managementGenerationContext);
 			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethodGenerator()
 					.generateMethod("addManagementInitializer").using((builder) -> {
 						builder.addJavadoc("Use AOT management context initialization");

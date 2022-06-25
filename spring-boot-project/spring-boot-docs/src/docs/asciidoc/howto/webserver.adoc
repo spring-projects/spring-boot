@@ -205,7 +205,6 @@ The following example shows setting SSL properties using PEM-encoded certificate
 	    certificate: "classpath:my-cert.crt"
 	    certificate-private-key: "classpath:my-cert.key"
 	    trust-certificate: "classpath:ca-cert.crt"
-	    key-store-password: "secret"
 ----
 
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
