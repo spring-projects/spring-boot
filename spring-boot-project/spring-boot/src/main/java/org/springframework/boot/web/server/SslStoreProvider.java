@@ -44,7 +44,7 @@ public interface SslStoreProvider {
 	/**
 	 * Return the password of the private key in the key store.
 	 * @return the key password
-	 * @since 2.7.1
+	 * @since 2.7.2
 	 */
 	default String getKeyPassword() {
 		return null;
