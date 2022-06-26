@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
@@ -64,12 +64,12 @@ public class SpringBootDependencyInjectionTestExecutionListener extends Dependen
 	static class PostProcessor implements DefaultTestExecutionListenersPostProcessor {
 
 		@Override
-		public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
-				Set<Class<? extends TestExecutionListener>> listeners) {
-			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<>(listeners.size());
-			for (Class<? extends TestExecutionListener> listener : listeners) {
-				updated.add(listener.equals(DependencyInjectionTestExecutionListener.class)
-						? SpringBootDependencyInjectionTestExecutionListener.class : listener);
+		public List<TestExecutionListener> postProcessDefaultTestExecutionListeners(
+				List<TestExecutionListener> listeners) {
+			List<TestExecutionListener> updated = new ArrayList<>();
+			for (TestExecutionListener listener : listeners) {
+				updated.add((listener instanceof DependencyInjectionTestExecutionListener)
+						? new SpringBootDependencyInjectionTestExecutionListener() : listener);
 			}
 			return updated;
 		}

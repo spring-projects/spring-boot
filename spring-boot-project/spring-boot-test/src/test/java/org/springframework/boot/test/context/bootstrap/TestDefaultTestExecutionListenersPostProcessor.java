@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context.bootstrap;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor;
 import org.springframework.test.context.TestContext;
@@ -31,9 +31,8 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 public class TestDefaultTestExecutionListenersPostProcessor implements DefaultTestExecutionListenersPostProcessor {
 
 	@Override
-	public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
-			Set<Class<? extends TestExecutionListener>> listeners) {
-		listeners.add(ExampleTestExecutionListener.class);
+	public List<TestExecutionListener> postProcessDefaultTestExecutionListeners(List<TestExecutionListener> listeners) {
+		listeners.add(new ExampleTestExecutionListener());
 		return listeners;
 	}
 
