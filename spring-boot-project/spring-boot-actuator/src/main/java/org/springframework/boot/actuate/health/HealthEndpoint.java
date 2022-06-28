@@ -66,6 +66,7 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	 * @param groups the health endpoint groups
 	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
+	 * @since 2.6.9
 	 */
 	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
