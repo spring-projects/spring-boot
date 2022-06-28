@@ -40,7 +40,7 @@ public @interface DisabledOnOs {
 	 * See {@link org.junit.jupiter.api.condition.DisabledOnOs#value()}.
 	 * @return os
 	 */
-	OS os();
+	OS[] os();
 
 	/**
 	 * Architecture of the operating system.
