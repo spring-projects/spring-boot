@@ -101,10 +101,6 @@ If your application is a web application (Spring MVC or Spring WebFlux), you can
   On a HotSpot JVM, an `HPROF`-format file is returned.
   On an OpenJ9 JVM, a `PHD`-format file is returned.
 
-| `jolokia`
-| Exposes JMX beans over HTTP when Jolokia is on the classpath (not available for WebFlux).
-  Requires a dependency on `jolokia-core`.
-
 | `logfile`
 | Returns the contents of the logfile (if the `logging.file.name` or the `logging.file.path` property has been set).
   Supports the use of the HTTP `Range` header to retrieve part of the log file's content.
@@ -203,10 +199,6 @@ The following table shows the default exposure for the built-in endpoints:
 
 | `integrationgraph`
 | Yes
-| No
-
-| `jolokia`
-| N/A
 | No
 
 | `logfile`
