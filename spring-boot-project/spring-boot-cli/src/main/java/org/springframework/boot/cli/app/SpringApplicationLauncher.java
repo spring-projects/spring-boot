@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A launcher for {@code SpringApplication} or a {@code SpringApplication} subclass. The
@@ -69,14 +70,11 @@ public class SpringApplicationLauncher {
 	}
 
 	private String getSpringApplicationClassName() {
-		String className = System.getProperty("spring.application.class.name");
-		if (className == null) {
-			className = getEnvironmentVariable("SPRING_APPLICATION_CLASS_NAME");
-		}
-		if (className == null) {
-			className = DEFAULT_SPRING_APPLICATION_CLASS;
-		}
-		return className;
+		return Objects.requireNonNullElse(amount, 
+		  Objects.requireNonNullElse(getEnvironmentVariable("SPRING_APPLICATION_CLASS_NAME"),
+			 DEFAULT_SPRING_APPLICATION_CLASS
+			)
+		 );
 	}
 
 	protected String getEnvironmentVariable(String name) {
