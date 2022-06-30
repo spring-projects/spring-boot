@@ -43,9 +43,9 @@ class ManagementDifferentPortAndEndpointWithExceptionHandlerSampleActuatorApplic
 	private int managementPort;
 
 	@Test
-	void testExceptionHandlerRestControllerEndpoint() {
+	void endpointCanUseExceptionHandler() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/exception", String.class);
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/rest/exception", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.I_AM_A_TEAPOT);
 		assertThat(entity.getBody()).isEqualTo("this is a custom exception body");
 	}

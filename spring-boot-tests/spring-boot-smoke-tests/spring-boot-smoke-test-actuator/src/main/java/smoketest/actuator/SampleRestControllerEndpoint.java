@@ -16,26 +16,38 @@
 
 package smoketest.actuator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
- * The Sample rest controller endpoint with exception.
+ * The Sample rest controller endpoint.
  *
  * @author Guirong Hu
  */
 @Component
-@RestControllerEndpoint(id = "exception")
-public class SampleRestControllerEndpointWithException {
+@RestControllerEndpoint(id = "rest")
+public class SampleRestControllerEndpoint {
 
-	@GetMapping("/")
+	@GetMapping("/exception")
 	public String exception() {
 		throw new CustomException();
+	}
+
+	@PostMapping("/upload")
+	public String upload(@RequestParam("file") MultipartFile file) throws IOException {
+		return StreamUtils.copyToString(file.getInputStream(), StandardCharsets.UTF_8);
 	}
 
 	@RestControllerAdvice
