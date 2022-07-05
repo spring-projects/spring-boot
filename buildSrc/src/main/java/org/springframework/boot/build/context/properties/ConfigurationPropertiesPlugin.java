@@ -16,17 +16,28 @@
 
 package org.springframework.boot.build.context.properties;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.dsl.ArtifactHandler;
+import org.gradle.api.file.Directory;
+import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.util.StringUtils;
@@ -71,15 +82,47 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 	}
 
-	private void addMetadataArtifact(Project project) {
-		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+	private void addMetadataArtifact (Project project) {
+		ExtensionContainer extensionContainer = project.getExtensions();
+		JavaPluginExtension javaPluginExtension = extensionContainer.getByType(JavaPluginExtension.class);
+		SourceSet mainSourceSet = javaPluginExtension.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+
 		project.getConfigurations().maybeCreate(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME);
-		project.afterEvaluate((evaluatedProject) -> evaluatedProject.getArtifacts().add(
-				CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
-				mainSourceSet.getJava().getDestinationDirectory().dir("META-INF/spring-configuration-metadata.json"),
-				(artifact) -> artifact
-						.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
+
+		project.afterEvaluate((evaluatedProject) -> {
+			ArtifactHandler artifactHandler = evaluatedProject.getArtifacts();
+			SourceDirectorySet sourceDirectorySet = mainSourceSet.getJava();
+			Provider<Directory> directoryProvider = sourceDirectorySet.getDestinationDirectory().dir("META-INF/spring-configuration-metadata.json");
+
+			artifactHandler.add(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME, directoryProvider, (artifact) -> {
+				TaskContainer taskContainer = evaluatedProject.getTasks();
+				String taskName = mainSourceSet.getClassesTaskName();
+				artifact.builtBy(taskContainer.getByName(taskName));
+
+				try {
+					checkIfSorted(artifact.getFile());
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			});
+		});
+	}
+
+	private Boolean checkIfSorted(File file) throws IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, Object> json = objectMapper.readValue(file, Map.class);
+		return checkByKey(json, "properties") && checkByKey(json, "hints") && checkByKey(json, "groups");
+	}
+
+	private Boolean checkByKey(Map<String, Object> json, String key){
+		String previousName = "";
+		for (Map<String, Object> property : (List<Map<String, Object>>) json.get(key)) {
+			String name = (String) property.get("name");
+			if (previousName != "" && name.compareTo(previousName) > 0)
+				return false;
+			previousName = name;
+		}
+		return true;
 	}
 
 	private void configureAdditionalMetadataLocationsCompilerArgument(Project project) {
