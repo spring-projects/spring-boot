@@ -966,6 +966,11 @@ public class ServerProperties {
 					+ "0:0:0:0:0:0:0:1|::1";
 
 			/**
+			 * Regular expression defining proxies that are trusted when they appear in the remoteIpHeader header.
+			 */
+			private String trustedProxies;
+
+			/**
 			 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 			 */
 			private String protocolHeader;
@@ -1040,6 +1045,13 @@ public class ServerProperties {
 				this.remoteIpHeader = remoteIpHeader;
 			}
 
+			public String getTrustedProxies() {
+				return trustedProxies;
+			}
+
+			public void setTrustedProxies(String trustedProxies) {
+				this.trustedProxies = trustedProxies;
+			}
 		}
 
 	}

@@ -229,6 +229,7 @@ public class TomcatWebServerFactoryCustomizer
 			}
 			// The internal proxies default to a list of "safe" internal IP addresses
 			valve.setInternalProxies(remoteIpProperties.getInternalProxies());
+			valve.setTrustedProxies(remoteIpProperties.getTrustedProxies());
 			try {
 				valve.setHostHeader(remoteIpProperties.getHostHeader());
 			}

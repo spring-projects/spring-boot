@@ -129,6 +129,7 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.remoteip.protocol-header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remoteip.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.remoteip.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		map.put("server.tomcat.remoteip.trusted-proxies", "proxy1, proxy2, proxy3");
 		map.put("server.tomcat.reject-illegal-header", "false");
 		map.put("server.tomcat.background-processor-delay", "10");
 		map.put("server.tomcat.relaxed-path-chars", "|,<");
@@ -152,6 +153,7 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getRemoteip().getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getRemoteip().getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getRemoteip().getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.getRemoteip().getTrustedProxies()).isEqualTo("proxy1, proxy2, proxy3");
 		assertThat(tomcat.isRejectIllegalHeader()).isFalse();
 		assertThat(tomcat.getBackgroundProcessorDelay()).hasSeconds(10);
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
