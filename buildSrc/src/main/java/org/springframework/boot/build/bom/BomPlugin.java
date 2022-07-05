@@ -106,7 +106,7 @@ public class BomPlugin implements Plugin<Project> {
 				Node projectNode = xml.asNode();
 				Node properties = new Node(null, "properties");
 				this.bom.getProperties().forEach(properties::appendNode);
-				Node dependencyManagement = findChild(projectNode, "dependencyManagement");
+				Node dependencyManagement = NodeUtil.findChild(projectNode, "dependencyManagement");
 				if (dependencyManagement != null) {
 					addPropertiesBeforeDependencyManagement(projectNode, properties);
 					addClassifiedManagedDependencies(dependencyManagement);
@@ -124,7 +124,7 @@ public class BomPlugin implements Plugin<Project> {
 		@SuppressWarnings("unchecked")
 		private void addPropertiesBeforeDependencyManagement(Node projectNode, Node properties) {
 			for (int i = 0; i < projectNode.children().size(); i++) {
-				if (isNodeWithName(projectNode.children().get(i), "dependencyManagement")) {
+				if (NodeUtil.isNodeWithName(projectNode.children().get(i), "dependencyManagement")) {
 					projectNode.children().add(i, properties);
 					break;
 				}
@@ -132,33 +132,33 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		private void replaceVersionsWithVersionPropertyReferences(Node dependencyManagement) {
-			Node dependencies = findChild(dependencyManagement, "dependencies");
+			Node dependencies = NodeUtil.findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
-				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
-					Node classifierNode = findChild(dependency, "classifier");
+				for (Node dependency : NodeUtil.findChildren(dependencies, "dependency")) {
+					String groupId = NodeUtil.findChild(dependency, "groupId").text();
+					String artifactId = NodeUtil.findChild(dependency, "artifactId").text();
+					Node classifierNode = NodeUtil.findChild(dependency, "classifier");
 					String classifier = (classifierNode != null) ? classifierNode.text() : "";
 					String versionProperty = this.bom.getArtifactVersionProperty(groupId, artifactId, classifier);
 					if (versionProperty != null) {
-						findChild(dependency, "version").setValue("${" + versionProperty + "}");
+						NodeUtil.findChild(dependency, "version").setValue("${" + versionProperty + "}");
 					}
 				}
 			}
 		}
 
 		private void addExclusionsToManagedDependencies(Node dependencyManagement) {
-			Node dependencies = findChild(dependencyManagement, "dependencies");
+			Node dependencies = NodeUtil.findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
-				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
+				for (Node dependency : NodeUtil.findChildren(dependencies, "dependency")) {
+					String groupId = NodeUtil.findChild(dependency, "groupId").text();
+					String artifactId = NodeUtil.findChild(dependency, "artifactId").text();
 					this.bom.getLibraries().stream().flatMap((library) -> library.getGroups().stream())
 							.filter((group) -> group.getId().equals(groupId))
 							.flatMap((group) -> group.getModules().stream())
 							.filter((module) -> module.getName().equals(artifactId))
 							.flatMap((module) -> module.getExclusions().stream()).forEach((exclusion) -> {
-								Node exclusions = findOrCreateNode(dependency, "exclusions");
+								Node exclusions = NodeUtils.findOrCreateNode(dependency, "exclusions");
 								Node node = new Node(exclusions, "exclusion");
 								node.appendNode("groupId", exclusion.getGroupId());
 								node.appendNode("artifactId", exclusion.getArtifactId());
@@ -168,11 +168,11 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		private void addTypesToManagedDependencies(Node dependencyManagement) {
-			Node dependencies = findChild(dependencyManagement, "dependencies");
+			Node dependencies = NodeUtil.findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
-				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
+				for (Node dependency : NodeUtil.findChildren(dependencies, "dependency")) {
+					String groupId = NodeUtil.findChild(dependency, "groupId").text();
+					String artifactId = NodeUtil.findChild(dependency, "artifactId").text();
 					Set<String> types = this.bom.getLibraries().stream()
 							.flatMap((library) -> library.getGroups().stream())
 							.filter((group) -> group.getId().equals(groupId))
@@ -193,12 +193,12 @@ public class BomPlugin implements Plugin<Project> {
 
 		@SuppressWarnings("unchecked")
 		private void addClassifiedManagedDependencies(Node dependencyManagement) {
-			Node dependencies = findChild(dependencyManagement, "dependencies");
+			Node dependencies = NodeUtil.findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
-				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
-					String version = findChild(dependency, "version").text();
+				for (Node dependency : NodeUtil.findChildren(dependencies, "dependency")) {
+					String groupId = NodeUtil.findChild(dependency, "groupId").text();
+					String artifactId = NodeUtil.findChild(dependency, "artifactId").text();
+					String version = NodeUtil.findChild(dependency, "version").text();
 					Set<String> classifiers = this.bom.getLibraries().stream()
 							.flatMap((library) -> library.getGroups().stream())
 							.filter((group) -> group.getId().equals(groupId))
@@ -227,7 +227,7 @@ public class BomPlugin implements Plugin<Project> {
 		private void addPluginManagement(Node projectNode) {
 			for (Library library : this.bom.getLibraries()) {
 				for (Group group : library.getGroups()) {
-					Node plugins = findOrCreateNode(projectNode, "build", "pluginManagement", "plugins");
+					Node plugins = NodeUtils.findOrCreateNode(projectNode, "build", "pluginManagement", "plugins");
 					for (String pluginName : group.getPlugins()) {
 						Node plugin = new Node(plugins, "plugin");
 						plugin.appendNode("groupId", group.getId());
@@ -240,52 +240,6 @@ public class BomPlugin implements Plugin<Project> {
 				}
 			}
 		}
-
-		private Node findOrCreateNode(Node parent, String... path) {
-			Node current = parent;
-			for (String nodeName : path) {
-				Node child = findChild(current, nodeName);
-				if (child == null) {
-					child = new Node(current, nodeName);
-				}
-				current = child;
-			}
-			return current;
-		}
-
-		private Node findChild(Node parent, String name) {
-			for (Object child : parent.children()) {
-				if (child instanceof Node node) {
-					if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
-						return node;
-					}
-					if (name.equals(node.name())) {
-						return node;
-					}
-				}
-			}
-			return null;
-		}
-
-		@SuppressWarnings("unchecked")
-		private List<Node> findChildren(Node parent, String name) {
-			return (List<Node>) parent.children().stream().filter((child) -> isNodeWithName(child, name))
-					.collect(Collectors.toList());
-
-		}
-
-		private boolean isNodeWithName(Object candidate, String name) {
-			if (candidate instanceof Node node) {
-				if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
-					return true;
-				}
-				if (name.equals(node.name())) {
-					return true;
-				}
-			}
-			return false;
-		}
-
 	}
 
 }
