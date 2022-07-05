@@ -75,7 +75,7 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 	private void appendFieldError(StringBuilder description, FieldError error) {
 		Origin origin = Origin.from(error);
 		description.append(String.format("%n    Property: %s", error.getObjectName() + "." + error.getField()));
-		description.append(String.format("%n    Value: %s", error.getRejectedValue()));
+		description.append(String.format("%n    Value: \"%s\"", error.getRejectedValue()));
 		if (origin != null) {
 			description.append(String.format("%n    Origin: %s", origin));
 		}

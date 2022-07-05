@@ -63,7 +63,7 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 	private void buildDescription(StringBuilder description, ConfigurationProperty property) {
 		if (property != null) {
 			description.append(String.format("%n    Property: %s", property.getName()));
-			description.append(String.format("%n    Value: %s", property.getValue()));
+			description.append(String.format("%n    Value: \"%s\"", property.getValue()));
 			description.append(String.format("%n    Origin: %s", property.getOrigin()));
 		}
 	}
