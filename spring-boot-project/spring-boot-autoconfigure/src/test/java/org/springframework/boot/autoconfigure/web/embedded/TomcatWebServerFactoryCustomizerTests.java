@@ -224,6 +224,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.remoteip.remote-ip-header=x-my-remote-ip-header",
 				"server.tomcat.remoteip.protocol-header=x-my-protocol-header",
 				"server.tomcat.remoteip.internal-proxies=192.168.0.1",
+				"server.tomcat.remoteip.trusted-proxies=proxy1|proxy2",
 				"server.tomcat.remoteip.host-header=x-my-forward-host",
 				"server.tomcat.remoteip.port-header=x-my-forward-port",
 				"server.tomcat.remoteip.protocol-header-https-value=On");
@@ -238,6 +239,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getHostHeader()).isEqualTo("x-my-forward-host");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+		assertThat(remoteIpValve.getTrustedProxies()).isEqualTo("proxy1|proxy2");
 	}
 
 	@Test
