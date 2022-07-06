@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration.ClientConfigurationCallback;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveRestClients;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.codec.CodecConfigurer.DefaultCodecConfig;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
+@SuppressWarnings("deprecation")
 class ReactiveElasticsearchClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -244,10 +245,11 @@ class ReactiveElasticsearchClientAutoConfigurationTests {
 				});
 	}
 
+	@SuppressWarnings("unchecked")
 	private WebClient configureWebClient(List<ClientConfigurationCallback<?>> callbacks) {
 		WebClient webClient = WebClient.create();
 		for (ClientConfigurationCallback<?> callback : callbacks) {
-			webClient = ((ReactiveRestClients.WebClientConfigurationCallback) callback).configure(webClient);
+			webClient = ((ClientConfiguration.ClientConfigurationCallback<WebClient>) callback).configure(webClient);
 		}
 		return webClient;
 	}
