@@ -32,14 +32,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients.WebClientConfigurationCallback;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveRestClients;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import static org.springframework.data.elasticsearch.client.elc.ElasticsearchClients.WebClientConfigurationCallback;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Elasticsearch Reactive REST
@@ -51,6 +52,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveRestClients.class, WebClient.class, HttpClient.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)
+@SuppressWarnings("deprecation")
 public class ReactiveElasticsearchClientAutoConfiguration {
 
 	private final ConsolidatedProperties properties;
