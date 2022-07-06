@@ -67,7 +67,7 @@ public class ObservationAutoConfiguration {
 
 		@Bean
 		TimerObservationHandlerObservationRegistryCustomizer enableTimerObservationHandler(
-				MeterRegistry meterRegistry) {
+				ObjectProvider<MeterRegistry> meterRegistry) {
 			return new TimerObservationHandlerObservationRegistryCustomizer(meterRegistry);
 		}
 
