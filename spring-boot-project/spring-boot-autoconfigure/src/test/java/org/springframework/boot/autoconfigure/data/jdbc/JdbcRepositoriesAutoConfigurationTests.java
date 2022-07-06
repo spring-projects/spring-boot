@@ -33,10 +33,14 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.ManagedTypes;
+import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
+import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
 import org.springframework.data.repository.Repository;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Mark Paluch
  */
 class JdbcRepositoriesAutoConfigurationTests {
 
@@ -85,6 +90,19 @@ class JdbcRepositoriesAutoConfigurationTests {
 					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);
 					assertThat(context.getBean(CityRepository.class).findById(2000L)).isPresent();
+				});
+	}
+
+	@Test
+	void entityScanShouldSetManagedTypes() {
+		this.contextRunner.with(database())
+				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+					JdbcMappingContext mappingContext = context.getBean(JdbcMappingContext.class);
+					ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext,
+							"managedTypes");
+					assertThat(managedTypes.toList()).containsOnly(City.class);
 				});
 	}
 

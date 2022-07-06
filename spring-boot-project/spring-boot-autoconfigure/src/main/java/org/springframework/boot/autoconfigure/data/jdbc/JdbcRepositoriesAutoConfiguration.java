@@ -16,19 +16,24 @@
 
 package org.springframework.boot.autoconfigure.data.jdbc;
 
+import java.util.Set;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
+import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -41,6 +46,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Mark Paluch
  * @since 2.1.0
  * @see EnableJdbcRepositories
  */
@@ -61,6 +67,17 @@ public class JdbcRepositoriesAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(AbstractJdbcConfiguration.class)
 	static class SpringBootJdbcConfiguration extends AbstractJdbcConfiguration {
+
+		private final ApplicationContext applicationContext;
+
+		SpringBootJdbcConfiguration(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
+			return new EntityScanner(this.applicationContext).scan(Table.class);
+		}
 
 	}
 
