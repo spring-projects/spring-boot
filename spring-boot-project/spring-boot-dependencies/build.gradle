@@ -1296,7 +1296,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.1.4") {
+	library("Selenium", "4.2.2") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"selenium-api",
