@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @Testcontainers(disabledWithoutDocker = true)
-@SuppressWarnings("deprecation")
 class ReactiveElasticsearchRestClientAutoConfigurationIntegrationTests {
 
 	@Container

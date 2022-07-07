@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import java.util.Collections;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +65,6 @@ class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void entityScanShouldSetInitialEntitySet() {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			CouchbaseMappingContext mappingContext = context.getBean(CouchbaseMappingContext.class);

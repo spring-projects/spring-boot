@@ -90,7 +90,6 @@ class CassandraRepositoriesAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	private ManagedTypes getManagedTypes(AssertableApplicationContext context) {
 		CassandraMappingContext mappingContext = context.getBean(CassandraMappingContext.class);
 		return (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import java.util.Set;
-
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +58,6 @@ class MongoReactiveRepositoriesAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ReactiveCityRepository.class);
 			assertThat(context).hasSingleBean(MongoClient.class);
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
-			@SuppressWarnings("unchecked")
 			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
 			assertThat(managedTypes.toList()).hasSize(1);
 		});

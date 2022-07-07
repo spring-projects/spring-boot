@@ -191,9 +191,9 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner
 				.withPropertyValues("spring.redis.sentinel.master:mymaster",
 						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
-				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
-				});
+				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
+				.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware())
+						.isTrue());
 	}
 
 	@Test

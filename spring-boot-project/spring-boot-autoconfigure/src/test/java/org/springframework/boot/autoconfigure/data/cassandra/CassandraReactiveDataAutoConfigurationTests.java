@@ -59,7 +59,6 @@ class CassandraReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void entityScanShouldSetManagedTypes() {
 		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);

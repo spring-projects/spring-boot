@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Set;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -161,7 +160,6 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void entityScanShouldSetManagedTypes() {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
@@ -211,7 +209,6 @@ class MongoDataAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {
 		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
 		assertThat(managedTypes.toList()).containsOnly(types);

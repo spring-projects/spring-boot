@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Collections;
-import java.util.Set;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.AfterEach;
@@ -67,7 +66,6 @@ class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void entityScanShouldSetManagedTypes() {
 		load(EntityScanConfig.class);
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);

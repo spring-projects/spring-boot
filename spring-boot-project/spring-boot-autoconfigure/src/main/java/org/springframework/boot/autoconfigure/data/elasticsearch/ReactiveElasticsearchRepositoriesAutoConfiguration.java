@@ -41,7 +41,6 @@ import org.springframework.data.elasticsearch.repository.support.ReactiveElastic
 		matchIfMissing = true)
 @ConditionalOnMissingBean(ReactiveElasticsearchRepositoryFactoryBean.class)
 @Import(ReactiveElasticsearchRepositoriesRegistrar.class)
-@SuppressWarnings("deprecation")
 public class ReactiveElasticsearchRepositoriesAutoConfiguration {
 
 }

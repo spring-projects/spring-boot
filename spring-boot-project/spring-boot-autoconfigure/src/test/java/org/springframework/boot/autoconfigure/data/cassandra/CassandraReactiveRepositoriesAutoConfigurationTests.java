@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import java.util.Set;
-
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -94,7 +92,6 @@ class CassandraReactiveRepositoriesAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	private ManagedTypes getManagedTypes(ApplicationContext context) {
 		CassandraMappingContext mappingContext = context.getBean(CassandraMappingContext.class);
 		return (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
