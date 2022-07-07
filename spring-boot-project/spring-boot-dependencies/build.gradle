@@ -1091,7 +1091,7 @@ bom {
 			]
 		}
 	}
-	library("OkHttp", "4.9.3") {
+	library("OkHttp", "4.10.0") {
 		group("com.squareup.okhttp3") {
 			imports = [
 				"okhttp-bom"
