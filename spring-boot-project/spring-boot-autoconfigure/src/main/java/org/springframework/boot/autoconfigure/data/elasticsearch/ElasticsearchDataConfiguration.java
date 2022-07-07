@@ -26,11 +26,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
 import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
@@ -87,9 +85,9 @@ abstract class ElasticsearchDataConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
 		@ConditionalOnBean(org.elasticsearch.client.RestHighLevelClient.class)
-		ElasticsearchRestTemplate elasticsearchTemplate(org.elasticsearch.client.RestHighLevelClient client,
-				ElasticsearchConverter converter) {
-			return new ElasticsearchRestTemplate(client, converter);
+		org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate elasticsearchTemplate(
+				org.elasticsearch.client.RestHighLevelClient client, ElasticsearchConverter converter) {
+			return new org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate(client, converter);
 		}
 
 	}
@@ -101,9 +99,11 @@ abstract class ElasticsearchDataConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(value = ReactiveElasticsearchOperations.class, name = "reactiveElasticsearchTemplate")
 		@ConditionalOnBean(ReactiveElasticsearchClient.class)
-		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(ReactiveElasticsearchClient client,
-				ElasticsearchConverter converter) {
-			return new ReactiveElasticsearchTemplate(client, converter);
+		@SuppressWarnings("deprecation")
+		org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(
+				ReactiveElasticsearchClient client, ElasticsearchConverter converter) {
+			return new org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate(client,
+					converter);
 		}
 
 	}

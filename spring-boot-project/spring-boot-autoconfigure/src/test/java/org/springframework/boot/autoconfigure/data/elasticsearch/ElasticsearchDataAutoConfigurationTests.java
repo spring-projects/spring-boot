@@ -33,8 +33,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
@@ -53,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  * @author Stephane Nicoll
  */
+@SuppressWarnings("deprecation")
 class ElasticsearchDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

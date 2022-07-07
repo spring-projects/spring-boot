@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearc
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @Testcontainers(disabledWithoutDocker = true)
+@SuppressWarnings("deprecation")
 class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container

@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for

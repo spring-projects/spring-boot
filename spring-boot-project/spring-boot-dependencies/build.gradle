@@ -680,7 +680,7 @@ bom {
 			]
 		}
 	}
-	library("Jedis", "3.8.0") {
+	library("Jedis", "4.2.3") {
 		group("redis.clients") {
 			modules = [
 				"jedis"
@@ -1374,7 +1374,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2022.0.0-M4") {
+	library("Spring Data Bom", "2022.0.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"

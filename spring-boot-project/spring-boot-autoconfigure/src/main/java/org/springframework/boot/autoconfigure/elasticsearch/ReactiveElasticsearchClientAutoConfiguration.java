@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.ElasticsearchException;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -32,9 +33,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients.WebClientConfigurationCallback;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchClients;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveRestClients;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.unit.DataSize;
@@ -49,8 +50,9 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @since 3.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ ReactiveRestClients.class, WebClient.class, HttpClient.class })
+@ConditionalOnClass({ ReactiveRestClients.class, ElasticsearchException.class, WebClient.class, HttpClient.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)
+@SuppressWarnings("deprecation")
 public class ReactiveElasticsearchClientAutoConfiguration {
 
 	private final ConsolidatedProperties properties;
@@ -78,7 +80,7 @@ public class ReactiveElasticsearchClientAutoConfiguration {
 	private void configureExchangeStrategies(PropertyMapper map,
 			ClientConfiguration.TerminalClientConfigurationBuilder builder) {
 		map.from(this.properties.getMaxInMemorySize()).asInt(DataSize::toBytes).to((maxInMemorySize) -> {
-			builder.withClientConfigurer(WebClientConfigurationCallback.from((webClient) -> {
+			builder.withClientConfigurer(ElasticsearchClients.WebClientConfigurationCallback.from((webClient) -> {
 				ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
 						.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize)).build();
 				return webClient.mutate().exchangeStrategies(exchangeStrategies).build();

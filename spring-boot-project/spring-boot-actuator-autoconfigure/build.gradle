@@ -166,6 +166,9 @@ dependencies {
 	testImplementation("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
+	testImplementation("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
@@ -186,6 +189,7 @@ dependencies {
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
 	testRuntimeOnly("org.cache2k:cache2k-core")
+	testRuntimeOnly("org.springframework:spring-aspects")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")

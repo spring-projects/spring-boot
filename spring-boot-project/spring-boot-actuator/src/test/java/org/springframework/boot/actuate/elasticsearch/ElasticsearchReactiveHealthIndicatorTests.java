@@ -28,8 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.reactive.DefaultReactiveElasticsearchClient;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,11 +50,12 @@ class ElasticsearchReactiveHealthIndicatorTests {
 
 	private ElasticsearchReactiveHealthIndicator healthIndicator;
 
+	@SuppressWarnings("deprecation")
 	@BeforeEach
 	void setup() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
-		ReactiveElasticsearchClient client = DefaultReactiveElasticsearchClient
+		ReactiveElasticsearchClient client = org.springframework.data.elasticsearch.client.erhlc.DefaultReactiveElasticsearchClient
 				.create(ClientConfiguration.create(this.server.getHostName() + ":" + this.server.getPort()));
 		this.healthIndicator = new ElasticsearchReactiveHealthIndicator(client);
 	}
