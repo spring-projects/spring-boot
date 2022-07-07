@@ -571,7 +571,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Validation", "3.0.1") {
+	library("Jakarta Validation", "3.0.2") {
 		group("jakarta.validation") {
 			modules = [
 				"jakarta.validation-api"
