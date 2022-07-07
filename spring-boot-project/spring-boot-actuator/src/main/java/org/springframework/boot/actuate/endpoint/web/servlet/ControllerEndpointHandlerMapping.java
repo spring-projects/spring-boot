@@ -33,6 +33,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 /**
  * {@link HandlerMapping} that exposes {@link ControllerEndpoint @ControllerEndpoint} and
@@ -89,16 +90,16 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 
 	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
 			RequestMappingInfo mapping) {
-		Set<String> patterns = mapping.getPatternsCondition().getPatterns();
+		Set<PathPattern> patterns = mapping.getPathPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
-			patterns = Collections.singleton("");
+			patterns = Collections.singleton(getPatternParser().parse(""));
 		}
 		String[] endpointMappedPatterns = patterns.stream()
 				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(String[]::new);
 		return mapping.mutate().paths(endpointMappedPatterns).build();
 	}
 
-	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, String pattern) {
+	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
 		return this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern);
 	}
 
