@@ -240,9 +240,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private void registerLinksMapping() {
-		RequestMappingInfo mapping = RequestMappingInfo.paths(this.endpointMapping.createSubPath(""))
-				.methods(RequestMethod.GET).produces(this.endpointMediaTypes.getProduced().toArray(new String[0]))
-				.options(this.builderConfig).build();
+		String path = this.endpointMapping.getPath();
+		String linksPath = (StringUtils.hasLength(path)) ? this.endpointMapping.createSubPath("/") : "/";
+		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath).methods(RequestMethod.GET)
+				.produces(this.endpointMediaTypes.getProduced().toArray(new String[0])).options(this.builderConfig)
+				.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
 				HttpServletRequest.class, HttpServletResponse.class));

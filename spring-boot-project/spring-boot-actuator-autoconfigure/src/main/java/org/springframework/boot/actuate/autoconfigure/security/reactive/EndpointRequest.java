@@ -217,7 +217,7 @@ public final class EndpointRequest {
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths);
 			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(pathMappedEndpoints.getBasePath()));
+				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
@@ -275,7 +275,9 @@ public final class EndpointRequest {
 
 		private ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new PathPatternParserServerWebExchangeMatcher(properties.getBasePath());
+				return new OrServerWebExchangeMatcher(
+						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath()),
+						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath() + "/"));
 			}
 			return EMPTY_MATCHER;
 		}

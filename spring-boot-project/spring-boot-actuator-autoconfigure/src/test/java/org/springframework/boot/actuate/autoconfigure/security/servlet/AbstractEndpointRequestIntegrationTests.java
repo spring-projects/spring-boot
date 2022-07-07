@@ -76,7 +76,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();
-			webTestClient.get().uri("/actuator/").exchange().expectStatus().isOk();
+			webTestClient.get().uri("/actuator/").exchange().expectStatus().isNotFound();
 		});
 	}
 

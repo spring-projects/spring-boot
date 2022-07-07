@@ -77,7 +77,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -312,6 +315,7 @@ class WebMvcMetricsFilterTests {
 
 	@Test
 	void trailingSlashShouldNotRecordDuplicateMetrics() throws Exception {
+
 		this.mvc.perform(get("/api/c1/simple/10")).andExpect(status().isOk());
 		this.mvc.perform(get("/api/c1/simple/10/")).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests").tags("status", "200", "uri", "/api/c1/simple/{id}").timer()
@@ -328,7 +332,7 @@ class WebMvcMetricsFilterTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Import({ Controller1.class, Controller2.class })
-	static class MetricsFilterApp {
+	static class MetricsFilterApp implements WebMvcConfigurer {
 
 		@Bean
 		Clock micrometerClock() {
@@ -391,6 +395,14 @@ class WebMvcMetricsFilterTests {
 		@Bean
 		FaultyWebMvcTagsProvider faultyWebMvcTagsProvider() {
 			return new FaultyWebMvcTagsProvider();
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public void configurePathMatch(PathMatchConfigurer configurer) {
+			PathPatternParser pathPatternParser = new PathPatternParser();
+			pathPatternParser.setMatchOptionalTrailingSeparator(true);
+			configurer.setPatternParser(pathPatternParser);
 		}
 
 	}
