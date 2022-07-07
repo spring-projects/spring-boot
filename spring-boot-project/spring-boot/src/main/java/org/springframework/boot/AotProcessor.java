@@ -183,7 +183,6 @@ public class AotProcessor {
 	private void writeNativeImageProperties() {
 		List<String> args = new ArrayList<>();
 		args.add("-H:Class=" + this.application.getName());
-		args.add("--allow-incomplete-classpath");
 		args.add("--report-unsupported-elements-at-runtime");
 		args.add("--no-fallback");
 		args.add("--install-exit-handlers");

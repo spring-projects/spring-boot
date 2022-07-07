@@ -121,7 +121,6 @@ class AotProcessorTests {
 					.resolve("resource/META-INF/native-image/com.example/example/native-image.properties");
 			assertThat(nativeImagePropertiesFile).exists().isRegularFile().hasContent("""
 					Args = -H:Class=org.springframework.boot.AotProcessorTests$SampleApplication \\
-					--allow-incomplete-classpath \\
 					--report-unsupported-elements-at-runtime \\
 					--no-fallback \\
 					--install-exit-handlers
