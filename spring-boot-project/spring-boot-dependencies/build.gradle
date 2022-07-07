@@ -1172,7 +1172,7 @@ bom {
 			]
 		}
 	}
-	library("Reactive Streams", "1.0.3") {
+	library("Reactive Streams", "1.0.4") {
 		group("org.reactivestreams") {
 			modules = [
 				"reactive-streams"
