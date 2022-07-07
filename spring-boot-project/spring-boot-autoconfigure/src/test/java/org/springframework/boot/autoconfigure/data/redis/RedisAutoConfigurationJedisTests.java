@@ -192,7 +192,6 @@ class RedisAutoConfigurationJedisTests {
 				.withPropertyValues("spring.redis.sentinel.master:mymaster",
 						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(context).hasFailed();
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
 				});
 	}
@@ -202,7 +201,6 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner.withPropertyValues("spring.redis.username=user", "spring.redis.password=password",
 				"spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(context).hasFailed();
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
 					assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
@@ -212,8 +210,9 @@ class RedisAutoConfigurationJedisTests {
 	@Test
 	void testRedisConfigurationWithCluster() {
 		this.contextRunner.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
-				.run((context) -> assertThat(context.getBean(JedisConnectionFactory.class).getClusterConnection())
-						.isNotNull());
+				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
+				.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisClusterAware())
+						.isTrue());
 	}
 
 	private String getUserName(JedisConnectionFactory factory) {
