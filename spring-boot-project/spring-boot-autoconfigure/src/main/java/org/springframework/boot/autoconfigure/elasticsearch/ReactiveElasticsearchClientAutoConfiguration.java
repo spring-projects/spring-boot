@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -50,7 +51,8 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @since 3.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ ReactiveRestClients.class, ElasticsearchException.class, WebClient.class, HttpClient.class })
+@ConditionalOnClass({ ReactiveRestClients.class, ElasticsearchException.class, GetIndexRequest.class, WebClient.class,
+		HttpClient.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 @SuppressWarnings("deprecation")
 public class ReactiveElasticsearchClientAutoConfiguration {
