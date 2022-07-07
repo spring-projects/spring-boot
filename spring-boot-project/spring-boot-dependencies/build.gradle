@@ -182,7 +182,7 @@ bom {
 			]
 		}
 	}
-	library("Derby", "10.15.2.0") {
+	library("Derby", "10.16.1.1") {
 		group("org.apache.derby") {
 			modules = [
 				"derby",
