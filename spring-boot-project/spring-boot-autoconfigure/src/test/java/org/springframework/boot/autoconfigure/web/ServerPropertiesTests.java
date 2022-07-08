@@ -514,6 +514,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void nettyMaxChunkSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getMaxChunkSize().toBytes())
 				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_CHUNK_SIZE);
