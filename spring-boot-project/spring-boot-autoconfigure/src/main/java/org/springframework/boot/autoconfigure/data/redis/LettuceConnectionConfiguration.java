@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,9 @@ import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.Builder;
-import io.lettuce.core.event.Event;
-import io.lettuce.core.event.EventBus;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -72,18 +69,6 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@ConditionalOnMissingBean(ClientResources.class)
 	DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
 		DefaultClientResources.Builder builder = DefaultClientResources.builder();
-		builder.eventBus(new EventBus() {
-
-			@Override
-			public Flux<Event> get() {
-				return Flux.empty();
-			}
-
-			@Override
-			public void publish(Event event) {
-			}
-
-		});
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}

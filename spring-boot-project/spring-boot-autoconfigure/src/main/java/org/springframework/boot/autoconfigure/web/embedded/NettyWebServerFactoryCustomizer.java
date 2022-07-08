@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 
 import io.netty.channel.ChannelOption;
-import reactor.netty.http.server.HttpRequestDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -87,7 +86,8 @@ public class NettyWebServerFactoryCustomizer
 					.to((maxHttpRequestHeader) -> httpRequestDecoderSpec
 							.maxHeaderSize((int) maxHttpRequestHeader.toBytes()));
 			ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-			maxChunkSize(propertyMapper, httpRequestDecoderSpec, nettyProperties);
+			propertyMapper.from(nettyProperties.getMaxChunkSize()).whenNonNull()
+					.to((maxChunkSize) -> httpRequestDecoderSpec.maxChunkSize((int) maxChunkSize.toBytes()));
 			propertyMapper.from(nettyProperties.getMaxInitialLineLength()).whenNonNull()
 					.to((maxInitialLineLength) -> httpRequestDecoderSpec
 							.maxInitialLineLength((int) maxInitialLineLength.toBytes()));
@@ -100,13 +100,6 @@ public class NettyWebServerFactoryCustomizer
 					.to(httpRequestDecoderSpec::validateHeaders);
 			return httpRequestDecoderSpec;
 		}));
-	}
-
-	@SuppressWarnings("deprecation")
-	private void maxChunkSize(PropertyMapper propertyMapper, HttpRequestDecoderSpec httpRequestDecoderSpec,
-			ServerProperties.Netty nettyProperties) {
-		propertyMapper.from(nettyProperties.getMaxChunkSize()).whenNonNull()
-				.to((maxChunkSize) -> httpRequestDecoderSpec.maxChunkSize((int) maxChunkSize.toBytes()));
 	}
 
 	private void customizeIdleTimeout(NettyReactiveWebServerFactory factory, Duration idleTimeout) {
