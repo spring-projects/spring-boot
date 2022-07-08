@@ -298,6 +298,9 @@ bom {
 		}
 	}
 	library("Glassfish JSTL", "2.0.0") {
+		prohibit("[3.0.0,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("org.glassfish.web") {
 			modules = [
 				"jakarta.servlet.jsp.jstl"
@@ -551,6 +554,9 @@ bom {
 		}
 	}
 	library("Jakarta Servlet", "5.0.0") {
+		prohibit("[6.0.0,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.servlet") {
 			modules = [
 				"jakarta.servlet-api"
@@ -558,6 +564,9 @@ bom {
 		}
 	}
 	library("Jakarta Servlet JSP JSTL", "2.0.0") {
+		prohibit("[3.0.0,)") {
+			because "it exceeds our Jakarta EE 9 baseline"
+		}
 		group("jakarta.servlet.jsp.jstl") {
 			modules = [
 				"jakarta.servlet.jsp.jstl-api"
