@@ -109,6 +109,8 @@ Any resources with a path in `+/webjars/**+` are served from jar files if they a
 TIP: Do not use the `src/main/webapp` directory if your application is packaged as a jar.
 Although this directory is a common standard, it works *only* with war packaging, and it is silently ignored by most build tools if you generate a jar.
 
+TIP: If you configure `spring.mvc.throw-exception-if-no-handler-found=true`, it will not work with default `+spring.mvc.static-path-pattern=/**+`, because each url matches `+/**+`. Url without handler must be excluded from _static-path-pattern_ to `NoHandlerFoundException` be thrown. Quite effective exclusion is  `spring.mvc.static-path-pattern=`
+
 Spring Boot also supports the advanced resource handling features provided by Spring MVC, allowing use cases such as cache-busting static resources or using version agnostic URLs for Webjars.
 
 To use version agnostic URLs for Webjars, add the `webjars-locator-core` dependency.
