@@ -49,7 +49,7 @@ dependencies {
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-tracing-api")
+	optional("io.micrometer:micrometer-tracing")
 	optional("io.micrometer:micrometer-tracing-bridge-brave")
 	optional("io.micrometer:micrometer-tracing-bridge-otel")
 	optional("io.micrometer:micrometer-tracing-reporter-wavefront")
