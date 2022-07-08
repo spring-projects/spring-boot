@@ -168,14 +168,14 @@ public class ScheduledTasksEndpoint {
 
 		protected IntervalTaskDescription(TaskType type, IntervalTask task) {
 			super(type, task.getRunnable());
-			this.initialDelay = task.getInitialDelay();
-			this.interval = task.getInterval();
+			this.initialDelay = task.getInitialDelayDuration().toMillis();
+			this.interval = task.getIntervalDuration().toMillis();
 		}
 
 		protected IntervalTaskDescription(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
 			super(type, task.getRunnable());
-			this.initialDelay = trigger.getInitialDelay();
-			this.interval = trigger.getPeriod();
+			this.initialDelay = trigger.getInitialDelayDuration().toMillis();
+			this.interval = trigger.getPeriodDuration().toMillis();
 		}
 
 		public long getInitialDelay() {

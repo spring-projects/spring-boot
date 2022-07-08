@@ -149,9 +149,9 @@ public class IntegrationAutoConfiguration {
 		}
 
 		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
-			PeriodicTrigger trigger = new PeriodicTrigger(period.toMillis());
+			PeriodicTrigger trigger = new PeriodicTrigger(period);
 			if (initialDelay != null) {
-				trigger.setInitialDelay(initialDelay.toMillis());
+				trigger.setInitialDelay(initialDelay);
 			}
 			trigger.setFixedRate(fixedRate);
 			return trigger;
