@@ -17,6 +17,7 @@
 package org.springframework.boot.json;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 import com.fasterxml.jackson.databind.ser.std.FileSerializer;
@@ -43,14 +44,14 @@ class JacksonRuntimeHintsTests {
 	@Test
 	void shouldRegisterSerializerConstructors() {
 		ReflectionHints hints = registerHints();
-		var serializers = Set.of(AtomicBooleanSerializer.class, AtomicIntegerSerializer.class,
-				AtomicLongSerializer.class, FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class);
-		for (var serializer : serializers) {
-			TypeHint typeHint = hints.getTypeHint(serializer);
-			assertThat(typeHint).withFailMessage(() -> "No hints found for serializer " + serializer).isNotNull();
-			Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
-			assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
-		}
+		Stream.of(AtomicBooleanSerializer.class, AtomicIntegerSerializer.class, AtomicLongSerializer.class,
+				FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class).forEach((serializer) -> {
+					TypeHint typeHint = hints.getTypeHint(serializer);
+					assertThat(typeHint).withFailMessage(() -> "No hints found for serializer " + serializer)
+							.isNotNull();
+					Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
+					assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+				});
 	}
 
 	private ReflectionHints registerHints() {
