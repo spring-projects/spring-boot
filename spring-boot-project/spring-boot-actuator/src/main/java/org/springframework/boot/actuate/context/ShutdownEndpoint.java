@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.context;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
@@ -37,11 +36,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 @Endpoint(id = "shutdown", enableByDefault = false)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	private static final Map<String, String> NO_CONTEXT_MESSAGE = Collections
-			.unmodifiableMap(Collections.singletonMap("message", "No context to shutdown."));
+	private static final Map<String, String> NO_CONTEXT_MESSAGE = Map.of("message", "No context to shutdown.");
 
-	private static final Map<String, String> SHUTDOWN_MESSAGE = Collections
-			.unmodifiableMap(Collections.singletonMap("message", "Shutting down, bye..."));
+	private static final Map<String, String> SHUTDOWN_MESSAGE = Map.of("message", "Shutting down, bye...");
 
 	private ConfigurableApplicationContext context;
 
