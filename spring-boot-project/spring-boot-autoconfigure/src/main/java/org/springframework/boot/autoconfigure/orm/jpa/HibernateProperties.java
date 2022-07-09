@@ -53,27 +53,12 @@ public class HibernateProperties {
 	 */
 	private String ddlAuto;
 
-	/**
-	 * Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE.
-	 * This is actually a shortcut for the "hibernate.id.new_generator_mappings" property.
-	 * When not specified will default to "true".
-	 */
-	private Boolean useNewIdGeneratorMappings;
-
 	public String getDdlAuto() {
 		return this.ddlAuto;
 	}
 
 	public void setDdlAuto(String ddlAuto) {
 		this.ddlAuto = ddlAuto;
-	}
-
-	public Boolean isUseNewIdGeneratorMappings() {
-		return this.useNewIdGeneratorMappings;
-	}
-
-	public void setUseNewIdGeneratorMappings(Boolean useNewIdGeneratorMappings) {
-		this.useNewIdGeneratorMappings = useNewIdGeneratorMappings;
 	}
 
 	public Naming getNaming() {
@@ -97,7 +82,6 @@ public class HibernateProperties {
 
 	private Map<String, Object> getAdditionalProperties(Map<String, String> existing, HibernateSettings settings) {
 		Map<String, Object> result = new HashMap<>(existing);
-		applyNewIdGeneratorMappings(result);
 		applyScanner(result);
 		getNaming().applyNamingStrategies(result);
 		String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
@@ -112,15 +96,6 @@ public class HibernateProperties {
 			customizers.forEach((customizer) -> customizer.customize(result));
 		}
 		return result;
-	}
-
-	private void applyNewIdGeneratorMappings(Map<String, Object> result) {
-		if (this.useNewIdGeneratorMappings != null) {
-			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, this.useNewIdGeneratorMappings.toString());
-		}
-		else if (!result.containsKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS)) {
-			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
-		}
 	}
 
 	private void applyScanner(Map<String, Object> result) {

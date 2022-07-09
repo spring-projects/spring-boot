@@ -45,7 +45,7 @@ dependencies {
 	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.apache.derby:derbytools")
-	optional("org.hibernate:hibernate-core-jakarta")
+	optional("org.hibernate.orm:hibernate-core")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-web")

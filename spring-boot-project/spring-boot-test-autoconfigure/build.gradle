@@ -23,7 +23,7 @@ dependencies {
 	optional("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	optional("org.hibernate:hibernate-core-jakarta")
+	optional("org.hibernate.orm:hibernate-core")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit-driver") {
 		exclude group: "commons-logging", module: "commons-logging"
