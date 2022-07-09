@@ -4,7 +4,8 @@ databaseChangeLog:
       author: dsyer
       changes:
         - createSequence:
-            sequenceName: hibernate_sequence
+            sequenceName: city_seq
+            incrementBy: 50
         - createTable:
             tableName: city
             columns:

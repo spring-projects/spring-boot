@@ -72,7 +72,7 @@ dependencies {
 	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.hamcrest:hamcrest-library")
-	optional("org.hibernate:hibernate-core-jakarta")
+	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.jooq:jooq") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")

@@ -107,7 +107,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
-	optional("org.hibernate:hibernate-core-jakarta")
+	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.liquibase:liquibase-core") {

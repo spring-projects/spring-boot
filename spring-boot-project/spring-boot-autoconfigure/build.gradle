@@ -102,10 +102,8 @@ dependencies {
 	optional("org.flywaydb:flyway-core")
 	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
-	optional("org.hibernate:hibernate-core-jakarta")
-	optional("org.hibernate:hibernate-jcache") {
-		exclude group: "org.hibernate", module: "hibernate-core"
-	}
+	optional("org.hibernate.orm:hibernate-core")
+	optional("org.hibernate.orm:hibernate-jcache")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.jooq:jooq") {

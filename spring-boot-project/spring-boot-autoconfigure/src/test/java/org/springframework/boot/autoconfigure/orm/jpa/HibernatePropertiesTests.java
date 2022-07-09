@@ -94,19 +94,6 @@ class HibernatePropertiesTests {
 	}
 
 	@Test
-	void useNewIdGeneratorMappingsDefault() {
-		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true")));
-	}
-
-	@Test
-	void useNewIdGeneratorMappingsFalse() {
-		this.contextRunner.withPropertyValues("spring.jpa.hibernate.use-new-id-generator-mappings:false")
-				.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-						.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false")));
-	}
-
-	@Test
 	void scannerUsesDisabledScannerByDefault() {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
 				.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));

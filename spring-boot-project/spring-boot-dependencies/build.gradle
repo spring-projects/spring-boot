@@ -353,22 +353,23 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.6.10.Final") {
-		group("org.hibernate") {
+	library("Hibernate", "6.1.1.Final") {
+		group("org.hibernate.orm") {
 			modules = [
+				"hibernate-agroal",
+				"hibernate-ant",
 				"hibernate-c3p0",
-				"hibernate-core-jakarta",
-				"hibernate-ehcache",
-				"hibernate-entitymanager",
-				"hibernate-envers-jakarta",
+				"hibernate-community-dialects",
+				"hibernate-core",
+				"hibernate-envers",
+				"hibernate-graalvm",
 				"hibernate-hikaricp",
-				"hibernate-java8",
 				"hibernate-jcache",
-				"hibernate-jpamodelgen-jakarta",
+				"hibernate-jpamodelgen",
 				"hibernate-micrometer",
 				"hibernate-proxool",
 				"hibernate-spatial",
-				"hibernate-testing-jakarta",
+				"hibernate-testing",
 				"hibernate-vibur"
 			]
 		}
