@@ -1188,6 +1188,13 @@ bom {
 			]
 		}
 	}
+	library("Reactor Netty HTTP", "1.1.0-M2") {
+		group("io.projectreactor.netty") {
+			imports = [
+				"reactor-netty-http"
+			]
+		}
+	}
 	library("Reactor Bom", "2022.0.0-M2") {
 		group("io.projectreactor") {
 			imports = [
@@ -1380,6 +1387,20 @@ bom {
 		group("org.springframework.batch") {
 			imports = [
 				"spring-batch-bom"
+			]
+		}
+	}
+	library("Spring Data JPA", "3.0.0-H6-SNAPSHOT") {
+		group("org.springframework.data") {
+			imports = [
+				"spring-data-jpa"
+			]
+		}
+	}
+	library("Spring Data Envers", "3.0.0-H6-SNAPSHOT") {
+		group("org.springframework.data") {
+			imports = [
+				"spring-data-envers"
 			]
 		}
 	}
