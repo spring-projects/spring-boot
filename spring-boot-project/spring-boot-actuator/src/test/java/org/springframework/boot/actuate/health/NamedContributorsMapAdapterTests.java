@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -93,6 +94,22 @@ class NamedContributorsMapAdapterTests {
 	}
 
 	@Test
+	void eachValueAdapterShouldBeCalledOnlyOnce() {
+		Map<String, String> map = new LinkedHashMap<>();
+		map.put("one", "one");
+		map.put("two", "two");
+		int callCount = map.size();
+
+		AtomicInteger counter = new AtomicInteger(0);
+		TestNamedContributorsMapAdapter<String> adapter = new TestNamedContributorsMapAdapter<>(map,
+				(name) -> count(name, counter));
+		assertThat(adapter.getContributor("one")).isEqualTo("eno");
+		assertThat(counter.get()).isEqualTo(callCount);
+		assertThat(adapter.getContributor("two")).isEqualTo("owt");
+		assertThat(counter.get()).isEqualTo(callCount);
+	}
+
+	@Test
 	void getContributorWhenNotInMapReturnsNull() {
 		TestNamedContributorsMapAdapter<String> adapter = createAdapter();
 		assertThat(adapter.getContributor("missing")).isNull();
@@ -104,6 +121,11 @@ class NamedContributorsMapAdapterTests {
 		map.put("two", "two");
 		TestNamedContributorsMapAdapter<String> adapter = new TestNamedContributorsMapAdapter<>(map, this::reverse);
 		return adapter;
+	}
+
+	private String count(CharSequence charSequence, AtomicInteger counter) {
+		counter.incrementAndGet();
+		return reverse(charSequence);
 	}
 
 	private String reverse(CharSequence charSequence) {
