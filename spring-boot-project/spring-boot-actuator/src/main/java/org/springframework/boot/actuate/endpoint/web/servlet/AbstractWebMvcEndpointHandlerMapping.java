@@ -128,29 +128,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
-		this(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping, null);
-	}
-
-	/**
-	 * Creates a new {@code AbstractWebMvcEndpointHandlerMapping} that provides mappings
-	 * for the operations of the given endpoints.
-	 * @param endpointMapping the base mapping for all endpoints
-	 * @param endpoints the web endpoints
-	 * @param endpointMediaTypes media types consumed and produced by the endpoints
-	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
-	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
-	 * @param pathPatternParser the path pattern parser
-	 */
-	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping,
-			PathPatternParser pathPatternParser) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
 		this.shouldRegisterLinksMapping = shouldRegisterLinksMapping;
-		setPatternParser(pathPatternParser);
 		setOrder(-100);
 	}
 

@@ -75,6 +75,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -250,20 +251,20 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			if (this.mvcProperties.getPathmatch()
-					.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER) {
-				configurer.setPatternParser(pathPatternParser);
+					.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
+				configurer.setPathMatcher(new AntPathMatcher());
+				configurer.setUseSuffixPatternMatch(this.mvcProperties.getPathmatch().isUseSuffixPattern());
+				configurer.setUseRegisteredSuffixPatternMatch(
+						this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
+				this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
+					String servletUrlMapping = dispatcherPath.getServletUrlMapping();
+					if (servletUrlMapping.equals("/") && singleDispatcherServlet()) {
+						UrlPathHelper urlPathHelper = new UrlPathHelper();
+						urlPathHelper.setAlwaysUseFullPath(true);
+						configurer.setUrlPathHelper(urlPathHelper);
+					}
+				});
 			}
-			configurer.setUseSuffixPatternMatch(this.mvcProperties.getPathmatch().isUseSuffixPattern());
-			configurer.setUseRegisteredSuffixPatternMatch(
-					this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
-			this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
-				String servletUrlMapping = dispatcherPath.getServletUrlMapping();
-				if (servletUrlMapping.equals("/") && singleDispatcherServlet()) {
-					UrlPathHelper urlPathHelper = new UrlPathHelper();
-					urlPathHelper.setAlwaysUseFullPath(true);
-					configurer.setUrlPathHelper(urlPathHelper);
-				}
-			});
 		}
 
 		private boolean singleDispatcherServlet() {

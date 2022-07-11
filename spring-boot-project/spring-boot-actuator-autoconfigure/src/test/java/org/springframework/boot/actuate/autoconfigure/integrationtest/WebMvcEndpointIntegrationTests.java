@@ -55,6 +55,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.both;
@@ -86,7 +87,7 @@ class WebMvcEndpointIntegrationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		WebMvcEndpointHandlerMapping handlerMapping = this.context.getBean(WebMvcEndpointHandlerMapping.class);
-		assertThat(handlerMapping.getPatternParser()).isEqualTo(WebMvcAutoConfiguration.pathPatternParser);
+		assertThat(handlerMapping.getPatternParser()).isInstanceOf(PathPatternParser.class);
 	}
 
 	@Test
