@@ -108,6 +108,7 @@ dependencies {
 	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.hibernate.orm:hibernate-core")
+	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.liquibase:liquibase-core") {
