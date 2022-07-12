@@ -90,6 +90,7 @@ dependencies {
 	}
 	optional("org.apache.kafka:kafka-clients")
 	optional("org.apache.kafka:kafka-streams")
+	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.solr:solr-solrj") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
