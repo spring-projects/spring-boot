@@ -190,7 +190,6 @@ dependencies {
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
 	testRuntimeOnly("org.cache2k:cache2k-core")
-	testRuntimeOnly("org.springframework:spring-aspects")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
