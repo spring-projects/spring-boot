@@ -34,10 +34,9 @@ import org.springframework.util.ResourceUtils;
  * {@link RuntimeHintsRegistrar} implementation for application configuration.
  *
  * @author Stephane Nicoll
- * @since 3.0.0
  * @see FilePatternResourceHintsRegistrar
  */
-public class ConfigDataLocationRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+class ConfigDataLocationRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 	private static final Log logger = LogFactory.getLog(ConfigDataLocationRuntimeHintsRegistrar.class);
 
