@@ -249,7 +249,7 @@ bom {
 				"flyway-core",
 				"flyway-firebird",
 				"flyway-mysql",
-                "flyway-sqlserver"
+				"flyway-sqlserver"
 			]
 			plugins = [
 				"flyway-maven-plugin"
