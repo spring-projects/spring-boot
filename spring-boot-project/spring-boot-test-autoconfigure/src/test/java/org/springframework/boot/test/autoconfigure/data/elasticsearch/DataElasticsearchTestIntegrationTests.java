@@ -28,6 +28,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -53,8 +54,7 @@ class DataElasticsearchTestIntegrationTests {
 	}
 
 	@Autowired
-	@SuppressWarnings("deprecation")
-	private org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate elasticsearchRestTemplate;
+	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -75,7 +75,7 @@ class DataElasticsearchTestIntegrationTests {
 		String id = UUID.randomUUID().toString();
 		document.setId(id);
 		ExampleDocument savedDocument = this.exampleRepository.save(document);
-		ExampleDocument getDocument = this.elasticsearchRestTemplate.get(id, ExampleDocument.class);
+		ExampleDocument getDocument = this.elasticsearchTemplate.get(id, ExampleDocument.class);
 		assertThat(getDocument).isNotNull();
 		assertThat(getDocument.getId()).isNotNull();
 		assertThat(getDocument.getId()).isEqualTo(savedDocument.getId());

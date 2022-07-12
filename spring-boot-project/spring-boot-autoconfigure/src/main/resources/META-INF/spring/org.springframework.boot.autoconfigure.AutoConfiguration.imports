@@ -39,6 +39,7 @@ org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
+org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientAutoConfiguration
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
 org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration

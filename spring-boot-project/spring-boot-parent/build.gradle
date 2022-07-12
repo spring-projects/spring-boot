@@ -134,7 +134,7 @@ bom {
 			modules = [
 				"native-gradle-plugin"
 			]
-		}		
+		}
 	}
 	library("Plexus Build API", "0.0.7") {
 		group("org.sonatype.plexus") {

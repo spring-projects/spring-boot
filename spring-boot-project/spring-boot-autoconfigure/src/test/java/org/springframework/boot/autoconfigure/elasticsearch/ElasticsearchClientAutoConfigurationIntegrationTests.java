@@ -17,54 +17,49 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.index.get.GetResult;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.GetResponse;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
-import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ReactiveElasticsearchClientAutoConfiguration}.
+ * Integration tests for {@link ElasticsearchClientAutoConfiguration}.
  *
- * @author Brian Clozel
+ * @author Andy Wilkinson
  */
 @Testcontainers(disabledWithoutDocker = true)
-class ReactiveElasticsearchRestClientAutoConfigurationIntegrationTests {
+class ElasticsearchClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
+					ElasticsearchRestClientAutoConfiguration.class, ElasticsearchClientAutoConfiguration.class));
 
 	@Test
-	void restClientCanQueryElasticsearchNode() {
+	void reactiveClientCanQueryElasticsearchNode() {
 		this.contextRunner
 				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
 						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
 				.run((context) -> {
-					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
-					Map<String, String> source = new HashMap<>();
-					source.put("a", "alpha");
-					source.put("b", "bravo");
-					IndexRequest indexRequest = new IndexRequest("foo").id("1").source(source);
-					GetRequest getRequest = new GetRequest("foo").id("1");
-					GetResult getResult = client.index(indexRequest).then(client.get(getRequest)).block();
-					assertThat(getResult).isNotNull();
-					assertThat(getResult.isExists()).isTrue();
+					ElasticsearchClient client = context.getBean(ElasticsearchClient.class);
+					client.index((b) -> b.index("foo").id("1").document(Map.of("a", "alpha", "b", "bravo")));
+					GetResponse<Object> response = client.get((b) -> b.index("foo").id("1"), Object.class);
+					assertThat(response).isNotNull();
+					assertThat(response.found()).isTrue();
 				});
 	}
 

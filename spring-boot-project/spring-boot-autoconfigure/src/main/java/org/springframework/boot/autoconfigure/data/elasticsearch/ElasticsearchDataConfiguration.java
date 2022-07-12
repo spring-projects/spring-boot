@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.util.Collections;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,14 +28,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
 import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
-import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Configuration classes for Spring Data for Elasticsearch
@@ -77,33 +80,28 @@ abstract class ElasticsearchDataConfiguration {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-	static class RestClientConfiguration {
+	@ConditionalOnClass(ElasticsearchClient.class)
+	static class JavaClientConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
-		@ConditionalOnBean(org.elasticsearch.client.RestHighLevelClient.class)
-		org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate elasticsearchTemplate(
-				org.elasticsearch.client.RestHighLevelClient client, ElasticsearchConverter converter) {
-			return new org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate(client, converter);
+		@ConditionalOnBean(ElasticsearchClient.class)
+		ElasticsearchTemplate elasticsearchTemplate(ElasticsearchClient client, ElasticsearchConverter converter) {
+			return new ElasticsearchTemplate(client, converter);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ WebClient.class, ReactiveElasticsearchOperations.class })
 	static class ReactiveRestClientConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(value = ReactiveElasticsearchOperations.class, name = "reactiveElasticsearchTemplate")
 		@ConditionalOnBean(ReactiveElasticsearchClient.class)
-		@SuppressWarnings("deprecation")
-		org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(
-				ReactiveElasticsearchClient client, ElasticsearchConverter converter) {
-			return new org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate(client,
-					converter);
+		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(ReactiveElasticsearchClient client,
+				ElasticsearchConverter converter) {
+			return new ReactiveElasticsearchTemplate(client, converter);
 		}
 
 	}

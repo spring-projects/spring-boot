@@ -212,34 +212,20 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.17.5") {
-		group("org.elasticsearch") {
-			modules = [
-				"elasticsearch"
-			]
-		}
+	library("Elasticsearch Client", "8.3.2") {
 		group("org.elasticsearch.client") {
 			modules = [
-				"transport",
 				"elasticsearch-rest-client" {
 					exclude group: "commons-logging", module: "commons-logging"
 				},
 				"elasticsearch-rest-client-sniffer" {
 					exclude group: "commons-logging", module: "commons-logging"
 				},
-				"elasticsearch-rest-high-level-client"
 			]
 		}
-		group("org.elasticsearch.distribution.integ-test-zip") {
+		group("co.elastic.clients") {
 			modules = [
-				"elasticsearch" {
-					type = 'zip'
-				}
-			]
-		}
-		group("org.elasticsearch.plugin") {
-			modules = [
-				"transport-netty4-client"
+				"elasticsearch-java"
 			]
 		}
 	}

@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ElasticSearchReactiveHealthContributorAutoConfiguration}.
+ * Tests for {@link ElasticsearchReactiveHealthContributorAutoConfiguration}.
  *
  * @author Aleksander Lech
  */
@@ -39,7 +39,7 @@ class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchDataAutoConfiguration.class,
 					ReactiveElasticsearchClientAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class,
-					ElasticSearchReactiveHealthContributorAutoConfiguration.class,
+					ElasticsearchReactiveHealthContributorAutoConfiguration.class,
 					HealthContributorAutoConfiguration.class));
 
 	@Test
@@ -51,7 +51,7 @@ class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 	@Test
 	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(ElasticSearchRestHealthContributorAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(ElasticsearchRestHealthContributorAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchReactiveHealthIndicator.class)
 						.hasBean("elasticsearchHealthContributor")
 						.doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class));

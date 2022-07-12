@@ -32,16 +32,16 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ElasticSearchRestHealthContributorAutoConfiguration}.
+ * Tests for {@link ElasticsearchRestHealthContributorAutoConfiguration}.
  *
  * @author Filip Hrisafov
  * @author Andy Wilkinson
  */
-class ElasticSearchRestHealthContributorAutoConfigurationTests {
+class ElasticsearchRestHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
-					ElasticSearchRestHealthContributorAutoConfiguration.class,
+					ElasticsearchRestHealthContributorAutoConfiguration.class,
 					HealthContributorAutoConfiguration.class));
 
 	@Test
@@ -51,25 +51,15 @@ class ElasticSearchRestHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void runWithoutRestHighLevelClientAndWithoutRestClientShouldNotCreateIndicator() {
-		this.contextRunner
-				.withClassLoader(
-						new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class, RestClient.class))
+	void runWithoutRestClientShouldNotCreateIndicator() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(RestClient.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class)
 						.doesNotHaveBean("elasticsearchHealthContributor"));
 	}
 
 	@Test
-	void runWithoutRestHighLevelClientAndWithRestClientShouldCreateIndicator() {
+	void runWithRestClientShouldCreateIndicator() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
-						.hasBean("elasticsearchHealthContributor"));
-	}
-
-	@Test
-	void runWithRestHighLevelClientAndWithRestClientShouldCreateIndicator() {
-		this.contextRunner.withUserConfiguration(CustomRestHighClientConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
 						.hasBean("elasticsearchHealthContributor"));
 	}
@@ -87,22 +77,6 @@ class ElasticSearchRestHealthContributorAutoConfigurationTests {
 		@Bean
 		RestClient customRestClient(RestClientBuilder builder) {
 			return builder.build();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class CustomRestHighClientConfiguration {
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient customRestHighClient(RestClientBuilder builder) {
-			return new org.elasticsearch.client.RestHighLevelClient(builder);
-		}
-
-		@Bean
-		RestClient customClient(org.elasticsearch.client.RestHighLevelClient restHighLevelClient) {
-			return restHighLevelClient.getLowLevelClient();
 		}
 
 	}

@@ -12,6 +12,9 @@ description = "Spring Boot AutoConfigure"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
+	optional("co.elastic.clients:elasticsearch-java") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -97,9 +100,6 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")

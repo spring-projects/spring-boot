@@ -25,6 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -50,8 +51,7 @@ class DataElasticsearchTestReactiveIntegrationTests {
 	}
 
 	@Autowired
-	@SuppressWarnings("deprecation")
-	private org.springframework.data.elasticsearch.client.erhlc.ReactiveElasticsearchTemplate elasticsearchTemplate;
+	private ReactiveElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
 	private ExampleReactiveRepository exampleReactiveRepository;

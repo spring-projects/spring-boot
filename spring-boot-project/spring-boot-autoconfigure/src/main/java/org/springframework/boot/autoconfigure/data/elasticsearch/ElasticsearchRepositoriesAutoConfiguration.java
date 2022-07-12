@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import org.elasticsearch.client.Client;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,7 +36,7 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
  * @see EnableElasticsearchRepositories
  */
 @AutoConfiguration
-@ConditionalOnClass({ Client.class, ElasticsearchRepository.class })
+@ConditionalOnClass(ElasticsearchRepository.class)
 @ConditionalOnProperty(prefix = "spring.data.elasticsearch.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
 @ConditionalOnMissingBean(ElasticsearchRepositoryFactoryBean.class)

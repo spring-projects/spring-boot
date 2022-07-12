@@ -982,6 +982,15 @@
       ]
     },
     {
+      "name": "spring.elasticsearch.webclient.max-in-memory-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Limit on the number of bytes that can be buffered whenever the input stream needs to be aggregated.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Reactive Elasticsearch client no longer uses WebClient."
+      }
+    },
+    {
       "name": "spring.flyway.baseline-migration-prefix",
       "defaultValue": "B"
     },

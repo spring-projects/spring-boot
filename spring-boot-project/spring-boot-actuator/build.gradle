@@ -43,11 +43,7 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
-	optional("org.elasticsearch:elasticsearch")
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
-	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 	optional("org.flywaydb:flyway-core")

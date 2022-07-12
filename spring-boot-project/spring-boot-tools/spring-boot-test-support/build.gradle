@@ -13,7 +13,6 @@ dependencies {
 	}
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 	compileOnly("junit:junit")
-	compileOnly("org.elasticsearch:elasticsearch")
 	compileOnly("org.junit.jupiter:junit-jupiter")
 	compileOnly("org.junit.platform:junit-platform-engine")
 	compileOnly("org.junit.platform:junit-platform-launcher")

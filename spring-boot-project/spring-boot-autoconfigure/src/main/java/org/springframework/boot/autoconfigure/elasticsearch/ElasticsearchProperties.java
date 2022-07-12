@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.unit.DataSize;
 
 /**
  * Configuration properties for Elasticsearch.
@@ -64,8 +63,6 @@ public class ElasticsearchProperties {
 	private String pathPrefix;
 
 	private final Restclient restclient = new Restclient();
-
-	private final Webclient webclient = new Webclient();
 
 	public List<String> getUris() {
 		return this.uris;
@@ -119,10 +116,6 @@ public class ElasticsearchProperties {
 		return this.restclient;
 	}
 
-	public Webclient getWebclient() {
-		return this.webclient;
-	}
-
 	public static class Restclient {
 
 		private final Sniffer sniffer = new Sniffer();
@@ -159,24 +152,6 @@ public class ElasticsearchProperties {
 				this.delayAfterFailure = delayAfterFailure;
 			}
 
-		}
-
-	}
-
-	public static class Webclient {
-
-		/**
-		 * Limit on the number of bytes that can be buffered whenever the input stream
-		 * needs to be aggregated.
-		 */
-		private DataSize maxInMemorySize;
-
-		public DataSize getMaxInMemorySize() {
-			return this.maxInMemorySize;
-		}
-
-		public void setMaxInMemorySize(DataSize maxInMemorySize) {
-			this.maxInMemorySize = maxInMemorySize;
 		}
 
 	}

@@ -101,11 +101,6 @@ dependencies {
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.thymeleaf:thymeleaf")
-	
-	testRuntimeOnly("org.elasticsearch:elasticsearch")
-	testRuntimeOnly("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
 }
 
 configurations {

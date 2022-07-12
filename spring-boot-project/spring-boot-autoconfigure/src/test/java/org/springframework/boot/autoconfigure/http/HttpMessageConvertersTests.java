@@ -31,7 +31,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.smile.MappingJackson2SmileHttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
@@ -58,8 +57,7 @@ class HttpMessageConvertersTests {
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class, MappingJackson2HttpMessageConverter.class,
-				MappingJackson2SmileHttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class,
-				MappingJackson2XmlHttpMessageConverter.class);
+				MappingJackson2CborHttpMessageConverter.class, MappingJackson2XmlHttpMessageConverter.class);
 	}
 
 	@Test
@@ -130,7 +128,7 @@ class HttpMessageConvertersTests {
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class, MappingJackson2HttpMessageConverter.class,
-				MappingJackson2SmileHttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
+				MappingJackson2CborHttpMessageConverter.class);
 	}
 
 	@Test
@@ -151,7 +149,7 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class, MappingJackson2SmileHttpMessageConverter.class);
+				MappingJackson2HttpMessageConverter.class);
 	}
 
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {

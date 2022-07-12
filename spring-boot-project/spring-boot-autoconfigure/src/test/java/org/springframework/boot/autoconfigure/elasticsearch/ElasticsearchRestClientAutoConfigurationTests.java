@@ -50,74 +50,32 @@ import static org.mockito.Mockito.mock;
  * @author Filip Hrisafov
  * @author Andy Wilkinson
  */
-@SuppressWarnings("deprecation")
 class ElasticsearchRestClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
-	void configureShouldCreateHighLevelAndLowLevelRestClients() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(RestClient.class)
-					.hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-					.hasSingleBean(RestClientBuilder.class);
-			assertThat(context.getBean(RestClient.class))
-					.isEqualTo(context.getBean(org.elasticsearch.client.RestHighLevelClient.class).getLowLevelClient());
-		});
-	}
-
-	@Test
-	void configureWithoutRestHighLevelClientShouldOnlyCreateRestClientBuilderAndRestClient() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
-				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-						.hasSingleBean(RestClientBuilder.class)
-						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class));
+	void configureShouldCreateRestClientBuilderAndRestClient() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
+				.hasSingleBean(RestClientBuilder.class));
 	}
 
 	@Test
 	void configureWhenCustomRestClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClientBuilder.class).hasSingleBean(RestClient.class)
-						.hasBean("customRestClient"));
-	}
-
-	@Test
-	void configureWhenCustomRestHighLevelClientShouldDefineRestClientFromCustomHighLevelClient() {
-		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClient.class).hasBean("elasticsearchRestClient").getBean(RestClient.class)
-						.isEqualTo(context.getBean(org.elasticsearch.client.RestHighLevelClient.class)
-								.getLowLevelClient()));
-	}
-
-	@Test
-	void configureWhenCustomRestHighLevelClientAndRestClientShouldBackOff() {
-		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientWithRestClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasBean("customRestHighLevelClient").hasSingleBean(RestClient.class)
-						.hasBean("customRestClient"));
-	}
-
-	@Test
-	void configureWhenNoUniqueRestHighLevelClientShouldNotDefineRestClient() {
-		this.contextRunner.withUserConfiguration(TwoCustomRestHighLevelClientsConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class));
+				.run((context) -> assertThat(context).hasSingleBean(RestClientBuilder.class)
+						.hasSingleBean(RestClient.class).hasBean("customRestClient"));
 	}
 
 	@Test
 	void configureWhenBuilderCustomizerShouldApply() {
 		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-					.hasSingleBean(RestClient.class);
-			org.elasticsearch.client.RestHighLevelClient restClient = context
-					.getBean(org.elasticsearch.client.RestHighLevelClient.class);
-			RestClient lowLevelClient = restClient.getLowLevelClient();
-			assertThat(lowLevelClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
-			assertThat(lowLevelClient).extracting("client.connmgr.pool.maxTotal").isEqualTo(100);
-			assertThat(lowLevelClient).extracting("client.defaultConfig.cookieSpec").isEqualTo("rfc6265-lax");
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
+			assertThat(restClient).extracting("client.connmgr.pool.maxTotal").isEqualTo(100);
+			assertThat(restClient).extracting("client.defaultConfig.cookieSpec").isEqualTo("rfc6265-lax");
 		});
 	}
 
@@ -228,22 +186,20 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureWithoutSnifferLibraryShouldNotCreateSniffer() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.elasticsearch.client.sniff"))
-				.run((context) -> assertThat(context).hasSingleBean(org.elasticsearch.client.RestHighLevelClient.class)
-						.hasSingleBean(RestClient.class).doesNotHaveBean(Sniffer.class));
+				.run((context) -> assertThat(context).hasSingleBean(RestClient.class).doesNotHaveBean(Sniffer.class));
 	}
 
 	@Test
 	void configureShouldCreateSnifferUsingRestClient() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Sniffer.class);
-					assertThat(context.getBean(Sniffer.class)).hasFieldOrPropertyWithValue("restClient",
-							context.getBean(RestClient.class));
-					// Validate shutdown order as the sniffer must be shutdown before the
-					// client
-					assertThat(context.getBeanFactory().getDependentBeans("elasticsearchRestClient"))
-							.contains("elasticsearchSniffer");
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Sniffer.class);
+			assertThat(context.getBean(Sniffer.class)).hasFieldOrPropertyWithValue("restClient",
+					context.getBean(RestClient.class));
+			// Validate shutdown order as the sniffer must be shutdown before the
+			// client
+			assertThat(context.getBeanFactory().getDependentBeans("elasticsearchRestClient"))
+					.contains("elasticsearchSniffer");
+		});
 	}
 
 	@Test
@@ -293,46 +249,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				}
 
 			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomRestHighLevelClientConfiguration {
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
-			return new org.elasticsearch.client.RestHighLevelClient(builder);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomRestHighLevelClientWithRestClientConfiguration {
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
-			return new org.elasticsearch.client.RestHighLevelClient(builder);
-		}
-
-		@Bean
-		RestClient customRestClient(org.elasticsearch.client.RestHighLevelClient restHighLevelClient) {
-			return restHighLevelClient.getLowLevelClient();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TwoCustomRestHighLevelClientsConfiguration {
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
-			return new org.elasticsearch.client.RestHighLevelClient(builder);
-		}
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient anotherCustomRestHighLevelClient(RestClientBuilder builder) {
-			return new org.elasticsearch.client.RestHighLevelClient(builder);
 		}
 
 	}

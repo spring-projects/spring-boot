@@ -18,37 +18,39 @@ package org.springframework.boot.actuate.autoconfigure.elasticsearch;
 
 import java.util.Map;
 
-import org.elasticsearch.client.RestClient;
+import reactor.core.publisher.Flux;
 
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestClientHealthIndicator;
-import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.elasticsearch.ElasticsearchReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link ElasticsearchRestClientHealthIndicator}.
+ * {@link ElasticsearchReactiveHealthIndicator} using the
+ * {@link ReactiveElasticsearchClient}.
  *
- * @author Artsiom Yudovin
- * @since 2.1.1
+ * @author Aleksander Lech
+ * @since 2.3.2
  */
-@AutoConfiguration(after = ElasticsearchRestClientAutoConfiguration.class)
-@ConditionalOnClass(RestClient.class)
-@ConditionalOnBean(RestClient.class)
+@AutoConfiguration(after = ReactiveElasticsearchClientAutoConfiguration.class)
+@ConditionalOnClass({ ReactiveElasticsearchClient.class, Flux.class })
+@ConditionalOnBean(ReactiveElasticsearchClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
-public class ElasticSearchRestHealthContributorAutoConfiguration
-		extends CompositeHealthContributorConfiguration<ElasticsearchRestClientHealthIndicator, RestClient> {
+public class ElasticsearchReactiveHealthContributorAutoConfiguration extends
+		CompositeReactiveHealthContributorConfiguration<ElasticsearchReactiveHealthIndicator, ReactiveElasticsearchClient> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
-	public HealthContributor elasticsearchHealthContributor(Map<String, RestClient> clients) {
+	public ReactiveHealthContributor elasticsearchHealthContributor(Map<String, ReactiveElasticsearchClient> clients) {
 		return createContributor(clients);
 	}
 

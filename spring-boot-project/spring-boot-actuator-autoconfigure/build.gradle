@@ -103,7 +103,6 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}
-	optional("org.elasticsearch:elasticsearch")
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -167,9 +166,6 @@ dependencies {
 	testImplementation("org.cache2k:cache2k-api")
 	testImplementation("org.eclipse.jetty:jetty-webapp") {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
-	}
-	testImplementation("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
-		exclude(group: "commons-logging", module: "commons-logging")
 	}
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.hsqldb:hsqldb")

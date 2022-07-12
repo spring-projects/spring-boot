@@ -35,7 +35,6 @@ import org.elasticsearch.client.sniff.SnifferBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -109,36 +108,7 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnMissingBean({ org.elasticsearch.client.RestHighLevelClient.class, RestClient.class })
-	static class RestHighLevelClientConfiguration {
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient elasticsearchRestHighLevelClient(
-				RestClientBuilder restClientBuilder) {
-			return new org.elasticsearch.client.RestHighLevelClient(restClientBuilder);
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnSingleCandidate(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnMissingBean(RestClient.class)
-	static class RestClientFromRestHighLevelClientConfiguration {
-
-		@Bean
-		RestClient elasticsearchRestClient(org.elasticsearch.client.RestHighLevelClient restHighLevelClient) {
-			return restHighLevelClient.getLowLevelClient();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingClass("org.elasticsearch.client.RestHighLevelClient")
 	@ConditionalOnMissingBean(RestClient.class)
 	static class RestClientConfiguration {
 
