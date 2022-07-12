@@ -123,7 +123,6 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.util.UrlPathHelper;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -158,11 +157,6 @@ public class WebMvcAutoConfiguration {
 	 * The default Spring MVC view suffix.
 	 */
 	public static final String DEFAULT_SUFFIX = "";
-
-	/**
-	 * Instance of {@link PathPatternParser} shared across MVC and actuator configuration.
-	 */
-	public static final PathPatternParser pathPatternParser = new PathPatternParser();
 
 	private static final String SERVLET_LOCATION = "/";
 
