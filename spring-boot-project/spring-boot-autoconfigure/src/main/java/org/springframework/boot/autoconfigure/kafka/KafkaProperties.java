@@ -648,6 +648,11 @@ public class KafkaProperties {
 		 */
 		private boolean failFast;
 
+		/**
+		 * Whether to enable modification of existing topic configuration.
+		 */
+		private boolean modifyTopicConfigs;
+
 		public Ssl getSsl() {
 			return this.ssl;
 		}
@@ -670,6 +675,14 @@ public class KafkaProperties {
 
 		public void setFailFast(boolean failFast) {
 			this.failFast = failFast;
+		}
+
+		public boolean isModifyTopicConfigs() {
+			return modifyTopicConfigs;
+		}
+
+		public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
+			this.modifyTopicConfigs = modifyTopicConfigs;
 		}
 
 		public Map<String, String> getProperties() {
