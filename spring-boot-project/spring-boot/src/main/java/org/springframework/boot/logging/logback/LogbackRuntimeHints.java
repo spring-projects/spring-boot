@@ -60,7 +60,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Andy Wilkinson
  */
-class LogbackRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 
 	private static final Consumer<Builder> DEFAULT_HINT = (hint) -> {
 	};

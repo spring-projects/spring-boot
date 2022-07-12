@@ -34,16 +34,16 @@ import org.springframework.core.mock.MockSpringFactoriesLoader;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConfigDataLocationRuntimeHintsRegistrar}.
+ * Tests for {@link ConfigDataLocationRuntimeHints}.
  *
  * @author Stephane Nicoll
  */
-class ConfigDataLocationRuntimeHintsRegistrarTests {
+class ConfigDataLocationRuntimeHintsTests {
 
 	@Test
 	void registerWithDefaultSettings() {
 		RuntimeHints hints = new RuntimeHints();
-		new TestConfigDataLocationRuntimeHintsRegistrar().registerHints(hints, null);
+		new TestConfigDataLocationRuntimeHints().registerHints(hints, null);
 		assertThat(hints.resources().resourcePatterns()).singleElement()
 				.satisfies(includes("application*.properties", "application*.xml", "application*.yaml",
 						"application*.yml", "config/application*.properties", "config/application*.xml",
@@ -53,7 +53,7 @@ class ConfigDataLocationRuntimeHintsRegistrarTests {
 	@Test
 	void registerWithCustomName() {
 		RuntimeHints hints = new RuntimeHints();
-		new TestConfigDataLocationRuntimeHintsRegistrar() {
+		new TestConfigDataLocationRuntimeHints() {
 			@Override
 			protected List<String> getFileNames(ClassLoader classLoader) {
 				return List.of("test");
@@ -68,7 +68,7 @@ class ConfigDataLocationRuntimeHintsRegistrarTests {
 	@Test
 	void registerWithCustomLocation() {
 		RuntimeHints hints = new RuntimeHints();
-		new TestConfigDataLocationRuntimeHintsRegistrar() {
+		new TestConfigDataLocationRuntimeHints() {
 			@Override
 			protected List<String> getLocations(ClassLoader classLoader) {
 				return List.of("config/");
@@ -82,7 +82,7 @@ class ConfigDataLocationRuntimeHintsRegistrarTests {
 	@Test
 	void registerWithCustomExtension() {
 		RuntimeHints hints = new RuntimeHints();
-		new ConfigDataLocationRuntimeHintsRegistrar() {
+		new ConfigDataLocationRuntimeHints() {
 			@Override
 			protected List<String> getExtensions(ClassLoader classLoader) {
 				return List.of(".conf");
@@ -95,7 +95,7 @@ class ConfigDataLocationRuntimeHintsRegistrarTests {
 	@Test
 	void registerWithUnknownLocationDoesNotAddHint() {
 		RuntimeHints hints = new RuntimeHints();
-		new ConfigDataLocationRuntimeHintsRegistrar() {
+		new ConfigDataLocationRuntimeHints() {
 			@Override
 			protected List<String> getLocations(ClassLoader classLoader) {
 				return List.of(UUID.randomUUID().toString());
@@ -112,15 +112,15 @@ class ConfigDataLocationRuntimeHintsRegistrarTests {
 		};
 	}
 
-	static class TestConfigDataLocationRuntimeHintsRegistrar extends ConfigDataLocationRuntimeHintsRegistrar {
+	static class TestConfigDataLocationRuntimeHints extends ConfigDataLocationRuntimeHints {
 
 		private final MockSpringFactoriesLoader springFactoriesLoader;
 
-		TestConfigDataLocationRuntimeHintsRegistrar(MockSpringFactoriesLoader springFactoriesLoader) {
+		TestConfigDataLocationRuntimeHints(MockSpringFactoriesLoader springFactoriesLoader) {
 			this.springFactoriesLoader = springFactoriesLoader;
 		}
 
-		TestConfigDataLocationRuntimeHintsRegistrar() {
+		TestConfigDataLocationRuntimeHints() {
 			this(springFactoriesLoader());
 		}
 

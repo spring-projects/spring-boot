@@ -14,23 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.autoconfigure.web;
+
+import java.util.List;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.TypeReference;
 
 /**
- * {@link RuntimeHintsRegistrar} implementation for property source support.
+ * {@link RuntimeHintsRegistrar} for default locations of web resources.
  *
  * @author Stephane Nicoll
+ * @since 3.0.0
  */
-class PropertySourceRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+public class WebResourcesRuntimeHints implements RuntimeHintsRegistrar {
+
+	private static final List<String> DEFAULT_LOCATIONS = List.of("META-INF/resources/", "resources/", "static/",
+			"public/");
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		hints.reflection().registerTypeIfPresent(classLoader, "org.yaml.snakeyaml.Yaml",
-				(hint) -> hint.onReachableType(TypeReference.of(YamlPropertySourceLoader.class)));
+		ClassLoader classLoaderToUse = (classLoader != null) ? classLoader : getClass().getClassLoader();
+		String[] locations = DEFAULT_LOCATIONS.stream()
+				.filter((candidate) -> classLoaderToUse.getResource(candidate) != null)
+				.map((location) -> location + "*").toArray(String[]::new);
+		if (locations.length > 0) {
+			hints.resources().registerPattern((hint) -> hint.includes(locations));
+		}
 	}
 
 }

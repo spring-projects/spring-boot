@@ -50,7 +50,7 @@ import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceCh
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
-import org.springframework.boot.autoconfigure.web.WebResourcesRuntimeHintsRegistrar;
+import org.springframework.boot.autoconfigure.web.WebResourcesRuntimeHints;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format;
@@ -146,7 +146,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@ImportRuntimeHints(WebResourcesRuntimeHintsRegistrar.class)
+@ImportRuntimeHints(WebResourcesRuntimeHints.class)
 public class WebMvcAutoConfiguration {
 
 	/**

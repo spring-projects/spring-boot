@@ -32,7 +32,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link RuntimeHintsRegistrar} for Jackson.
+ * {@link RuntimeHintsRegistrar} implementation for Jackson.
  *
  * @author Moritz Halbritter
  */

@@ -36,9 +36,9 @@ import org.springframework.util.ResourceUtils;
  * @author Stephane Nicoll
  * @see FilePatternResourceHintsRegistrar
  */
-class ConfigDataLocationRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 
-	private static final Log logger = LogFactory.getLog(ConfigDataLocationRuntimeHintsRegistrar.class);
+	private static final Log logger = LogFactory.getLog(ConfigDataLocationRuntimeHints.class);
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {

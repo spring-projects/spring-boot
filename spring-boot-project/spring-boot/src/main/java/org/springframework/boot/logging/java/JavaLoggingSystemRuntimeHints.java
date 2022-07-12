@@ -20,7 +20,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
 /**
- * Registrar which registers resources needed by {@link JavaLoggingSystem}.
+ * {@link RuntimeHintsRegistrar} implementation for {@link JavaLoggingSystem}.
  *
  * @author Moritz Halbritter
  */

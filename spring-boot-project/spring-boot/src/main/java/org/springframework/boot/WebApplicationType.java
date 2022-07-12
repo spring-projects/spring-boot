@@ -68,7 +68,7 @@ public enum WebApplicationType {
 		return WebApplicationType.SERVLET;
 	}
 
-	static class WebApplicationTypeRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+	static class WebApplicationTypeRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {

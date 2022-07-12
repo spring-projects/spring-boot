@@ -40,11 +40,11 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LogbackRuntimeHintsRegistrar}.
+ * Tests for {@link LogbackRuntimeHints}.
  *
  * @author Andy Wilkinson
  */
-class LogbackRuntimeHintsRegistrarTests {
+class LogbackRuntimeHintsTests {
 
 	@Test
 	void registersHintsForTypesCheckedByLogbackLoggingSystem() {
@@ -70,13 +70,13 @@ class LogbackRuntimeHintsRegistrarTests {
 	@Test
 	void doesNotRegisterHintsWhenLoggerContextIsNotAvailable() {
 		RuntimeHints hints = new RuntimeHints();
-		new LogbackRuntimeHintsRegistrar().registerHints(hints, ClassLoader.getPlatformClassLoader());
+		new LogbackRuntimeHints().registerHints(hints, ClassLoader.getPlatformClassLoader());
 		assertThat(hints.reflection().typeHints()).isEmpty();
 	}
 
 	private ReflectionHints registerHints() {
 		RuntimeHints hints = new RuntimeHints();
-		new LogbackRuntimeHintsRegistrar().registerHints(hints, getClass().getClassLoader());
+		new LogbackRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHints reflection = hints.reflection();
 		return reflection;
 	}

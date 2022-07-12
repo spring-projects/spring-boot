@@ -30,11 +30,11 @@ import org.springframework.aot.hint.RuntimeHints;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebResourcesRuntimeHintsRegistrar}.
+ * Tests for {@link WebResourcesRuntimeHints}.
  *
  * @author Stephane Nicoll
  */
-class WebResourcesRuntimeHintsRegistrarTests {
+class WebResourcesRuntimeHintsTests {
 
 	@Test
 	void registerHintsWithAllLocations() {
@@ -58,7 +58,7 @@ class WebResourcesRuntimeHintsRegistrarTests {
 
 	RuntimeHints register(ClassLoader classLoader) {
 		RuntimeHints hints = new RuntimeHints();
-		WebResourcesRuntimeHintsRegistrar registrar = new WebResourcesRuntimeHintsRegistrar();
+		WebResourcesRuntimeHints registrar = new WebResourcesRuntimeHints();
 		registrar.registerHints(hints, classLoader);
 		return hints;
 	}
