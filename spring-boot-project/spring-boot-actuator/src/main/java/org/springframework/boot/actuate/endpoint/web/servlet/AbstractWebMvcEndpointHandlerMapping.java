@@ -72,7 +72,6 @@ import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.servlet.handler.RequestMatchResult;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
