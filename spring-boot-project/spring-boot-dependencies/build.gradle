@@ -1412,7 +1412,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "3.0.0-M4") {
+	library("Spring Kafka", "3.0.0-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
