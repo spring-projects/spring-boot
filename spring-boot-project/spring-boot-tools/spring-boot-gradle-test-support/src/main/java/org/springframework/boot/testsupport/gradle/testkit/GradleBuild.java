@@ -126,7 +126,8 @@ public class GradleBuild {
 				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
 				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)),
 				new File(pathOfJarContaining("org.graalvm.buildtools.gradle.NativeImagePlugin")),
-				new File(pathOfJarContaining("org.graalvm.reachability.JvmReachabilityMetadataRepository")));
+				new File(pathOfJarContaining("org.graalvm.reachability.GraalVMReachabilityMetadataRepository")),
+				new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")));
 	}
 
 	private String pathOfJarContaining(String className) {

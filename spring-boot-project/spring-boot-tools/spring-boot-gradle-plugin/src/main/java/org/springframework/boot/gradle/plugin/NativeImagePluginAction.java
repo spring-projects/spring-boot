@@ -18,10 +18,12 @@ package org.springframework.boot.gradle.plugin;
 
 import org.graalvm.buildtools.gradle.NativeImagePlugin;
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension;
+import org.graalvm.buildtools.gradle.dsl.GraalVMReachabilityMetadataRepositoryExtension;
 import org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
@@ -53,6 +55,13 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		});
 		GraalVMExtension graalVmExtension = project.getExtensions().getByType(GraalVMExtension.class);
 		graalVmExtension.getToolchainDetection().set(false);
+		reachabilityExtensionOn(graalVmExtension).getEnabled().set(true);
+	}
+
+	private static GraalVMReachabilityMetadataRepositoryExtension reachabilityExtensionOn(
+			GraalVMExtension graalVmExtension) {
+		return ((ExtensionAware) graalVmExtension).getExtensions()
+				.getByType(GraalVMReachabilityMetadataRepositoryExtension.class);
 	}
 
 }
