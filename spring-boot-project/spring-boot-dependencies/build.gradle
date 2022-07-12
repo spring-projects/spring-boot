@@ -1073,7 +1073,7 @@ bom {
 			]
 		}
 	}
-	library("Native Build Tools Plugin", "0.9.11") {
+	library("Native Build Tools Plugin", "${nativeBuildToolsVersion}") {
 		group("org.graalvm.buildtools") {
 			plugins = [
 					"native-maven-plugin"
