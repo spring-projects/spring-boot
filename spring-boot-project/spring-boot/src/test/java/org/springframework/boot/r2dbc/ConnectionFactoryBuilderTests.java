@@ -265,6 +265,8 @@ class ConnectionFactoryBuilderTests {
 		MAX_CREATE_CONNECTION_TIME(PoolingConnectionFactoryProvider.MAX_CREATE_CONNECTION_TIME, Duration.ofSeconds(10),
 				"maxCreateConnectionTime"),
 
+		MIN_IDLE(PoolingConnectionFactoryProvider.MIN_IDLE, 0, "minIdle"),
+
 		POOL_NAME(PoolingConnectionFactoryProvider.POOL_NAME, "testPool", "name"),
 
 		POST_ALLOCATE(PoolingConnectionFactoryProvider.POST_ALLOCATE, mock(Function.class), "postAllocate"),

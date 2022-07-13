@@ -1122,6 +1122,13 @@ bom {
 			]
 		}
 	}
+	library("Oracle R2DBC", "1.0.0") {
+		group("com.oracle.database.r2dbc") {
+			modules = [
+				"oracle-r2dbc"
+			]
+		}
+	}
 	library("Pooled JMS", "3.0.0") {
 		group("org.messaginghub") {
 			modules = [
@@ -1161,10 +1168,38 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Bom", "Borca-SR1") {
+	library("R2DBC H2", "1.0.0.RC1") {
 		group("io.r2dbc") {
-			imports = [
-					"r2dbc-bom"
+			modules = [
+				"r2dbc-h2"
+			]
+		}
+	}
+	library("R2DBC Pool", "1.0.0.RC1") {
+		group("io.r2dbc") {
+			modules = [
+				"r2dbc-pool"
+			]
+		}
+	}
+	library("R2DBC Postgresql", "1.0.0.RC1") {
+		group("org.postgresql") {
+			modules = [
+				"r2dbc-postgresql"
+			]
+		}
+	}
+	library("R2DBC Proxy", "1.0.0.RELEASE") {
+		group("io.r2dbc") {
+			modules = [
+				"r2dbc-proxy"
+			]
+		}
+	}
+	library("R2DBC SPI", "1.0.0.RELEASE") {
+		group("io.r2dbc") {
+			modules = [
+				"r2dbc-spi"
 			]
 		}
 	}
