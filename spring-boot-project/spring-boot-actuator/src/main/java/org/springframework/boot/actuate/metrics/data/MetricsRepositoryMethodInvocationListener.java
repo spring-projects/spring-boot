@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,9 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 		Set<Timed> annotations = TimedAnnotations.get(invocation.getMethod(), invocation.getRepositoryInterface());
 		Iterable<Tag> tags = this.tagsProvider.repositoryTags(invocation);
 		long duration = invocation.getDuration(TimeUnit.NANOSECONDS);
-		AutoTimer.apply(this.autoTimer, this.metricName, annotations, (builder) -> builder.tags(tags)
-				.register(this.registrySupplier.get()).record(duration, TimeUnit.NANOSECONDS));
+		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
+				(builder) -> builder.description("Duration of repository invocations").tags(tags)
+						.register(this.registrySupplier.get()).record(duration, TimeUnit.NANOSECONDS));
 	}
 
 }
