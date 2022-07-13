@@ -678,7 +678,7 @@ public class KafkaProperties {
 		}
 
 		public boolean isModifyTopicConfigs() {
-			return modifyTopicConfigs;
+			return this.modifyTopicConfigs;
 		}
 
 		public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
