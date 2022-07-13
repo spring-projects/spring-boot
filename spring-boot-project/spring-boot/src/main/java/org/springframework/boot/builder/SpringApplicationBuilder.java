@@ -103,20 +103,6 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Creates a new {@link SpringApplication} instance from the given sources. Subclasses
-	 * may override in order to provide a custom subclass of {@link SpringApplication}.
-	 * @param sources the sources
-	 * @return the {@link SpringApplication} instance
-	 * @since 1.1.0
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #createSpringApplication(ResourceLoader, Class...)}
-	 */
-	@Deprecated
-	protected SpringApplication createSpringApplication(Class<?>... sources) {
-		return new SpringApplication(sources);
-	}
-
-	/**
 	 * Creates a new {@link SpringApplication} instance from the given sources using the
 	 * given {@link ResourceLoader}. Subclasses may override in order to provide a custom
 	 * subclass of {@link SpringApplication}.

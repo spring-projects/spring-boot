@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import java.util.Collections;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +36,7 @@ import org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,13 +64,11 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void entityScanShouldSetInitialEntitySet() {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			CouchbaseMappingContext mappingContext = context.getBean(CouchbaseMappingContext.class);
-			Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-					"initialEntitySet");
-			assertThat(initialEntitySet).containsOnly(City.class);
+			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes.toList()).containsOnly(City.class);
 		});
 	}
 

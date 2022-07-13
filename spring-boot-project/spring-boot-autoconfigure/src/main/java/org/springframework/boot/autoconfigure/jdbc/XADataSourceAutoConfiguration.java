@@ -21,7 +21,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
+
+import jakarta.transaction.TransactionManager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;

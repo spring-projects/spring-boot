@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.List;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -55,12 +54,10 @@ class ElasticsearchRestClientConfigurations {
 	@ConditionalOnMissingBean(RestClientBuilder.class)
 	static class RestClientBuilderConfiguration {
 
-		private final ConsolidatedProperties properties;
+		private final ElasticsearchProperties properties;
 
-		@SuppressWarnings("deprecation")
-		RestClientBuilderConfiguration(ElasticsearchProperties properties,
-				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
-			this.properties = new ConsolidatedProperties(properties, deprecatedProperties);
+		RestClientBuilderConfiguration(ElasticsearchProperties properties) {
+			this.properties = properties;
 		}
 
 		@Bean
@@ -82,7 +79,7 @@ class ElasticsearchRestClientConfigurations {
 				return requestConfigBuilder;
 			});
 			if (this.properties.getPathPrefix() != null) {
-				builder.setPathPrefix(this.properties.properties.getPathPrefix());
+				builder.setPathPrefix(this.properties.getPathPrefix());
 			}
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
@@ -159,17 +156,12 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("deprecation")
-		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchRestClientProperties properties,
-				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
+		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			Duration interval = deprecatedProperties.isCustomized() ? deprecatedProperties.getSniffer().getInterval()
-					: properties.getSniffer().getInterval();
+			Duration interval = properties.getRestclient().getSniffer().getInterval();
 			map.from(interval).asInt(Duration::toMillis).to(builder::setSniffIntervalMillis);
-			Duration delayAfterFailure = deprecatedProperties.isCustomized()
-					? deprecatedProperties.getSniffer().getDelayAfterFailure()
-					: properties.getSniffer().getDelayAfterFailure();
+			Duration delayAfterFailure = properties.getRestclient().getSniffer().getDelayAfterFailure();
 			map.from(delayAfterFailure).asInt(Duration::toMillis).to(builder::setSniffAfterFailureDelayMillis);
 			return builder.build();
 		}
@@ -180,9 +172,9 @@ class ElasticsearchRestClientConfigurations {
 
 		private static final PropertyMapper map = PropertyMapper.get();
 
-		private final ConsolidatedProperties properties;
+		private final ElasticsearchProperties properties;
 
-		DefaultRestClientBuilderCustomizer(ConsolidatedProperties properties) {
+		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties) {
 			this.properties = properties;
 		}
 
@@ -207,7 +199,7 @@ class ElasticsearchRestClientConfigurations {
 
 	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
 
-		PropertiesCredentialsProvider(ConsolidatedProperties properties) {
+		PropertiesCredentialsProvider(ElasticsearchProperties properties) {
 			if (StringUtils.hasText(properties.getUsername())) {
 				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
 						properties.getPassword());
@@ -244,50 +236,6 @@ class ElasticsearchRestClientConfigurations {
 			String username = userInfo.substring(0, delimiter);
 			String password = userInfo.substring(delimiter + 1);
 			return new UsernamePasswordCredentials(username, password);
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	private static final class ConsolidatedProperties {
-
-		private final ElasticsearchProperties properties;
-
-		private final DeprecatedElasticsearchRestClientProperties deprecatedProperties;
-
-		private ConsolidatedProperties(ElasticsearchProperties properties,
-				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
-			this.properties = properties;
-			this.deprecatedProperties = deprecatedProperties;
-		}
-
-		private List<String> getUris() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getUris()
-					: this.properties.getUris();
-		}
-
-		private String getUsername() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getUsername()
-					: this.properties.getUsername();
-		}
-
-		private String getPassword() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getPassword()
-					: this.properties.getPassword();
-		}
-
-		private Duration getConnectionTimeout() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getConnectionTimeout()
-					: this.properties.getConnectionTimeout();
-		}
-
-		private Duration getSocketTimeout() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getReadTimeout()
-					: this.properties.getSocketTimeout();
-		}
-
-		private String getPathPrefix() {
-			return this.deprecatedProperties.isCustomized() ? null : this.properties.getPathPrefix();
 		}
 
 	}

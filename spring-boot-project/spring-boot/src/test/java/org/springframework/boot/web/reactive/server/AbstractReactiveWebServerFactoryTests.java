@@ -42,7 +42,7 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.util.StringRequestContent;
 import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
 import org.junit.jupiter.api.AfterEach;
@@ -500,7 +500,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		client.start();
 		try {
 			ContentResponse response = client.POST("http://localhost:" + this.webServer.getPort())
-					.content(new StringContentProvider("Hello World"), "text/plain").send();
+					.body(new StringRequestContent("text/plain", "Hello World")).send();
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 			assertThat(response.getContentAsString()).isEqualTo("Hello World");
 		}
@@ -656,8 +656,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) {
-			if (msg instanceof HttpResponse) {
-				HttpResponse response = (HttpResponse) msg;
+			if (msg instanceof HttpResponse response) {
 				boolean compressed = response.headers().contains(HttpHeaderNames.CONTENT_ENCODING, "gzip", true);
 				if (compressed) {
 					response.headers().set("X-Test-Compressed", "true");

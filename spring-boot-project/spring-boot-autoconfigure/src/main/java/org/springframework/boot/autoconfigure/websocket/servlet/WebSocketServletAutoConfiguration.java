@@ -16,12 +16,11 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import javax.servlet.Servlet;
-import javax.websocket.server.ServerContainer;
-
+import jakarta.servlet.Servlet;
+import jakarta.websocket.server.ServerContainer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.websocket.server.WsSci;
-import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import org.eclipse.jetty.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -71,26 +70,13 @@ public class WebSocketServletAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(WebSocketServerContainerInitializer.class)
+	@ConditionalOnClass(JakartaWebSocketServletContainerInitializer.class)
 	static class JettyWebSocketConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
 		JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketServletWebServerCustomizer();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(name = { Jetty10WebSocketServletWebServerCustomizer.JAVAX_WEB_SOCKET_SERVER_CONTAINER,
-			Jetty10WebSocketServletWebServerCustomizer.JETTY_WEB_SOCKET_SERVER_CONTAINER })
-	static class Jetty10WebSocketConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		Jetty10WebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
-			return new Jetty10WebSocketServletWebServerCustomizer();
 		}
 
 	}

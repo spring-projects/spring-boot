@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.jms;
 
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -39,7 +38,7 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(after = { ActiveMQAutoConfiguration.class, ArtemisAutoConfiguration.class })
+@AutoConfiguration(after = ArtemisAutoConfiguration.class)
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("jms")

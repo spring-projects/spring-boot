@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,10 +74,10 @@ class ArtemisEmbeddedConfigurationFactoryTests {
 	void hasDlqExpiryQueueAddressSettingsConfigured() {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
-		Map<String, AddressSettings> addressesSettings = configuration.getAddressesSettings();
-		assertThat((Object) addressesSettings.get("#").getDeadLetterAddress())
+		Map<String, AddressSettings> addressSettings = configuration.getAddressSettings();
+		assertThat((Object) addressSettings.get("#").getDeadLetterAddress())
 				.isEqualTo(SimpleString.toSimpleString("DLQ"));
-		assertThat((Object) addressesSettings.get("#").getExpiryAddress())
+		assertThat((Object) addressSettings.get("#").getExpiryAddress())
 				.isEqualTo(SimpleString.toSimpleString("ExpiryQueue"));
 	}
 

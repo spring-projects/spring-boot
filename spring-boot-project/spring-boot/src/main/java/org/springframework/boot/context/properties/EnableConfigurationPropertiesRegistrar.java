@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,9 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	static void registerMethodValidationExcludeFilter(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.genericBeanDefinition(MethodValidationExcludeFilter.class,
-							() -> MethodValidationExcludeFilter.byAnnotation(ConfigurationProperties.class))
-					.setRole(BeanDefinition.ROLE_INFRASTRUCTURE).getBeanDefinition();
+					.rootBeanDefinition(MethodValidationExcludeFilter.class, "byAnnotation")
+					.addConstructorArgValue(ConfigurationProperties.class).setRole(BeanDefinition.ROLE_INFRASTRUCTURE)
+					.getBeanDefinition();
 			registry.registerBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME, definition);
 		}
 	}

@@ -22,14 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PreDestroy;
-
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
+import jakarta.annotation.PreDestroy;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -144,9 +143,8 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	private void setPortProperty(ApplicationContext context, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
-					.getPropertySources();
+		if (context instanceof ConfigurableApplicationContext configurableContext) {
+			MutablePropertySources sources = configurableContext.getEnvironment().getPropertySources();
 			getLdapPorts(sources).put("local.ldap.port", port);
 		}
 		if (context.getParent() != null) {

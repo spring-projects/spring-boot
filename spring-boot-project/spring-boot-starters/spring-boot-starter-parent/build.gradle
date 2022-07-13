@@ -19,7 +19,7 @@ publishing.publications.withType(MavenPublication) {
 		root.remove(root.version)
 		root.description.plus {
 			properties {
-				delegate."java.version"('1.8')
+				delegate."java.version"('17')
 				delegate."resource.delimiter"('@')
 				delegate."maven.compiler.source"('${java.version}')
 				delegate."maven.compiler.target"('${java.version}')
@@ -133,8 +133,8 @@ publishing.publications.withType(MavenPublication) {
 							}
 						}
 						plugin {
-							delegate.groupId('pl.project13.maven')
-							delegate.artifactId('git-commit-id-plugin')
+							delegate.groupId('io.github.git-commit-id')
+							delegate.artifactId('git-commit-id-maven-plugin')
 							executions {
 								execution {
 									goals {
@@ -215,6 +215,50 @@ publishing.publications.withType(MavenPublication) {
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ManifestResourceTransformer') {
 												delegate.mainClass('${start-class}')
 											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			profiles {
+				profile {
+					delegate.id("native")
+					build {
+						plugins {
+							plugin {
+								delegate.groupId('org.springframework.boot')
+								delegate.artifactId('spring-boot-maven-plugin')
+								executions {
+									execution {
+										delegate.id('aot-generate')
+										goals {
+											delegate.goal('aot-generate')
+										}
+									}
+									execution {
+										delegate.id('repackage')
+										configuration {
+											delegate.classifier('exec')
+										}
+									}
+								}
+							}
+							plugin {
+								delegate.groupId('org.graalvm.buildtools')
+								delegate.artifactId('native-maven-plugin')
+								configuration {
+									metadataRepository {
+										delegate.enabled('true')
+									}
+								}
+								executions {
+									execution {
+										delegate.id('build-native')
+										goals {
+											delegate.goal('build')
 										}
 									}
 								}

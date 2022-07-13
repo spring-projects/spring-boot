@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to MongoDB tests.
- * <p>
- * By default, tests annotated with {@code @DataMongoTest} will use an embedded in-memory
- * MongoDB process (if available).
  * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.

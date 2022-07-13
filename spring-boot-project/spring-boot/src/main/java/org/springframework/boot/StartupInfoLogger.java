@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ class StartupInfoLogger {
 		message.append(" seconds");
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;
-			message.append(" (JVM running for ").append(uptime).append(")");
+			message.append(" (process running for ").append(uptime).append(")");
 		}
 		catch (Throwable ex) {
 			// No JVM time available

@@ -22,14 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.catalina.connector.ClientAbortException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +47,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.StandardServletAsyncWebRequest;
 import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
-import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -368,11 +366,11 @@ class ErrorPageFilterTests {
 	}
 
 	@Test
-	void nestedServletExceptionIsUnwrapped() throws Exception {
+	void servletExceptionIsUnwrapped() throws Exception {
 		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
 		this.chain = new TestFilterChain((request, response, chain) -> {
 			chain.call();
-			throw new NestedServletException("Wrapper", new RuntimeException("BAD"));
+			throw new ServletException("Wrapper", new RuntimeException("BAD"));
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus()).isEqualTo(500);
@@ -389,7 +387,7 @@ class ErrorPageFilterTests {
 	}
 
 	@Test
-	void nestedServletExceptionWithNoCause() throws Exception {
+	void servletExceptionWithNoCause() throws Exception {
 		this.filter.addErrorPages(new ErrorPage(MissingServletRequestParameterException.class, "/500"));
 		this.chain = new TestFilterChain((request, response, chain) -> {
 			chain.call();

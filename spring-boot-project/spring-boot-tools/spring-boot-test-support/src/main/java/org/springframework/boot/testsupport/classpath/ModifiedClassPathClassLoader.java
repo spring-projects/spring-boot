@@ -115,8 +115,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	private static Stream<URL> doExtractUrls(ClassLoader classLoader) {
-		if (classLoader instanceof URLClassLoader) {
-			return Stream.of(((URLClassLoader) classLoader).getURLs());
+		if (classLoader instanceof URLClassLoader urlClassLoader) {
+			return Stream.of(urlClassLoader.getURLs());
 		}
 		return Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
 				.map(ModifiedClassPathClassLoader::toURL);

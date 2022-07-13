@@ -21,7 +21,6 @@ org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoC
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRestClientAutoConfiguration
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration
@@ -41,19 +40,9 @@ org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfigura
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
+org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.data.GraphQlReactiveQueryByExampleAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.data.GraphQlReactiveQuerydslAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.data.GraphQlQueryByExampleAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.data.GraphQlQuerydslAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.reactive.GraphQlWebFluxAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.rsocket.GraphQlRSocketAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.rsocket.RSocketGraphQlClientAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.security.GraphQlWebFluxSecurityAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.security.GraphQlWebMvcSecurityAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration
 org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
@@ -74,9 +63,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConf
 org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration
-org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration
 org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration
-org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration
 org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -86,7 +73,6 @@ org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
 org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
@@ -113,7 +99,6 @@ org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2Clie
 org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
-org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration
 org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration

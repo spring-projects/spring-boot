@@ -64,6 +64,9 @@ do as they were designed before this was clarified.
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
+| https://casdoor.org/[Casdoor]
+| https://github.com/casdoor/casdoor-spring-boot-starter
+
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
 
@@ -93,6 +96,9 @@ do as they were designed before this was clarified.
 
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
+
+| Error Handling Spring Boot Starter
+| https://github.com/wimdeblauwe/error-handling-spring-boot-starter
 
 | https://www.flowable.org/[Flowable]
 | https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters

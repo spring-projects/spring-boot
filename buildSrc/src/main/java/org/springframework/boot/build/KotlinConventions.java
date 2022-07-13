@@ -30,8 +30,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
  * <ul>
  * <li>{@link KotlinCompile} tasks are configured to:
  * <ul>
- * <li>Use {@code apiVersion} and {@code languageVersion} 1.3.
- * <li>Use {@code jvmTarget} 1.8.
+ * <li>Use {@code apiVersion} and {@code languageVersion} 1.7.
+ * <li>Use {@code jvmTarget} 17.
  * <li>Treat all warnings as errors
  * <li>Suppress version warnings
  * </ul>
@@ -50,9 +50,9 @@ class KotlinConventions {
 
 	private void configure(KotlinCompile compile) {
 		KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
-		kotlinOptions.setApiVersion("1.3");
-		kotlinOptions.setLanguageVersion("1.3");
-		kotlinOptions.setJvmTarget("1.8");
+		kotlinOptions.setApiVersion("1.7");
+		kotlinOptions.setLanguageVersion("1.7");
+		kotlinOptions.setJvmTarget("17");
 		kotlinOptions.setAllWarningsAsErrors(true);
 		List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
 		freeCompilerArgs.add("-Xsuppress-version-warnings");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,14 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+					JdbcIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	void defaultConfig() {
 		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
+				.withPropertyValues("spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
@@ -73,11 +75,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	}
 
 	@Test
-	void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-						JdbcIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+	void redisTakesPrecedenceMultipleImplementations() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
@@ -87,7 +86,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void defaultConfigWithCustomTimeout() {
 		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
+				.withPropertyValues("spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort(), "spring.session.timeout=1m")
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
 					RedisIndexedSessionRepository repository = validateSessionRepository(context,
@@ -99,8 +98,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void redisSessionStoreWithCustomizations() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate", "spring.session.redis.save-mode=on-get-attribute",
+				.withPropertyValues("spring.session.redis.namespace=foo", "spring.session.redis.flush-mode=immediate",
+						"spring.session.redis.save-mode=on-get-attribute",
 						"spring.session.redis.cleanup-cron=0 0 12 * * *", "spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateSpringSessionUsesRedis("foo:event:0:created:", FlushMode.IMMEDIATE,
@@ -110,7 +109,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void redisSessionWithConfigureActionNone() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.configure-action=none",
+				.withPropertyValues("spring.session.redis.configure-action=none",
 						"spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateStrategy(ConfigureRedisAction.NO_OP.getClass()));
 	}
@@ -118,7 +117,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void redisSessionWithDefaultConfigureActionNone() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
+				.withPropertyValues("spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateStrategy(ConfigureNotifyKeyspaceEventsAction.class,
 						entry("notify-keyspace-events", "gxE")));
@@ -128,7 +127,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	void redisSessionWithCustomConfigureRedisActionBean() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withUserConfiguration(MaxEntriesRedisAction.class)
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
+				.withPropertyValues("spring.redis.host=" + redis.getHost(),
 						"spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateStrategy(MaxEntriesRedisAction.class, entry("set-max-intset-entries", "1024")));
 
@@ -158,7 +157,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 			assertThat(context.getBean(ConfigureRedisAction.class)).isInstanceOf(expectedConfigureRedisActionType);
 			RedisConnection connection = context.getBean(RedisConnectionFactory.class).getConnection();
 			if (expectedConfig.length > 0) {
-				assertThat(connection.getConfig("*")).contains(expectedConfig);
+				assertThat(connection.serverCommands().getConfig("*")).contains(expectedConfig);
 			}
 		};
 	}
@@ -167,7 +166,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 
 		@Override
 		public void configure(RedisConnection connection) {
-			connection.setConfig("set-max-intset-entries", "1024");
+			connection.serverCommands().setConfig("set-max-intset-entries", "1024");
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,11 +130,10 @@ public class ScheduledTasksEndpoint {
 
 		private static TaskDescription describeTriggerTask(TriggerTask triggerTask) {
 			Trigger trigger = triggerTask.getTrigger();
-			if (trigger instanceof CronTrigger) {
-				return new CronTaskDescription(triggerTask, (CronTrigger) trigger);
+			if (trigger instanceof CronTrigger cronTrigger) {
+				return new CronTaskDescription(triggerTask, cronTrigger);
 			}
-			if (trigger instanceof PeriodicTrigger) {
-				PeriodicTrigger periodicTrigger = (PeriodicTrigger) trigger;
+			if (trigger instanceof PeriodicTrigger periodicTrigger) {
 				if (periodicTrigger.isFixedRate()) {
 					return new FixedRateTaskDescription(triggerTask, periodicTrigger);
 				}
@@ -169,14 +168,14 @@ public class ScheduledTasksEndpoint {
 
 		protected IntervalTaskDescription(TaskType type, IntervalTask task) {
 			super(type, task.getRunnable());
-			this.initialDelay = task.getInitialDelay();
-			this.interval = task.getInterval();
+			this.initialDelay = task.getInitialDelayDuration().toMillis();
+			this.interval = task.getIntervalDuration().toMillis();
 		}
 
 		protected IntervalTaskDescription(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
 			super(type, task.getRunnable());
-			this.initialDelay = trigger.getInitialDelay();
-			this.interval = trigger.getPeriod();
+			this.initialDelay = trigger.getInitialDelayDuration().toMillis();
+			this.interval = trigger.getPeriodDuration().toMillis();
 		}
 
 		public long getInitialDelay() {
@@ -275,8 +274,8 @@ public class ScheduledTasksEndpoint {
 		private final String target;
 
 		private RunnableDescription(Runnable runnable) {
-			if (runnable instanceof ScheduledMethodRunnable) {
-				Method method = ((ScheduledMethodRunnable) runnable).getMethod();
+			if (runnable instanceof ScheduledMethodRunnable scheduledMethodRunnable) {
+				Method method = scheduledMethodRunnable.getMethod();
 				this.target = method.getDeclaringClass().getName() + "." + method.getName();
 			}
 			else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,14 +66,6 @@ class ConfigDataEnvironmentTests {
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	private Collection<String> additionalProfiles = Collections.emptyList();
-
-	@Test
-	void createWhenUseLegacyPropertyInEnvironmentThrowsException() {
-		this.environment.setProperty("spring.config.use-legacy-processing", "true");
-		assertThatExceptionOfType(UseLegacyConfigProcessingException.class)
-				.isThrownBy(() -> new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, this.environment,
-						this.resourceLoader, this.additionalProfiles, null));
-	}
 
 	@Test
 	void createExposesEnvironmentBinderToConfigDataLocationResolvers() {

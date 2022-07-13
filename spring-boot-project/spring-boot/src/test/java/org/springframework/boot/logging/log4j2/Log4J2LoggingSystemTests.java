@@ -25,6 +25,8 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
@@ -37,6 +39,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
+import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -383,6 +386,22 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
 		assertThat(updatedConfiguration)
 				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.WARN, LogLevel.WARN));
+	}
+
+	@Test
+	void log4jLevelsArePropagatedToJul() {
+		this.loggingSystem.beforeInitialize();
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		// check if Log4jBridgeHandler is used
+		Handler[] handlers = rootLogger.getHandlers();
+		assertThat(handlers.length).isEqualTo(1);
+		assertThat(handlers[0]).isInstanceOf(Log4jBridgeHandler.class);
+
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Log4J2LoggingSystemTests.class.getName());
+		assertThat(logger.getLevel()).isNull();
+		this.loggingSystem.setLogLevel(Log4J2LoggingSystemTests.class.getName(), LogLevel.DEBUG);
+		assertThat(logger.getLevel()).isEqualTo(Level.FINE);
 	}
 
 	@Test

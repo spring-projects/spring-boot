@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.context.ApplicationContext;
@@ -38,11 +38,11 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 
 	@Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
-		if (!(context instanceof WebApplicationContext)) {
-			return Collections.emptyList();
+		if (context instanceof WebApplicationContext webApplicationContext) {
+			return webApplicationContext.getServletContext().getFilterRegistrations().values().stream()
+					.map(FilterRegistrationMappingDescription::new).collect(Collectors.toList());
 		}
-		return ((WebApplicationContext) context).getServletContext().getFilterRegistrations().values().stream()
-				.map(FilterRegistrationMappingDescription::new).collect(Collectors.toList());
+		return Collections.emptyList();
 	}
 
 	@Override

@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
-import javax.persistence.EntityManagerFactory;
-
 import com.hazelcast.core.HazelcastInstance;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;

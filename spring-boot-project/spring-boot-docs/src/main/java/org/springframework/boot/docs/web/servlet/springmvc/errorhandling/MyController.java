@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.errorhandling;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.stereotype.Controller;

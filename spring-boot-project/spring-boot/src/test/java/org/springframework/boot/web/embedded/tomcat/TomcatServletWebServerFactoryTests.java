@@ -32,14 +32,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
@@ -458,7 +458,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
 		String tldScan = ((StandardJarScanFilter) jarScanFilter).getTldScan();
-		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
+		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-jakarta-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
 	}
 
 	@Test
@@ -476,8 +476,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsTrue() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.addContextCustomizers((context) -> {
-			if (context instanceof StandardContext) {
-				((StandardContext) context).setFailCtxIfServletStartFails(true);
+			if (context instanceof StandardContext standardContext) {
+				standardContext.setFailCtxIfServletStartFails(true);
 			}
 		});
 		this.webServer = factory
@@ -489,8 +489,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsFalse() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.addContextCustomizers((context) -> {
-			if (context instanceof StandardContext) {
-				((StandardContext) context).setFailCtxIfServletStartFails(false);
+			if (context instanceof StandardContext standardContext) {
+				standardContext.setFailCtxIfServletStartFails(false);
 			}
 		});
 		this.webServer = factory
@@ -627,8 +627,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 			return result;
 		}, (result) -> result instanceof Exception);
 		assertThat(idleConnectionRequestResult).isInstanceOfAny(SocketException.class, NoHttpResponseException.class);
-		if (idleConnectionRequestResult instanceof SocketException) {
-			assertThat((SocketException) idleConnectionRequestResult).hasMessage("Connection reset");
+		if (idleConnectionRequestResult instanceof SocketException socketException) {
+			assertThat(socketException).hasMessage("Connection reset");
 		}
 		blockingServlet.admitOne();
 		Object response = request.get();

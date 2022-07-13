@@ -14,18 +14,15 @@ def caches = [
 	],
 	"ehcache": [
 		"javax.cache:cache-api",
-		"org.ehcache:ehcache"
-	],
-	"ehcache2": [
-		"net.sf.ehcache:ehcache"
+		dependencies.create("org.ehcache:ehcache") {
+			artifact {
+				classifier = 'jakarta'
+			}
+		}
 	],
 	"hazelcast": [
 		"com.hazelcast:hazelcast",
 		"com.hazelcast:hazelcast-spring"
-	],
-	"infinispan": [
-		"org.infinispan:infinispan-jcache",
-		"org.infinispan:infinispan-spring5-embedded"
 	],
 	"redis": [
 		project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis")

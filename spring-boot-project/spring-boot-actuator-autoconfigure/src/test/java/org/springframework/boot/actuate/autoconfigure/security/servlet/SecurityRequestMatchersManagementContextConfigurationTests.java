@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
-import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -68,17 +67,6 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 	}
 
 	@Test
-	void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-				.withUserConfiguration(TestJerseyConfiguration.class).run((context) -> {
-					AntPathRequestMatcherProvider matcherProvider = context
-							.getBean(AntPathRequestMatcherProvider.class);
-					RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");
-					assertThat(requestMatcher).extracting("pattern").isEqualTo("/admin/example");
-				});
-	}
-
-	@Test
 	void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
 				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
@@ -91,36 +79,12 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
 	}
 
-	@Test
-	void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("org.glassfish.jersey.server.ResourceConfig"))
-				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
-	}
-
-	@Test
-	void jerseyRequestMatcherProviderConditionalOnJerseyApplicationPathBean() {
-		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class))
-				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class TestMvcConfiguration {
 
 		@Bean
 		DispatcherServletPath dispatcherServletPath() {
 			return () -> "/custom";
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestJerseyConfiguration {
-
-		@Bean
-		JerseyApplicationPath jerseyApplicationPath() {
-			return () -> "/admin";
 		}
 
 	}

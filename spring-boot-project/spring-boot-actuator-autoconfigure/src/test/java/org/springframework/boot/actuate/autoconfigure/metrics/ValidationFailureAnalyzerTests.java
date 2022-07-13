@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,10 @@ class ValidationFailureAnalyzerTests {
 		FailureAnalysis analysis = new ValidationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdAndApiKeyConfiguration.class));
 		assertThat(analysis).isNotNull();
-		assertThat(analysis.getCause().getMessage()).contains("management.metrics.export.newrelic.apiKey was 'null'");
+		assertThat(analysis.getCause().getMessage()).contains("management.newrelic.metrics.export.apiKey was 'null'");
 		assertThat(analysis.getDescription()).isEqualTo(String.format("Invalid Micrometer configuration detected:%n%n"
-				+ "  - management.metrics.export.newrelic.apiKey was 'null' but it is required when publishing to Insights API%n"
-				+ "  - management.metrics.export.newrelic.accountId was 'null' but it is required when publishing to Insights API"));
+				+ "  - management.newrelic.metrics.export.apiKey was 'null' but it is required when publishing to Insights API%n"
+				+ "  - management.newrelic.metrics.export.accountId was 'null' but it is required when publishing to Insights API"));
 	}
 
 	private Exception createFailure(Class<?> configuration) {

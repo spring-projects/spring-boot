@@ -113,19 +113,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	/**
 	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #AbstractApplicationContextRunner(Supplier, Function)}
-	 */
-	@Deprecated
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
-		Assert.notNull(contextFactory, "ContextFactory must not be null");
-		this.runnerConfiguration = new RunnerConfiguration<>(contextFactory);
-		this.instanceFactory = this::legacyNewInstance;
-	}
-
-	/**
-	 * Create a new {@link AbstractApplicationContextRunner} instance.
-	 * @param contextFactory the factory used to create the actual context
 	 * @param instanceFactory the factory used to create new instance of the runner
 	 * @since 2.6.0
 	 */
@@ -149,43 +136,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		Assert.notNull(instanceFactory, "instanceFactory must not be null");
 		this.runnerConfiguration = configuration;
 		this.instanceFactory = instanceFactory;
-	}
-
-	/**
-	 * Create a new {@link AbstractApplicationContextRunner} instance.
-	 * @param contextFactory the factory used to create the actual context
-	 * @param allowBeanDefinitionOverriding whether bean definition overriding is allowed
-	 * @param initializers the initializers
-	 * @param environmentProperties the environment properties
-	 * @param systemProperties the system properties
-	 * @param classLoader the class loader
-	 * @param parent the parent
-	 * @param beanRegistrations the bean registrations
-	 * @param configurations the configuration
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #AbstractApplicationContextRunner(Supplier, Function)}
-	 */
-	@Deprecated
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory, boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
-			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations) {
-		Assert.notNull(contextFactory, "ContextFactory must not be null");
-		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
-		Assert.notNull(systemProperties, "SystemProperties must not be null");
-		Assert.notNull(configurations, "Configurations must not be null");
-		Assert.notNull(initializers, "Initializers must not be null");
-		RunnerConfiguration<C> configuration = new RunnerConfiguration<>(contextFactory);
-		configuration.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
-		configuration.initializers = Collections.unmodifiableList(initializers);
-		configuration.environmentProperties = environmentProperties;
-		configuration.systemProperties = systemProperties;
-		configuration.classLoader = classLoader;
-		configuration.parent = parent;
-		configuration.beanRegistrations = Collections.unmodifiableList(beanRegistrations);
-		configuration.configurations = Collections.unmodifiableList(configurations);
-		this.runnerConfiguration = configuration;
-		this.instanceFactory = this::legacyNewInstance;
 	}
 
 	/**
@@ -374,20 +324,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return customizer.apply((SELF) this);
 	}
 
-	@Deprecated
-	private SELF legacyNewInstance(RunnerConfiguration<C> configuration) {
-		return newInstance(configuration.contextFactory, configuration.allowBeanDefinitionOverriding,
-				configuration.initializers, configuration.environmentProperties, configuration.systemProperties,
-				configuration.classLoader, configuration.parent, configuration.beanRegistrations,
-				configuration.configurations);
-	}
-
-	@Deprecated
-	protected abstract SELF newInstance(Supplier<C> contextFactory, boolean allowBeanDefinitionOverriding,
-			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
-			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations);
-
 	private SELF newInstance(RunnerConfiguration<C> runnerConfiguration) {
 		return this.instanceFactory.apply(runnerConfiguration);
 	}
@@ -401,14 +337,31 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF run(ContextConsumer<? super A> consumer) {
-		withContextClassLoader(this.runnerConfiguration.classLoader,
-				() -> this.runnerConfiguration.systemProperties.applyToSystemProperties(() -> {
-					try (A context = createAssertableContext()) {
-						accept(consumer, context);
-					}
-					return null;
-				}));
+		withContextClassLoader(this.runnerConfiguration.classLoader, () -> this.runnerConfiguration.systemProperties
+				.applyToSystemProperties(() -> consumeAssertableContext(true, consumer)));
 		return (SELF) this;
+	}
+
+	/**
+	 * Prepare a new {@link ApplicationContext} based on the current state of this loader.
+	 * The context is consumed by the specified {@code consumer} and closed upon
+	 * completion. Unlike {@link #run(ContextConsumer)}, this method does not refresh the
+	 * consumed context.
+	 * @param consumer the consumer of the created {@link ApplicationContext}
+	 * @return this instance
+	 * @since 3.0.0
+	 */
+	@SuppressWarnings("unchecked")
+	public SELF prepare(ContextConsumer<? super A> consumer) {
+		withContextClassLoader(this.runnerConfiguration.classLoader, () -> this.runnerConfiguration.systemProperties
+				.applyToSystemProperties(() -> consumeAssertableContext(false, consumer)));
+		return (SELF) this;
+	}
+
+	private void consumeAssertableContext(boolean refresh, ContextConsumer<? super A> consumer) {
+		try (A context = createAssertableContext(refresh)) {
+			accept(consumer, context);
+		}
 	}
 
 	private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
@@ -429,26 +382,25 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	@SuppressWarnings("unchecked")
-	private A createAssertableContext() {
+	private A createAssertableContext(boolean refresh) {
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return ApplicationContextAssertProvider.get(assertType, contextType, this::createAndLoadContext);
+		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh));
 	}
 
-	private C createAndLoadContext() {
+	private C createAndLoadContext(boolean refresh) {
 		C context = this.runnerConfiguration.contextFactory.get();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
-			((AbstractAutowireCapableBeanFactory) beanFactory)
-					.setAllowCircularReferences(this.runnerConfiguration.allowCircularReferences);
-			if (beanFactory instanceof DefaultListableBeanFactory) {
-				((DefaultListableBeanFactory) beanFactory)
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			autowireCapableBeanFactory.setAllowCircularReferences(this.runnerConfiguration.allowCircularReferences);
+			if (beanFactory instanceof DefaultListableBeanFactory listableBeanFactory) {
+				listableBeanFactory
 						.setAllowBeanDefinitionOverriding(this.runnerConfiguration.allowBeanDefinitionOverriding);
 			}
 		}
 		try {
-			configureContext(context);
+			configureContext(context, refresh);
 			return context;
 		}
 		catch (RuntimeException ex) {
@@ -457,7 +409,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	private void configureContext(C context) {
+	private void configureContext(C context, boolean refresh) {
 		if (this.runnerConfiguration.parent != null) {
 			context.setParent(this.runnerConfiguration.parent);
 		}
@@ -466,13 +418,15 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			((DefaultResourceLoader) context).setClassLoader(this.runnerConfiguration.classLoader);
 		}
 		this.runnerConfiguration.environmentProperties.applyTo(context);
+		this.runnerConfiguration.beanRegistrations.forEach((registration) -> registration.apply(context));
+		this.runnerConfiguration.initializers.forEach((initializer) -> initializer.initialize(context));
 		Class<?>[] classes = Configurations.getClasses(this.runnerConfiguration.configurations);
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
 		}
-		this.runnerConfiguration.beanRegistrations.forEach((registration) -> registration.apply(context));
-		this.runnerConfiguration.initializers.forEach((initializer) -> initializer.initialize(context));
-		context.refresh();
+		if (refresh) {
+			context.refresh();
+		}
 	}
 
 	private void accept(ContextConsumer<? super A> consumer, A context) {

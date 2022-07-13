@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.Filter;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.Servlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -141,8 +140,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
-		if (beanFactory instanceof BeanDefinitionRegistry) {
-			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			return registry.getBeanDefinition(beanName).getResourceDescription();
 		}
 		return "unknown";

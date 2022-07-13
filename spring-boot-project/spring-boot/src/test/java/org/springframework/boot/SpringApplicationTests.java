@@ -29,8 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +54,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.SpringApplicationHooks.Hook;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -115,6 +115,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
@@ -127,6 +128,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -229,29 +231,6 @@ class SpringApplicationTests {
 		this.context = application.run("--spring.banner.location=classpath:test-banner-with-placeholder.txt",
 				"--test.property=123456");
 		assertThat(output).containsPattern("Running a Test!\\s+123456");
-	}
-
-	@Test
-	void imageBannerAndTextBanner(CapturedOutput output) {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		MockResourceLoader resourceLoader = new MockResourceLoader();
-		resourceLoader.addResource("banner.gif", "black-and-white.gif");
-		resourceLoader.addResource("banner.txt", "foobar.txt");
-		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setResourceLoader(resourceLoader);
-		application.run();
-		assertThat(output).contains("@@@@").contains("Foo Bar");
-	}
-
-	@Test
-	void imageBannerLoads(CapturedOutput output) {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		MockResourceLoader resourceLoader = new MockResourceLoader();
-		resourceLoader.addResource("banner.gif", "black-and-white.gif");
-		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setResourceLoader(resourceLoader);
-		application.run();
-		assertThat(output).contains("@@@@@@");
 	}
 
 	@Test
@@ -1323,6 +1302,31 @@ class SpringApplicationTests {
 				.walk((s) -> s.filter(e -> Objects.equals(e.getMethodName(), "main")).findFirst()
 						.map(StackWalker.StackFrame::getDeclaringClass))
 				.orElse(null);
+    
+	void hookIsCalledWhenApplicationIsRun() throws Exception {
+		Hook hook = mock(Hook.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		given(hook.preRefresh(eq(application), any(ConfigurableApplicationContext.class))).willReturn(true);
+		this.context = SpringApplicationHooks.withHook(hook,
+				(ThrowingSupplier<ConfigurableApplicationContext>) application::run);
+		then(hook).should().preRun(application);
+		then(hook).should().preRefresh(application, this.context);
+		then(hook).should().postRun(application, this.context);
+		assertThat(this.context.isRunning()).isTrue();
+	}
+
+	@Test
+	void hookIsCalledAndCanPreventRefreshWhenApplicationIsRun() throws Exception {
+		Hook hook = mock(Hook.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = SpringApplicationHooks.withHook(hook,
+				(ThrowingSupplier<ConfigurableApplicationContext>) application::run);
+		then(hook).should().preRun(application);
+		then(hook).should().preRefresh(application, this.context);
+		then(hook).should().postRun(application, this.context);
+		assertThat(this.context.isRunning()).isFalse();
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
@@ -1341,7 +1345,7 @@ class SpringApplicationTests {
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final Class<?> propertySourceClass,
 			final String name) {
 
-		return new Condition<ConfigurableEnvironment>("has property source") {
+		return new Condition<>("has property source") {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
@@ -1357,7 +1361,7 @@ class SpringApplicationTests {
 	}
 
 	private Condition<ConfigurableApplicationContext> runTestRunnerBean(final String name) {
-		return new Condition<ConfigurableApplicationContext>("run testrunner bean") {
+		return new Condition<>("run testrunner bean") {
 
 			@Override
 			public boolean matches(ConfigurableApplicationContext value) {

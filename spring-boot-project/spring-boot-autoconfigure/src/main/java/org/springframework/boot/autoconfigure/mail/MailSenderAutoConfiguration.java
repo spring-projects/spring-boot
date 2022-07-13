@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
-import javax.activation.MimeType;
-import javax.mail.internet.MimeMessage;
+import jakarta.activation.MimeType;
+import jakarta.mail.internet.MimeMessage;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

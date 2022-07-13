@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 
@@ -147,83 +146,6 @@ public class MustacheProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.allow-request-override")
-	public boolean isAllowRequestOverride() {
-		return this.servlet.isAllowRequestOverride();
-	}
-
-	@Deprecated
-	public void setAllowRequestOverride(boolean allowRequestOverride) {
-		this.servlet.setAllowRequestOverride(allowRequestOverride);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.allow-session-override")
-	public boolean isAllowSessionOverride() {
-		return this.servlet.isAllowSessionOverride();
-	}
-
-	@Deprecated
-	public void setAllowSessionOverride(boolean allowSessionOverride) {
-		this.servlet.setAllowSessionOverride(allowSessionOverride);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.cache")
-	public boolean isCache() {
-		return this.servlet.isCache();
-	}
-
-	@Deprecated
-	public void setCache(boolean cache) {
-		this.servlet.setCache(cache);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.content-type")
-	public MimeType getContentType() {
-		return this.servlet.getContentType();
-	}
-
-	@Deprecated
-	public void setContentType(MimeType contentType) {
-		this.servlet.setContentType(contentType);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.expose-request-attributes")
-	public boolean isExposeRequestAttributes() {
-		return this.servlet.isExposeRequestAttributes();
-	}
-
-	@Deprecated
-	public void setExposeRequestAttributes(boolean exposeRequestAttributes) {
-		this.servlet.setExposeRequestAttributes(exposeRequestAttributes);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.expose-session-attributes")
-	public boolean isExposeSessionAttributes() {
-		return this.servlet.isExposeSessionAttributes();
-	}
-
-	@Deprecated
-	public void setExposeSessionAttributes(boolean exposeSessionAttributes) {
-		this.servlet.setExposeSessionAttributes(exposeSessionAttributes);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.expose-spring-macro-helpers")
-	public boolean isExposeSpringMacroHelpers() {
-		return this.servlet.isExposeSessionAttributes();
-	}
-
-	@Deprecated
-	public void setExposeSpringMacroHelpers(boolean exposeSpringMacroHelpers) {
-		this.servlet.setExposeSpringMacroHelpers(exposeSpringMacroHelpers);
 	}
 
 	public static class Servlet {

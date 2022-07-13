@@ -97,7 +97,7 @@ public final class RestTemplateExchangeTags {
 			if (response == null) {
 				return "CLIENT_ERROR";
 			}
-			return String.valueOf(response.getRawStatusCode());
+			return String.valueOf(response.getStatusCode().value());
 		}
 		catch (IOException ex) {
 			return "IO_ERROR";
@@ -128,7 +128,7 @@ public final class RestTemplateExchangeTags {
 	public static Tag outcome(ClientHttpResponse response) {
 		try {
 			if (response != null) {
-				return Outcome.forStatus(response.getRawStatusCode()).asTag();
+				return Outcome.forStatus(response.getStatusCode().value()).asTag();
 			}
 		}
 		catch (IOException ex) {

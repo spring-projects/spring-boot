@@ -152,8 +152,8 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			for (UpgradeProtocol upgradeProtocol : handler.findUpgradeProtocols()) {
-				if (upgradeProtocol instanceof Http2Protocol) {
-					((Http2Protocol) upgradeProtocol).setKeepAliveTimeout(keepAliveTimeout.toMillis());
+				if (upgradeProtocol instanceof Http2Protocol protocol) {
+					protocol.setKeepAliveTimeout(keepAliveTimeout.toMillis());
 				}
 			}
 			if (handler instanceof AbstractProtocol) {
@@ -280,11 +280,6 @@ public class TomcatWebServerFactoryCustomizer
 			if (handler instanceof AbstractHttp11Protocol) {
 				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
 				protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
-				for (UpgradeProtocol upgradeProtocol : protocol.findUpgradeProtocols()) {
-					if (upgradeProtocol instanceof Http2Protocol) {
-						((Http2Protocol) upgradeProtocol).setMaxHeaderSize(maxHttpHeaderSize);
-					}
-				}
 			}
 		});
 	}

@@ -381,8 +381,8 @@ public class Binder {
 			return context.getConverter().convert(result, target);
 		}
 		catch (Exception ex) {
-			if (ex instanceof BindException) {
-				throw (BindException) ex;
+			if (ex instanceof BindException bindException) {
+				throw bindException;
 			}
 			throw new BindException(name, target, context.getConfigurationProperty(), ex);
 		}

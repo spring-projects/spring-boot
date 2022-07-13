@@ -43,7 +43,7 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 
 	@Override
 	public String prefix() {
-		return "management.metrics.export.statsd";
+		return "management.statsd.metrics.export";
 	}
 
 	@Override

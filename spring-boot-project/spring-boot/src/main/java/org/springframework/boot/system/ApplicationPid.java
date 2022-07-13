@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
@@ -51,8 +50,7 @@ public class ApplicationPid {
 
 	private String getPid() {
 		try {
-			String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-			return jvmName.split("@")[0];
+			return Long.toString(ProcessHandle.current().pid());
 		}
 		catch (Throwable ex) {
 			return null;
@@ -64,8 +62,8 @@ public class ApplicationPid {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof ApplicationPid) {
-			return ObjectUtils.nullSafeEquals(this.pid, ((ApplicationPid) obj).pid);
+		if (obj instanceof ApplicationPid other) {
+			return ObjectUtils.nullSafeEquals(this.pid, other.pid);
 		}
 		return false;
 	}

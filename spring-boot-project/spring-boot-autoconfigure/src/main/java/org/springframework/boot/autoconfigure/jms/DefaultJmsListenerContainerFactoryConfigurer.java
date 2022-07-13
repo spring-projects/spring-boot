@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.time.Duration;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.ExceptionListener;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ExceptionListener;
 
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;

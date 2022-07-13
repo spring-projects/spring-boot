@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,8 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	private Map<EndpointId, PathMappedEndpoint> getEndpoints(Collection<EndpointsSupplier<?>> suppliers) {
 		Map<EndpointId, PathMappedEndpoint> endpoints = new LinkedHashMap<>();
 		suppliers.forEach((supplier) -> supplier.getEndpoints().forEach((endpoint) -> {
-			if (endpoint instanceof PathMappedEndpoint) {
-				endpoints.put(endpoint.getEndpointId(), (PathMappedEndpoint) endpoint);
+			if (endpoint instanceof PathMappedEndpoint pathMappedEndpoint) {
+				endpoints.put(endpoint.getEndpointId(), pathMappedEndpoint);
 			}
 		}));
 		return Collections.unmodifiableMap(endpoints);

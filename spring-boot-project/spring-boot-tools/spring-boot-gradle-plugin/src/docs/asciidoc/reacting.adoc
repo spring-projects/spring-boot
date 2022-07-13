@@ -65,9 +65,14 @@ When Gradle's {application-plugin}[`application` plugin] is applied to a project
 
 
 
-[[reacting-to-other-plugins.maven]]
-== Reacting to the Maven plugin
-WARNING: Support for reacting to Gradle's `maven` plugin is deprecated and will be removed in a future release.
-Please use the `maven-publish` plugin instead.
+[[reacting-to-other-plugins.nbt]]
+== Reacting to the GraalVM Native Image Plugin
+When the {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
 
-When Gradle's {maven-plugin}[`maven` plugin] is applied to a project, the Spring Boot plugin will configure the `uploadBootArchives` `Upload` task to ensure that no dependencies are declared in the pom that it generates.
+. Applies the `org.springframework.boot.aot` plugin that:
+.. Registers a `GenerateAotSources` task named `generateAotSources` that will generate AOT-optimized source code for the application.
+.. Configures the Java compilation and process resources tasks for the `aot` source set to depend upon `generateAotSources`.
+. Adds the output of the `aot` source set to the classpath of the `nativeCompile` task.
+. Configures the GraalVM extension to disable Toolchain detection.
+
+

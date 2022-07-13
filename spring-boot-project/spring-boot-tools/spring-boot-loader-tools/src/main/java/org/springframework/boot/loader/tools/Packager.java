@@ -96,23 +96,10 @@ public abstract class Packager {
 	 * @param source the source archive file to package
 	 */
 	protected Packager(File source) {
-		this(source, null);
-	}
-
-	/**
-	 * Create a new {@link Packager} instance.
-	 * @param source the source archive file to package
-	 * @param layoutFactory the layout factory to use or {@code null}
-	 * @deprecated since 2.3.10 for removal in 2.5 in favor of {@link #Packager(File)} and
-	 * {@link #setLayoutFactory(LayoutFactory)}
-	 */
-	@Deprecated
-	protected Packager(File source, LayoutFactory layoutFactory) {
 		Assert.notNull(source, "Source file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
 				() -> "Source must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
-		this.layoutFactory = layoutFactory;
 	}
 
 	/**
@@ -218,8 +205,8 @@ public abstract class Packager {
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
 		Layout layout = getLayout();
-		if (layout instanceof CustomLoaderLayout) {
-			((CustomLoaderLayout) getLayout()).writeLoadedClasses(writer);
+		if (layout instanceof CustomLoaderLayout customLoaderLayout) {
+			customLoaderLayout.writeLoadedClasses(writer);
 		}
 		else if (layout.isExecutable()) {
 			writer.writeLoaderClasses();
@@ -236,8 +223,8 @@ public abstract class Packager {
 	}
 
 	private EntryTransformer getEntityTransformer() {
-		if (getLayout() instanceof RepackagingLayout) {
-			return new RepackagingEntryTransformer((RepackagingLayout) getLayout());
+		if (getLayout() instanceof RepackagingLayout repackagingLayout) {
+			return new RepackagingEntryTransformer(repackagingLayout);
 		}
 		return EntryTransformer.NONE;
 	}
@@ -362,8 +349,8 @@ public abstract class Packager {
 
 	private void addBootAttributesForLayout(Attributes attributes) {
 		Layout layout = getLayout();
-		if (layout instanceof RepackagingLayout) {
-			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, ((RepackagingLayout) layout).getRepackagedClassesLocation());
+		if (layout instanceof RepackagingLayout repackagingLayout) {
+			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, repackagingLayout.getRepackagedClassesLocation());
 		}
 		else {
 			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getClassesLocation());

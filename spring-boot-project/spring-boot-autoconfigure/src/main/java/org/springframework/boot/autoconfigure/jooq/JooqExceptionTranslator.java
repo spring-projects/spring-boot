@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.sql.SQLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.ExecuteContext;
+import org.jooq.ExecuteListener;
 import org.jooq.SQLDialect;
-import org.jooq.impl.DefaultExecuteListener;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
@@ -39,7 +39,7 @@ import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
  * @author Stephane Nicoll
  * @since 1.5.10
  */
-public class JooqExceptionTranslator extends DefaultExecuteListener {
+public class JooqExceptionTranslator implements ExecuteListener {
 
 	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
 

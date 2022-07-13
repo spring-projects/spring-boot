@@ -15,6 +15,6 @@
  */
 
 /**
- * Classes and utilities designed to work with the {@code javax.servlet} specification.
+ * Classes and utilities designed to work with the {@code jakarta.servlet} specification.
  */
 package org.springframework.boot.web.servlet;

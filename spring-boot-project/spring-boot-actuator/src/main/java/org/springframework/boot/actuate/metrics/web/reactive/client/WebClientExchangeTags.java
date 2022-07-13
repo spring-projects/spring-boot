@@ -86,7 +86,7 @@ public final class WebClientExchangeTags {
 	 */
 	public static Tag status(ClientResponse response, Throwable throwable) {
 		if (response != null) {
-			return Tag.of("status", String.valueOf(response.rawStatusCode()));
+			return Tag.of("status", String.valueOf(response.statusCode().value()));
 		}
 		if (throwable != null) {
 			return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
@@ -117,7 +117,7 @@ public final class WebClientExchangeTags {
 	 * @since 2.2.0
 	 */
 	public static Tag outcome(ClientResponse response) {
-		Outcome outcome = (response != null) ? Outcome.forStatus(response.rawStatusCode()) : Outcome.UNKNOWN;
+		Outcome outcome = (response != null) ? Outcome.forStatus(response.statusCode().value()) : Outcome.UNKNOWN;
 		return outcome.asTag();
 	}
 

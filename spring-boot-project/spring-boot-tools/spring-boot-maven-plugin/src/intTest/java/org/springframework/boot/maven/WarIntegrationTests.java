@@ -56,7 +56,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-core")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl")
-						.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-4")
+						.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-5")
 						.hasEntryWithName("org/springframework/boot/loader/WarLauncher.class")
 						.hasEntryWithName("WEB-INF/classes/org/test/SampleApplication.class")
 						.hasEntryWithName("index.html")

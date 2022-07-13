@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,17 +86,6 @@ public final class ConfigData {
 	 */
 	public List<PropertySource<?>> getPropertySources() {
 		return this.propertySources;
-	}
-
-	/**
-	 * Return a set of {@link Option config data options} for this source.
-	 * @return the config data options
-	 * @deprecated since 2.4.5 in favor of {@link #getOptions(PropertySource)}
-	 */
-	@Deprecated
-	public Set<Option> getOptions() {
-		Assert.state(this.propertySourceOptions instanceof AlwaysPropertySourceOptions, "No global options defined");
-		return this.propertySourceOptions.get(null).asSet();
 	}
 
 	/**

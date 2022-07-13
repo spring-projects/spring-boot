@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,12 +77,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		OutcomesResolver outcomesResolver = new StandardOutcomesResolver(autoConfigurationClasses, start, end,
 				autoConfigurationMetadata, getBeanClassLoader());
-		try {
-			return new ThreadedOutcomesResolver(outcomesResolver);
-		}
-		catch (AccessControlException ex) {
-			return outcomesResolver;
-		}
+		return new ThreadedOutcomesResolver(outcomesResolver);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Chris Bono
  */
+@SuppressWarnings("deprecation")
 @SpringBootTest
 @AutoConfigureMetrics
 class AutoConfigureMetricsPresentIntegrationTests {
@@ -44,8 +45,8 @@ class AutoConfigureMetricsPresentIntegrationTests {
 
 	@Test
 	void customizerDoesNotSetExclusionPropertiesWhenAnnotationPresent(@Autowired Environment environment) {
-		assertThat(environment.containsProperty("management.metrics.export.enabled")).isFalse();
-		assertThat(environment.containsProperty("management.metrics.export.simple.enabled")).isFalse();
+		assertThat(environment.containsProperty("management.defaults.metrics.export.enabled")).isFalse();
+		assertThat(environment.containsProperty("management.simple.metrics.export.enabled")).isFalse();
 	}
 
 }

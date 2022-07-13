@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package org.springframework.boot.web.servlet.filter;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.springframework.core.Ordered;
 
 /**
- * An {@link Ordered} {@link javax.servlet.Filter}.
+ * An {@link Ordered} {@link jakarta.servlet.Filter}.
  *
  * @author Phillip Webb
  * @since 2.1.0

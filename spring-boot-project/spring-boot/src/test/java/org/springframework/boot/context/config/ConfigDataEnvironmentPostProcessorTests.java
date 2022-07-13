@@ -36,10 +36,8 @@ import org.springframework.core.io.ResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -68,12 +66,6 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Captor
 	private ArgumentCaptor<ResourceLoader> resourceLoaderCaptor;
-
-	@Test
-	@Deprecated
-	void defaultOrderMatchesDeprecatedListener() {
-		assertThat(ConfigDataEnvironmentPostProcessor.ORDER).isEqualTo(ConfigFileApplicationListener.DEFAULT_ORDER);
-	}
 
 	@Test
 	void postProcessEnvironmentWhenNoLoaderCreatesDefaultLoaderInstance() {
@@ -116,33 +108,6 @@ class ConfigDataEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	void postProcessEnvironmentWhenUseLegacyProcessingSwitchesToLegacyMethod() {
-		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
-				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
-		willThrow(new UseLegacyConfigProcessingException(null)).given(this.postProcessor)
-				.getConfigDataEnvironment(any(), any(), any());
-		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
-		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		then(this.configDataEnvironment).shouldHaveNoInteractions();
-		then(legacyListener).should().addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
-		assertThat(this.environment.getActiveProfiles()).isEmpty();
-	}
-
-	@Test
-	void postProcessEnvironmentWhenHasAdditionalProfilesAndUseLegacyProcessing() {
-		this.application.setAdditionalProfiles("dev");
-		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
-				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
-		willThrow(new UseLegacyConfigProcessingException(null)).given(this.postProcessor)
-				.getConfigDataEnvironment(any(), any(), any());
-		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
-		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		then(this.configDataEnvironment).shouldHaveNoInteractions();
-		then(legacyListener).should().addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
-		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
-	}
-
-	@Test
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
 		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
@@ -157,8 +122,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	}
 
 	private boolean hasDevProfile(ConfigDataResource resource) {
-		return (resource instanceof StandardConfigDataResource)
-				&& "dev".equals(((StandardConfigDataResource) resource).getProfile());
+		return (resource instanceof StandardConfigDataResource standardResource)
+				&& "dev".equals(standardResource.getProfile());
 	}
 
 }

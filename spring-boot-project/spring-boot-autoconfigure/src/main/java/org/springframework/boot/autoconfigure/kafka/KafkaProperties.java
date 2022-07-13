@@ -34,7 +34,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -883,6 +882,12 @@ public class KafkaProperties {
 		private AckMode ackMode;
 
 		/**
+		 * Support for asynchronous record acknowledgements. Only applies when
+		 * spring.kafka.listener.ack-mode is manual or manual-immediate.
+		 */
+		private Boolean asyncAcks;
+
+		/**
 		 * Prefix for the listener's consumer client.id property.
 		 */
 		private String clientId;
@@ -943,12 +948,6 @@ public class KafkaProperties {
 		private Boolean logContainerConfig;
 
 		/**
-		 * Whether to suppress the entire record from being written to the log when
-		 * retries are being attempted.
-		 */
-		private boolean onlyLogRecordMetadata = true;
-
-		/**
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
@@ -974,6 +973,14 @@ public class KafkaProperties {
 
 		public void setAckMode(AckMode ackMode) {
 			this.ackMode = ackMode;
+		}
+
+		public Boolean getAsyncAcks() {
+			return this.asyncAcks;
+		}
+
+		public void setAsyncAcks(Boolean asyncAcks) {
+			this.asyncAcks = asyncAcks;
 		}
 
 		public String getClientId() {
@@ -1062,17 +1069,6 @@ public class KafkaProperties {
 
 		public void setLogContainerConfig(Boolean logContainerConfig) {
 			this.logContainerConfig = logContainerConfig;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "Use KafkaUtils#setConsumerRecordFormatter instead.")
-		public boolean isOnlyLogRecordMetadata() {
-			return this.onlyLogRecordMetadata;
-		}
-
-		@Deprecated
-		public void setOnlyLogRecordMetadata(boolean onlyLogRecordMetadata) {
-			this.onlyLogRecordMetadata = onlyLogRecordMetadata;
 		}
 
 		public boolean isMissingTopicsFatal() {

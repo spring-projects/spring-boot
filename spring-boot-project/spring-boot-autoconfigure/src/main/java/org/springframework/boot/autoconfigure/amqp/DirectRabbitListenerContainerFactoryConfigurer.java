@@ -32,16 +32,6 @@ public final class DirectRabbitListenerContainerFactoryConfigurer
 		extends AbstractRabbitListenerContainerFactoryConfigurer<DirectRabbitListenerContainerFactory> {
 
 	/**
-	 * Creates a new configurer.
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #DirectRabbitListenerContainerFactoryConfigurer(RabbitProperties)}
-	 */
-	@Deprecated
-	public DirectRabbitListenerContainerFactoryConfigurer() {
-		super();
-	}
-
-	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
 	 * @param rabbitProperties properties to use
 	 * @since 2.6.0

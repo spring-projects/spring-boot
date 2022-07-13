@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.validation;
 
-import javax.validation.MessageInterpolator;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidationException;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +43,7 @@ class MessageInterpolatorFactoryWithoutElIntegrationTests {
 		// Sanity test
 		assertThatExceptionOfType(ValidationException.class)
 				.isThrownBy(Validation.byDefaultProvider().configure()::getDefaultMessageInterpolator)
-				.withMessageContaining("javax.el.ExpressionFactory");
+				.withMessageContaining("jakarta.el.ExpressionFactory");
 	}
 
 	@Test

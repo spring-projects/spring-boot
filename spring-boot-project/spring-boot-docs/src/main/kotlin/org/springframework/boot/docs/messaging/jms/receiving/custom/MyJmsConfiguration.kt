@@ -16,11 +16,11 @@
 
 package org.springframework.boot.docs.messaging.jms.receiving.custom
 
+import jakarta.jms.ConnectionFactory
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory
-import javax.jms.ConnectionFactory
 
 @Configuration(proxyBeanMethods = false)
 class MyJmsConfiguration {

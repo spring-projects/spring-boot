@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import org.eclipse.jetty.util.thread.ShutdownThread;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
-import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import org.eclipse.jetty.websocket.core.server.WebSocketMappings;
+import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
+import org.eclipse.jetty.websocket.jakarta.server.internal.JakartaWebSocketServerContainer;
+import org.eclipse.jetty.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -43,8 +45,18 @@ public class JettyWebSocketServletWebServerCustomizer
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
-				ServerContainer serverContainer = WebSocketServerContainerInitializer.initialize(context);
-				ShutdownThread.deregister(serverContainer);
+				if (JettyWebSocketServerContainer.getContainer(context.getServletContext()) == null) {
+					WebSocketServerComponents.ensureWebSocketComponents(context.getServer(),
+							context.getServletContext());
+					JettyWebSocketServerContainer.ensureContainer(context.getServletContext());
+				}
+				if (JakartaWebSocketServerContainer.getContainer(context.getServletContext()) == null) {
+					WebSocketServerComponents.ensureWebSocketComponents(context.getServer(),
+							context.getServletContext());
+					WebSocketUpgradeFilter.ensureFilter(context.getServletContext());
+					WebSocketMappings.ensureMappings(context.getServletContext());
+					JakartaWebSocketServerContainer.ensureContainer(context.getServletContext());
+				}
 			}
 
 		});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.gradle.plugin;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
@@ -37,18 +35,11 @@ class SpringBootPluginIntegrationTests {
 
 	final GradleBuild gradleBuild = new GradleBuild();
 
-	@DisabledForJreRange(min = JRE.JAVA_14)
 	@Test
-	void failFastWithVersionOfGradle6LowerThanRequired() {
-		BuildResult result = this.gradleBuild.gradleVersion("6.7.1").buildAndFail();
-		assertThat(result.getOutput()).contains(
-				"Spring Boot plugin requires Gradle 6.8.x, 6.9.x, or 7.x. The current version is Gradle 6.7.1");
-	}
-
-	@DisabledForJreRange(min = JRE.JAVA_16)
-	@Test
-	void succeedWithVersionOfGradle6MatchingWithIsRequired() {
-		this.gradleBuild.gradleVersion("6.8").build();
+	void failFastWithVersionOfGradle7LowerThanRequired() {
+		BuildResult result = this.gradleBuild.gradleVersion("7.3.3").buildAndFail();
+		assertThat(result.getOutput())
+				.contains("Spring Boot plugin requires Gradle 7.x (7.4 or later). The current version is Gradle 7.3.3");
 	}
 
 }

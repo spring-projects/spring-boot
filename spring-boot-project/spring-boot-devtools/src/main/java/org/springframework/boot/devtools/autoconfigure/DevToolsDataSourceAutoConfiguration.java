@@ -71,8 +71,8 @@ public class DevToolsDataSourceAutoConfiguration {
 	}
 
 	/**
-	 * Post processor to ensure that {@link javax.persistence.EntityManagerFactory} beans
-	 * depend on the {@code inMemoryDatabaseShutdownExecutor} bean.
+	 * Post processor to ensure that {@link jakarta.persistence.EntityManagerFactory}
+	 * beans depend on the {@code inMemoryDatabaseShutdownExecutor} bean.
 	 */
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
@@ -186,11 +186,10 @@ public class DevToolsDataSourceAutoConfiguration {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSourceProperties bean").atAll());
 			}
 			BeanDefinition dataSourceDefinition = context.getRegistry().getBeanDefinition(dataSourceBeanNames[0]);
-			if (dataSourceDefinition instanceof AnnotatedBeanDefinition
-					&& ((AnnotatedBeanDefinition) dataSourceDefinition).getFactoryMethodMetadata() != null
-					&& ((AnnotatedBeanDefinition) dataSourceDefinition).getFactoryMethodMetadata()
-							.getDeclaringClassName().startsWith(DataSourceAutoConfiguration.class.getPackage().getName()
-									+ ".DataSourceConfiguration$")) {
+			if (dataSourceDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition
+					&& annotatedBeanDefinition.getFactoryMethodMetadata() != null
+					&& annotatedBeanDefinition.getFactoryMethodMetadata().getDeclaringClassName().startsWith(
+							DataSourceAutoConfiguration.class.getPackage().getName() + ".DataSourceConfiguration$")) {
 				return ConditionOutcome.match(message.foundExactly("auto-configured DataSource"));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("an auto-configured DataSource").atAll());

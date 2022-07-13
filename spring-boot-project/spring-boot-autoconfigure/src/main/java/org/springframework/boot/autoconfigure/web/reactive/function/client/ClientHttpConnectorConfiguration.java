@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -82,8 +84,11 @@ class ClientHttpConnectorConfiguration {
 		@Bean
 		@Lazy
 		JettyClientHttpConnector jettyClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
-			SslContextFactory sslContextFactory = new SslContextFactory.Client();
-			HttpClient httpClient = new HttpClient(sslContextFactory);
+			SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+			ClientConnector connector = new ClientConnector();
+			connector.setSslContextFactory(sslContextFactory);
+			HttpClientTransportOverHTTP transport = new HttpClientTransportOverHTTP(connector);
+			HttpClient httpClient = new HttpClient(transport);
 			return new JettyClientHttpConnector(httpClient, jettyResourceFactory);
 		}
 

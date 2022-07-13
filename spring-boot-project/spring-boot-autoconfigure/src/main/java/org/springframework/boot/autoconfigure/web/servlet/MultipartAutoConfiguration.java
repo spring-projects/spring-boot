@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.Servlet;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,18 +30,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for multipart uploads. Adds a
  * {@link StandardServletMultipartResolver} if none is present, and adds a
- * {@link javax.servlet.MultipartConfigElement multipartConfigElement} if none is
+ * {@link jakarta.servlet.MultipartConfigElement multipartConfigElement} if none is
  * otherwise defined. The {@link ServletWebServerApplicationContext} will associate the
  * {@link MultipartConfigElement} bean to any {@link Servlet} beans.
  * <p>
- * The {@link javax.servlet.MultipartConfigElement} is a Servlet API that's used to
+ * The {@link jakarta.servlet.MultipartConfigElement} is a Servlet API that's used to
  * configure how the server handles file uploads.
  *
  * @author Greg Turnquist
@@ -63,7 +62,7 @@ public class MultipartAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ MultipartConfigElement.class, CommonsMultipartResolver.class })
+	@ConditionalOnMissingBean(MultipartConfigElement.class)
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}

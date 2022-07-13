@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
+import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
@@ -42,12 +43,11 @@ import org.springframework.boot.configurationsample.lombok.LombokExplicitPropert
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
+import org.springframework.boot.configurationsample.simple.AutowiredProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
-import org.springframework.boot.configurationsample.specific.MatchingConstructorNoDirectiveProperties;
-import org.springframework.boot.configurationsample.specific.TwoConstructorsClassConstructorBindingExample;
 import org.springframework.boot.configurationsample.specific.TwoConstructorsExample;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 
@@ -112,6 +112,14 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
+	void propertiesWithDeducedConstructorBinding() throws IOException {
+		process(ImmutableDeducedConstructorBindingProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag")));
+		process(ImmutableDeducedConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
+				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+	}
+
+	@Test
 	void propertiesWithConstructorWithConstructorBinding() throws IOException {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
@@ -128,16 +136,9 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithConstructorAndClassConstructorBindingAndSeveralCandidates() throws IOException {
-		process(TwoConstructorsClassConstructorBindingExample.class,
-				propertyNames((stream) -> assertThat(stream).isEmpty()));
-	}
-
-	@Test
-	void propertiesWithConstructorNoDirective() throws IOException {
-		process(MatchingConstructorNoDirectiveProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name")));
-		process(MatchingConstructorNoDirectiveProperties.class, properties((stream) -> assertThat(stream)
+	void propertiesWithAutowiredConstructor() throws IOException {
+		process(AutowiredProperties.class, propertyNames((stream) -> assertThat(stream).containsExactly("theName")));
+		process(AutowiredProperties.class, properties((stream) -> assertThat(stream)
 				.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 

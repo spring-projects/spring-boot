@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docs.howto.dataaccess.usemultipleentitymanagers
 
+import javax.sql.DataSource
+
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
@@ -24,7 +26,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
-import javax.sql.DataSource
 
 @Suppress("UNUSED_PARAMETER")
 @Configuration(proxyBeanMethods = false)

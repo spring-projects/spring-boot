@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.util.Assert;

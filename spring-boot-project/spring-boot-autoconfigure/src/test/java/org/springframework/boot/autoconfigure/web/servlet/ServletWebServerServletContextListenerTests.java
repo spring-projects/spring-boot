@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;

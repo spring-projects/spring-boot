@@ -1,4 +1,5 @@
-@Grab("org.codehaus.groovy:groovy-ant:2.1.6")
+@Grab("org.apache.groovy:groovy-ant:4.0.1")
+import groovy.ant.AntBuilder
 
 @RestController
 class MainController {

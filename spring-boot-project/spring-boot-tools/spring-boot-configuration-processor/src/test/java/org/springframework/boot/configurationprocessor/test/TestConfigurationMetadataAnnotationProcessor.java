@@ -59,6 +59,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.configurationsample.ConstructorBinding";
 
+	public static final String AUTOWIRED_ANNOTATION = "org.springframework.boot.configurationsample.Autowired";
+
 	public static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.configurationsample.DefaultValue";
 
 	public static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.ControllerEndpoint";
@@ -103,6 +105,11 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	@Override
 	protected String constructorBindingAnnotation() {
 		return CONSTRUCTOR_BINDING_ANNOTATION;
+	}
+
+	@Override
+	protected String autowiredAnnotation() {
+		return AUTOWIRED_ANNOTATION;
 	}
 
 	@Override

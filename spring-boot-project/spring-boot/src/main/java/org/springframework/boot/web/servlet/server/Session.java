@@ -126,7 +126,7 @@ public class Session {
 
 	/**
 	 * Available session tracking modes (mirrors
-	 * {@link javax.servlet.SessionTrackingMode}.
+	 * {@link jakarta.servlet.SessionTrackingMode}.
 	 */
 	public enum SessionTrackingMode {
 

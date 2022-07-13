@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package org.springframework.boot.web.embedded.tomcat;
 
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.UpgradeProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.apache.coyote.http2.Http2Protocol;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.util.StringUtils;
@@ -46,21 +44,6 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 			if (handler instanceof AbstractHttp11Protocol) {
 				customize((AbstractHttp11Protocol<?>) handler);
 			}
-			for (UpgradeProtocol upgradeProtocol : connector.findUpgradeProtocols()) {
-				if (upgradeProtocol instanceof Http2Protocol) {
-					customize((Http2Protocol) upgradeProtocol);
-				}
-			}
-		}
-	}
-
-	private void customize(Http2Protocol protocol) {
-		Compression compression = this.compression;
-		protocol.setCompression("on");
-		protocol.setCompressionMinSize(getMinResponseSize(compression));
-		protocol.setCompressibleMimeType(getMimeTypes(compression));
-		if (this.compression.getExcludedUserAgents() != null) {
-			protocol.setNoCompressionUserAgents(getExcludedUserAgents());
 		}
 	}
 

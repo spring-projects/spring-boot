@@ -158,8 +158,8 @@ public final class ConfigurationPropertySources {
 	}
 
 	private static Stream<PropertySource<?>> flatten(PropertySource<?> source) {
-		if (source.getSource() instanceof ConfigurableEnvironment) {
-			return streamPropertySources(((ConfigurableEnvironment) source.getSource()).getPropertySources());
+		if (source.getSource() instanceof ConfigurableEnvironment configurableEnvironment) {
+			return streamPropertySources(configurableEnvironment.getPropertySources());
 		}
 		return Stream.of(source);
 	}

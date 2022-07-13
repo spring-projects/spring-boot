@@ -7,5 +7,6 @@ description = "Starter for using Spring Boot's Actuator which provides productio
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	api("io.micrometer:micrometer-observation")
 	api("io.micrometer:micrometer-core")
 }

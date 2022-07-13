@@ -88,7 +88,7 @@ A number of configuration options that are specific to executable jars and wars 
 
 [[packaging-executable.configuring.main-class]]
 === Configuring the Main Class
-By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
+By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in the main source set's output.
 
 The main class can also be configured explicitly using the task's `mainClass` property:
 

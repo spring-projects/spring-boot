@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,14 @@ class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
-		this.contextRunner.withPropertyValues("management.metrics.export.defaults.enabled=false")
+		this.contextRunner.withPropertyValues("management.defaults.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
 						.doesNotHaveBean(StatsdConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
-		this.contextRunner.withPropertyValues("management.metrics.export.statsd.enabled=false")
+		this.contextRunner.withPropertyValues("management.statsd.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
 						.doesNotHaveBean(StatsdConfig.class));
 	}

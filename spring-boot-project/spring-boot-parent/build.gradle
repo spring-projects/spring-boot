@@ -41,7 +41,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Inject", "1.0.5") {
+	library("Jakarta Inject", "2.0.1") {
 		group("jakarta.inject") {
 			modules = [
 				"jakarta.inject-api"
@@ -129,6 +129,13 @@ bom {
 			]
 		}
 	}
+	library("Native Gradle Plugin", "${nativeBuildToolsVersion}") {
+		group("org.graalvm.buildtools") {
+			modules = [
+				"native-gradle-plugin"
+			]
+		}		
+	}
 	library("Plexus Build API", "0.0.7") {
 		group("org.sonatype.plexus") {
 			modules = [
@@ -157,11 +164,10 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "2.0-groovy-3.0") {
+	library("Spock Framework", "2.2-M1-groovy-4.0") {
 		group("org.spockframework") {
-			modules = [
-				"spock-core",
-				"spock-spring"
+			imports = [
+				"spock-bom"
 			]
 		}
 	}
@@ -191,4 +197,9 @@ bom {
 
 dependencies {
 	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+	// Internal module so enforced platform dependencies are OK
+	suppressedValidationErrors.add('enforced-platform')
 }

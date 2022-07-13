@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,15 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,7 +40,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.util.NestedServletException;
 
 /**
  * Intercepts incoming HTTP requests handled by Spring MVC handlers and records metrics
@@ -105,13 +103,13 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		}
 		catch (Exception ex) {
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			record(timingContext, request, response, unwrapNestedServletException(ex));
+			record(timingContext, request, response, unwrapServletException(ex));
 			throw ex;
 		}
 	}
 
-	private Throwable unwrapNestedServletException(Throwable ex) {
-		return (ex instanceof NestedServletException) ? ex.getCause() : ex;
+	private Throwable unwrapServletException(Throwable ex) {
+		return (ex instanceof ServletException) ? ex.getCause() : ex;
 	}
 
 	private TimingContext startAndAttachTimingContext(HttpServletRequest request) {
@@ -135,8 +133,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			Object handler = getHandler(request);
 			Set<Timed> annotations = getTimedAnnotations(handler);
 			Timer.Sample timerSample = timingContext.getTimerSample();
-			AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-					(builder) -> timerSample.stop(getTimer(builder, handler, request, response, exception)));
+			AutoTimer.apply(this.autoTimer, this.metricName, annotations, (builder) -> timerSample
+					.stop(getTimer(builder, handler, request, response, exception).register(this.registry)));
 		}
 		catch (Exception ex) {
 			logger.warn("Failed to record timer metrics", ex);
@@ -149,16 +147,15 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	}
 
 	private Set<Timed> getTimedAnnotations(Object handler) {
-		if (handler instanceof HandlerMethod) {
-			HandlerMethod handlerMethod = (HandlerMethod) handler;
+		if (handler instanceof HandlerMethod handlerMethod) {
 			return TimedAnnotations.get(handlerMethod.getMethod(), handlerMethod.getBeanType());
 		}
 		return Collections.emptySet();
 	}
 
-	private Timer getTimer(Builder builder, Object handler, HttpServletRequest request, HttpServletResponse response,
-			Throwable exception) {
-		return builder.tags(this.tagsProvider.getTags(request, response, handler, exception)).register(this.registry);
+	private Timer.Builder getTimer(Builder builder, Object handler, HttpServletRequest request,
+			HttpServletResponse response, Throwable exception) {
+		return builder.tags(this.tagsProvider.getTags(request, response, handler, exception));
 	}
 
 	/**

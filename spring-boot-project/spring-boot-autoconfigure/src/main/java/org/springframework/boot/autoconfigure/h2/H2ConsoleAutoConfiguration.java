@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.h2.server.web.WebServlet;
+import org.h2.server.web.JakartaWebServlet;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -50,7 +50,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass(WebServlet.class)
+@ConditionalOnClass(JakartaWebServlet.class)
 @ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 public class H2ConsoleAutoConfiguration {
@@ -58,11 +58,12 @@ public class H2ConsoleAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(H2ConsoleAutoConfiguration.class);
 
 	@Bean
-	public ServletRegistrationBean<WebServlet> h2Console(H2ConsoleProperties properties,
+	public ServletRegistrationBean<JakartaWebServlet> h2Console(H2ConsoleProperties properties,
 			ObjectProvider<DataSource> dataSource) {
 		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
-		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet(), urlMapping);
+		ServletRegistrationBean<JakartaWebServlet> registration = new ServletRegistrationBean<>(new JakartaWebServlet(),
+				urlMapping);
 		configureH2ConsoleSettings(registration, properties.getSettings());
 		if (logger.isInfoEnabled()) {
 			logDataSources(dataSource, path);
@@ -88,7 +89,8 @@ public class H2ConsoleAutoConfiguration {
 		}
 	}
 
-	private void configureH2ConsoleSettings(ServletRegistrationBean<WebServlet> registration, Settings settings) {
+	private void configureH2ConsoleSettings(ServletRegistrationBean<JakartaWebServlet> registration,
+			Settings settings) {
 		if (settings.isTrace()) {
 			registration.addInitParameter("trace", "");
 		}

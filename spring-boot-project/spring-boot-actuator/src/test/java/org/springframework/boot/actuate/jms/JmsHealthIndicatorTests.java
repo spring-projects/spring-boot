@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.jms;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.ConnectionMetaData;
-import javax.jms.JMSException;
-
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ConnectionMetaData;
+import jakarta.jms.JMSException;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

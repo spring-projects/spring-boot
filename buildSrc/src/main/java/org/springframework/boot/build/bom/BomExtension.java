@@ -300,7 +300,7 @@ public class BomExtension {
 
 			public void setModules(List<Object> modules) {
 				this.modules = modules.stream()
-						.map((input) -> (input instanceof Module) ? (Module) input : new Module((String) input))
+						.map((input) -> (input instanceof Module module) ? module : new Module((String) input))
 						.collect(Collectors.toList());
 			}
 
@@ -315,9 +315,8 @@ public class BomExtension {
 			public Object methodMissing(String name, Object args) {
 				if (args instanceof Object[] && ((Object[]) args).length == 1) {
 					Object arg = ((Object[]) args)[0];
-					if (arg instanceof Closure) {
+					if (arg instanceof Closure<?> closure) {
 						ModuleHandler moduleHandler = new ModuleHandler();
-						Closure<?> closure = (Closure<?>) arg;
 						closure.setResolveStrategy(Closure.DELEGATE_FIRST);
 						closure.setDelegate(moduleHandler);
 						closure.call(moduleHandler);

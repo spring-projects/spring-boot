@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.micrometer.core.instrument.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,6 +69,22 @@ class DefaultWebMvcTagsProviderTests {
 				new DefaultWebMvcTagsProvider(Arrays.asList(new TestWebMvcTagsContributor("alpha"),
 						new TestWebMvcTagsContributor("bravo", "charlie"))).getLongRequestTags(null, null));
 		assertThat(tags).containsOnlyKeys("method", "uri", "alpha", "bravo", "charlie");
+	}
+
+	@Test
+	void trailingSlashIsIncludedByDefault() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/the/uri/");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "{one}/{two}/");
+		Map<String, Tag> tags = asMap(new DefaultWebMvcTagsProvider().getTags(request, null, null, null));
+		assertThat(tags.get("uri").getValue()).isEqualTo("{one}/{two}/");
+	}
+
+	@Test
+	void trailingSlashCanBeIgnored() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/the/uri/");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "{one}/{two}/");
+		Map<String, Tag> tags = asMap(new DefaultWebMvcTagsProvider(true).getTags(request, null, null, null));
+		assertThat(tags.get("uri").getValue()).isEqualTo("{one}/{two}");
 	}
 
 	private Map<String, Tag> asMap(Iterable<Tag> tags) {

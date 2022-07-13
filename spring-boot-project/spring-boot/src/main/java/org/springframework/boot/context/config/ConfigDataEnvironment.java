@@ -41,6 +41,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
@@ -138,7 +139,6 @@ class ConfigDataEnvironment {
 			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles,
 			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		Binder binder = Binder.get(environment);
-		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
 		this.notFoundAction = binder.bind(ON_NOT_FOUND_PROPERTY, ConfigDataNotFoundAction.class)
@@ -149,13 +149,15 @@ class ConfigDataEnvironment {
 		this.additionalProfiles = additionalProfiles;
 		this.environmentUpdateListener = (environmentUpdateListener != null) ? environmentUpdateListener
 				: ConfigDataEnvironmentUpdateListener.NONE;
-		this.loaders = new ConfigDataLoaders(logFactory, bootstrapContext, resourceLoader.getClassLoader());
+		this.loaders = new ConfigDataLoaders(logFactory, bootstrapContext,
+				SpringFactoriesLoader.forDefaultResourceLocation());
 		this.contributors = createContributors(binder);
 	}
 
 	protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext, Binder binder, ResourceLoader resourceLoader) {
-		return new ConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader);
+		return new ConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader,
+				SpringFactoriesLoader.forDefaultResourceLocation(resourceLoader.getClassLoader()));
 	}
 
 	private ConfigDataEnvironmentContributors createContributors(Binder binder) {
@@ -248,8 +250,8 @@ class ConfigDataEnvironment {
 			return new ConfigDataActivationContext(this.environment, initialBinder);
 		}
 		catch (BindException ex) {
-			if (ex.getCause() instanceof InactiveConfigDataAccessException) {
-				throw (InactiveConfigDataAccessException) ex.getCause();
+			if (ex.getCause() instanceof InactiveConfigDataAccessException inactiveException) {
+				throw inactiveException;
 			}
 			throw ex;
 		}
@@ -276,8 +278,8 @@ class ConfigDataEnvironment {
 			return activationContext.withProfiles(profiles);
 		}
 		catch (BindException ex) {
-			if (ex.getCause() instanceof InactiveConfigDataAccessException) {
-				throw (InactiveConfigDataAccessException) ex.getCause();
+			if (ex.getCause() instanceof InactiveConfigDataAccessException inactiveException) {
+				throw inactiveException;
 			}
 			throw ex;
 		}
@@ -358,7 +360,7 @@ class ConfigDataEnvironment {
 
 	private void checkForInvalidProperties(ConfigDataEnvironmentContributors contributors) {
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
-			InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
+			InvalidConfigDataPropertyException.throwIfPropertyFound(contributor);
 		}
 	}
 

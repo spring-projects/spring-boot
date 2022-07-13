@@ -29,9 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -102,6 +101,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			HttpServletRequest.class, Map.class);
 
 	private RequestMappingInfo.BuilderConfiguration builderConfig = new RequestMappingInfo.BuilderConfiguration();
+
+	/**
+	 * Instance of {@link PathPatternParser} shared across actuator configuration.
+	 */
+	public static final PathPatternParser pathPatternParser = new PathPatternParser();
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
@@ -241,9 +245,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private void registerLinksMapping() {
-		RequestMappingInfo mapping = RequestMappingInfo.paths(this.endpointMapping.createSubPath(""))
-				.methods(RequestMethod.GET).produces(this.endpointMediaTypes.getProduced().toArray(new String[0]))
-				.options(this.builderConfig).build();
+		String path = this.endpointMapping.getPath();
+		String linksPath = (StringUtils.hasLength(path)) ? this.endpointMapping.createSubPath("/") : "/";
+		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath).methods(RequestMethod.GET)
+				.produces(this.endpointMediaTypes.getProduced().toArray(new String[0])).options(this.builderConfig)
+				.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
 				HttpServletRequest.class, HttpServletResponse.class));
@@ -350,7 +356,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 						});
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
 						serverNamespaceArgumentResolver, producibleOperationArgumentResolver);
-				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
+				return handleResult(this.operation.invoke(invocationContext), HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
 				throw new InvalidEndpointBadRequestException(ex);

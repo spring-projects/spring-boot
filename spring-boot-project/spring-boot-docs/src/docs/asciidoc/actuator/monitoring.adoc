@@ -4,8 +4,7 @@ If you are developing a web application, Spring Boot Actuator auto-configures al
 The default convention is to use the `id` of the endpoint with a prefix of `/actuator` as the URL path.
 For example, `health` is exposed as `/actuator/health`.
 
-TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
-If both Jersey and Spring MVC are available, Spring MVC is used.
+TIP: Actuator is supported natively with Spring MVC and Spring WebFlux.
 
 NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
 

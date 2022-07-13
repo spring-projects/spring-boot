@@ -36,9 +36,7 @@ final class CacheConfigurations {
 	static {
 		Map<CacheType, String> mappings = new EnumMap<>(CacheType.class);
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class.getName());
-		mappings.put(CacheType.EHCACHE, EhCacheCacheConfiguration.class.getName());
 		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class.getName());
-		mappings.put(CacheType.INFINISPAN, InfinispanCacheConfiguration.class.getName());
 		mappings.put(CacheType.JCACHE, JCacheCacheConfiguration.class.getName());
 		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class.getName());
 		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class.getName());

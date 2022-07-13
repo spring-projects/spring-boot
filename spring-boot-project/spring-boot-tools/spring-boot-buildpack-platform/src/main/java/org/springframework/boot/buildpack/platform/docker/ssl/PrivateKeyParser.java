@@ -18,7 +18,6 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
@@ -65,7 +64,7 @@ final class PrivateKeyParser {
 	 */
 	static PrivateKey parse(Path path) {
 		try {
-			String text = readText(path);
+			String text = Files.readString(path);
 			Matcher matcher = PKCS1_PATTERN.matcher(text);
 			if (matcher.find()) {
 				return parsePkcs1(decodeBase64(matcher.group(1)));
@@ -130,11 +129,6 @@ final class PrivateKeyParser {
 		catch (InvalidKeySpecException ex) {
 			throw new IllegalArgumentException("Unexpected key format", ex);
 		}
-	}
-
-	private static String readText(Path path) throws IOException {
-		byte[] bytes = Files.readAllBytes(path);
-		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
 	private static byte[] decodeBase64(String content) {

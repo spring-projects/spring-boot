@@ -18,9 +18,8 @@ package org.springframework.boot.web.servlet;
 
 import java.util.EventListener;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextListener;
-
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

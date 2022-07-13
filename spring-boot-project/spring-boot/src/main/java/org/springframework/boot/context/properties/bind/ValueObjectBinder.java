@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,8 +98,8 @@ class ValueObjectBinder implements DataObjectBinder {
 		ResolvableType type = parameter.getType();
 		Annotation[] annotations = parameter.getAnnotations();
 		for (Annotation annotation : annotations) {
-			if (annotation instanceof DefaultValue) {
-				String[] defaultValue = ((DefaultValue) annotation).value();
+			if (annotation instanceof DefaultValue defaultValueAnnotation) {
+				String[] defaultValue = defaultValueAnnotation.value();
 				if (defaultValue.length == 0) {
 					return getNewInstanceIfPossible(context, type);
 				}

@@ -6,11 +6,6 @@ description = "Starter for using jOOQ to access SQL databases with JDBC. An alte
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
-	api("jakarta.activation:jakarta.activation-api")
-	api("jakarta.xml.bind:jakarta.xml.bind-api")
 	api("org.springframework:spring-tx")
-	api("org.jooq:jooq") {
-		exclude group: "javax.activation", module: "javax.activation-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	api("org.jooq:jooq")
 }

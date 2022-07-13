@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -31,6 +31,8 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.DuplicateJobException;
+import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -39,7 +41,9 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
@@ -60,6 +64,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -101,18 +106,6 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	void whenThereIsNoDataSourceAutoConfigurationBacksOff() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
-	}
-
-	@Test
-	void whenThereIsAnEntityManagerFactoryButNoDataSourceAutoConfigurationBacksOff() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class, EntityManagerFactoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
-	}
-
-	@Test
 	void testNoBatchConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
@@ -150,11 +143,11 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	void testDefinesAndLaunchesNamedJob() {
+	void testDefinesAndLaunchesNamedRegisteredJob() {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithRegisteredJob.class,
 						EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.batch.job.names:discreteRegisteredJob").run((context) -> {
+				.withPropertyValues("spring.batch.job.name:discreteRegisteredJob").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					context.getBean(JobLauncherApplicationRunner.class).run();
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("discreteRegisteredJob",
@@ -163,10 +156,45 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	void testRegisteredAndLocalJob() {
+		this.contextRunner
+				.withUserConfiguration(NamedJobConfigurationWithRegisteredAndLocalJob.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.job.name:discreteRegisteredJob").run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					context.getBean(JobLauncherApplicationRunner.class).run();
+					assertThat(context.getBean(JobRepository.class)
+							.getLastJobExecution("discreteRegisteredJob", new JobParameters()).getStatus())
+									.isEqualTo(BatchStatus.COMPLETED);
+				});
+	}
+
+	@Test
 	void testDefinesAndLaunchesLocalJob() {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.batch.job.names:discreteLocalJob").run((context) -> {
+				.withPropertyValues("spring.batch.job.name:discreteLocalJob").run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					context.getBean(JobLauncherApplicationRunner.class).run();
+					assertThat(context.getBean(JobRepository.class).getLastJobExecution("discreteLocalJob",
+							new JobParameters())).isNotNull();
+				});
+	}
+
+	@Test
+	void testMultipleJobsAndNoJobName() {
+		this.contextRunner.withUserConfiguration(MultipleJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure().getCause().getMessage())
+							.contains("Job name must be specified in case of multiple jobs");
+				});
+	}
+
+	@Test
+	void testMultipleJobsAndJobName() {
+		this.contextRunner.withUserConfiguration(MultipleJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.job.name:discreteLocalJob").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					context.getBean(JobLauncherApplicationRunner.class).run();
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("discreteLocalJob",
@@ -407,24 +435,23 @@ class BatchAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	static class NamedJobConfigurationWithRegisteredJob {
-
-		@Autowired
-		private JobRegistry jobRegistry;
+	static class NamedJobConfigurationWithRegisteredAndLocalJob {
 
 		@Autowired
 		private JobRepository jobRepository;
 
 		@Bean
-		JobRegistryBeanPostProcessor registryProcessor() {
+		static JobRegistryBeanPostProcessor registryProcessor(JobRegistry jobRegistry) {
 			JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
-			processor.setJobRegistry(this.jobRegistry);
+			processor.setJobRegistry(jobRegistry);
 			return processor;
 		}
 
 		@Bean
 		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
+
+				private static int count = 0;
 
 				@Override
 				public Collection<String> getStepNames() {
@@ -438,11 +465,86 @@ class BatchAutoConfigurationTests {
 
 				@Override
 				protected void doExecute(JobExecution execution) {
-					execution.setStatus(BatchStatus.COMPLETED);
+					if (count == 0) {
+						execution.setStatus(BatchStatus.COMPLETED);
+					}
+					else {
+						execution.setStatus(BatchStatus.FAILED);
+					}
+					count++;
 				}
 			};
 			job.setJobRepository(this.jobRepository);
 			return job;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableBatchProcessing
+	static class NamedJobConfigurationWithRegisteredJob {
+
+		@Bean
+		static BeanPostProcessor registryProcessor(ApplicationContext applicationContext) {
+			return new NamedJobJobRegistryBeanPostProcessor(applicationContext);
+		}
+
+	}
+
+	static class NamedJobJobRegistryBeanPostProcessor implements BeanPostProcessor {
+
+		private final ApplicationContext applicationContext;
+
+		NamedJobJobRegistryBeanPostProcessor(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof JobRegistry jobRegistry) {
+				try {
+					jobRegistry.register(getJobFactory());
+				}
+				catch (DuplicateJobException ex) {
+				}
+			}
+			return bean;
+		}
+
+		private JobFactory getJobFactory() {
+			JobRepository jobRepository = this.applicationContext.getBean(JobRepository.class);
+			return new JobFactory() {
+
+				@Override
+				public Job createJob() {
+					AbstractJob job = new AbstractJob("discreteRegisteredJob") {
+
+						@Override
+						public Collection<String> getStepNames() {
+							return Collections.emptySet();
+						}
+
+						@Override
+						public Step getStep(String stepName) {
+							return null;
+						}
+
+						@Override
+						protected void doExecute(JobExecution execution) {
+							execution.setStatus(BatchStatus.COMPLETED);
+						}
+
+					};
+					job.setJobRepository(jobRepository);
+					return job;
+				}
+
+				@Override
+				public String getJobName() {
+					return "discreteRegisteredJob";
+				}
+
+			};
 		}
 
 	}
@@ -475,6 +577,43 @@ class BatchAutoConfigurationTests {
 			};
 			job.setJobRepository(this.jobRepository);
 			return job;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableBatchProcessing
+	static class MultipleJobConfiguration {
+
+		@Autowired
+		private JobRepository jobRepository;
+
+		@Bean
+		Job discreteJob() {
+			AbstractJob job = new AbstractJob("discreteLocalJob") {
+
+				@Override
+				public Collection<String> getStepNames() {
+					return Collections.emptySet();
+				}
+
+				@Override
+				public Step getStep(String stepName) {
+					return null;
+				}
+
+				@Override
+				protected void doExecute(JobExecution execution) {
+					execution.setStatus(BatchStatus.COMPLETED);
+				}
+			};
+			job.setJobRepository(this.jobRepository);
+			return job;
+		}
+
+		@Bean
+		Job job2() {
+			return mock(Job.class);
 		}
 
 	}

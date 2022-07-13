@@ -20,8 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.validation.Configuration;
-import javax.validation.Validation;
+import jakarta.validation.Configuration;
+import jakarta.validation.Validation;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -30,7 +30,7 @@ import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.NativeDetector;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
@@ -49,8 +49,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @author Sebastien Deleuze
  * @since 1.3.0
  */
-@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent> {
+public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	/**
 	 * System property that instructs Spring Boot how to run pre initialization. When the
@@ -70,6 +69,11 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	static {
 		ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME) && !NativeDetector.inNativeImage()
 				&& Runtime.getRuntime().availableProcessors() > 1;
+	}
+
+	@Override
+	public int getOrder() {
+		return LoggingApplicationListener.DEFAULT_ORDER + 1;
 	}
 
 	@Override
@@ -139,7 +143,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	}
 
 	/**
-	 * Early initializer for javax.validation.
+	 * Early initializer for jakarta.validation.
 	 */
 	private static class ValidationInitializer implements Runnable {
 

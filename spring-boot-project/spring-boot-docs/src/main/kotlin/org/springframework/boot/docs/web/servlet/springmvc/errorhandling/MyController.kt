@@ -16,10 +16,10 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.errorhandling
 
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.web.servlet.error.ErrorAttributes
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ExceptionHandler
-import javax.servlet.http.HttpServletRequest
 
 @Controller
 class MyController {

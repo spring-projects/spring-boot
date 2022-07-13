@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -87,17 +86,6 @@ public class OAuth2ResourceServerProperties {
 
 		public void setJwkSetUri(String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.security.oauth2.resourceserver.jwt.jws-algorithms")
-		public String getJwsAlgorithm() {
-			return this.jwsAlgorithms.isEmpty() ? null : this.jwsAlgorithms.get(0);
-		}
-
-		@Deprecated
-		public void setJwsAlgorithm(String jwsAlgorithm) {
-			this.jwsAlgorithms = new ArrayList<>(Arrays.asList(jwsAlgorithm));
 		}
 
 		public List<String> getJwsAlgorithms() {

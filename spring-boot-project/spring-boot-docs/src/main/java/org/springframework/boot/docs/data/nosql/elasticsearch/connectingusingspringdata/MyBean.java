@@ -16,15 +16,15 @@
 
 package org.springframework.boot.docs.data.nosql.elasticsearch.connectingusingspringdata;
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings("deprecation")
 public class MyBean {
 
-	private final ElasticsearchRestTemplate template;
+	private final org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate template;
 
-	public MyBean(ElasticsearchRestTemplate template) {
+	public MyBean(org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate template) {
 		this.template = template;
 	}
 

@@ -7,7 +7,7 @@ description = "Starter for JMS messaging using Apache Artemis"
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework:spring-jms")
-	api("org.apache.activemq:artemis-jms-client") {
+	api("org.apache.activemq:artemis-jakarta-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 }

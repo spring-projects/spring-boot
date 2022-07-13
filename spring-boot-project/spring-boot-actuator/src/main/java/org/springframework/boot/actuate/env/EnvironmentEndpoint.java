@@ -176,34 +176,21 @@ public class EnvironmentEndpoint {
 	}
 
 	private MutablePropertySources getPropertySources() {
-		if (this.environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) this.environment).getPropertySources();
+		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
+			return configurableEnvironment.getPropertySources();
 		}
 		return new StandardEnvironment().getPropertySources();
 	}
 
 	private void extract(String root, Map<String, PropertySource<?>> map, PropertySource<?> source) {
-		if (source instanceof CompositePropertySource) {
-			for (PropertySource<?> nest : ((CompositePropertySource) source).getPropertySources()) {
+		if (source instanceof CompositePropertySource compositePropertySource) {
+			for (PropertySource<?> nest : compositePropertySource.getPropertySources()) {
 				extract(source.getName() + ":", map, nest);
 			}
 		}
 		else {
 			map.put(root + source.getName(), source);
 		}
-	}
-
-	/**
-	 * Apply sanitization to the given name and value.
-	 * @param key the name to sanitize
-	 * @param value the value to sanitize
-	 * @return the sanitized value
-	 * @deprecated since 2.6.0 for removal in 3.0.0 as sanitization should be internal to
-	 * the class
-	 */
-	@Deprecated
-	public Object sanitize(String key, Object value) {
-		return this.sanitizer.sanitize(key, value);
 	}
 
 	private Object sanitize(PropertySource<?> source, String name, Object value) {

@@ -246,7 +246,7 @@ See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguratio
 Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
-To do this with JCache, first make sure that `org.hibernate:hibernate-jcache` is available on the classpath.
+To do this with JCache, first make sure that `org.hibernate.orm:hibernate-jcache` is available on the classpath.
 Then, add a `HibernatePropertiesCustomizer` bean as shown in the following example:
 
 include::code:MyHibernateSecondLevelCacheConfiguration[]

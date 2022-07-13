@@ -56,7 +56,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * {@link EnvironmentPostProcessor} classes loaded via {@code spring.factories}.
 	 */
 	public EnvironmentPostProcessorApplicationListener() {
-		this(EnvironmentPostProcessorsFactory::fromSpringFactories, new DeferredLogs());
+		this(EnvironmentPostProcessorsFactory::fromSpringFactories);
 	}
 
 	/**
@@ -64,14 +64,21 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * processors created by the given factory.
 	 * @param postProcessorsFactory the post processors factory
 	 */
-	public EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory) {
-		this((classloader) -> postProcessorsFactory, new DeferredLogs());
+	private EnvironmentPostProcessorApplicationListener(
+			Function<ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory) {
+		this.postProcessorsFactory = postProcessorsFactory;
+		this.deferredLogs = new DeferredLogs();
 	}
 
-	EnvironmentPostProcessorApplicationListener(
-			Function<ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory, DeferredLogs deferredLogs) {
-		this.postProcessorsFactory = postProcessorsFactory;
-		this.deferredLogs = deferredLogs;
+	/**
+	 * Factory method that creates an {@link EnvironmentPostProcessorApplicationListener}
+	 * with a specific {@link EnvironmentPostProcessorsFactory}.
+	 * @param postProcessorsFactory the environment post processor factory
+	 * @return an {@link EnvironmentPostProcessorApplicationListener} instance
+	 */
+	public static EnvironmentPostProcessorApplicationListener with(
+			EnvironmentPostProcessorsFactory postProcessorsFactory) {
+		return new EnvironmentPostProcessorApplicationListener((classloader) -> postProcessorsFactory);
 	}
 
 	@Override
@@ -83,8 +90,8 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+		if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent(environmentPreparedEvent);
 		}
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent();

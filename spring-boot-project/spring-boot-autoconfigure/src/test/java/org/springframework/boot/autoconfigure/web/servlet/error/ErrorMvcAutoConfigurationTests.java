@@ -103,8 +103,8 @@ class ErrorMvcAutoConfigurationTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/path");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request, response);
-		webRequest.setAttribute("javax.servlet.error.exception", ex, RequestAttributes.SCOPE_REQUEST);
-		webRequest.setAttribute("javax.servlet.error.request_uri", "/path", RequestAttributes.SCOPE_REQUEST);
+		webRequest.setAttribute("jakarta.servlet.error.exception", ex, RequestAttributes.SCOPE_REQUEST);
+		webRequest.setAttribute("jakarta.servlet.error.request_uri", "/path", RequestAttributes.SCOPE_REQUEST);
 		response.setCommitted(committed);
 		response.setOutputStreamAccessAllowed(!committed);
 		response.setWriterAccessAllowed(!committed);

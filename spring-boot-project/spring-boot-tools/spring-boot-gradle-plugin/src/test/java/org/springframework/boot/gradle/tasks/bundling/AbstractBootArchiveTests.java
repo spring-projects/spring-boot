@@ -22,11 +22,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -294,11 +295,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	void customLaunchScriptCanBePrepended() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		File customScript = new File(this.temp, "custom.script");
-		Files.write(customScript.toPath(), Arrays.asList("custom script"), StandardOpenOption.CREATE);
+		Files.writeString(customScript.toPath(), "custom script", StandardOpenOption.CREATE);
 		this.task.launchScript((configuration) -> configuration.setScript(customScript));
 		executeTask();
-		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
-				.startsWith("custom script".getBytes());
+		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
+		assertThat(Files.readString(path, StandardCharsets.ISO_8859_1)).startsWith("custom script");
 	}
 
 	@Test
@@ -310,10 +311,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			configuration.getProperties().put("initInfoDescription", "description");
 		});
 		executeTask();
-		byte[] bytes = Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath());
-		assertThat(bytes).containsSequence("Provides:          provides".getBytes());
-		assertThat(bytes).containsSequence("Short-Description: short description".getBytes());
-		assertThat(bytes).containsSequence("Description:       description".getBytes());
+		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
+		String content = Files.readString(path, StandardCharsets.ISO_8859_1);
+		assertThat(content).containsSequence("Provides:          provides");
+		assertThat(content).containsSequence("Short-Description: short description");
+		assertThat(content).containsSequence("Description:       description");
 	}
 
 	@Test

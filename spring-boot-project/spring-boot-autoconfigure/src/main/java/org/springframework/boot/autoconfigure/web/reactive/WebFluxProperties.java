@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,8 +35,6 @@ public class WebFluxProperties {
 
 	private final Format format = new Format();
 
-	private final Session session = new Session();
-
 	/**
 	 * Path pattern used for static resources.
 	 */
@@ -52,7 +49,10 @@ public class WebFluxProperties {
 	}
 
 	private String cleanBasePath(String basePath) {
-		String candidate = StringUtils.trimWhitespace(basePath);
+		String candidate = null;
+		if (StringUtils.hasLength(basePath)) {
+			candidate = basePath.strip();
+		}
 		if (StringUtils.hasText(candidate)) {
 			if (!candidate.startsWith("/")) {
 				candidate = "/" + candidate;
@@ -66,11 +66,6 @@ public class WebFluxProperties {
 
 	public Format getFormat() {
 		return this.format;
-	}
-
-	@DeprecatedConfigurationProperty(replacement = "server.reactive.session")
-	public Session getSession() {
-		return this.session;
 	}
 
 	public String getStaticPathPattern() {
@@ -120,86 +115,6 @@ public class WebFluxProperties {
 
 		public void setDateTime(String dateTime) {
 			this.dateTime = dateTime;
-		}
-
-	}
-
-	/**
-	 * Session properties.
-	 *
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@code server.reactive.session}.
-	 */
-	@Deprecated
-	public static class Session {
-
-		private final Cookie cookie = new Cookie();
-
-		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie")
-		public Cookie getCookie() {
-			return this.cookie;
-		}
-
-	}
-
-	/**
-	 * Session cookie properties.
-	 *
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link org.springframework.boot.web.server.Cookie}.
-	 */
-	@Deprecated
-	public static class Cookie {
-
-		/**
-		 * SameSite attribute value for session Cookies.
-		 */
-		private SameSite sameSite;
-
-		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie.same-site")
-		public SameSite getSameSite() {
-			return this.sameSite;
-		}
-
-		public void setSameSite(SameSite sameSite) {
-			this.sameSite = sameSite;
-		}
-
-	}
-
-	/**
-	 * SameSite values.
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link org.springframework.boot.web.server.Cookie.SameSite}.
-	 */
-	@Deprecated
-	public enum SameSite {
-
-		/**
-		 * Cookies are sent in both first-party and cross-origin requests.
-		 */
-		NONE("None"),
-
-		/**
-		 * Cookies are sent in a first-party context, also when following a link to the
-		 * origin site.
-		 */
-		LAX("Lax"),
-
-		/**
-		 * Cookies are only sent in a first-party context (i.e. not when following a link
-		 * to the origin site).
-		 */
-		STRICT("Strict");
-
-		private final String attribute;
-
-		SameSite(String attribute) {
-			this.attribute = attribute;
-		}
-
-		public String attribute() {
-			return this.attribute;
 		}
 
 	}

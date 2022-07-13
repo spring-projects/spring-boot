@@ -45,15 +45,14 @@ import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. By default a
- * Runner will be created and all jobs in the context will be executed on startup.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. If a single job is
+ * found in the context, it will be executed on startup.
  * <p>
  * Disable this behavior with {@literal spring.batch.job.enabled=false}).
  * <p>
- * Alternatively, discrete Job names to execute on startup can be supplied by the User
- * with a comma-delimited list: {@literal spring.batch.job.names=job1,job2}. In this case
- * the Runner will first find jobs registered as Beans, then those in the existing
- * JobRegistry.
+ * If multiple jobs are found, a job name to execute on startup can be supplied by the
+ * User with : {@literal spring.batch.job.name=job1}. In this case the Runner will first
+ * find jobs registered as Beans, then those in the existing JobRegistry.
  *
  * @author Dave Syer
  * @author Eddú Meléndez
@@ -63,7 +62,7 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
 @ConditionalOnClass({ JobLauncher.class, DataSource.class })
-@ConditionalOnBean(JobLauncher.class)
+@ConditionalOnBean({ DataSource.class, JobLauncher.class })
 @EnableConfigurationProperties(BatchProperties.class)
 @Import({ BatchConfigurerConfiguration.class, DatabaseInitializationDependencyConfigurer.class })
 public class BatchAutoConfiguration {
@@ -74,9 +73,9 @@ public class BatchAutoConfiguration {
 	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
 			JobRepository jobRepository, BatchProperties properties) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
-		String jobNames = properties.getJob().getNames();
+		String jobNames = properties.getJob().getName();
 		if (StringUtils.hasText(jobNames)) {
-			runner.setJobNames(jobNames);
+			runner.setJobName(jobNames);
 		}
 		return runner;
 	}
@@ -102,14 +101,12 @@ public class BatchAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnClass(DatabasePopulator.class)
 	@Conditional(OnBatchDatasourceInitializationCondition.class)
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
-		@ConditionalOnMissingBean({ BatchDataSourceScriptDatabaseInitializer.class, BatchDataSourceInitializer.class })
+		@ConditionalOnMissingBean(BatchDataSourceScriptDatabaseInitializer.class)
 		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
 			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),

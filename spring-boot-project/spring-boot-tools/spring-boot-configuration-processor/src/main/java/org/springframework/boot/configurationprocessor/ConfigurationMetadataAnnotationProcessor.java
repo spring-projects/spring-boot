@@ -80,6 +80,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.context.properties.ConstructorBinding";
 
+	static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
+
 	static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.context.properties.bind.DefaultValue";
 
 	static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint";
@@ -125,6 +127,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return CONSTRUCTOR_BINDING_ANNOTATION;
 	}
 
+	protected String autowiredAnnotation() {
+		return AUTOWIRED_ANNOTATION;
+	}
+
 	protected String defaultValueAnnotation() {
 		return DEFAULT_VALUE_ANNOTATION;
 	}
@@ -159,7 +165,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataCollector = new MetadataCollector(env, this.metadataStore.readMetadata());
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
-				constructorBindingAnnotation(), defaultValueAnnotation(), endpointAnnotations(),
+				constructorBindingAnnotation(), autowiredAnnotation(), defaultValueAnnotation(), endpointAnnotations(),
 				readOperationAnnotation(), nameAnnotation());
 	}
 
@@ -206,11 +212,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			AnnotationMirror annotation = this.metadataEnv.getConfigurationPropertiesAnnotation(element);
 			if (annotation != null) {
 				String prefix = getPrefix(annotation);
-				if (element instanceof TypeElement) {
-					processAnnotatedTypeElement(prefix, (TypeElement) element, new Stack<>());
+				if (element instanceof TypeElement typeElement) {
+					processAnnotatedTypeElement(prefix, typeElement, new Stack<>());
 				}
-				else if (element instanceof ExecutableElement) {
-					processExecutableElement(prefix, (ExecutableElement) element, new Stack<>());
+				else if (element instanceof ExecutableElement executableElement) {
+					processExecutableElement(prefix, executableElement, new Stack<>());
 				}
 			}
 		}
@@ -229,7 +235,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if ((!element.getModifiers().contains(Modifier.PRIVATE))
 				&& (TypeKind.VOID != element.getReturnType().getKind())) {
 			Element returns = this.processingEnv.getTypeUtils().asElement(element.getReturnType());
-			if (returns instanceof TypeElement) {
+			if (returns instanceof TypeElement typeElement) {
 				ItemMetadata group = ItemMetadata.newGroup(prefix,
 						this.metadataEnv.getTypeUtils().getQualifiedName(returns),
 						this.metadataEnv.getTypeUtils().getQualifiedName(element.getEnclosingElement()),
@@ -240,7 +246,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				}
 				else {
 					this.metadataCollector.add(group);
-					processTypeElement(prefix, (TypeElement) returns, element, seen);
+					processTypeElement(prefix, typeElement, element, seen);
 				}
 			}
 		}
@@ -267,8 +273,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		try {
 			String annotationName = this.metadataEnv.getTypeUtils().getQualifiedName(annotations.get(0));
 			AnnotationMirror annotation = this.metadataEnv.getAnnotation(element, annotationName);
-			if (element instanceof TypeElement) {
-				processEndpoint(annotation, (TypeElement) element);
+			if (element instanceof TypeElement typeElement) {
+				processEndpoint(annotation, typeElement);
 			}
 		}
 		catch (Exception ex) {

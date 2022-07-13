@@ -26,12 +26,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.undertow.UndertowOptions;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
@@ -495,11 +494,7 @@ class ServerPropertiesTests {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			StringBuilder data = new StringBuilder();
-			for (int i = 0; i < 250000; i++) {
-				data.append("a");
-			}
-			body.add("data", data.toString());
+			body.add("data", "a".repeat(250000));
 			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
 			assertThat(failure.get()).isNotNull();
@@ -519,6 +514,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void nettyMaxChunkSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getMaxChunkSize().toBytes())
 				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_CHUNK_SIZE);

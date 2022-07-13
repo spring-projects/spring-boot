@@ -31,7 +31,6 @@ import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -61,27 +60,6 @@ class ConfigDataTests {
 		ConfigData configData = new ConfigData(sources);
 		sources.clear();
 		assertThat(configData.getPropertySources()).containsExactly(source);
-	}
-
-	@Test
-	@Deprecated
-	void getDeprecatedOptionsReturnsCopyOfOptions() {
-		MapPropertySource source = new MapPropertySource("test", Collections.emptyMap());
-		Option[] options = { Option.IGNORE_IMPORTS };
-		ConfigData configData = new ConfigData(Collections.singleton(source), options);
-		options[0] = null;
-		assertThat(configData.getOptions()).containsExactly(Option.IGNORE_IMPORTS);
-	}
-
-	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void getDeprecatedOptionsWhenUsingPropertySourceOptionsThrowsException() {
-		MapPropertySource source = new MapPropertySource("test", Collections.emptyMap());
-		PropertySourceOptions propertySourceOptions = (propertySource) -> Options.NONE;
-		ConfigData configData = new ConfigData(Collections.singleton(source), propertySourceOptions);
-		assertThatIllegalStateException().isThrownBy(() -> configData.getOptions())
-				.withMessage("No global options defined");
 	}
 
 	@Test

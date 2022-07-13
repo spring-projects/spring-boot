@@ -17,13 +17,10 @@
 package org.springframework.boot.system;
 
 import java.io.Console;
-import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.springframework.util.ClassUtils;
 
@@ -35,51 +32,6 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 public enum JavaVersion {
-
-	/**
-	 * Java 1.8.
-	 */
-	EIGHT("1.8", Optional.class, "empty"),
-
-	/**
-	 * Java 9.
-	 */
-	NINE("9", Optional.class, "stream"),
-
-	/**
-	 * Java 10.
-	 */
-	TEN("10", Optional.class, "orElseThrow"),
-
-	/**
-	 * Java 11.
-	 */
-	ELEVEN("11", String.class, "strip"),
-
-	/**
-	 * Java 12.
-	 */
-	TWELVE("12", String.class, "describeConstable"),
-
-	/**
-	 * Java 13.
-	 */
-	THIRTEEN("13", String.class, "stripIndent"),
-
-	/**
-	 * Java 14.
-	 */
-	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess"),
-
-	/**
-	 * Java 15.
-	 */
-	FIFTEEN("15", CharSequence.class, "isEmpty"),
-
-	/**
-	 * Java 16.
-	 */
-	SIXTEEN("16", Stream.class, "toList"),
 
 	/**
 	 * Java 17.
@@ -117,7 +69,7 @@ public enum JavaVersion {
 				return candidate;
 			}
 		}
-		return EIGHT;
+		return SEVENTEEN;
 	}
 
 	/**

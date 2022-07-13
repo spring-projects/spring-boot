@@ -82,6 +82,7 @@ import static org.mockito.Mockito.times;
  * @author Vedran Pavic
  * @author Robert Thornton
  * @author Eddú Meléndez
+ * @author Scott Frederick
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
@@ -548,26 +549,33 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void testDateformatPatternProperty(CapturedOutput output) {
-		this.environment.setProperty("logging.pattern.dateformat", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
-		new LoggingSystemProperties(this.environment).apply();
+	void testDateformatPatternDefault(CapturedOutput output) {
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world"))
-				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
+				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}([-+]\\d{2}:\\d{2}|Z)");
+	}
+
+	@Test
+	void testDateformatPatternProperty(CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.dateformat", "dd-MM-yyyy");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).containsPattern("\\d{2}-\\d{2}-\\d{4}\\s");
 	}
 
 	@Test // gh-24835
 	void testDateformatPatternPropertyDirect(CapturedOutput output) {
-		this.environment.setProperty("logging.pattern.dateformat", "yyyy'T'hh:mm:ss.SSSZ");
+		this.environment.setProperty("logging.pattern.dateformat", "yyyy");
 		new LoggingSystemProperties(this.environment).apply();
-		this.environment.setProperty("logging.pattern.dateformat", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
+		this.environment.setProperty("logging.pattern.dateformat", "dd-MM-yyyy");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
-		assertThat(getLineWithText(output, "Hello world"))
-				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
+		assertThat(getLineWithText(output, "Hello world")).containsPattern("\\d{2}-\\d{2}-\\d{4}\\s");
 	}
 
 	@Test

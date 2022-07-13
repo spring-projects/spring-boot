@@ -35,7 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 public interface ErrorAttributes {
 
 	/**
-	 * Name of the {@link javax.servlet.http.HttpServletRequest#getAttribute(String)
+	 * Name of the {@link jakarta.servlet.http.HttpServletRequest#getAttribute(String)
 	 * request attribute} holding the error resolved by the {@code ErrorAttributes}
 	 * implementation.
 	 * @since 2.5.0

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Set;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -37,6 +36,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
@@ -57,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Josh Long
  * @author Oliver Gierke
+ * @author Mark Paluch
  */
 class MongoDataAutoConfigurationTests {
 
@@ -159,13 +160,11 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetManagedTypes() {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
-			Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-					"initialEntitySet");
-			assertThat(initialEntitySet).containsOnly(City.class, Country.class);
+			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes.toList()).containsOnly(City.class, Country.class);
 		});
 
 	}
@@ -210,10 +209,9 @@ class MongoDataAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {
-		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils.getField(mappingContext, "initialEntitySet");
-		assertThat(initialEntitySet).containsOnly(types);
+		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+		assertThat(managedTypes.toList()).containsOnly(types);
 	}
 
 	@Configuration(proxyBeanMethods = false)

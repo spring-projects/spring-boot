@@ -31,6 +31,7 @@ import java.util.Map;
 import io.undertow.UndertowOptions;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -262,7 +263,10 @@ public class ServerProperties {
 		}
 
 		private String cleanContextPath(String contextPath) {
-			String candidate = StringUtils.trimWhitespace(contextPath);
+			String candidate = null;
+			if (StringUtils.hasLength(contextPath)) {
+				candidate = contextPath.strip();
+			}
 			if (StringUtils.hasText(candidate) && candidate.endsWith("/")) {
 				return candidate.substring(0, candidate.length() - 1);
 			}
@@ -1381,10 +1385,13 @@ public class ServerProperties {
 			this.initialBufferSize = initialBufferSize;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "Deprecated for removal in Reactor Netty")
 		public DataSize getMaxChunkSize() {
 			return this.maxChunkSize;
 		}
 
+		@Deprecated
 		public void setMaxChunkSize(DataSize maxChunkSize) {
 			this.maxChunkSize = maxChunkSize;
 		}

@@ -50,7 +50,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	void failsWithADeviceIdWithoutAUri() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.dynatrace.device-id:dev-1")
+				.withPropertyValues("management.dynatrace.metrics.export.device-id:dev-1")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
@@ -64,7 +64,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.defaults.enabled=false")
+				.withPropertyValues("management.defaults.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
 						.doesNotHaveBean(DynatraceConfig.class));
 	}
@@ -72,7 +72,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.dynatrace.enabled=false")
+				.withPropertyValues("management.dynatrace.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
 						.doesNotHaveBean(DynatraceConfig.class));
 	}
@@ -114,9 +114,9 @@ class DynatraceMetricsExportAutoConfigurationTests {
 
 	private Function<ApplicationContextRunner, ApplicationContextRunner> v1MandatoryProperties() {
 		return (runner) -> runner.withPropertyValues(
-				"management.metrics.export.dynatrace.uri=https://dynatrace.example.com",
-				"management.metrics.export.dynatrace.api-token=abcde",
-				"management.metrics.export.dynatrace.device-id=test");
+				"management.dynatrace.metrics.export.uri=https://dynatrace.example.com",
+				"management.dynatrace.metrics.export.api-token=abcde",
+				"management.dynatrace.metrics.export.device-id=test");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -135,17 +135,11 @@ class DynatraceMetricsExportAutoConfigurationTests {
 
 		@Bean
 		DynatraceConfig customConfig() {
-			return (key) -> {
-				switch (key) {
-					case "dynatrace.uri":
-						return "https://dynatrace.example.com";
-					case "dynatrace.apiToken":
-						return "abcde";
-					case "dynatrace.deviceId":
-						return "test";
-					default:
-						return null;
-				}
+			return (key) -> switch (key) {
+				case "dynatrace.uri" -> "https://dynatrace.example.com";
+				case "dynatrace.apiToken" -> "abcde";
+				case "dynatrace.deviceId" -> "test";
+				default -> null;
 			};
 		}
 

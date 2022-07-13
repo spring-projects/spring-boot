@@ -149,9 +149,9 @@ public class IntegrationAutoConfiguration {
 		}
 
 		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
-			PeriodicTrigger trigger = new PeriodicTrigger(period.toMillis());
+			PeriodicTrigger trigger = new PeriodicTrigger(period);
 			if (initialDelay != null) {
-				trigger.setInitialDelay(initialDelay.toMillis());
+				trigger.setInitialDelay(initialDelay);
 			}
 			trigger.setFixedRate(fixedRate);
 			return trigger;
@@ -236,9 +236,7 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
-		@ConditionalOnMissingBean({ IntegrationDataSourceScriptDatabaseInitializer.class,
-				IntegrationDataSourceInitializer.class })
+		@ConditionalOnMissingBean(IntegrationDataSourceScriptDatabaseInitializer.class)
 		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
 				IntegrationProperties properties) {
 			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());

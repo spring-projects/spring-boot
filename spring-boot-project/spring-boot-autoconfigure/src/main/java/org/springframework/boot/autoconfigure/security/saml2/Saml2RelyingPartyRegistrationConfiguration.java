@@ -23,11 +23,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty;
@@ -40,7 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.core.log.LogMessage;
 import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.core.Saml2X509Credential.Saml2X509CredentialType;
@@ -50,7 +45,6 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
-import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -67,8 +61,6 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(RelyingPartyRegistrationRepository.class)
 class Saml2RelyingPartyRegistrationConfiguration {
 
-	private static final Log logger = LogFactory.getLog(Saml2RelyingPartyRegistrationConfiguration.class);
-
 	@Bean
 	RelyingPartyRegistrationRepository relyingPartyRegistrationRepository(Saml2RelyingPartyProperties properties) {
 		List<RelyingPartyRegistration> registrations = properties.getRegistration().entrySet().stream()
@@ -81,20 +73,19 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		AssertingPartyProperties assertingParty = new AssertingPartyProperties(properties, id);
-		boolean usingMetadata = StringUtils.hasText(assertingParty.getMetadataUri());
-		Builder builder = (usingMetadata)
-				? RelyingPartyRegistrations.fromMetadataLocation(assertingParty.getMetadataUri()).registrationId(id)
+		boolean usingMetadata = StringUtils.hasText(properties.getAssertingparty().getMetadataUri());
+		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
+				.fromMetadataLocation(properties.getAssertingparty().getMetadataUri()).registrationId(id)
 				: RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
-		builder.assertingPartyDetails(mapAssertingParty(properties, id, usingMetadata));
+		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingparty(), usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
 		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
 				.map(this::asDecryptionCredential).forEach(credentials::add));
-		builder.assertingPartyDetails(
-				(details) -> details.verificationX509Credentials((credentials) -> assertingParty.getVerification()
+		builder.assertingPartyDetails((details) -> details
+				.verificationX509Credentials((credentials) -> properties.getAssertingparty().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
@@ -106,19 +97,18 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		return registration;
 	}
 
-	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(Registration registration, String id,
+	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty,
 			boolean usingMetadata) {
 		return (details) -> {
-			AssertingPartyProperties assertingParty = new AssertingPartyProperties(registration, id);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(assertingParty::getEntityId).to(details::entityId);
-			map.from(assertingParty::getSingleSignonBinding).to(details::singleSignOnServiceBinding);
-			map.from(assertingParty::getSingleSignonUrl).to(details::singleSignOnServiceLocation);
-			map.from(assertingParty::getSingleSignonSignRequest).when((ignored) -> !usingMetadata)
+			map.from(assertingParty.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(assertingParty.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
+			map.from(assertingParty.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
 					.to(details::wantAuthnRequestsSigned);
-			map.from(assertingParty.getSinglelogoutUrl()).to(details::singleLogoutServiceLocation);
-			map.from(assertingParty.getSinglelogoutResponseUrl()).to(details::singleLogoutServiceResponseLocation);
-			map.from(assertingParty.getSinglelogoutBinding()).to(details::singleLogoutServiceBinding);
+			map.from(assertingParty.getSinglelogout()::getUrl).to(details::singleLogoutServiceLocation);
+			map.from(assertingParty.getSinglelogout()::getResponseUrl).to(details::singleLogoutServiceResponseLocation);
+			map.from(assertingParty.getSinglelogout()::getBinding).to(details::singleLogoutServiceBinding);
 		};
 	}
 
@@ -167,75 +157,6 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		catch (Exception ex) {
 			throw new IllegalArgumentException(ex);
 		}
-	}
-
-	/**
-	 * Access to {@link AssertingParty} properties taking into account deprecations.
-	 */
-	private static class AssertingPartyProperties {
-
-		private final Registration registration;
-
-		private final String id;
-
-		AssertingPartyProperties(Registration registration, String id) {
-			this.registration = registration;
-			this.id = id;
-		}
-
-		String getMetadataUri() {
-			return get("metadata-uri", AssertingParty::getMetadataUri);
-		}
-
-		Verification getVerification() {
-			return get("verification", AssertingParty::getVerification);
-		}
-
-		String getEntityId() {
-			return get("entity-id", AssertingParty::getEntityId);
-		}
-
-		Saml2MessageBinding getSingleSignonBinding() {
-			return get("singlesignon.binding", (property) -> property.getSinglesignon().getBinding());
-		}
-
-		String getSingleSignonUrl() {
-			return get("singlesignon.url", (property) -> property.getSinglesignon().getUrl());
-		}
-
-		Boolean getSingleSignonSignRequest() {
-			return get("singlesignon.sign-request", (property) -> property.getSinglesignon().getSignRequest());
-		}
-
-		String getSinglelogoutUrl() {
-			return this.registration.getAssertingparty().getSinglelogout().getUrl();
-		}
-
-		String getSinglelogoutResponseUrl() {
-			return this.registration.getAssertingparty().getSinglelogout().getResponseUrl();
-		}
-
-		Saml2MessageBinding getSinglelogoutBinding() {
-			return this.registration.getAssertingparty().getSinglelogout().getBinding();
-		}
-
-		@SuppressWarnings("deprecation")
-		private <T> T get(String name, Function<AssertingParty, T> getter) {
-			T newValue = getter.apply(this.registration.getAssertingparty());
-			if (newValue != null) {
-				return newValue;
-			}
-			T deprecatedValue = getter.apply(this.registration.getIdentityprovider());
-			if (deprecatedValue != null) {
-				logger.warn(LogMessage.format(
-						"Property 'spring.security.saml2.relyingparty.registration.identityprovider.%1$s.%2$s' is deprecated, "
-								+ "please use 'spring.security.saml2.relyingparty.registration.assertingparty.%1$s.%2$s' instead",
-						this.id, name));
-				return deprecatedValue;
-			}
-			return newValue;
-		}
-
 	}
 
 }

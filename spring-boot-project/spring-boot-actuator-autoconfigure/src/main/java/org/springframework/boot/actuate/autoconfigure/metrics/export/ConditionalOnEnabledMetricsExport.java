@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional @Conditional} that checks whether or not a metrics exporter is
- * enabled. If the {@code management.metrics.export.<name>.enabled} property is configured
+ * enabled. If the {@code management.<name>.metrics.export.enabled} property is configured
  * then its value is used to determine if it matches. Otherwise, matches if the value of
- * the {@code management.metrics.export.defaults.enabled} property is {@code true} or if
+ * the {@code management.defaults.metrics.export.enabled} property is {@code true} or if
  * it is not configured.
  *
  * @author Chris Bono

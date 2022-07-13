@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import javax.websocket.server.ServerContainer;
-
+import jakarta.websocket.server.ServerContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +68,7 @@ class WebSocketServletAutoConfigurationTests {
 		this.context.register(configuration);
 		this.context.refresh();
 		Object serverContainer = this.context.getServletContext()
-				.getAttribute("javax.websocket.server.ServerContainer");
+				.getAttribute("jakarta.websocket.server.ServerContainer");
 		assertThat(serverContainer).isInstanceOf(ServerContainer.class);
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.scan.valid.b;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
  * @author Madhura Bhave
@@ -29,7 +28,6 @@ public class BScanConfiguration {
 
 	}
 
-	@ConstructorBinding
 	@ConfigurationProperties(prefix = "b.first")
 	public static class BFirstProperties implements BProperties {
 

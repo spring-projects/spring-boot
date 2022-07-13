@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.io.File;
 
-import javax.servlet.Filter;
-
+import jakarta.servlet.Filter;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -174,8 +173,8 @@ class ServletManagementChildContextConfiguration {
 
 		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {
 			for (Valve engineValve : factory.getEngineValves()) {
-				if (engineValve instanceof AccessLogValve) {
-					return (AccessLogValve) engineValve;
+				if (engineValve instanceof AccessLogValve accessLogValve) {
+					return accessLogValve;
 				}
 			}
 			return null;
@@ -203,14 +202,14 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeServer(Server server) {
 			RequestLog requestLog = server.getRequestLog();
-			if (requestLog instanceof CustomRequestLog) {
-				customizeRequestLog((CustomRequestLog) requestLog);
+			if (requestLog instanceof CustomRequestLog customRequestLog) {
+				customizeRequestLog(customRequestLog);
 			}
 		}
 
 		private void customizeRequestLog(CustomRequestLog requestLog) {
-			if (requestLog.getWriter() instanceof RequestLogWriter) {
-				customizeRequestLogWriter((RequestLogWriter) requestLog.getWriter());
+			if (requestLog.getWriter() instanceof RequestLogWriter requestLogWriter) {
+				customizeRequestLogWriter(requestLogWriter);
 			}
 		}
 

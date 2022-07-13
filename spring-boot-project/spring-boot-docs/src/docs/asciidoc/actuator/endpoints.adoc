@@ -90,7 +90,7 @@ The following technology-agnostic endpoints are available:
 | Performs a thread dump.
 |===
 
-If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can use the following additional endpoints:
+If your application is a web application (Spring MVC or Spring WebFlux), you can use the following additional endpoints:
 
 [cols="2,5"]
 |===
@@ -100,10 +100,6 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | Returns a heap dump file.
   On a HotSpot JVM, an `HPROF`-format file is returned.
   On an OpenJ9 JVM, a `PHD`-format file is returned.
-
-| `jolokia`
-| Exposes JMX beans over HTTP when Jolokia is on the classpath (not available for WebFlux).
-  Requires a dependency on `jolokia-core`.
 
 | `logfile`
 | Returns the contents of the logfile (if the `logging.file.name` or the `logging.file.path` property has been set).
@@ -203,10 +199,6 @@ The following table shows the default exposure for the built-in endpoints:
 
 | `integrationgraph`
 | Yes
-| No
-
-| `jolokia`
-| N/A
 | No
 
 | `logfile`
@@ -432,8 +424,7 @@ TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpo
 [[actuator.endpoints.implementing-custom]]
 === Implementing Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
-Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring WebFlux.
-If both Jersey and Spring MVC are available, Spring MVC is used.
+Endpoints can be exposed over HTTP by using Spring MVC, or Spring WebFlux.
 
 The following example exposes a read operation that returns a custom object:
 
@@ -490,8 +481,7 @@ Before calling an operation method, the input received over JMX or HTTP is conve
 
 [[actuator.endpoints.implementing-custom.web]]
 ==== Custom Web Endpoints
-Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
-If both Jersey and Spring MVC are available, Spring MVC is used.
+Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Spring MVC or Spring WebFlux.
 
 
 
@@ -570,9 +560,7 @@ If an operation is invoked without a required parameter or with a parameter that
 [[actuator.endpoints.implementing-custom.web.range-requests]]
 ===== Web Endpoint Range Requests
 You can use an HTTP range request to request part of an HTTP resource.
-When using Spring MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource` automatically support range requests.
-
-NOTE: Range requests are not supported when using Jersey.
+Operations that return a `org.springframework.core.io.Resource` automatically support range requests.
 
 
 
@@ -715,10 +703,6 @@ with the `key` listed in the following table:
 | `redis`
 | {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
-
-| `solr`
-| {spring-boot-actuator-module-code}/solr/SolrHealthIndicator.java[`SolrHealthIndicator`]
-| Checks that a Solr server is up.
 |===
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.

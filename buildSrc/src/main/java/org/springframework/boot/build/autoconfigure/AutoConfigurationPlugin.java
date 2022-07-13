@@ -24,7 +24,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 
 import org.springframework.boot.build.DeployedPlugin;
@@ -66,7 +66,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 					.add(project.getDependencies().project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
-				SourceSet main = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+				SourceSet main = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());

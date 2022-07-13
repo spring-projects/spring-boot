@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.defaults.enabled=false")
+				.withPropertyValues("management.defaults.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
 						.doesNotHaveBean(KairosConfig.class));
 	}
@@ -61,7 +61,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.kairos.enabled=false")
+				.withPropertyValues("management.kairos.metrics.export.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
 						.doesNotHaveBean(KairosConfig.class));
 	}

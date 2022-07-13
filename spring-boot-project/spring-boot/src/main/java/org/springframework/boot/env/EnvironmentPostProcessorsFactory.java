@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ public interface EnvironmentPostProcessorsFactory {
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
 	 */
 	static EnvironmentPostProcessorsFactory fromSpringFactories(ClassLoader classLoader) {
-		return new ReflectionEnvironmentPostProcessorsFactory(classLoader,
-				SpringFactoriesLoader.loadFactoryNames(EnvironmentPostProcessor.class, classLoader));
+		return new SpringFactoriesEnvironmentPostProcessorsFactory(
+				SpringFactoriesLoader.forDefaultResourceLocation(classLoader));
 	}
 
 	/**

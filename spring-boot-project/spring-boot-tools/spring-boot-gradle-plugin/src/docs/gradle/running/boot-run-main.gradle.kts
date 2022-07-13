@@ -13,6 +13,6 @@ tasks.named<BootRun>("bootRun") {
 
 tasks.register("configuredMainClass") {
 	doLast {
-		println(tasks.getByName<BootRun>("bootRun").mainClass)
+		println(tasks.getByName<BootRun>("bootRun").mainClass.get())
 	}
 }

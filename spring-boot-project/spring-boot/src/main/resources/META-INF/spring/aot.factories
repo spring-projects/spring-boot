@@ -1,0 +1,13 @@
+org.springframework.aot.hint.RuntimeHintsRegistrar=\
+org.springframework.boot.context.config.ConfigDataLocationRuntimeHints,\
+org.springframework.boot.env.PropertySourceRuntimeHints,\
+org.springframework.boot.json.JacksonRuntimeHints,\
+org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
+org.springframework.boot.logging.logback.LogbackRuntimeHints,\
+org.springframework.boot.WebApplicationType.WebApplicationTypeRuntimeHints
+
+org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor
+
+org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor

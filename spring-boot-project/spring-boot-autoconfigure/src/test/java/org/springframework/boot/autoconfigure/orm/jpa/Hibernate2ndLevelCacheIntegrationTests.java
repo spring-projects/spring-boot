@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import org.ehcache.jsr107.EhcacheCachingProvider;
+import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -41,9 +41,9 @@ class Hibernate2ndLevelCacheIntegrationTests {
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	void hibernate2ndLevelCacheWithJCacheAndEhCache3() {
-		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
-		String configLocation = "ehcache3.xml";
+	void hibernate2ndLevelCacheWithJCacheAndHazelcast() {
+		String cachingProviderFqn = HazelcastServerCachingProvider.class.getName();
+		String configLocation = "classpath:hazelcast.xml";
 		this.contextRunner
 				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
 						"spring.cache.jcache.config=" + configLocation,

@@ -220,15 +220,17 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 
 include::code:MyJmxTests[]
 
-
-
 [[features.testing.spring-boot-applications.metrics]]
 ==== Using Metrics
 Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using `@SpringBootTest`.
 
-If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureMetrics`.
+If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureObservability`.
 
+[[features.testing.spring-boot-applications.tracing]]
+==== Using Tracing
+Regardless of your classpath, tracing is not auto-configured when using `@SpringBootTest`.
 
+If you need tracing as part of an integration test, annotate it with `@AutoConfigureObservability`.
 
 [[features.testing.spring-boot-applications.mocking-beans]]
 ==== Mocking and Spying Beans
@@ -403,66 +405,6 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 
 
 
-[[features.testing.spring-boot-applications.spring-graphql-tests]]
-==== Auto-configured Spring GraphQL Tests
-Spring GraphQL offers a dedicated testing support module; you'll need to add it to your project:
-
-.Maven
-[source,xml,indent=0,subs="verbatim"]
-----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.graphql</groupId>
-			<artifactId>spring-graphql-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- Unless already present in the compile scope -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-----
-
-.Gradle
-[source,gradle,indent=0,subs="verbatim"]
-----
-	dependencies {
-		testImplementation("org.springframework.graphql:spring-graphql-test")
-		// Unless already present in the implementation configuration
-		testImplementation("org.springframework.boot:spring-boot-starter-webflux")
-	}
-----
-
-This testing module ships the {spring-graphql-docs}/#testing-graphqltester[GraphQlTester].
-The tester is heavily used in test, so be sure to become familiar with using it.
-There are `GraphQlTester` variants and Spring Boot will auto-configure them depending on the type of tests:
-
-* the `ExecutionGraphQlServiceTester` performs tests on the server side, without a client nor a transport
-* the `HttpGraphQlTester` performs tests with a client that connects to a server, with or without a live server
-
-Spring Boot helps you to test your {spring-graphql-docs}#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
-`@GraphQlTest` auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
-This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `Converter`, `GenericConverter`, `DataFetcherExceptionResolver`, `Instrumentation` and `GraphQlSourceBuilderCustomizer`.
-Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
-`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-
-TIP: A list of the auto-configurations that are enabled by `@GraphQlTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
-
-TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
-
-Often, `@GraphQlTest` is limited to a set of controllers and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
-
-include::code:GreetingControllerTests[]
-
-`@SpringBootTest` tests are full integration tests and involve the entire application.
-When using a random or defined port, a live server is configured and an `HttpGraphQlTester` bean is contributed automatically so you can use it to test your server.
-When a MOCK environment is configured, you can also request an `HttpGraphQlTester` bean by annotating your test class with `@AutoConfigureHttpGraphQlTester`:
-
-include::code:GraphQlIntegrationTests[]
-
-
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
 ==== Auto-configured Data Cassandra Tests
 You can use `@DataCassandraTest` to test Cassandra applications.
@@ -609,7 +551,7 @@ If that is not what you want, you can disable transaction management for a test 
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-mongodb]]
 ==== Auto-configured Data MongoDB Tests
 You can use `@DataMongoTest` to test MongoDB applications.
-By default, it configures an in-memory embedded MongoDB (if available), configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
+By default, it configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using MongoDB with Spring Boot, see "<<data#data.nosql.mongodb>>".)
@@ -618,12 +560,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTe
 
 The following class shows the `@DataMongoTest` annotation in use:
 
-include::code:withoutdb/MyDataMongoDbTests[]
-
-In-memory embedded MongoDB generally works well for tests, since it is fast and does not require any developer installation.
-If, however, you prefer to run tests against a real MongoDB server, you should exclude the embedded MongoDB auto-configuration, as shown in the following example:
-
-include::code:withdb/MyDataMongoDbTests[]
+include::code:MyDataMongoDbTests[]
 
 
 
@@ -870,10 +807,10 @@ Alternatively, you can specify a source for your test, which disables the behavi
 
 [[features.testing.spring-boot-applications.spock]]
 ==== Using Spock to Test Spring Boot Applications
-Spock 2.x can be used to test a Spring Boot application.
-To do so, add a dependency on Spock's `spock-spring` module to your application's build.
+Spock 2.2 or later can be used to test a Spring Boot application.
+To do so, add a dependency on a `-groovy-4.0` version of Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
-See https://spockframework.org/spock/docs/2.0/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
+See https://spockframework.org/spock/docs/2.2-M1/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
 
 
 

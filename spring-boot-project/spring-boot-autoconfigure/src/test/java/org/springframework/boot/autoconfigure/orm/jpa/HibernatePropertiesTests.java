@@ -94,19 +94,6 @@ class HibernatePropertiesTests {
 	}
 
 	@Test
-	void useNewIdGeneratorMappingsDefault() {
-		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true")));
-	}
-
-	@Test
-	void useNewIdGeneratorMappingsFalse() {
-		this.contextRunner.withPropertyValues("spring.jpa.hibernate.use-new-id-generator-mappings:false")
-				.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-						.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false")));
-	}
-
-	@Test
 	void scannerUsesDisabledScannerByDefault() {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
 				.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));
@@ -136,10 +123,10 @@ class HibernatePropertiesTests {
 	void defaultDdlAutoIsNotInvokedAndDdlAutoIsNotSetIfJpaDbActionPropertyIsSet() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create")
+						"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=drop-and-create")
 				.run(assertHibernateProperties((hibernateProperties) -> {
 					assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
-					assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_DATABASE_ACTION,
+					assertThat(hibernateProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
 							"drop-and-create");
 					then(this.ddlAutoSupplier).should(never()).get();
 				}));

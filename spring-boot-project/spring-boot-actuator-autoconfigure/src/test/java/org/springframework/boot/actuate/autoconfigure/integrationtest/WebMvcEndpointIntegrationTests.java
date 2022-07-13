@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServlet;
-
+import jakarta.servlet.http.HttpServlet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
+import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -87,7 +87,7 @@ class WebMvcEndpointIntegrationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		WebMvcEndpointHandlerMapping handlerMapping = this.context.getBean(WebMvcEndpointHandlerMapping.class);
-		assertThat(handlerMapping.getPatternParser()).isEqualTo(WebMvcAutoConfiguration.pathPatternParser);
+		assertThat(handlerMapping.getPatternParser()).isEqualTo(AbstractWebMvcEndpointHandlerMapping.pathPatternParser);
 	}
 
 	@Test

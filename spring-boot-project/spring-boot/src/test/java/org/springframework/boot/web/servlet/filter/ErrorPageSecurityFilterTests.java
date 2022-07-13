@@ -16,13 +16,9 @@
 
 package org.springframework.boot.web.servlet.filter;
 
-import java.lang.reflect.Method;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +31,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -146,20 +141,6 @@ class ErrorPageSecurityFilterTests {
 		this.request.setServletPath("/dispatcher/path");
 		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
 		then(this.privilegeEvaluator).should().isAllowed(eq("/dispatcher/path/error"), any());
-	}
-
-	@Test
-	void filterIsCompatibleWithServlet31() {
-		Method[] methods = Filter.class.getDeclaredMethods();
-		for (Method method : methods) {
-			if (method.isDefault()) {
-				Method securityFilterMethod = ReflectionUtils.findMethod(ErrorPageSecurityFilter.class,
-						method.getName(), method.getParameterTypes());
-				assertThat(securityFilterMethod).isNotNull();
-				assertThat(securityFilterMethod.getDeclaringClass()).as(method.getName())
-						.isEqualTo(ErrorPageSecurityFilter.class);
-			}
-		}
 	}
 
 }

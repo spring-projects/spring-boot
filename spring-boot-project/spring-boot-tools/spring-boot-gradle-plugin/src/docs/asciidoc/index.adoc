@@ -39,6 +39,7 @@ v{gradle-project-version}
 :buildpacks-reference: https://buildpacks.io/docs
 :paketo-reference: https://paketo.io/docs
 :paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
+:nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
 
 
 

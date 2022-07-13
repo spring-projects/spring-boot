@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.jta.mixingxaandnonxaconnections.primary
 
-import javax.jms.ConnectionFactory
+import jakarta.jms.ConnectionFactory
 
 @Suppress("UNUSED_PARAMETER")
 class MyBean(connectionFactory: ConnectionFactory?)

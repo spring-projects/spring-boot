@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -226,7 +225,7 @@ class BasicErrorControllerMockMvcTests {
 			MockHttpServletRequest request = this.result.getRequest();
 			request.setDispatcherType(DispatcherType.ERROR);
 			request.setRequestURI(this.path);
-			request.setAttribute("javax.servlet.error.status_code", this.result.getResponse().getStatus());
+			request.setAttribute("jakarta.servlet.error.status_code", this.result.getResponse().getStatus());
 			return request;
 		}
 

@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
@@ -77,12 +77,10 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	}
 
 	private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, BeanFactory beanFactory) {
-		if (beanFactory instanceof ListableBeanFactory) {
-			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+		if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
 			resolvers.addAll(listableBeanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		}
-		if (beanFactory instanceof HierarchicalBeanFactory) {
-			HierarchicalBeanFactory hierarchicalBeanFactory = (HierarchicalBeanFactory) beanFactory;
+		if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
 			collectResolverBeans(resolvers, hierarchicalBeanFactory.getParentBeanFactory());
 		}
 	}

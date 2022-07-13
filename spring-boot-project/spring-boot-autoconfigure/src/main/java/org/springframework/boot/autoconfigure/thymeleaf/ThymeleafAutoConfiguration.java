@@ -18,19 +18,18 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.LinkedHashMap;
 
-import javax.servlet.DispatcherType;
-
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+import jakarta.servlet.DispatcherType;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
-import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;

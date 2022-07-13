@@ -36,7 +36,6 @@
 	<suppress files="Direction\.java" checks="JavadocVariable" />
 	<suppress files="LoggingApplicationListenerIntegrationTests\.java" checks="IllegalImport" />
 	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
-	<suppress files="EmbeddedMongoAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
@@ -62,5 +61,6 @@
 	<suppress files="DeprecatedReactiveElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
+	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
 </suppressions>

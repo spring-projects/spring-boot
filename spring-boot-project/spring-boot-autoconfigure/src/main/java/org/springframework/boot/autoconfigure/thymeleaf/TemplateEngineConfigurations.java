@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.spring5.ISpringTemplateEngine;
-import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.ISpringTemplateEngine;
+import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.beans.factory.ObjectProvider;

@@ -147,34 +147,14 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void allowRequestOverrideCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-request-override=true",
-				"allowRequestOverride", true);
-	}
-
-	@Test
 	void allowSessionOverrideCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.allow-session-override=true",
 				"allowSessionOverride", true);
 	}
 
 	@Test
-	@Deprecated
-	void allowSessionOverrideCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-session-override=true",
-				"allowSessionOverride", true);
-	}
-
-	@Test
 	void cacheCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.cache=true", "cache", true);
-	}
-
-	@Test
-	@Deprecated
-	void cacheCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.cache=true", "cache", true);
 	}
 
 	@ParameterizedTest
@@ -190,35 +170,14 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void exposeRequestAttributesCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-request-attributes=true",
-				"exposeRequestAttributes", true);
-	}
-
-	@Test
 	void exposeSessionAttributesCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-session-attributes=true",
 				"exposeSessionAttributes", true);
 	}
 
 	@Test
-	@Deprecated
-	void exposeSessionAttributesCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-session-attributes=true",
-				"exposeSessionAttributes", true);
-	}
-
-	@Test
 	void exposeSpringMacroHelpersCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-spring-macro-helpers=true",
-				"exposeSpringMacroHelpers", true);
-	}
-
-	@Test
-	@Deprecated
-	void exposeSpringMacroHelpersCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-spring-macro-helpers=true",
 				"exposeSpringMacroHelpers", true);
 	}
 

@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.condition.DisabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.gradle.junit.GradleMultiDslExtension;
@@ -43,7 +41,6 @@ class RunningDocumentationTests {
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	@DisabledForJreRange(min = JRE.JAVA_13)
 	void bootRunMain() throws IOException {
 		writeMainClass();
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-main").build("bootRun").getOutput())

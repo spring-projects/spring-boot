@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.time.Duration;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Message;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

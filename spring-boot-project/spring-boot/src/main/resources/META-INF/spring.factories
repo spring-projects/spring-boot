@@ -21,8 +21,8 @@ org.springframework.boot.context.config.StandardConfigDataLoader
 
 # Application Context Factories
 org.springframework.boot.ApplicationContextFactory=\
-org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext.Factory,\
-org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext.Factory
+org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContextFactory,\
+org.springframework.boot.web.servlet.context.ServletWebServerApplicationContextFactory
 
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
@@ -89,7 +89,6 @@ org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
 org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
-org.springframework.boot.jdbc.AbstractDataSourceInitializerDatabaseInitializerDetector,\
 org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector,\
 org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
 org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\

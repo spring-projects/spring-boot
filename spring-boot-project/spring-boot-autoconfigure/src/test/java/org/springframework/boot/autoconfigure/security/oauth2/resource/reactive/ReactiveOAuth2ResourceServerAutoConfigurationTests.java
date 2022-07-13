@@ -19,12 +19,12 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -90,6 +90,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	private MockWebServer server;
 
+	private static final Duration TIMEOUT = Duration.ofSeconds(5);
+
 	private static final String JWK_SET = "{\"keys\":[{\"kty\":\"RSA\",\"e\":\"AQAB\",\"use\":\"sig\","
 			+ "\"kid\":\"one\",\"n\":\"oXJ8OyOv_eRnce4akdanR4KYRfnC2zLV4uYNQpcFn6oHL0dj7D6kxQmsXoYgJV8ZVDn71KGm"
 			+ "uLvolxsDncc2UrhyMBY6DVQVgMSVYaPCTgW76iYEKGgzTEw5IBRQL9w3SRJWd3VJTZZQjkXef48Ocz06PGF3lhbz4t5UEZtd"
@@ -110,20 +112,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
-				});
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	@Deprecated
-	void autoConfigurationUsingJwkSetUriShouldConfigureResourceServerUsingJwsAlgorithm() {
-		this.contextRunner
-				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
-						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS512")
-				.run((context) -> {
-					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
-							.matches((algorithms) -> ((Set<JWSAlgorithm>) algorithms).contains(JWSAlgorithm.RS512));
 				});
 	}
 
@@ -150,18 +138,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
 							.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
 							.containsExactlyInAnyOrder(JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
-				});
-	}
-
-	@Test
-	@Deprecated
-	void autoConfigurationUsingPublicKeyValueShouldConfigureResourceServerUsingJwsAlgorithm() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
-				"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS384").run((context) -> {
-					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.jwsKeySelector.expectedJWSAlg")
-							.isEqualTo(JWSAlgorithm.RS384);
 				});
 	}
 
@@ -206,7 +182,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					reactiveJwtDecoderSupplier.block();
+					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(1);
@@ -229,7 +205,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					reactiveJwtDecoderSupplier.block();
+					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(2);
@@ -252,7 +228,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getBean(SupplierReactiveJwtDecoder.class);
 					Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 							.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
-					reactiveJwtDecoderSupplier.block();
+					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
 		assertThat(this.server.getRequestCount()).isEqualTo(3);
@@ -589,7 +565,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
 		ReactiveAuthenticationManagerResolver<?> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<?>) ReflectionTestUtils
 				.getField(webFilter, "authenticationManagerResolver");
-		Object authenticationManager = authenticationManagerResolver.resolve(null).block();
+		Object authenticationManager = authenticationManagerResolver.resolve(null).block(TIMEOUT);
 		assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
 	}
 
@@ -602,7 +578,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
 		ReactiveAuthenticationManagerResolver<?> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<?>) ReflectionTestUtils
 				.getField(webFilter, "authenticationManagerResolver");
-		Object authenticationManager = authenticationManagerResolver.resolve(null).block();
+		Object authenticationManager = authenticationManagerResolver.resolve(null).block(TIMEOUT);
 		assertThat(authenticationManager).isInstanceOf(OpaqueTokenReactiveAuthenticationManager.class);
 	}
 

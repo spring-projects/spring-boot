@@ -16,12 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import java.net.URI;
-import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -29,20 +24,13 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.reactive.ClientHttpConnector;
-import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link WebClientAutoConfiguration}
@@ -88,26 +76,9 @@ class WebClientAutoConfigurationTests {
 	@Test
 	void shouldGetPrototypeScopedBean() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
-			ClientHttpResponse response = mock(ClientHttpResponse.class);
-			given(response.getBody()).willReturn(Flux.empty());
-			given(response.getHeaders()).willReturn(new HttpHeaders());
-			ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
-			given(firstConnector.connect(any(), any(), any())).willReturn(Mono.just(response));
 			WebClient.Builder firstBuilder = context.getBean(WebClient.Builder.class);
-			firstBuilder.clientConnector(firstConnector).baseUrl("https://first.example.org");
-			ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
-			given(secondConnector.connect(any(), any(), any())).willReturn(Mono.just(response));
 			WebClient.Builder secondBuilder = context.getBean(WebClient.Builder.class);
-			secondBuilder.clientConnector(secondConnector).baseUrl("https://second.example.org");
 			assertThat(firstBuilder).isNotEqualTo(secondBuilder);
-			firstBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
-			secondBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
-			then(firstConnector).should().connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")),
-					any());
-			then(secondConnector).should().connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
-					any());
-			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
-			then(customizer).should(times(2)).customize(any(WebClient.Builder.class));
 		});
 	}
 

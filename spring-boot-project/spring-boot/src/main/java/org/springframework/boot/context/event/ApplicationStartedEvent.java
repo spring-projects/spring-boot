@@ -43,20 +43,6 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param context the context that was being created
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #ApplicationStartedEvent(SpringApplication, String[], ConfigurableApplicationContext, Duration)}
-	 */
-	@Deprecated
-	public ApplicationStartedEvent(SpringApplication application, String[] args,
-			ConfigurableApplicationContext context) {
-		this(application, args, context, null);
-	}
-
-	/**
-	 * Create a new {@link ApplicationStartedEvent} instance.
-	 * @param application the current application
-	 * @param args the arguments the application is running with
-	 * @param context the context that was being created
 	 * @param timeTaken the time taken to start the application
 	 * @since 2.6.0
 	 */

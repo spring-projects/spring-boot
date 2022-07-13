@@ -28,7 +28,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -54,7 +53,8 @@ class DataElasticsearchTestIntegrationTests {
 	}
 
 	@Autowired
-	private ElasticsearchRestTemplate elasticsearchRestTemplate;
+	@SuppressWarnings("deprecation")
+	private org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate elasticsearchRestTemplate;
 
 	@Autowired
 	private ExampleRepository exampleRepository;

@@ -39,8 +39,10 @@ import static org.mockito.Mockito.mock;
  */
 class HibernateDefaultDdlAutoProviderTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class))
+			.withPropertyValues("spring.sql.init.mode:never");
 
 	@Test
 	void defaultDDlAutoForEmbedded() {

@@ -40,16 +40,6 @@ public class RabbitTemplateConfigurer {
 	private RabbitProperties rabbitProperties;
 
 	/**
-	 * Creates a new configurer.
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #RabbitTemplateConfigurer(RabbitProperties)}
-	 */
-	@Deprecated
-	public RabbitTemplateConfigurer() {
-
-	}
-
-	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
 	 * @param rabbitProperties properties to use
 	 * @since 2.6.0
@@ -76,17 +66,6 @@ public class RabbitTemplateConfigurer {
 	 */
 	public void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
-	}
-
-	/**
-	 * Set the {@link RabbitProperties} to use.
-	 * @param rabbitProperties the {@link RabbitProperties}
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #RabbitTemplateConfigurer(RabbitProperties)}
-	 */
-	@Deprecated
-	protected void setRabbitProperties(RabbitProperties rabbitProperties) {
-		this.rabbitProperties = rabbitProperties;
 	}
 
 	protected final RabbitProperties getRabbitProperties() {

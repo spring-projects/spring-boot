@@ -187,7 +187,10 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 				.andDo(MockMvcRestDocumentation.document("threaddump/text",
 						preprocessResponse(new ContentModifyingOperationPreprocessor((bytes, mediaType) -> {
 							String content = new String(bytes, StandardCharsets.UTF_8);
-							return content.substring(0, content.indexOf("\"main\" - Thread")).getBytes();
+							int mainThreadIndex = content.indexOf("\"main\" - Thread");
+							String truncatedContent = (mainThreadIndex >= 0) ? content.substring(0, mainThreadIndex)
+									: content;
+							return truncatedContent.getBytes();
 						}))));
 	}
 

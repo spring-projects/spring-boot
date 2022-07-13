@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -35,8 +35,7 @@ class OnWarDeploymentCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ResourceLoader resourceLoader = context.getResourceLoader();
-		if (resourceLoader instanceof WebApplicationContext) {
-			WebApplicationContext applicationContext = (WebApplicationContext) resourceLoader;
+		if (resourceLoader instanceof WebApplicationContext applicationContext) {
 			ServletContext servletContext = applicationContext.getServletContext();
 			if (servletContext != null) {
 				return ConditionOutcome.match("Application is deployed as a WAR file.");

@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
@@ -42,18 +44,19 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.core.util.NameUtil;
+import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.message.Message;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
-import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
@@ -71,9 +74,13 @@ import org.springframework.util.StringUtils;
  * @author Ben Hale
  * @since 1.2.0
  */
-public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
+public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String FILE_PROTOCOL = "file";
+
+	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
+
+	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
@@ -155,8 +162,64 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
-		super.beforeInitialize();
+		if (!configureJdkLoggingBridgeHandler()) {
+			super.beforeInitialize();
+		}
 		loggerContext.getConfiguration().addFilter(FILTER);
+	}
+
+	private boolean configureJdkLoggingBridgeHandler() {
+		try {
+			if (isJulUsingASingleConsoleHandlerAtMost() && !isLog4jLogManagerInstalled()
+					&& isLog4jBridgeHandlerAvailable()) {
+				removeDefaultRootHandler();
+				Log4jBridgeHandler.install(false, null, true);
+				return true;
+			}
+		}
+		catch (Throwable ex) {
+			// Ignore. No java.util.logging bridge is installed.
+		}
+		return false;
+	}
+
+	private boolean isJulUsingASingleConsoleHandlerAtMost() {
+		java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
+	}
+
+	private boolean isLog4jLogManagerInstalled() {
+		final String logManagerClassName = java.util.logging.LogManager.getLogManager().getClass().getName();
+		return LOG4J_LOG_MANAGER.equals(logManagerClassName);
+	}
+
+	private boolean isLog4jBridgeHandlerAvailable() {
+		return ClassUtils.isPresent(LOG4J_BRIDGE_HANDLER, getClassLoader());
+	}
+
+	private void removeLog4jBridgeHandler() {
+		removeDefaultRootHandler();
+		java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+		for (final Handler handler : rootLogger.getHandlers()) {
+			if (handler instanceof Log4jBridgeHandler) {
+				handler.close();
+				rootLogger.removeHandler(handler);
+			}
+		}
+	}
+
+	private void removeDefaultRootHandler() {
+		try {
+			java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+			Handler[] handlers = rootLogger.getHandlers();
+			if (handlers.length == 1 && handlers[0] instanceof ConsoleHandler) {
+				rootLogger.removeHandler(handlers[0]);
+			}
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
 	}
 
 	@Override
@@ -189,20 +252,10 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
-		super.loadConfiguration(initializationContext, location, logFile);
+		if (initializationContext != null) {
+			applySystemProperties(initializationContext.getEnvironment(), logFile);
+		}
 		loadConfiguration(location, logFile, getOverrides(initializationContext));
-	}
-
-	/**
-	 * Load the configuration from the given {@code location}.
-	 * @param location the location
-	 * @param logFile log file configuration
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #loadConfiguration(String, LogFile, List)}
-	 */
-	@Deprecated
-	protected void loadConfiguration(String location, LogFile logFile) {
-		this.loadConfiguration(location, logFile, Collections.emptyList());
 	}
 
 	/**
@@ -378,6 +431,9 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void cleanUp() {
+		if (isLog4jBridgeHandlerAvailable()) {
+			removeLog4jBridgeHandler();
+		}
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();
 		markAsUninitialized(loggerContext);
@@ -391,8 +447,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private LoggerConfig findLogger(String name) {
 		Configuration configuration = getLoggerContext().getConfiguration();
-		if (configuration instanceof AbstractConfiguration) {
-			return ((AbstractConfiguration) configuration).getLogger(name);
+		if (configuration instanceof AbstractConfiguration abstractConfiguration) {
+			return abstractConfiguration.getLogger(name);
 		}
 		return configuration.getLoggers().get(name);
 	}

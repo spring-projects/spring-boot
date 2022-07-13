@@ -19,21 +19,21 @@ package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.HibernateMetrics;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,7 +44,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, HibernateMetrics.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })

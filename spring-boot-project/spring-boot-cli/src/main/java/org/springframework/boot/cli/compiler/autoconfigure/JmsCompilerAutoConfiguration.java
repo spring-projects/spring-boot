@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,12 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) throws CompilationFailedException {
-		dependencies.add("spring-jms", "javax.jms-api");
+		dependencies.add("spring-jms", "jakarta.jms-api");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("javax.jms", "org.springframework.jms.annotation", "org.springframework.jms.config",
+		imports.addStarImports("jakarta.jms", "org.springframework.jms.annotation", "org.springframework.jms.config",
 				"org.springframework.jms.core", "org.springframework.jms.listener",
 				"org.springframework.jms.listener.adapter");
 	}

@@ -145,19 +145,6 @@ class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void backOffIfSaml2RelyingPartyAutoConfigurationPresentDeprecated() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class))
-				.withPropertyValues(
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.single-sign-on.sign-request=false",
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
-						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location")
-				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
-						.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
-	}
-
-	@Test
 	void backOffIfRemoteDevToolsSecurityFilterChainIsPresent() {
 		this.contextRunner.withUserConfiguration(TestRemoteDevToolsSecurityFilterChainConfig.class).run((context) -> {
 			SecurityFilterChain testSecurityFilterChain = context.getBean("testSecurityFilterChain",
@@ -173,7 +160,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	private HttpStatus getResponseStatus(AssertableWebApplicationContext context, String path)
-			throws IOException, javax.servlet.ServletException {
+			throws IOException, jakarta.servlet.ServletException {
 		FilterChainProxy filterChainProxy = context.getBean(FilterChainProxy.class);
 		MockServletContext servletContext = new MockServletContext();
 		MockHttpServletResponse response = new MockHttpServletResponse();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 	@Test
 	void thresholdMustBePositive() {
 		this.contextRunner.withPropertyValues("management.health.diskspace.threshold=-10MB")
-				.run((context) -> assertThat(context).hasFailed().getFailure()
-						.hasMessageContaining("Failed to bind properties under 'management.health.diskspace'"));
+				.run((context) -> assertThat(context).hasFailed().getFailure().rootCause()
+						.hasMessage("threshold must be greater than or equal to 0"));
 	}
 
 	@Test

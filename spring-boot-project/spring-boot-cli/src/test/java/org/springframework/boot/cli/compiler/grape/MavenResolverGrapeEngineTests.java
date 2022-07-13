@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * Tests for {@link AetherGrapeEngine}.
+ * Tests for {@link MavenResolverGrapeEngine}.
  *
  * @author Andy Wilkinson
  */

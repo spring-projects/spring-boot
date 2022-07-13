@@ -11,8 +11,6 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	runtimeOnly("org.jolokia:jolokia-core")
-
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 
 	testRuntimeOnly("org.apache.httpcomponents:httpclient") {

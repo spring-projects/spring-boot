@@ -21,7 +21,6 @@
 :docs-java: {docdir}/../main/java/org/springframework/boot/docs
 :docs-kotlin: {docdir}/../main/kotlin/org/springframework/boot/docs
 :docs-groovy: {docdir}/../main/groovy/org/springframework/boot/docs
-:docs-resources: ../../main/resources
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
@@ -48,7 +47,7 @@
 :spring-boot-devtools-module-code: {spring-boot-code}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
 :spring-boot-devtools-module-api: {spring-boot-api}/org/springframework/boot/devtools
 :spring-boot-for-apache-geode: https://github.com/spring-projects/spring-boot-data-geode
-:spring-boot-for-apache-geode-docs: https://docs.spring.io/spring-boot-data-geode-build/1.7.x/reference/html5/
+:spring-boot-for-apache-geode-docs: https://docs.spring.io/spring-boot-data-geode-build/2.0.x/reference/html5/
 :spring-boot-test-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test/src/main/java/org/springframework/boot/test
 :spring-boot-test-module-api: {spring-boot-api}/org/springframework/boot/test
 :spring-boot-test-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
@@ -84,9 +83,6 @@
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/org/springframework
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference/html
-:spring-graphql: https://spring.io/projects/spring-graphql
-:spring-graphql-api: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/api/
-:spring-graphql-docs: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/reference/html/
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/
@@ -100,7 +96,6 @@
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dynatrace-help: https://www.dynatrace.com/support/help
-:embedded-mongo-code: https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/blob/de.flapdoodle.embed.mongo-{embedded-mongo-version}
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/javase/8/docs/api

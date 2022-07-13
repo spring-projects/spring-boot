@@ -18,8 +18,9 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.util.Arrays;
 
-import javax.jms.ConnectionFactory;
 import javax.naming.NamingException;
+
+import jakarta.jms.ConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

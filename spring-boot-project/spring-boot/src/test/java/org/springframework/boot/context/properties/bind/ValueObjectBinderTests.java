@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -54,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class ValueObjectBinderTests {
 
@@ -369,7 +368,6 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
 	void bindToRecordWithDefaultValue(@TempDir File tempDir) throws IOException, ClassNotFoundException {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.record.property1", "value-from-config-1");

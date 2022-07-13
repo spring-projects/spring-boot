@@ -16,9 +16,7 @@
 
 package org.springframework.boot.build.context.properties;
 
-import java.io.File;
 import java.util.Collections;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import org.gradle.api.Plugin;
@@ -26,7 +24,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.compile.JavaCompile;
@@ -74,13 +72,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	private void addMetadataArtifact(Project project) {
-		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		project.getConfigurations().maybeCreate(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME);
 		project.afterEvaluate((evaluatedProject) -> evaluatedProject.getArtifacts().add(
 				CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
-				evaluatedProject.provider((Callable<File>) () -> new File(mainSourceSet.getJava().getOutputDir(),
-						"META-INF/spring-configuration-metadata.json")),
+				mainSourceSet.getJava().getDestinationDirectory().dir("META-INF/spring-configuration-metadata.json"),
 				(artifact) -> artifact
 						.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
 	}
@@ -90,7 +87,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
 		((Task) compileJava).getInputs().files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME))
 				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("processed resources");
-		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		compileJava.getOptions().getCompilerArgs()
 				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + StringUtils

@@ -15,9 +15,6 @@ There is also explicit support for <<run.examples.system-properties,system prope
 
 As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run.examples.specify-active-profiles,Specify active profiles>>.
 
-Although this is not recommended (and deprecated), it is possible to execute the application directly from the Maven JVM by disabling the `fork` property.
-Doing so means that the `jvmArguments`, `systemPropertyVariables`, `environmentVariables` and `agents` options are ignored.
-
 Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
 To enable it, just add the following dependency to your project:
 

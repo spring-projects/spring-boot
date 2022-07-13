@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

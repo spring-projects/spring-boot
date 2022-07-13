@@ -21,7 +21,7 @@ dependencies {
 
 	providedRuntime("org.eclipse.jetty:apache-jsp") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
-		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude group: "jakarta.servlet", module: "jakarta.servlet-api"
 	}
 
 	runtimeOnly("org.glassfish.web:jakarta.servlet.jsp.jstl")

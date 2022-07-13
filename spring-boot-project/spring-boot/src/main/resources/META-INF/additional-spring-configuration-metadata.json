@@ -163,21 +163,21 @@
       "type": "java.lang.String",
       "description": "Appender pattern for output to the console. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+      "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
     },
     {
       "name": "logging.pattern.dateformat",
       "type": "java.lang.String",
       "description": "Appender pattern for log date format. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "yyyy-MM-dd HH:mm:ss.SSS"
+      "defaultValue": "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     },
     {
       "name": "logging.pattern.file",
       "type": "java.lang.String",
       "description": "Appender pattern for output to a file. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+      "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
     },
     {
       "name": "logging.pattern.level",
@@ -227,43 +227,58 @@
     {
       "name": "spring.banner.image.bitdepth",
       "type": "java.lang.Integer",
-      "description": "Bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
-      "defaultValue": 4
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.height",
       "type": "java.lang.Integer",
-      "description": "Height of the banner image in chars (default based on image height)."
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.invert",
       "type": "java.lang.Boolean",
-      "description": "Whether images should be inverted for dark terminal themes.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.location",
       "type": "org.springframework.core.io.Resource",
-      "description": "Banner image file location (jpg or png can also be used).",
-      "defaultValue": "classpath:banner.gif"
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.margin",
       "type": "java.lang.Integer",
-      "description": "Left hand image margin in chars.",
-      "defaultValue": 2
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.pixelmode",
       "type": "org.springframework.boot.ImageBanner$PixelMode",
-      "description": "Pixel mode to use when rendering the image.",
-      "defaultValue": "TEXT"
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.width",
       "type": "java.lang.Integer",
-      "description": "Width of the banner image in chars.",
-      "defaultValue": 76
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.location",
@@ -314,12 +329,6 @@
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Config file name.",
       "defaultValue": "application"
-    },
-    {
-      "name": "spring.config.use-legacy-processing",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable configuration data processing legacy mode.",
-      "defaultValue": false
     },
     {
       "name": "spring.jpa.defer-datasource-initialization",

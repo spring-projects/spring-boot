@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.function.Supplier;
 
-import org.jolokia.http.AgentServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -72,7 +76,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();
-			webTestClient.get().uri("/actuator/").exchange().expectStatus().isOk();
+			webTestClient.get().uri("/actuator/").exchange().expectStatus().isNotFound();
 		});
 	}
 
@@ -158,7 +162,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 		@Override
 		public EndpointServlet get() {
-			return new EndpointServlet(AgentServlet.class);
+			return new EndpointServlet(ExampleServlet.class);
 		}
 
 	}
@@ -183,6 +187,14 @@ abstract class AbstractEndpointRequestIntegrationTests {
 				}
 
 			};
+		}
+
+	}
+
+	static class ExampleServlet extends HttpServlet {
+
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		}
 
 	}

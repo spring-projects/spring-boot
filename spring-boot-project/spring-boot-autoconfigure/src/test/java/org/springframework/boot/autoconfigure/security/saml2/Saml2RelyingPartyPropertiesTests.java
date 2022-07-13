@@ -61,7 +61,7 @@ class Saml2RelyingPartyPropertiesTests {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request",
 				"false");
 		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
-				.getSignRequest()).isEqualTo(false);
+				.isSignRequest()).isEqualTo(false);
 	}
 
 	@Test
@@ -84,6 +84,13 @@ class Saml2RelyingPartyPropertiesTests {
 				"https://idp.example.org/metadata");
 		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getMetadataUri())
 				.isEqualTo("https://idp.example.org/metadata");
+	}
+
+	@Test
+	void customizeSsoSignRequestsIsTrueByDefault() {
+		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
+				.isSignRequest()).isEqualTo(true);
 	}
 
 	private void bind(String name, String value) {

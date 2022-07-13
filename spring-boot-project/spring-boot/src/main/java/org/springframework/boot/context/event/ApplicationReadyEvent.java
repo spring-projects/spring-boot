@@ -44,19 +44,6 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param context the context that was being created
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #ApplicationReadyEvent(SpringApplication, String[], ConfigurableApplicationContext, Duration)}
-	 */
-	@Deprecated
-	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context) {
-		this(application, args, context, null);
-	}
-
-	/**
-	 * Create a new {@link ApplicationReadyEvent} instance.
-	 * @param application the current application
-	 * @param args the arguments the application is running with
-	 * @param context the context that was being created
 	 * @param timeTaken the time taken to get the application ready to service requests
 	 * @since 2.6.0
 	 */

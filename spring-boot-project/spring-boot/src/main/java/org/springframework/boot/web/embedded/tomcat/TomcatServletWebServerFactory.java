@@ -33,10 +33,9 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
@@ -230,8 +229,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		File docBase = (documentRoot != null) ? documentRoot : createTempDir("tomcat-docbase");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader((this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
-				: ClassUtils.getDefaultClassLoader());
+		ClassLoader parentClassLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
+				: ClassUtils.getDefaultClassLoader();
+		context.setParentClassLoader(parentClassLoader);
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		try {
@@ -242,7 +242,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		configureTldPatterns(context);
 		WebappLoader loader = new WebappLoader();
-		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
 		loader.setDelegate(true);
 		context.setLoader(loader);
 		if (isRegisterDefaultServlet()) {
@@ -371,8 +371,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	protected void configureContext(Context context, ServletContextInitializer[] initializers) {
 		TomcatStarter starter = new TomcatStarter(initializers);
-		if (context instanceof TomcatEmbeddedContext) {
-			TomcatEmbeddedContext embeddedContext = (TomcatEmbeddedContext) context;
+		if (context instanceof TomcatEmbeddedContext embeddedContext) {
 			embeddedContext.setStarter(starter);
 			embeddedContext.setFailCtxIfServletStartFails(true);
 		}
@@ -752,8 +751,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			if (event.getType().equals(Lifecycle.START_EVENT)) {
 				Context context = (Context) event.getLifecycle();
 				Manager manager = context.getManager();
-				if (manager instanceof StandardManager) {
-					((StandardManager) manager).setPathname(null);
+				if (manager instanceof StandardManager standardManager) {
+					standardManager.setPathname(null);
 				}
 			}
 		}

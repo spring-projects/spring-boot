@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -172,14 +173,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeStacktrace()) {
-			case ALWAYS:
-				return true;
-			case ON_PARAM:
-				return isTraceEnabled(request);
-			default:
-				return false;
-		}
+		return switch (this.errorProperties.getIncludeStacktrace()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isTraceEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -189,14 +187,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the message attribute should be included
 	 */
 	protected boolean isIncludeMessage(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeMessage()) {
-			case ALWAYS:
-				return true;
-			case ON_PARAM:
-				return isMessageEnabled(request);
-			default:
-				return false;
-		}
+		return switch (this.errorProperties.getIncludeMessage()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isMessageEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -206,14 +201,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the errors attribute should be included
 	 */
 	protected boolean isIncludeBindingErrors(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeBindingErrors()) {
-			case ALWAYS:
-				return true;
-			case ON_PARAM:
-				return isBindingErrorsEnabled(request);
-			default:
-				return false;
-		}
+		return switch (this.errorProperties.getIncludeBindingErrors()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isBindingErrorsEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -237,7 +229,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 			try {
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
 				acceptedMediaTypes.removeIf(MediaType.ALL::equalsTypeAndSubtype);
-				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
+				MimeTypeUtils.sortBySpecificity(acceptedMediaTypes);
 				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}
 			catch (InvalidMediaTypeException ex) {

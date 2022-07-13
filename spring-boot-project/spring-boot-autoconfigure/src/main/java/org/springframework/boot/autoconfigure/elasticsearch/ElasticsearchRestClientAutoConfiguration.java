@@ -36,11 +36,9 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@SuppressWarnings("deprecation")
 @AutoConfiguration
 @ConditionalOnClass(RestClientBuilder.class)
-@EnableConfigurationProperties({ ElasticsearchProperties.class, ElasticsearchRestClientProperties.class,
-		DeprecatedElasticsearchRestClientProperties.class })
+@EnableConfigurationProperties(ElasticsearchProperties.class)
 @Import({ RestClientBuilderConfiguration.class, RestHighLevelClientConfiguration.class,
 		RestClientFromRestHighLevelClientConfiguration.class, RestClientConfiguration.class,
 		RestClientSnifferConfiguration.class })

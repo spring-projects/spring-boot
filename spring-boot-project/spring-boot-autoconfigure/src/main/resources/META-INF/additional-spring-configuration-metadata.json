@@ -1101,20 +1101,21 @@
       }
     },
     {
-      "name": "spring.graphql.schema.file-extensions",
-      "defaultValue": ".graphqls,.gqls"
-    },
-    {
-      "name": "spring.graphql.schema.locations",
-      "defaultValue": "classpath:graphql/**/"
-    },
-    {
       "name": "spring.groovy.template.prefix",
       "defaultValue": ""
     },
     {
       "name": "spring.groovy.template.suffix",
       "defaultValue": ".tpl"
+    },
+    {
+      "name": "spring.jpa.hibernate.use-new-id-generator-mappings",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
+      "deprecation": {
+        "level": "error",
+        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings."
+      }
     },
     {
       "name": "spring.http.converters.preferred-json-mapper",
@@ -1216,10 +1217,6 @@
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "spring.jersey.type",
-      "defaultValue": "servlet"
     },
     {
       "name": "spring.jpa.open-in-view",
@@ -1598,6 +1595,16 @@
       "defaultValue": "required"
     },
     {
+      "name": "spring.kafka.listener.only-log-record-metadata",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to suppress the entire record from being written to the log when retries are being attempted.",
+      "deprecation": {
+        "reason": "Use KafkaUtils#setConsumerRecordFormatter instead.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.kafka.listener.type",
       "defaultValue": "single"
     },
@@ -1697,13 +1704,6 @@
       "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
       "type": "java.lang.Boolean",
       "defaultValue": false
-    },
-    {
-      "name": "spring.mongodb.embedded.features",
-      "deprecation": {
-        "level": "error",
-        "reason": "Feature support has been removed from Embedded Mongo. A custom MongodConfig bean should be defined instead."
-      }
     },
     {
       "name": "spring.mustache.prefix",
@@ -2072,8 +2072,11 @@
     },
     {
       "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
-      "description": "JSON Web Algorithm used for verifying the digital signatures.",
-      "defaultValue": "RS256"
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.security.oauth2.resourceserver.jwt.jws-algorithms",
+        "level": "error"
+      }
     },
     {
       "name": "spring.session.hazelcast.flush-mode",
@@ -2183,7 +2186,7 @@
         {
           "name": "class-reference",
           "parameters": {
-            "target": "javax.servlet.http.HttpServlet"
+            "target": "jakarta.servlet.http.HttpServlet"
           }
         }
       ]
@@ -2354,45 +2357,6 @@
           "parameters": {
             "target": "javax.sql.XADataSource"
           }
-        }
-      ]
-    },
-    {
-      "name": "spring.graphql.cors.allowed-headers",
-      "values": [
-        {
-          "value": "*"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
-    {
-      "name": "spring.graphql.cors.allowed-methods",
-      "values": [
-        {
-          "value": "*"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
-    {
-      "name": "spring.graphql.cors.allowed-origins",
-      "values": [
-        {
-          "value": "*"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
         }
       ]
     },

@@ -37,19 +37,9 @@ public enum CacheType {
 	JCACHE,
 
 	/**
-	 * EhCache backed caching.
-	 */
-	EHCACHE,
-
-	/**
 	 * Hazelcast backed caching.
 	 */
 	HAZELCAST,
-
-	/**
-	 * Infinispan backed caching.
-	 */
-	INFINISPAN,
 
 	/**
 	 * Couchbase backed caching.

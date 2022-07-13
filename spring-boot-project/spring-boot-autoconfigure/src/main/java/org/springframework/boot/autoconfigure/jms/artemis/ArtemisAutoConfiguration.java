@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms.artemis;
 
-import javax.jms.ConnectionFactory;
-
+import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;

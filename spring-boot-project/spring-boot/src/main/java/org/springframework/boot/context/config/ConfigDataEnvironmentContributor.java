@@ -237,7 +237,6 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
 				contributors, activationContext, this, true);
 		Binder binder = new Binder(sources, placeholdersResolver, null, null, null);
-		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		if (properties != null && this.configDataOptions.contains(ConfigData.Option.IGNORE_IMPORTS)) {
 			properties = properties.withoutImports();

@@ -33,7 +33,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -161,7 +160,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenActiveProfilesDoesNotLoadDefault() {
 		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofilesdocument",
-				"--spring.profiles.default=thedefault", "--spring.profiles.active=other");
+				"--spring.config.location=classpath:configdata/profiles/", "--spring.profiles.default=thedefault",
+				"--spring.profiles.active=other");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromotherprofile");
 	}
@@ -591,7 +591,6 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	@Disabled("Disabled until spring.profiles suppport is dropped")
 	void runWhenUsingInvalidPropertyThrowsException() {
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(
 				() -> this.application.run("--spring.config.location=classpath:invalidproperty.properties"));

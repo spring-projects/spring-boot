@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import org.glassfish.jersey.server.ResourceConfig;
-
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
-import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -55,19 +51,6 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 		@ConditionalOnClass(DispatcherServlet.class)
 		public RequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
 			return new AntPathRequestMatcherProvider(servletPath::getRelativePath);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ResourceConfig.class)
-	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	@ConditionalOnBean(JerseyApplicationPath.class)
-	public static class JerseyRequestMatcherConfiguration {
-
-		@Bean
-		public RequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
-			return new AntPathRequestMatcherProvider(applicationPath::getRelativePath);
 		}
 
 	}

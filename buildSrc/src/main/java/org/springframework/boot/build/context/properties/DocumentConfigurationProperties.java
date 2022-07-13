@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,11 +174,9 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	private void webPrefixes(Config prefix) {
-		prefix.accept("spring.graphql");
 		prefix.accept("spring.hateoas");
 		prefix.accept("spring.http");
 		prefix.accept("spring.servlet");
-		prefix.accept("spring.jersey");
 		prefix.accept("spring.mvc");
 		prefix.accept("spring.netty");
 		prefix.accept("spring.resources");

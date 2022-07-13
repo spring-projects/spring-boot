@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.simple")
+@ConfigurationProperties(prefix = "management.simple.metrics.export")
 public class SimpleProperties {
 
 	/**

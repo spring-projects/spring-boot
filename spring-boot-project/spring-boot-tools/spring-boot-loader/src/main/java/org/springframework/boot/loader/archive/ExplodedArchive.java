@@ -108,7 +108,7 @@ public class ExplodedArchive implements Archive {
 		return new EntryIterator(this.root, this.recursive, null, null);
 	}
 
-	protected Archive getNestedArchive(Entry entry) throws IOException {
+	protected Archive getNestedArchive(Entry entry) {
 		File file = ((FileEntry) entry).getFile();
 		return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive((FileEntry) entry));
 	}
