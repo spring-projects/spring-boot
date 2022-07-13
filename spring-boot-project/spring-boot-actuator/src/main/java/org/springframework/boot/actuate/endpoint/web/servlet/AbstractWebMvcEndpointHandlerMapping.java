@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,11 +67,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.MatchableHandlerMapping;
-import org.springframework.web.servlet.handler.RequestMatchResult;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
@@ -85,7 +81,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @since 2.0.0
  */
 public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappingInfoHandlerMapping
-		implements InitializingBean, MatchableHandlerMapping {
+		implements InitializingBean {
 
 	private final EndpointMapping endpointMapping;
 
@@ -101,11 +97,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			HttpServletRequest.class, Map.class);
 
 	private RequestMappingInfo.BuilderConfiguration builderConfig = new RequestMappingInfo.BuilderConfiguration();
-
-	/**
-	 * Instance of {@link PathPatternParser} shared across actuator configuration.
-	 */
-	public static final PathPatternParser pathPatternParser = new PathPatternParser();
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
@@ -133,29 +124,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
-		this(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping, null);
-	}
-
-	/**
-	 * Creates a new {@code AbstractWebMvcEndpointHandlerMapping} that provides mappings
-	 * for the operations of the given endpoints.
-	 * @param endpointMapping the base mapping for all endpoints
-	 * @param endpoints the web endpoints
-	 * @param endpointMediaTypes media types consumed and produced by the endpoints
-	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
-	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
-	 * @param pathPatternParser the path pattern parser
-	 */
-	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping,
-			PathPatternParser pathPatternParser) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
 		this.shouldRegisterLinksMapping = shouldRegisterLinksMapping;
-		setPatternParser(pathPatternParser);
 		setOrder(-100);
 	}
 
@@ -163,15 +136,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	@SuppressWarnings("deprecation")
 	public void afterPropertiesSet() {
 		this.builderConfig = new RequestMappingInfo.BuilderConfiguration();
-		if (getPatternParser() != null) {
-			this.builderConfig.setPatternParser(getPatternParser());
-		}
-		else {
-			this.builderConfig.setPathMatcher(null);
-			this.builderConfig.setTrailingSlashMatch(true);
-			this.builderConfig.setSuffixPatternMatch(false);
-
-		}
+		this.builderConfig.setPatternParser(getPatternParser());
 		super.afterPropertiesSet();
 	}
 
@@ -191,19 +156,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
 		HandlerMethod handlerMethod = super.createHandlerMethod(handler, method);
 		return new WebMvcEndpointHandlerMethod(handlerMethod.getBean(), handlerMethod.getMethod());
-	}
-
-	@Override
-	public RequestMatchResult match(HttpServletRequest request, String pattern) {
-		Assert.isNull(getPatternParser(), "This HandlerMapping uses PathPatterns.");
-		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(this.builderConfig).build();
-		RequestMappingInfo matchingInfo = info.getMatchingCondition(request);
-		if (matchingInfo == null) {
-			return null;
-		}
-		Set<String> patterns = matchingInfo.getPatternsCondition().getPatterns();
-		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
-		return new RequestMatchResult(patterns.iterator().next(), lookupPath, getPathMatcher());
 	}
 
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {

@@ -63,8 +63,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			EndpointLinksResolver linksResolver) {
-		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true,
-				AbstractWebMvcEndpointHandlerMapping.pathPatternParser);
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.securityInterceptor = securityInterceptor;
 		this.linksResolver = linksResolver;
 	}

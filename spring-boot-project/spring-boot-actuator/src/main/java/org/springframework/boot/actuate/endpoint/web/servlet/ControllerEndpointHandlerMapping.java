@@ -67,7 +67,6 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		this.handlers = getHandlers(endpoints);
 		this.corsConfiguration = corsConfiguration;
 		setOrder(-100);
-		setUseSuffixPatternMatch(false);
 	}
 
 	private Map<Object, ExposableControllerEndpoint> getHandlers(Collection<ExposableControllerEndpoint> endpoints) {
