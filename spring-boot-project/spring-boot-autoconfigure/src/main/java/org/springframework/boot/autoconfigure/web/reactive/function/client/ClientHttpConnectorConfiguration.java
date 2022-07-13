@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
+import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
@@ -105,6 +106,17 @@ class ClientHttpConnectorConfiguration {
 			return new HttpComponentsClientHttpConnector();
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(JdkClientHttpConnector.class)
+	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	static class JdkClient {
+		@Bean
+		@Lazy
+		JdkClientHttpConnector jdkClientHttpConnector() {
+			return new JdkClientHttpConnector();
+		}
 	}
 
 }
