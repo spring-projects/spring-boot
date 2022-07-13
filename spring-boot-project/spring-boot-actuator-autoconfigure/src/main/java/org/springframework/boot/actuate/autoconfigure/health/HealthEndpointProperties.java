@@ -42,9 +42,9 @@ public class HealthEndpointProperties extends HealthProperties {
 	/**
 	 * Health endpoint groups.
 	 */
-	private Map<String, Group> group = new LinkedHashMap<>();
+	private final Map<String, Group> group = new LinkedHashMap<>();
 
-	private Logging logging = new Logging();
+	private final Logging logging = new Logging();
 
 	@Override
 	public Show getShowDetails() {
@@ -139,7 +139,7 @@ public class HealthEndpointProperties extends HealthProperties {
 		/**
 		 * Threshold after which a warning will be logged for slow health indicators.
 		 */
-		Duration slowIndicatorThreshold = Duration.ofSeconds(10);
+		private Duration slowIndicatorThreshold = Duration.ofSeconds(10);
 
 		public Duration getSlowIndicatorThreshold() {
 			return this.slowIndicatorThreshold;

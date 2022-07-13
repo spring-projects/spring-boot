@@ -52,7 +52,7 @@ abstract class HealthEndpointSupport<C, T> {
 
 	private final HealthEndpointGroups groups;
 
-	private Duration slowIndicatorLoggingThreshold;
+	private final Duration slowIndicatorLoggingThreshold;
 
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
@@ -177,7 +177,7 @@ abstract class HealthEndpointSupport<C, T> {
 				if (duration.compareTo(this.slowIndicatorLoggingThreshold) > 0) {
 					String contributorClassName = contributor.getClass().getName();
 					Object contributorIdentifier = (!StringUtils.hasLength(name)) ? contributorClassName
-							: contributor.getClass().getName() + " (" + name + ")";
+							: contributorClassName + " (" + name + ")";
 					logger.warn(LogMessage.format("Health contributor %s took %s to respond", contributorIdentifier,
 							DurationStyle.SIMPLE.print(duration)));
 				}

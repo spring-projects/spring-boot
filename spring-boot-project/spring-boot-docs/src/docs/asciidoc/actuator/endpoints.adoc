@@ -754,7 +754,7 @@ In the preceding example, the health information is available in an entry named 
 
 TIP: Health indicators are usually called over HTTP and need to respond before any connection timeouts.
 Spring Boot will log a warning message for any health indicator that takes longer than 10 seconds to respond.
-If you want to configure this threshold, you can use the configprop:management.endpoint.health.logging.slow-indicator-threshold[] property
+If you want to configure this threshold, you can use the configprop:management.endpoint.health.logging.slow-indicator-threshold[] property.
 
 In addition to Spring Boot's predefined {spring-boot-actuator-module-code}/health/Status.java[`Status`] types, `Health` can return a custom `Status` that represents a new system state.
 In such cases, you also need to provide a custom implementation of the {spring-boot-actuator-module-code}/health/StatusAggregator.java[`StatusAggregator`] interface, or you must configure the default implementation by using the configprop:management.endpoint.health.status.order[] configuration property.
