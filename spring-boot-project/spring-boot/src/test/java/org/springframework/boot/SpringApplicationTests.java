@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1293,6 +1294,35 @@ class SpringApplicationTests {
 				.map(ApplicationFailedEvent.class::cast).findFirst().get();
 		assertThat(SpringApplicationShutdownHookInstance.get())
 				.didNotRegisterApplicationContext(failure.getApplicationContext());
+	}
+
+	@Test
+	void deduceMainApplicationClass() {
+		assertThat(
+				Objects.equals(deduceMainApplicationClassByStackWalker(), deduceMainApplicationClassByThrowException()))
+						.isTrue();
+	}
+
+	private Class<?> deduceMainApplicationClassByThrowException() {
+		try {
+			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+			for (StackTraceElement stackTraceElement : stackTrace) {
+				if ("main".equals(stackTraceElement.getMethodName())) {
+					return Class.forName(stackTraceElement.getClassName());
+				}
+			}
+		}
+		catch (ClassNotFoundException ex) {
+			// Swallow and continue
+		}
+		return null;
+	}
+
+	private Class<?> deduceMainApplicationClassByStackWalker() {
+		return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+				.walk((s) -> s.filter(e -> Objects.equals(e.getMethodName(), "main")).findFirst()
+						.map(StackWalker.StackFrame::getDeclaringClass))
+				.orElse(null);
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
