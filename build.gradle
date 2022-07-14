@@ -38,3 +38,7 @@ allprojects {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
+
+tasks.named("checkstyleNohttp").configure {
+	maxHeapSize = "1g"
+}
