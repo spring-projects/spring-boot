@@ -1014,7 +1014,7 @@ bom {
 			]
 		}
 	}
-	library("JsonAssert", "1.5.0") {
+	library("JsonAssert", "1.5.1") {
 		group("org.skyscreamer") {
 			modules = [
 				"jsonassert"
