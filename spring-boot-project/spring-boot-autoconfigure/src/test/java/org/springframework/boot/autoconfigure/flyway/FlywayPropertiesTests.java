@@ -44,7 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class FlywayPropertiesTests {
 
-	@SuppressWarnings("deprecation")
 	@Test
 	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
@@ -86,10 +85,6 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isCleanDisabled()).isEqualTo(properties.isCleanDisabled());
 		assertThat(configuration.isCleanOnValidationError()).isEqualTo(properties.isCleanOnValidationError());
 		assertThat(configuration.isGroup()).isEqualTo(properties.isGroup());
-		assertThat(configuration.isIgnoreMissingMigrations()).isEqualTo(properties.isIgnoreMissingMigrations());
-		assertThat(configuration.isIgnoreIgnoredMigrations()).isEqualTo(properties.isIgnoreIgnoredMigrations());
-		assertThat(configuration.isIgnorePendingMigrations()).isEqualTo(properties.isIgnorePendingMigrations());
-		assertThat(configuration.isIgnoreFutureMigrations()).isEqualTo(properties.isIgnoreFutureMigrations());
 		assertThat(configuration.isMixed()).isEqualTo(properties.isMixed());
 		assertThat(configuration.isOutOfOrder()).isEqualTo(properties.isOutOfOrder());
 		assertThat(configuration.isSkipDefaultCallbacks()).isEqualTo(properties.isSkipDefaultCallbacks());
@@ -113,7 +108,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(properties, "sqlServerKerberosLoginFile");
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
-				"javaMigrationClassProvider", "resourceProvider", "resolvers");
+				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver");
 		// Handled by the conversion service

@@ -32,7 +32,6 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
-import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -202,7 +201,6 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isCleanDisabled()).to(configuration::cleanDisabled);
 			map.from(properties.isCleanOnValidationError()).to(configuration::cleanOnValidationError);
 			map.from(properties.isGroup()).to(configuration::group);
-			configureIgnoredMigrations(configuration, properties, map);
 			map.from(properties.isMixed()).to(configuration::mixed);
 			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
@@ -242,7 +240,8 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getOutputQueryResults())
 					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
 			map.from(properties.getSqlServerKerberosLoginFile()).whenNonNull()
-					.to(this::configureSqlServerKerberosLoginFile);
+					.to((sqlServerKerberosLoginFile) -> configureSqlServerKerberosLoginFile(configuration,
+							sqlServerKerberosLoginFile));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getSkipExecutingMigrations())
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
@@ -253,18 +252,6 @@ public class FlywayAutoConfiguration {
 			// No method reference for compatibility with Flyway version < 7.9
 			map.from(properties.getDetectEncoding())
 					.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
-			// No method reference for compatibility with Flyway version < 8.0
-			map.from(properties.getBaselineMigrationPrefix())
-					.to((baselineMigrationPrefix) -> configuration.baselineMigrationPrefix(baselineMigrationPrefix));
-		}
-
-		@SuppressWarnings("deprecation")
-		private void configureIgnoredMigrations(FluentConfiguration configuration, FlywayProperties properties,
-				PropertyMapper map) {
-			map.from(properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
-			map.from(properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
-			map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
-			map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
 		}
 
 		private void configureFailOnMissingLocations(FluentConfiguration configuration,
@@ -286,9 +273,11 @@ public class FlywayAutoConfiguration {
 			}
 		}
 
-		private void configureSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
-			SQLServerConfigurationExtension sqlServerConfigurationExtension = PluginRegister
+		private void configureSqlServerKerberosLoginFile(FluentConfiguration configuration,
+				String sqlServerKerberosLoginFile) {
+			SQLServerConfigurationExtension sqlServerConfigurationExtension = configuration.getPluginRegister()
 					.getPlugin(SQLServerConfigurationExtension.class);
+			Assert.state(sqlServerConfigurationExtension != null, "Flyway SQL Server extension missing");
 			sqlServerConfigurationExtension.setKerberosLoginFile(sqlServerKerberosLoginFile);
 		}
 

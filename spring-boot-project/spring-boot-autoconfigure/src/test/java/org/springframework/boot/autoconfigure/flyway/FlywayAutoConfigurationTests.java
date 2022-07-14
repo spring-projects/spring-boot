@@ -33,8 +33,6 @@ import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
-import org.flywaydb.core.internal.plugin.PluginRegister;
-import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -493,8 +491,8 @@ class FlywayAutoConfigurationTests {
 	void licenseKeyIsCorrectlyMapped(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.license-key=<<secret>>")
-				.run((context) -> assertThat(output).contains(
-						"Flyway Teams Edition upgrade required: licenseKey is not supported by Flyway Community Edition."));
+				.run((context) -> assertThat(output).contains("License key detected - in order to use Teams or "
+						+ "Enterprise features, download Flyway Teams Edition & Flyway Enterprise Edition"));
 	}
 
 	@Test
@@ -574,14 +572,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void oracleKerberosConfigFileIsCorrectlyMappedToReplacementProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config")
-				.run(validateFlywayTeamsPropertyOnly("kerberosConfigFile"));
-	}
-
-	@Test
 	void oracleKerberosCacheFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
@@ -597,15 +587,9 @@ class FlywayAutoConfigurationTests {
 
 	@Test
 	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
-		try {
-			this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-					.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
-					.run(validateFlywayTeamsPropertyOnly("sqlserver.kerberos.login.file"));
-		}
-		finally {
-			// Reset to default value
-			PluginRegister.getPlugin(SQLServerConfigurationExtension.class).setKerberosLoginFile(null);
-		}
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
+				.run(validateFlywayTeamsPropertyOnly("sqlserver.kerberos.login.file"));
 	}
 
 	@Test
@@ -641,13 +625,6 @@ class FlywayAutoConfigurationTests {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
 					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("customFlyway");
 				});
-	}
-
-	@Test
-	void baselineMigrationPrefixIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.baseline-migration-prefix=BL")
-				.run(validateFlywayTeamsPropertyOnly("baselineMigrationPrefix"));
 	}
 
 	@Test
@@ -1004,11 +981,6 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isUndo() {
-			return false;
-		}
-
-		@Override
 		public boolean canExecuteInTransaction() {
 			return true;
 		}
@@ -1016,11 +988,6 @@ class FlywayAutoConfigurationTests {
 		@Override
 		public void migrate(org.flywaydb.core.api.migration.Context context) {
 
-		}
-
-		@Override
-		public boolean isBaselineMigration() {
-			return false;
 		}
 
 	}
