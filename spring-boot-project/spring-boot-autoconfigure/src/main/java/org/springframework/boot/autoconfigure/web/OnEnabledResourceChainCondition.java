@@ -27,8 +27,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link Condition} that checks whether or not the Spring resource handling chain is
- * enabled.
+ * {@link Condition} that checks whether the Spring resource handling chain is enabled.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb

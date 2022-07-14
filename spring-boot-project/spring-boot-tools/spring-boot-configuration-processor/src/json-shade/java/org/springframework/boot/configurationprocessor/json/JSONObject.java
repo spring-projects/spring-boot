@@ -708,7 +708,7 @@ public class JSONObject {
 	}
 
 	/**
-	 * Encodes this object as a human readable JSON string for debugging, such as: <pre>
+	 * Encodes this object as a human-readable JSON string for debugging, such as: <pre>
 	 * {
 	 *     "query": "Pizza",
 	 *     "locations": [

@@ -80,14 +80,13 @@ public @interface ConditionalOnBean {
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when all of the annotations specified are defined on beans in the
-	 * {@link BeanFactory}.
+	 * when all the annotations specified are defined on beans in the {@link BeanFactory}.
 	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
 	/**
-	 * The names of beans to check. The condition matches when all of the bean names
+	 * The names of beans to check. The condition matches when all the bean names
 	 * specified are contained in the {@link BeanFactory}.
 	 * @return the names of beans to check
 	 */

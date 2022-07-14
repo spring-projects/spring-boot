@@ -20,7 +20,7 @@ import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
- * An upgrade to change a {@link Library} to use a new version}.
+ * An upgrade to change a {@link Library} to use a new version.
  *
  * @author Andy Wilkinson
  */

@@ -141,7 +141,7 @@ class Neo4jAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	void determineServerUriWithCustoUriShouldTakePrecedenceOverDeprecatedProperty() {
+	void determineServerUriWithCustomUriShouldTakePrecedenceOverDeprecatedProperty() {
 		URI customUri = URI.create("bolt://localhost:4242");
 		URI anotherCustomURI = URI.create("bolt://localhost:2424");
 		Neo4jProperties properties = new Neo4jProperties();

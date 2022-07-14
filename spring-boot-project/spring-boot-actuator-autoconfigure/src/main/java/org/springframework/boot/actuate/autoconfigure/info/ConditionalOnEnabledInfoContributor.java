@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional @Conditional} that checks whether or not an info contributor is
- * enabled. Matches if the value of the {@code management.info.<name>.enabled} property is
+ * {@link Conditional @Conditional} that checks whether an info contributor is enabled.
+ * Matches if the value of the {@code management.info.<name>.enabled} property is
  * {@code true}. Otherwise, use the specific {@link #fallback() fallback} method.
  *
  * @author Stephane Nicoll

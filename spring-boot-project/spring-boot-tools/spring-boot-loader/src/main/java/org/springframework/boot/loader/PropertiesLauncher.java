@@ -127,7 +127,7 @@ public class PropertiesLauncher extends Launcher {
 	public static final String CONFIG_LOCATION = "loader.config.location";
 
 	/**
-	 * Properties key for boolean flag (default false) which if set will cause the
+	 * Properties key for boolean flag (default false) which, if set, will cause the
 	 * external configuration properties to be copied to System properties (assuming that
 	 * is allowed by Java security).
 	 */

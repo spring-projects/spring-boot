@@ -89,7 +89,7 @@ class RestartServerTests {
 	@Test
 	void updateReplacesLocalFilesWhenPossible(@TempDir File directory) throws Exception {
 		// This is critical for Cloud Foundry support where the application is
-		// run exploded and resources can be found from the servlet root (outside of the
+		// run exploded and resources can be found from the servlet root (outside the
 		// classloader)
 		File classFile = new File(directory, "ClassA.class");
 		FileCopyUtils.copy("abc".getBytes(), classFile);

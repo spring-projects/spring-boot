@@ -81,9 +81,9 @@ public class ApplicationTemp {
 	}
 
 	/**
-	 * Return a sub-directory of the application temp.
-	 * @param subDir the sub-directory name
-	 * @return a sub-directory
+	 * Return a subdirectory of the application temp.
+	 * @param subDir the subdirectory name
+	 * @return a subdirectory
 	 */
 	public File getDir(String subDir) {
 		return createDirectory(getPath().resolve(subDir)).toFile();

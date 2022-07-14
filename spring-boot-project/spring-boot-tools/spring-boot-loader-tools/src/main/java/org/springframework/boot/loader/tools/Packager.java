@@ -163,8 +163,8 @@ public abstract class Packager {
 	}
 
 	/**
-	 * Sets the {@link File} to use to backup the original source.
-	 * @param backupFile the file to use to backup the original source
+	 * Sets the {@link File} to use to back up the original source.
+	 * @param backupFile the file to use to back up the original source
 	 */
 	protected void setBackupFile(File backupFile) {
 		this.backupFile = backupFile;
@@ -320,8 +320,8 @@ public abstract class Packager {
 	}
 
 	/**
-	 * Return the {@link File} to use to backup the original source.
-	 * @return the file to use to backup the original source
+	 * Return the {@link File} to use to back up the original source.
+	 * @return the file to use to back up the original source
 	 */
 	public final File getBackupFile() {
 		if (this.backupFile != null) {

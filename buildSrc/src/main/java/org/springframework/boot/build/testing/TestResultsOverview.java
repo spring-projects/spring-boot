@@ -29,8 +29,7 @@ import org.gradle.tooling.events.FinishEvent;
 import org.gradle.tooling.events.OperationCompletionListener;
 
 /**
- * {@link BuildService} that provides an overview of all of the test failures in the
- * build.
+ * {@link BuildService} that provides an overview of all the test failures in the build.
  *
  * @author Andy Wilkinson
  */

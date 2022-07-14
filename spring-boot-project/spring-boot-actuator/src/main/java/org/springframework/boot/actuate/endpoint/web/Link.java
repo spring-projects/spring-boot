@@ -52,7 +52,7 @@ public class Link {
 	}
 
 	/**
-	 * Returns whether or not the {@link #getHref() href} is templated.
+	 * Returns whether the {@link #getHref() href} is templated.
 	 * @return {@code true} if the href is templated, otherwise {@code false}
 	 */
 	public boolean isTemplated() {

@@ -35,8 +35,8 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * A single element that may directly or indirectly contribute configuration data to the
- * {@link Environment}. There are several different {@link Kind kinds} of contributor, all
- * are immutable and will be replaced with new versions as imports are processed.
+ * {@link Environment}. There are several {@link Kind kinds} of contributor, all are
+ * immutable and will be replaced with new versions as imports are processed.
  * <p>
  * Contributors may provide a set of imports that should be processed and ultimately
  * turned into children. There are two distinct import phases:

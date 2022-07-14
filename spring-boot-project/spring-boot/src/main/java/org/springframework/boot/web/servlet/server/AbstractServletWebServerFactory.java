@@ -277,7 +277,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	/**
-	 * Returns whether or not the JSP servlet should be registered with the web server.
+	 * Returns whether the JSP servlet should be registered with the web server.
 	 * @return {@code true} if the servlet should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {

@@ -44,8 +44,8 @@ public abstract class HealthProperties {
 	private Show showComponents;
 
 	/**
-	 * Roles used to determine whether or not a user is authorized to be shown details.
-	 * When empty, all authenticated users are authorized.
+	 * Roles used to determine whether a user is authorized to be shown details. When
+	 * empty, all authenticated users are authorized.
 	 */
 	private Set<String> roles = new HashSet<>();
 

@@ -56,7 +56,7 @@ import org.springframework.web.util.UriTemplateHandler;
 
 /**
  * Convenient alternative of {@link RestTemplate} that is suitable for integration tests.
- * {@code TestRestTemplate} is fault tolerant. This means that 4xx and 5xx do not result
+ * {@code TestRestTemplate} is fault-tolerant. This means that 4xx and 5xx do not result
  * in an exception being thrown and can instead be detected via the {@link ResponseEntity
  * response entity} and its {@link ResponseEntity#getStatusCode() status code}.
  * <p>
@@ -641,12 +641,12 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Return the value of the Allow header for the given URI.
+	 * Return the value of the {@code Allow} header for the given URI.
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables, if any.
 	 * @param url the URL
 	 * @param urlVariables the variables to expand in the template
-	 * @return the value of the allow header
+	 * @return the value of the {@code Allow} header
 	 * @see RestTemplate#optionsForAllow(java.lang.String, java.lang.Object[])
 	 */
 	public Set<HttpMethod> optionsForAllow(String url, Object... urlVariables) {
@@ -654,12 +654,12 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Return the value of the Allow header for the given URI.
+	 * Return the value of the {@code Allow} header for the given URI.
 	 * <p>
 	 * URI Template variables are expanded using the given map.
 	 * @param url the URL
 	 * @param urlVariables the variables to expand in the template
-	 * @return the value of the allow header
+	 * @return the value of the {@code Allow} header
 	 * @see RestTemplate#optionsForAllow(java.lang.String, java.util.Map)
 	 */
 	public Set<HttpMethod> optionsForAllow(String url, Map<String, ?> urlVariables) {
@@ -667,9 +667,9 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Return the value of the Allow header for the given URL.
+	 * Return the value of the {@code Allow} header for the given URL.
 	 * @param url the URL
-	 * @return the value of the allow header
+	 * @return the value of the {@code Allow} header
 	 * @see RestTemplate#optionsForAllow(java.net.URI)
 	 */
 	public Set<HttpMethod> optionsForAllow(URI url) {

@@ -327,7 +327,7 @@ public class Restarter {
 	}
 
 	private void cleanupKnownCaches() {
-		// Whilst not strictly necessary it helps to cleanup soft reference caches
+		// Whilst not strictly necessary it helps to clean up soft reference caches
 		// early rather than waiting for memory limits to be reached
 		ResolvableType.clearCache();
 		cleanCachedIntrospectionResultsCache();

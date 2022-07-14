@@ -96,7 +96,7 @@ public class SpringApplicationRunner {
 				stop();
 				Class<?>[] compiledSources = compile();
 				monitorForChanges();
-				// Run in new thread to ensure that the context classloader is setup
+				// Run in new thread to ensure that the context classloader is set up
 				this.runThread = new RunThread(compiledSources);
 				this.runThread.start();
 				this.runThread.join();

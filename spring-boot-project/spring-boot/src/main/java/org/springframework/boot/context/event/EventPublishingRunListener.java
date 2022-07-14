@@ -125,7 +125,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 		}
 		else {
 			// An inactive context may not have a multicaster so we use our multicaster to
-			// call all of the context's listeners instead
+			// call all the context's listeners instead
 			if (context instanceof AbstractApplicationContext) {
 				for (ApplicationListener<?> listener : ((AbstractApplicationContext) context)
 						.getApplicationListeners()) {
