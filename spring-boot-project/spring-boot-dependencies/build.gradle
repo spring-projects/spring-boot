@@ -1100,7 +1100,7 @@ bom {
 			]
 		}
 	}
-	library("Kotlin Coroutines", "1.6.3") {
+	library("Kotlin Coroutines", "1.6.3-native-mt") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
