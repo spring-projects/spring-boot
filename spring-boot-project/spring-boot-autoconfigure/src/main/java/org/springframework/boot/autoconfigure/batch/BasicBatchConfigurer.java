@@ -131,6 +131,7 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 		map.from(this::determineIsolationLevel).whenNonNull().to(factory::setIsolationLevelForCreate);
 		map.from(this.properties.getJdbc()::getTablePrefix).whenHasText().to(factory::setTablePrefix);
 		map.from(this::getTransactionManager).to(factory::setTransactionManager);
+		map.from(this.properties.getJdbc()::getPlatform).whenHasText().to(factory::setDatabaseType);
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
