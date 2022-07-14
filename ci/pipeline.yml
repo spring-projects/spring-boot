@@ -14,6 +14,7 @@ anchors:
       password: ((docker-hub-mirror-password))
   gradle-enterprise-task-params: &gradle-enterprise-task-params
     GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
+    GRADLE_ENTERPRISE_CACHE_URL: ((gradle_enterprise_cache_url))
     GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
     GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
   docker-hub-task-params: &docker-hub-task-params
