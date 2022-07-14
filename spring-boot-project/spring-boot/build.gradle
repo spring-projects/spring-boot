@@ -62,13 +62,13 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-servlets")
 	optional("org.eclipse.jetty:jetty-util")
 	optional("org.eclipse.jetty:jetty-webapp") {
-		exclude(group: "javax.servlet", module: "javax.servlet-api")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
 	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server") {
-		exclude(group: "javax.servlet", module: "javax.servlet-api")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
 	optional("org.eclipse.jetty.http2:http2-server") {
-		exclude(group: "javax.servlet", module: "javax.servlet-api")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
 	optional("org.flywaydb:flyway-core")
 	optional("org.hamcrest:hamcrest-library")

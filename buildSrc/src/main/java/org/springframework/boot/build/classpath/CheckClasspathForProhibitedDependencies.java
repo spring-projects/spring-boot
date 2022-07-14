@@ -78,6 +78,9 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.equals("org.codehaus.groovy")) {
 			return true;
 		}
+		if (group.equals("org.eclipse.jetty.toolchain")) {
+			return true;
+		}
 		if (group.startsWith("javax")) {
 			return true;
 		}
