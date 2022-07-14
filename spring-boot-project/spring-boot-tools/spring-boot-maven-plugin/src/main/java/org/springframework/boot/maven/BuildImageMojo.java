@@ -289,8 +289,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-	 * Return the {@link File} to use to backup the original source.
-	 * @return the file to use to backup the original source
+	 * Return the {@link File} to use to back up the original source.
+	 * @return the file to use to back up the original source
 	 */
 	private File getBackupFile() {
 		Artifact source = getSourceArtifact(null);

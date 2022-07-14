@@ -52,7 +52,7 @@ public abstract class FileUtils {
 	}
 
 	/**
-	 * Generate a SHA.1 Hash for a given file.
+	 * Generate a SHA-1 Hash for a given file.
 	 * @param file the file to hash
 	 * @return the hash value as a String
 	 * @throws IOException if the file cannot be read

@@ -29,7 +29,7 @@ import org.junit.runners.model.Statement;
 import static org.hamcrest.Matchers.allOf;
 
 /**
- * JUnit {@code @Rule} to capture output from System.out and System.err.
+ * JUnit {@code @Rule} to capture output from {@code System.out} and {@code System.err}.
  * <p>
  * To use add as a {@link Rule @Rule}:
  *

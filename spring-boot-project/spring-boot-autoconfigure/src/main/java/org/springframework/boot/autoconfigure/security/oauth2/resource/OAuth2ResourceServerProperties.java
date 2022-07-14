@@ -92,8 +92,8 @@ public class OAuth2ResourceServerProperties {
 			return this.jwsAlgorithms;
 		}
 
-		public void setJwsAlgorithms(List<String> jwsAlgortithms) {
-			this.jwsAlgorithms = jwsAlgortithms;
+		public void setJwsAlgorithms(List<String> jwsAlgorithms) {
+			this.jwsAlgorithms = jwsAlgorithms;
 		}
 
 		public String getIssuerUri() {

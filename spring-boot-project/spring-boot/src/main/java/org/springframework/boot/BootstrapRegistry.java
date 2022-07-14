@@ -163,7 +163,7 @@ public interface BootstrapRegistry {
 	}
 
 	/**
-	 * The scope of a instance.
+	 * The scope of an instance.
 	 * @since 2.4.2
 	 */
 	enum Scope {

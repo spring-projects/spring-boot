@@ -714,7 +714,7 @@ public class KafkaProperties {
 		private String applicationId;
 
 		/**
-		 * Whether or not to auto-start the streams factory bean.
+		 * Whether to auto-start the streams factory bean.
 		 */
 		private boolean autoStartup = true;
 

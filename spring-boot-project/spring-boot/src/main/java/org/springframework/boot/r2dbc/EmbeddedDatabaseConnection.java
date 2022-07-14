@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Connection details for embedded databases compatible with r2dbc.
+ * Connection details for embedded databases compatible with R2DBC.
  *
  * @author Mark Paluch
  * @author Stephane Nicoll

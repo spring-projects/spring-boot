@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
  * Strategy interface used to contribute {@link Health} to the results returned from the
  * reactive variant of the {@link HealthEndpoint}.
  * <p>
- * This is non blocking contract that is meant to be used in a reactive application. See
+ * This is non-blocking contract that is meant to be used in a reactive application. See
  * {@link HealthIndicator} for the traditional contract.
  *
  * @author Stephane Nicoll

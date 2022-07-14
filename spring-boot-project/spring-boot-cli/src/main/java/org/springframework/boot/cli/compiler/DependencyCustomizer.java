@@ -105,8 +105,8 @@ public class DependencyCustomizer {
 	}
 
 	/**
-	 * Create a nested {@link DependencyCustomizer} that only applies if all of the
-	 * specified class names are not on the class path.
+	 * Create a nested {@link DependencyCustomizer} that only applies if all the specified
+	 * class names are not on the class path.
 	 * @param classNames the class names to test
 	 * @return a nested {@link DependencyCustomizer}
 	 */

@@ -64,7 +64,7 @@ public class JSONStringer {
 
 	/**
 	 * Lexical scoping elements within this stringer, necessary to insert the appropriate
-	 * separator characters (ie. commas and colons) and to detect nesting errors.
+	 * separator characters (i.e. commas and colons) and to detect nesting errors.
 	 */
 	enum Scope {
 

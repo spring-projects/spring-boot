@@ -53,12 +53,12 @@ class DependencyVersionTests {
 	}
 
 	@Test
-	void parseWhenCalendarVersionShouldReturnArticatVersionDependencyVersion() {
+	void parseWhenCalendarVersionShouldReturnArtifactVersionDependencyVersion() {
 		assertThat(DependencyVersion.parse("2020.0.0")).isInstanceOf(CalendarVersionDependencyVersion.class);
 	}
 
 	@Test
-	void parseWhenCalendarVersionWithModifierShouldReturnArticatVersionDependencyVersion() {
+	void parseWhenCalendarVersionWithModifierShouldReturnArtifactVersionDependencyVersion() {
 		assertThat(DependencyVersion.parse("2020.0.0-M1")).isInstanceOf(CalendarVersionDependencyVersion.class);
 	}
 

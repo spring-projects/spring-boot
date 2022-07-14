@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.Optional;
 
 /**
- * Data object with a pubic method picked up by the {@code ObjectToObjectConverter}. Used
+ * Data object with a public method picked up by the {@code ObjectToObjectConverter}. Used
  * in {@link ConfigurationPropertiesTests}.
  *
  * @author Phillip Webb

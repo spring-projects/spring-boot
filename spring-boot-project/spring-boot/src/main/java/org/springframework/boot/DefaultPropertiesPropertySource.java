@@ -61,8 +61,8 @@ public class DefaultPropertiesPropertySource extends MapPropertySource {
 	}
 
 	/**
-	 * Create a consume a new {@link DefaultPropertiesPropertySource} instance if the
-	 * provided source is not empty.
+	 * Create a new {@link DefaultPropertiesPropertySource} instance if the provided
+	 * source is not empty.
 	 * @param source the {@code Map} source
 	 * @param action the action used to consume the
 	 * {@link DefaultPropertiesPropertySource}

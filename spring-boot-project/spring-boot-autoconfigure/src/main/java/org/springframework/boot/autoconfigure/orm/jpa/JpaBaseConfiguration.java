@@ -140,7 +140,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	protected abstract Map<String, Object> getVendorProperties();
 
 	/**
-	 * Customize vendor properties before they are used. Allows for post processing (for
+	 * Customize vendor properties before they are used. Allows for post-processing (for
 	 * example to configure JTA specific settings).
 	 * @param vendorProperties the vendor properties to customize
 	 */

@@ -110,7 +110,7 @@ class ServletWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
-		// Ensure that the context has been setup
+		// Ensure that the context has been set up
 		assertThat(this.context.getServletContext()).isEqualTo(factory.getServletContext());
 		then(factory.getServletContext()).should()
 				.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
@@ -124,7 +124,7 @@ class ServletWebServerApplicationContextTests {
 	@Test
 	void doesNotRegistersShutdownHook() {
 		// See gh-314 for background. We no longer register the shutdown hook
-		// since it is really the callers responsibility. The shutdown hook could
+		// since it is really the caller's responsibility. The shutdown hook could
 		// also be problematic in a classic WAR deployment.
 		addWebServerFactoryBean();
 		this.context.refresh();

@@ -75,7 +75,7 @@ class BinderTests {
 	}
 
 	@Test
-	void creatWhenSourcesIsNullIterableShouldThrowException() {
+	void createWhenSourcesIsNullIterableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
 				.withMessageContaining("Sources must not be null");
 	}

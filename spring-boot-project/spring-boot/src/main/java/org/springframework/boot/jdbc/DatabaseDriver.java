@@ -62,7 +62,7 @@ public enum DatabaseDriver {
 			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS"),
 
 	/**
-	 * SQL Lite.
+	 * SQLite.
 	 */
 	SQLITE("SQLite", "org.sqlite.JDBC"),
 
