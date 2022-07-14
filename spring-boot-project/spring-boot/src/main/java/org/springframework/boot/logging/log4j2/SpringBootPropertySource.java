@@ -51,4 +51,14 @@ public class SpringBootPropertySource implements PropertySource {
 		return -200;
 	}
 
+	@Override
+	public String getProperty(String key) {
+		return this.properties.get(key);
+	}
+
+	@Override
+	public boolean containsProperty(String key) {
+		return this.properties.containsKey(key);
+	}
+
 }
