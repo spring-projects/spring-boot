@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class FlywayEndpointTests {
 					Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class).flywayBeans()
 							.getContexts().get(context.getId()).getFlywayBeans();
 					assertThat(flywayBeans).hasSize(1);
-					assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
+					assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(4);
 				});
 	}
 
