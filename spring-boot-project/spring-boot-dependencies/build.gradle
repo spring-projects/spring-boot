@@ -853,7 +853,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.12.0") {
+	library("Liquibase", "4.13.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
