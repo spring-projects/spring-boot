@@ -146,6 +146,7 @@ import static org.mockito.Mockito.mock;
  * @author Kristine Jetzke
  * @author Artsiom Yudovin
  * @author Scott Frederick
+ * @author Vedran Pavic
  */
 class WebMvcAutoConfigurationTests {
 
@@ -192,6 +193,17 @@ class WebMvcAutoConfigurationTests {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/static/**")).hasSize(5);
 			assertThat(getResourceResolvers(context, "/static/**")).hasSize(1);
+		});
+	}
+
+	@Test
+	void customWebjarsHandlerMapping() {
+		this.contextRunner.withPropertyValues("spring.mvc.webjars-path-pattern:/assets/**").run((context) -> {
+			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
+			assertThat(locations.get("/assets/**")).hasSize(1);
+			assertThat(locations.get("/assets/**").get(0))
+					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
+			assertThat(getResourceResolvers(context, "/assets/**")).hasSize(1);
 		});
 	}
 

@@ -104,7 +104,8 @@ You can also customize the static resource locations by using the configprop:spr
 The root servlet context path, `"/"`, is automatically added as a location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special case is made for https://www.webjars.org/[Webjars content].
-Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+By default, any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+The path can be customized with the configprop:spring.mvc.webjars-path-pattern[] property.
 
 TIP: Do not use the `src/main/webapp` directory if your application is packaged as a jar.
 Although this directory is a common standard, it works *only* with war packaging, and it is silently ignored by most build tools if you generate a jar.
