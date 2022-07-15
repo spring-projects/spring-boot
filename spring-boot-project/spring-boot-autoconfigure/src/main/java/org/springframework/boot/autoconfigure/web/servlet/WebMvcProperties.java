@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Brian Clozel
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.mvc")
@@ -90,6 +91,11 @@ public class WebMvcProperties {
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
+
+	/**
+	 * Path pattern used for WebJar assets.
+	 */
+	private String webjarsPathPattern = "/webjars/**";
 
 	private final Async async = new Async();
 
@@ -186,6 +192,14 @@ public class WebMvcProperties {
 
 	public void setStaticPathPattern(String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
+	}
+
+	public String getWebjarsPathPattern() {
+		return this.webjarsPathPattern;
+	}
+
+	public void setWebjarsPathPattern(String webjarsPathPattern) {
+		this.webjarsPathPattern = webjarsPathPattern;
 	}
 
 	public Async getAsync() {
