@@ -25,12 +25,9 @@ import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.Builder;
-import io.lettuce.core.event.Event;
-import io.lettuce.core.event.EventBus;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -72,18 +69,6 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@ConditionalOnMissingBean(ClientResources.class)
 	DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
 		DefaultClientResources.Builder builder = DefaultClientResources.builder();
-		builder.eventBus(new EventBus() {
-
-			@Override
-			public Flux<Event> get() {
-				return Flux.empty();
-			}
-
-			@Override
-			public void publish(Event event) {
-			}
-
-		});
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
