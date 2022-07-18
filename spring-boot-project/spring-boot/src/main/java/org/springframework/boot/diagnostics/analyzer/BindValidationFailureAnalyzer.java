@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 	private void appendFieldError(StringBuilder description, FieldError error) {
 		Origin origin = Origin.from(error);
 		description.append(String.format("%n    Property: %s", error.getObjectName() + "." + error.getField()));
-		description.append(String.format("%n    Value: %s", error.getRejectedValue()));
+		description.append(String.format("%n    Value: \"%s\"", error.getRejectedValue()));
 		if (origin != null) {
 			description.append(String.format("%n    Origin: %s", origin));
 		}
