@@ -227,9 +227,9 @@ public class TomcatWebServerFactoryCustomizer
 			if (StringUtils.hasLength(remoteIpHeader)) {
 				valve.setRemoteIpHeader(remoteIpHeader);
 			}
+			valve.setTrustedProxies(remoteIpProperties.getTrustedProxies());
 			// The internal proxies default to a list of "safe" internal IP addresses
 			valve.setInternalProxies(remoteIpProperties.getInternalProxies());
-			valve.setTrustedProxies(remoteIpProperties.getTrustedProxies());
 			try {
 				valve.setHostHeader(remoteIpProperties.getHostHeader());
 			}
