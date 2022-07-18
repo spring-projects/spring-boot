@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ class BindValidationFailureAnalyzerTests {
 	}
 
 	private static String failure(String property, String value, String reason) {
-		return String.format("Property: %s%n    Value: %s%n    Reason: %s", property, value, reason);
+		return String.format("Property: %s%n    Value: \"%s\"%n    Reason: %s", property, value, reason);
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {

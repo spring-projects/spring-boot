@@ -101,7 +101,7 @@ class BindFailureAnalyzerTests {
 	}
 
 	private static String failure(String property, String value, String origin, String reason) {
-		return String.format("Property: %s%n    Value: %s%n    Origin: %s%n    Reason: %s", property, value, origin,
+		return String.format("Property: %s%n    Value: \"%s\"%n    Origin: %s%n    Reason: %s", property, value, origin,
 				reason);
 	}
 
