@@ -17,12 +17,19 @@
 package org.springframework.boot.actuate.metrics.cache;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import com.hazelcast.spring.cache.HazelcastCache;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider.HazelcastCacheMeterBinderProviderRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -31,6 +38,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@ImportRuntimeHints(HazelcastCacheMeterBinderProviderRuntimeHints.class)
 public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvider<HazelcastCache> {
 
 	@Override
@@ -54,6 +62,20 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to create MeterBinder for Hazelcast", ex);
 		}
+	}
+
+	static class HazelcastCacheMeterBinderProviderRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(HazelcastCache.class, (hint) -> hint.withMethod("getNativeCache", List.of(),
+					(method) -> method.withMode(ExecutableMode.INVOKE)));
+			hints.reflection().registerType(HazelcastCacheMetrics.class,
+					(hint) -> hint.withConstructor(
+							List.of(TypeReference.of(Object.class), TypeReference.of(Iterable.class)),
+							(ctor) -> ctor.withMode(ExecutableMode.INVOKE)));
+		}
+
 	}
 
 }
