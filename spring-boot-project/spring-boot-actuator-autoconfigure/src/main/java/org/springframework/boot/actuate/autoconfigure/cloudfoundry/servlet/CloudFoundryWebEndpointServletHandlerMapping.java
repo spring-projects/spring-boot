@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundryWebEndpointServletHandlerMapping.CloudFoundryWebEndpointServletHandlerMappingRuntimeHints;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -37,6 +43,8 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,6 +59,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Phillip Webb
  * @author Brian Clozel
  */
+@ImportRuntimeHints(CloudFoundryWebEndpointServletHandlerMappingRuntimeHints.class)
 class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
 	private static final Log logger = LogFactory.getLog(CloudFoundryWebEndpointServletHandlerMapping.class);
@@ -143,6 +152,22 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 				return new ResponseEntity<Object>(securityResponse.getMessage(), securityResponse.getStatus());
 			}
 			return this.delegate.handle(request, body);
+		}
+
+	}
+
+	static class CloudFoundryWebEndpointServletHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(CloudFoundryLinksHandler.class,
+					(hint) -> hint.onReachableType(TypeReference.of(CloudFoundryLinksHandler.class)).withMethod("links",
+							List.of(TypeReference.of(HttpServletRequest.class),
+									TypeReference.of(HttpServletResponse.class)),
+							(method) -> method.setModes(ExecutableMode.INVOKE)));
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 
 	}

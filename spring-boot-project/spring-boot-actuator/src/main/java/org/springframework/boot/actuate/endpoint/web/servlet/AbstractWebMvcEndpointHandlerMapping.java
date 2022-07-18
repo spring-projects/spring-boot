@@ -32,6 +32,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import reactor.core.publisher.Flux;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
@@ -46,7 +50,9 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping.AbstractWebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -80,6 +86,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Brian Clozel
  * @since 2.0.0
  */
+@ImportRuntimeHints(AbstractWebMvcEndpointHandlerMappingRuntimeHints.class)
 public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements InitializingBean {
 
@@ -472,6 +479,18 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		@Override
 		public boolean isUserInRole(String role) {
 			return this.request.isUserInRole(role);
+		}
+
+	}
+
+	static class AbstractWebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(OperationHandler.class,
+					(hint) -> hint.withMethod("handle",
+							List.of(TypeReference.of(HttpServletRequest.class), TypeReference.of(Map.class)),
+							(method) -> method.withMode(ExecutableMode.INVOKE)));
 		}
 
 	}

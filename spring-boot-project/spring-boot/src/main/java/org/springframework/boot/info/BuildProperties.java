@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,18 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.info.BuildProperties.BuildPropertiesRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
+
 /**
  * Provide build-related information such as group and artifact.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@ImportRuntimeHints(BuildPropertiesRuntimeHints.class)
 public class BuildProperties extends InfoProperties {
 
 	/**
@@ -98,6 +104,15 @@ public class BuildProperties extends InfoProperties {
 				// Ignore and store the original value
 			}
 		}
+	}
+
+	static class BuildPropertiesRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("META-INF/build-info.properties");
+		}
+
 	}
 
 }
