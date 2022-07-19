@@ -507,7 +507,7 @@ public class PropertiesLauncher extends Launcher {
 		else {
 			// It's a directory
 			if (!path.endsWith("/") && !path.equals(".")) {
-				path = path + "/";
+				path += "/";
 			}
 		}
 		return path;

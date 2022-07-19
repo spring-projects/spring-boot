@@ -202,7 +202,7 @@ public abstract class SystemPropertyUtils {
 			if (substringMatch(buf, index, PLACEHOLDER_SUFFIX)) {
 				if (withinNestedPlaceholder > 0) {
 					withinNestedPlaceholder--;
-					index = index + PLACEHOLDER_SUFFIX.length();
+					index += PLACEHOLDER_SUFFIX.length();
 				}
 				else {
 					return index;
@@ -210,7 +210,7 @@ public abstract class SystemPropertyUtils {
 			}
 			else if (substringMatch(buf, index, SIMPLE_PREFIX)) {
 				withinNestedPlaceholder++;
-				index = index + SIMPLE_PREFIX.length();
+				index += SIMPLE_PREFIX.length();
 			}
 			else {
 				index++;
