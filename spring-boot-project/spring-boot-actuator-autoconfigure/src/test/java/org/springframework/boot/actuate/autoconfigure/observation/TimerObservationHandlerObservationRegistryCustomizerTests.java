@@ -21,9 +21,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import org.springframework.beans.factory.ObjectProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,13 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TimerObservationHandlerObservationRegistryCustomizerTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void customizeInstallsTimerObservationHandler() {
 		MeterRegistry meterRegistry = new SimpleMeterRegistry();
-		ObjectProvider<MeterRegistry> meterRegistryProvider = Mockito.mock(ObjectProvider.class);
-		Mockito.when(meterRegistryProvider.getObject()).thenReturn(meterRegistry);
 		TimerObservationHandlerObservationRegistryCustomizer sut = new TimerObservationHandlerObservationRegistryCustomizer(
-				meterRegistryProvider);
+				meterRegistry);
 		ObservationRegistry observationRegistry = ObservationRegistry.create();
 		sut.customize(observationRegistry);
 		Observation.start("test-1", observationRegistry).stop();
