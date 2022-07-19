@@ -111,7 +111,7 @@ public final class WebClientExchangeTags {
 
 	/**
 	 * Creates an {@code outcome} {@code Tag} derived from the
-	 * {@link ClientResponse#statusCode() status} of the given {@code response}.
+	 * {@link ClientResponse#rawStatusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the outcome tag
 	 * @since 2.2.0
