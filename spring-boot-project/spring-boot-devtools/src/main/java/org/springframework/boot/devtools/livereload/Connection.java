@@ -105,18 +105,21 @@ class Connection {
 	private void readWebSocketFrame() throws IOException {
 		try {
 			Frame frame = Frame.read(this.inputStream);
-			if (frame.getType() == Frame.Type.PING) {
-				writeWebSocketFrame(new Frame(Frame.Type.PONG));
-			}
-			else if (frame.getType() == Frame.Type.CLOSE) {
-				throw new ConnectionClosedException();
-			}
-			else if (frame.getType() == Frame.Type.TEXT) {
-				logger.debug(LogMessage.format("Received LiveReload text frame %s", frame));
-			}
-			else {
-				throw new IOException("Unexpected Frame Type " + frame.getType());
-			}
+			if (null == frame.getType()) {
+                            throw new IOException("Unexpected Frame Type " + frame.getType());
+                        }
+			else switch (frame.getType()) {
+                        case PING:
+                            writeWebSocketFrame(new Frame(Frame.Type.PONG));
+                            break;
+                        case CLOSE:
+                            throw new ConnectionClosedException();
+                        case TEXT:
+                            logger.debug(LogMessage.format("Received LiveReload text frame %s", frame));
+                            break;
+                        default:
+                            throw new IOException("Unexpected Frame Type " + frame.getType());
+                    }
 		}
 		catch (SocketTimeoutException ex) {
 			writeWebSocketFrame(new Frame(Frame.Type.PING));
