@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,22 @@ package org.springframework.boot.actuate.endpoint.web.servlet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
+import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcEndpointHandlerMappingRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
@@ -40,6 +47,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@ImportRuntimeHints(WebMvcEndpointHandlerMappingRuntimeHints.class)
 public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
 	private final EndpointLinksResolver linksResolver;
@@ -82,6 +90,20 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 		@Override
 		public String toString() {
 			return "Actuator root web endpoint";
+		}
+
+	}
+
+	static class WebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection()
+					.registerMethod(Objects.requireNonNull(ReflectionUtils.findMethod(WebMvcLinksHandler.class, "links",
+							HttpServletRequest.class, HttpServletResponse.class)));
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 
 	}

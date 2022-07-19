@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,14 @@ import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider.DispatcherHandlersMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.core.io.Resource;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.DispatcherHandler;
@@ -53,6 +58,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@ImportRuntimeHints(DispatcherHandlersMappingDescriptionProviderRuntimeHints.class)
 public class DispatcherHandlersMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders = Arrays
@@ -190,6 +196,18 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 
 		@Override
 		public void unknown(RouterFunction<?> routerFunction) {
+		}
+
+	}
+
+	static class DispatcherHandlersMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
+					DispatcherHandlerMappingDescription.class);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.management;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
+import org.springframework.boot.actuate.management.ThreadDumpEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ThreadDumpEndpointAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class ThreadDumpEndpointAutoConfigurationTests {
 
@@ -36,20 +38,27 @@ class ThreadDumpEndpointAutoConfigurationTests {
 
 	@Test
 	void runShouldHaveEndpointBean() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=threaddump")
-				.run((context) -> assertThat(context).hasSingleBean(ThreadDumpEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=threaddump").run((context) -> {
+			assertThat(context).hasSingleBean(ThreadDumpEndpoint.class);
+			assertThat(context).hasSingleBean(ThreadDumpEndpointWebExtension.class);
+		});
 	}
 
 	@Test
 	void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class);
+			assertThat(context).doesNotHaveBean(ThreadDumpEndpointWebExtension.class);
+		});
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.withPropertyValues("management.endpoint.threaddump.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class));
+				.withPropertyValues("management.endpoint.threaddump.enabled:false").run((context) -> {
+					assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class);
+					assertThat(context).doesNotHaveBean(ThreadDumpEndpointWebExtension.class);
+				});
 	}
 
 }

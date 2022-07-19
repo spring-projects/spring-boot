@@ -19,14 +19,19 @@ package org.springframework.boot.actuate.scheduling;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CronTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CustomTriggerTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedDelayTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedRateTaskDescription;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksReport;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ScheduledTasksEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class ScheduledTasksEndpointTests {
 
@@ -147,6 +153,19 @@ class ScheduledTasksEndpointTests {
 			assertThat(description.getRunnable().getTarget()).isEqualTo(CustomTriggerRunnable.class.getName());
 			assertThat(description.getTrigger()).isEqualTo(CustomTriggerTask.trigger.toString());
 		});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new ScheduledTasksEndpointRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		Set<Class<?>> bindingTypes = Set.of(FixedRateTaskDescription.class, FixedDelayTaskDescription.class,
+				CronTaskDescription.class, CustomTriggerTaskDescription.class);
+		for (Class<?> bindingType : bindingTypes) {
+			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+							.accepts(runtimeHints);
+		}
 	}
 
 	private void run(Class<?> configuration, Consumer<ScheduledTasksReport> consumer) {

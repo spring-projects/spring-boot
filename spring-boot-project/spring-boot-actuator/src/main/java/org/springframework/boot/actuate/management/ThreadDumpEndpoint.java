@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.function.Function;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.core.NativeDetector;
 
 /**
  * {@link Endpoint @Endpoint} to expose thread info.
@@ -48,7 +49,41 @@ public class ThreadDumpEndpoint {
 	}
 
 	private <T> T getFormattedThreadDump(Function<ThreadInfo[], T> formatter) {
-		return formatter.apply(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true));
+		ThreadDumper threadDumper = createThreadDumper();
+		return formatter.apply(threadDumper.dumpAllThreads());
+	}
+
+	private ThreadDumper createThreadDumper() {
+		if (NativeDetector.inNativeImage()) {
+			throw new ThreadDumperUnavailableException("Running in native image");
+		}
+		return new ThreadMXBeanThreadDumper();
+	}
+
+	private interface ThreadDumper {
+
+		ThreadInfo[] dumpAllThreads();
+
+	}
+
+	private static class ThreadMXBeanThreadDumper implements ThreadDumper {
+
+		@Override
+		public ThreadInfo[] dumpAllThreads() {
+			return ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
+		}
+
+	}
+
+	/**
+	 * Exception to be thrown if the {@link ThreadDumper} cannot be created.
+	 */
+	static class ThreadDumperUnavailableException extends RuntimeException {
+
+		ThreadDumperUnavailableException(String message) {
+			super(message);
+		}
+
 	}
 
 	/**

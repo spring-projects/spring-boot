@@ -16,10 +16,31 @@
 
 package org.springframework.boot.actuate.integration;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint.IntegrationGraphEndpointRuntimeHints;
+import org.springframework.integration.graph.CompositeMessageHandlerNode;
+import org.springframework.integration.graph.DiscardingMessageHandlerNode;
+import org.springframework.integration.graph.EndpointNode;
+import org.springframework.integration.graph.ErrorCapableCompositeMessageHandlerNode;
+import org.springframework.integration.graph.ErrorCapableDiscardingMessageHandlerNode;
+import org.springframework.integration.graph.ErrorCapableEndpointNode;
+import org.springframework.integration.graph.ErrorCapableMessageHandlerNode;
+import org.springframework.integration.graph.ErrorCapableRoutingNode;
 import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.MessageChannelNode;
+import org.springframework.integration.graph.MessageGatewayNode;
+import org.springframework.integration.graph.MessageHandlerNode;
+import org.springframework.integration.graph.MessageProducerNode;
+import org.springframework.integration.graph.MessageSourceNode;
+import org.springframework.integration.graph.PollableChannelNode;
+import org.springframework.integration.graph.RoutingMessageHandlerNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,6 +51,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link IntegrationGraphEndpoint}.
  *
  * @author Tim Ysewyn
+ * @author Moritz Halbritter
  */
 class IntegrationGraphEndpointTests {
 
@@ -50,6 +72,23 @@ class IntegrationGraphEndpointTests {
 	void writeOperationShouldRebuildGraph() {
 		this.endpoint.rebuild();
 		then(this.server).should().rebuild();
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new IntegrationGraphEndpointRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		Set<Class<?>> bindingTypes = Set.of(Graph.class, EndpointNode.class, CompositeMessageHandlerNode.class,
+				DiscardingMessageHandlerNode.class, ErrorCapableCompositeMessageHandlerNode.class,
+				ErrorCapableDiscardingMessageHandlerNode.class, ErrorCapableEndpointNode.class,
+				ErrorCapableMessageHandlerNode.class, ErrorCapableRoutingNode.class, MessageGatewayNode.class,
+				MessageProducerNode.class, PollableChannelNode.class, MessageChannelNode.class,
+				MessageHandlerNode.class, MessageSourceNode.class, RoutingMessageHandlerNode.class);
+		for (Class<?> bindingType : bindingTypes) {
+			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+							.accepts(runtimeHints);
+		}
 	}
 
 }

@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -29,6 +31,9 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension.HealthEndpointWebExtensionRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link HealthEndpoint}.
@@ -44,6 +49,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
+@ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
 public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
 	private static final String[] NO_PATH = {};
@@ -108,6 +114,18 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
+	}
+
+	static class HealthEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Health.class, SystemHealth.class,
+					CompositeHealth.class);
+		}
+
 	}
 
 }

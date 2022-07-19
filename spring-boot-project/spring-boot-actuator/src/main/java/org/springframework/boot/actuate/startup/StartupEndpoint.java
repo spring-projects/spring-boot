@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,18 @@
 
 package org.springframework.boot.actuate.startup;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import org.springframework.boot.actuate.startup.StartupEndpoint.StartupEndpointRuntimeHints;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.metrics.buffering.StartupTimeline;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link Endpoint @Endpoint} to expose the timeline of the
@@ -33,6 +39,7 @@ import org.springframework.boot.context.metrics.buffering.StartupTimeline;
  * @since 2.4.0
  */
 @Endpoint(id = "startup")
+@ImportRuntimeHints(StartupEndpointRuntimeHints.class)
 public class StartupEndpoint {
 
 	private final BufferingApplicationStartup applicationStartup;
@@ -79,6 +86,28 @@ public class StartupEndpoint {
 
 		public StartupTimeline getTimeline() {
 			return this.timeline;
+		}
+
+	}
+
+	static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(
+					TypeReference
+							.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag"),
+					(hint) -> hint
+							.onReachableType(TypeReference
+									.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep"))
+							.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection().registerType(
+					TypeReference
+							.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag"),
+					(hint) -> hint
+							.onReachableType(
+									TypeReference.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep"))
+							.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
 		}
 
 	}
