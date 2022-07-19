@@ -27,6 +27,8 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link HealthEndpointWebExtensionRuntimeHints}.
+ *
  * @author Moritz Halbritter
  */
 class HealthEndpointWebExtensionRuntimeHintsTest {
