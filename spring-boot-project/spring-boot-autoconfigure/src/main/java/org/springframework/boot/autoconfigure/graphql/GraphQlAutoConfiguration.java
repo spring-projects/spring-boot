@@ -50,6 +50,7 @@ import org.springframework.graphql.execution.DefaultBatchLoaderRegistry;
 import org.springframework.graphql.execution.DefaultExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
+import org.springframework.graphql.execution.SubscriptionExceptionResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for creating a Spring GraphQL base
@@ -76,6 +77,7 @@ public class GraphQlAutoConfiguration {
 	@ConditionalOnMissingBean
 	public GraphQlSource graphQlSource(ResourcePatternResolver resourcePatternResolver, GraphQlProperties properties,
 			ObjectProvider<DataFetcherExceptionResolver> exceptionResolvers,
+			ObjectProvider<SubscriptionExceptionResolver> subscriptionExceptionResolvers,
 			ObjectProvider<Instrumentation> instrumentations, ObjectProvider<RuntimeWiringConfigurer> wiringConfigurers,
 			ObjectProvider<GraphQlSourceBuilderCustomizer> sourceCustomizers) {
 		String[] schemaLocations = properties.getSchema().getLocations();
@@ -83,6 +85,7 @@ public class GraphQlAutoConfiguration {
 				properties.getSchema().getFileExtensions());
 		GraphQlSource.SchemaResourceBuilder builder = GraphQlSource.schemaResourceBuilder()
 				.schemaResources(schemaResources).exceptionResolvers(toList(exceptionResolvers))
+				.subscriptionExceptionResolvers(toList(subscriptionExceptionResolvers))
 				.instrumentation(toList(instrumentations));
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
