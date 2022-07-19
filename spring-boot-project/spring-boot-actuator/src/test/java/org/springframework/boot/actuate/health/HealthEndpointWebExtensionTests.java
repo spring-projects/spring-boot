@@ -19,19 +19,14 @@ package org.springframework.boot.actuate.health;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.MemberCategory;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
-import org.springframework.boot.actuate.health.HealthEndpointWebExtension.HealthEndpointWebExtensionRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -41,7 +36,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Scott Frederick
- * @author Moritz Halbritter
  */
 class HealthEndpointWebExtensionTests extends
 		HealthEndpointSupportTests<HealthEndpointWebExtension, HealthContributorRegistry, HealthContributor, HealthComponent> {
@@ -85,18 +79,6 @@ class HealthEndpointWebExtensionTests extends
 				WebServerNamespace.SERVER, SecurityContext.NONE, "test");
 		assertThat(response.getBody()).isEqualTo(this.up);
 		assertThat(response.getStatus()).isEqualTo(200);
-	}
-
-	@Test
-	void shouldRegisterHints() {
-		RuntimeHints runtimeHints = new RuntimeHints();
-		new HealthEndpointWebExtensionRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		Set<Class<?>> bindingTypes = Set.of(Health.class, SystemHealth.class, CompositeHealth.class);
-		for (Class<?> bindingType : bindingTypes) {
-			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
-					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-							.accepts(runtimeHints);
-		}
 	}
 
 	@Override
