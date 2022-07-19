@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
@@ -302,27 +303,31 @@ public final class PropertyMapper {
 		 * @throws NoSuchElementException if the value has been filtered
 		 */
 		public <R> R toInstance(Function<T, R> factory) {
-			Assert.notNull(factory, "Factory must not be null");
-			T value = this.supplier.get();
-			if (!this.predicate.test(value)) {
-				throw new NoSuchElementException("No value present");
-			}
-			return factory.apply(value);
+			return toInstance(factory, true);
 		}
 
 		/**
-		 * Complete the mapping by creating a new instance
+		 * Complete the mapping by creating a new instance from the non-filtered value.
 		 * @param <R> the resulting type
 		 * @param factory the factory used to create the instance
-		 * @return the created instance or empty when the value is filtered
+		 * @param failIfFiltered whether to throw exception or return {@code null} if the
+		 * value has been filtered
+		 * @return the instance or {@code null} if the value has been filtered and
+		 * {@code failIfFiltered} is {@code false}
+		 * @throws NoSuchElementException if the value has been filtered and
+		 * {@code failIfFiltered} is {@code true}
 		 */
-		public <R> Optional<R> toOptionalInstance(Function<T, R> factory) {
+		@Nullable
+		public <R> R toInstance(Function<T, R> factory, boolean failIfFiltered) {
 			Assert.notNull(factory, "Factory must not be null");
 			T value = this.supplier.get();
 			if (!this.predicate.test(value)) {
-				return Optional.empty();
+				if (failIfFiltered) {
+					throw new NoSuchElementException("No value present");
+				}
+				return null;
 			}
-			return Optional.ofNullable(factory.apply(value));
+			return factory.apply(value);
 		}
 
 		/**

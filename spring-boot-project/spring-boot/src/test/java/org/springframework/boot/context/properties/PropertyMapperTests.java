@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
@@ -210,21 +209,21 @@ class PropertyMapperTests {
 	}
 
 	@Test
-	void toOptionalInstanceWithNonFilteredValueShouldReturnFactoryValue() {
-		Optional<String> result = this.map.from("123").whenEqualTo("123").toOptionalInstance(String::new);
-		assertThat(result).isNotEmpty().hasValue("123");
+	void toInstanceWithoutFailFlagWithNonFilteredValueShouldReturnFactoryValue() {
+		String result = this.map.from("123").whenEqualTo("123").toInstance(String::new, false);
+		assertThat(result).isEqualTo("123");
 	}
 
 	@Test
-	void toOptionalInstanceWithNonFilteredValueShouldTolerateNullFactoryValue() {
-		Optional<String> result = this.map.from("123").whenEqualTo("123").toOptionalInstance((s) -> null);
-		assertThat(result).isEmpty();
+	void toInstanceWithoutFailFlagWithNonFilteredValueShouldTolerateNullFactoryValue() {
+		String result = this.map.from("123").whenEqualTo("123").toInstance((s) -> null, false);
+		assertThat(result).isNull();
 	}
 
 	@Test
-	void toOptionalInstanceWithFilteredValueShouldReturnEmpty() {
-		Optional<String> result = this.map.from("123").whenEqualTo("foo").toOptionalInstance(String::new);
-		assertThat(result).isEmpty();
+	void toInstanceWithoutFailFlagWithFilteredValueShouldReturnNull() {
+		String result = this.map.from("123").whenEqualTo("foo").toInstance(String::new, false);
+		assertThat(result).isNull();
 	}
 
 	static class Count<T> implements Supplier<T> {
