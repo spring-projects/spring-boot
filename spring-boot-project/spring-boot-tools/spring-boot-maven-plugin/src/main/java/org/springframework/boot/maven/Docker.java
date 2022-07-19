@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ public class Docker {
 
 	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.publishRegistry == null || this.publishRegistry.isEmpty()) {
-			return dockerConfiguration;
+			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
 		}
 		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
 			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());

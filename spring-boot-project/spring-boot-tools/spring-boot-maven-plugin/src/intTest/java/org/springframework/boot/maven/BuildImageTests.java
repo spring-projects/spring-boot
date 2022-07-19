@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -328,12 +328,6 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 		mavenBuild.project("build-image-multi-module").goals("spring-boot:build-image")
 				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").executeAndFail(
 						(project) -> assertThat(buildLog(project)).contains("Error packaging archive for image"));
-	}
-
-	@TestTemplate
-	void failsWhenPublishWithoutPublishRegistryConfigured(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image").goals("package").systemProperty("spring-boot.build-image.publish", "true")
-				.executeAndFail((project) -> assertThat(buildLog(project)).contains("requires docker.publishRegistry"));
 	}
 
 	@TestTemplate

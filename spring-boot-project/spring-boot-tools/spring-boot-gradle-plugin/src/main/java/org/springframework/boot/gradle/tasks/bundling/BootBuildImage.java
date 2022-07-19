@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -605,11 +604,6 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizePublish(BuildRequest request) {
-		boolean publishRegistryAuthNotConfigured = this.docker == null || this.docker.getPublishRegistry() == null
-				|| this.docker.getPublishRegistry().hasEmptyAuth();
-		if (this.publish && publishRegistryAuthNotConfigured) {
-			throw new GradleException("Publishing an image requires docker.publishRegistry to be configured");
-		}
 		request = request.withPublish(this.publish);
 		return request;
 	}
