@@ -46,7 +46,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-public final class ConfigurationPropertiesReflectionHintsRegistrar {
+public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private static final BeanInfoFactory beanInfoFactory = new ExtendedBeanInfoFactory();
 
@@ -58,7 +58,7 @@ public final class ConfigurationPropertiesReflectionHintsRegistrar {
 
 	private final Set<Class<?>> seen;
 
-	private ConfigurationPropertiesReflectionHintsRegistrar(Class<?> type, Constructor<?> bindConstructor,
+	private ConfigurationPropertiesReflectionHintsProcessor(Class<?> type, Constructor<?> bindConstructor,
 			Set<Class<?>> seen) {
 		this.type = type;
 		this.bindConstructor = bindConstructor;
@@ -73,7 +73,7 @@ public final class ConfigurationPropertiesReflectionHintsRegistrar {
 	 * @param reflectionHints {@link ReflectionHints} to register the types on
 	 */
 	public static void processConfigurationProperties(Class<?> type, ReflectionHints reflectionHints) {
-		new ConfigurationPropertiesReflectionHintsRegistrar(type, getBindConstructor(type, false), new HashSet<>())
+		new ConfigurationPropertiesReflectionHintsProcessor(type, getBindConstructor(type, false), new HashSet<>())
 				.process(reflectionHints);
 	}
 
@@ -82,7 +82,7 @@ public final class ConfigurationPropertiesReflectionHintsRegistrar {
 	}
 
 	private void processNestedType(Class<?> type, Constructor<?> bindConstructor, ReflectionHints reflectionHints) {
-		new ConfigurationPropertiesReflectionHintsRegistrar(type, bindConstructor, this.seen).process(reflectionHints);
+		new ConfigurationPropertiesReflectionHintsProcessor(type, bindConstructor, this.seen).process(reflectionHints);
 	}
 
 	private static Constructor<?> getBindConstructor(Class<?> type, boolean nestedType) {

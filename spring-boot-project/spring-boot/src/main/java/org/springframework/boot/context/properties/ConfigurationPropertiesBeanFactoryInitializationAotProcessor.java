@@ -69,7 +69,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			RuntimeHintsUtils.registerAnnotation(generationContext.getRuntimeHints(), ConfigurationProperties.class);
 			for (Class<?> type : this.types) {
-				ConfigurationPropertiesReflectionHintsRegistrar.processConfigurationProperties(type,
+				ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(type,
 						generationContext.getRuntimeHints().reflection());
 			}
 		}

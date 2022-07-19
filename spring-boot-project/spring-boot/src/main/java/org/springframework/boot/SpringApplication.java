@@ -47,7 +47,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsRegistrar;
+import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -1397,7 +1397,7 @@ public class SpringApplication {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			ConfigurationPropertiesReflectionHintsRegistrar.processConfigurationProperties(SpringApplication.class,
+			ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(SpringApplication.class,
 					hints.reflection());
 		}
 
