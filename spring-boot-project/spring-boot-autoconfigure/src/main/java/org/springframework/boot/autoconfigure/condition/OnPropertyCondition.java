@@ -95,7 +95,7 @@ class OnPropertyCondition extends SpringBootCondition {
 		Spec(AnnotationAttributes annotationAttributes) {
 			String prefix = annotationAttributes.getString("prefix").trim();
 			if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
-				prefix = prefix + ".";
+				prefix += ".";
 			}
 			this.prefix = prefix;
 			this.havingValue = annotationAttributes.getString("havingValue");
