@@ -82,7 +82,18 @@ image: gitpod/workspace-java-17
 #     lynx `gp url`
 
 tasks:
-  - init: yes | sdk env install && gradle build -DskipTests=true 
+
+  - name: Build Project 
+    init: |
+        yes | sdk env install 
+        ./gradlew assemble
+
+  
+  - name: Pre-Download Test dependencies
+    init: |
+        yes | sdk env install 
+        ./gradlew assemble compileTestJava 
+
 
 ## The 'ports' section defines various ports your may listen on are
 ## configured in Gitpod on an authenticated URL. By default, all ports
