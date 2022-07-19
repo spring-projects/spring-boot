@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,15 +95,11 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	private boolean getShowResult(SecurityContext securityContext, Show show) {
-		switch (show) {
-		case NEVER:
-			return false;
-		case ALWAYS:
-			return true;
-		case WHEN_AUTHORIZED:
-			return isAuthorized(securityContext);
-		}
-		throw new IllegalStateException("Unsupported 'show' value " + show);
+		return switch (show) {
+			case NEVER -> false;
+			case ALWAYS -> true;
+			case WHEN_AUTHORIZED -> isAuthorized(securityContext);
+		};
 	}
 
 	private boolean isAuthorized(SecurityContext securityContext) {

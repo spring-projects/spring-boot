@@ -134,8 +134,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	}
 
 	@Override
-	protected ConfigurationMetadata writeMetaData() throws Exception {
-		super.writeMetaData();
+	protected ConfigurationMetadata writeMetadata() throws Exception {
+		super.writeMetadata();
 		try {
 			File metadataFile = new File(this.outputLocation, "META-INF/spring-configuration-metadata.json");
 			if (metadataFile.isFile()) {

@@ -213,8 +213,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 
 		private Object extractValue(Object value) {
-			if (value instanceof DeclaredType) {
-				return Elements.getQualifiedName(((DeclaredType) value).asElement());
+			if (value instanceof DeclaredType declaredType) {
+				return Elements.getQualifiedName(declaredType.asElement());
 			}
 			return value;
 		}

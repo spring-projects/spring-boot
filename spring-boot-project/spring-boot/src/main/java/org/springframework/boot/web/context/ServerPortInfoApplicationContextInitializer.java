@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 	}
 
 	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			setPortProperty(((ConfigurableApplicationContext) context).getEnvironment(), propertyName, port);
+		if (context instanceof ConfigurableApplicationContext configurableContext) {
+			setPortProperty(configurableContext.getEnvironment(), propertyName, port);
 		}
 		if (context.getParent() != null) {
 			setPortProperty(context.getParent(), propertyName, port);

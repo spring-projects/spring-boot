@@ -203,6 +203,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		mappings.add("xul", "application/vnd.mozilla.xul+xml");
 		mappings.add("xwd", "image/x-xwindowdump");
 		mappings.add("vsd", "application/vnd.visio");
+		mappings.add("wasm", "application/wasm");
 		mappings.add("wav", "audio/x-wav");
 		mappings.add("wbmp", "image/vnd.wap.wbmp");
 		mappings.add("wml", "text/vnd.wap.wml");
@@ -309,8 +310,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof MimeMappings) {
-			MimeMappings other = (MimeMappings) obj;
+		if (obj instanceof MimeMappings other) {
 			return this.map.equals(other.map);
 		}
 		return false;
@@ -363,8 +363,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			if (obj == this) {
 				return true;
 			}
-			if (obj instanceof Mapping) {
-				Mapping other = (Mapping) obj;
+			if (obj instanceof Mapping other) {
 				return this.extension.equals(other.extension) && this.mimeType.equals(other.mimeType);
 			}
 			return false;

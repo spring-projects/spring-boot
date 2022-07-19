@@ -451,11 +451,6 @@ public class DockerApi {
 			}
 		}
 
-		String getCapturedDigest() {
-			Assert.hasText(this.digest, "No digest found");
-			return this.digest;
-		}
-
 	}
 
 	/**

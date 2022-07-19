@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,11 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
-		if (event instanceof AuthenticationCredentialsNotFoundEvent) {
-			onAuthenticationCredentialsNotFoundEvent((AuthenticationCredentialsNotFoundEvent) event);
+		if (event instanceof AuthenticationCredentialsNotFoundEvent credentialsNotFoundEvent) {
+			onAuthenticationCredentialsNotFoundEvent(credentialsNotFoundEvent);
 		}
-		else if (event instanceof AuthorizationFailureEvent) {
-			onAuthorizationFailureEvent((AuthorizationFailureEvent) event);
+		else if (event instanceof AuthorizationFailureEvent authorizationFailureEvent) {
+			onAuthorizationFailureEvent(authorizationFailureEvent);
 		}
 	}
 

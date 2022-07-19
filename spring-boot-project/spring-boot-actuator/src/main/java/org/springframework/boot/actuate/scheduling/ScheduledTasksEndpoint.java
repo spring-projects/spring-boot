@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,13 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.FixedDelayTask;
@@ -49,6 +54,7 @@ import org.springframework.scheduling.support.ScheduledMethodRunnable;
  * @since 2.0.0
  */
 @Endpoint(id = "scheduledtasks")
+@ImportRuntimeHints(ScheduledTasksEndpointRuntimeHints.class)
 public class ScheduledTasksEndpoint {
 
 	private final Collection<ScheduledTaskHolder> scheduledTaskHolders;
@@ -130,11 +136,10 @@ public class ScheduledTasksEndpoint {
 
 		private static TaskDescription describeTriggerTask(TriggerTask triggerTask) {
 			Trigger trigger = triggerTask.getTrigger();
-			if (trigger instanceof CronTrigger) {
-				return new CronTaskDescription(triggerTask, (CronTrigger) trigger);
+			if (trigger instanceof CronTrigger cronTrigger) {
+				return new CronTaskDescription(triggerTask, cronTrigger);
 			}
-			if (trigger instanceof PeriodicTrigger) {
-				PeriodicTrigger periodicTrigger = (PeriodicTrigger) trigger;
+			if (trigger instanceof PeriodicTrigger periodicTrigger) {
 				if (periodicTrigger.isFixedRate()) {
 					return new FixedRateTaskDescription(triggerTask, periodicTrigger);
 				}
@@ -169,14 +174,14 @@ public class ScheduledTasksEndpoint {
 
 		protected IntervalTaskDescription(TaskType type, IntervalTask task) {
 			super(type, task.getRunnable());
-			this.initialDelay = task.getInitialDelay();
-			this.interval = task.getInterval();
+			this.initialDelay = task.getInitialDelayDuration().toMillis();
+			this.interval = task.getIntervalDuration().toMillis();
 		}
 
 		protected IntervalTaskDescription(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
 			super(type, task.getRunnable());
-			this.initialDelay = trigger.getInitialDelay();
-			this.interval = trigger.getPeriod();
+			this.initialDelay = trigger.getInitialDelayDuration().toMillis();
+			this.interval = trigger.getPeriodDuration().toMillis();
 		}
 
 		public long getInitialDelay() {
@@ -275,8 +280,8 @@ public class ScheduledTasksEndpoint {
 		private final String target;
 
 		private RunnableDescription(Runnable runnable) {
-			if (runnable instanceof ScheduledMethodRunnable) {
-				Method method = ((ScheduledMethodRunnable) runnable).getMethod();
+			if (runnable instanceof ScheduledMethodRunnable scheduledMethodRunnable) {
+				Method method = scheduledMethodRunnable.getMethod();
 				this.target = method.getDeclaringClass().getName() + "." + method.getName();
 			}
 			else {
@@ -293,6 +298,18 @@ public class ScheduledTasksEndpoint {
 	private enum TaskType {
 
 		CRON, CUSTOM_TRIGGER, FIXED_DELAY, FIXED_RATE
+
+	}
+
+	static class ScheduledTasksEndpointRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), FixedRateTaskDescription.class,
+					FixedDelayTaskDescription.class, CronTaskDescription.class, CustomTriggerTaskDescription.class);
+		}
 
 	}
 

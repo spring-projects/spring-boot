@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,11 @@ public class EndpointLinksResolver {
 		Map<String, Link> links = new LinkedHashMap<>();
 		links.put("self", new Link(normalizedUrl));
 		for (ExposableEndpoint<?> endpoint : this.endpoints) {
-			if (endpoint instanceof ExposableWebEndpoint) {
-				collectLinks(links, (ExposableWebEndpoint) endpoint, normalizedUrl);
+			if (endpoint instanceof ExposableWebEndpoint exposableWebEndpoint) {
+				collectLinks(links, exposableWebEndpoint, normalizedUrl);
 			}
-			else if (endpoint instanceof PathMappedEndpoint) {
-				String rootPath = ((PathMappedEndpoint) endpoint).getRootPath();
+			else if (endpoint instanceof PathMappedEndpoint pathMappedEndpoint) {
+				String rootPath = pathMappedEndpoint.getRootPath();
 				Link link = createLink(normalizedUrl, rootPath);
 				links.put(endpoint.getEndpointId().toLowerCaseString(), link);
 			}

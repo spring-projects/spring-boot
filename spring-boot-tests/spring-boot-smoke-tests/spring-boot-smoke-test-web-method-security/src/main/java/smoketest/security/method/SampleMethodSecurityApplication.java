@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@SuppressWarnings("deprecation")
 		@Bean
-		public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+		public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 			return new InMemoryUserDetailsManager(
 					User.withDefaultPasswordEncoder().username("admin").password("admin")
 							.roles("ADMIN", "USER", "ACTUATOR").build(),
@@ -69,7 +69,8 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.authorizeRequests((requests) -> requests.anyRequest().fullyAuthenticated()
+					.filterSecurityInterceptorOncePerRequest(true));
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			http.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access"));
 			return http.build();
@@ -85,7 +86,8 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
 			http.csrf().disable();
 			http.requestMatcher(EndpointRequest.toAnyEndpoint());
-			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+			http.authorizeRequests(
+					(requests) -> requests.anyRequest().authenticated().filterSecurityInterceptorOncePerRequest(true));
 			http.httpBasic();
 			return http.build();
 		}

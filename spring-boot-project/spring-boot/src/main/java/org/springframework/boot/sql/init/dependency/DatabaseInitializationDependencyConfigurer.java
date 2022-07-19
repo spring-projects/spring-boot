@@ -162,8 +162,8 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-				if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-					return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
+				if (parentBeanFactory instanceof ConfigurableListableBeanFactory configurableBeanFactory) {
+					return getBeanDefinition(beanName, configurableBeanFactory);
 				}
 				throw ex;
 			}

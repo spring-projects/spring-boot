@@ -13,6 +13,15 @@ repositories {
 sourceCompatibility = 17
 targetCompatibility = 17
 
+ext {
+	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
+	propertiesFile.withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		set("kotlinVersion", properties["kotlinVersion"])
+	}
+}
+
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
 	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
@@ -21,8 +30,8 @@ dependencies {
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
 	implementation("org.gradle:test-retry-gradle-plugin:1.4.0")
-	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0")
-	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.5.0")
+	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
@@ -33,8 +42,6 @@ dependencies {
 }
 
 checkstyle {
-	def archive = configurations.checkstyle.filter { it.name.startsWith("spring-javaformat-checkstyle")}
-	config = resources.text.fromArchiveEntry(archive, "io/spring/javaformat/checkstyle/checkstyle.xml")
 	toolVersion = 8.11
 }
 

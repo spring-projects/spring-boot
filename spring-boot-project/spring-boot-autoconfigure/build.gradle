@@ -75,15 +75,18 @@ dependencies {
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty:jetty-webapp") {
-		exclude group: "javax.servlet", module: "javax.servlet-api"
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
 	optional("org.eclipse.jetty.websocket:websocket-jakarta-server") {
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-websocket-api")
 	}
 	optional("org.eclipse.jetty.websocket:websocket-jetty-server") {
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
+		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
 	optional("org.ehcache:ehcache") {
 		artifact {
@@ -102,10 +105,8 @@ dependencies {
 	optional("org.flywaydb:flyway-core")
 	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
-	optional("org.hibernate:hibernate-core-jakarta")
-	optional("org.hibernate:hibernate-jcache") {
-		exclude group: "org.hibernate", module: "hibernate-core"
-	}
+	optional("org.hibernate.orm:hibernate-core")
+	optional("org.hibernate.orm:hibernate-jcache")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.jooq:jooq") {

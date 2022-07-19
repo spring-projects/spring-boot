@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ public abstract class GenericBomAstTransformation implements SpringBootAstTransf
 	@Override
 	public void visit(ASTNode[] nodes, SourceUnit source) {
 		for (ASTNode astNode : nodes) {
-			if (astNode instanceof ModuleNode) {
-				visitModule((ModuleNode) astNode, getBomModule());
+			if (astNode instanceof ModuleNode moduleNode) {
+				visitModule(moduleNode, getBomModule());
 			}
 		}
 	}
@@ -107,12 +107,12 @@ public abstract class GenericBomAstTransformation implements SpringBootAstTransf
 	}
 
 	private List<ConstantExpression> getConstantExpressions(Expression valueExpression) {
-		if (valueExpression instanceof ListExpression) {
-			return getConstantExpressions((ListExpression) valueExpression);
+		if (valueExpression instanceof ListExpression listExpression) {
+			return getConstantExpressions(listExpression);
 		}
-		if (valueExpression instanceof ConstantExpression
-				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
-			return Arrays.asList((ConstantExpression) valueExpression);
+		if (valueExpression instanceof ConstantExpression constantExpression
+				&& constantExpression.getValue() instanceof String) {
+			return Arrays.asList(constantExpression);
 		}
 		return Collections.emptyList();
 	}
@@ -120,9 +120,9 @@ public abstract class GenericBomAstTransformation implements SpringBootAstTransf
 	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
 		List<ConstantExpression> expressions = new ArrayList<>();
 		for (Expression expression : valueExpression.getExpressions()) {
-			if (expression instanceof ConstantExpression
-					&& ((ConstantExpression) expression).getValue() instanceof String) {
-				expressions.add((ConstantExpression) expression);
+			if (expression instanceof ConstantExpression constantExpression
+					&& constantExpression.getValue() instanceof String) {
+				expressions.add(constantExpression);
 			}
 		}
 		return expressions;

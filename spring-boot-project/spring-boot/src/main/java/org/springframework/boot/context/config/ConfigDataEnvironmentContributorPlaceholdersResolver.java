@@ -56,8 +56,8 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 
 	@Override
 	public Object resolvePlaceholders(Object value) {
-		if (value instanceof String) {
-			return this.helper.replacePlaceholders((String) value, this::resolvePlaceholder);
+		if (value instanceof String string) {
+			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
 		}
 		return value;
 	}

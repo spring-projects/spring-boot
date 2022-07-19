@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,20 @@ public final class TestPropertyValues {
 
 	/**
 	 * Add the properties to the {@link System#getProperties() system properties} for the
-	 * duration of the {@code call}, restoring previous values when the call completes.
+	 * duration of the {@code action}, restoring previous values when it completes.
+	 * @param action the action to take
+	 * @since 3.0.0
+	 */
+	public void applyToSystemProperties(Runnable action) {
+		applyToSystemProperties(() -> {
+			action.run();
+			return null;
+		});
+	}
+
+	/**
+	 * Add the properties to the {@link System#getProperties() system properties} for the
+	 * duration of the {@code call}, restoring previous values when it completes.
 	 * @param <T> the result type
 	 * @param call the call to make
 	 * @return the result of the call

@@ -300,17 +300,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private void invokeAwareMethods(Object instance) {
 		if (instance instanceof Aware) {
-			if (instance instanceof BeanClassLoaderAware) {
-				((BeanClassLoaderAware) instance).setBeanClassLoader(this.beanClassLoader);
+			if (instance instanceof BeanClassLoaderAware beanClassLoaderAwareInstance) {
+				beanClassLoaderAwareInstance.setBeanClassLoader(this.beanClassLoader);
 			}
-			if (instance instanceof BeanFactoryAware) {
-				((BeanFactoryAware) instance).setBeanFactory(this.beanFactory);
+			if (instance instanceof BeanFactoryAware beanFactoryAwareInstance) {
+				beanFactoryAwareInstance.setBeanFactory(this.beanFactory);
 			}
-			if (instance instanceof EnvironmentAware) {
-				((EnvironmentAware) instance).setEnvironment(this.environment);
+			if (instance instanceof EnvironmentAware environmentAwareInstance) {
+				environmentAwareInstance.setEnvironment(this.environment);
 			}
-			if (instance instanceof ResourceLoaderAware) {
-				((ResourceLoaderAware) instance).setResourceLoader(this.resourceLoader);
+			if (instance instanceof ResourceLoaderAware resourceLoaderAwareInstance) {
+				resourceLoaderAwareInstance.setResourceLoader(this.resourceLoader);
 			}
 		}
 	}

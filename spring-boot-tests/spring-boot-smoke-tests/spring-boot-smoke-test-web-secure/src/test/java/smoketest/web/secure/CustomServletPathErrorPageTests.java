@@ -47,6 +47,7 @@ class CustomServletPathErrorPageTests extends AbstractErrorPageTests {
 			http.authorizeRequests((requests) -> {
 				requests.antMatchers("/custom/servlet/path/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
+				requests.filterSecurityInterceptorOncePerRequest(true);
 			});
 			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/custom/servlet/path/login").permitAll());

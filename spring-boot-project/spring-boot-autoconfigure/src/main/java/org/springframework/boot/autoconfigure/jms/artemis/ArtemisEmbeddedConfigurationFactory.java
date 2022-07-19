@@ -69,7 +69,7 @@ class ArtemisEmbeddedConfigurationFactory {
 		configuration.setClusterPassword(this.properties.getClusterPassword());
 		configuration.addAddressConfiguration(createAddressConfiguration("DLQ"));
 		configuration.addAddressConfiguration(createAddressConfiguration("ExpiryQueue"));
-		configuration.addAddressesSetting("#",
+		configuration.addAddressSetting("#",
 				new AddressSettings().setDeadLetterAddress(SimpleString.toSimpleString("DLQ"))
 						.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
 		return configuration;

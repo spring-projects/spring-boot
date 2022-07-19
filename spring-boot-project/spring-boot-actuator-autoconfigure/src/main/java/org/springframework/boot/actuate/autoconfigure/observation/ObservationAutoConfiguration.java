@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.observation;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
@@ -50,7 +49,7 @@ public class ObservationAutoConfiguration {
 			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders,
-			ObjectProvider<ObservationHandler<Context>> observationHandlers,
+			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
 				keyValuesProviders, observationHandlers, observationHandlerGrouping);
@@ -68,7 +67,7 @@ public class ObservationAutoConfiguration {
 
 		@Bean
 		TimerObservationHandlerObservationRegistryCustomizer enableTimerObservationHandler(
-				MeterRegistry meterRegistry) {
+				ObjectProvider<MeterRegistry> meterRegistry) {
 			return new TimerObservationHandlerObservationRegistryCustomizer(meterRegistry);
 		}
 
@@ -76,10 +75,10 @@ public class ObservationAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("io.micrometer.tracing.handler.TracingObservationHandler")
-	static class NoTracingConfiguration {
+	static class OnlyMetricsConfiguration {
 
 		@Bean
-		ObservationHandlerGrouping noTracingObservationHandlerGrouping() {
+		OnlyMetricsObservationHandlerGrouping onlyMetricsObservationHandlerGrouping() {
 			return new OnlyMetricsObservationHandlerGrouping();
 		}
 
@@ -90,7 +89,7 @@ public class ObservationAutoConfiguration {
 	static class TracingConfiguration {
 
 		@Bean
-		ObservationHandlerGrouping tracingObservationHandlerGrouping() {
+		TracingObservationHandlerGrouping tracingObservationHandlerGrouping() {
 			return new TracingObservationHandlerGrouping();
 		}
 

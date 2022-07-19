@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,8 +107,8 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 		List<Map<String, String>> dependencies = new ArrayList<>(constantExpressions.size());
 		for (ConstantExpression expression : constantExpressions) {
 			Object value = expression.getValue();
-			if (value instanceof String) {
-				String[] components = ((String) expression.getValue()).split(":");
+			if (value instanceof String string) {
+				String[] components = string.split(":");
 				if (components.length == 3) {
 					dependency = new HashMap<>();
 					dependency.put("group", components[0]);
@@ -126,12 +126,12 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	}
 
 	private List<ConstantExpression> getConstantExpressions(Expression valueExpression) {
-		if (valueExpression instanceof ListExpression) {
-			return getConstantExpressions((ListExpression) valueExpression);
+		if (valueExpression instanceof ListExpression listExpression) {
+			return getConstantExpressions(listExpression);
 		}
-		if (valueExpression instanceof ConstantExpression
-				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
-			return Arrays.asList((ConstantExpression) valueExpression);
+		if (valueExpression instanceof ConstantExpression constantExpression
+				&& constantExpression.getValue() instanceof String) {
+			return Arrays.asList(constantExpression);
 		}
 		reportError("@DependencyManagementBom requires an inline constant that is a string or a string array",
 				valueExpression);
@@ -141,9 +141,9 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
 		List<ConstantExpression> expressions = new ArrayList<>();
 		for (Expression expression : valueExpression.getExpressions()) {
-			if (expression instanceof ConstantExpression
-					&& ((ConstantExpression) expression).getValue() instanceof String) {
-				expressions.add((ConstantExpression) expression);
+			if (expression instanceof ConstantExpression constantExpression
+					&& constantExpression.getValue() instanceof String) {
+				expressions.add(constantExpression);
 			}
 			else {
 				reportError("Each entry in the array must be an inline string constant", expression);

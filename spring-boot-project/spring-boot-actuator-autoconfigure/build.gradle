@@ -49,7 +49,7 @@ dependencies {
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
 	optional("io.micrometer:micrometer-core")
-	optional("io.micrometer:micrometer-tracing-api")
+	optional("io.micrometer:micrometer-tracing")
 	optional("io.micrometer:micrometer-tracing-bridge-brave")
 	optional("io.micrometer:micrometer-tracing-bridge-otel")
 	optional("io.micrometer:micrometer-tracing-reporter-wavefront")
@@ -93,6 +93,7 @@ dependencies {
 	}
 	optional("org.apache.kafka:kafka-clients")
 	optional("org.apache.kafka:kafka-streams")
+	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
@@ -100,14 +101,15 @@ dependencies {
 	optional("org.cache2k:cache2k-micrometer")
 	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty:jetty-server") {
-		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}
 	optional("org.elasticsearch:elasticsearch")
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
-	optional("org.hibernate:hibernate-core-jakarta")
+	optional("org.hibernate.orm:hibernate-core")
+	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.liquibase:liquibase-core") {
@@ -164,7 +166,10 @@ dependencies {
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.cache2k:cache2k-api")
 	testImplementation("org.eclipse.jetty:jetty-webapp") {
-		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
+	}
+	testImplementation("org.elasticsearch.client:elasticsearch-rest-high-level-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
 	}
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.hsqldb:hsqldb")
@@ -172,6 +177,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
+	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework:spring-orm")
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 	testImplementation("org.springframework.integration:spring-integration-jmx")
@@ -185,6 +191,7 @@ dependencies {
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
 	testRuntimeOnly("org.cache2k:cache2k-core")
+	testRuntimeOnly("org.springframework:spring-aspects")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
@@ -236,4 +243,8 @@ task zip(type: Zip) {
 
 artifacts {
 	documentation zip
+}
+
+test {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

@@ -16,10 +16,10 @@
 
 package org.springframework.boot.web.servlet.context;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.NativeDetector;
 
 /**
  * {@link ApplicationContextFactory} registered in {@code spring.factories} to support
@@ -36,7 +36,7 @@ class ServletWebServerApplicationContextFactory implements ApplicationContextFac
 		if (webApplicationType != WebApplicationType.SERVLET) {
 			return null;
 		}
-		return NativeDetector.inNativeImage() ? new ServletWebServerApplicationContext()
+		return AotDetector.useGeneratedArtifacts() ? new ServletWebServerApplicationContext()
 				: new AnnotationConfigServletWebServerApplicationContext();
 	}
 

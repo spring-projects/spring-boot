@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 public class MyDemoBean implements ApplicationListener<ApplicationStartedEvent> {
 
+	@SuppressWarnings("unused")
 	private ServletContext servletContext;
 
 	@Override

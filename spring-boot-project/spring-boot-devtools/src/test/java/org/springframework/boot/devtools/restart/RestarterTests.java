@@ -79,7 +79,7 @@ class RestarterTests {
 	}
 
 	@Test
-	void testRestart(CapturedOutput output) throws Exception {
+	void testRestart(CapturedOutput output) {
 		Restarter.clearInstance();
 		Thread thread = new Thread(SampleApplication::main);
 		thread.start();

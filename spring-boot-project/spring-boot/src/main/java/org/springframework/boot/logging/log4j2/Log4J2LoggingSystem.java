@@ -447,8 +447,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private LoggerConfig findLogger(String name) {
 		Configuration configuration = getLoggerContext().getConfiguration();
-		if (configuration instanceof AbstractConfiguration) {
-			return ((AbstractConfiguration) configuration).getLogger(name);
+		if (configuration instanceof AbstractConfiguration abstractConfiguration) {
+			return abstractConfiguration.getLogger(name);
 		}
 		return configuration.getLoggers().get(name);
 	}

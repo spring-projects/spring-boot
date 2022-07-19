@@ -545,6 +545,10 @@
       "defaultValue": "5s"
     },
     {
+      "name": "spring.data.cassandra.controlconnection.timeout",
+      "defaultValue": "5s"
+    },
+    {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
         "127.0.0.1:9042"
@@ -698,6 +702,14 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable LDAP repositories.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.data.mongodb.grid-fs-database",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.data.mongodb.gridfs.database",
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.mongodb.repositories.type",
@@ -1095,6 +1107,15 @@
     {
       "name": "spring.groovy.template.suffix",
       "defaultValue": ".tpl"
+    },
+    {
+      "name": "spring.jpa.hibernate.use-new-id-generator-mappings",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
+      "deprecation": {
+        "level": "error",
+        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings."
+      }
     },
     {
       "name": "spring.http.converters.preferred-json-mapper",
@@ -2050,6 +2071,14 @@
       "defaultValue": -100
     },
     {
+      "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.security.oauth2.resourceserver.jwt.jws-algorithms",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.session.hazelcast.flush-mode",
       "defaultValue": "on-save"
     },
@@ -2286,14 +2315,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "spring.data.mongodb.grid-fs-database",
-      "type": "java.lang.String",
-      "deprecation": {
-        "replacement": "spring.data.mongodb.gridfs.database",
-        "level": "error"
-      }
     },
     {
       "name": "spring.datasource.data",

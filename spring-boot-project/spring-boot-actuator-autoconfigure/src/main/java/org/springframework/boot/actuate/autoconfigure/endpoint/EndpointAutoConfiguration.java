@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
@@ -45,6 +46,7 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @AutoConfiguration
+@ImportRuntimeHints(ActuatorAnnotationsRuntimeHints.class)
 public class EndpointAutoConfiguration {
 
 	@Bean

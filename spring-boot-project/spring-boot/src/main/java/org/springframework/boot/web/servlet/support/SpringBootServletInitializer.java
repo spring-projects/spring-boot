@@ -176,8 +176,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
 		Object context = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-		if (context instanceof ApplicationContext) {
-			return (ApplicationContext) context;
+		if (context instanceof ApplicationContext applicationContext) {
+			return applicationContext;
 		}
 		return null;
 	}
@@ -211,8 +211,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			ConfigurableEnvironment environment = event.getEnvironment();
-			if (environment instanceof ConfigurableWebEnvironment) {
-				((ConfigurableWebEnvironment) environment).initPropertySources(this.servletContext, null);
+			if (environment instanceof ConfigurableWebEnvironment configurableWebEnvironment) {
+				configurableWebEnvironment.initPropertySources(this.servletContext, null);
 			}
 		}
 

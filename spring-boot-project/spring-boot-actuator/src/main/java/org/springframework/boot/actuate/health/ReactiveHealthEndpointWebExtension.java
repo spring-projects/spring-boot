@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -51,9 +52,25 @@ public class ReactiveHealthEndpointWebExtension
 	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
+	 * @deprecated since 2.6.9 for removal in 3.0.0 in favor of
+	 * {@link #ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry, HealthEndpointGroups, Duration)}
 	 */
+	@Deprecated
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry, HealthEndpointGroups groups) {
-		super(registry, groups);
+		super(registry, groups, null);
+	}
+
+	/**
+	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
+	 * @param registry the health contributor registry
+	 * @param groups the health endpoint groups
+	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * logging should occur
+	 * @since 2.6.9
+	 */
+	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry, HealthEndpointGroups groups,
+			Duration slowIndicatorLoggingThreshold) {
+		super(registry, groups, slowIndicatorLoggingThreshold);
 	}
 
 	@ReadOperation

@@ -99,7 +99,7 @@ dependencies {
 	implementation("org.assertj:assertj-core")
 	implementation("org.cache2k:cache2k-spring")
 	implementation("org.apache.groovy:groovy")
-	implementation("org.hibernate:hibernate-jcache") {
+	implementation("org.hibernate.orm:hibernate-jcache") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
@@ -194,10 +194,8 @@ task aggregatedJavadoc(type: Javadoc) {
 		options {
 			author = true
 			docTitle = "Spring Boot ${project.version} API"
-			encoding = "UTF-8"
 			memberLevel = "protected"
 			outputLevel = "quiet"
-			source = "1.8"
 			splitIndex = true
 			use = true
 			windowTitle = "Spring Boot ${project.version} API"

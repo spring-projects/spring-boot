@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +41,6 @@ class ReactiveMultipartAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveMultipartAutoConfiguration.class));
-
-	private static final Path DEFAULT_FILE_STORAGE_DIRECTORY = Paths.get(System.getProperty("java.io.tmpdir"),
-			"spring-multipart");
 
 	@Test
 	void shouldNotProvideCustomizerForNonReactiveApp() {

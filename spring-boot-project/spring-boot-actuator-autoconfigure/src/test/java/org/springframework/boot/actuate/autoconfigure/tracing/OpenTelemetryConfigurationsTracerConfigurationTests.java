@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.TracerConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -29,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TracerConfiguration}.
@@ -71,7 +71,7 @@ class OpenTelemetryConfigurationsTracerConfigurationTests {
 
 		@Bean
 		OpenTelemetry openTelemetry() {
-			return Mockito.mock(OpenTelemetry.class);
+			return mock(OpenTelemetry.class);
 		}
 
 	}
@@ -81,7 +81,7 @@ class OpenTelemetryConfigurationsTracerConfigurationTests {
 
 		@Bean
 		Tracer customTracer() {
-			return Mockito.mock(Tracer.class);
+			return mock(Tracer.class);
 		}
 
 	}

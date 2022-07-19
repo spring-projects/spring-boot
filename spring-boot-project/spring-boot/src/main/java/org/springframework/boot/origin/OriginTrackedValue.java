@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,8 @@ public class OriginTrackedValue implements OriginProvider {
 		if (value == null) {
 			return null;
 		}
-		if (value instanceof CharSequence) {
-			return new OriginTrackedCharSequence((CharSequence) value, origin);
+		if (value instanceof CharSequence charSequence) {
+			return new OriginTrackedCharSequence(charSequence, origin);
 		}
 		return new OriginTrackedValue(value, origin);
 	}

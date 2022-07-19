@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
 @Import({ SdkConfiguration.class, TracerConfiguration.class, MicrometerConfiguration.class })
+@ConditionalOnEnabledTracing
 public class OpenTelemetryAutoConfiguration {
 
 }

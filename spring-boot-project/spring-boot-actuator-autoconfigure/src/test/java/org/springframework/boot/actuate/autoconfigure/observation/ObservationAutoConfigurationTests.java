@@ -36,7 +36,6 @@ import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingObservationHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -49,6 +48,7 @@ import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ObservationAutoConfiguration}.
@@ -124,6 +124,19 @@ class ObservationAutoConfigurationTests {
 			assertThat(((CustomMeterObservationHandler) handlers.get(1)).getName())
 					.isEqualTo("customMeterObservationHandler1");
 		});
+	}
+
+	@Test
+	void autoConfiguresObservationHandlerWithCustomContext() {
+		this.contextRunner.withUserConfiguration(ObservationHandlerWithCustomContextConfiguration.class)
+				.run((context) -> {
+					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+					List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
+					CustomContext customContext = new CustomContext();
+					Observation.start("test-observation", customContext, observationRegistry);
+					assertThat(handlers).hasSize(1);
+					assertThat(handlers.get(0)).isInstanceOf(ObservationHandlerWithCustomContext.class);
+				});
 	}
 
 	@Test
@@ -218,6 +231,17 @@ class ObservationAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(CalledHandlersConfiguration.class)
+	static class ObservationHandlerWithCustomContextConfiguration {
+
+		@Bean
+		ObservationHandlerWithCustomContext observationHandlerWithCustomContext(CalledHandlers calledHandlers) {
+			return new ObservationHandlerWithCustomContext(calledHandlers);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(CalledHandlersConfiguration.class)
 	static class ObservationHandlersTracing {
 
 		@Bean
@@ -266,7 +290,7 @@ class ObservationAutoConfigurationTests {
 
 	private static class CustomTracingObservationHandler implements TracingObservationHandler<Context> {
 
-		private final Tracer tracer = Mockito.mock(Tracer.class, Answers.RETURNS_MOCKS);
+		private final Tracer tracer = mock(Tracer.class, Answers.RETURNS_MOCKS);
 
 		private final String name;
 
@@ -295,6 +319,30 @@ class ObservationAutoConfigurationTests {
 		public boolean supportsContext(Context context) {
 			return true;
 		}
+
+	}
+
+	private static class ObservationHandlerWithCustomContext implements ObservationHandler<CustomContext> {
+
+		private final CalledHandlers calledHandlers;
+
+		ObservationHandlerWithCustomContext(CalledHandlers calledHandlers) {
+			this.calledHandlers = calledHandlers;
+		}
+
+		@Override
+		public void onStart(CustomContext context) {
+			this.calledHandlers.onCalled(this);
+		}
+
+		@Override
+		public boolean supportsContext(Context context) {
+			return context instanceof CustomContext;
+		}
+
+	}
+
+	private static class CustomContext extends Context {
 
 	}
 

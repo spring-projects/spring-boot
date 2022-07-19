@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,9 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups) {
-		return new HealthEndpoint(registry, groups);
+	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
+			HealthEndpointProperties properties) {
+		return new HealthEndpoint(registry, groups, properties.getLogging().getSlowIndicatorThreshold());
 	}
 
 	@Bean
@@ -112,8 +113,8 @@ class HealthEndpointConfiguration {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof HealthEndpointGroups) {
-				return applyPostProcessors((HealthEndpointGroups) bean);
+			if (bean instanceof HealthEndpointGroups groups) {
+				return applyPostProcessors(groups);
 			}
 			return bean;
 		}
@@ -144,11 +145,11 @@ class HealthEndpointConfiguration {
 		}
 
 		private HealthContributor adapt(ReactiveHealthContributor contributor) {
-			if (contributor instanceof ReactiveHealthIndicator) {
-				return adapt((ReactiveHealthIndicator) contributor);
+			if (contributor instanceof ReactiveHealthIndicator healthIndicator) {
+				return adapt(healthIndicator);
 			}
-			if (contributor instanceof CompositeReactiveHealthContributor) {
-				return adapt((CompositeReactiveHealthContributor) contributor);
+			if (contributor instanceof CompositeReactiveHealthContributor healthContributor) {
+				return adapt(healthContributor);
 			}
 			throw new IllegalStateException("Unsupported ReactiveHealthContributor type " + contributor.getClass());
 		}

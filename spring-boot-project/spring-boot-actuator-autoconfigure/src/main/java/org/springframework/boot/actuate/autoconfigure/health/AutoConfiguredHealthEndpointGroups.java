@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,8 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 	 * @param properties the health endpoint properties
 	 */
 	AutoConfiguredHealthEndpointGroups(ApplicationContext applicationContext, HealthEndpointProperties properties) {
-		ListableBeanFactory beanFactory = (applicationContext instanceof ConfigurableApplicationContext)
-				? ((ConfigurableApplicationContext) applicationContext).getBeanFactory() : applicationContext;
+		ListableBeanFactory beanFactory = (applicationContext instanceof ConfigurableApplicationContext configurableContext)
+				? configurableContext.getBeanFactory() : applicationContext;
 		Show showComponents = properties.getShowComponents();
 		Show showDetails = properties.getShowDetails();
 		Set<String> roles = properties.getRoles();

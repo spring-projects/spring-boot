@@ -163,7 +163,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 		});
 	}
 
-	@SuppressWarnings("deprecation")
 	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
 		this.singlePublishedArtifact.addJarCandidate(bootJar);
 	}
@@ -265,10 +264,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 		@Override
 		public void execute(Task task) {
-			if (!(task instanceof JavaCompile)) {
+			if (!(task instanceof JavaCompile compile)) {
 				return;
 			}
-			JavaCompile compile = (JavaCompile) task;
 			if (hasConfigurationProcessorOnClasspath(compile)) {
 				configureAdditionalMetadataLocations(compile);
 			}

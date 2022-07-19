@@ -325,10 +325,6 @@ public class FlywayAutoConfiguration {
 			}
 		}
 
-		private String normalizePrefix(String location) {
-			return location.replace("filesystem:", "file:");
-		}
-
 		@Bean
 		@ConditionalOnMissingBean
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,

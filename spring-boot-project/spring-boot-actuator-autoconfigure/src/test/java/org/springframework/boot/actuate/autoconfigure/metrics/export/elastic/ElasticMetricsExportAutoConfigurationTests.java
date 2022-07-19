@@ -96,7 +96,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.elastic.metrics.export.api-key-credentials:secret",
 						"management.elastic.metrics.export.user-name:alice")
-				.run((context) -> assertThat(context).hasFailed().getFailure().getRootCause()
+				.run((context) -> assertThat(context).hasFailed().getFailure().rootCause()
 						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
 
@@ -105,7 +105,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.elastic.metrics.export.api-key-credentials:secret",
 						"management.elastic.metrics.export.password:secret")
-				.run((context) -> assertThat(context).hasFailed().getFailure().getRootCause()
+				.run((context) -> assertThat(context).hasFailed().getFailure().rootCause()
 						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
 

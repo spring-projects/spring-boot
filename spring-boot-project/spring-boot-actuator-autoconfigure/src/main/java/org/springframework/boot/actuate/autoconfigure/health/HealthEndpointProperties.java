@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +42,9 @@ public class HealthEndpointProperties extends HealthProperties {
 	/**
 	 * Health endpoint groups.
 	 */
-	private Map<String, Group> group = new LinkedHashMap<>();
+	private final Map<String, Group> group = new LinkedHashMap<>();
+
+	private final Logging logging = new Logging();
 
 	@Override
 	public Show getShowDetails() {
@@ -54,6 +57,10 @@ public class HealthEndpointProperties extends HealthProperties {
 
 	public Map<String, Group> getGroup() {
 		return this.group;
+	}
+
+	public Logging getLogging() {
+		return this.logging;
 	}
 
 	/**
@@ -120,6 +127,26 @@ public class HealthEndpointProperties extends HealthProperties {
 
 		public void setAdditionalPath(String additionalPath) {
 			this.additionalPath = additionalPath;
+		}
+
+	}
+
+	/**
+	 * Health logging properties.
+	 */
+	public static class Logging {
+
+		/**
+		 * Threshold after which a warning will be logged for slow health indicators.
+		 */
+		private Duration slowIndicatorThreshold = Duration.ofSeconds(10);
+
+		public Duration getSlowIndicatorThreshold() {
+			return this.slowIndicatorThreshold;
+		}
+
+		public void setSlowIndicatorThreshold(Duration slowIndicatorThreshold) {
+			this.slowIndicatorThreshold = slowIndicatorThreshold;
 		}
 
 	}

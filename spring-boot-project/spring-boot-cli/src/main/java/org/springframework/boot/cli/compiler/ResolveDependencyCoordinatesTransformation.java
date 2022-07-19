@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,9 +73,9 @@ public class ResolveDependencyCoordinatesTransformation extends AnnotatedNodeAST
 
 	private String getValue(AnnotationNode annotation) {
 		Expression expression = annotation.getMember("value");
-		if (expression instanceof ConstantExpression) {
-			Object value = ((ConstantExpression) expression).getValue();
-			return (value instanceof String) ? (String) value : null;
+		if (expression instanceof ConstantExpression constantExpression) {
+			Object value = constantExpression.getValue();
+			return (value instanceof String string) ? string : null;
 		}
 		return null;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,14 +131,11 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
-		switch (getErrorProperties().getIncludeStacktrace()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return getTraceParameter(request);
-		default:
-			return false;
-		}
+		return switch (getErrorProperties().getIncludeStacktrace()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getTraceParameter(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -148,14 +145,11 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the message attribute should be included
 	 */
 	protected boolean isIncludeMessage(HttpServletRequest request, MediaType produces) {
-		switch (getErrorProperties().getIncludeMessage()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return getMessageParameter(request);
-		default:
-			return false;
-		}
+		return switch (getErrorProperties().getIncludeMessage()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getMessageParameter(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -165,14 +159,11 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the errors attribute should be included
 	 */
 	protected boolean isIncludeBindingErrors(HttpServletRequest request, MediaType produces) {
-		switch (getErrorProperties().getIncludeBindingErrors()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return getErrorsParameter(request);
-		default:
-			return false;
-		}
+		return switch (getErrorProperties().getIncludeBindingErrors()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getErrorsParameter(request);
+			default -> false;
+		};
 	}
 
 	/**

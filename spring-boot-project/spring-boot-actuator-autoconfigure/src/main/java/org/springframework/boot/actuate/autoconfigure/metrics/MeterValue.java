@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,18 +63,18 @@ public final class MeterValue {
 	}
 
 	private Double getDistributionSummaryValue() {
-		if (this.value instanceof Double) {
-			return (Double) this.value;
+		if (this.value instanceof Double doubleValue) {
+			return doubleValue;
 		}
 		return null;
 	}
 
 	private Long getTimerValue() {
-		if (this.value instanceof Double) {
-			return TimeUnit.MILLISECONDS.toNanos(((Double) this.value).longValue());
+		if (this.value instanceof Double doubleValue) {
+			return TimeUnit.MILLISECONDS.toNanos(doubleValue.longValue());
 		}
-		if (this.value instanceof Duration) {
-			return ((Duration) this.value).toNanos();
+		if (this.value instanceof Duration duration) {
+			return duration.toNanos();
 		}
 		return null;
 	}

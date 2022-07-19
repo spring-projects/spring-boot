@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,21 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.convert.DurationStyle;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -37,22 +44,30 @@ import org.springframework.util.StringUtils;
  */
 abstract class HealthEndpointSupport<C, T> {
 
+	private static final Log logger = LogFactory.getLog(HealthEndpointSupport.class);
+
 	static final Health DEFAULT_HEALTH = Health.up().build();
 
 	private final ContributorRegistry<C> registry;
 
 	private final HealthEndpointGroups groups;
 
+	private final Duration slowIndicatorLoggingThreshold;
+
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
+	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * logging should occur
 	 */
-	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups) {
+	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups,
+			Duration slowIndicatorLoggingThreshold) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notNull(groups, "Groups must not be null");
 		this.registry = registry;
 		this.groups = groups;
+		this.slowIndicatorLoggingThreshold = slowIndicatorLoggingThreshold;
 	}
 
 	HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
@@ -127,7 +142,7 @@ abstract class HealthEndpointSupport<C, T> {
 					showDetails, groupNames);
 		}
 		if (contributor != null && (name.isEmpty() || group.isMember(name))) {
-			return getHealth((C) contributor, showDetails);
+			return getLoggedHealth((C) contributor, name, showDetails);
 		}
 		return null;
 	}
@@ -149,6 +164,25 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 		return aggregateContributions(apiVersion, contributions, group.getStatusAggregator(), showComponents,
 				groupNames);
+	}
+
+	private T getLoggedHealth(C contributor, String name, boolean showDetails) {
+		Instant start = Instant.now();
+		try {
+			return getHealth(contributor, showDetails);
+		}
+		finally {
+			if (logger.isWarnEnabled() && this.slowIndicatorLoggingThreshold != null) {
+				Duration duration = Duration.between(start, Instant.now());
+				if (duration.compareTo(this.slowIndicatorLoggingThreshold) > 0) {
+					String contributorClassName = contributor.getClass().getName();
+					Object contributorIdentifier = (!StringUtils.hasLength(name)) ? contributorClassName
+							: contributorClassName + " (" + name + ")";
+					logger.warn(LogMessage.format("Health contributor %s took %s to respond", contributorIdentifier,
+							DurationStyle.SIMPLE.print(duration)));
+				}
+			}
+		}
 	}
 
 	protected abstract T getHealth(C contributor, boolean includeDetails);

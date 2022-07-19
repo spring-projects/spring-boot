@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,13 @@ public final class ConditionMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ConditionMessage)) {
-			return false;
-		}
 		if (obj == this) {
 			return true;
 		}
-		return ObjectUtils.nullSafeEquals(((ConditionMessage) obj).message, this.message);
+		if (obj instanceof ConditionMessage other) {
+			return ObjectUtils.nullSafeEquals(other.message, this.message);
+		}
+		return false;
 	}
 
 	@Override

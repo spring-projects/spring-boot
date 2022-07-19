@@ -83,7 +83,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void missingHttpHandler() {
 		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class)
 				.run((context) -> assertThat(context.getStartupFailure())
-						.isInstanceOf(ApplicationContextException.class)
+						.isInstanceOf(ApplicationContextException.class).rootCause()
 						.hasMessageContaining("missing HttpHandler bean"));
 	}
 
@@ -93,7 +93,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
 						TooManyHttpHandlers.class)
 				.run((context) -> assertThat(context.getStartupFailure())
-						.isInstanceOf(ApplicationContextException.class)
+						.isInstanceOf(ApplicationContextException.class).rootCause()
 						.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
 	}
 

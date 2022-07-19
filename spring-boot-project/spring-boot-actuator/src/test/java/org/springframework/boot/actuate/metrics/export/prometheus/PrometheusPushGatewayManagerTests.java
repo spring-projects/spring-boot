@@ -135,13 +135,34 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
-	void shutdownWhenShutdownOperationIsPushPerformsPushOnShutdown() throws Exception {
+	@SuppressWarnings("deprecation")
+	void shutdownWhenShutdownOperationIsPushPerformsPushAddOnShutdown() throws Exception {
 		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUSH);
 		manager.shutdown();
 		then(this.future).should().cancel(false);
 		then(this.pushGateway).should().pushAdd(this.registry, "job", this.groupingKey);
+	}
+
+	@Test
+	void shutdownWhenShutdownOperationIsPostPerformsPushAddOnShutdown() throws Exception {
+		givenScheduleAtFixedRateWithReturnFuture();
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.POST);
+		manager.shutdown();
+		then(this.future).should().cancel(false);
+		then(this.pushGateway).should().pushAdd(this.registry, "job", this.groupingKey);
+	}
+
+	@Test
+	void shutdownWhenShutdownOperationIsPutPerformsPushOnShutdown() throws Exception {
+		givenScheduleAtFixedRateWithReturnFuture();
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUT);
+		manager.shutdown();
+		then(this.future).should().cancel(false);
+		then(this.pushGateway).should().push(this.registry, "job", this.groupingKey);
 	}
 
 	@Test

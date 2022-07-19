@@ -63,8 +63,8 @@ final class StandardGitHubRepository implements GitHubRepository {
 			return (Integer) response.getBody().get("number");
 		}
 		catch (RestClientException ex) {
-			if (ex instanceof Forbidden) {
-				System.out.println("Received 403 response with headers " + ((Forbidden) ex).getResponseHeaders());
+			if (ex instanceof Forbidden forbidden) {
+				System.out.println("Received 403 response with headers " + forbidden.getResponseHeaders());
 			}
 			throw ex;
 		}

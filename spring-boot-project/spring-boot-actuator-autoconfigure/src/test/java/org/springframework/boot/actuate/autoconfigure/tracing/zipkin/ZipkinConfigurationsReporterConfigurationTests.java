@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import zipkin2.Span;
 import zipkin2.codec.BytesEncoder;
 import zipkin2.codec.SpanBytesEncoder;
@@ -32,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ReporterConfiguration}.
@@ -78,7 +78,7 @@ class ZipkinConfigurationsReporterConfigurationTests {
 		@Bean
 		@SuppressWarnings("unchecked")
 		Reporter<Span> customReporter() {
-			return Mockito.mock(Reporter.class);
+			return mock(Reporter.class);
 		}
 
 	}

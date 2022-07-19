@@ -305,6 +305,11 @@ class PrometheusMetricsExportAutoConfigurationTests {
 					return null;
 				}
 
+				@Override
+				public boolean isSampled() {
+					return false;
+				}
+
 			};
 		}
 

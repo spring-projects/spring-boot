@@ -153,8 +153,8 @@ public class GroovyCompiler {
 
 	private URL[] getExistingUrls() {
 		ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-		if (tccl instanceof ExtendedGroovyClassLoader) {
-			return ((ExtendedGroovyClassLoader) tccl).getURLs();
+		if (tccl instanceof ExtendedGroovyClassLoader groovyClassLoader) {
+			return groovyClassLoader.getURLs();
 		}
 		else {
 			return new URL[0];

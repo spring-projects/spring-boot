@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension.HealthEndpointWebExtensionRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -35,9 +41,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
-class HealthEndpointWebExtensionTests
-		extends HealthEndpointSupportTests<HealthContributorRegistry, HealthContributor, HealthComponent> {
+class HealthEndpointWebExtensionTests extends
+		HealthEndpointSupportTests<HealthEndpointWebExtension, HealthContributorRegistry, HealthContributor, HealthComponent> {
 
 	@Test
 	void healthReturnsSystemHealth() {
@@ -80,9 +87,22 @@ class HealthEndpointWebExtensionTests
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new HealthEndpointWebExtensionRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		Set<Class<?>> bindingTypes = Set.of(Health.class, SystemHealth.class, CompositeHealth.class);
+		for (Class<?> bindingType : bindingTypes) {
+			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+							.accepts(runtimeHints);
+		}
+	}
+
 	@Override
-	protected HealthEndpointWebExtension create(HealthContributorRegistry registry, HealthEndpointGroups groups) {
-		return new HealthEndpointWebExtension(registry, groups);
+	protected HealthEndpointWebExtension create(HealthContributorRegistry registry, HealthEndpointGroups groups,
+			Duration slowIndicatorLoggingThreshold) {
+		return new HealthEndpointWebExtension(registry, groups, slowIndicatorLoggingThreshold);
 	}
 
 	@Override

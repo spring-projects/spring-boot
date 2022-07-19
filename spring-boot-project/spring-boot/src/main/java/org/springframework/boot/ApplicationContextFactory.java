@@ -18,11 +18,11 @@ package org.springframework.boot;
 
 import java.util.function.Supplier;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.NativeDetector;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
@@ -51,7 +51,7 @@ public interface ApplicationContextFactory {
 					return context;
 				}
 			}
-			return NativeDetector.inNativeImage() ? new GenericApplicationContext()
+			return AotDetector.useGeneratedArtifacts() ? new GenericApplicationContext()
 					: new AnnotationConfigApplicationContext();
 		}
 		catch (Exception ex) {

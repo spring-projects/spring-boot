@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -82,7 +83,9 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		try {
 			generateAotAssets(workingDirectory, startClassName, environmentVariables);
 			compileSourceFiles();
-			copyNativeConfiguration(this.generatedResources.toPath());
+			copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
+					this.classesDirectory.toPath().resolve("META-INF/native-image"));
+			copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -158,14 +161,13 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		}
 	}
 
-	private void copyNativeConfiguration(Path generatedResources) throws IOException {
-		Path targetDirectory = this.classesDirectory.toPath().resolve("META-INF/native-image");
-		Path sourceDirectory = generatedResources.resolve("META-INF/native-image");
-		List<Path> files = Files.walk(sourceDirectory).filter(Files::isRegularFile).toList();
+	private void copyAll(Path from, Path to) throws IOException {
+		List<Path> files = (Files.exists(from)) ? Files.walk(from).filter(Files::isRegularFile).toList()
+				: Collections.emptyList();
 		for (Path file : files) {
-			String relativeFileName = file.subpath(sourceDirectory.getNameCount(), file.getNameCount()).toString();
-			getLog().debug("Copying '" + relativeFileName + "' to " + targetDirectory);
-			Path target = targetDirectory.resolve(relativeFileName);
+			String relativeFileName = file.subpath(from.getNameCount(), file.getNameCount()).toString();
+			getLog().debug("Copying '" + relativeFileName + "' to " + to);
+			Path target = to.resolve(relativeFileName);
 			Files.createDirectories(target.getParent());
 			Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
 		}

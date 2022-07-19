@@ -47,9 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
@@ -734,7 +732,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		ssl.setCertificate(cert);
 		ssl.setCertificatePrivateKey(privateKey);
 		ssl.setTrustCertificate(cert);
-		ssl.setKeyStorePassword("secret");
 		return ssl;
 	}
 
@@ -1189,7 +1186,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException, BrokenBarrierException {
+	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException {
 		AbstractServletWebServerFactory factory = getFactory();
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory
@@ -1229,8 +1226,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	protected void whenHttp2IsEnabledAndSslIsDisabledThenHttp11CanStillBeUsed()
-			throws InterruptedException, ExecutionException, IOException, URISyntaxException {
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenHttp11CanStillBeUsed() throws IOException, URISyntaxException {
 		AbstractServletWebServerFactory factory = getFactory();
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
@@ -1241,8 +1237,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void whenARequestIsActiveAfterGracefulShutdownEndsThenStopWillComplete()
-			throws InterruptedException, BrokenBarrierException {
+	void whenARequestIsActiveAfterGracefulShutdownEndsThenStopWillComplete() throws InterruptedException {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();

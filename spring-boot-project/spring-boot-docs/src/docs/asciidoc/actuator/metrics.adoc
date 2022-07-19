@@ -168,9 +168,10 @@ You can also change the interval at which metrics are sent to Datadog:
 [[actuator.metrics.export.dynatrace]]
 ==== Dynatrace
 Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer].
+You can find the Dynatrace documentation on Micrometer metrics ingest {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/micrometer[here].
 Configuration properties in the `v1` namespace apply only when exporting to the {dynatrace-help}/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
 Configuration properties in the `v2` namespace apply only when exporting to the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API].
-Note that this integration can export only to either the `v1` or `v2` version of the API at a time.
+Note that this integration can export only to either the `v1` or `v2` version of the API at a time, with `v2` being preferred.
 If the `device-id` (required for v1 but not used in v2) is set in the `v1` namespace, metrics are exported to the `v1` endpoint.
 Otherwise, `v2` is assumed.
 
@@ -180,11 +181,24 @@ Otherwise, `v2` is assumed.
 ===== v2 API
 You can use the v2 API in two ways.
 
-If a local OneAgent is running on the host, metrics are automatically exported to the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint].
+
+
+[[actuator.metrics.export.dynatrace.v2-api.auto-config]]
+====== Auto-configuration
+Dynatrace auto-configuration is available for hosts that are monitored by the OneAgent or by the Dynatrace Operator for Kubernetes.
+
+**Local OneAgent:** If a OneAgent is running on the host, metrics are automatically exported to the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/local-api/[local OneAgent ingest endpoint].
 The ingest endpoint forwards the metrics to the Dynatrace backend.
+
+**Dynatrace Kubernetes Operator:** When running in Kubernetes with the Dynatrace Operator installed, the registry will automatically pick up your endpoint URI and API token from the operator instead.
+
 This is the default behavior and requires no special setup beyond a dependency on `io.micrometer:micrometer-registry-dynatrace`.
 
-If no local OneAgent is running, the endpoint of the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
+
+
+[[actuator.metrics.export.dynatrace.v2-api.manual-config]]
+====== Manual configuration
+If no auto-configuration is available, the endpoint of the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
 The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "`Ingest metrics`" (`metrics.ingest`) permission set.
 We recommend limiting the scope of the token to this one permission.
 You must ensure that the endpoint URI contains the path (for example, `/api/v2/metrics/ingest`):
@@ -206,15 +220,19 @@ The example below configures metrics export using the `example` environment id:
 	        api-token: "YOUR_TOKEN"
 ----
 
-When using the Dynatrace v2 API, the following optional features are available:
+When using the Dynatrace v2 API, the following optional features are available (more details can be found in the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/micrometer#dt-configuration-properties[Dynatrace documentation]):
 
 * Metric key prefix: Sets a prefix that is prepended to all exported metric keys.
 * Enrich with Dynatrace metadata: If a OneAgent or Dynatrace operator is running, enrich metrics with additional metadata (for example, about the host, process, or pod).
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
-  If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
+If tags with the same key are specified with Micrometer, they overwrite the default dimensions.
+* Use Dynatrace Summary instruments: In some cases the Micrometer Dynatrace registry created metrics that were rejected.
+In Micrometer 1.9.x, this was fixed by introducing Dynatrace-specific summary instruments.
+Setting this toggle to `false` forces Micrometer to fall back to the behavior that was the default before 1.9.x.
+It should only be used when encountering problems while migrating from Micrometer 1.8.x to 1.9.x.
 
 It is possible to not specify a URI and API token, as shown in the following example.
-In this scenario, the local OneAgent endpoint is used:
+In this scenario, the automatically configured endpoint is used:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -229,6 +247,7 @@ In this scenario, the local OneAgent endpoint is used:
 	          default-dimensions:
 	            key1: "value1"
 	            key2: "value2"
+	          use-dynatrace-summary-instruments: true # (default: true)
 ----
 
 
@@ -270,7 +289,7 @@ The following example sets the export interval to 30 seconds:
 	        step: "30s"
 ----
 
-You can find more information on how to set up the Dynatrace exporter for Micrometer in {micrometer-registry-docs}/dynatrace[the Micrometer documentation].
+You can find more information on how to set up the Dynatrace exporter for Micrometer in the {micrometer-registry-docs}/dynatrace[Micrometer documentation] and the {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/micrometer[Dynatrace documentation].
 
 
 
@@ -676,6 +695,7 @@ The following JVM metrics are provided:
 * Thread utilization
 * The number of classes loaded and unloaded
 * JVM version information
+* JIT compilation time
 
 
 
@@ -883,6 +903,25 @@ See `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
 Also, Hikari-specific metrics are exposed with a `hikaricp` prefix.
 Each metric is tagged by the name of the pool (you can control it with `spring.datasource.name`).
+
+
+
+[[actuator.metrics.supported.hibernate]]
+==== Hibernate Metrics
+If `org.hibernate.orm:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled are instrumented with a metric named `hibernate`.
+
+Metrics are also tagged by the name of the `EntityManagerFactory`, which is derived from the bean name.
+
+To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
+You can enable that on the auto-configured `EntityManagerFactory`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  jpa:
+	    properties:
+	      "[hibernate.generate_statistics]": true
+----
 
 
 

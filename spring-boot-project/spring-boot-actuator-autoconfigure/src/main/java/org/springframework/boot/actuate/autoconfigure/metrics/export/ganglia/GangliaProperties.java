@@ -45,19 +45,9 @@ public class GangliaProperties {
 	private Duration step = Duration.ofMinutes(1);
 
 	/**
-	 * Base time unit used to report rates.
-	 */
-	private TimeUnit rateUnits;
-
-	/**
 	 * Base time unit used to report durations.
 	 */
 	private TimeUnit durationUnits = TimeUnit.MILLISECONDS;
-
-	/**
-	 * Ganglia protocol version. Must be either 3.1 or 3.0.
-	 */
-	private String protocolVersion;
 
 	/**
 	 * UDP addressing mode, either unicast or multicast.

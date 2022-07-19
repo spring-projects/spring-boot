@@ -209,15 +209,14 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void adminProperties() {
-		this.contextRunner
-				.withPropertyValues("spring.kafka.clientId=cid", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-						"spring.kafka.admin.fail-fast=true", "spring.kafka.admin.properties.fiz.buz=fix.fox",
-						"spring.kafka.admin.security.protocol=SSL", "spring.kafka.admin.ssl.key-password=p4",
-						"spring.kafka.admin.ssl.key-store-location=classpath:ksLocP",
-						"spring.kafka.admin.ssl.key-store-password=p5", "spring.kafka.admin.ssl.key-store-type=PKCS12",
-						"spring.kafka.admin.ssl.trust-store-location=classpath:tsLocP",
-						"spring.kafka.admin.ssl.trust-store-password=p6",
-						"spring.kafka.admin.ssl.trust-store-type=PKCS12", "spring.kafka.admin.ssl.protocol=TLSv1.2")
+		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz", "spring.kafka.admin.fail-fast=true",
+				"spring.kafka.admin.properties.fiz.buz=fix.fox", "spring.kafka.admin.security.protocol=SSL",
+				"spring.kafka.admin.ssl.key-password=p4", "spring.kafka.admin.ssl.key-store-location=classpath:ksLocP",
+				"spring.kafka.admin.ssl.key-store-password=p5", "spring.kafka.admin.ssl.key-store-type=PKCS12",
+				"spring.kafka.admin.ssl.trust-store-location=classpath:tsLocP",
+				"spring.kafka.admin.ssl.trust-store-password=p6", "spring.kafka.admin.ssl.trust-store-type=PKCS12",
+				"spring.kafka.admin.ssl.protocol=TLSv1.2", "spring.kafka.admin.modify-topic-configs=true")
 				.run((context) -> {
 					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 					Map<String, Object> configs = admin.getConfigurationProperties();
@@ -239,6 +238,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 					assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
 					assertThat(admin).hasFieldOrPropertyWithValue("fatalIfBrokerNotAvailable", true);
+					assertThat(admin).hasFieldOrPropertyWithValue("modifyTopicConfigs", true);
 				});
 	}
 

@@ -108,7 +108,7 @@ class JmsAutoConfigurationTests {
 				.run(this::testJmsTemplateBackOffEverything);
 	}
 
-	private void testJmsTemplateBackOffEverything(AssertableApplicationContext loaded) throws IOException {
+	private void testJmsTemplateBackOffEverything(AssertableApplicationContext loaded) {
 		JmsTemplate jmsTemplate = loaded.getBean(JmsTemplate.class);
 		assertThat(jmsTemplate.getPriority()).isEqualTo(999);
 		assertThat(loaded.getBeansOfType(ActiveMQConnectionFactory.class)).containsOnlyKeys("customConnectionFactory");

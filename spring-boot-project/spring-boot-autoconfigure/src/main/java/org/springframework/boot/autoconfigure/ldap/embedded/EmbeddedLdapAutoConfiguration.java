@@ -125,7 +125,7 @@ public class EmbeddedLdapAutoConfiguration {
 		}
 	}
 
-	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
+	private void importLdif(ApplicationContext applicationContext) {
 		String location = this.embeddedProperties.getLdif();
 		if (StringUtils.hasText(location)) {
 			try {
@@ -143,9 +143,8 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	private void setPortProperty(ApplicationContext context, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
-					.getPropertySources();
+		if (context instanceof ConfigurableApplicationContext configurableContext) {
+			MutablePropertySources sources = configurableContext.getEnvironment().getPropertySources();
 			getLdapPorts(sources).put("local.ldap.port", port);
 		}
 		if (context.getParent() != null) {

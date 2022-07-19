@@ -434,9 +434,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		@Override
 		public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider,
 				PropertyWriter writer) throws Exception {
-			if (writer instanceof BeanPropertyWriter) {
+			if (writer instanceof BeanPropertyWriter beanPropertyWriter) {
 				try {
-					if (pojo == ((BeanPropertyWriter) writer).get(pojo)) {
+					if (pojo == beanPropertyWriter.get(pojo)) {
 						if (logger.isDebugEnabled()) {
 							logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
 									+ "' as it is self-referential");

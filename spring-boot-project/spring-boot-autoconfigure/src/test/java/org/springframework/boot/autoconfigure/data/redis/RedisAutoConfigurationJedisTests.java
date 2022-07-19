@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,10 +191,9 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner
 				.withPropertyValues("spring.redis.sentinel.master:mymaster",
 						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
-				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
-				});
+				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
+				.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware())
+						.isTrue());
 	}
 
 	@Test
@@ -202,7 +201,6 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner.withPropertyValues("spring.redis.username=user", "spring.redis.password=password",
 				"spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(context).hasFailed();
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
 					assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
@@ -212,8 +210,9 @@ class RedisAutoConfigurationJedisTests {
 	@Test
 	void testRedisConfigurationWithCluster() {
 		this.contextRunner.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
-				.run((context) -> assertThat(context.getBean(JedisConnectionFactory.class).getClusterConnection())
-						.isNotNull());
+				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
+				.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisClusterAware())
+						.isTrue());
 	}
 
 	private String getUserName(JedisConnectionFactory factory) {
@@ -246,8 +245,8 @@ class RedisAutoConfigurationJedisTests {
 
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) {
-			if (bean instanceof JedisConnectionFactory) {
-				connectionFactory = (JedisConnectionFactory) bean;
+			if (bean instanceof JedisConnectionFactory jedisConnectionFactory) {
+				connectionFactory = jedisConnectionFactory;
 			}
 			return bean;
 		}

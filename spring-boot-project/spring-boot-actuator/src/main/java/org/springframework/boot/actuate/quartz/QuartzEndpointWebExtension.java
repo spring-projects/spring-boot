@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,19 @@ package org.springframework.boot.actuate.quartz;
 
 import org.quartz.SchedulerException;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroups;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetails;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummary;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummary;
+import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension.QuartzEndpointWebExtensionRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link QuartzEndpoint}.
@@ -31,6 +39,7 @@ import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroups;
  * @since 2.5.0
  */
 @EndpointWebExtension(endpoint = QuartzEndpoint.class)
+@ImportRuntimeHints(QuartzEndpointWebExtensionRuntimeHints.class)
 public class QuartzEndpointWebExtension {
 
 	private final QuartzEndpoint delegate;
@@ -81,6 +90,18 @@ public class QuartzEndpointWebExtension {
 	private interface ResponseSupplier<T> {
 
 		T get() throws SchedulerException;
+
+	}
+
+	static class QuartzEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), QuartzGroups.class,
+					QuartzJobDetails.class, QuartzJobGroupSummary.class, QuartzTriggerGroupSummary.class);
+		}
 
 	}
 

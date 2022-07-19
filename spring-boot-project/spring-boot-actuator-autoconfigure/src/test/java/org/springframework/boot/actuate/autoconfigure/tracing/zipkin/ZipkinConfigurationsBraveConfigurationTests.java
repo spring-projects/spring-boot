@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import brave.handler.SpanHandler;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import zipkin2.Span;
 import zipkin2.reporter.Reporter;
+import zipkin2.reporter.brave.ZipkinSpanHandler;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link BraveConfiguration}.
@@ -44,28 +45,38 @@ class ZipkinConfigurationsBraveConfigurationTests {
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(ReporterConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(SpanHandler.class));
+				.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanHandler.class));
 	}
 
 	@Test
 	void shouldNotSupplySpanHandlerIfReporterIsMissing() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SpanHandler.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
 	}
 
 	@Test
 	void shouldNotSupplyIfZipkinReporterBraveIsNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter.brave"))
 				.withUserConfiguration(ReporterConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(SpanHandler.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
 
 	}
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("customSpanHandler");
-			assertThat(context).hasSingleBean(SpanHandler.class);
-		});
+		this.contextRunner.withUserConfiguration(ReporterConfiguration.class, CustomConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("customZipkinSpanHandler");
+					assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+				});
+	}
+
+	@Test
+	void shouldSupplyZipkinSpanHandlerWithCustomSpanHandler() {
+		this.contextRunner.withUserConfiguration(ReporterConfiguration.class, CustomSpanHandlerConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("customSpanHandler");
+					assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -74,7 +85,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		@Bean
 		@SuppressWarnings("unchecked")
 		Reporter<Span> reporter() {
-			return Mockito.mock(Reporter.class);
+			return mock(Reporter.class);
 		}
 
 	}
@@ -83,8 +94,19 @@ class ZipkinConfigurationsBraveConfigurationTests {
 	private static class CustomConfiguration {
 
 		@Bean
+		@SuppressWarnings("unchecked")
+		ZipkinSpanHandler customZipkinSpanHandler() {
+			return (ZipkinSpanHandler) ZipkinSpanHandler.create(mock(Reporter.class));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomSpanHandlerConfiguration {
+
+		@Bean
 		SpanHandler customSpanHandler() {
-			return Mockito.mock(SpanHandler.class);
+			return mock(SpanHandler.class);
 		}
 
 	}

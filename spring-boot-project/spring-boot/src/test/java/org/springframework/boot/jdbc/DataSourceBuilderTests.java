@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@ package org.springframework.boot.jdbc;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -62,8 +65,8 @@ class DataSourceBuilderTests {
 
 	@AfterEach
 	void shutdownDataSource() throws IOException {
-		if (this.dataSource instanceof Closeable) {
-			((Closeable) this.dataSource).close();
+		if (this.dataSource instanceof Closeable closeable) {
+			closeable.close();
 		}
 	}
 
@@ -343,6 +346,19 @@ class DataSourceBuilderTests {
 		assertThat(built.getUrl()).startsWith("jdbc:hsqldb:mem");
 	}
 
+	@Test
+	void buildWhenDerivedFromWrappedDataSource() {
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setJdbcUrl("jdbc:h2:test");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(wrap(wrap(dataSource)));
+		HikariDataSource built = (HikariDataSource) builder.username("test2").password("secret2").build();
+		assertThat(built.getUsername()).isEqualTo("test2");
+		assertThat(built.getPassword()).isEqualTo("secret2");
+		assertThat(built.getJdbcUrl()).isEqualTo("jdbc:h2:test");
+	}
+
 	@Test // gh-26644
 	void buildWhenDerivedFromExistingDatabaseWithTypeChange() {
 		HikariDataSource dataSource = new HikariDataSource();
@@ -382,6 +398,65 @@ class DataSourceBuilderTests {
 		assertThat(testSource.getUsername()).isEqualTo("test");
 		assertThat(testSource.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
 		assertThat(testSource.getPassword()).isEqualTo("secret");
+	}
+
+	private DataSource wrap(DataSource target) {
+		return new DataSourceWrapper(target);
+	}
+
+	private static final class DataSourceWrapper implements DataSource {
+
+		private final DataSource delegate;
+
+		private DataSourceWrapper(DataSource delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+			return this.delegate.getParentLogger();
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return this.delegate.unwrap(iface);
+		}
+
+		@Override
+		public boolean isWrapperFor(Class<?> iface) throws SQLException {
+			return this.delegate.isWrapperFor(iface);
+		}
+
+		@Override
+		public Connection getConnection() throws SQLException {
+			return this.delegate.getConnection();
+		}
+
+		@Override
+		public Connection getConnection(String username, String password) throws SQLException {
+			return this.delegate.getConnection(username, password);
+		}
+
+		@Override
+		public PrintWriter getLogWriter() throws SQLException {
+			return this.delegate.getLogWriter();
+		}
+
+		@Override
+		public void setLogWriter(PrintWriter out) throws SQLException {
+			this.delegate.setLogWriter(out);
+		}
+
+		@Override
+		public void setLoginTimeout(int seconds) throws SQLException {
+			this.delegate.setLoginTimeout(seconds);
+		}
+
+		@Override
+		public int getLoginTimeout() throws SQLException {
+			return this.delegate.getLoginTimeout();
+		}
+
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {

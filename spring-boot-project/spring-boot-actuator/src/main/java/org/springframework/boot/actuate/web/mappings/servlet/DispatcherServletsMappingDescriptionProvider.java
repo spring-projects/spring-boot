@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,15 @@ import java.util.stream.Stream;
 
 import jakarta.servlet.Servlet;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider.DispatcherServletsMappingDescriptionProviderRuntimeHints;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -49,6 +54,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@ImportRuntimeHints(DispatcherServletsMappingDescriptionProviderRuntimeHints.class)
 public class DispatcherServletsMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	private static final List<HandlerMappingDescriptionProvider<?>> descriptionProviders;
@@ -68,8 +74,8 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 	@Override
 	public Map<String, List<DispatcherServletMappingDescription>> describeMappings(ApplicationContext context) {
-		if (context instanceof WebApplicationContext) {
-			return describeMappings((WebApplicationContext) context);
+		if (context instanceof WebApplicationContext webApplicationContext) {
+			return describeMappings(webApplicationContext);
 		}
 		return Collections.emptyMap();
 	}
@@ -191,6 +197,18 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 						DispatcherServletsMappingDescriptionProvider.describe(delegate, this.descriptionProviders));
 			}
 			return descriptions;
+		}
+
+	}
+
+	static class DispatcherServletsMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
+					DispatcherServletMappingDescription.class);
 		}
 
 	}

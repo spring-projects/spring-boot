@@ -129,7 +129,7 @@ bom {
 			]
 		}
 	}
-	library("Native Gradle Plugin", "0.9.11") {
+	library("Native Gradle Plugin", "${nativeBuildToolsVersion}") {
 		group("org.graalvm.buildtools") {
 			modules = [
 				"native-gradle-plugin"

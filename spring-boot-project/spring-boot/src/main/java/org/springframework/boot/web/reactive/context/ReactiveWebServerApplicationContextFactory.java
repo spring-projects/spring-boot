@@ -16,10 +16,10 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.NativeDetector;
 
 /**
  * {@link ApplicationContextFactory} registered in {@code spring.factories} to support
@@ -36,7 +36,7 @@ class ReactiveWebServerApplicationContextFactory implements ApplicationContextFa
 		if (webApplicationType != WebApplicationType.REACTIVE) {
 			return null;
 		}
-		return NativeDetector.inNativeImage() ? new ReactiveWebServerApplicationContext()
+		return AotDetector.useGeneratedArtifacts() ? new ReactiveWebServerApplicationContext()
 				: new AnnotationConfigReactiveWebServerApplicationContext();
 	}
 

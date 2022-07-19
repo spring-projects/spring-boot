@@ -25,7 +25,6 @@ import io.micrometer.tracing.reporter.wavefront.WavefrontBraveSpanHandler;
 import io.micrometer.tracing.reporter.wavefront.WavefrontOtelSpanHandler;
 import io.micrometer.tracing.reporter.wavefront.WavefrontSpanHandler;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -72,6 +71,18 @@ class WavefrontTracingAutoConfigurationTests {
 	void shouldNotSupplyBeansIfMicrometerReporterWavefrontIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.tracing.reporter.wavefront"))
 				.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
+					assertThat(context).doesNotHaveBean(SpanMetrics.class);
+					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
+					assertThat(context).doesNotHaveBean(WavefrontOtelSpanHandler.class);
+				});
+	}
+
+	@Test
+	void shouldNotSupplyBeansIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+				.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(ApplicationTags.class);
 					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 					assertThat(context).doesNotHaveBean(SpanMetrics.class);
 					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
@@ -144,27 +155,27 @@ class WavefrontTracingAutoConfigurationTests {
 
 		@Bean
 		ApplicationTags customApplicationTags() {
-			return Mockito.mock(ApplicationTags.class);
+			return mock(ApplicationTags.class);
 		}
 
 		@Bean
 		WavefrontSpanHandler customWavefrontSpanHandler() {
-			return Mockito.mock(WavefrontSpanHandler.class);
+			return mock(WavefrontSpanHandler.class);
 		}
 
 		@Bean
 		SpanMetrics customSpanMetrics() {
-			return Mockito.mock(SpanMetrics.class);
+			return mock(SpanMetrics.class);
 		}
 
 		@Bean
 		WavefrontBraveSpanHandler customWavefrontBraveSpanHandler() {
-			return Mockito.mock(WavefrontBraveSpanHandler.class);
+			return mock(WavefrontBraveSpanHandler.class);
 		}
 
 		@Bean
 		WavefrontOtelSpanHandler customWavefrontOtelSpanHandler() {
-			return Mockito.mock(WavefrontOtelSpanHandler.class);
+			return mock(WavefrontOtelSpanHandler.class);
 		}
 
 	}

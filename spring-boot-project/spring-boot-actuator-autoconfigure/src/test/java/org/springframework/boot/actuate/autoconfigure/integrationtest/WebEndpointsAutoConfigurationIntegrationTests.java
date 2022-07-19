@@ -19,10 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -68,12 +64,14 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 
 	private WebApplicationContextRunner servletWebRunner() {
 		return new WebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class));
+				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class)).withPropertyValues(
+						"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
 		return new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class));
+				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class)).withPropertyValues(
+						"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
@@ -82,8 +80,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class, WavefrontAutoConfiguration.class,
-			BraveAutoConfiguration.class, OpenTelemetryAutoConfiguration.class })
+			RedisRepositoriesAutoConfiguration.class })
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {
 

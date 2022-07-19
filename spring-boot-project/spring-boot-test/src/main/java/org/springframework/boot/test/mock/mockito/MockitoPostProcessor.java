@@ -163,11 +163,11 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	private void register(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry,
 			Definition definition, Field field) {
-		if (definition instanceof MockDefinition) {
-			registerMock(beanFactory, registry, (MockDefinition) definition, field);
+		if (definition instanceof MockDefinition mockDefinition) {
+			registerMock(beanFactory, registry, mockDefinition, field);
 		}
-		else if (definition instanceof SpyDefinition) {
-			registerSpy(beanFactory, registry, (SpyDefinition) definition, field);
+		else if (definition instanceof SpyDefinition spyDefinition) {
+			registerSpy(beanFactory, registry, spyDefinition, field);
 		}
 	}
 

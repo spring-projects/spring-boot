@@ -24,7 +24,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
-import org.gradle.api.JavaVersion;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
@@ -96,12 +95,7 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			assertThat(result.getOutput()).contains("-XX:TieredStopAtLevel=1");
-		}
-		else {
-			assertThat(result.getOutput()).contains("-Xverify:none").contains("-XX:TieredStopAtLevel=1");
-		}
+		assertThat(result.getOutput()).contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate
@@ -117,14 +111,8 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			assertThat(result.getOutput()).contains("-Dcom.bar=baz").contains("-Dcom.foo=bar")
-					.contains("-XX:TieredStopAtLevel=1");
-		}
-		else {
-			assertThat(result.getOutput()).contains("-Dcom.bar=baz").contains("-Dcom.foo=bar").contains("-Xverify:none")
-					.contains("-XX:TieredStopAtLevel=1");
-		}
+		assertThat(result.getOutput()).contains("-Dcom.bar=baz").contains("-Dcom.foo=bar")
+				.contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate

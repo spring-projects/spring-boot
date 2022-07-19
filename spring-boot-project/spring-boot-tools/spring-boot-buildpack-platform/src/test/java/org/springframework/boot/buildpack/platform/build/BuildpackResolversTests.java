@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ class BuildpackResolversTests extends AbstractJsonTests {
 	void resolveAllWithImageBuildpackReferenceReturnsExpectedBuildpack() throws IOException {
 		Image image = Image.of(getContent("buildpack-image.json"));
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
 		given(resolverContext.fetchImage(any(), any())).willReturn(image);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:latest");
 		Buildpacks buildpacks = BuildpackResolvers.resolveAll(resolverContext, Collections.singleton(reference));

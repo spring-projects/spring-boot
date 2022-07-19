@@ -34,12 +34,12 @@ import java.util.Set;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.support.RuntimeHintsUtils;
 import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.core.ResolvableType;
@@ -64,8 +64,10 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(ConfigurationProperties.class);
 		List<Class<?>> types = new ArrayList<>();
 		for (String beanName : beanNames) {
-			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
-			types.add(ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass()));
+			Class<?> beanType = beanFactory.getType(beanName, false);
+			if (beanType != null) {
+				types.add(ClassUtils.getUserClass(beanType));
+			}
 		}
 		if (!CollectionUtils.isEmpty(types)) {
 			return new ConfigurationPropertiesReflectionHintsContribution(types);
@@ -85,6 +87,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
+			RuntimeHintsUtils.registerAnnotation(generationContext.getRuntimeHints(), ConfigurationProperties.class);
 			for (Class<?> type : this.types) {
 				TypeProcessor.processConfigurationProperties(type, generationContext.getRuntimeHints());
 			}

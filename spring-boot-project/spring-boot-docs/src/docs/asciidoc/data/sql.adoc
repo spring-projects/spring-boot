@@ -242,7 +242,7 @@ For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference d
 ==== Spring Data Envers Repositories
 If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
 
-To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as show in the following example:
+To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as shown in the following example:
 
 include::code:CountryRepository[]
 
@@ -337,7 +337,7 @@ More information on {spring-security-docs}/features/exploits/csrf.html[CSRF] and
 
 In simple setups, a `SecurityFilterChain` like the following can be used:
 
-include::code:DevProfileSecurityConfiguration[]
+include::code:DevProfileSecurityConfiguration[tag=!customizer]
 
 WARNING: The H2 console is only intended for use during development.
 In production, disabling CSRF protection or allowing frames for a website may create severe security risks.

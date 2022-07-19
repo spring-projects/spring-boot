@@ -17,7 +17,6 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -38,8 +37,7 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenTheRunGoalIsExecutedTheApplicationIsForkedWithOptimizedJvmArguments(MavenBuild mavenBuild) {
 		mavenBuild.project("run").goals("spring-boot:run", "-X").execute((project) -> {
-			String jvmArguments = isJava13OrLater() ? "JVM argument(s): -XX:TieredStopAtLevel=1"
-					: "JVM argument(s): -Xverify:none -XX:TieredStopAtLevel=1";
+			String jvmArguments = "JVM argument(s): -XX:TieredStopAtLevel=1";
 			assertThat(buildLog(project)).contains("I haz been run").contains(jvmArguments);
 		});
 	}
@@ -134,15 +132,6 @@ class RunIntegrationTests {
 
 	private String buildLog(File project) {
 		return contentOf(new File(project, "target/build.log"));
-	}
-
-	private boolean isJava13OrLater() {
-		for (Method method : String.class.getMethods()) {
-			if (method.getName().equals("stripIndent")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

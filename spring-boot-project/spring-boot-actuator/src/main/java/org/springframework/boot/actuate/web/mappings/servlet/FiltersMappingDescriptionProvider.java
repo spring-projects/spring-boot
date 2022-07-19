@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,13 @@ import java.util.stream.Collectors;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContext;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider.FiltersMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -34,20 +39,33 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@ImportRuntimeHints(FiltersMappingDescriptionProviderRuntimeHints.class)
 public class FiltersMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	@Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
-		if (!(context instanceof WebApplicationContext)) {
-			return Collections.emptyList();
+		if (context instanceof WebApplicationContext webApplicationContext) {
+			return webApplicationContext.getServletContext().getFilterRegistrations().values().stream()
+					.map(FilterRegistrationMappingDescription::new).collect(Collectors.toList());
 		}
-		return ((WebApplicationContext) context).getServletContext().getFilterRegistrations().values().stream()
-				.map(FilterRegistrationMappingDescription::new).collect(Collectors.toList());
+		return Collections.emptyList();
 	}
 
 	@Override
 	public String getMappingName() {
 		return "servletFilters";
+	}
+
+	static class FiltersMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
+					FilterRegistrationMappingDescription.class);
+		}
+
 	}
 
 }

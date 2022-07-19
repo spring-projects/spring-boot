@@ -20,6 +20,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.TimerObservationHandler;
 import io.micrometer.observation.ObservationRegistry;
 
+import org.springframework.beans.factory.ObjectProvider;
+
 /**
  * Registers the {@link TimerObservationHandler} with an {@link ObservationRegistry}.
  *
@@ -28,15 +30,15 @@ import io.micrometer.observation.ObservationRegistry;
 class TimerObservationHandlerObservationRegistryCustomizer
 		implements ObservationRegistryCustomizer<ObservationRegistry> {
 
-	private final MeterRegistry meterRegistry;
+	private final ObjectProvider<MeterRegistry> meterRegistry;
 
-	TimerObservationHandlerObservationRegistryCustomizer(MeterRegistry meterRegistry) {
+	TimerObservationHandlerObservationRegistryCustomizer(ObjectProvider<MeterRegistry> meterRegistry) {
 		this.meterRegistry = meterRegistry;
 	}
 
 	@Override
 	public void customize(ObservationRegistry registry) {
-		registry.observationConfig().observationHandler(new TimerObservationHandler(this.meterRegistry));
+		registry.observationConfig().observationHandler(new TimerObservationHandler(this.meterRegistry.getObject()));
 	}
 
 }

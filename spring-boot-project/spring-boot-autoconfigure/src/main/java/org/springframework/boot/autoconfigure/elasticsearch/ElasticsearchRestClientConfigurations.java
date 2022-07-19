@@ -156,12 +156,12 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchRestClientProperties properties) {
+		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			Duration interval = properties.getSniffer().getInterval();
+			Duration interval = properties.getRestclient().getSniffer().getInterval();
 			map.from(interval).asInt(Duration::toMillis).to(builder::setSniffIntervalMillis);
-			Duration delayAfterFailure = properties.getSniffer().getDelayAfterFailure();
+			Duration delayAfterFailure = properties.getRestclient().getSniffer().getDelayAfterFailure();
 			map.from(delayAfterFailure).asInt(Duration::toMillis).to(builder::setSniffAfterFailureDelayMillis);
 			return builder.build();
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,8 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	private Mono<Health> getHealth(Health.Builder builder, ReactiveRedisConnection connection) {
-		if (connection instanceof ReactiveRedisClusterConnection) {
-			return ((ReactiveRedisClusterConnection) connection).clusterGetClusterInfo()
-					.map((info) -> fromClusterInfo(builder, info));
+		if (connection instanceof ReactiveRedisClusterConnection clusterConnection) {
+			return clusterConnection.clusterGetClusterInfo().map((info) -> fromClusterInfo(builder, info));
 		}
 		return connection.serverCommands().info("server").map((info) -> up(builder, info));
 	}

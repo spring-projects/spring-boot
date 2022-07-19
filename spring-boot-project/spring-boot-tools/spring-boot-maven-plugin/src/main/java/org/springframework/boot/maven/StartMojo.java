@@ -153,7 +153,7 @@ public class StartMojo extends AbstractApplicationRunMojo {
 	}
 
 	private void doWaitForSpringApplication(MBeanServerConnection connection)
-			throws IOException, MojoExecutionException, MojoFailureException {
+			throws MojoExecutionException, MojoFailureException {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(connection, this.jmxName);
 		try {
 			execute(this.wait, this.maxAttempts, () -> (client.isReady() ? true : null));

@@ -152,8 +152,8 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			for (UpgradeProtocol upgradeProtocol : handler.findUpgradeProtocols()) {
-				if (upgradeProtocol instanceof Http2Protocol) {
-					((Http2Protocol) upgradeProtocol).setKeepAliveTimeout(keepAliveTimeout.toMillis());
+				if (upgradeProtocol instanceof Http2Protocol protocol) {
+					protocol.setKeepAliveTimeout(keepAliveTimeout.toMillis());
 				}
 			}
 			if (handler instanceof AbstractProtocol) {
@@ -227,6 +227,7 @@ public class TomcatWebServerFactoryCustomizer
 			if (StringUtils.hasLength(remoteIpHeader)) {
 				valve.setRemoteIpHeader(remoteIpHeader);
 			}
+			valve.setTrustedProxies(remoteIpProperties.getTrustedProxies());
 			// The internal proxies default to a list of "safe" internal IP addresses
 			valve.setInternalProxies(remoteIpProperties.getInternalProxies());
 			try {

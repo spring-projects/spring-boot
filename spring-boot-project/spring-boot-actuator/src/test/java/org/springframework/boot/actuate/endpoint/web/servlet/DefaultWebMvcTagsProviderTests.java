@@ -30,6 +30,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,6 +69,22 @@ class DefaultWebMvcTagsProviderTests {
 				new DefaultWebMvcTagsProvider(Arrays.asList(new TestWebMvcTagsContributor("alpha"),
 						new TestWebMvcTagsContributor("bravo", "charlie"))).getLongRequestTags(null, null));
 		assertThat(tags).containsOnlyKeys("method", "uri", "alpha", "bravo", "charlie");
+	}
+
+	@Test
+	void trailingSlashIsIncludedByDefault() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/the/uri/");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "{one}/{two}/");
+		Map<String, Tag> tags = asMap(new DefaultWebMvcTagsProvider().getTags(request, null, null, null));
+		assertThat(tags.get("uri").getValue()).isEqualTo("{one}/{two}/");
+	}
+
+	@Test
+	void trailingSlashCanBeIgnored() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/the/uri/");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "{one}/{two}/");
+		Map<String, Tag> tags = asMap(new DefaultWebMvcTagsProvider(true).getTags(request, null, null, null));
+		assertThat(tags.get("uri").getValue()).isEqualTo("{one}/{two}");
 	}
 
 	private Map<String, Tag> asMap(Iterable<Tag> tags) {

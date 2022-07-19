@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,8 +152,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
-				if (definition instanceof AnnotatedBeanDefinition) {
-					AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
+				if (definition instanceof AnnotatedBeanDefinition annotatedDefinition) {
 					addComponentScanningPackages(packages, annotatedDefinition.getMetadata());
 				}
 			}

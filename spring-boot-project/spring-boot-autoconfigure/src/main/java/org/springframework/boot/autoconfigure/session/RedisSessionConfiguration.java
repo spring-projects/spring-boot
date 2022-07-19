@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -48,21 +47,16 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisIn
 @ConditionalOnClass({ RedisTemplate.class, RedisIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
-@Conditional(ServletSessionCondition.class)
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
-		switch (redisSessionProperties.getConfigureAction()) {
-		case NOTIFY_KEYSPACE_EVENTS:
-			return new ConfigureNotifyKeyspaceEventsAction();
-		case NONE:
-			return ConfigureRedisAction.NO_OP;
-		}
-		throw new IllegalStateException(
-				"Unsupported redis configure action '" + redisSessionProperties.getConfigureAction() + "'.");
+		return switch (redisSessionProperties.getConfigureAction()) {
+			case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsAction();
+			case NONE -> ConfigureRedisAction.NO_OP;
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)

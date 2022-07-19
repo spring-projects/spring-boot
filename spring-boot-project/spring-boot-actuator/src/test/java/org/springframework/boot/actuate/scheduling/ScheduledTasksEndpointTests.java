@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 package org.springframework.boot.actuate.scheduling;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CronTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CustomTriggerTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedDelayTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedRateTaskDescription;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksReport;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ScheduledTasksEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class ScheduledTasksEndpointTests {
 
@@ -149,6 +155,19 @@ class ScheduledTasksEndpointTests {
 		});
 	}
 
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new ScheduledTasksEndpointRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		Set<Class<?>> bindingTypes = Set.of(FixedRateTaskDescription.class, FixedDelayTaskDescription.class,
+				CronTaskDescription.class, CustomTriggerTaskDescription.class);
+		for (Class<?> bindingType : bindingTypes) {
+			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+							.accepts(runtimeHints);
+		}
+	}
+
 	private void run(Class<?> configuration, Consumer<ScheduledTasksReport> consumer) {
 		this.contextRunner.withUserConfiguration(configuration)
 				.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
@@ -196,8 +215,8 @@ class ScheduledTasksEndpointTests {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-			PeriodicTrigger trigger = new PeriodicTrigger(1, TimeUnit.SECONDS);
-			trigger.setInitialDelay(2);
+			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(1));
+			trigger.setInitialDelay(Duration.ofSeconds(2));
 			taskRegistrar.addTriggerTask(new FixedDelayTriggerRunnable(), trigger);
 		}
 
@@ -207,8 +226,8 @@ class ScheduledTasksEndpointTests {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-			PeriodicTrigger trigger = new PeriodicTrigger(2, TimeUnit.SECONDS);
-			trigger.setInitialDelay(3);
+			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(2));
+			trigger.setInitialDelay(Duration.ofSeconds(3));
 			trigger.setFixedRate(true);
 			taskRegistrar.addTriggerTask(new FixedRateTriggerRunnable(), trigger);
 		}
@@ -226,7 +245,7 @@ class ScheduledTasksEndpointTests {
 
 	static class CustomTriggerTask implements SchedulingConfigurer {
 
-		private static final Trigger trigger = (context) -> new Date();
+		private static final Trigger trigger = (context) -> Instant.now();
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {

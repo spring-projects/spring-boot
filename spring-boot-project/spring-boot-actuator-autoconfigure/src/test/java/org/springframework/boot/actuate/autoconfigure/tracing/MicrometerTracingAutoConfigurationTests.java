@@ -26,7 +26,6 @@ import io.micrometer.tracing.handler.TracingObservationHandler;
 import io.micrometer.tracing.http.HttpClientHandler;
 import io.micrometer.tracing.http.HttpServerHandler;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -35,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MicrometerTracingAutoConfiguration}.
@@ -116,12 +116,24 @@ class MicrometerTracingAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(HttpServerTracingObservationHandler.class));
 	}
 
+	@Test
+	void shouldNotSupplyBeansIfTracingIsDisabled() {
+		this.contextRunner
+				.withUserConfiguration(TracerConfiguration.class, HttpClientHandlerConfiguration.class,
+						HttpServerHandlerConfiguration.class)
+				.withPropertyValues("management.tracing.enabled=false").run((context) -> {
+					assertThat(context).doesNotHaveBean(DefaultTracingObservationHandler.class);
+					assertThat(context).doesNotHaveBean(HttpServerTracingObservationHandler.class);
+					assertThat(context).doesNotHaveBean(HttpClientTracingObservationHandler.class);
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class TracerConfiguration {
 
 		@Bean
 		Tracer tracer() {
-			return Mockito.mock(Tracer.class);
+			return mock(Tracer.class);
 		}
 
 	}
@@ -131,7 +143,7 @@ class MicrometerTracingAutoConfigurationTests {
 
 		@Bean
 		HttpClientHandler httpClientHandler() {
-			return Mockito.mock(HttpClientHandler.class);
+			return mock(HttpClientHandler.class);
 		}
 
 	}
@@ -141,7 +153,7 @@ class MicrometerTracingAutoConfigurationTests {
 
 		@Bean
 		HttpServerHandler httpServerHandler() {
-			return Mockito.mock(HttpServerHandler.class);
+			return mock(HttpServerHandler.class);
 		}
 
 	}
@@ -151,17 +163,17 @@ class MicrometerTracingAutoConfigurationTests {
 
 		@Bean
 		DefaultTracingObservationHandler customDefaultTracingObservationHandler() {
-			return Mockito.mock(DefaultTracingObservationHandler.class);
+			return mock(DefaultTracingObservationHandler.class);
 		}
 
 		@Bean
 		HttpServerTracingObservationHandler customHttpServerTracingObservationHandler() {
-			return Mockito.mock(HttpServerTracingObservationHandler.class);
+			return mock(HttpServerTracingObservationHandler.class);
 		}
 
 		@Bean
 		HttpClientTracingObservationHandler customHttpClientTracingObservationHandler() {
-			return Mockito.mock(HttpClientTracingObservationHandler.class);
+			return mock(HttpClientTracingObservationHandler.class);
 		}
 
 	}

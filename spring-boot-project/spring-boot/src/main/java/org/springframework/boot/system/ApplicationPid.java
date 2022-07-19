@@ -62,8 +62,8 @@ public class ApplicationPid {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof ApplicationPid) {
-			return ObjectUtils.nullSafeEquals(this.pid, ((ApplicationPid) obj).pid);
+		if (obj instanceof ApplicationPid other) {
+			return ObjectUtils.nullSafeEquals(this.pid, other.pid);
 		}
 		return false;
 	}

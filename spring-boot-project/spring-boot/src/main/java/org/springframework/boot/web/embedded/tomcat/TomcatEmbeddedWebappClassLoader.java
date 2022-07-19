@@ -81,7 +81,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		return resultClass;
 	}
 
-	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
+	private Class<?> doLoadClass(String name) {
 		if ((this.delegate || filter(name, true))) {
 			Class<?> result = loadFromParent(name);
 			return (result != null) ? result : findClassIgnoringNotFound(name);

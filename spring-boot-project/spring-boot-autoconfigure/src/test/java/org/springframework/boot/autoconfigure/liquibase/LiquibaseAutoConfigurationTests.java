@@ -468,7 +468,7 @@ class LiquibaseAutoConfigurationTests {
 		private String name = UUID.randomUUID().toString();
 
 		@Bean
-		SimpleDriverDataSource dataSource() throws SQLException {
+		SimpleDriverDataSource dataSource() {
 			SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 			dataSource.setDriverClass(CustomH2Driver.class);
 			dataSource.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false", this.name));

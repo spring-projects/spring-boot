@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.autoconfigure.data.elasticsearch;
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,11 +24,13 @@ import org.springframework.stereotype.Service;
  * @author Eddú Meléndez
  */
 @Service
+@SuppressWarnings("deprecation")
 public class ExampleService {
 
-	private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+	private final org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate elasticsearchRestTemplate;
 
-	public ExampleService(ElasticsearchRestTemplate elasticsearchRestTemplate) {
+	public ExampleService(
+			org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate elasticsearchRestTemplate) {
 		this.elasticsearchRestTemplate = elasticsearchRestTemplate;
 	}
 

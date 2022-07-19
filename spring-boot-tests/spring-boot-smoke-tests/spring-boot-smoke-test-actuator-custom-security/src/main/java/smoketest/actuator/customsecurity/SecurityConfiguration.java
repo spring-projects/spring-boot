@@ -62,6 +62,7 @@ public class SecurityConfiguration {
 					.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
 			requests.antMatchers("/foo").permitAll();
+			requests.antMatchers("/error").permitAll();
 			requests.antMatchers("/**").hasRole("USER");
 		});
 		http.cors(Customizer.withDefaults());

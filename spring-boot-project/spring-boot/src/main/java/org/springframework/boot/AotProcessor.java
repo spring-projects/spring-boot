@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,14 +27,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.aot.generate.ClassNameGenerator;
 import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.FileSystemGeneratedFiles;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
 import org.springframework.aot.hint.ExecutableHint;
 import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.nativex.FileNativeConfigurationWriter;
+import org.springframework.boot.SpringApplicationHooks.Hook;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
@@ -48,7 +54,7 @@ import org.springframework.util.FileSystemUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.0
+ * @since 3.0.0
  */
 public class AotProcessor {
 
@@ -97,7 +103,7 @@ public class AotProcessor {
 	 */
 	public void process() {
 		deleteExistingOutput();
-		AotProcessingHook hook = new AotProcessingHook();
+		AotProcessorHook hook = new AotProcessorHook();
 		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
 		GenericApplicationContext applicationContext = hook.getApplicationContext();
 		Assert.notNull(applicationContext, "No application context available after calling main method of '"
@@ -124,6 +130,13 @@ public class AotProcessor {
 		try {
 			this.application.getMethod("main", String[].class).invoke(null, new Object[] { this.applicationArgs });
 		}
+		catch (InvocationTargetException ex) {
+			Throwable targetException = ex.getTargetException();
+			if (!(targetException instanceof MainMethodSilentExitException)) {
+				throw (targetException instanceof RuntimeException runtimeEx) ? runtimeEx
+						: new RuntimeException(targetException);
+			}
+		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -131,11 +144,11 @@ public class AotProcessor {
 
 	private void performAotProcessing(GenericApplicationContext applicationContext) {
 		FileSystemGeneratedFiles generatedFiles = new FileSystemGeneratedFiles(this::getRoot);
-		DefaultGenerationContext generationContext = new DefaultGenerationContext(generatedFiles);
+		DefaultGenerationContext generationContext = new DefaultGenerationContext(
+				new ClassNameGenerator(this.application), generatedFiles);
 		ApplicationContextAotGenerator generator = new ApplicationContextAotGenerator();
-		ClassName generatedInitializerClassName = generationContext.getClassNameGenerator()
-				.generateClassName(this.application, "ApplicationContextInitializer");
-		generator.generateApplicationContext(applicationContext, generationContext, generatedInitializerClassName);
+		ClassName generatedInitializerClassName = generator.generateApplicationContext(applicationContext,
+				generationContext);
 		registerEntryPointHint(generationContext, generatedInitializerClassName);
 		generationContext.writeGeneratedContent();
 		writeHints(generationContext.getRuntimeHints());
@@ -146,20 +159,19 @@ public class AotProcessor {
 			ClassName generatedInitializerClassName) {
 		TypeReference generatedType = TypeReference.of(generatedInitializerClassName.canonicalName());
 		TypeReference applicationType = TypeReference.of(this.application);
-		generationContext.getRuntimeHints().reflection().registerType(generatedType, (hint) -> hint
-				.onReachableType(applicationType).withConstructor(Collections.emptyList(), INVOKE_CONSTRUCTOR_HINT));
+		ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
+		reflection.registerType(applicationType, (hint) -> {
+		});
+		reflection.registerType(generatedType, (hint) -> hint.onReachableType(applicationType)
+				.withConstructor(Collections.emptyList(), INVOKE_CONSTRUCTOR_HINT));
 	}
 
 	private Path getRoot(Kind kind) {
-		switch (kind) {
-		case SOURCE:
-			return this.sourceOutput;
-		case RESOURCE:
-			return this.resourceOutput;
-		case CLASS:
-			return this.classOutput;
-		}
-		throw new IllegalStateException("Unsupported kind " + kind);
+		return switch (kind) {
+			case SOURCE -> this.sourceOutput;
+			case RESOURCE -> this.resourceOutput;
+			case CLASS -> this.classOutput;
+		};
 	}
 
 	private void writeHints(RuntimeHints hints) {
@@ -171,7 +183,6 @@ public class AotProcessor {
 	private void writeNativeImageProperties() {
 		List<String> args = new ArrayList<>();
 		args.add("-H:Class=" + this.application.getName());
-		args.add("--allow-incomplete-classpath");
 		args.add("--report-unsupported-elements-at-runtime");
 		args.add("--no-fallback");
 		args.add("--install-exit-handlers");
@@ -194,10 +205,8 @@ public class AotProcessor {
 
 	public static void main(String[] args) throws Exception {
 		int requiredArgs = 6;
-		if (args.length < requiredArgs) {
-			throw new IllegalArgumentException("Usage: " + AotProcessor.class.getName()
-					+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
-		}
+		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + AotProcessor.class.getName()
+				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		String applicationName = args[0];
 		Path sourceOutput = Paths.get(args[1]);
 		Path resourceOutput = Paths.get(args[2]);
@@ -207,9 +216,44 @@ public class AotProcessor {
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
 		Class<?> application = Class.forName(applicationName);
-		AotProcessor aotProcess = new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput,
-				classOutput, groupId, artifactId);
-		aotProcess.process();
+		new AotProcessor(application, applicationArgs, sourceOutput, resourceOutput, classOutput, groupId, artifactId)
+				.process();
+	}
+
+	/**
+	 * Hook used to capture the {@link ApplicationContext} and trigger early exit of main
+	 * method.
+	 */
+	private static class AotProcessorHook implements Hook {
+
+		private GenericApplicationContext context;
+
+		@Override
+		public boolean preRefresh(SpringApplication application, ConfigurableApplicationContext context) {
+			Assert.isInstanceOf(GenericApplicationContext.class, context,
+					() -> "AOT processing requires a GenericApplicationContext but got a "
+							+ context.getClass().getName());
+			this.context = (GenericApplicationContext) context;
+			return false;
+		}
+
+		@Override
+		public void postRun(SpringApplication application, ConfigurableApplicationContext context) {
+			throw new MainMethodSilentExitException();
+		}
+
+		GenericApplicationContext getApplicationContext() {
+			return this.context;
+		}
+
+	}
+
+	/**
+	 * Internal exception used to prevent main method to continue once
+	 * {@code SpringApplication#run} completes.
+	 */
+	private static class MainMethodSilentExitException extends RuntimeException {
+
 	}
 
 }

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -433,7 +434,7 @@ class IntegrationAutoConfigurationTests {
 						"spring.integration.poller.fixed-delay=1s")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
-						.getRootCause()
+						.rootCause()
 						.asInstanceOf(
 								InstanceOfAssertFactories.type(MutuallyExclusiveConfigurationPropertiesException.class))
 						.satisfies((ex) -> {
@@ -455,7 +456,7 @@ class IntegrationAutoConfigurationTests {
 					assertThat(metadata.getTrigger())
 							.asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
 							.satisfies((trigger) -> {
-								assertThat(trigger.getPeriod()).isEqualTo(5000L);
+								assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
 								assertThat(trigger.isFixedRate()).isFalse();
 							});
 				});
@@ -470,7 +471,7 @@ class IntegrationAutoConfigurationTests {
 					assertThat(metadata.getTrigger())
 							.asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
 							.satisfies((trigger) -> {
-								assertThat(trigger.getPeriod()).isEqualTo(5000L);
+								assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
 								assertThat(trigger.isFixedRate()).isTrue();
 							});
 				});

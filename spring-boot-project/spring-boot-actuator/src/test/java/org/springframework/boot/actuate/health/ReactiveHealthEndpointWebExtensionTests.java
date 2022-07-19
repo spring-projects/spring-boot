@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  */
 class ReactiveHealthEndpointWebExtensionTests extends
-		HealthEndpointSupportTests<ReactiveHealthContributorRegistry, ReactiveHealthContributor, Mono<? extends HealthComponent>> {
+		HealthEndpointSupportTests<ReactiveHealthEndpointWebExtension, ReactiveHealthContributorRegistry, ReactiveHealthContributor, Mono<? extends HealthComponent>> {
 
 	@Test
 	void healthReturnsSystemHealth() {
@@ -82,8 +83,8 @@ class ReactiveHealthEndpointWebExtensionTests extends
 
 	@Override
 	protected ReactiveHealthEndpointWebExtension create(ReactiveHealthContributorRegistry registry,
-			HealthEndpointGroups groups) {
-		return new ReactiveHealthEndpointWebExtension(registry, groups);
+			HealthEndpointGroups groups, Duration slowIndicatorLoggingThreshold) {
+		return new ReactiveHealthEndpointWebExtension(registry, groups, slowIndicatorLoggingThreshold);
 	}
 
 	@Override

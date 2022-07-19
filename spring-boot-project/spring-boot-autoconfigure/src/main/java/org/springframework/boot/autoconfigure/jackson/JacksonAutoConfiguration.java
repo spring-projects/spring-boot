@@ -315,17 +315,13 @@ public class JacksonAutoConfiguration {
 				if (strategy != null) {
 					builder.postConfigurer((objectMapper) -> {
 						switch (strategy) {
-						case USE_PROPERTIES_BASED:
-							objectMapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
-							break;
-						case USE_DELEGATING:
-							objectMapper.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
-							break;
-						case EXPLICIT_ONLY:
-							objectMapper.setConstructorDetector(ConstructorDetector.EXPLICIT_ONLY);
-							break;
-						default:
-							objectMapper.setConstructorDetector(ConstructorDetector.DEFAULT);
+							case USE_PROPERTIES_BASED ->
+								objectMapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
+							case USE_DELEGATING ->
+								objectMapper.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
+							case EXPLICIT_ONLY ->
+								objectMapper.setConstructorDetector(ConstructorDetector.EXPLICIT_ONLY);
+							default -> objectMapper.setConstructorDetector(ConstructorDetector.DEFAULT);
 						}
 					});
 				}

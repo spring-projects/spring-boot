@@ -46,6 +46,7 @@ class ErrorPageTests extends AbstractErrorPageTests {
 			http.authorizeRequests((requests) -> {
 				requests.antMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
+				requests.filterSecurityInterceptorOncePerRequest(true);
 			});
 			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/login").permitAll());

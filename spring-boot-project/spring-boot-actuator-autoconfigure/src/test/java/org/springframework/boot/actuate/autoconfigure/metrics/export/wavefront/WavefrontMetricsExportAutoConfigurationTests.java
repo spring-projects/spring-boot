@@ -21,7 +21,6 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -98,7 +97,7 @@ class WavefrontMetricsExportAutoConfigurationTests {
 
 		@Bean
 		WavefrontSender customWavefrontSender() {
-			return Mockito.mock(WavefrontSender.class);
+			return mock(WavefrontSender.class);
 		}
 
 		@Bean

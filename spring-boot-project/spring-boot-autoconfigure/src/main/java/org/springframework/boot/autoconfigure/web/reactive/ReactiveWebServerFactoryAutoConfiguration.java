@@ -90,8 +90,8 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-			if (beanFactory instanceof ConfigurableListableBeanFactory) {
-				this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+			if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
+				this.beanFactory = listableBeanFactory;
 			}
 		}
 

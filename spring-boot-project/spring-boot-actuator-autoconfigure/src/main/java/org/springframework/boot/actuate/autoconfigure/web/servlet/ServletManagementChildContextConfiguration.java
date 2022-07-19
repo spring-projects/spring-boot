@@ -173,8 +173,8 @@ class ServletManagementChildContextConfiguration {
 
 		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {
 			for (Valve engineValve : factory.getEngineValves()) {
-				if (engineValve instanceof AccessLogValve) {
-					return (AccessLogValve) engineValve;
+				if (engineValve instanceof AccessLogValve accessLogValve) {
+					return accessLogValve;
 				}
 			}
 			return null;
@@ -202,14 +202,14 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeServer(Server server) {
 			RequestLog requestLog = server.getRequestLog();
-			if (requestLog instanceof CustomRequestLog) {
-				customizeRequestLog((CustomRequestLog) requestLog);
+			if (requestLog instanceof CustomRequestLog customRequestLog) {
+				customizeRequestLog(customRequestLog);
 			}
 		}
 
 		private void customizeRequestLog(CustomRequestLog requestLog) {
-			if (requestLog.getWriter() instanceof RequestLogWriter) {
-				customizeRequestLogWriter((RequestLogWriter) requestLog.getWriter());
+			if (requestLog.getWriter() instanceof RequestLogWriter requestLogWriter) {
+				customizeRequestLogWriter(requestLogWriter);
 			}
 		}
 

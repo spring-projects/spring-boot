@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,20 +34,13 @@ public class Location {
 	}
 
 	public Location getAdjacentLocation(Direction direction) {
-		switch (direction) {
-		case NORTH:
-			return new Location(this.x, this.y - SnakeUtils.GRID_SIZE);
-		case SOUTH:
-			return new Location(this.x, this.y + SnakeUtils.GRID_SIZE);
-		case EAST:
-			return new Location(this.x + SnakeUtils.GRID_SIZE, this.y);
-		case WEST:
-			return new Location(this.x - SnakeUtils.GRID_SIZE, this.y);
-		case NONE:
-			// fall through
-		default:
-			return this;
-		}
+		return switch (direction) {
+			case NORTH -> new Location(this.x, this.y - SnakeUtils.GRID_SIZE);
+			case SOUTH -> new Location(this.x, this.y + SnakeUtils.GRID_SIZE);
+			case EAST -> new Location(this.x + SnakeUtils.GRID_SIZE, this.y);
+			case WEST -> new Location(this.x - SnakeUtils.GRID_SIZE, this.y);
+			case NONE -> this;
+		};
 	}
 
 	@Override

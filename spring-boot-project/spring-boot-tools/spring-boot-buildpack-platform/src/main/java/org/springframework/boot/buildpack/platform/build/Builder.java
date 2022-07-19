@@ -107,7 +107,8 @@ public class Builder {
 		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
-		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata);
+		BuildpackLayersMetadata buildpackLayersMetadata = BuildpackLayersMetadata.fromImage(builderImage);
+		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata, buildpackLayersMetadata);
 		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, request.getName(),
 				builderMetadata, request.getCreator(), request.getEnv(), buildpacks);
 		this.docker.image().load(ephemeralBuilder.getArchive(), UpdateListener.none());
@@ -143,8 +144,10 @@ public class Builder {
 				+ "' does not match builder stack '" + builderImageStackId + "'");
 	}
 
-	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, BuilderMetadata builderMetadata) {
-		BuildpackResolverContext resolverContext = new BuilderResolverContext(imageFetcher, builderMetadata);
+	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, BuilderMetadata builderMetadata,
+			BuildpackLayersMetadata buildpackLayersMetadata) {
+		BuildpackResolverContext resolverContext = new BuilderResolverContext(imageFetcher, builderMetadata,
+				buildpackLayersMetadata);
 		return BuildpackResolvers.resolveAll(resolverContext, request.getBuildpacks());
 	}
 
@@ -245,14 +248,23 @@ public class Builder {
 
 		private final BuilderMetadata builderMetadata;
 
-		BuilderResolverContext(ImageFetcher imageFetcher, BuilderMetadata builderMetadata) {
+		private final BuildpackLayersMetadata buildpackLayersMetadata;
+
+		BuilderResolverContext(ImageFetcher imageFetcher, BuilderMetadata builderMetadata,
+				BuildpackLayersMetadata buildpackLayersMetadata) {
 			this.imageFetcher = imageFetcher;
 			this.builderMetadata = builderMetadata;
+			this.buildpackLayersMetadata = buildpackLayersMetadata;
 		}
 
 		@Override
 		public List<BuildpackMetadata> getBuildpackMetadata() {
 			return this.builderMetadata.getBuildpacks();
+		}
+
+		@Override
+		public BuildpackLayersMetadata getBuildpackLayersMetadata() {
+			return this.buildpackLayersMetadata;
 		}
 
 		@Override

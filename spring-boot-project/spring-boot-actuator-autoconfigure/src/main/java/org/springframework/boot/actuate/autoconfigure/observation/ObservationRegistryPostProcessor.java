@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
-import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
@@ -41,7 +40,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders;
 
-	private final ObjectProvider<ObservationHandler<Context>> observationHandlers;
+	private final ObjectProvider<ObservationHandler<?>> observationHandlers;
 
 	private final ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping;
 
@@ -50,7 +49,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders,
-			ObjectProvider<ObservationHandler<Context>> observationHandlers,
+			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		this.observationRegistryCustomizers = observationRegistryCustomizers;
 		this.observationPredicates = observationPredicates;
@@ -61,8 +60,8 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof ObservationRegistry) {
-			getConfigurer().configure((ObservationRegistry) bean);
+		if (bean instanceof ObservationRegistry registry) {
+			getConfigurer().configure(registry);
 		}
 		return bean;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
@@ -117,8 +117,8 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 		static class CustomTrigger implements Trigger {
 
 			@Override
-			public Date nextExecutionTime(TriggerContext triggerContext) {
-				return new Date();
+			public Instant nextExecution(TriggerContext triggerContext) {
+				return Instant.now();
 			}
 
 		}

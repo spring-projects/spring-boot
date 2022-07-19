@@ -47,6 +47,8 @@ public class AotGenerateTests {
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
 							"resource-config.json"),
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
+							"proxy-config.json"),
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
 							"native-image.properties"));
 		});
 	}
@@ -67,6 +69,7 @@ public class AotGenerateTests {
 			assertThat(collectRelativePaths(classesDirectory)).contains(
 					Path.of("org.springframework.boot.maven.it", "aot", "reflect-config.json"),
 					Path.of("org.springframework.boot.maven.it", "aot", "resource-config.json"),
+					Path.of("org.springframework.boot.maven.it", "aot", "proxy-config.json"),
 					Path.of("org.springframework.boot.maven.it", "aot", "native-image.properties"));
 		});
 	}

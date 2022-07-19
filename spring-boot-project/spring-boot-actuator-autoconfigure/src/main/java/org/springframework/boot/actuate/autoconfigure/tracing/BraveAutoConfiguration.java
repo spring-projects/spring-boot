@@ -60,6 +60,7 @@ import org.springframework.core.env.Environment;
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass(brave.Tracer.class)
 @EnableConfigurationProperties(TracingProperties.class)
+@ConditionalOnEnabledTracing
 public class BraveAutoConfiguration {
 
 	/**
