@@ -117,7 +117,6 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 		return factory.getObject();
 	}
 
-	@SuppressWarnings({ "deprecation", "removal" })
 	protected JobLauncher createJobLauncher() throws Exception {
 		TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
 		jobLauncher.setJobRepository(getJobRepository());
