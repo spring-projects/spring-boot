@@ -32,18 +32,16 @@ import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension.Quartz
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link QuartzEndpointWebExtensionRuntimeHints}.
+ * Tests for {@link QuartzEndpointWebExtension}.
  *
  * @author Moritz Halbritter
  */
-class QuartzEndpointWebExtensionRuntimeHintsTests {
-
-	private final QuartzEndpointWebExtensionRuntimeHints sut = new QuartzEndpointWebExtensionRuntimeHints();
+class QuartzEndpointWebExtensionTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
+		new QuartzEndpointWebExtensionRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
 		Set<Class<?>> bindingTypes = Set.of(QuartzGroups.class, QuartzJobDetails.class, QuartzJobGroupSummary.class,
 				QuartzTriggerGroupSummary.class);
 		for (Class<?> bindingType : bindingTypes) {

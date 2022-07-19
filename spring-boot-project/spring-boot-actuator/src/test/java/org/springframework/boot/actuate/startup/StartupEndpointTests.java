@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,17 @@
 
 package org.springframework.boot.actuate.startup;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.actuate.startup.StartupEndpoint.StartupEndpointRuntimeHints;
 import org.springframework.boot.actuate.startup.StartupEndpoint.StartupResponse;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -35,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Chris Bono
+ * @author Moritz Halbritter
  */
 class StartupEndpointTests {
 
@@ -67,6 +74,19 @@ class StartupEndpointTests {
 			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
 			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isEmpty();
 		});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new StartupEndpointRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		Set<TypeReference> bindingTypes = Set.of(
+				TypeReference.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag"),
+				TypeReference.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag"));
+		for (TypeReference bindingType : bindingTypes) {
+			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+					.withMemberCategories(MemberCategory.INVOKE_PUBLIC_METHODS)).accepts(runtimeHints);
+		}
 	}
 
 	private void testStartupEndpoint(ApplicationStartup applicationStartup, Consumer<StartupEndpoint> startupEndpoint) {

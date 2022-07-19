@@ -26,16 +26,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import reactor.core.publisher.Flux;
 
-import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
@@ -487,10 +486,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(OperationHandler.class,
-					(hint) -> hint.withMethod("handle",
-							List.of(TypeReference.of(HttpServletRequest.class), TypeReference.of(Map.class)),
-							(method) -> method.withMode(ExecutableMode.INVOKE)));
+			hints.reflection().registerMethod(Objects.requireNonNull(
+					ReflectionUtils.findMethod(OperationHandler.class, "handle", HttpServletRequest.class, Map.class)));
 		}
 
 	}

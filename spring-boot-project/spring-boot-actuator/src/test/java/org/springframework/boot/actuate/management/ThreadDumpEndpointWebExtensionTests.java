@@ -34,21 +34,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ThreadDumpEndpointWebExtensionTests {
 
-	private ThreadDumpEndpointWebExtension sut;
+	private ThreadDumpEndpointWebExtension extension;
 
 	private ThreadDumpEndpoint delegateMock;
 
 	@BeforeEach
 	void setUp() {
 		this.delegateMock = Mockito.mock(ThreadDumpEndpoint.class);
-		this.sut = new ThreadDumpEndpointWebExtension(this.delegateMock);
+		this.extension = new ThreadDumpEndpointWebExtension(this.delegateMock);
 	}
 
 	@Test
 	void shouldHandleThreadDumperUnavailable() {
 		Mockito.when(this.delegateMock.threadDump())
 				.thenThrow(new ThreadDumperUnavailableException("No thread dumper available"));
-		WebEndpointResponse<ThreadDumpDescriptor> response = this.sut.threadDump();
+		WebEndpointResponse<ThreadDumpDescriptor> response = this.extension.threadDump();
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
 	}
 
@@ -56,7 +56,7 @@ class ThreadDumpEndpointWebExtensionTests {
 	void shouldHandleThreadDumperUnavailableText() {
 		Mockito.when(this.delegateMock.textThreadDump())
 				.thenThrow(new ThreadDumperUnavailableException("No thread dumper available"));
-		WebEndpointResponse<String> response = this.sut.textThreadDump();
+		WebEndpointResponse<String> response = this.extension.textThreadDump();
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
 	}
 

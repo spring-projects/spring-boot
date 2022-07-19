@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.aot.ActuatorAnnotationsRuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -47,7 +46,7 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ImportRuntimeHints(ActuatorAnnotationsRuntimeHintsRegistrar.class)
+@ImportRuntimeHints(ActuatorAnnotationsRuntimeHints.class)
 public class EndpointAutoConfiguration {
 
 	@Bean

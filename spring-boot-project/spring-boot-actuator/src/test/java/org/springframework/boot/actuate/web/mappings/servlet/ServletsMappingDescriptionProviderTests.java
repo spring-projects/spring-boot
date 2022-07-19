@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.info;
+package org.springframework.boot.actuate.web.mappings.servlet;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.info.JavaInfoContributor.JavaInfoContributorRuntimeHints;
-import org.springframework.boot.info.JavaInfo;
+import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider.ServletsMappingDescriptionProviderRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JavaInfoContributorRuntimeHints}.
+ * Tests for {@link ServletsMappingDescriptionProvider}.
  *
  * @author Moritz Halbritter
  */
-class JavaInfoContributorRuntimeHintsTests {
-
-	private final JavaInfoContributorRuntimeHints sut = new JavaInfoContributorRuntimeHints();
+class ServletsMappingDescriptionProviderTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(JavaInfo.class)
+		new ServletsMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(ServletRegistrationMappingDescription.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 						.accepts(runtimeHints);
 	}

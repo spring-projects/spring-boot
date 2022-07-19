@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.jmx.annotation;
+package org.springframework.boot.actuate.info;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer.JmxEndpointDiscovererRuntimeHints;
+import org.springframework.boot.actuate.info.BuildInfoContributor.BuildInfoContributorRuntimeHints;
+import org.springframework.boot.info.BuildProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JmxEndpointDiscovererRuntimeHints}.
+ * Tests for {@link BuildInfoContributor}.
  *
  * @author Moritz Halbritter
  */
-class JmxEndpointDiscovererRuntimeHintsTests {
-
-	private final JmxEndpointDiscovererRuntimeHints sut = new JmxEndpointDiscovererRuntimeHints();
+class BuildInfoContributorTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(JmxEndpointFilter.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
+		new BuildInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(BuildProperties.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+						.accepts(runtimeHints);
 	}
 
 }

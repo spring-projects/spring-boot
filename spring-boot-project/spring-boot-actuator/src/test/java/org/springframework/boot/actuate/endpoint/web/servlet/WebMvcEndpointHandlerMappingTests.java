@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.info;
+package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.info.OsInfoContributor.OsInfoContributorRuntimeHints;
-import org.springframework.boot.info.OsInfo;
+import org.springframework.boot.actuate.endpoint.web.Link;
+import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcEndpointHandlerMappingRuntimeHints;
+import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcLinksHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OsInfoContributorRuntimeHints}.
+ * Tests for {@link WebMvcEndpointHandlerMapping}.
  *
  * @author Moritz Halbritter
  */
-class OsInfoContributorRuntimeHintsTests {
-
-	private final OsInfoContributorRuntimeHints sut = new OsInfoContributorRuntimeHints();
+class WebMvcEndpointHandlerMappingTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(OsInfo.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(runtimeHints);
-
+		new WebMvcEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(WebMvcLinksHandler.class, "links"))
+				.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}
 
 }

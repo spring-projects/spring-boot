@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.mappings.servlet;
+package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider.FiltersMappingDescriptionProviderRuntimeHints;
+import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.AbstractWebFluxEndpointHandlerMappingRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link FiltersMappingDescriptionProviderRuntimeHints}.
+ * Tests for {@link AbstractWebFluxEndpointHandlerMapping}.
  *
  * @author Moritz Halbritter
  */
-class FiltersMappingDescriptionProviderRuntimeHintsTests {
-
-	private final FiltersMappingDescriptionProviderRuntimeHints sut = new FiltersMappingDescriptionProviderRuntimeHints();
+class AbstractWebFluxEndpointHandlerMappingTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(FilterRegistrationMappingDescription.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+		new AbstractWebFluxEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(TypeReference.of(
+				"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.WriteOperationHandler")))
 						.accepts(runtimeHints);
-
+		assertThat(RuntimeHintsPredicates.reflection().onType(TypeReference.of(
+				"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.ReadOperationHandler")))
+						.accepts(runtimeHints);
 	}
 
 }

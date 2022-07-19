@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.cache;
+package org.springframework.boot.actuate.web.mappings.reactive;
 
-import com.hazelcast.spring.cache.HazelcastCache;
-import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider.HazelcastCacheMeterBinderProviderRuntimeHints;
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider.DispatcherHandlersMappingDescriptionProviderRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HazelcastCacheMeterBinderProviderRuntimeHints}.
+ * Tests for {@link DispatcherHandlersMappingDescriptionProvider}.
  *
  * @author Moritz Halbritter
  */
-class HazelcastCacheMeterBinderProviderRuntimeHintsTests {
-
-	private final HazelcastCacheMeterBinderProviderRuntimeHints sut = new HazelcastCacheMeterBinderProviderRuntimeHints();
+class DispatcherHandlersMappingDescriptionProviderTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(HazelcastCache.class, "getNativeCache"))
-				.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(HazelcastCacheMetrics.class)).accepts(runtimeHints);
+		new DispatcherHandlersMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(DispatcherHandlerMappingDescription.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+						.accepts(runtimeHints);
+
 	}
 
 }

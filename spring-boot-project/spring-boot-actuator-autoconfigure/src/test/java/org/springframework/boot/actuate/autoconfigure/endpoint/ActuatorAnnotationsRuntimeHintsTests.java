@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.aot;
+package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.Set;
 
@@ -34,20 +34,20 @@ import org.springframework.core.annotation.SynthesizedAnnotation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ActuatorAnnotationsRuntimeHintsRegistrar}.
+ * Tests for {@link ActuatorAnnotationsRuntimeHints}.
  *
  * @author Moritz Halbritter
  */
-class ActuatorAnnotationsRuntimeHintsRegistrarTests {
+class ActuatorAnnotationsRuntimeHintsTests {
 
-	private final ActuatorAnnotationsRuntimeHintsRegistrar sut = new ActuatorAnnotationsRuntimeHintsRegistrar();
+	private final ActuatorAnnotationsRuntimeHints registrar = new ActuatorAnnotationsRuntimeHints();
 
 	private RuntimeHints runtimeHints;
 
 	@BeforeEach
 	void setUp() {
 		this.runtimeHints = new RuntimeHints();
-		this.sut.registerHints(this.runtimeHints, getClass().getClassLoader());
+		this.registrar.registerHints(this.runtimeHints, getClass().getClassLoader());
 	}
 
 	@Test

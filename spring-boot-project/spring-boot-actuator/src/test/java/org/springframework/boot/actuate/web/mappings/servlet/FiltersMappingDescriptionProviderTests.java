@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.servlet;
+package org.springframework.boot.actuate.web.mappings.servlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcEndpointHandlerMappingRuntimeHints;
-import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcLinksHandler;
+import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider.FiltersMappingDescriptionProviderRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcEndpointHandlerMappingRuntimeHints}.
+ * Tests for {@link FiltersMappingDescriptionProvider}.
  *
  * @author Moritz Halbritter
  */
-class WebMvcEndpointHandlerMappingRuntimeHintsTests {
-
-	private final WebMvcEndpointHandlerMappingRuntimeHints sut = new WebMvcEndpointHandlerMappingRuntimeHints();
+class FiltersMappingDescriptionProviderTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(WebMvcLinksHandler.class, "links"))
-				.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
+		new FiltersMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(FilterRegistrationMappingDescription.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+						.accepts(runtimeHints);
+
 	}
 
 }

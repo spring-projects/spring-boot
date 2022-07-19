@@ -17,8 +17,9 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -34,17 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OperationReflectiveProcessor}.
  *
  * @author Moritz Halbritter
+ * @author Stephane Nicoll
  */
 class OperationReflectiveProcessorTests {
 
-	private final OperationReflectiveProcessor sut = new OperationReflectiveProcessor();
+	private final OperationReflectiveProcessor processor = new OperationReflectiveProcessor();
 
-	private RuntimeHints runtimeHints;
-
-	@BeforeEach
-	void setUp() {
-		this.runtimeHints = new RuntimeHints();
-	}
+	private final RuntimeHints runtimeHints = new RuntimeHints();
 
 	@Test
 	void shouldRegisterMethodAsInvokable() {
@@ -57,24 +54,21 @@ class OperationReflectiveProcessorTests {
 	void shouldRegisterReturnType() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "dto");
 		runProcessor(method);
-		assertThat(RuntimeHintsPredicates.reflection().onType(Dto.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(this.runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedDto.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(this.runtimeHints);
+		assertHintsForDto();
+	}
+
+	@Test
+	void shouldRegisterMapValueFromReturnType() {
+		Method method = ReflectionUtils.findMethod(Methods.class, "dtos");
+		runProcessor(method);
+		assertHintsForDto();
 	}
 
 	@Test
 	void shouldRegisterWebEndpointResponseReturnType() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "webEndpointResponse");
 		runProcessor(method);
-		assertThat(RuntimeHintsPredicates.reflection().onType(Dto.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(this.runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedDto.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(this.runtimeHints);
+		assertHintsForDto();
 		assertThat(RuntimeHintsPredicates.reflection().onType(WebEndpointResponse.class)).rejects(this.runtimeHints);
 	}
 
@@ -85,13 +79,27 @@ class OperationReflectiveProcessorTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(Resource.class)).rejects(this.runtimeHints);
 	}
 
-	private void runProcessor(Method method) {
-		this.sut.registerReflectionHints(this.runtimeHints.reflection(), method);
+	private void assertHintsForDto() {
+		assertThat(RuntimeHintsPredicates.reflection().onType(Dto.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+						.accepts(this.runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(NestedDto.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+						.accepts(this.runtimeHints);
 	}
 
+	private void runProcessor(Method method) {
+		this.processor.registerReflectionHints(this.runtimeHints.reflection(), method);
+	}
+
+	@SuppressWarnings("unused")
 	private static class Methods {
 
 		private String string() {
+			return null;
+		}
+
+		private Map<String, List<Dto>> dtos() {
 			return null;
 		}
 
@@ -109,6 +117,7 @@ class OperationReflectiveProcessorTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	public static class Dto {
 
 		private final NestedDto nestedDto = new NestedDto();

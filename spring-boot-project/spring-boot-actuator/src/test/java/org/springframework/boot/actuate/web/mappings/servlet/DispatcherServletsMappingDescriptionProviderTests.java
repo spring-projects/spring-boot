@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.annotation;
+package org.springframework.boot.actuate.web.mappings.servlet;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer.WebEndpointDiscovererRuntimeHints;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider.DispatcherServletsMappingDescriptionProviderRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebEndpointDiscovererRuntimeHints}.
+ * Tests for {@link DispatcherServletsMappingDescriptionProvider}.
  *
  * @author Moritz Halbritter
  */
-class WebEndpointDiscovererRuntimeHintsTests {
-
-	private final WebEndpointDiscovererRuntimeHints sut = new WebEndpointDiscovererRuntimeHints();
+class DispatcherServletsMappingDescriptionProviderTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(WebEndpointFilter.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
-
+		new DispatcherServletsMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(DispatcherServletMappingDescription.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+						.accepts(runtimeHints);
 	}
 
 }

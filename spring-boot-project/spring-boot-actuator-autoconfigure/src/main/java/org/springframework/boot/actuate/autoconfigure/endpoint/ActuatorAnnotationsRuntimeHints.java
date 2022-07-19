@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.aot;
+package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.stream.Stream;
 
@@ -29,12 +29,11 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.core.annotation.SynthesizedAnnotation;
 
 /**
- * Registrar which registers the annotations needed for actuator support.
+ * {@link RuntimeHintsRegistrar} for actuator support.
  *
  * @author Moritz Halbritter
- * @since 3.0.0
  */
-public class ActuatorAnnotationsRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+class ActuatorAnnotationsRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {

@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.annotation;
+package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer.ServletEndpointDiscovererRuntimeHints;
+import org.springframework.boot.actuate.endpoint.web.Link;
+import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping.WebFluxEndpointHandlerMappingRuntimeHints;
+import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping.WebFluxLinksHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ServletEndpointDiscovererRuntimeHints}.
+ * Tests for {@link WebFluxEndpointHandlerMapping}.
  *
  * @author Moritz Halbritter
  */
-class ServletEndpointDiscovererRuntimeHintsTests {
-
-	private final ServletEndpointDiscovererRuntimeHints sut = new ServletEndpointDiscovererRuntimeHints();
+class WebFluxEndpointHandlerMappingTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(ServletEndpointFilter.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
-
+		new WebFluxEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(WebFluxLinksHandler.class, "links"))
+				.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}
 
 }

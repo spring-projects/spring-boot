@@ -16,52 +16,43 @@
 
 package org.springframework.boot.actuate.endpoint.annotation;
 
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.annotation.ReflectiveProcessor;
+import org.springframework.aot.hint.annotation.SimpleReflectiveProcessor;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 
 /**
- * Processor which registers the annotated operation method and its return type for
- * reflection.
+ * {@link ReflectiveProcessor} that registers the annotated operation method and its
+ * return type for reflection.
  *
  * @author Moritz Halbritter
+ * @author Stephane Nicoll
  */
-class OperationReflectiveProcessor implements ReflectiveProcessor {
+class OperationReflectiveProcessor extends SimpleReflectiveProcessor {
 
 	private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 	@Override
-	public void registerReflectionHints(ReflectionHints hints, AnnotatedElement element) {
-		if (!(element instanceof Method method)) {
-			throw new IllegalArgumentException("This processor can only be invoked for annotated methods");
+	protected void registerMethodHint(ReflectionHints hints, Method method) {
+		super.registerMethodHint(hints, method);
+		Type returnType = extractReturnType(method);
+		if (returnType != null) {
+			registerReflectionHints(hints, returnType);
 		}
-		hints.registerMethod(method, (hint) -> hint.setModes(ExecutableMode.INVOKE));
-		registerReturnValueHints(hints, method);
 	}
 
-	private void registerReturnValueHints(ReflectionHints hints, Method method) {
+	private Type extractReturnType(Method method) {
 		ResolvableType returnType = ResolvableType.forMethodReturnType(method);
 		if (WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
-			registerWebEndpointResponse(hints, returnType);
+			return returnType.as(WebEndpointResponse.class).getGeneric(0).getType();
 		}
-		else {
-			registerReflectionHints(hints, returnType.getType());
-		}
-	}
-
-	private void registerWebEndpointResponse(ReflectionHints hints, ResolvableType returnType) {
-		ResolvableType genericParameter = returnType.getGeneric(0);
-		if (genericParameter.getRawClass() != null) {
-			registerReflectionHints(hints, genericParameter.getType());
-		}
+		return returnType.getType();
 	}
 
 	private void registerReflectionHints(ReflectionHints hints, Type type) {

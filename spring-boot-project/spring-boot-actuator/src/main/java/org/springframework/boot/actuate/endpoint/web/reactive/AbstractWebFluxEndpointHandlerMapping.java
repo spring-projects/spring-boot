@@ -22,8 +22,8 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
@@ -31,10 +31,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
@@ -496,13 +494,11 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(WriteOperationHandler.class,
-					(hint) -> hint.withMethod("handle",
-							List.of(TypeReference.of(ServerWebExchange.class), TypeReference.of(Map.class)),
-							(method) -> method.withMode(ExecutableMode.INVOKE)));
-			hints.reflection().registerType(ReadOperationHandler.class,
-					(hint) -> hint.withMethod("handle", List.of(TypeReference.of(ServerWebExchange.class)),
-							(method) -> method.withMode(ExecutableMode.INVOKE)));
+			hints.reflection()
+					.registerMethod(Objects.requireNonNull(ReflectionUtils.findMethod(WriteOperationHandler.class,
+							"handle", ServerWebExchange.class, Map.class)))
+					.registerMethod(Objects.requireNonNull(
+							ReflectionUtils.findMethod(ReadOperationHandler.class, "handle", ServerWebExchange.class)));
 		}
 
 	}

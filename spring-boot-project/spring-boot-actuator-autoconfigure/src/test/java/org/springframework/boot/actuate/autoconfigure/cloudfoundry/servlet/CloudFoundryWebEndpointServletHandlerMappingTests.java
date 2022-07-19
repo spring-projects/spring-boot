@@ -27,18 +27,17 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CloudFoundryWebEndpointServletHandlerMappingRuntimeHints}.
+ * Tests for {@link CloudFoundryWebEndpointServletHandlerMapping}.
  *
  * @author Moritz Halbritter
  */
-class CloudFoundryWebEndpointServletHandlerMappingRuntimeHintsTests {
-
-	private final CloudFoundryWebEndpointServletHandlerMappingRuntimeHints sut = new CloudFoundryWebEndpointServletHandlerMappingRuntimeHints();
+class CloudFoundryWebEndpointServletHandlerMappingTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
+		new CloudFoundryWebEndpointServletHandlerMappingRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(CloudFoundryLinksHandler.class, "links"))
 				.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);

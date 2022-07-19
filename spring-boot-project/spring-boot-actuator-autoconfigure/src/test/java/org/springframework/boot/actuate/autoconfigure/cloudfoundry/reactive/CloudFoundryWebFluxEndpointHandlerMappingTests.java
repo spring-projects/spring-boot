@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.reactive;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.CloudFoundryWebFluxEndpointHandlerMapping.CloudFoundryLinksHandler;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.CloudFoundryWebFluxEndpointHandlerMapping.CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping.WebFluxEndpointHandlerMappingRuntimeHints;
-import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping.WebFluxLinksHandler;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebFluxEndpointHandlerMappingRuntimeHints}.
+ * Tests for {@link CloudFoundryWebFluxEndpointHandlerMapping}.
  *
  * @author Moritz Halbritter
  */
-class WebFluxEndpointHandlerMappingRuntimeHintsTests {
-
-	private final WebFluxEndpointHandlerMappingRuntimeHints sut = new WebFluxEndpointHandlerMappingRuntimeHints();
+class CloudFoundryWebFluxEndpointHandlerMappingTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		this.sut.registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(WebFluxLinksHandler.class, "links"))
+		new CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
+		Assertions.assertThat(RuntimeHintsPredicates.reflection().onMethod(CloudFoundryLinksHandler.class, "links"))
 				.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
+		Assertions.assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}
 
 }
