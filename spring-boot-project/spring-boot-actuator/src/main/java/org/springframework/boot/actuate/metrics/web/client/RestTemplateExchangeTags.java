@@ -84,7 +84,7 @@ public final class RestTemplateExchangeTags {
 
 	/**
 	 * Creates a {@code status} {@code Tag} derived from the
-	 * {@link ClientHttpResponse#getRawStatusCode() status} of the given {@code response}.
+	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the status tag
 	 */
@@ -120,7 +120,7 @@ public final class RestTemplateExchangeTags {
 
 	/**
 	 * Creates an {@code outcome} {@code Tag} derived from the
-	 * {@link ClientHttpResponse#getRawStatusCode() status} of the given {@code response}.
+	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the outcome tag
 	 * @since 2.2.0
