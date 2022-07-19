@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.http;
 
 import java.util.stream.Collectors;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -27,15 +29,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -60,6 +65,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 @Conditional(NotReactiveWebApplicationCondition.class)
 @Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
+@ImportRuntimeHints(HttpMessageConvertersAutoConfigurationRuntimeHints.class)
 public class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.mvc.converters.preferred-json-mapper";
@@ -94,6 +100,16 @@ public class HttpMessageConvertersAutoConfiguration {
 		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		private static class ReactiveWebApplication {
 
+		}
+
+	}
+
+	static class HttpMessageConvertersAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(Encoding.class,
+					hints.reflection());
 		}
 
 	}

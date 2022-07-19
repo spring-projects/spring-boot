@@ -23,9 +23,13 @@ import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
@@ -36,6 +40,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -61,6 +66,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Sebastien Deleuze
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class HttpMessageConvertersAutoConfigurationTests {
 
@@ -269,6 +275,15 @@ class HttpMessageConvertersAutoConfigurationTests {
 					assertThat(context).hasSingleBean(HttpMessageConverters.class);
 					assertThat(context).doesNotHaveBean(ServerProperties.class);
 				});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
+						.accepts(hints);
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {
