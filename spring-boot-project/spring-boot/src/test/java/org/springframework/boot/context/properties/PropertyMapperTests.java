@@ -283,7 +283,7 @@ class PropertyMapperTests {
 			this.age = age;
 		}
 
-		public Immutable withAge(Integer age) {
+		Immutable withAge(Integer age) {
 			return new Immutable(this.name, age);
 		}
 
