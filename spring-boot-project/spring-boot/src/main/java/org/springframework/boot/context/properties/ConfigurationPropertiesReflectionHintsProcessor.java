@@ -21,6 +21,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,10 +35,12 @@ import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Registers a given type on {@link ReflectionHints} for binding purposes, discovering any
- * referenced types it may expose via a property.
+ * nested type it may expose via a property.
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
@@ -74,22 +77,12 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 				.process(reflectionHints);
 	}
 
-	private void processType(Class<?> type, ReflectionHints reflectionHints) {
-		if (isTypeIgnored(type)) {
-			return;
-		}
-		new ConfigurationPropertiesReflectionHintsProcessor(type, getBindConstructor(type, true), this.seen)
-				.process(reflectionHints);
+	private void processNestedType(Class<?> type, ReflectionHints reflectionHints) {
+		processNestedType(type, getBindConstructor(type, true), reflectionHints);
 	}
 
-	private boolean isTypeIgnored(Class<?> type) {
-		if (type.getPackageName().startsWith("java.")) {
-			return true;
-		}
-		if (type.isInterface()) {
-			return true;
-		}
-		return false;
+	private void processNestedType(Class<?> type, Constructor<?> bindConstructor, ReflectionHints reflectionHints) {
+		new ConfigurationPropertiesReflectionHintsProcessor(type, bindConstructor, this.seen).process(reflectionHints);
 	}
 
 	private static Constructor<?> getBindConstructor(Class<?> type, boolean nestedType) {
@@ -125,8 +118,9 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private void handleValueObjectProperties(ReflectionHints reflectionHints) {
 		for (int i = 0; i < this.bindConstructor.getParameterCount(); i++) {
+			String propertyName = this.bindConstructor.getParameters()[i].getName();
 			ResolvableType propertyType = ResolvableType.forConstructorParameter(this.bindConstructor, i);
-			registerType(reflectionHints, propertyType);
+			handleProperty(reflectionHints, propertyName, propertyType);
 		}
 	}
 
@@ -135,12 +129,16 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 			Method readMethod = propertyDescriptor.getReadMethod();
 			if (readMethod != null) {
 				ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
-				registerType(reflectionHints, propertyType);
+				String propertyName = propertyDescriptor.getName();
+				if (isSetterMandatory(propertyName, propertyType) && propertyDescriptor.getWriteMethod() == null) {
+					continue;
+				}
+				handleProperty(reflectionHints, propertyName, propertyType);
 			}
 		}
 	}
 
-	private void registerType(ReflectionHints reflectionHints, ResolvableType propertyType) {
+	private void handleProperty(ReflectionHints reflectionHints, String propertyName, ResolvableType propertyType) {
 		Class<?> propertyClass = propertyType.resolve();
 		if (propertyClass == null) {
 			return;
@@ -150,11 +148,25 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 		}
 		Class<?> componentType = getComponentType(propertyType);
 		if (componentType != null) {
-			processType(componentType, reflectionHints);
+			// Can be a list of simple types
+			if (!isJavaType(componentType)) {
+				processNestedType(componentType, reflectionHints);
+			}
 		}
-		else {
-			processType(propertyClass, reflectionHints);
+		else if (isNestedType(propertyName, propertyClass)) {
+			processNestedType(propertyClass, reflectionHints);
 		}
+	}
+
+	private boolean isSetterMandatory(String propertyName, ResolvableType propertyType) {
+		Class<?> propertyClass = propertyType.resolve();
+		if (propertyClass == null) {
+			return true;
+		}
+		if (getComponentType(propertyType) != null) {
+			return false;
+		}
+		return !isNestedType(propertyName, propertyClass);
 	}
 
 	private Class<?> getComponentType(ResolvableType propertyType) {
@@ -169,6 +181,27 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 			return propertyType.as(Map.class).getGeneric(1).toClass();
 		}
 		return null;
+	}
+
+	/**
+	 * Specify whether the specified property refer to a nested type. A nested type
+	 * represents a sub-namespace that need to be fully resolved.
+	 * @param propertyName the name of the property
+	 * @param propertyType the type of the property
+	 * @return whether the specified {@code propertyType} is a nested type
+	 */
+	private boolean isNestedType(String propertyName, Class<?> propertyType) {
+		if (this.type.equals(propertyType.getDeclaringClass())) {
+			return true;
+		}
+		else {
+			Field field = ReflectionUtils.findField(this.type, propertyName);
+			return field != null && MergedAnnotations.from(field).isPresent(NestedConfigurationProperty.class);
+		}
+	}
+
+	private boolean isJavaType(Class<?> candidate) {
+		return candidate.getPackageName().startsWith("java.");
 	}
 
 	private static BeanInfo getBeanInfo(Class<?> beanType) {
