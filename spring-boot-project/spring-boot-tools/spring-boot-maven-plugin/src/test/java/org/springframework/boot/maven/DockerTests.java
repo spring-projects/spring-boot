@@ -36,9 +36,12 @@ class DockerTests {
 	@Test
 	void asDockerConfigurationWithDefaults() {
 		Docker docker = new Docker();
-		assertThat(docker.asDockerConfiguration().getHost()).isNull();
-		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(docker.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
+		assertThat(dockerConfiguration.getHost()).isNull();
+		assertThat(dockerConfiguration.getBuilderRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -71,7 +74,9 @@ class DockerTests {
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(docker.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test

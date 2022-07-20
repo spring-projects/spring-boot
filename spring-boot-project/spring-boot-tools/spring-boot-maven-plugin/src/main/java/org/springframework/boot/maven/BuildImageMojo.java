@@ -224,7 +224,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		Libraries libraries = getLibraries(Collections.emptySet());
 		try {
 			DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.asDockerConfiguration()
-					: null;
+					: new Docker().asDockerConfiguration();
 			BuildRequest request = getBuildRequest(libraries);
 			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			builder.build(request);
@@ -234,7 +234,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private BuildRequest getBuildRequest(Libraries libraries) throws MojoExecutionException {
+	private BuildRequest getBuildRequest(Libraries libraries) {
 		ImagePackager imagePackager = new ImagePackager(getArchiveFile(), getBackupFile());
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries, imagePackager);
 		Image image = (this.image != null) ? this.image : new Image();
@@ -259,15 +259,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		if (image.network == null && this.network != null) {
 			image.setNetwork(this.network);
 		}
-		if (image.publish != null && image.publish && publishRegistryNotConfigured()) {
-			throw new MojoExecutionException("Publishing an image requires docker.publishRegistry to be configured");
-		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
-	}
-
-	private boolean publishRegistryNotConfigured() {
-		return this.docker == null || this.docker.getPublishRegistry() == null
-				|| this.docker.getPublishRegistry().isEmpty();
 	}
 
 	private TarArchive getApplicationContent(Owner owner, Libraries libraries, ImagePackager imagePackager) {

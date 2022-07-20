@@ -37,9 +37,12 @@ class DockerSpecTests {
 	@Test
 	void asDockerConfigurationWithDefaults() {
 		DockerSpec dockerSpec = new DockerSpec();
-		assertThat(dockerSpec.asDockerConfiguration().getHost()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		DockerConfiguration dockerConfiguration = dockerSpec.asDockerConfiguration();
+		assertThat(dockerConfiguration.getHost()).isNull();
+		assertThat(dockerConfiguration.getBuilderRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -55,7 +58,9 @@ class DockerSpecTests {
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -84,7 +89,9 @@ class DockerSpecTests {
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
