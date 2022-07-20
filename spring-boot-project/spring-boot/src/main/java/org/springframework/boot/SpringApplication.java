@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.lang.StackWalker.StackFrame;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +26,12 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -274,18 +278,13 @@ public class SpringApplication {
 	}
 
 	private Class<?> deduceMainApplicationClass() {
-		try {
-			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
-			for (StackTraceElement stackTraceElement : stackTrace) {
-				if ("main".equals(stackTraceElement.getMethodName())) {
-					return Class.forName(stackTraceElement.getClassName());
-				}
-			}
-		}
-		catch (ClassNotFoundException ex) {
-			// Swallow and continue
-		}
-		return null;
+		return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(this::findMainClass)
+				.orElse(null);
+	}
+
+	private Optional<Class<?>> findMainClass(Stream<StackFrame> stack) {
+		return stack.filter((frame) -> Objects.equals(frame.getMethodName(), "main")).findFirst()
+				.map(StackWalker.StackFrame::getDeclaringClass);
 	}
 
 	/**
