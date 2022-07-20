@@ -992,7 +992,12 @@
     },
     {
       "name": "spring.flyway.baseline-migration-prefix",
-      "defaultValue": "B"
+      "defaultValue": "B",
+      "description": "Filename prefix for baseline migrations. Requires Flyway Teams.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0"
+      }
     },
     {
       "name": "spring.flyway.check-location",
@@ -1023,6 +1028,46 @@
       }
     },
     {
+      "name": "spring.flyway.ignore-future-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore future migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-ignored-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore ignored migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-missing-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore missing migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
+      "name": "spring.flyway.ignore-pending-migrations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore pending migrations when reading the schema history table.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 9.0",
+        "replacement": "spring.flyway.ignore-migration-patterns"
+      }
+    },
+    {
       "name": "spring.flyway.locations",
       "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
       "defaultValue": [
@@ -1032,6 +1077,14 @@
     {
       "name": "spring.flyway.lock-retry-count",
       "defaultValue": 50
+    },
+    {
+      "name": "spring.flyway.oracle-kerberos-config-file",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.kerberos-config-file",
+        "level": "error"
+      }
     },
     {
       "name": "spring.flyway.placeholder-separator",
