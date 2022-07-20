@@ -74,6 +74,12 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		this.contextRunner.run(this::validateDefaultConfig);
 	}
 
+	@Test
+	void jdbcTakesPrecedenceOverMongoAndHazelcast() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(RedisIndexedSessionRepository.class))
+				.run(this::validateDefaultConfig);
+	}
+
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
 		JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 				JdbcIndexedSessionRepository.class);

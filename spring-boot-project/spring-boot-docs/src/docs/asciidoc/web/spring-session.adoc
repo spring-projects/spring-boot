@@ -4,9 +4,9 @@ Spring Boot provides {spring-session}[Spring Session] auto-configuration for a w
 When building a servlet web application, the following stores can be auto-configured:
 
 * Redis
-* MongoDB
-* Hazelcast
 * JDBC
+* Hazelcast
+* MongoDB
 
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-session[auto-configuration for using Apache Geode as a session store].
 
@@ -16,10 +16,10 @@ If a single Spring Session module is present on the classpath, Spring Boot uses 
 If you have more than one implementation, Spring Boot uses the following order for choosing a specific implementation:
 
 . Redis
-. MongoDB
-. Hazelcast
 . JDBC
-. If none of Redis, MongoDB, Hazelcast and JDBC are available, we do not configure a `SessionRepository`.
+. Hazelcast
+. MongoDB
+. If none of Redis, JDBC, Hazelcast and MongoDB are available, we do not configure a `SessionRepository`.
 
 
 When building a reactive web application, the following stores can be auto-configured:

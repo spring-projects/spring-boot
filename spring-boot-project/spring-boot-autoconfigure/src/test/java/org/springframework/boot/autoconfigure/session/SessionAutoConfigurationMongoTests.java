@@ -64,12 +64,6 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 	}
 
 	@Test
-	void mongoTakesPrecedenceOverJdbcAndHazelcast() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(RedisIndexedSessionRepository.class))
-				.run(validateSpringSessionUsesMongo("sessions"));
-	}
-
-	@Test
 	void defaultConfigWithCustomTimeout() {
 		this.contextRunner.withPropertyValues("spring.session.timeout=1m")
 				.run(validateSpringSessionUsesMongo("sessions", Duration.ofMinutes(1)));

@@ -58,9 +58,9 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 	}
 
 	@Test
-	void hazelcastTakesPrecedenceOverJdbc() {
+	void hazelcastTakesPrecedenceOverMongo() {
 		this.contextRunner.withClassLoader(
-				new FilteredClassLoader(RedisIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
+				new FilteredClassLoader(RedisIndexedSessionRepository.class, JdbcIndexedSessionRepository.class))
 				.run(this::validateDefaultConfig);
 	}
 

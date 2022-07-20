@@ -116,8 +116,8 @@ public class SessionAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
-		@Import({ RedisSessionConfiguration.class, MongoSessionConfiguration.class, HazelcastSessionConfiguration.class,
-				JdbcSessionConfiguration.class })
+		@Import({ RedisSessionConfiguration.class, JdbcSessionConfiguration.class, HazelcastSessionConfiguration.class,
+				MongoSessionConfiguration.class })
 		static class ServletSessionRepositoryConfiguration {
 
 		}
