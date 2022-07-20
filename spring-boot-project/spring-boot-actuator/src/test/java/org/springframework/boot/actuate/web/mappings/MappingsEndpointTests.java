@@ -163,7 +163,7 @@ class MappingsEndpointTests {
 							contextMappings, "dispatcherHandlers");
 					assertThat(dispatcherHandlers).containsOnlyKeys("webHandler");
 					List<DispatcherHandlerMappingDescription> handlerMappings = dispatcherHandlers.get("webHandler");
-					assertThat(handlerMappings).hasSize(3);
+					assertThat(handlerMappings).hasSize(4);
 				});
 	}
 
@@ -208,6 +208,11 @@ class MappingsEndpointTests {
 		@RequestMapping("/three")
 		void three() {
 
+		}
+
+		@Bean
+		RouterFunction<ServerResponse> routerFunctionWithAttributes() {
+			return route(GET("/four"), (request) -> ServerResponse.ok().build()).withAttribute("test", "test");
 		}
 
 	}

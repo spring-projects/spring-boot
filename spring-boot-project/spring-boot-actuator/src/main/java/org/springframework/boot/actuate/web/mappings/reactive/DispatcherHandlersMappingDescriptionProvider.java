@@ -190,8 +190,6 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 
 		@Override
 		public void attributes(Map<String, Object> attributes) {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Auto-generated method stub");
 		}
 
 		@Override
