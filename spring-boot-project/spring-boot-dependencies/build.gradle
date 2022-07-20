@@ -251,7 +251,10 @@ bom {
 		group("org.apache.derby") {
 			modules = [
 				"derby",
-				"derbyclient"
+				"derbyclient",
+				"derbynet",
+				"derbyoptionaltools",
+				"derbytools"
 			]
 		}
 	}
