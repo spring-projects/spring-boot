@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.api.MigrationState;
-import org.flywaydb.core.api.MigrationType;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint;
@@ -77,10 +76,8 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 						.optional(),
 				fieldWithPath("state")
 						.description("State of the migration. (" + describeEnumValues(MigrationState.class) + ")"),
-				fieldWithPath("type")
-						.description("Type of the migration. (" + describeEnumValues(MigrationType.class) + ")"),
-				fieldWithPath("version").description("Version of the database after applying the migration, if any.")
-						.optional());
+				fieldWithPath("type").description("Type of the migration."), fieldWithPath("version")
+						.description("Version of the database after applying the migration, if any.").optional());
 	}
 
 	@Configuration(proxyBeanMethods = false)

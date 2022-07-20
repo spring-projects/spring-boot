@@ -104,11 +104,6 @@ class Flyway5xAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isUndo() {
-			return false;
-		}
-
-		@Override
 		public boolean canExecuteInTransaction() {
 			return true;
 		}
@@ -116,11 +111,6 @@ class Flyway5xAutoConfigurationTests {
 		@Override
 		public void migrate(org.flywaydb.core.api.migration.Context context) {
 
-		}
-
-		@Override
-		public boolean isBaselineMigration() {
-			return false;
 		}
 
 	}
