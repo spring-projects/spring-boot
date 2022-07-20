@@ -187,6 +187,8 @@ bom {
 			modules = [
 				"derby",
 				"derbyclient",
+				"derbynet",
+				"derbyoptionaltools",
 				"derbyshared",
 				"derbytools"
 			]
