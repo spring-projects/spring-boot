@@ -74,7 +74,9 @@ class DockerSpecTests {
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test

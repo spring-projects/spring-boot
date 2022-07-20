@@ -104,7 +104,7 @@ public final class DockerConfiguration {
 
 	public DockerConfiguration withEmptyPublishRegistryAuthentication() {
 		return new DockerConfiguration(this.host, this.builderAuthentication,
-				new DockerRegistryUserAuthentication("", "", "", ""));
+				new DockerRegistryUserAuthentication("", "", "", ""), this.bindHostToBuilder);
 	}
 
 }

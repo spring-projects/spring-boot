@@ -57,7 +57,9 @@ class DockerTests {
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(docker.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
