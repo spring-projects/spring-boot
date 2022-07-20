@@ -77,11 +77,10 @@ class HealthEndpointConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	HealthContributorRegistry healthContributorRegistry(ApplicationContext applicationContext,
-			HealthEndpointGroups groups) {
-		Map<String, HealthContributor> healthContributors = new LinkedHashMap<>(
-				applicationContext.getBeansOfType(HealthContributor.class));
+			HealthEndpointGroups groups, Map<String, HealthContributor> healthContributors,
+			Map<String, ReactiveHealthContributor> reactiveHealthContributors) {
 		if (ClassUtils.isPresent("reactor.core.publisher.Flux", applicationContext.getClassLoader())) {
-			healthContributors.putAll(new AdaptedReactiveHealthContributors(applicationContext).get());
+			healthContributors.putAll(new AdaptedReactiveHealthContributors(reactiveHealthContributors).get());
 		}
 		return new AutoConfiguredHealthContributorRegistry(healthContributors, groups.getNames());
 	}
@@ -137,10 +136,9 @@ class HealthEndpointConfiguration {
 
 		private final Map<String, HealthContributor> adapted;
 
-		AdaptedReactiveHealthContributors(ApplicationContext applicationContext) {
+		AdaptedReactiveHealthContributors(Map<String, ReactiveHealthContributor> reactiveContributors) {
 			Map<String, HealthContributor> adapted = new LinkedHashMap<>();
-			applicationContext.getBeansOfType(ReactiveHealthContributor.class)
-					.forEach((name, contributor) -> adapted.put(name, adapt(contributor)));
+			reactiveContributors.forEach((name, contributor) -> adapted.put(name, adapt(contributor)));
 			this.adapted = Collections.unmodifiableMap(adapted);
 		}
 
