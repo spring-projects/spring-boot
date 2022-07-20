@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the primary SQL database. May be
@@ -29,6 +30,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
  * @author Phillip Webb
  * @since 2.6.0
  */
+@ImportRuntimeHints(SqlInitializationScriptsRuntimeHints.class)
 public class SqlDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
 	/**
