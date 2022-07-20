@@ -83,6 +83,9 @@
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/org/springframework
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference/html
+:spring-graphql: https://spring.io/projects/spring-graphql
+:spring-graphql-api: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/api/
+:spring-graphql-docs: https://docs.spring.io/spring-graphql/docs/{spring-graphql-version}/reference/html/
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/

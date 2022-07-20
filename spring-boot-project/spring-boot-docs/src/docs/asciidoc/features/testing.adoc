@@ -405,6 +405,42 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 
 
 
+[[features.testing.spring-boot-applications.spring-graphql-tests]]
+==== Auto-configured Spring GraphQL Tests
+Spring GraphQL offers a dedicated testing support module; you'll need to add it to your project:
+
+.Maven
+[source,xml,indent=0,subs="verbatim"]
+----
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.graphql</groupId>
+      <artifactId>spring-graphql-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- Unless already present in the compile scope -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+----
+
+.Gradle
+[source,gradle,indent=0,subs="verbatim"]
+----
+  dependencies {
+    testImplementation("org.springframework.graphql:spring-graphql-test")
+    // Unless already present in the implementation configuration
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+  }
+----
+
+This testing module ships the {spring-graphql-docs}/#testing-graphqltester[GraphQlTester].
+spring-boot-project/spring-boot-docs/src/docs/asciidoc/features/testing.adoc
+
+
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
 ==== Auto-configured Data Cassandra Tests
 You can use `@DataCassandraTest` to test Cassandra applications.

@@ -295,6 +295,13 @@ bom {
 			]
 		}
 	}
+	library("GraphQL Java", "19.0") {
+		group("com.graphql-java") {
+			modules = [
+					"graphql-java"
+			]
+		}
+	}
 	library("Groovy", "4.0.3") {
 		group("org.apache.groovy") {
 			imports = [
@@ -1281,6 +1288,7 @@ bom {
 				"spring-boot-starter-data-neo4j",
 				"spring-boot-starter-data-rest",
 				"spring-boot-starter-freemarker",
+				"spring-boot-starter-graphql",
 				"spring-boot-starter-groovy-templates",
 				"spring-boot-starter-hateoas",
 				"spring-boot-starter-integration",
@@ -1412,6 +1420,14 @@ bom {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
+			]
+		}
+	}
+	library("Spring GraphQL", "1.1.0-SNAPSHOT") {
+		group("org.springframework.graphql") {
+			modules = [
+					"spring-graphql",
+					"spring-graphql-test"
 			]
 		}
 	}
