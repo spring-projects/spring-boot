@@ -18,8 +18,6 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 		publishRegistry {
 			username = "user"
 			password = "secret"
-			url = "https://docker.example.com/v1/"
-			email = "user@example.com"
 		}
 	}
 }
