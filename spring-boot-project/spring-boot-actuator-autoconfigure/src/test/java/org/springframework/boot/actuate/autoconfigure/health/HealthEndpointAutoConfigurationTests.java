@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -45,8 +46,10 @@ import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtensio
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
+import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -262,6 +265,32 @@ class HealthEndpointAutoConfigurationTests {
 					assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> groups.get("test"))
 							.withMessage("postprocessed");
 				});
+	}
+
+	@Test
+	void runWithIndicatorsInParentContextFindsIndicators() {
+		new ApplicationContextRunner().withUserConfiguration(HealthIndicatorsConfiguration.class)
+				.run((parent) -> new WebApplicationContextRunner().withConfiguration(AutoConfigurations
+						.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class))
+						.withParent(parent).run((context) -> {
+							HealthComponent health = context.getBean(HealthEndpoint.class).health();
+							Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
+							assertThat(components).containsKeys("additional", "ping", "simple");
+						}));
+	}
+
+	@Test
+	void runWithReactiveContextAndIndicatorsInParentContextFindsIndicators() {
+		new ApplicationContextRunner().withUserConfiguration(HealthIndicatorsConfiguration.class)
+				.run((parent) -> new ReactiveWebApplicationContextRunner()
+						.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+								HealthEndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+								EndpointAutoConfiguration.class))
+						.withParent(parent).run((context) -> {
+							HealthComponent health = context.getBean(HealthEndpoint.class).health();
+							Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
+							assertThat(components).containsKeys("additional", "ping", "simple");
+						}));
 	}
 
 	@Configuration(proxyBeanMethods = false)
