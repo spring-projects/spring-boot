@@ -369,7 +369,10 @@ An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/pack
 
 [[build-image.examples.publish]]
 === Image Publishing
-The generated image can be published to a Docker registry by enabling a `publish` option and configuring authentication for the registry using `docker.publishRegistry` properties.
+The generated image can be published to a Docker registry by enabling a `publish` option.
+
+If the Docker registry requires authentication, the credentials can be configured using `docker.publishRegistry` properties.
+If the Docker registry does not require authentication, the `docker.publishRegistry` configuration can be omitted.
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

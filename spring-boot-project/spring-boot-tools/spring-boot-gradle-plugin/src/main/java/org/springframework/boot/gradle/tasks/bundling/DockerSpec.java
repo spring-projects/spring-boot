@@ -172,7 +172,7 @@ public class DockerSpec {
 
 	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.publishRegistry == null || this.publishRegistry.hasEmptyAuth()) {
-			return dockerConfiguration;
+			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
 		}
 		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
 			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());
