@@ -165,16 +165,14 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 			GenerationContext managementGenerationContext = generationContext.withName("Management");
 			ClassName generatedInitializerClassName = new ApplicationContextAotGenerator()
 					.generateApplicationContext(this.managementContext, managementGenerationContext);
-			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethodGenerator()
-					.generateMethod("addManagementInitializer").using((builder) -> {
-						builder.addJavadoc("Use AOT management context initialization");
-						builder.addModifiers(Modifier.PRIVATE, Modifier.STATIC);
-						builder.addParameter(RegisteredBean.class, "registeredBean");
-						builder.addParameter(ChildManagementContextInitializer.class, "instance");
-						builder.returns(ChildManagementContextInitializer.class);
-						builder.addStatement("return instance.withApplicationContextInitializer(new $L())",
-								generatedInitializerClassName);
-					});
+			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethods().add("addManagementInitializer",
+					(method) -> method.addJavadoc("Use AOT management context initialization")
+							.addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+							.addParameter(RegisteredBean.class, "registeredBean")
+							.addParameter(ChildManagementContextInitializer.class, "instance")
+							.returns(ChildManagementContextInitializer.class)
+							.addStatement("return instance.withApplicationContextInitializer(new $L())",
+									generatedInitializerClassName));
 			beanRegistrationCode.addInstancePostProcessor(
 					MethodReference.ofStatic(beanRegistrationCode.getClassName(), postProcessorMethod.getName()));
 		}

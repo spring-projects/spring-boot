@@ -73,21 +73,19 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
 				BeanRegistrationCode beanRegistrationCode, Executable constructorOrFactoryMethod,
 				boolean allowDirectSupplierShortcut) {
-			GeneratedMethod method = beanRegistrationCode.getMethodGenerator().generateMethod("get", "instance")
-					.using((builder) -> {
-						Class<?> beanClass = this.registeredBean.getBeanClass();
-						builder.addJavadoc("Get the bean instance for '$L'.", this.registeredBean.getBeanName());
-						builder.addModifiers(Modifier.PRIVATE, Modifier.STATIC);
-						builder.returns(beanClass);
-						builder.addParameter(RegisteredBean.class, REGISTERED_BEAN_PARAMETER_NAME);
-						builder.addStatement("$T beanFactory = registeredBean.getBeanFactory()", BeanFactory.class);
-						builder.addStatement("$T beanName = registeredBean.getBeanName()", String.class);
-						builder.addStatement("$T<?> beanClass = registeredBean.getBeanClass()", Class.class);
-						builder.addStatement("return ($T) $T.from(beanFactory, beanName, beanClass)", beanClass,
+			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {
+				Class<?> beanClass = this.registeredBean.getBeanClass();
+				method.addJavadoc("Get the bean instance for '$L'.", this.registeredBean.getBeanName())
+						.addModifiers(Modifier.PRIVATE, Modifier.STATIC).returns(beanClass)
+						.addParameter(RegisteredBean.class, REGISTERED_BEAN_PARAMETER_NAME)
+						.addStatement("$T beanFactory = registeredBean.getBeanFactory()", BeanFactory.class)
+						.addStatement("$T beanName = registeredBean.getBeanName()", String.class)
+						.addStatement("$T<?> beanClass = registeredBean.getBeanClass()", Class.class)
+						.addStatement("return ($T) $T.from(beanFactory, beanName, beanClass)", beanClass,
 								ConstructorBound.class);
-					});
+			});
 			return CodeBlock.of("$T.of($T::$L)", InstanceSupplier.class, beanRegistrationCode.getClassName(),
-					method.getName());
+					generatedMethod.getName());
 		}
 
 	}
