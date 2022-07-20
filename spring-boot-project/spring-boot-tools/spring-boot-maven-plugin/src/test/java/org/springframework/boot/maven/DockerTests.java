@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,12 @@ class DockerTests {
 	@Test
 	void asDockerConfigurationWithDefaults() {
 		Docker docker = new Docker();
-		assertThat(docker.asDockerConfiguration().getHost()).isNull();
-		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(docker.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
+		assertThat(dockerConfiguration.getHost()).isNull();
+		assertThat(dockerConfiguration.getBuilderRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -53,7 +56,9 @@ class DockerTests {
 		assertThat(host.isSecure()).isEqualTo(true);
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
-		assertThat(docker.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test

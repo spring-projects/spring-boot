@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +35,6 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BootBuildImage}.
@@ -187,13 +185,6 @@ class BootBuildImageTests {
 	@Test
 	void whenUsingDefaultConfigurationThenRequestHasPublishDisabled() {
 		assertThat(this.buildImage.createRequest().isPublish()).isFalse();
-	}
-
-	@Test
-	void whenPublishIsEnabledWithoutPublishRegistryThenExceptionIsThrown() {
-		this.buildImage.setPublish(true);
-		assertThatExceptionOfType(GradleException.class).isThrownBy(this.buildImage::createRequest)
-				.withMessageContaining("Publishing an image requires docker.publishRegistry to be configured");
 	}
 
 	@Test
