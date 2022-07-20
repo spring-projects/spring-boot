@@ -16,6 +16,11 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -43,6 +48,16 @@ class SpringBootAotPluginIntegrationTests {
 	void applyingAotPluginCreatesGenerateAotSourcesTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=generateAotSources").getOutput())
 				.contains("generateAotSources exists = true");
+	}
+
+	@TestTemplate
+	void generateAotSourcesHasLibraryResourcesOnItsClasspath() throws IOException {
+		File settings = new File(this.gradleBuild.getProjectDir(), "settings.gradle");
+		Files.write(settings.toPath(), List.of("include 'library'"));
+		File library = new File(this.gradleBuild.getProjectDir(), "library");
+		library.mkdirs();
+		Files.write(library.toPath().resolve("build.gradle"), List.of("plugins {", "    id 'java-library'", "}"));
+		assertThat(this.gradleBuild.build("generateAotSourcesClasspath").getOutput()).contains("library.jar");
 	}
 
 }

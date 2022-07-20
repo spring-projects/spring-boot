@@ -1,0 +1,15 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'org.springframework.boot.aot'
+	id 'java'
+}
+
+dependencies {
+	implementation project(":library")
+}
+
+task('generateAotSourcesClasspath') {
+	doFirst {
+		tasks.findByName('generateAotSources').classpath.files.each { println it }
+	}
+}
