@@ -105,7 +105,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	@Override
 	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		Set<String> exclusions = new LinkedHashSet<>();
-		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
+		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
 		for (String annotationName : ANNOTATION_NAMES) {
 			AnnotationAttributes merged = AnnotatedElementUtils.getMergedAnnotationAttributes(source, annotationName);
 			Class<?>[] exclude = (merged != null) ? merged.getClassArray("exclude") : null;
@@ -129,7 +129,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 
 	protected final Map<Class<?>, List<Annotation>> getAnnotations(AnnotationMetadata metadata) {
 		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<>();
-		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
+		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
 		collectAnnotations(source, annotations, new HashSet<>());
 		return Collections.unmodifiableMap(annotations);
 	}
