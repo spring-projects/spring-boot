@@ -87,8 +87,10 @@ class ClientHttpConnectorAutoConfigurationTests {
 	}
 
 	@Test
-	void whenReactorAndJettyAndHttpClientBeansAreUnavailableThenJdkClientAreDefined() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class, ReactiveRequest.class, HttpAsyncClients.class))
+	void whenReactorJettyAndHttpClientBeansAreUnavailableThenJdkClientBeansAreDefined() {
+		this.contextRunner
+				.withClassLoader(
+						new FilteredClassLoader(HttpClient.class, ReactiveRequest.class, HttpAsyncClients.class))
 				.run((context) -> {
 					BeanDefinition customizerDefinition = context.getBeanFactory()
 							.getBeanDefinition("clientConnectorCustomizer");
