@@ -374,6 +374,9 @@ The generated image can be published to a Docker registry by enabling a `publish
 If the Docker registry requires authentication, the credentials can be configured using `docker.publishRegistry` properties.
 If the Docker registry does not require authentication, the `docker.publishRegistry` configuration can be omitted.
 
+NOTE: The registry that the image will be published to is determined by the registry part of the image name (`docker.example.com` in these examples).
+If `docker.publishRegistry` credentials are configured and include a `url` property, this value is passed to the registry but is not used to determine the publishing registry location.
+
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
