@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -34,6 +35,7 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.aot.AotFactoriesLoader;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
@@ -53,6 +55,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ConfigurationPropertiesBeanFactoryInitializationAotProcessor}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
@@ -225,6 +228,31 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithGeneric.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(SamplePropertiesWithGeneric.class))
 				.anySatisfy(javaBeanBinding(GenericObject.class));
+	}
+
+	@Test
+	void processConfigurationPropertiesWithNestedGenerics() {
+		RuntimeHints runtimeHints = process(NestedGenerics.class);
+		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
+						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.Nested.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
+						.accepts(runtimeHints);
+	}
+
+	@Test
+	void processConfigurationPropertiesWithMultipleNestedClasses() {
+		RuntimeHints runtimeHints = process(TripleNested.class);
+		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
+						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
+						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.Nested.class)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
+						.accepts(runtimeHints);
 	}
 
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type) {
@@ -586,6 +614,66 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 		public T getValue() {
 			return this.value;
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "nested-generics")
+	public static class NestedGenerics {
+
+		private final Map<String, List<Nested>> nested = new HashMap<>();
+
+		public Map<String, List<Nested>> getNested() {
+			return this.nested;
+		}
+
+		public static class Nested {
+
+			private String field;
+
+			public String getField() {
+				return this.field;
+			}
+
+			public void setField(String field) {
+				this.field = field;
+			}
+
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "triple-nested")
+	public static class TripleNested {
+
+		private final DoubleNested doubleNested = new DoubleNested();
+
+		public DoubleNested getDoubleNested() {
+			return this.doubleNested;
+		}
+
+		public static class DoubleNested {
+
+			private final Nested nested = new Nested();
+
+			public Nested getNested() {
+				return this.nested;
+			}
+
+			public static class Nested {
+
+				private String field;
+
+				public String getField() {
+					return this.field;
+				}
+
+				public void setField(String field) {
+					this.field = field;
+				}
+
+			}
+
 		}
 
 	}

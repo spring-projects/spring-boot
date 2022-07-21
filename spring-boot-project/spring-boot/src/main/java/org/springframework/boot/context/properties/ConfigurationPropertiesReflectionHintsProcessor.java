@@ -163,7 +163,7 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 		if (propertyClass == null) {
 			return true;
 		}
-		if (getComponentType(propertyType) != null) {
+		if (isContainer(propertyType)) {
 			return false;
 		}
 		return !isNestedType(propertyName, propertyClass);
@@ -171,21 +171,43 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private Class<?> getComponentType(ResolvableType propertyType) {
 		Class<?> propertyClass = propertyType.toClass();
+		ResolvableType componentType = null;
 		if (propertyType.isArray()) {
-			return propertyType.getComponentType().toClass();
+			componentType = propertyType.getComponentType();
 		}
 		else if (Collection.class.isAssignableFrom(propertyClass)) {
-			return propertyType.as(Collection.class).getGeneric(0).toClass();
+			componentType = propertyType.asCollection().getGeneric(0);
 		}
 		else if (Map.class.isAssignableFrom(propertyClass)) {
-			return propertyType.as(Map.class).getGeneric(1).toClass();
+			componentType = propertyType.asMap().getGeneric(1);
 		}
-		return null;
+		if (componentType == null) {
+			return null;
+		}
+		if (isContainer(componentType)) {
+			// Resolve nested generics like Map<String, List<SomeType>>
+			return getComponentType(componentType);
+		}
+		return componentType.toClass();
+	}
+
+	private boolean isContainer(ResolvableType type) {
+		if (type.isArray()) {
+			return true;
+		}
+		if (Collection.class.isAssignableFrom(type.toClass())) {
+			return true;
+		}
+		else if (Map.class.isAssignableFrom(type.toClass())) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Specify whether the specified property refer to a nested type. A nested type
-	 * represents a sub-namespace that need to be fully resolved.
+	 * represents a sub-namespace that need to be fully resolved. Nested types are either
+	 * inner classes or annotated with {@link NestedConfigurationProperty}.
 	 * @param propertyName the name of the property
 	 * @param propertyType the type of the property
 	 * @return whether the specified {@code propertyType} is a nested type
