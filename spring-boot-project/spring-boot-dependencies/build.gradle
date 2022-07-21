@@ -917,7 +917,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Deploy Plugin", "2.8.2") {
+	library("Maven Deploy Plugin", "3.0.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-deploy-plugin"
