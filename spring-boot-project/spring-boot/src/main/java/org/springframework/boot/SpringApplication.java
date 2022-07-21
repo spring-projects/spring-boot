@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.StackWalker.StackFrame;
+import java.lang.invoke.MethodType;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,6 +166,7 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @author Ethan Rubinson
  * @author Chris Bono
+ * @author Yanming Zhou
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -283,8 +285,10 @@ public class SpringApplication {
 	}
 
 	private Optional<Class<?>> findMainClass(Stream<StackFrame> stack) {
-		return stack.filter((frame) -> Objects.equals(frame.getMethodName(), "main")).findFirst()
-				.map(StackWalker.StackFrame::getDeclaringClass);
+		return stack
+				.filter((frame) -> Objects.equals(frame.getMethodName(), "main")
+						&& Objects.equals(frame.getMethodType(), MethodType.methodType(void.class, String[].class)))
+				.findFirst().map(StackWalker.StackFrame::getDeclaringClass);
 	}
 
 	/**
