@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.env;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
@@ -48,25 +46,18 @@ public class EnvironmentEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties,
 			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment,
-				sanitizingFunctions.orderedStream().collect(Collectors.toList()));
-		String[] keysToSanitize = properties.getKeysToSanitize();
-		if (keysToSanitize != null) {
-			endpoint.setKeysToSanitize(keysToSanitize);
-		}
-		String[] additionalKeysToSanitize = properties.getAdditionalKeysToSanitize();
-		if (additionalKeysToSanitize != null) {
-			endpoint.keysToSanitize(additionalKeysToSanitize);
-		}
-		return endpoint;
+		return new EnvironmentEndpoint(environment, sanitizingFunctions.orderedStream().toList(),
+				properties.getShowValues());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
-	public EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint environmentEndpoint) {
-		return new EnvironmentEndpointWebExtension(environmentEndpoint);
+	public EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint environmentEndpoint,
+			EnvironmentEndpointProperties properties) {
+		return new EnvironmentEndpointWebExtension(environmentEndpoint, properties.getShowValues(),
+				properties.getRoles());
 	}
 
 }

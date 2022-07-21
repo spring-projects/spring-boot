@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -456,12 +457,12 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 		@Bean
 		QuartzEndpoint endpoint(Scheduler scheduler) {
-			return new QuartzEndpoint(scheduler);
+			return new QuartzEndpoint(scheduler, Collections.emptyList());
 		}
 
 		@Bean
 		QuartzEndpointWebExtension endpointWebExtension(QuartzEndpoint endpoint) {
-			return new QuartzEndpointWebExtension(endpoint);
+			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
 		}
 
 	}

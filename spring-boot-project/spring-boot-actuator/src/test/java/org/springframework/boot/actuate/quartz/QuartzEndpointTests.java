@@ -62,7 +62,6 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 
-import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetails;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummary;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobSummary;
@@ -107,7 +106,7 @@ class QuartzEndpointTests {
 
 	QuartzEndpointTests() {
 		this.scheduler = mock(Scheduler.class);
-		this.endpoint = new QuartzEndpoint(this.scheduler);
+		this.endpoint = new QuartzEndpoint(this.scheduler, Collections.emptyList());
 	}
 
 	@Test
@@ -417,7 +416,7 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("3am-every-day", "samples")))
 				.willReturn(TriggerState.NORMAL);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day", true);
 		assertThat(triggerDetails).contains(entry("group", "samples"), entry("name", "3am-every-day"),
 				entry("description", "Sample description"), entry("type", "cron"), entry("state", TriggerState.NORMAL),
 				entry("priority", 3));
@@ -443,7 +442,7 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("every-hour", "samples")))
 				.willReturn(TriggerState.COMPLETE);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "every-hour");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "every-hour", true);
 		assertThat(triggerDetails).contains(entry("group", "samples"), entry("name", "every-hour"),
 				entry("description", "Every hour"), entry("type", "simple"), entry("state", TriggerState.COMPLETE),
 				entry("priority", 20));
@@ -470,7 +469,7 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("every-hour-mon-wed", "samples")))
 				.willReturn(TriggerState.NORMAL);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "every-hour-mon-wed");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "every-hour-mon-wed", true);
 		assertThat(triggerDetails).contains(entry("group", "samples"), entry("name", "every-hour-mon-wed"),
 				entry("description", "Every working hour Mon Wed"), entry("type", "dailyTimeInterval"),
 				entry("state", TriggerState.NORMAL), entry("priority", 4));
@@ -499,7 +498,7 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("once-a-week", "samples")))
 				.willReturn(TriggerState.BLOCKED);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "once-a-week");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "once-a-week", true);
 		assertThat(triggerDetails).contains(entry("group", "samples"), entry("name", "once-a-week"),
 				entry("description", "Once a week"), entry("type", "calendarInterval"),
 				entry("state", TriggerState.BLOCKED), entry("priority", 8));
@@ -524,7 +523,7 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("custom", "samples")))
 				.willReturn(TriggerState.ERROR);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "custom");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "custom", true);
 		assertThat(triggerDetails).contains(entry("group", "samples"), entry("name", "custom"), entry("type", "custom"),
 				entry("state", TriggerState.ERROR), entry("priority", 9));
 		assertThat(triggerDetails).contains(entry("previousFireTime", previousFireTime),
@@ -542,9 +541,22 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("3am-every-day", "samples")))
 				.willReturn(TriggerState.NORMAL);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day", true);
 		assertThat(triggerDetails).extractingByKey("data", nestedMap()).containsOnly(entry("user", "user"),
-				entry("password", "******"), entry("url", "https://user:******@example.com"));
+				entry("password", "secret"), entry("url", "https://user:secret@example.com"));
+	}
+
+	@Test
+	void quartzTriggerWithDataMapAndShowUnsanitizedFalse() throws SchedulerException {
+		CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples")
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).usingJobData("user", "user")
+				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
+		mockTriggers(trigger);
+		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("3am-every-day", "samples")))
+				.willReturn(TriggerState.NORMAL);
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day", false);
+		assertThat(triggerDetails).extractingByKey("data", nestedMap()).containsOnly(entry("user", "******"),
+				entry("password", "******"), entry("url", "******"));
 	}
 
 	@ParameterizedTest(name = "unit {1}")
@@ -554,7 +566,7 @@ class QuartzEndpointTests {
 				.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withInterval(amount, unit))
 				.build();
 		mockTriggers(trigger);
-		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "trigger");
+		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "trigger", true);
 		assertThat(triggerDetails).extractingByKey("calendarInterval", nestedMap())
 				.contains(entry("interval", expectedDuration.toMillis()));
 	}
@@ -575,7 +587,7 @@ class QuartzEndpointTests {
 		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").withDescription("A sample job")
 				.storeDurably().requestRecovery(false).build();
 		mockJobs(job);
-		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello");
+		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello", true);
 		assertThat(jobDetails.getGroup()).isEqualTo("samples");
 		assertThat(jobDetails.getName()).isEqualTo("hello");
 		assertThat(jobDetails.getDescription()).isEqualTo("A sample job");
@@ -600,7 +612,7 @@ class QuartzEndpointTests {
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
 				.willAnswer((invocation) -> Collections.singletonList(trigger));
-		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello");
+		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello", true);
 		assertThat(jobDetails.getTriggers()).hasSize(1);
 		Map<String, Object> triggerDetails = jobDetails.getTriggers().get(0);
 		assertThat(triggerDetails).containsOnly(entry("group", "samples"), entry("name", "3am-every-day"),
@@ -622,7 +634,7 @@ class QuartzEndpointTests {
 		mockTriggers(triggerOne, triggerTwo);
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
 				.willAnswer((invocation) -> Arrays.asList(triggerOne, triggerTwo));
-		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello");
+		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello", true);
 		assertThat(jobDetails.getTriggers()).hasSize(2);
 		assertThat(jobDetails.getTriggers().get(0)).containsEntry("name", "two");
 		assertThat(jobDetails.getTriggers().get(1)).containsEntry("name", "one");
@@ -642,35 +654,30 @@ class QuartzEndpointTests {
 		mockTriggers(triggerOne, triggerTwo);
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
 				.willAnswer((invocation) -> Arrays.asList(triggerOne, triggerTwo));
-		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello");
+		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello", true);
 		assertThat(jobDetails.getTriggers()).hasSize(2);
 		assertThat(jobDetails.getTriggers().get(0)).containsEntry("name", "two");
 		assertThat(jobDetails.getTriggers().get(1)).containsEntry("name", "one");
 	}
 
 	@Test
-	void quartzJobWithSensitiveDataMap() throws SchedulerException {
+	void quartzJobWithDataMap() throws SchedulerException {
 		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").usingJobData("user", "user")
 				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
 		mockJobs(job);
-		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello");
-		assertThat(jobDetails.getData()).containsOnly(entry("user", "user"), entry("password", "******"),
-				entry("url", "https://user:******@example.com"));
+		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello", true);
+		assertThat(jobDetails.getData()).containsOnly(entry("user", "user"), entry("password", "secret"),
+				entry("url", "https://user:secret@example.com"));
 	}
 
 	@Test
-	void quartzJobWithSensitiveDataMapAndCustomSanitizer() throws SchedulerException {
-		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").usingJobData("test", "value")
-				.usingJobData("secret", "value").build();
+	void quartzJobWithDataMapAndShowUnsanitizedFalse() throws SchedulerException {
+		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").usingJobData("user", "user")
+				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
 		mockJobs(job);
-		Sanitizer sanitizer = mock(Sanitizer.class);
-		given(sanitizer.sanitize("test", "value")).willReturn("value");
-		given(sanitizer.sanitize("secret", "value")).willReturn("----");
-		QuartzJobDetails jobDetails = new QuartzEndpoint(this.scheduler, sanitizer).quartzJob("samples", "hello");
-		assertThat(jobDetails.getData()).containsOnly(entry("test", "value"), entry("secret", "----"));
-		then(sanitizer).should().sanitize("test", "value");
-		then(sanitizer).should().sanitize("secret", "value");
-		then(sanitizer).shouldHaveNoMoreInteractions();
+		QuartzJobDetails jobDetails = this.endpoint.quartzJob("samples", "hello", false);
+		assertThat(jobDetails.getData()).containsOnly(entry("user", "******"), entry("password", "******"),
+				entry("url", "******"));
 	}
 
 	private void mockJobs(JobDetail... jobs) throws SchedulerException {

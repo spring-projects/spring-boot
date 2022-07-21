@@ -48,7 +48,9 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
+import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
+import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
@@ -71,25 +73,10 @@ public class QuartzEndpoint {
 
 	private final Sanitizer sanitizer;
 
-	/**
-	 * Create an instance for the specified {@link Scheduler} using a default
-	 * {@link Sanitizer}.
-	 * @param scheduler the scheduler to use to retrieve jobs and triggers details
-	 */
-	public QuartzEndpoint(Scheduler scheduler) {
-		this(scheduler, new Sanitizer());
-	}
-
-	/**
-	 * Create an instance for the specified {@link Scheduler} and {@link Sanitizer}.
-	 * @param scheduler the scheduler to use to retrieve jobs and triggers details
-	 * @param sanitizer the sanitizer to use to sanitize data maps
-	 */
-	public QuartzEndpoint(Scheduler scheduler, Sanitizer sanitizer) {
+	public QuartzEndpoint(Scheduler scheduler, Iterable<SanitizingFunction> sanitizingFunctions) {
 		Assert.notNull(scheduler, "Scheduler must not be null");
-		Assert.notNull(sanitizer, "Sanitizer must not be null");
 		this.scheduler = scheduler;
-		this.sanitizer = sanitizer;
+		this.sanitizer = new Sanitizer(sanitizingFunctions);
 	}
 
 	/**
@@ -201,17 +188,19 @@ public class QuartzEndpoint {
 	 * group name and job name.
 	 * @param groupName the name of the group
 	 * @param jobName the name of the job
+	 * @param showUnsanitized whether to sanitize values in data map
 	 * @return the details of the job or {@code null} if such job does not exist
 	 * @throws SchedulerException if retrieving the information from the scheduler failed
 	 */
-	public QuartzJobDetails quartzJob(String groupName, String jobName) throws SchedulerException {
+	public QuartzJobDetails quartzJob(String groupName, String jobName, boolean showUnsanitized)
+			throws SchedulerException {
 		JobKey jobKey = JobKey.jobKey(jobName, groupName);
 		JobDetail jobDetail = this.scheduler.getJobDetail(jobKey);
 		if (jobDetail != null) {
 			List<? extends Trigger> triggers = this.scheduler.getTriggersOfJob(jobKey);
 			return new QuartzJobDetails(jobDetail.getKey().getGroup(), jobDetail.getKey().getName(),
 					jobDetail.getDescription(), jobDetail.getJobClass().getName(), jobDetail.isDurable(),
-					jobDetail.requestsRecovery(), sanitizeJobDataMap(jobDetail.getJobDataMap()),
+					jobDetail.requestsRecovery(), sanitizeJobDataMap(jobDetail.getJobDataMap(), showUnsanitized),
 					extractTriggersSummary(triggers));
 		}
 		return null;
@@ -236,14 +225,18 @@ public class QuartzEndpoint {
 	 * name.
 	 * @param groupName the name of the group
 	 * @param triggerName the name of the trigger
+	 * @param showUnsanitized whether to sanitize values in data map
 	 * @return the details of the trigger or {@code null} if such trigger does not exist
 	 * @throws SchedulerException if retrieving the information from the scheduler failed
 	 */
-	public Map<String, Object> quartzTrigger(String groupName, String triggerName) throws SchedulerException {
+	Map<String, Object> quartzTrigger(String groupName, String triggerName, boolean showUnsanitized)
+			throws SchedulerException {
 		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, groupName);
 		Trigger trigger = this.scheduler.getTrigger(triggerKey);
-		return (trigger != null) ? TriggerDescription.of(trigger).buildDetails(
-				this.scheduler.getTriggerState(triggerKey), sanitizeJobDataMap(trigger.getJobDataMap())) : null;
+		return (trigger != null)
+				? TriggerDescription.of(trigger).buildDetails(this.scheduler.getTriggerState(triggerKey),
+						sanitizeJobDataMap(trigger.getJobDataMap(), showUnsanitized))
+				: null;
 	}
 
 	private static Duration getIntervalDuration(long amount, IntervalUnit unit) {
@@ -255,13 +248,18 @@ public class QuartzEndpoint {
 				: null;
 	}
 
-	private Map<String, Object> sanitizeJobDataMap(JobDataMap dataMap) {
+	private Map<String, Object> sanitizeJobDataMap(JobDataMap dataMap, boolean showUnsanitized) {
 		if (dataMap != null) {
 			Map<String, Object> map = new LinkedHashMap<>(dataMap.getWrappedMap());
-			map.replaceAll(this.sanitizer::sanitize);
+			map.replaceAll((key, value) -> getSanitizedValue(showUnsanitized, key, value));
 			return map;
 		}
 		return null;
+	}
+
+	private Object getSanitizedValue(boolean showUnsanitized, String key, Object value) {
+		SanitizableData data = new SanitizableData(null, key, value);
+		return this.sanitizer.sanitize(data, showUnsanitized);
 	}
 
 	private static TemporalUnit temporalUnit(IntervalUnit unit) {

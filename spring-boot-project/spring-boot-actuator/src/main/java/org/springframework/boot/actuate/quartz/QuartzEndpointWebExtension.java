@@ -16,10 +16,14 @@
 
 package org.springframework.boot.actuate.quartz;
 
+import java.util.Set;
+
 import org.quartz.SchedulerException;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -44,8 +48,14 @@ public class QuartzEndpointWebExtension {
 
 	private final QuartzEndpoint delegate;
 
-	public QuartzEndpointWebExtension(QuartzEndpoint delegate) {
+	private final Show showValues;
+
+	private final Set<String> roles;
+
+	public QuartzEndpointWebExtension(QuartzEndpoint delegate, Show showValues, Set<String> roles) {
 		this.delegate = delegate;
+		this.showValues = showValues;
+		this.roles = roles;
 	}
 
 	@ReadOperation
@@ -62,10 +72,11 @@ public class QuartzEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Object> quartzJobOrTrigger(@Selector String jobsOrTriggers, @Selector String group,
-			@Selector String name) throws SchedulerException {
-		return handle(jobsOrTriggers, () -> this.delegate.quartzJob(group, name),
-				() -> this.delegate.quartzTrigger(group, name));
+	public WebEndpointResponse<Object> quartzJobOrTrigger(SecurityContext securityContext,
+			@Selector String jobsOrTriggers, @Selector String group, @Selector String name) throws SchedulerException {
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
+		return handle(jobsOrTriggers, () -> this.delegate.quartzJob(group, name, showUnsanitized),
+				() -> this.delegate.quartzTrigger(group, name, showUnsanitized));
 	}
 
 	private <T> WebEndpointResponse<T> handle(String jobsOrTriggers, ResponseSupplier<T> jobAction,

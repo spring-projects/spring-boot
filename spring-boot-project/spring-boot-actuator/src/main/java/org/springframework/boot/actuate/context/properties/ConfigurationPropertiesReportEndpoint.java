@@ -55,6 +55,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -83,11 +84,11 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties @ConfigurationProperties} annotated beans.
  *
  * <p>
- * To protect sensitive information from being exposed, certain property values are masked
- * if their names end with a set of configurable values (default "password" and "secret").
- * Configure property names by using
- * {@code management.endpoint.configprops.keys-to-sanitize} in your Spring Boot
- * application configuration.
+ * To protect sensitive information from being exposed, all property values are masked by
+ * default. To configure when property values should be shown, use
+ * {@code management.endpoint.configprops.show-values} and
+ * {@code management.endpoint.configprops.roles} in your Spring Boot application
+ * configuration.
  *
  * @author Christian Dupuis
  * @author Dave Syer
@@ -104,16 +105,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private final Sanitizer sanitizer;
 
+	private final Show showValues;
+
 	private ApplicationContext context;
 
 	private ObjectMapper objectMapper;
 
-	public ConfigurationPropertiesReportEndpoint() {
-		this(Collections.emptyList());
-	}
-
-	public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions) {
+	public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions, Show showValues) {
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
+		this.showValues = showValues;
 	}
 
 	@Override
@@ -121,31 +121,35 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		this.context = context;
 	}
 
-	public void setKeysToSanitize(String... keysToSanitize) {
-		this.sanitizer.setKeysToSanitize(keysToSanitize);
-	}
-
-	public void keysToSanitize(String... keysToSanitize) {
-		this.sanitizer.keysToSanitize(keysToSanitize);
-	}
-
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationProperties() {
-		return extract(this.context, (bean) -> true);
+		boolean showUnsanitized = this.showValues.isShown(true);
+		return getConfigurationProperties(showUnsanitized);
+	}
+
+	ApplicationConfigurationProperties getConfigurationProperties(boolean showUnsanitized) {
+		return getConfigurationProperties(this.context, (bean) -> true, showUnsanitized);
 	}
 
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationPropertiesWithPrefix(@Selector String prefix) {
-		return extract(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix));
+		boolean showUnsanitized = this.showValues.isShown(true);
+		return getConfigurationProperties(prefix, showUnsanitized);
 	}
 
-	private ApplicationConfigurationProperties extract(ApplicationContext context,
-			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
+	ApplicationConfigurationProperties getConfigurationProperties(String prefix, boolean showUnsanitized) {
+		return getConfigurationProperties(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix),
+				showUnsanitized);
+	}
+
+	private ApplicationConfigurationProperties getConfigurationProperties(ApplicationContext context,
+			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		ObjectMapper mapper = getObjectMapper();
 		Map<String, ContextConfigurationProperties> contexts = new HashMap<>();
 		ApplicationContext target = context;
+
 		while (target != null) {
-			contexts.put(target.getId(), describeBeans(mapper, target, beanFilterPredicate));
+			contexts.put(target.getId(), describeBeans(mapper, target, beanFilterPredicate, showUnsanitized));
 			target = target.getParent();
 		}
 		return new ApplicationConfigurationProperties(contexts);
@@ -196,20 +200,21 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context,
-			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
+			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values().stream()
-				.filter(beanFilterPredicate)
-				.collect(Collectors.toMap(ConfigurationPropertiesBean::getName, (bean) -> describeBean(mapper, bean)));
+				.filter(beanFilterPredicate).collect(Collectors.toMap(ConfigurationPropertiesBean::getName,
+						(bean) -> describeBean(mapper, bean, showUnsanitized)));
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
 
-	private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean) {
+	private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean,
+			boolean showUnsanitized) {
 		String prefix = bean.getAnnotation().prefix();
 		Map<String, Object> serialized = safeSerialize(mapper, bean.getInstance(), prefix);
-		Map<String, Object> properties = sanitize(prefix, serialized);
-		Map<String, Object> inputs = getInputs(prefix, serialized);
+		Map<String, Object> properties = sanitize(prefix, serialized, showUnsanitized);
+		Map<String, Object> inputs = getInputs(prefix, serialized, showUnsanitized);
 		return new ConfigurationPropertiesBeanDescriptor(prefix, properties, inputs);
 	}
 
@@ -236,35 +241,36 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * information.
 	 * @param prefix the property prefix
 	 * @param map the source map
+	 * @param showUnsanitized whether to show the unsanitized values
 	 * @return the sanitized map
 	 */
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
+	private Map<String, Object> sanitize(String prefix, Map<String, Object> map, boolean showUnsanitized) {
 		map.forEach((key, value) -> {
 			String qualifiedKey = getQualifiedKey(prefix, key);
 			if (value instanceof Map) {
-				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
+				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value, showUnsanitized));
 			}
 			else if (value instanceof List) {
-				map.put(key, sanitize(qualifiedKey, (List<Object>) value));
+				map.put(key, sanitize(qualifiedKey, (List<Object>) value, showUnsanitized));
 			}
 			else {
-				map.put(key, sanitizeWithPropertySourceIfPresent(qualifiedKey, value));
+				map.put(key, sanitizeWithPropertySourceIfPresent(qualifiedKey, value, showUnsanitized));
 			}
 		});
 		return map;
 	}
 
-	private Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value) {
+	private Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value, boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
 		if (propertySource != null) {
 			SanitizableData data = new SanitizableData(propertySource, qualifiedKey, value);
-			return this.sanitizer.sanitize(data);
+			return this.sanitizer.sanitize(data, showUnsanitized);
 		}
 		SanitizableData data = new SanitizableData(null, qualifiedKey, value);
-		return this.sanitizer.sanitize(data);
+		return this.sanitizer.sanitize(data, showUnsanitized);
 	}
 
 	private PropertySource<?> getPropertySource(ConfigurationProperty configurationProperty) {
@@ -293,69 +299,69 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Object> sanitize(String prefix, List<Object> list) {
+	private List<Object> sanitize(String prefix, List<Object> list, boolean showUnsanitized) {
 		List<Object> sanitized = new ArrayList<>();
 		int index = 0;
 		for (Object item : list) {
 			String name = prefix + "[" + index++ + "]";
 			if (item instanceof Map) {
-				sanitized.add(sanitize(name, (Map<String, Object>) item));
+				sanitized.add(sanitize(name, (Map<String, Object>) item, showUnsanitized));
 			}
 			else if (item instanceof List) {
-				sanitized.add(sanitize(name, (List<Object>) item));
+				sanitized.add(sanitize(name, (List<Object>) item, showUnsanitized));
 			}
 			else {
-				sanitized.add(sanitizeWithPropertySourceIfPresent(name, item));
+				sanitized.add(sanitizeWithPropertySourceIfPresent(name, item, showUnsanitized));
 			}
 		}
 		return sanitized;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> getInputs(String prefix, Map<String, Object> map) {
+	private Map<String, Object> getInputs(String prefix, Map<String, Object> map, boolean showUnsanitized) {
 		Map<String, Object> augmented = new LinkedHashMap<>(map);
 		map.forEach((key, value) -> {
 			String qualifiedKey = getQualifiedKey(prefix, key);
 			if (value instanceof Map) {
-				augmented.put(key, getInputs(qualifiedKey, (Map<String, Object>) value));
+				augmented.put(key, getInputs(qualifiedKey, (Map<String, Object>) value, showUnsanitized));
 			}
 			else if (value instanceof List) {
-				augmented.put(key, getInputs(qualifiedKey, (List<Object>) value));
+				augmented.put(key, getInputs(qualifiedKey, (List<Object>) value, showUnsanitized));
 			}
 			else {
-				augmented.put(key, applyInput(qualifiedKey));
+				augmented.put(key, applyInput(qualifiedKey, showUnsanitized));
 			}
 		});
 		return augmented;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Object> getInputs(String prefix, List<Object> list) {
+	private List<Object> getInputs(String prefix, List<Object> list, boolean showUnsanitized) {
 		List<Object> augmented = new ArrayList<>();
 		int index = 0;
 		for (Object item : list) {
 			String name = prefix + "[" + index++ + "]";
 			if (item instanceof Map) {
-				augmented.add(getInputs(name, (Map<String, Object>) item));
+				augmented.add(getInputs(name, (Map<String, Object>) item, showUnsanitized));
 			}
 			else if (item instanceof List) {
-				augmented.add(getInputs(name, (List<Object>) item));
+				augmented.add(getInputs(name, (List<Object>) item, showUnsanitized));
 			}
 			else {
-				augmented.add(applyInput(name));
+				augmented.add(applyInput(name, showUnsanitized));
 			}
 		}
 		return augmented;
 	}
 
-	private Map<String, Object> applyInput(String qualifiedKey) {
+	private Map<String, Object> applyInput(String qualifiedKey, boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
 		if (propertySource != null) {
 			Object value = stringifyIfNecessary(candidate.getValue());
 			SanitizableData data = new SanitizableData(propertySource, currentName.toString(), value);
-			return getInput(candidate, this.sanitizer.sanitize(data));
+			return getInput(candidate, this.sanitizer.sanitize(data, showUnsanitized));
 		}
 		return Collections.emptyMap();
 	}
@@ -550,7 +556,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, ContextConfigurationProperties> contexts;
 
-		private ApplicationConfigurationProperties(Map<String, ContextConfigurationProperties> contexts) {
+		ApplicationConfigurationProperties(Map<String, ContextConfigurationProperties> contexts) {
 			this.contexts = contexts;
 		}
 

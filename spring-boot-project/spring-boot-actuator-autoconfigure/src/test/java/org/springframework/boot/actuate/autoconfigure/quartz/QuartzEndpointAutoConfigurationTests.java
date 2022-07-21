@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure.quartz;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.quartz.Scheduler;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -81,6 +86,34 @@ class QuartzEndpointAutoConfigurationTests {
 						.doesNotHaveBean(QuartzEndpointWebExtension.class));
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void rolesCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
+				.withPropertyValues("management.endpoint.quartz.roles: test")
+				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
+					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
+					QuartzEndpointWebExtension endpoint = context.getBean(QuartzEndpointWebExtension.class);
+					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
+					assertThat(roles.contains("test")).isTrue();
+				});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void showValuesCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
+				.withPropertyValues("management.endpoint.quartz.show-values: WHEN_AUTHORIZED")
+				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
+					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
+					QuartzEndpointWebExtension webExtension = context.getBean(QuartzEndpointWebExtension.class);
+					Show showValuesWebExtension = (Show) ReflectionTestUtils.getField(webExtension, "showValues");
+					assertThat(showValuesWebExtension).isEqualTo(Show.WHEN_AUTHORIZED);
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomEndpointConfiguration {
 
@@ -94,7 +127,7 @@ class QuartzEndpointAutoConfigurationTests {
 	private static final class CustomEndpoint extends QuartzEndpoint {
 
 		private CustomEndpoint() {
-			super(mock(Scheduler.class));
+			super(mock(Scheduler.class), Collections.emptyList());
 		}
 
 	}

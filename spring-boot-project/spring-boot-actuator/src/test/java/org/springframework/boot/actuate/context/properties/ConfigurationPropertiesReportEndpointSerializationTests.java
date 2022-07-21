@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -290,7 +291,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		@Bean
 		ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.ALWAYS);
 		}
 
 	}
@@ -553,7 +554,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		@Bean
 		ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.ALWAYS);
 		}
 
 		@Bean
