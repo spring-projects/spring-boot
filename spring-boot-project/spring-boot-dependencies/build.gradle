@@ -945,7 +945,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Install Plugin", "2.5.2") {
+	library("Maven Install Plugin", "3.0.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-install-plugin"
