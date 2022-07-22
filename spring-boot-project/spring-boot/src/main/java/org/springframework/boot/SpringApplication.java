@@ -285,10 +285,10 @@ public class SpringApplication {
 	}
 
 	private Optional<Class<?>> findMainClass(Stream<StackFrame> stack) {
-		return stack
-				.filter((frame) -> Objects.equals(frame.getMethodName(), "main")
-						&& Objects.equals(frame.getMethodType(), MethodType.methodType(void.class, String[].class)))
-				.findFirst().map(StackWalker.StackFrame::getDeclaringClass);
+		MethodType mainMethodType = MethodType.methodType(void.class, String[].class);
+		return stack.filter((frame) -> Objects.equals(frame.getMethodName(), "main"))
+				.filter((frame) -> Objects.equals(frame.getMethodType(), mainMethodType)).findFirst()
+				.map(StackWalker.StackFrame::getDeclaringClass);
 	}
 
 	/**
