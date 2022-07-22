@@ -264,7 +264,7 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
                     certificate-location: "path-to-certificate"
                 singlelogout:
                    url: "https://myapp/logout/saml2/slo"
-                   reponse-url: "https://remoteidp2.slo.url"
+                   response-url: "https://remoteidp2.slo.url"
                    binding: "POST"
 	            assertingparty:
 	              verification:
