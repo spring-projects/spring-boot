@@ -238,25 +238,20 @@ publishing.publications.withType(MavenPublication) {
 											delegate.goal('aot-generate')
 										}
 									}
-									execution {
-										delegate.id('repackage')
-										configuration {
-											delegate.classifier('exec')
-										}
-									}
 								}
 							}
 							plugin {
 								delegate.groupId('org.graalvm.buildtools')
 								delegate.artifactId('native-maven-plugin')
 								configuration {
+									delegate.classesDirectory('${project.build.outputDirectory}')
 									metadataRepository {
 										delegate.enabled('true')
 									}
 								}
 								executions {
 									execution {
-										delegate.id('build-native')
+										delegate.id('native-build')
 										goals {
 											delegate.goal('build')
 										}
