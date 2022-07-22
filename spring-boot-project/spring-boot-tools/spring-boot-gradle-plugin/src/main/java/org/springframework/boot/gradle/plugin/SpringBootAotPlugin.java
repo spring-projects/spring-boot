@@ -99,10 +99,10 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 					task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
 					task.getArtifactId().set(project.provider(() -> project.getName()));
 				});
-		project.getTasks().getByName(aotSourceSet.getCompileJavaTaskName(),
-				(compile) -> compile.dependsOn(generateAotSources));
-		project.getTasks().getByName(aotSourceSet.getProcessResourcesTaskName(),
-				(processResources) -> processResources.dependsOn(generateAotSources));
+		project.getTasks().named(aotSourceSet.getCompileJavaTaskName())
+				.configure((compileJava) -> compileJava.dependsOn(generateAotSources));
+		project.getTasks().named(aotSourceSet.getProcessResourcesTaskName())
+				.configure((processResources) -> processResources.dependsOn(generateAotSources));
 	}
 
 }
