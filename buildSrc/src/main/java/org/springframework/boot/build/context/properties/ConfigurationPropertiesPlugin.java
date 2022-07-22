@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 import org.springframework.util.StringUtils;
 
@@ -43,6 +45,8 @@ import org.springframework.util.StringUtils;
  * argument.
  * <li>Adding the outputs of the processResources task as inputs of the compileJava task
  * to ensure that the additional metadata is available when the annotation processor runs.
+ * <li>Registering a {@link CheckAdditionalSpringConfigurationMetadata} task and
+ * configuring the {@code check} task to depend upon it.
  * <li>Defining an artifact for the resulting configuration property metadata so that it
  * can be consumed by downstream projects.
  * </ul>
@@ -57,11 +61,17 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	 */
 	public static final String CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME = "configurationPropertiesMetadata";
 
+	/**
+	 * Name of the {@link CheckAdditionalSpringConfigurationMetadata} task.
+	 */
+	public static final String CHECK_ADDITIONAL_SPRING_CONFIGURATION_METADATA_TASK_NAME = "checkAdditionalSpringConfigurationMetadata";
+
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			addConfigurationProcessorDependency(project);
 			configureAdditionalMetadataLocationsCompilerArgument(project);
+			registerCheckAdditionalMetadataTask(project);
 			addMetadataArtifact(project);
 		});
 	}
@@ -96,6 +106,22 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + StringUtils
 						.collectionToCommaDelimitedString(mainSourceSet.getResources().getSourceDirectories().getFiles()
 								.stream().map(project.getRootProject()::relativePath).collect(Collectors.toSet())));
+	}
+
+	private void registerCheckAdditionalMetadataTask(Project project) {
+		TaskProvider<CheckAdditionalSpringConfigurationMetadata> checkConfigurationMetadata = project.getTasks()
+				.register(CHECK_ADDITIONAL_SPRING_CONFIGURATION_METADATA_TASK_NAME,
+						CheckAdditionalSpringConfigurationMetadata.class);
+		checkConfigurationMetadata.configure((check) -> {
+			SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			check.setSource(mainSourceSet.getResources());
+			check.include("META-INF/additional-spring-configuration-metadata.json");
+			check.getReportLocation().set(project.getLayout().getBuildDirectory()
+					.file("reports/additional-spring-configuration-metadata/check.txt"));
+		});
+		project.getTasks().named(LifecycleBasePlugin.CHECK_TASK_NAME)
+				.configure((check) -> check.dependsOn(checkConfigurationMetadata));
 	}
 
 }

@@ -182,6 +182,14 @@
       "defaultValue": "immediate"
     },
     {
+      "name": "server.ssl.certificate",
+      "description": "Path to a PEM-encoded SSL certificate file."
+    },
+    {
+      "name": "server.ssl.certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate."
+    },
+    {
       "name": "server.ssl.ciphers",
       "description": "Supported SSL ciphers."
     },
@@ -228,6 +236,14 @@
       "defaultValue": "TLS"
     },
     {
+      "name": "server.ssl.trust-certificate",
+      "description": "Path to a PEM-encoded SSL certificate authority file."
+    },
+    {
+      "name": "server.ssl.trust-certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
+    },
+    {
       "name": "server.ssl.trust-store",
       "description": "Trust store that holds SSL certificates."
     },
@@ -242,22 +258,6 @@
     {
       "name": "server.ssl.trust-store-type",
       "description": "Type of the trust store."
-    },
-    {
-      "name": "server.ssl.certificate",
-      "description": "Path to a PEM-encoded SSL certificate file."
-    },
-    {
-      "name": "server.ssl.certificate-private-key",
-      "description": "Path to a PEM-encoded private key file for the SSL certificate."
-    },
-    {
-      "name": "server.ssl.trust-certificate",
-      "description": "Path to a PEM-encoded SSL certificate authority file."
-    },
-    {
-      "name": "server.ssl.trust-certificate-private-key",
-      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
     },
     {
       "name": "server.tomcat.max-http-post-size",
@@ -545,14 +545,14 @@
       "defaultValue": "5s"
     },
     {
-      "name": "spring.data.cassandra.controlconnection.timeout",
-      "defaultValue": "5s"
-    },
-    {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
         "127.0.0.1:9042"
       ]
+    },
+    {
+      "name": "spring.data.cassandra.controlconnection.timeout",
+      "defaultValue": "5s"
     },
     {
       "name": "spring.data.cassandra.jmx-enabled",
