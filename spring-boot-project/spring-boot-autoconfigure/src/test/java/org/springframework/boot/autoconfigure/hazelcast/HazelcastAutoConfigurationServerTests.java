@@ -131,6 +131,7 @@ class HazelcastAutoConfigurationServerTests {
 	@Test
 	void configInstanceWithName() {
 		Config config = new Config("my-test-instance");
+		config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(false);
 		HazelcastInstance existing = Hazelcast.newHazelcastInstance(config);
 		try {
 			this.contextRunner.withUserConfiguration(HazelcastConfigWithName.class)
@@ -180,6 +181,7 @@ class HazelcastAutoConfigurationServerTests {
 		@Bean
 		Config anotherHazelcastConfig() {
 			Config config = new Config();
+			config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(false);
 			config.addQueueConfig(new QueueConfig("another-queue"));
 			return config;
 		}
