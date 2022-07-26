@@ -16,6 +16,8 @@
 
 package org.springframework.boot.json;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -51,6 +53,12 @@ class YamlJsonParserTests extends AbstractJsonParserTests {
 	@Override
 	@Disabled("SnakeYaml does not fail when a map has a key with no value")
 	void mapWithKeyAndNoValue() {
+	}
+
+	@Override
+	@Disabled("SnakeYaml does not protect against deeply nested JSON")
+	void listWithRepeatedOpenArray() throws IOException {
+		super.listWithRepeatedOpenArray();
 	}
 
 }

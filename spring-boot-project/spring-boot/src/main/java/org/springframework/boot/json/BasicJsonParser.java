@@ -37,6 +37,8 @@ import org.springframework.util.StringUtils;
  */
 public class BasicJsonParser extends AbstractJsonParser {
 
+	private static final int MAX_DEPTH = 1000;
+
 	@Override
 	public Map<String, Object> parseMap(String json) {
 		return tryParse(() -> parseMap(json, this::parseMapInternal), Exception.class);
@@ -44,21 +46,24 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	@Override
 	public List<Object> parseList(String json) {
-		return tryParse(() -> parseList(json, this::parseListInternal), Exception.class);
+		return tryParse(() -> parseList(json, (jsonToParse) -> parseListInternal(0, jsonToParse)), Exception.class);
 	}
 
-	private List<Object> parseListInternal(String json) {
+	private List<Object> parseListInternal(int nesting, String json) {
 		List<Object> list = new ArrayList<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, ']'), '[').trim();
 		for (String value : tokenize(json)) {
-			list.add(parseInternal(value));
+			list.add(parseInternal(nesting + 1, value));
 		}
 		return list;
 	}
 
-	private Object parseInternal(String json) {
+	private Object parseInternal(int nesting, String json) {
+		if (nesting > MAX_DEPTH) {
+			throw new IllegalStateException("JSON is too deeply nested");
+		}
 		if (json.startsWith("[")) {
-			return parseListInternal(json);
+			return parseListInternal(nesting + 1, json);
 		}
 		if (json.startsWith("{")) {
 			return parseMapInternal(json);
@@ -101,7 +106,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 		for (String pair : tokenize(json)) {
 			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
 			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
-			Object value = parseInternal(values[1]);
+			Object value = parseInternal(0, values[1]);
 			map.put(key, value);
 		}
 		return map;
