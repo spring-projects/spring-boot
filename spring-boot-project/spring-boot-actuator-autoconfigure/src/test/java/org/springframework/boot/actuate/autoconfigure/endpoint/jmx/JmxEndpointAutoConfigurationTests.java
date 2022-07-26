@@ -37,6 +37,8 @@ import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDisco
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,6 +53,9 @@ import static org.mockito.Mockito.times;
  * @author Stephane Nicoll
  */
 class JmxEndpointAutoConfigurationTests {
+
+	private static final ContextConsumer<ConfigurableApplicationContext> NO_OPERATION = (context) -> {
+	};
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class, JmxAutoConfiguration.class,
@@ -90,11 +95,11 @@ class JmxEndpointAutoConfigurationTests {
 		given(this.mBeanServer.queryNames(any(), any()))
 				.willReturn(new HashSet<>(Arrays.asList(new ObjectName("test:test=test"))));
 		ArgumentCaptor<ObjectName> objectName = ArgumentCaptor.forClass(ObjectName.class);
-		this.contextRunner.withPropertyValues("spring.jmx.enabled=true").with(mockMBeanServer()).run((parent) -> {
-			this.contextRunner.withPropertyValues("spring.jmx.enabled=true").withParent(parent).run((child) -> {
-			});
-			this.contextRunner.withPropertyValues("spring.jmx.enabled=true").withParent(parent).run((child) -> {
-			});
+		ApplicationContextRunner jmxEnabledContextRunner = this.contextRunner
+				.withPropertyValues("spring.jmx.enabled=true");
+		jmxEnabledContextRunner.with(mockMBeanServer()).run((parent) -> {
+			jmxEnabledContextRunner.withParent(parent).run(NO_OPERATION);
+			jmxEnabledContextRunner.withParent(parent).run(NO_OPERATION);
 		});
 		then(this.mBeanServer).should(times(3)).registerMBean(any(Object.class), objectName.capture());
 		Set<ObjectName> uniqueValues = new HashSet<>(objectName.getAllValues());
