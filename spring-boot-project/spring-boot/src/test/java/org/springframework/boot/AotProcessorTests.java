@@ -45,7 +45,7 @@ class AotProcessorTests {
 	}
 
 	@Test
-	void processApplicationInvokesRunMethod(@TempDir Path directory) {
+	void processApplicationInvokesRunMethod(@TempDir Path directory) throws IOException {
 		String[] arguments = new String[] { "1", "2" };
 		AotProcessor processor = new AotProcessor(SampleApplication.class, arguments, directory.resolve("source"),
 				directory.resolve("resource"), directory.resolve("class"), "com.example", "example");
