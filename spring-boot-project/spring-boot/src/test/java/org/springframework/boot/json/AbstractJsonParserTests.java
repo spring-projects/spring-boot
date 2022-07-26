@@ -16,10 +16,14 @@
 
 package org.springframework.boot.json;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -184,6 +188,14 @@ abstract class AbstractJsonParserTests {
 	@Test
 	void mapWithKeyAndNoValue() {
 		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseMap("{\"foo\"}"));
+	}
+
+	@Test // gh-31868
+	void listWithRepeatedOpenArray() throws IOException {
+		String input = StreamUtils.copyToString(
+				AbstractJsonParserTests.class.getResourceAsStream("repeated-open-array.txt"), StandardCharsets.UTF_8);
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input)).havingCause()
+				.withMessageContaining("too deeply nested");
 	}
 
 }
