@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link NamedContributorsMapAdapter}.
  *
  * @author Phillip Webb
+ * @author Guirong Hu
  */
 class NamedContributorsMapAdapterTests {
 
@@ -94,12 +95,11 @@ class NamedContributorsMapAdapterTests {
 	}
 
 	@Test
-	void eachValueAdapterShouldBeCalledOnlyOnce() {
+	void getContributorCallsAdaptersOnlyOnce() {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("one", "one");
 		map.put("two", "two");
 		int callCount = map.size();
-
 		AtomicInteger counter = new AtomicInteger(0);
 		TestNamedContributorsMapAdapter<String> adapter = new TestNamedContributorsMapAdapter<>(map,
 				(name) -> count(name, counter));

@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 
@@ -37,34 +37,30 @@ import org.springframework.util.Assert;
  */
 abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C> {
 
-	private final Map<String, C> namedContributorsMap;
+	private final Map<String, C> map;
 
 	NamedContributorsMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
 		Assert.notNull(map, "Map must not be null");
 		Assert.notNull(valueAdapter, "ValueAdapter must not be null");
-		this.namedContributorsMap = getContributorsMap(map, valueAdapter);
-	}
-
-	private Map<String, C> getContributorsMap(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
-		Map<String, C> contributorsMap = new LinkedHashMap<>(map.size());
-		map.forEach((name, value) -> {
-			this.validateKey(name);
-			C contributor = adapt(value, valueAdapter);
-			Assert.notNull(contributor, "Map must not contain null values");
-			contributorsMap.put(name, contributor);
-		});
-		return Collections.unmodifiableMap(contributorsMap);
+		map.keySet().forEach(this::validateKey);
+		this.map = Collections.unmodifiableMap(map.entrySet().stream()
+				.collect(Collectors.toMap(Entry::getKey, (entry) -> adapt(entry.getValue(), valueAdapter))));
 	}
 
 	private void validateKey(String value) {
 		Assert.notNull(value, "Map must not contain null keys");
 		Assert.isTrue(!value.contains("/"), "Map keys must not contain a '/'");
+	}
 
+	private C adapt(V value, Function<V, ? extends C> valueAdapter) {
+		C contributor = (value != null) ? valueAdapter.apply(value) : null;
+		Assert.notNull(contributor, "Map must not contain null values");
+		return contributor;
 	}
 
 	@Override
 	public Iterator<NamedContributor<C>> iterator() {
-		Iterator<Entry<String, C>> iterator = this.namedContributorsMap.entrySet().iterator();
+		Iterator<Entry<String, C>> iterator = this.map.entrySet().iterator();
 		return new Iterator<NamedContributor<C>>() {
 
 			@Override
@@ -83,11 +79,7 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 
 	@Override
 	public C getContributor(String name) {
-		return this.namedContributorsMap.get(name);
-	}
-
-	private C adapt(V value, Function<V, ? extends C> valueAdapter) {
-		return (value != null) ? valueAdapter.apply(value) : null;
+		return this.map.get(name);
 	}
 
 }
