@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class GangliaProperties {
 	private GMetric.UDPAddressingMode addressingMode = GMetric.UDPAddressingMode.MULTICAST;
 
 	/**
-	 * Time to live for metrics on Ganglia. Set the multi-cast Time-To-Live to be one
+	 * Time to live for metrics on Ganglia. Set the multicast Time-To-Live to be one
 	 * greater than the number of hops (routers) between the hosts.
 	 */
 	private Integer timeToLive = 1;

@@ -119,7 +119,7 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 				ServletContextAwareEmbeddedConfiguration.class);
 		verifyContext();
 		// You can't initialize the application context and inject the servlet context
-		// because of a cycle - we'd like this to be not null but it never will be
+		// because of a cycle - we'd like this to be not null, but it never will be
 		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class).getServletContext()).isNull();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public final class VolumeName {
 	 * Factory method to create a new {@link VolumeName} with a random name.
 	 * @param prefix the prefix to use with the random name
 	 * @param randomLength the number of chars in the random part of the name
-	 * @return a randomly volume reference
+	 * @return a randomly named volume reference
 	 */
 	public static VolumeName random(String prefix, int randomLength) {
 		return of(RandomString.generate(prefix, randomLength));

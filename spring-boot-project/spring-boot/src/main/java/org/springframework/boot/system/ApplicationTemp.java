@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,9 +81,9 @@ public class ApplicationTemp {
 	}
 
 	/**
-	 * Return a sub-directory of the application temp.
-	 * @param subDir the sub-directory name
-	 * @return a sub-directory
+	 * Return a subdirectory of the application temp.
+	 * @param subDir the subdirectory name
+	 * @return a subdirectory
 	 */
 	public File getDir(String subDir) {
 		return createDirectory(getPath().resolve(subDir)).toFile();

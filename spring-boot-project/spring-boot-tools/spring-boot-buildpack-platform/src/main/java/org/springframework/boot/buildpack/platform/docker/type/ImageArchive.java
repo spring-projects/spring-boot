@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-	 * Return the create data of the archive.
+	 * Return the create date of the archive.
 	 * @return the create date
 	 */
 	public Instant getCreateDate() {

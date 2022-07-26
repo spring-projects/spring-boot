@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ public class InvocationContext {
 	}
 
 	/**
-	 * Returns whether or not the context is capable of resolving an argument of the given
+	 * Returns whether the context is capable of resolving an argument of the given
 	 * {@code type}. Note that, even when {@code true} is returned,
 	 * {@link #resolveArgument argument resolution} will return {@code null} if no
 	 * argument of the required type is available.

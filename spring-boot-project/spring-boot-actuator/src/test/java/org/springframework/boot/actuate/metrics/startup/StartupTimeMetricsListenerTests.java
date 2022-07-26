@@ -84,9 +84,9 @@ class StartupTimeMetricsListenerTests {
 		Tags tags = Tags.of("foo", "bar");
 		this.listener = new StartupTimeMetricsListener(this.registry, "started", "ready", tags);
 		this.listener.onApplicationEvent(new ApplicationReadyEvent(application, null, null, Duration.ofSeconds(2)));
-		TimeGauge applicationReadyGague = this.registry.find("ready").timeGauge();
-		assertThat(applicationReadyGague).isNotNull();
-		assertThat(applicationReadyGague.getId().getTags()).containsExactlyElementsOf(tags);
+		TimeGauge applicationReadyGauge = this.registry.find("ready").timeGauge();
+		assertThat(applicationReadyGauge).isNotNull();
+		assertThat(applicationReadyGauge.getId().getTags()).containsExactlyElementsOf(tags);
 	}
 
 	@Test

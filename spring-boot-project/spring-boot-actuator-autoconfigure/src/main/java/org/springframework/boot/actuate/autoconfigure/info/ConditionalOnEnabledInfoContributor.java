@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional @Conditional} that checks whether or not an info contributor is
- * enabled. Matches if the value of the {@code management.info.<name>.enabled} property is
+ * {@link Conditional @Conditional} that checks whether an info contributor is enabled.
+ * Matches if the value of the {@code management.info.<name>.enabled} property is
  * {@code true}. Otherwise, use the specific {@link #fallback() fallback} method.
  *
  * @author Stephane Nicoll
