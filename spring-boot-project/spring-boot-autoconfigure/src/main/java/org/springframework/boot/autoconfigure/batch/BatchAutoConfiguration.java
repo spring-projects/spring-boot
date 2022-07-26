@@ -41,7 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -101,7 +100,6 @@ public class BatchAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(DatabasePopulator.class)
 	@Conditional(OnBatchDatasourceInitializationCondition.class)
 	static class DataSourceInitializerConfiguration {
 
