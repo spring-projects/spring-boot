@@ -1472,9 +1472,13 @@ bom {
 			modules = [
 				"json-path",
 				"json-schema-validator",
+				"kotlin-extensions",
 				"rest-assured",
+				"rest-assured-common",
 				"scala-support",
+				"spring-commons",
 				"spring-mock-mvc",
+				"spring-mock-mvc-kotlin-extensions",
 				"spring-web-test-client",
 				"xml-path"
 			]
