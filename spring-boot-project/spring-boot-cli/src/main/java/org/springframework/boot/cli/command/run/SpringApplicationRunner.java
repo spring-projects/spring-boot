@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class SpringApplicationRunner {
 				stop();
 				Class<?>[] compiledSources = compile();
 				monitorForChanges();
-				// Run in new thread to ensure that the context classloader is setup
+				// Run in new thread to ensure that the context classloader is set up
 				this.runThread = new RunThread(compiledSources);
 				this.runThread.start();
 				this.runThread.join();

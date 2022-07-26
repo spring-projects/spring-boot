@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class DatabaseDriverClassNameTests {
 	}
 
 	private List<String> getInterfaceNames(String className) throws IOException {
-		// Use ASM to avoid unwanted side-effects of loading JDBC drivers
+		// Use ASM to avoid unwanted side effects of loading JDBC drivers
 		ClassReader classReader = new ClassReader(getClass().getResourceAsStream("/" + className + ".class"));
 		List<String> interfaceNames = new ArrayList<>();
 		for (String name : classReader.getInterfaces()) {

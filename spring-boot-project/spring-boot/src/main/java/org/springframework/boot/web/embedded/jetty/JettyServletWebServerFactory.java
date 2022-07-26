@@ -479,7 +479,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	/**
 	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
-	 * applied to the {@link Server} before the it is created.
+	 * applied to the {@link Server} before it is created.
 	 * @return the {@link JettyServerCustomizer}s
 	 */
 	public Collection<JettyServerCustomizer> getServerCustomizers() {
@@ -694,13 +694,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		@Override
 		public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 				throws IOException, ServletException {
-			HttpServletResponse wrappedResponse = new ResposeWrapper(response);
+			HttpServletResponse wrappedResponse = new ResponseWrapper(response);
 			super.handle(target, baseRequest, request, wrappedResponse);
 		}
 
-		class ResposeWrapper extends HttpServletResponseWrapper {
+		class ResponseWrapper extends HttpServletResponseWrapper {
 
-			ResposeWrapper(HttpServletResponse response) {
+			ResponseWrapper(HttpServletResponse response) {
 				super(response);
 			}
 

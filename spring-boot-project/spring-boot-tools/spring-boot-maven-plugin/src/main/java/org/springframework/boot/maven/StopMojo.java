@@ -68,7 +68,7 @@ public class StopMojo extends AbstractMojo {
 	private String jmxName;
 
 	/**
-	 * The port to use to lookup the platform MBeanServer if the application has been
+	 * The port to use to look up the platform MBeanServer if the application has been
 	 * forked.
 	 */
 	@Parameter(defaultValue = "9001")

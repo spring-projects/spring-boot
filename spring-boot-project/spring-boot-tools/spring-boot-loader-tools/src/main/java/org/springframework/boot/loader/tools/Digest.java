@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ final class Digest {
 	}
 
 	/**
-	 * Return the SHA1 digest from the supplied stream.
+	 * Return the SHA-1 digest from the supplied stream.
 	 * @param supplier the stream supplier
-	 * @return the SHA1 digest
+	 * @return the SHA-1 digest
 	 * @throws IOException on IO error
 	 */
 	static String sha1(InputStreamSupplier supplier) throws IOException {

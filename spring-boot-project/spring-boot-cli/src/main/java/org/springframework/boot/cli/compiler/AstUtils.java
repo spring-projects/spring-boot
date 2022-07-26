@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,7 +143,7 @@ public abstract class AstUtils {
 	 * optionally removing it from the block at the same time.
 	 * @param block a block statement (class definition)
 	 * @param name the name to look for
-	 * @param remove whether or not the extracted closure should be removed
+	 * @param remove whether the extracted closure should be removed
 	 * @return a beans Closure if one can be found, null otherwise
 	 */
 	public static ClosureExpression getClosure(BlockStatement block, String name, boolean remove) {
