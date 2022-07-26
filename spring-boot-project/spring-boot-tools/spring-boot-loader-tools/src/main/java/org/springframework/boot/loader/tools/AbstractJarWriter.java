@@ -375,8 +375,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-	 * An {@code UnpackHandler} determines whether or not unpacking is required and
-	 * provides a SHA1 hash if required.
+	 * An {@code UnpackHandler} determines whether unpacking is required and provides a
+	 * SHA-1 hash if required.
 	 */
 	interface UnpackHandler {
 

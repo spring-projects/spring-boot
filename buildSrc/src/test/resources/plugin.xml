@@ -805,7 +805,7 @@ required to use this feature.</description>
           <type>long</type>
           <required>false</required>
           <editable>true</editable>
-          <description>The number of milli-seconds to wait between each attempt to check if the spring
+          <description>The number of milliseconds to wait between each attempt to check if the spring
 application is ready.</description>
         </parameter>
         <parameter>
@@ -880,7 +880,7 @@ application.</description>
           <type>int</type>
           <required>false</required>
           <editable>true</editable>
-          <description>The port to use to lookup the platform MBeanServer if the application has been
+          <description>The port to use to look up the platform MBeanServer if the application has been
 forked.</description>
         </parameter>
         <parameter>

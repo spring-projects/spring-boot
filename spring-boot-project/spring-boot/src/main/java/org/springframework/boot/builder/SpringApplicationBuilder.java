@@ -133,8 +133,8 @@ public class SpringApplicationBuilder {
 
 	/**
 	 * Create an application context (and its parent if specified) with the command line
-	 * args provided. The parent is run first with the same arguments if has not yet been
-	 * started.
+	 * args provided. The parent is run first with the same arguments if it has not yet
+	 * been started.
 	 * @param args the command line arguments
 	 * @return an application context created from the current state
 	 */

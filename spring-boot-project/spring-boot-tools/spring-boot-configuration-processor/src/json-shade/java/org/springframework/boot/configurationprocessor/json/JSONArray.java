@@ -632,13 +632,13 @@ public class JSONArray {
 	}
 
 	/**
-	 * Encodes this array as a human readable JSON string for debugging, such as: <pre>
+	 * Encodes this array as a human-readable JSON string for debugging, such as: <pre>
 	 * [
 	 *     94043,
 	 *     90210
 	 * ]</pre>
 	 * @param indentSpaces the number of spaces to indent for each level of nesting.
-	 * @return a human readable JSON string of this array
+	 * @return a human-readable JSON string of this array
 	 * @throws JSONException if processing of json failed
 	 */
 	public String toString(int indentSpaces) throws JSONException {

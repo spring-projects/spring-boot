@@ -55,7 +55,7 @@ public class GangliaProperties {
 	private GMetric.UDPAddressingMode addressingMode = GMetric.UDPAddressingMode.MULTICAST;
 
 	/**
-	 * Time to live for metrics on Ganglia. Set the multi-cast Time-To-Live to be one
+	 * Time to live for metrics on Ganglia. Set the multicast Time-To-Live to be one
 	 * greater than the number of hops (routers) between the hosts.
 	 */
 	private Integer timeToLive = 1;

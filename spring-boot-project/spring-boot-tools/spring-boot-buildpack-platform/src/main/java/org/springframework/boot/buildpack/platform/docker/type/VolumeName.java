@@ -72,7 +72,7 @@ public final class VolumeName {
 	 * Factory method to create a new {@link VolumeName} with a random name.
 	 * @param prefix the prefix to use with the random name
 	 * @param randomLength the number of chars in the random part of the name
-	 * @return a randomly volume reference
+	 * @return a randomly named volume reference
 	 */
 	public static VolumeName random(String prefix, int randomLength) {
 		return of(RandomString.generate(prefix, randomLength));

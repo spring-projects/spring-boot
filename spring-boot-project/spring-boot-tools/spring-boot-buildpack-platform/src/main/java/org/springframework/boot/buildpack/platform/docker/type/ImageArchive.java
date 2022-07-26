@@ -100,7 +100,7 @@ public class ImageArchive implements TarArchive {
 	}
 
 	/**
-	 * Return the create data of the archive.
+	 * Return the create date of the archive.
 	 * @return the create date
 	 */
 	public Instant getCreateDate() {

@@ -143,7 +143,7 @@ public abstract class AstUtils {
 	 * optionally removing it from the block at the same time.
 	 * @param block a block statement (class definition)
 	 * @param name the name to look for
-	 * @param remove whether or not the extracted closure should be removed
+	 * @param remove whether the extracted closure should be removed
 	 * @return a beans Closure if one can be found, null otherwise
 	 */
 	public static ClosureExpression getClosure(BlockStatement block, String name, boolean remove) {

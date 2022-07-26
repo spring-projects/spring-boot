@@ -105,9 +105,8 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Whether or not the project archive should be extracted in the output location. If
-	 * the {@link #getOutput() output} ends with "/", the project is extracted
-	 * automatically.
+	 * Whether the project archive should be extracted in the output location. If the
+	 * {@link #getOutput() output} ends with "/", the project is extracted automatically.
 	 * @return {@code true} if the archive should be extracted, otherwise {@code false}
 	 */
 	boolean isExtract() {
@@ -242,7 +241,7 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Whether or not the type should be detected based on the build and format value.
+	 * Whether the type should be detected based on the build and format value.
 	 * @return {@code true} if type detection will be performed, otherwise {@code false}
 	 */
 	boolean isDetectType() {

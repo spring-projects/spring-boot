@@ -318,7 +318,7 @@ public class FlywayProperties {
 	private String oracleKerberosCacheFile;
 
 	/**
-	 * Location of the Oracle Wallet, used to sign-in to the database automatically.
+	 * Location of the Oracle Wallet, used to sign in to the database automatically.
 	 * Requires Flyway Teams.
 	 */
 	private String oracleWalletLocation;
