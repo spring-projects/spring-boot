@@ -6,6 +6,7 @@
 	<map name="defaultCache" />
 	<network>
 		<join>
+			<auto-detection enabled="false" />
 			<tcp-ip enabled="false"/>
 			<multicast enabled="false"/>
 		</join>
