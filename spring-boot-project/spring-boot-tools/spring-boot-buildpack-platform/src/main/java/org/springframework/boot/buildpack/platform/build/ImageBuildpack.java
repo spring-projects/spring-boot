@@ -61,12 +61,8 @@ final class ImageBuildpack implements Buildpack {
 			Image image = context.fetchImage(reference, ImageType.BUILDPACK);
 			BuildpackMetadata buildpackMetadata = BuildpackMetadata.fromImage(image);
 			this.coordinates = BuildpackCoordinates.fromBuildpackMetadata(buildpackMetadata);
-			if (!buildpackExistsInBuilder(context, image.getLayers())) {
-				this.exportedLayers = new ExportedLayers(context, reference);
-			}
-			else {
-				this.exportedLayers = null;
-			}
+			this.exportedLayers = (!buildpackExistsInBuilder(context, image.getLayers()))
+					? new ExportedLayers(context, reference) : null;
 		}
 		catch (IOException | DockerEngineException ex) {
 			throw new IllegalArgumentException("Error pulling buildpack image '" + reference + "'", ex);
@@ -76,11 +72,8 @@ final class ImageBuildpack implements Buildpack {
 	private boolean buildpackExistsInBuilder(BuildpackResolverContext context, List<LayerId> imageLayers) {
 		BuildpackLayerDetails buildpackLayerDetails = context.getBuildpackLayersMetadata()
 				.getBuildpack(this.coordinates.getId(), this.coordinates.getVersion());
-		if (buildpackLayerDetails != null) {
-			String layerDiffId = buildpackLayerDetails.getLayerDiffId();
-			return imageLayers.stream().map(LayerId::toString).anyMatch((layerId) -> layerId.equals(layerDiffId));
-		}
-		return false;
+		String layerDiffId = (buildpackLayerDetails != null) ? buildpackLayerDetails.getLayerDiffId() : null;
+		return (layerDiffId != null) && imageLayers.stream().map(LayerId::toString).anyMatch(layerDiffId::equals);
 	}
 
 	@Override
