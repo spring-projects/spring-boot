@@ -42,7 +42,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		return tryParse(() -> parseMap(json, this::parseMapInternal), Exception.class);
+		return tryParse(() -> parseMap(json, (jsonToParse) -> parseMapInternal(0, jsonToParse)), Exception.class);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			return parseListInternal(nesting + 1, json);
 		}
 		if (json.startsWith("{")) {
-			return parseMapInternal(json);
+			return parseMapInternal(nesting, json);
 		}
 		if (json.startsWith("\"")) {
 			return trimTrailingCharacter(trimLeadingCharacter(json, '"'), '"');
@@ -87,7 +87,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 		return json;
 	}
 
-	private Map<String, Object> parseMapInternal(String json) {
+	private Map<String, Object> parseMapInternal(int nesting, String json) {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
 		for (String pair : tokenize(json)) {
@@ -95,7 +95,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			Assert.state(values[0].startsWith("\"") && values[0].endsWith("\""),
 					"Expecting double-quotes around field names");
 			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
-			Object value = parseInternal(0, values[1]);
+			Object value = parseInternal(nesting, values[1]);
 			map.put(key, value);
 		}
 		return map;
