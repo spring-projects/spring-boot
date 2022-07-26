@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -86,6 +87,20 @@ public class BasicJsonParser extends AbstractJsonParser {
 		return json;
 	}
 
+	private Map<String, Object> parseMapInternal(String json) {
+		Map<String, Object> map = new LinkedHashMap<>();
+		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
+		for (String pair : tokenize(json)) {
+			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
+			Assert.state(values[0].startsWith("\"") && values[0].endsWith("\""),
+					"Expecting double-quotes around field names");
+			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
+			Object value = parseInternal(0, values[1]);
+			map.put(key, value);
+		}
+		return map;
+	}
+
 	private static String trimTrailingCharacter(String string, char c) {
 		if (!string.isEmpty() && string.charAt(string.length() - 1) == c) {
 			return string.substring(0, string.length() - 1);
@@ -98,18 +113,6 @@ public class BasicJsonParser extends AbstractJsonParser {
 			return string.substring(1);
 		}
 		return string;
-	}
-
-	private Map<String, Object> parseMapInternal(String json) {
-		Map<String, Object> map = new LinkedHashMap<>();
-		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
-		for (String pair : tokenize(json)) {
-			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
-			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
-			Object value = parseInternal(0, values[1]);
-			map.put(key, value);
-		}
-		return map;
 	}
 
 	private List<String> tokenize(String json) {
