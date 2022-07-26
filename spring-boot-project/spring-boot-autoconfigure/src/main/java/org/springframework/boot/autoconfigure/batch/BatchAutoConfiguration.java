@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,7 +61,7 @@ import org.springframework.util.StringUtils;
  * @since 1.0.0
  */
 @AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
-@ConditionalOnClass({ JobLauncher.class, DataSource.class })
+@ConditionalOnClass({ JobLauncher.class, DataSource.class, DatabasePopulator.class })
 @ConditionalOnBean({ DataSource.class, JobLauncher.class })
 @EnableConfigurationProperties(BatchProperties.class)
 @Import({ BatchConfigurerConfiguration.class, DatabaseInitializationDependencyConfigurer.class })

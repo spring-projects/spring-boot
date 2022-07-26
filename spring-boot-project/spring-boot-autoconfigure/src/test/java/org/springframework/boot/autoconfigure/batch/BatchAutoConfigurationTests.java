@@ -61,6 +61,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -71,6 +72,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -111,6 +113,15 @@ class BatchAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean(JobLauncher.class);
 					assertThat(context).doesNotHaveBean(JobRepository.class);
+				});
+	}
+
+	@Test
+	void autoconfigurationBacksOffEntirelyIfSpringJdbcAbsent() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(DatabasePopulator.class)).run((context) -> {
+					assertThat(context).doesNotHaveBean(JobLauncherApplicationRunner.class);
+					assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class);
 				});
 	}
 
