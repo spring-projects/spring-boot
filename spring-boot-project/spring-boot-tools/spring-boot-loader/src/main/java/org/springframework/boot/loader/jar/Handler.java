@@ -413,7 +413,7 @@ public class Handler extends URLStreamHandler {
 	 */
 	static void captureJarContextUrl() {
 		if (canResetCachedUrlHandlers()) {
-			String handlers = System.getProperty(PROTOCOL_HANDLER, "");
+			String handlers = System.getProperty(PROTOCOL_HANDLER);
 			try {
 				System.clearProperty(PROTOCOL_HANDLER);
 				try {
