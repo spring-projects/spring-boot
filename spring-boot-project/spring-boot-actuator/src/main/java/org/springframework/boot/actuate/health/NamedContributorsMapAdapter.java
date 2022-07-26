@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 
@@ -31,34 +31,36 @@ import org.springframework.util.Assert;
  * @param <V> the value type
  * @param <C> the contributor type
  * @author Phillip Webb
+ * @author Guirong Hu
  * @see CompositeHealthContributorMapAdapter
  * @see CompositeReactiveHealthContributorMapAdapter
  */
 abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C> {
 
-	private final Map<String, V> map;
-
-	private final Function<V, ? extends C> valueAdapter;
+	private final Map<String, C> map;
 
 	NamedContributorsMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
 		Assert.notNull(map, "Map must not be null");
 		Assert.notNull(valueAdapter, "ValueAdapter must not be null");
 		map.keySet().forEach(this::validateKey);
-		map.values().stream().map(valueAdapter)
-				.forEach((value) -> Assert.notNull(value, "Map must not contain null values"));
-		this.map = Collections.unmodifiableMap(new LinkedHashMap<>(map));
-		this.valueAdapter = valueAdapter;
+		this.map = Collections.unmodifiableMap(map.entrySet().stream()
+				.collect(Collectors.toMap(Entry::getKey, (entry) -> adapt(entry.getValue(), valueAdapter))));
 	}
 
 	private void validateKey(String value) {
 		Assert.notNull(value, "Map must not contain null keys");
 		Assert.isTrue(!value.contains("/"), "Map keys must not contain a '/'");
+	}
 
+	private C adapt(V value, Function<V, ? extends C> valueAdapter) {
+		C contributor = (value != null) ? valueAdapter.apply(value) : null;
+		Assert.notNull(contributor, "Map must not contain null values");
+		return contributor;
 	}
 
 	@Override
 	public Iterator<NamedContributor<C>> iterator() {
-		Iterator<Entry<String, V>> iterator = this.map.entrySet().iterator();
+		Iterator<Entry<String, C>> iterator = this.map.entrySet().iterator();
 		return new Iterator<NamedContributor<C>>() {
 
 			@Override
@@ -68,8 +70,8 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 
 			@Override
 			public NamedContributor<C> next() {
-				Entry<String, V> entry = iterator.next();
-				return NamedContributor.of(entry.getKey(), adapt(entry.getValue()));
+				Entry<String, C> entry = iterator.next();
+				return NamedContributor.of(entry.getKey(), entry.getValue());
 			}
 
 		};
@@ -77,11 +79,7 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 
 	@Override
 	public C getContributor(String name) {
-		return adapt(this.map.get(name));
-	}
-
-	private C adapt(V value) {
-		return (value != null) ? this.valueAdapter.apply(value) : null;
+		return this.map.get(name);
 	}
 
 }
