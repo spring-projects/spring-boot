@@ -61,4 +61,9 @@ class YamlJsonParserTests extends AbstractJsonParserTests {
 		super.listWithRepeatedOpenArray();
 	}
 
+	@Override
+	@Disabled("SnakeYaml does not protect against malformed keys")
+	void largeMalformed() throws IOException {
+	}
+
 }

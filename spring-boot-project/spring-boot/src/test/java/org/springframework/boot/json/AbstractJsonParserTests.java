@@ -198,4 +198,11 @@ abstract class AbstractJsonParserTests {
 				.withMessageContaining("too deeply nested");
 	}
 
+	@Test // gh-31869
+	void largeMalformed() throws IOException {
+		String input = StreamUtils.copyToString(
+				AbstractJsonParserTests.class.getResourceAsStream("large-malformed-json.txt"), StandardCharsets.UTF_8);
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input));
+	}
+
 }
