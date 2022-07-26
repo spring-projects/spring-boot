@@ -1444,14 +1444,8 @@ bom {
 	}
 	library("REST Assured", "4.5.1") {
 		group("io.rest-assured") {
-			modules = [
-				"json-path",
-				"json-schema-validator",
-				"rest-assured",
-				"scala-support",
-				"spring-mock-mvc",
-				"spring-web-test-client",
-				"xml-path"
+			imports = [
+				"rest-assured-bom"
 			]
 		}
 	}
