@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@ import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.instance.BuildInfoProvider;
 import org.assertj.core.api.Condition;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -44,6 +47,16 @@ class Hazelcast3AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
+
+	@BeforeEach
+	void setHazelcastVersionOverride() {
+		System.setProperty(BuildInfoProvider.HAZELCAST_INTERNAL_OVERRIDE_VERSION, "3.12.8");
+	}
+
+	@AfterEach
+	void clearHazelcastVersionOverride() {
+		System.clearProperty(BuildInfoProvider.HAZELCAST_INTERNAL_OVERRIDE_VERSION);
+	}
 
 	@Test
 	void defaultConfigFile() {
