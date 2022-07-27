@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.hazelcast;
 
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
+import com.hazelcast.config.JoinConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.context.SpringManagedContext;
@@ -30,42 +31,43 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
-import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HazelcastAutoConfiguration} with Hazelcast 3.
+ * Tests for {@link HazelcastAutoConfiguration} with Hazelcast 4.
  *
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("hazelcast*.jar")
-@ClassPathOverrides({ "com.hazelcast:hazelcast:3.12.12", "com.hazelcast:hazelcast-client:3.12.12",
-		"com.hazelcast:hazelcast-spring:3.12.12" })
-class Hazelcast3AutoConfigurationTests {
+@ClassPathOverrides({ "com.hazelcast:hazelcast:4.2.5", "com.hazelcast:hazelcast-spring:4.2.5" })
+class Hazelcast4AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
-	void defaultConfigFile() {
-		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
-		// this also asserts that XML has priority over YAML
-		// as both hazelcast.yaml and hazelcast.xml in test classpath.
-		this.contextRunner.run((context) -> {
-			Config config = context.getBean(HazelcastInstance.class).getConfig();
-			assertThat(config.getConfigurationUrl()).isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
-		});
+	void serverConfig() {
+		this.contextRunner.withPropertyValues(
+				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-server.xml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getInstanceName()).isEqualTo("explicit-server");
+				});
 	}
 
 	@Test
 	void explicitConfigFileWithXml() {
-		HazelcastInstance hazelcastServer = Hazelcast.newHazelcastInstance();
+		Config config = new Config();
+		JoinConfig join = config.getNetworkConfig().getJoin();
+		join.getAutoDetectionConfig().setEnabled(false);
+		join.getMulticastConfig().setEnabled(false);
+		HazelcastInstance hazelcastServer = Hazelcast.newHazelcastInstance(config);
 		try {
 			this.contextRunner
-					.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-							+ "hazelcast/hazelcast-client-specific.xml")
-					.run(assertSpecificHazelcastClient("explicit-xml"));
+					.withPropertyValues("spring.hazelcast.config="
+							+ "org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-client.xml")
+					.run(assertSpecificHazelcastClient("explicit-client"));
 		}
 		finally {
 			hazelcastServer.shutdown();
@@ -74,10 +76,12 @@ class Hazelcast3AutoConfigurationTests {
 
 	@Test
 	void autoConfiguredConfigUsesSpringManagedContext() {
-		this.contextRunner.run((context) -> {
-			Config config = context.getBean(HazelcastInstance.class).getConfig();
-			assertThat(config.getManagedContext()).isInstanceOf(SpringManagedContext.class);
-		});
+		this.contextRunner.withPropertyValues(
+				"spring.hazelcast.config=" + "org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-server.xml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getManagedContext()).isInstanceOf(SpringManagedContext.class);
+				});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {

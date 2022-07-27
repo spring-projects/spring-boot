@@ -29,24 +29,25 @@ import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
-import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
+import org.springframework.session.hazelcast.Hazelcast4IndexedSessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Hazelcast 3 specific tests for {@link SessionAutoConfiguration}.
+ * Hazelcast 4 specific tests for {@link SessionAutoConfiguration}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
 @ClassPathExclusions("hazelcast*.jar")
-@ClassPathOverrides("com.hazelcast:hazelcast:3.12.12")
-class SessionAutoConfigurationHazelcast3Tests extends AbstractSessionAutoConfigurationTests {
+@ClassPathOverrides("com.hazelcast:hazelcast:4.2.5")
+class SessionAutoConfigurationHazelcast4Tests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class, SessionAutoConfiguration.class))
 			.withPropertyValues(
-					"spring.hazelcast.config=org/springframework/boot/autoconfigure/session/hazelcast-3.xml");
+					"spring.hazelcast.config=org/springframework/boot/autoconfigure/session/hazelcast-4.xml");
 
 	@Test
 	void defaultConfig() {
@@ -62,7 +63,7 @@ class SessionAutoConfigurationHazelcast3Tests extends AbstractSessionAutoConfigu
 	}
 
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
-		validateSessionRepository(context, HazelcastIndexedSessionRepository.class);
+		validateSessionRepository(context, Hazelcast4IndexedSessionRepository.class);
 	}
 
 	@Test
@@ -70,15 +71,15 @@ class SessionAutoConfigurationHazelcast3Tests extends AbstractSessionAutoConfigu
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=hazelcast",
 						"spring.session.hazelcast.map-name=foo:bar:biz")
-				.run((context) -> validateSessionRepository(context, HazelcastIndexedSessionRepository.class));
+				.run((context) -> validateSessionRepository(context, Hazelcast4IndexedSessionRepository.class));
 	}
 
 	@Test
 	void customFlushMode() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
 				"spring.session.hazelcast.flush-mode=immediate").run((context) -> {
-					HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
-							HazelcastIndexedSessionRepository.class);
+					Hazelcast4IndexedSessionRepository repository = validateSessionRepository(context,
+							Hazelcast4IndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
 				});
 	}
@@ -87,8 +88,8 @@ class SessionAutoConfigurationHazelcast3Tests extends AbstractSessionAutoConfigu
 	void customSaveMode() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
 				"spring.session.hazelcast.save-mode=on-get-attribute").run((context) -> {
-					HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
-							HazelcastIndexedSessionRepository.class);
+					Hazelcast4IndexedSessionRepository repository = validateSessionRepository(context,
+							Hazelcast4IndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
 				});
 	}
