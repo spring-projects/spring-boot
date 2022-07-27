@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.aot.AotFactoriesLoader;
+import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -40,7 +40,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 
 	@Test
 	void configurationPropertiesBeanRegistrationAotProcessorIsRegistered() {
-		assertThat(new AotFactoriesLoader(new DefaultListableBeanFactory()).load(BeanRegistrationAotProcessor.class))
+		assertThat(AotServices.factories().load(BeanRegistrationAotProcessor.class))
 				.anyMatch(ConfigurationPropertiesBeanRegistrationAotProcessor.class::isInstance);
 	}
 

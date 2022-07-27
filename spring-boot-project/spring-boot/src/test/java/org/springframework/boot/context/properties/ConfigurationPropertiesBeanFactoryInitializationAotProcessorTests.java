@@ -36,7 +36,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.beans.factory.aot.AotFactoriesLoader;
+import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
@@ -63,9 +63,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	@Test
 	void configurationPropertiesBeanFactoryInitializationAotProcessorIsRegistered() {
-		assertThat(new AotFactoriesLoader(new DefaultListableBeanFactory())
-				.load(BeanFactoryInitializationAotProcessor.class))
-						.anyMatch(ConfigurationPropertiesBeanFactoryInitializationAotProcessor.class::isInstance);
+		assertThat(AotServices.factories().load(BeanFactoryInitializationAotProcessor.class))
+				.anyMatch(ConfigurationPropertiesBeanFactoryInitializationAotProcessor.class::isInstance);
 	}
 
 	@Test

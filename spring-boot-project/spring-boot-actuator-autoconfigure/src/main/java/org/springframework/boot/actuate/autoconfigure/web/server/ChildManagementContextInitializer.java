@@ -27,7 +27,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
-import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
@@ -57,8 +56,8 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ChildManagementContextInitializer implements ApplicationListener<WebServerInitializedEvent>,
-		BeanRegistrationAotProcessor, BeanRegistrationExcludeFilter {
+class ChildManagementContextInitializer
+		implements ApplicationListener<WebServerInitializedEvent>, BeanRegistrationAotProcessor {
 
 	private final ManagementContextFactory managementContextFactory;
 
@@ -103,7 +102,7 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 	}
 
 	@Override
-	public boolean isExcluded(RegisteredBean registeredBean) {
+	public boolean isBeanExcludedFromAotProcessing() {
 		return false;
 	}
 

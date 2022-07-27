@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.template;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
@@ -24,8 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.beans.factory.aot.AotFactoriesLoader;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.core.io.ClassPathResource;
 
@@ -43,8 +41,7 @@ class TemplateRuntimeHintsTests {
 
 	@Test
 	void templateRuntimeHintsIsRegistered() {
-		List<RuntimeHintsRegistrar> registrar = new AotFactoriesLoader(new DefaultListableBeanFactory())
-				.load(RuntimeHintsRegistrar.class);
+		Iterable<RuntimeHintsRegistrar> registrar = AotServices.factories().load(RuntimeHintsRegistrar.class);
 		assertThat(registrar).anyMatch(TemplateRuntimeHints.class::isInstance);
 	}
 
