@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 
@@ -43,8 +43,9 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 		Assert.notNull(map, "Map must not be null");
 		Assert.notNull(valueAdapter, "ValueAdapter must not be null");
 		map.keySet().forEach(this::validateKey);
-		this.map = Collections.unmodifiableMap(map.entrySet().stream()
-				.collect(Collectors.toMap(Entry::getKey, (entry) -> adapt(entry.getValue(), valueAdapter))));
+		this.map = Collections.unmodifiableMap(map.entrySet().stream().collect(LinkedHashMap::new,
+				(result, entry) -> result.put(entry.getKey(), adapt(entry.getValue(), valueAdapter)), Map::putAll));
+
 	}
 
 	private void validateKey(String value) {
