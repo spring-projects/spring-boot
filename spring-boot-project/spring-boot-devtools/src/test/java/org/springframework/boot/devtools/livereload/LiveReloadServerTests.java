@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
@@ -165,7 +165,7 @@ class LiveReloadServerTests {
 		WsWebSocketContainer webSocketContainer = new WsWebSocketContainer();
 		WebSocketClient client = clientFactory.apply(webSocketContainer);
 		LiveReloadWebSocketHandler handler = new LiveReloadWebSocketHandler();
-		client.doHandshake(handler, "ws://localhost:" + this.port + "/livereload");
+		client.execute(handler, "ws://localhost:" + this.port + "/livereload");
 		handler.awaitHello();
 		return handler;
 	}
@@ -293,7 +293,7 @@ class LiveReloadServerTests {
 		}
 
 		@Override
-		protected ListenableFuture<WebSocketSession> doHandshakeInternal(WebSocketHandler webSocketHandler,
+		protected CompletableFuture<WebSocketSession> executeInternal(WebSocketHandler webSocketHandler,
 				HttpHeaders headers, URI uri, List<String> protocols, List<WebSocketExtension> extensions,
 				Map<String, Object> attributes) {
 			InetSocketAddress localAddress = new InetSocketAddress(getLocalHost(), uri.getPort());
@@ -311,7 +311,7 @@ class LiveReloadServerTests {
 				this.webSocketContainer.connectToServer(endpoint, endpointConfig, uri);
 				return session;
 			};
-			return getTaskExecutor().submitListenable(connectTask);
+			return getTaskExecutor().submitCompletable(connectTask);
 		}
 
 		private InetAddress getLocalHost() {

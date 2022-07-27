@@ -192,7 +192,7 @@ class WebSocketMessagingAutoConfigurationTests {
 		};
 
 		stompClient.setMessageConverter(new SimpleMessageConverter());
-		stompClient.connect("ws://localhost:{port}/messaging", handler, this.context.getWebServer().getPort());
+		stompClient.connectAsync("ws://localhost:{port}/messaging", handler, this.context.getWebServer().getPort());
 
 		if (!latch.await(30, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {

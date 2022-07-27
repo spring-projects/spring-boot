@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
@@ -37,7 +38,6 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -213,7 +213,7 @@ class TaskExecutionAutoConfigurationTests {
 
 		@Async
 		Future<String> echo(String text) {
-			return new AsyncResult<>(Thread.currentThread().getName() + " " + text);
+			return CompletableFuture.completedFuture(Thread.currentThread().getName() + " " + text);
 		}
 
 	}
