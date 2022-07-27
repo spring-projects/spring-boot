@@ -22,7 +22,7 @@ You need to populate your database when your application starts and be prepared 
 
 TIP: The "`How-to`" section includes a <<howto#howto.data-initialization, section on how to initialize a database>>.
 
-Spring Boot can auto-configure embedded https://www.h2database.com[H2], http://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
+Spring Boot can auto-configure embedded https://www.h2database.com[H2], https://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use.
 If there are multiple embedded databases on the classpath, set the configprop:spring.datasource.embedded-database-connection[] configuration property to control which one is used.
