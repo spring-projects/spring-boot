@@ -1,6 +1,6 @@
 <hazelcast xmlns="http://www.hazelcast.com/schema/config"
 		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		   xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-4.0.xsd">
+		   xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-4.2.xsd">
 	<map name="countries">
 		<time-to-live-seconds>600</time-to-live-seconds>
 	</map>
@@ -13,7 +13,7 @@
 
 	<network>
 		<join>
-			<tcp-ip enabled="false"/>
+			<auto-detection enabled="false" />
 			<multicast enabled="false"/>
 		</join>
 	</network>
