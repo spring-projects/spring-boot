@@ -96,6 +96,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	protected Collection<String> loadFactoryNames(Class<?> source) {
+		@SuppressWarnings("deprecation")
 		List<String> factoryNames = new ArrayList<>(
 				SpringFactoriesLoader.loadFactoryNames(source, getBeanClassLoader()));
 		ImportCandidates.load(source, getBeanClassLoader()).forEach(factoryNames::add);

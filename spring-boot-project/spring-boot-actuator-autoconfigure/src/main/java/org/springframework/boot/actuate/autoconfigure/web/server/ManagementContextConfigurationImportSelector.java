@@ -90,6 +90,7 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	}
 
 	protected List<String> loadFactoryNames() {
+		@SuppressWarnings("deprecation")
 		List<String> factoryNames = new ArrayList<>(
 				SpringFactoriesLoader.loadFactoryNames(ManagementContextConfiguration.class, this.classLoader));
 		ImportCandidates.load(ManagementContextConfiguration.class, this.classLoader).forEach(factoryNames::add);
