@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.hazelcast;
 import java.util.Map;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.JoinConfig;
 import com.hazelcast.config.QueueConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -138,7 +139,7 @@ class HazelcastAutoConfigurationServerTests {
 
 	@Test
 	void configInstanceWithName() {
-		Config config = new Config("my-test-instance");
+		Config config = createTestConfig("my-test-instance");
 		HazelcastInstance existing = Hazelcast.newHazelcastInstance(config);
 		try {
 			this.contextRunner.withUserConfiguration(HazelcastConfigWithName.class)
@@ -205,6 +206,14 @@ class HazelcastAutoConfigurationServerTests {
 		});
 	}
 
+	private static Config createTestConfig(String instanceName) {
+		Config config = new Config(instanceName);
+		JoinConfig join = config.getNetworkConfig().getJoin();
+		join.getAutoDetectionConfig().setEnabled(false);
+		join.getMulticastConfig().setEnabled(false);
+		return config;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfigWithName {
 
@@ -220,7 +229,7 @@ class HazelcastAutoConfigurationServerTests {
 
 		@Bean
 		Config anotherHazelcastConfig() {
-			Config config = new Config();
+			Config config = createTestConfig("another-test-instance");
 			config.addQueueConfig(new QueueConfig("another-queue"));
 			return config;
 		}
