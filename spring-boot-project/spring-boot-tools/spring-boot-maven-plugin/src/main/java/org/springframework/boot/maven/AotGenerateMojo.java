@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -36,14 +37,18 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.ToolchainManager;
 
-import org.springframework.boot.loader.tools.RunProcess;
+import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Invoke the AOT engine on the application.
@@ -55,9 +60,34 @@ import org.springframework.boot.loader.tools.RunProcess;
 @Mojo(name = "aot-generate", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class AotGenerateMojo extends AbstractRunMojo {
+public class AotGenerateMojo extends AbstractDependencyFilterMojo {
 
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.AotProcessor";
+
+	/**
+	 * The current Maven session. This is used for toolchain manager API calls.
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true)
+	private MavenSession session;
+
+	/**
+	 * The toolchain manager to use to locate a custom JDK.
+	 */
+	@Component
+	private ToolchainManager toolchainManager;
+
+	/**
+	 * Directory containing the classes and resource files that should be packaged into
+	 * the archive.
+	 */
+	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+	private File classesDirectory;
+
+	/**
+	 * Skip the execution.
+	 */
+	@Parameter(property = "spring-boot.aot.skip", defaultValue = "false")
+	private boolean skip;
 
 	/**
 	 * Directory containing the generated sources.
@@ -77,11 +107,40 @@ public class AotGenerateMojo extends AbstractRunMojo {
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
 	private File generatedClasses;
 
+	/**
+	 * List of JVM system properties to pass to the AOT process.
+	 */
+	@Parameter
+	private Map<String, String> systemPropertyVariables;
+
+	/**
+	 * JVM arguments that should be associated with the AOT process. On command line, make
+	 * sure to wrap multiple values between quotes.
+	 */
+	@Parameter(property = "spring-boot.aot.jvmArguments")
+	private String jvmArguments;
+
+	/**
+	 * Name of the main class to use as the source for the AOT process. If not specified
+	 * the first compiled class found that contains a 'main' method will be used.
+	 */
+	@Parameter(property = "spring-boot.aot.main-class")
+	private String mainClass;
+
+	/**
+	 * Spring profiles to take into account for AOT processing.
+	 */
+	@Parameter
+	private String[] profiles;
+
 	@Override
-	protected void run(File workingDirectory, String startClassName, Map<String, String> environmentVariables)
-			throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping execution as per configuration.");
+			return;
+		}
 		try {
-			generateAotAssets(workingDirectory, startClassName, environmentVariables);
+			generateAotAssets();
 			compileSourceFiles();
 			copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
 					this.classesDirectory.toPath().resolve("META-INF/native-image"));
@@ -92,52 +151,39 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		}
 	}
 
-	private void generateAotAssets(File workingDirectory, String startClassName,
-			Map<String, String> environmentVariables) throws MojoExecutionException {
-		List<String> args = new ArrayList<>();
-		addJvmArgs(args);
-		addClasspath(args);
-		args.add(AOT_PROCESSOR_CLASS_NAME);
-		// Adding arguments that are necessary for generation
-		args.add(startClassName);
-		args.add(this.generatedSources.toString());
-		args.add(this.generatedResources.toString());
-		args.add(this.generatedClasses.toString());
-		args.add(this.project.getGroupId());
-		args.add(this.project.getArtifactId());
-		addArgs(args);
+	private void generateAotAssets() throws MojoExecutionException {
+		String applicationClass = (this.mainClass != null) ? this.mainClass
+				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
+		List<String> aotArguments = new ArrayList<>();
+		aotArguments.add(applicationClass);
+		aotArguments.add(this.generatedSources.toString());
+		aotArguments.add(this.generatedResources.toString());
+		aotArguments.add(this.generatedClasses.toString());
+		aotArguments.add(this.project.getGroupId());
+		aotArguments.add(this.project.getArtifactId());
+		if (!ObjectUtils.isEmpty(this.profiles)) {
+			aotArguments.add("--spring.profiles.active=" + String.join(",", this.profiles));
+		}
+		// @formatter:off
+		List<String> args = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
+				.withSystemProperties(this.systemPropertyVariables)
+				.withJvmArguments(new RunArguments(this.jvmArguments).asArray())
+				.withClasspath(getClassPathUrls())
+				.withArguments(aotArguments.toArray(String[]::new))
+				.build();
+		// @formatter:on
 		if (getLog().isDebugEnabled()) {
 			getLog().debug("Generating AOT assets using command: " + args);
 		}
-		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
-		if (!hasTerminatedSuccessfully(exitCode)) {
-			throw new MojoExecutionException("AOT generation process finished with exit code: " + exitCode);
-		}
+		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
+		processExecutor.run(this.project.getBasedir(), args, Collections.emptyMap());
 	}
 
-	private int forkJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
-			throws MojoExecutionException {
-		try {
-			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
-			return runProcess.run(true, args, environmentVariables);
-		}
-		catch (Exception ex) {
-			throw new MojoExecutionException("Could not exec java", ex);
-		}
-	}
-
-	@Override
-	protected URL[] getClassPathUrls() throws MojoExecutionException {
-		try {
-			List<URL> urls = new ArrayList<>();
-			addUserDefinedDirectories(urls);
-			addProjectClasses(urls);
-			addDependencies(urls, getFilters(new TestArtifactFilter()));
-			return urls.toArray(new URL[0]);
-		}
-		catch (IOException ex) {
-			throw new MojoExecutionException("Unable to build classpath", ex);
-		}
+	private URL[] getClassPathUrls() throws MojoExecutionException {
+		List<URL> urls = new ArrayList<>();
+		urls.add(toURL(this.classesDirectory));
+		urls.addAll(getDependencyURLs(new TestArtifactFilter()));
+		return urls.toArray(URL[]::new);
 	}
 
 	private void compileSourceFiles() throws IOException, MojoExecutionException {
@@ -148,7 +194,8 @@ public class AotGenerateMojo extends AbstractRunMojo {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		try (StandardJavaFileManager fm = compiler.getStandardFileManager(null, null, null)) {
 			List<String> options = new ArrayList<>();
-			addClasspath(options);
+			options.add("-cp");
+			options.add(ClasspathBuilder.build(Arrays.asList(getClassPathUrls())));
 			options.add("-d");
 			options.add(this.classesDirectory.toPath().toAbsolutePath().toString());
 			Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromPaths(sourceFiles);
