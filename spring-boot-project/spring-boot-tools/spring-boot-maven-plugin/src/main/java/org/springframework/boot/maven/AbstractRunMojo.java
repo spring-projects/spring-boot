@@ -42,7 +42,6 @@ import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
-import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * Base class to run a Spring Boot application.
@@ -57,8 +56,6 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @see StartMojo
  */
 public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
-
-	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
 	/**
 	 * The Maven project.
@@ -206,7 +203,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			getLog().debug("skipping run as per configuration.");
 			return;
 		}
-		run(getStartClass());
+		String startClass = (this.mainClass != null) ? this.mainClass
+				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
+		run(startClass);
 	}
 
 	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
@@ -341,23 +340,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
 		}
-	}
-
-	private String getStartClass() throws MojoExecutionException {
-		String mainClass = this.mainClass;
-		if (mainClass == null) {
-			try {
-				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
-						SPRING_BOOT_APPLICATION_CLASS_NAME);
-			}
-			catch (IOException ex) {
-				throw new MojoExecutionException(ex.getMessage(), ex);
-			}
-		}
-		if (mainClass == null) {
-			throw new MojoExecutionException("Unable to find a suitable main class, please add a 'mainClass' property");
-		}
-		return mainClass;
 	}
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
