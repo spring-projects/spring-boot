@@ -65,12 +65,12 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 	}
 
 	@Override
-	public List<Upgrade> resolveUpgrades(Collection<Library> libraries) {
+	public List<Upgrade> resolveUpgrades(Collection<Library> librariesToUpgrade, Collection<Library> libraries) {
 		Map<String, Library> librariesByName = new HashMap<>();
 		for (Library library : libraries) {
 			librariesByName.put(library.getName(), library);
 		}
-		return libraries.stream().filter((library) -> !library.getName().equals("Spring Boot"))
+		return librariesToUpgrade.stream().filter((library) -> !library.getName().equals("Spring Boot"))
 				.map((library) -> resolveUpgrade(library, librariesByName)).filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}

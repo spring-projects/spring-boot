@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -42,6 +45,7 @@ import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.github.GitHub;
 import org.springframework.boot.build.bom.bomr.github.GitHubRepository;
 import org.springframework.boot.build.bom.bomr.github.Issue;
@@ -60,6 +64,8 @@ public class UpgradeBom extends DefaultTask {
 	private final BomExtension bom;
 
 	private String milestone;
+
+	private String libraries;
 
 	@Inject
 	public UpgradeBom(BomExtension bom) {
@@ -83,6 +89,17 @@ public class UpgradeBom extends DefaultTask {
 		return this.milestone;
 	}
 
+	@Option(option = "libraries", description = "Regular expression that identifies the libraries to upgrade")
+	public void setLibraries(String libraries) {
+		this.libraries = libraries;
+	}
+
+	@Input
+	@org.gradle.api.tasks.Optional
+	public String getLibraries() {
+		return this.libraries;
+	}
+
 	@TaskAction
 	@SuppressWarnings("deprecation")
 	void upgradeDependencies() {
@@ -100,7 +117,7 @@ public class UpgradeBom extends DefaultTask {
 		List<Issue> existingUpgradeIssues = repository.findIssues(issueLabels, milestone);
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(new MavenMetadataVersionResolver(this.repositoryUrls),
 				this.bom.getUpgrade().getPolicy(), getServices().get(UserInputHandler.class))
-						.resolveUpgrades(this.bom.getLibraries());
+						.resolveUpgrades(matchingLibraries(this.libraries), this.bom.getLibraries());
 		Path buildFile = getProject().getBuildFile().toPath();
 		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
 		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
@@ -138,6 +155,19 @@ public class UpgradeBom extends DefaultTask {
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	private List<Library> matchingLibraries(String pattern) {
+		if (pattern == null) {
+			return this.bom.getLibraries();
+		}
+		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
+		List<Library> matchingLibraries = this.bom.getLibraries().stream()
+				.filter((library) -> libraryPredicate.test(library.getName())).collect(Collectors.toList());
+		if (matchingLibraries.isEmpty()) {
+			throw new InvalidUserDataException("No libraries matched '" + pattern + "'");
+		}
+		return matchingLibraries;
 	}
 
 	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
