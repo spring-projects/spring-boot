@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +29,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
@@ -37,6 +43,13 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
  * @since 1.1.0
  */
 public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
+
+	/**
+	 * The Maven project.
+	 * @since 3.0.0
+	 */
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	protected MavenProject project;
 
 	/**
 	 * Collection of artifact definitions to include. The {@link Include} element defines
@@ -74,6 +87,26 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	protected void setExcludeGroupIds(String excludeGroupIds) {
 		this.excludeGroupIds = excludeGroupIds;
+	}
+
+	protected List<URL> getDependencyURLs(ArtifactsFilter... additionalFilters) throws MojoExecutionException {
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), getFilters(additionalFilters));
+		List<URL> urls = new ArrayList<>();
+		for (Artifact artifact : artifacts) {
+			if (artifact.getFile() != null) {
+				urls.add(toURL(artifact.getFile()));
+			}
+		}
+		return urls;
+	}
+
+	protected URL toURL(File file) {
+		try {
+			return file.toURI().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException("Invalid URL for " + file, ex);
+		}
 	}
 
 	protected final Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
@@ -122,6 +155,19 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 			}
 		}
 		return cleaned.toString();
+	}
+
+	static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
+
+		TestArtifactFilter() {
+			super("", Artifact.SCOPE_TEST);
+		}
+
+		@Override
+		protected String getArtifactFeature(Artifact artifact) {
+			return artifact.getScope();
+		}
+
 	}
 
 }
