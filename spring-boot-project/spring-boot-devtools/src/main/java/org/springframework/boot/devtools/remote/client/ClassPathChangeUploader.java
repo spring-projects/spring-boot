@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,14 +91,15 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		try {
 			ClassLoaderFiles classLoaderFiles = getClassLoaderFiles(event);
 			byte[] bytes = serialize(classLoaderFiles);
-			performUpload(classLoaderFiles, bytes);
+			performUpload(classLoaderFiles, bytes, event);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private void performUpload(ClassLoaderFiles classLoaderFiles, byte[] bytes) throws IOException {
+	private void performUpload(ClassLoaderFiles classLoaderFiles, byte[] bytes, ClassPathChangedEvent event)
+			throws IOException {
 		try {
 			while (true) {
 				try {
@@ -107,11 +108,11 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 					headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 					headers.setContentLength(bytes.length);
 					FileCopyUtils.copy(bytes, request.getBody());
+					logUpload(event);
 					ClientHttpResponse response = request.execute();
 					HttpStatus statusCode = response.getStatusCode();
 					Assert.state(statusCode == HttpStatus.OK,
 							() -> "Unexpected " + statusCode + " response uploading class files");
-					logUpload(classLoaderFiles);
 					return;
 				}
 				catch (SocketException ex) {
@@ -128,9 +129,8 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		}
 	}
 
-	private void logUpload(ClassLoaderFiles classLoaderFiles) {
-		int size = classLoaderFiles.size();
-		logger.info(LogMessage.format("Uploaded %s class %s", size, (size != 1) ? "resources" : "resource"));
+	private void logUpload(ClassPathChangedEvent event) {
+		logger.info(LogMessage.format("Uploading %s", event.overview()));
 	}
 
 	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
