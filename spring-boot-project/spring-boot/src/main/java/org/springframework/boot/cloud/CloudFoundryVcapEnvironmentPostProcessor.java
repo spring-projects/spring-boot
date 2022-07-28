@@ -97,7 +97,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 
 	private final Log logger;
 
-	// Before ConfigFileApplicationListener so values there can use these
+	// Before ConfigDataEnvironmentPostProcessor so values there can use these
 	private int order = ConfigDataEnvironmentPostProcessor.ORDER - 1;
 
 	/**

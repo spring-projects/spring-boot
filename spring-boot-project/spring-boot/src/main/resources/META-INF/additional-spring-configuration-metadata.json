@@ -308,7 +308,7 @@
     {
       "name": "spring.config.additional-location",
       "type": "java.lang.String",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataEnvironment",
       "description": "Config file locations used in addition to the defaults."
     },
     {
@@ -320,13 +320,13 @@
     {
       "name": "spring.config.location",
       "type": "java.lang.String",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataEnvironment",
       "description": "Config file locations that replace the defaults."
     },
     {
       "name": "spring.config.name",
       "type": "java.lang.String",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.StandardConfigDataLocationResolver",
       "description": "Config file name.",
       "defaultValue": "application"
     },
@@ -919,7 +919,7 @@
     {
       "name": "spring.profiles",
       "type": "java.util.List<java.lang.String>",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
       "description": "Comma-separated list of profile expressions that at least one should match for the document to be included.",
       "deprecation": {
         "replacement": "spring.config.activate.on-profile",
@@ -929,12 +929,13 @@
     {
       "name": "spring.profiles.active",
       "type": "java.util.List<java.lang.String>",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
       "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
     },
     {
       "name": "spring.profiles.default",
       "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
       "description": "Name of the profile to enable if no profile is active.",
       "defaultValue": "default"
     },
