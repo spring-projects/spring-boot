@@ -37,11 +37,9 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.boot.loader.tools.JavaExecutable;
 
 /**
  * Base class to run a Spring Boot application.
@@ -215,20 +213,24 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		addClasspath(args);
 		args.add(startClassName);
 		addArgs(args);
-		run((this.workingDirectory != null) ? this.workingDirectory : this.project.getBasedir(), args,
-				determineEnvironmentVariables());
+		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
+		File workingDirectoryToUse = (this.workingDirectory != null) ? this.workingDirectory
+				: this.project.getBasedir();
+		run(processExecutor, workingDirectoryToUse, args, determineEnvironmentVariables());
 	}
 
 	/**
-	 * Run with a forked VM, using the specified command line arguments.
+	 * Run the application.
+	 * @param processExecutor the {@link JavaProcessExecutor} to use
 	 * @param workingDirectory the working directory of the forked JVM
 	 * @param args the arguments (JVM arguments and application arguments)
 	 * @param environmentVariables the environment variables
 	 * @throws MojoExecutionException in case of MOJO execution errors
 	 * @throws MojoFailureException in case of MOJO failures
+	 * @since 3.0.0
 	 */
-	protected abstract void run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
-			throws MojoExecutionException, MojoFailureException;
+	protected abstract void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException;
 
 	/**
 	 * Resolve the application arguments to use.
@@ -239,16 +241,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				: new RunArguments(this.commandlineArguments);
 		addActiveProfileArgument(runArguments);
 		return runArguments;
-	}
-
-	/**
-	 * Provides access to the java binary executable, regardless of OS.
-	 * @return the java executable
-	 */
-	protected String getJavaExecutable() {
-		Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session);
-		String javaExecutable = (toolchain != null) ? toolchain.findTool("java") : null;
-		return (javaExecutable != null) ? javaExecutable : new JavaExecutable().toString();
 	}
 
 	/**

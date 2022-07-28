@@ -86,27 +86,15 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
-			throws MojoExecutionException, MojoFailureException {
-		RunProcess runProcess = runProcess(workingDirectory, args, environmentVariables);
+	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
+		RunProcess runProcess = processExecutor.runAsync(workingDirectory, args, environmentVariables);
 		try {
 			waitForSpringApplication();
 		}
 		catch (MojoExecutionException | MojoFailureException ex) {
 			runProcess.kill();
 			throw ex;
-		}
-	}
-
-	private RunProcess runProcess(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
-			throws MojoExecutionException {
-		try {
-			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
-			runProcess.run(false, args, environmentVariables);
-			return runProcess;
-		}
-		catch (Exception ex) {
-			throw new MojoExecutionException("Could not exec java", ex);
 		}
 	}
 

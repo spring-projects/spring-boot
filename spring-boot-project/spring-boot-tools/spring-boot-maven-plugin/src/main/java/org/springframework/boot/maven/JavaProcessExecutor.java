@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -42,9 +43,23 @@ class JavaProcessExecutor {
 
 	private final ToolchainManager toolchainManager;
 
+	private final Consumer<RunProcess> runProcessCustomizer;
+
 	JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager) {
+		this(mavenSession, toolchainManager, null);
+	}
+
+	private JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager,
+			Consumer<RunProcess> runProcessCustomizer) {
 		this.mavenSession = mavenSession;
 		this.toolchainManager = toolchainManager;
+		this.runProcessCustomizer = runProcessCustomizer;
+	}
+
+	JavaProcessExecutor withRunProcessCustomizer(Consumer<RunProcess> customizer) {
+		Consumer<RunProcess> combinedCustomizer = (this.runProcessCustomizer != null)
+				? this.runProcessCustomizer.andThen(customizer) : customizer;
+		return new JavaProcessExecutor(this.mavenSession, this.toolchainManager, combinedCustomizer);
 	}
 
 	int run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
@@ -56,6 +71,18 @@ class JavaProcessExecutor {
 				throw new MojoExecutionException("Process terminated with exit code: " + exitCode);
 			}
 			return exitCode;
+		}
+		catch (IOException ex) {
+			throw new MojoExecutionException("Process execution failed", ex);
+		}
+	}
+
+	RunProcess runAsync(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+			throws MojoExecutionException {
+		try {
+			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
+			runProcess.run(false, args, environmentVariables);
+			return runProcess;
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException("Process execution failed", ex);

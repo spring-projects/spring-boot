@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -43,8 +44,6 @@ import org.springframework.boot.loader.tools.RunProcess;
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractRunMojo {
 
-	private static final int EXIT_CODE_SIGINT = 130;
-
 	/**
 	 * Whether the JVM's launch should be optimized.
 	 * @since 2.2.0
@@ -62,25 +61,11 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected void run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
-			throws MojoExecutionException {
-		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
-		if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
-			return;
-		}
-		throw new MojoExecutionException("Application finished with exit code: " + exitCode);
-	}
-
-	private int forkJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
-			throws MojoExecutionException {
-		try {
-			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
-			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			return runProcess.run(true, args, environmentVariables);
-		}
-		catch (Exception ex) {
-			throw new MojoExecutionException("Could not exec java", ex);
-		}
+	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
+		processExecutor.withRunProcessCustomizer(
+				(runProcess) -> Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess))))
+				.run(workingDirectory, args, environmentVariables);
 	}
 
 	private static final class RunProcessKiller implements Runnable {
