@@ -289,7 +289,7 @@
     {
       "name": "spring.beaninfo.ignore",
       "type": "java.lang.Boolean",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Whether to skip search of BeanInfo classes.",
       "defaultValue": true
     },
