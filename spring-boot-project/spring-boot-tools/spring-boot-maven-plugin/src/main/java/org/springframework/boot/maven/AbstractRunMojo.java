@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
- * Base class to run a spring application.
+ * Base class to run a Spring Boot application.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -86,7 +86,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing of
 	 * resources. Duplicate resources are removed from {@code target/classes} to prevent
-	 * them to appear twice if {@code ClassLoader.getResources()} is called. Please
+	 * them from appearing twice if {@code ClassLoader.getResources()} is called. Please
 	 * consider adding {@code spring-boot-devtools} to your project instead as it provides
 	 * this feature and many more.
 	 * @since 1.0.0
