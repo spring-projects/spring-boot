@@ -41,7 +41,9 @@ import org.springframework.boot.loader.tools.RunProcess;
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE,
 		requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
-public class RunMojo extends AbstractApplicationRunMojo {
+public class RunMojo extends AbstractRunMojo {
+
+	private static final int EXIT_CODE_SIGINT = 130;
 
 	/**
 	 * Whether the JVM's launch should be optimized.
@@ -63,7 +65,7 @@ public class RunMojo extends AbstractApplicationRunMojo {
 	protected void run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
-		if (hasTerminatedSuccessfully(exitCode)) {
+		if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
 			return;
 		}
 		throw new MojoExecutionException("Application finished with exit code: " + exitCode);
