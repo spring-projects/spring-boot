@@ -154,9 +154,7 @@ You can also provide the following System properties (or environment variables) 
 No matter what you set in the environment, Spring Boot always loads `application.properties` as described above.
 By default, if YAML is used, then files with the '`.yml`' extension are also added to the list.
 
-Spring Boot logs the configuration files that are loaded at the `DEBUG` level and the candidates it has not found at `TRACE` level.
-
-See {spring-boot-module-code}/context/config/ConfigFileApplicationListener.java[`ConfigFileApplicationListener`] for more detail.
+TIP: If you want detailed information about the files that are being loaded you can <<features#features.logging.log-levels, set the logging level>> of `org.springframework.boot.context.config` to `trace`.
 
 
 
