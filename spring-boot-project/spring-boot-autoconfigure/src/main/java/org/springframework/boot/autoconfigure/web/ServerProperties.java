@@ -327,6 +327,7 @@ public class ServerProperties {
 			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration timeout = Duration.ofMinutes(30);
 
+			@NestedConfigurationProperty
 			private final Cookie cookie = new Cookie();
 
 			public Duration getTimeout() {
