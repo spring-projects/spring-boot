@@ -36,7 +36,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
@@ -371,8 +370,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
-		FilterArtifacts filters = (this.useTestClasspath ? getFilters() : getFilters(new TestArtifactFilter()));
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
+		Set<Artifact> artifacts = (this.useTestClasspath) ? filterDependencies(this.project.getArtifacts())
+				: filterDependencies(this.project.getArtifacts(), new TestArtifactFilter());
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
 				urls.add(artifact.getFile().toURI().toURL());

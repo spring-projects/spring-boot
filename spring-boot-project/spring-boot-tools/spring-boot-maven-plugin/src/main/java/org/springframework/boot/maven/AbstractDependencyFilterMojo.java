@@ -90,7 +90,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	}
 
 	protected List<URL> getDependencyURLs(ArtifactsFilter... additionalFilters) throws MojoExecutionException {
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), getFilters(additionalFilters));
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), additionalFilters);
 		List<URL> urls = new ArrayList<>();
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
@@ -98,6 +98,18 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 			}
 		}
 		return urls;
+	}
+
+	protected final Set<Artifact> filterDependencies(Set<Artifact> dependencies, ArtifactsFilter... additionalFilters)
+			throws MojoExecutionException {
+		try {
+			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
+			filtered.retainAll(getFilters(additionalFilters).filter(dependencies));
+			return filtered;
+		}
+		catch (ArtifactFilterException ex) {
+			throw new MojoExecutionException(ex.getMessage(), ex);
+		}
 	}
 
 	protected URL toURL(File file) {
@@ -109,24 +121,12 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		}
 	}
 
-	protected final Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
-			throws MojoExecutionException {
-		try {
-			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
-			filtered.retainAll(filters.filter(dependencies));
-			return filtered;
-		}
-		catch (ArtifactFilterException ex) {
-			throw new MojoExecutionException(ex.getMessage(), ex);
-		}
-	}
-
 	/**
 	 * Return artifact filters configured for this MOJO.
 	 * @param additionalFilters optional additional filters to apply
 	 * @return the filters
 	 */
-	protected final FilterArtifacts getFilters(ArtifactsFilter... additionalFilters) {
+	private FilterArtifacts getFilters(ArtifactsFilter... additionalFilters) {
 		FilterArtifacts filters = new FilterArtifacts();
 		for (ArtifactsFilter additionalFilter : additionalFilters) {
 			filters.addFilter(additionalFilter);
