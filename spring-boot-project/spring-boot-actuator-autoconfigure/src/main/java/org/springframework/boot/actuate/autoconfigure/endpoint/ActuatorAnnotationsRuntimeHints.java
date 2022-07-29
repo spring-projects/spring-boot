@@ -26,7 +26,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.core.annotation.SynthesizedAnnotation;
 
 /**
  * {@link RuntimeHintsRegistrar} for actuator support.
@@ -37,11 +36,10 @@ class ActuatorAnnotationsRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		Stream.of(Endpoint.class, ReadOperation.class, WriteOperation.class, DeleteOperation.class,
-				EndpointExtension.class)
+		Stream.of(ReadOperation.class, WriteOperation.class, DeleteOperation.class)
 				.forEach((annotationType) -> RuntimeHintsUtils.registerAnnotation(hints, annotationType));
-		Stream.of(Endpoint.class, EndpointExtension.class).forEach(
-				(annotationType) -> hints.proxies().registerJdkProxy(annotationType, SynthesizedAnnotation.class));
+		Stream.of(Endpoint.class, EndpointExtension.class)
+				.forEach((annotationType) -> RuntimeHintsUtils.registerComposableAnnotation(hints, annotationType));
 	}
 
 }
