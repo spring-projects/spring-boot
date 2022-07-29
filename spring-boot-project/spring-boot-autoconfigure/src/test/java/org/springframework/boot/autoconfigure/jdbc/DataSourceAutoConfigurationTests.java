@@ -240,7 +240,7 @@ class DataSourceAutoConfigurationTests {
 
 	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {
 		return (runner) -> runner.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
-				"org.apache.commons.dbcp2", "oracle.ucp.jdbc"));
+				"org.apache.commons.dbcp2", "oracle.ucp.jdbc", "com.mchange"));
 	}
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType, List<String> hiddenPackages,
