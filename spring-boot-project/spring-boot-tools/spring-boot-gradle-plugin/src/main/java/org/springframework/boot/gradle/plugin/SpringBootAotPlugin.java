@@ -22,6 +22,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.file.Directory;
 import org.gradle.api.plugins.JavaPlugin;
@@ -77,10 +78,15 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			aotImplementation.extendsFrom(configurations.getByName(main.getImplementationConfigurationName()));
 			aotImplementation.extendsFrom(configurations.getByName(main.getRuntimeOnlyConfigurationName()));
 			configurations.getByName(aot.getCompileClasspathConfigurationName())
-					.attributes((attributes) -> attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
-							project.getObjects().named(LibraryElements.class, LibraryElements.CLASSES_AND_RESOURCES)));
+					.attributes((attributes) -> addLibraryElementsAttribute(project, attributes));
 		});
 		return aotSourceSet;
+	}
+
+	private AttributeContainer addLibraryElementsAttribute(Project project, AttributeContainer attributes) {
+		LibraryElements libraryElements = project.getObjects().named(LibraryElements.class,
+				LibraryElements.CLASSES_AND_RESOURCES);
+		return attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, libraryElements);
 	}
 
 	private void registerGenerateAotSourcesTask(Project project, SourceSet aotSourceSet) {

@@ -40,7 +40,6 @@ class ActuatorAnnotationsRuntimeHints implements RuntimeHintsRegistrar {
 		Stream.of(Endpoint.class, ReadOperation.class, WriteOperation.class, DeleteOperation.class,
 				EndpointExtension.class)
 				.forEach((annotationType) -> RuntimeHintsUtils.registerAnnotation(hints, annotationType));
-		// TODO: See https://github.com/spring-projects/spring-framework/issues/28767
 		Stream.of(Endpoint.class, EndpointExtension.class).forEach(
 				(annotationType) -> hints.proxies().registerJdkProxy(annotationType, SynthesizedAnnotation.class));
 	}

@@ -157,9 +157,9 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		return cleaned.toString();
 	}
 
-	static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
+	protected static class TestScopeArtifactFilter extends AbstractArtifactFeatureFilter {
 
-		TestArtifactFilter() {
+		TestScopeArtifactFilter() {
 			super("", Artifact.SCOPE_TEST);
 		}
 

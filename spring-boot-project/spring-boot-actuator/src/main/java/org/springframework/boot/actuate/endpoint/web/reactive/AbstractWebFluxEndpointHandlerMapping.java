@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
@@ -60,6 +59,7 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -494,11 +494,13 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection()
-					.registerMethod(Objects.requireNonNull(ReflectionUtils.findMethod(WriteOperationHandler.class,
-							"handle", ServerWebExchange.class, Map.class)))
-					.registerMethod(Objects.requireNonNull(
-							ReflectionUtils.findMethod(ReadOperationHandler.class, "handle", ServerWebExchange.class)));
+			Method writeOperationHandleMethod = ReflectionUtils.findMethod(WriteOperationHandler.class, "handle",
+					ServerWebExchange.class, Map.class);
+			Assert.state(writeOperationHandleMethod != null, () -> "Unable to find write operation 'handle' method");
+			Method readOperationHandleMethod = ReflectionUtils.findMethod(ReadOperationHandler.class, "handle",
+					ServerWebExchange.class);
+			Assert.state(readOperationHandleMethod != null, () -> "Unable to find read operation 'handle' method");
+			hints.reflection().registerMethod(writeOperationHandleMethod).registerMethod(readOperationHandleMethod);
 		}
 
 	}

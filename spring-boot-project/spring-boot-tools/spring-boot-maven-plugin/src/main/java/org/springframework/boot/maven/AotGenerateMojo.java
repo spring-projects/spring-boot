@@ -154,6 +154,18 @@ public class AotGenerateMojo extends AbstractDependencyFilterMojo {
 	private void generateAotAssets() throws MojoExecutionException {
 		String applicationClass = (this.mainClass != null) ? this.mainClass
 				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
+		List<String> command = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
+				.withSystemProperties(this.systemPropertyVariables)
+				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPathUrls())
+				.withArguments(getAotArguments(applicationClass)).build();
+		if (getLog().isDebugEnabled()) {
+			getLog().debug("Generating AOT assets using command: " + command);
+		}
+		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
+		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
+	}
+
+	private String[] getAotArguments(String applicationClass) {
 		List<String> aotArguments = new ArrayList<>();
 		aotArguments.add(applicationClass);
 		aotArguments.add(this.generatedSources.toString());
@@ -164,25 +176,13 @@ public class AotGenerateMojo extends AbstractDependencyFilterMojo {
 		if (!ObjectUtils.isEmpty(this.profiles)) {
 			aotArguments.add("--spring.profiles.active=" + String.join(",", this.profiles));
 		}
-		// @formatter:off
-		List<String> args = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
-				.withSystemProperties(this.systemPropertyVariables)
-				.withJvmArguments(new RunArguments(this.jvmArguments).asArray())
-				.withClasspath(getClassPathUrls())
-				.withArguments(aotArguments.toArray(String[]::new))
-				.build();
-		// @formatter:on
-		if (getLog().isDebugEnabled()) {
-			getLog().debug("Generating AOT assets using command: " + args);
-		}
-		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
-		processExecutor.run(this.project.getBasedir(), args, Collections.emptyMap());
+		return aotArguments.toArray(String[]::new);
 	}
 
 	private URL[] getClassPathUrls() throws MojoExecutionException {
 		List<URL> urls = new ArrayList<>();
 		urls.add(toURL(this.classesDirectory));
-		urls.addAll(getDependencyURLs(new TestArtifactFilter()));
+		urls.addAll(getDependencyURLs(new TestScopeArtifactFilter()));
 		return urls.toArray(URL[]::new);
 	}
 

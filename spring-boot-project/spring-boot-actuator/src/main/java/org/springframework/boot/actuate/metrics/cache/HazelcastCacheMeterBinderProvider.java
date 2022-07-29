@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.cache;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 import com.hazelcast.spring.cache.HazelcastCache;
 import io.micrometer.core.instrument.Tag;
@@ -28,6 +28,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider.HazelcastCacheMeterBinderProviderRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -67,10 +68,10 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			try {
-				hints.reflection()
-						.registerMethod(Objects
-								.requireNonNull(ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache")))
-						.registerConstructor(HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class));
+				Method getNativeCacheMethod = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
+				Assert.state(getNativeCacheMethod != null, "Unable to find 'getNativeCache' method");
+				Constructor<?> constructor = HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class);
+				hints.reflection().registerMethod(getNativeCacheMethod).registerConstructor(constructor);
 			}
 			catch (NoSuchMethodException ex) {
 				throw new IllegalStateException(ex);

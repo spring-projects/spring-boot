@@ -39,7 +39,6 @@ class FiltersMappingDescriptionProviderTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(FilterRegistrationMappingDescription.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 						.accepts(runtimeHints);
-
 	}
 
 }

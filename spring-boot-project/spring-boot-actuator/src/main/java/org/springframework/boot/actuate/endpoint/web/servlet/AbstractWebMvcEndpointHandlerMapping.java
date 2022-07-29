@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -486,8 +485,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerMethod(Objects.requireNonNull(
-					ReflectionUtils.findMethod(OperationHandler.class, "handle", HttpServletRequest.class, Map.class)));
+			Method handlerMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
+					HttpServletRequest.class, Map.class);
+			Assert.state(handlerMethod != null, "Unable to find 'handler' method");
+			hints.reflection().registerMethod(handlerMethod);
 		}
 
 	}

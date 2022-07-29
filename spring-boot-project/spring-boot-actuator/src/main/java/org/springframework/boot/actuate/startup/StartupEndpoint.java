@@ -92,22 +92,24 @@ public class StartupEndpoint {
 
 	static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
 
+		private static final TypeReference DEFAULT_TAG = TypeReference
+				.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag");
+
+		private static final TypeReference BUFFERED_STARTUP_STEP = TypeReference
+				.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep");
+
+		private static final TypeReference FLIGHT_RECORDER_TAG = TypeReference
+				.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag");
+
+		private static final TypeReference FLIGHT_RECORDER_STARTUP_STEP = TypeReference
+				.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
+
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(
-					TypeReference
-							.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag"),
-					(hint) -> hint
-							.onReachableType(TypeReference
-									.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep"))
-							.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
-			hints.reflection().registerType(
-					TypeReference
-							.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag"),
-					(hint) -> hint
-							.onReachableType(
-									TypeReference.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep"))
-							.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection().registerType(DEFAULT_TAG, (hint) -> hint.onReachableType(BUFFERED_STARTUP_STEP)
+					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection().registerType(FLIGHT_RECORDER_TAG, (hint) -> hint
+					.onReachableType(FLIGHT_RECORDER_STARTUP_STEP).withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
 		}
 
 	}

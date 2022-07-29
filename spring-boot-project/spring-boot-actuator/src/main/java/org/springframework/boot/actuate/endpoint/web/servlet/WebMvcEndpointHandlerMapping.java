@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.aot.BindingReflectionHintsRegistrar;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
@@ -100,9 +101,10 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection()
-					.registerMethod(Objects.requireNonNull(ReflectionUtils.findMethod(WebMvcLinksHandler.class, "links",
-							HttpServletRequest.class, HttpServletResponse.class)));
+			Method linksMethod = ReflectionUtils.findMethod(WebMvcLinksHandler.class, "links", HttpServletRequest.class,
+					HttpServletResponse.class);
+			Assert.state(linksMethod != null, "Unable to find 'links' method");
+			hints.reflection().registerMethod(linksMethod);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 

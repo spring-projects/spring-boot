@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
@@ -44,6 +44,7 @@ import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
@@ -159,8 +160,10 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerMethod(Objects.requireNonNull(
-					ReflectionUtils.findMethod(CloudFoundryLinksHandler.class, "links", ServerWebExchange.class)));
+			Method linksMethod = ReflectionUtils.findMethod(CloudFoundryLinksHandler.class, "links",
+					ServerWebExchange.class);
+			Assert.state(linksMethod != null, "Unable to find 'links' method");
+			hints.reflection().registerMethod(linksMethod);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 

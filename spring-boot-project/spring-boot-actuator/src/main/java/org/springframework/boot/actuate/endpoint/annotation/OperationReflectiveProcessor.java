@@ -49,17 +49,16 @@ class OperationReflectiveProcessor extends SimpleReflectiveProcessor {
 
 	private Type extractReturnType(Method method) {
 		ResolvableType returnType = ResolvableType.forMethodReturnType(method);
-		if (WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
-			return returnType.as(WebEndpointResponse.class).getGeneric(0).getType();
+		if (!WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
+			return returnType.getType();
 		}
-		return returnType.getType();
+		return returnType.as(WebEndpointResponse.class).getGeneric(0).getType();
 	}
 
 	private void registerReflectionHints(ReflectionHints hints, Type type) {
-		if (type.equals(Resource.class)) {
-			return;
+		if (!type.equals(Resource.class)) {
+			this.bindingRegistrar.registerReflectionHints(hints, type);
 		}
-		this.bindingRegistrar.registerReflectionHints(hints, type);
 	}
 
 }

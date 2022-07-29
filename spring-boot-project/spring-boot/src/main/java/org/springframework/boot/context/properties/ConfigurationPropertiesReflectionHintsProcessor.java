@@ -109,11 +109,14 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 	private void handleConstructor(ReflectionHints reflectionHints) {
 		if (this.bindConstructor != null) {
 			reflectionHints.registerConstructor(this.bindConstructor);
+			return;
 		}
-		else {
-			Arrays.stream(this.type.getDeclaredConstructors()).filter((candidate) -> candidate.getParameterCount() == 0)
-					.findFirst().ifPresent(reflectionHints::registerConstructor);
-		}
+		Arrays.stream(this.type.getDeclaredConstructors()).filter(this::hasNoParameters).findFirst()
+				.ifPresent(reflectionHints::registerConstructor);
+	}
+
+	private boolean hasNoParameters(Constructor<?> candidate) {
+		return candidate.getParameterCount() == 0;
 	}
 
 	private void handleValueObjectProperties(ReflectionHints reflectionHints) {
@@ -138,26 +141,6 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 		}
 	}
 
-	private void handleProperty(ReflectionHints reflectionHints, String propertyName, ResolvableType propertyType) {
-		Class<?> propertyClass = propertyType.resolve();
-		if (propertyClass == null) {
-			return;
-		}
-		if (propertyClass.equals(this.type)) {
-			return; // Prevent infinite recursion
-		}
-		Class<?> componentType = getComponentType(propertyType);
-		if (componentType != null) {
-			// Can be a list of simple types
-			if (!isJavaType(componentType)) {
-				processNestedType(componentType, reflectionHints);
-			}
-		}
-		else if (isNestedType(propertyName, propertyClass)) {
-			processNestedType(propertyClass, reflectionHints);
-		}
-	}
-
 	private boolean isSetterMandatory(String propertyName, ResolvableType propertyType) {
 		Class<?> propertyClass = propertyType.resolve();
 		if (propertyClass == null) {
@@ -169,39 +152,61 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 		return !isNestedType(propertyName, propertyClass);
 	}
 
-	private Class<?> getComponentType(ResolvableType propertyType) {
-		Class<?> propertyClass = propertyType.toClass();
-		ResolvableType componentType = null;
-		if (propertyType.isArray()) {
-			componentType = propertyType.getComponentType();
+	private void handleProperty(ReflectionHints reflectionHints, String propertyName, ResolvableType propertyType) {
+		Class<?> propertyClass = propertyType.resolve();
+		if (propertyClass == null) {
+			return;
 		}
-		else if (Collection.class.isAssignableFrom(propertyClass)) {
-			componentType = propertyType.asCollection().getGeneric(0);
+		if (propertyClass.equals(this.type)) {
+			return; // Prevent infinite recursion
 		}
-		else if (Map.class.isAssignableFrom(propertyClass)) {
-			componentType = propertyType.asMap().getGeneric(1);
+		Class<?> componentType = getComponentClass(propertyType);
+		if (componentType != null) {
+			// Can be a list of simple types
+			if (!isJavaType(componentType)) {
+				processNestedType(componentType, reflectionHints);
+			}
 		}
+		else if (isNestedType(propertyName, propertyClass)) {
+			processNestedType(propertyClass, reflectionHints);
+		}
+	}
+
+	private Class<?> getComponentClass(ResolvableType type) {
+		ResolvableType componentType = getComponentType(type);
 		if (componentType == null) {
 			return null;
 		}
 		if (isContainer(componentType)) {
 			// Resolve nested generics like Map<String, List<SomeType>>
-			return getComponentType(componentType);
+			return getComponentClass(componentType);
 		}
 		return componentType.toClass();
 	}
 
-	private boolean isContainer(ResolvableType type) {
+	private ResolvableType getComponentType(ResolvableType type) {
 		if (type.isArray()) {
-			return true;
+			return type.getComponentType();
 		}
-		if (Collection.class.isAssignableFrom(type.toClass())) {
-			return true;
+		if (isCollection(type)) {
+			return type.asCollection().getGeneric();
 		}
-		else if (Map.class.isAssignableFrom(type.toClass())) {
-			return true;
+		if (isMap(type)) {
+			return type.asMap().getGeneric(1);
 		}
-		return false;
+		return null;
+	}
+
+	private boolean isContainer(ResolvableType type) {
+		return type.isArray() || isCollection(type) || isMap(type);
+	}
+
+	private boolean isCollection(ResolvableType type) {
+		return Collection.class.isAssignableFrom(type.toClass());
+	}
+
+	private boolean isMap(ResolvableType type) {
+		return Map.class.isAssignableFrom(type.toClass());
 	}
 
 	/**
