@@ -43,6 +43,10 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
 	private final Set<String> names;
 
+	private static final String LIVENESS = "liveness";
+
+	private static final String READINESS = "readiness";
+
 	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups groups, boolean addAdditionalPaths) {
 		Assert.notNull(groups, "Groups must not be null");
 		this.groups = groups;
@@ -54,16 +58,30 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
 	private Map<String, HealthEndpointGroup> createProbeGroups(boolean addAdditionalPaths) {
 		Map<String, HealthEndpointGroup> probeGroups = new LinkedHashMap<>();
-		probeGroups.put("liveness", createProbeGroup(addAdditionalPaths, "/livez", "livenessState"));
-		probeGroups.put("readiness", createProbeGroup(addAdditionalPaths, "/readyz", "readinessState"));
+		probeGroups.put(LIVENESS, getOrCreateProbeGroup(addAdditionalPaths, LIVENESS, "/livez", "livenessState"));
+		probeGroups.put(READINESS, getOrCreateProbeGroup(addAdditionalPaths, READINESS, "/readyz", "readinessState"));
 		return Collections.unmodifiableMap(probeGroups);
 	}
 
-	private AvailabilityProbesHealthEndpointGroup createProbeGroup(boolean addAdditionalPath, String path,
+	private HealthEndpointGroup getOrCreateProbeGroup(boolean addAdditionalPath, String name, String path,
 			String members) {
+		HealthEndpointGroup group = this.groups.get(name);
+		if (group != null) {
+			return determineAdditionalPathForExistingGroup(addAdditionalPath, path, group);
+		}
 		AdditionalHealthEndpointPath additionalPath = (!addAdditionalPath) ? null
 				: AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, path);
 		return new AvailabilityProbesHealthEndpointGroup(additionalPath, members);
+	}
+
+	private HealthEndpointGroup determineAdditionalPathForExistingGroup(boolean addAdditionalPath, String path,
+			HealthEndpointGroup group) {
+		if (addAdditionalPath && group.getAdditionalPath() == null) {
+			AdditionalHealthEndpointPath additionalPath = AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER,
+					path);
+			return new DelegatingAvailabilityProbesHealthEndpointGroup(group, additionalPath);
+		}
+		return group;
 	}
 
 	@Override
@@ -79,15 +97,14 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 	@Override
 	public HealthEndpointGroup get(String name) {
 		HealthEndpointGroup group = this.groups.get(name);
-		if (group == null) {
+		if (group == null || isProbeGroup(name)) {
 			group = this.probeGroups.get(name);
 		}
 		return group;
 	}
 
-	static boolean containsAllProbeGroups(HealthEndpointGroups groups) {
-		Set<String> names = groups.getNames();
-		return names.contains("liveness") && names.contains("readiness");
+	private boolean isProbeGroup(String name) {
+		return name.equals(LIVENESS) || name.equals(READINESS);
 	}
 
 }
