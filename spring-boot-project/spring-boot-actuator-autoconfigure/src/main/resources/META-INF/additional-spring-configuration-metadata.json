@@ -244,15 +244,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.status.order",
-      "defaultValue": [
-        "DOWN",
-        "OUT_OF_SERVICE",
-        "UP",
-        "UNKNOWN"
-      ]
-    },
-    {
       "name": "management.info.build.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable build info.",
