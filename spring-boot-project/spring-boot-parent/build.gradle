@@ -27,6 +27,13 @@ bom {
 			]
 		}
 	}
+	library("C3P0", "0.9.5.5") {
+		group("com.mchange") {
+			modules = [
+					"c3p0"
+			]
+		}
+	}
 	library("Commons Compress", "1.21") {
 		group("org.apache.commons") {
 			modules = [

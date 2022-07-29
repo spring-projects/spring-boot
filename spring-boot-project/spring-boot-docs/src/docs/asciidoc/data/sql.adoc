@@ -135,6 +135,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 * Spring Framework's `SimpleDriverDataSource`
 * H2 `JdbcDataSource`
 * PostgreSQL `PGSimpleDataSource`
+* C3P0
 
 
 

@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.internal.OpaqueString;
@@ -398,6 +399,19 @@ class DataSourceBuilderTests {
 		assertThat(testSource.getUsername()).isEqualTo("test");
 		assertThat(testSource.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
 		assertThat(testSource.getPassword()).isEqualTo("secret");
+	}
+
+	@Test // gh-31920
+	void buildWhenC3P0TypeSpecifiedReturnsExpectedDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:postgresql://localhost:5432/postgres")
+				.type(ComboPooledDataSource.class).username("test").password("secret")
+				.driverClassName("com.example.Driver").build();
+		assertThat(this.dataSource).isInstanceOf(ComboPooledDataSource.class);
+		ComboPooledDataSource c3p0DataSource = (ComboPooledDataSource) this.dataSource;
+		assertThat(c3p0DataSource.getJdbcUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+		assertThat(c3p0DataSource.getUser()).isEqualTo("test");
+		assertThat(c3p0DataSource.getPassword()).isEqualTo("secret");
+		assertThat(c3p0DataSource.getDriverClass()).isEqualTo("com.example.Driver");
 	}
 
 	private DataSource wrap(DataSource target) {
