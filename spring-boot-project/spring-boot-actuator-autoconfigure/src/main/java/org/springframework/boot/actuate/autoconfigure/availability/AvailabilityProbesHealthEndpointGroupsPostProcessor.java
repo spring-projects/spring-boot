@@ -41,9 +41,6 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpo
 
 	@Override
 	public HealthEndpointGroups postProcessHealthEndpointGroups(HealthEndpointGroups groups) {
-		if (AvailabilityProbesHealthEndpointGroups.containsAllProbeGroups(groups)) {
-			return groups;
-		}
 		return new AvailabilityProbesHealthEndpointGroups(groups, this.addAdditionalPaths);
 	}
 
