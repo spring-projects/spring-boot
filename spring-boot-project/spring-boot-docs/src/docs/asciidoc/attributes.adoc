@@ -21,6 +21,7 @@
 :docs-java: {docdir}/../main/java/org/springframework/boot/docs
 :docs-kotlin: {docdir}/../main/kotlin/org/springframework/boot/docs
 :docs-groovy: {docdir}/../main/groovy/org/springframework/boot/docs
+:docs-resources: {docdir}/../main/resources
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference

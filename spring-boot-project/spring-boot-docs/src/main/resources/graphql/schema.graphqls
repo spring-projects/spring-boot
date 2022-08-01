@@ -1,0 +1,29 @@
+type Query {
+    greeting(name: String! = "Spring"): String!
+    project(slug: ID!): Project
+}
+
+""" A Project in the Spring portfolio """
+type Project {
+    """ Unique string id used in URLs """
+    slug: ID!
+    """ Project name """
+    name: String!
+    """ URL of the git repository """
+    repositoryUrl: String!
+    """ Current support status """
+    status: ProjectStatus!
+}
+
+enum ProjectStatus {
+    """ Actively supported by the Spring team """
+    ACTIVE
+    """ Supported by the community """
+    COMMUNITY
+    """ Prototype, not officially supported yet  """
+    INCUBATING
+    """ Project being retired, in maintenance mode """
+    ATTIC
+    """ End-Of-Lifed """
+    EOL
+}
