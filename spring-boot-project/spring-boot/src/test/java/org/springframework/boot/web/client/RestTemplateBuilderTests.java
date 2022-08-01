@@ -33,9 +33,14 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.web.client.RestTemplateBuilder.RestTemplateBuilderRuntimeHints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -50,6 +55,7 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
@@ -583,6 +589,58 @@ class RestTemplateBuilderTests {
 		RestTemplate template = this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.build();
 		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection
+				.onField(ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory")))
+						.accepts(hints);
+	}
+
+	@Test
+	void shouldRegisterHttpComponentHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection.onMethod(ReflectionUtils.findMethod(HttpComponentsClientHttpRequestFactory.class,
+				"setConnectTimeout", int.class))).accepts(hints);
+		assertThat(reflection.onMethod(
+				ReflectionUtils.findMethod(HttpComponentsClientHttpRequestFactory.class, "setReadTimeout", int.class)))
+						.accepts(hints);
+		assertThat(reflection.onMethod(ReflectionUtils.findMethod(HttpComponentsClientHttpRequestFactory.class,
+				"setBufferRequestBody", boolean.class))).accepts(hints);
+	}
+
+	@Test
+	void shouldRegisterOkHttpHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection.onMethod(
+				ReflectionUtils.findMethod(OkHttp3ClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+						.accepts(hints);
+		assertThat(reflection.onMethod(
+				ReflectionUtils.findMethod(OkHttp3ClientHttpRequestFactory.class, "setReadTimeout", int.class)))
+						.accepts(hints);
+	}
+
+	@Test
+	void shouldRegisterSimpleHttpHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection.onMethod(
+				ReflectionUtils.findMethod(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+						.accepts(hints);
+		assertThat(reflection.onMethod(
+				ReflectionUtils.findMethod(SimpleClientHttpRequestFactory.class, "setReadTimeout", int.class)))
+						.accepts(hints);
+		assertThat(reflection.onMethod(ReflectionUtils.findMethod(SimpleClientHttpRequestFactory.class,
+				"setBufferRequestBody", boolean.class))).accepts(hints);
 	}
 
 	private ClientHttpRequest createRequest(RestTemplate template) {

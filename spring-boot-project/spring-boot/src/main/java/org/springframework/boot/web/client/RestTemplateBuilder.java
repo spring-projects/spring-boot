@@ -29,13 +29,19 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import reactor.netty.http.client.HttpClientRequest;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -56,7 +62,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * converters}, {@link #errorHandler(ResponseErrorHandler) error handlers} and
  * {@link #uriTemplateHandler(UriTemplateHandler) UriTemplateHandlers}.
  * <p>
- * By default the built {@link RestTemplate} will attempt to use the most suitable
+ * By default, the built {@link RestTemplate} will attempt to use the most suitable
  * {@link ClientHttpRequestFactory}, call {@link #detectRequestFactory(boolean)
  * detectRequestFactory(false)} if you prefer to keep the default. In a typical
  * auto-configured Spring Boot application this builder is available as a bean and can be
@@ -71,6 +77,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Ilya Lukyanovich
  * @since 1.4.0
  */
+@ImportRuntimeHints(RestTemplateBuilder.RestTemplateBuilderRuntimeHints.class)
 public class RestTemplateBuilder {
 
 	private final RequestFactoryCustomizer requestFactoryCustomizer;
@@ -785,6 +792,25 @@ public class RestTemplateBuilder {
 
 		private void invoke(ClientHttpRequestFactory requestFactory, Method method, Object... parameters) {
 			ReflectionUtils.invokeMethod(method, requestFactory, parameters);
+		}
+
+	}
+
+	static class RestTemplateBuilderRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerField(Objects.requireNonNull(
+					ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory")));
+			ClientHttpRequestFactorySupplier.ClientHttpRequestFactorySupplierRuntimeHints.registerHints(hints,
+					classLoader, (hint) -> {
+						hint.withMethod("setConnectTimeout", List.of(TypeReference.of(int.class)),
+								(method) -> method.withMode(ExecutableMode.INVOKE));
+						hint.withMethod("setReadTimeout", List.of(TypeReference.of(int.class)),
+								(method) -> method.withMode(ExecutableMode.INVOKE));
+						hint.withMethod("setBufferRequestBody", List.of(TypeReference.of(boolean.class)),
+								(method) -> method.withMode(ExecutableMode.INVOKE));
+					});
 		}
 
 	}

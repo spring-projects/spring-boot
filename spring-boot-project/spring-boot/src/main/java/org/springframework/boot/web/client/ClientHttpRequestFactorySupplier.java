@@ -16,13 +16,15 @@
 
 package org.springframework.boot.web.client;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.springframework.beans.BeanUtils;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.TypeHint.Builder;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
 
@@ -31,30 +33,38 @@ import org.springframework.util.ClassUtils;
  * based on the available implementations on the classpath.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  * @since 2.1.0
  */
 public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
 
-	private static final Map<String, String> REQUEST_FACTORY_CANDIDATES;
+	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent("org.apache.http.client.HttpClient",
+			null);
 
-	static {
-		Map<String, String> candidates = new LinkedHashMap<>();
-		candidates.put("org.apache.http.client.HttpClient",
-				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory");
-		candidates.put("okhttp3.OkHttpClient", "org.springframework.http.client.OkHttp3ClientHttpRequestFactory");
-		REQUEST_FACTORY_CANDIDATES = Collections.unmodifiableMap(candidates);
-	}
+	private static final boolean OKHTTP_CLIENT_PRESENT = ClassUtils.isPresent("okhttp3.OkHttpClient", null);
 
 	@Override
 	public ClientHttpRequestFactory get() {
-		for (Map.Entry<String, String> candidate : REQUEST_FACTORY_CANDIDATES.entrySet()) {
-			ClassLoader classLoader = getClass().getClassLoader();
-			if (ClassUtils.isPresent(candidate.getKey(), classLoader)) {
-				Class<?> factoryClass = ClassUtils.resolveClassName(candidate.getValue(), classLoader);
-				return (ClientHttpRequestFactory) BeanUtils.instantiateClass(factoryClass);
-			}
+		if (APACHE_HTTP_CLIENT_PRESENT) {
+			return new HttpComponentsClientHttpRequestFactory();
+		}
+		if (OKHTTP_CLIENT_PRESENT) {
+			return new OkHttp3ClientHttpRequestFactory();
 		}
 		return new SimpleClientHttpRequestFactory();
+	}
+
+	static class ClientHttpRequestFactorySupplierRuntimeHints {
+
+		static void registerHints(RuntimeHints hints, ClassLoader classLoader, Consumer<Builder> callback) {
+			hints.reflection().registerType(HttpComponentsClientHttpRequestFactory.class, (hint) -> callback
+					.accept(hint.onReachableType(TypeReference.of("org.apache.http.client.HttpClient"))));
+			hints.reflection().registerType(OkHttp3ClientHttpRequestFactory.class,
+					(hint) -> callback.accept(hint.onReachableType(TypeReference.of("okhttp3.OkHttpClient"))));
+			hints.reflection().registerType(SimpleClientHttpRequestFactory.class, (hint) -> callback
+					.accept(hint.onReachableType(TypeReference.of(SimpleClientHttpRequestFactory.class))));
+		}
+
 	}
 
 }
