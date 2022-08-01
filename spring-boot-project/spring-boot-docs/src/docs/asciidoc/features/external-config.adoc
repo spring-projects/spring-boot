@@ -568,7 +568,7 @@ If you need a secure way to store credentials and passwords, the https://cloud.s
 [[features.external-config.yaml]]
 === Working with YAML
 https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
-The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
+The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://github.com/snakeyaml/snakeyaml[SnakeYAML] library on your classpath.
 
 NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
 
