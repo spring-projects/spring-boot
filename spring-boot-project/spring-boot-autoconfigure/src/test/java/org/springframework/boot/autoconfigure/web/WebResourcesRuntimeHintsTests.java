@@ -56,7 +56,7 @@ class WebResourcesRuntimeHintsTests {
 		assertThat(hints.resources().resourcePatterns()).isEmpty();
 	}
 
-	RuntimeHints register(ClassLoader classLoader) {
+	private RuntimeHints register(ClassLoader classLoader) {
 		RuntimeHints hints = new RuntimeHints();
 		WebResourcesRuntimeHints registrar = new WebResourcesRuntimeHints();
 		registrar.registerHints(hints, classLoader);

@@ -33,8 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author HaiTao Zhang
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "management.endpoints.web.base-path=/", "management.server.port=0",
-				"logging.level.org.springframework.web=trace" })
+		properties = { "management.endpoints.web.base-path=/", "management.server.port=0" })
 class ManagementDifferentPortSampleActuatorApplicationTests {
 
 	@LocalManagementPort
