@@ -86,7 +86,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	private JarEntryCertification[] certifications;
 
 	private final Map<Integer, FileHeader> entriesCache = Collections
-			.synchronizedMap(new LinkedHashMap<Integer, FileHeader>(16, 0.75f, true) {
+			.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
 
 				@Override
 				protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
@@ -338,7 +338,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			// We fall back to use JarInputStream to obtain the certs. This isn't that
 			// fast, but hopefully doesn't happen too often.
 			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
-				java.util.jar.JarEntry certifiedEntry = null;
+				java.util.jar.JarEntry certifiedEntry;
 				while ((certifiedEntry = certifiedJarStream.getNextJarEntry()) != null) {
 					// Entry must be closed to trigger a read and set entry certificates
 					certifiedJarStream.closeEntry();

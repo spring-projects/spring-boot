@@ -41,7 +41,7 @@ import org.springframework.util.unit.DataSize;
  */
 abstract class HttpSender extends Sender {
 
-	private static final DataSize MESSAGE_MAX_BYTES = DataSize.ofKilobytes(512);
+	private static final DataSize MESSAGE_MAX_SIZE = DataSize.ofKilobytes(512);
 
 	private volatile boolean closed;
 
@@ -52,7 +52,7 @@ abstract class HttpSender extends Sender {
 
 	@Override
 	public int messageMaxBytes() {
-		return (int) MESSAGE_MAX_BYTES.toBytes();
+		return (int) MESSAGE_MAX_SIZE.toBytes();
 	}
 
 	@Override
