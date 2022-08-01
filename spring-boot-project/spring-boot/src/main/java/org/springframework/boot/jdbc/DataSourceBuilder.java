@@ -238,18 +238,6 @@ public final class DataSourceBuilder<T extends DataSource> {
 				throw new IllegalStateException("Unable to unwrap embedded database", ex);
 			}
 		}
-		try {
-			while (dataSource.isWrapperFor(DataSource.class)) {
-				DataSource unwrapped = dataSource.unwrap(DataSource.class);
-				if (unwrapped == dataSource) {
-					break;
-				}
-				dataSource = unwrapped;
-			}
-		}
-		catch (SQLException ex) {
-			// Try to continue with the existing, potentially still wrapped, DataSource
-		}
 		return new DataSourceBuilder<>(unwrap(dataSource));
 	}
 
