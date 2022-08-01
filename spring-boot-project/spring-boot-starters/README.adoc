@@ -34,9 +34,6 @@ do as they were designed before this was clarified.
 | https://qpid.apache.org/components/jms/[Apache Qpid]
 | https://github.com/amqphub/amqp-10-jms-spring-boot
 
-| https://rocketmq.apache.org/[Apache RocketMQ]
-| https://github.com/ThierrySquirrel/rocketmq-spring-boot-starter
-
 | https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
@@ -152,7 +149,7 @@ do as they were designed before this was clarified.
 | https://github.com/liquigraph/liquigraph
 
 | https://logback.qos.ch/access.html[Logback-access]
-| https://github.com/akihyro/logback-access-spring-boot-starter
+| https://github.com/akkinoc/logback-access-spring-boot-starter
 
 | https://github.com/mulesoft/mule[Mule 4]
 | https://github.com/hawkore/mule4-spring-boot-starter
@@ -218,7 +215,7 @@ do as they were designed before this was clarified.
 | https://github.com/fonimus/ssh-shell-spring-boot
 
 | https://github.com/savantly-net/sprout-platform[Sprout Platform]
-| https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
+| https://github.com/savantly-net/sprout-platform/tree/master/backend/starters/sprout-spring-boot-starter
 
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
