@@ -349,6 +349,9 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("src/main/groovy") {
 		into "main/groovy"
 	}
+	from("src/main/resources") {
+		into "main/resources"
+	}
 }
 
 syncDocumentationSourceForAsciidoctorPdf {
