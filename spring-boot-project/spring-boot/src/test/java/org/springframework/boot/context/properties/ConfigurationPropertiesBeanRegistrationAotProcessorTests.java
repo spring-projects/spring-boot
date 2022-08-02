@@ -16,14 +16,30 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.Arrays;
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.test.generator.compile.CompileWithTargetClassAccess;
+import org.springframework.aot.test.generator.compile.TestCompiler;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BFirstProperties;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BSecondProperties;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.aot.ApplicationContextAotGenerator;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.javapoet.ClassName;
+import org.springframework.test.aot.generate.TestGenerationContext;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,6 +89,78 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 		return this.processor.processAheadOfTime(registeredBean);
 	}
 
+	@Test
+	@CompileWithTargetClassAccess
+	void aotContributedInitializerBindsValueObject() {
+		compile(createContext(ValueObjectSampleBeanConfiguration.class), (freshContext) -> {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello");
+			freshContext.refresh();
+			ValueObjectSampleBean bean = freshContext.getBean(ValueObjectSampleBean.class);
+			assertThat(bean.name).isEqualTo("Hello");
+		});
+	}
+
+	@Test
+	@CompileWithTargetClassAccess
+	void aotContributedInitializerBindsJavaBean() {
+		compile(createContext(JavaBeanSampleBeanConfiguration.class), (freshContext) -> {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello");
+			freshContext.refresh();
+			JavaBeanSampleBean bean = freshContext.getBean(JavaBeanSampleBean.class);
+			assertThat(bean.getName()).isEqualTo("Hello");
+		});
+	}
+
+	@Test
+	@CompileWithTargetClassAccess
+	void aotContributedInitializerBindsScannedValueObject() {
+		compile(createContext(ScanTestConfiguration.class), (freshContext) -> {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "b.first.name=Hello");
+			freshContext.refresh();
+			BFirstProperties bean = freshContext.getBean(BFirstProperties.class);
+			assertThat(bean.getName()).isEqualTo("Hello");
+		});
+	}
+
+	@Test
+	@CompileWithTargetClassAccess
+	void aotContributedInitializerBindsScannedJavaBean() {
+		compile(createContext(ScanTestConfiguration.class), (freshContext) -> {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "b.second.number=42");
+			freshContext.refresh();
+			BSecondProperties bean = freshContext.getBean(BSecondProperties.class);
+			assertThat(bean.getNumber()).isEqualTo(42);
+		});
+	}
+
+	private GenericApplicationContext createContext(Class<?>... types) {
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
+		context.registerBean(JavaBeanSampleBeanConfiguration.class);
+		Arrays.stream(types).forEach((type) -> context.registerBean(type));
+		return context;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void compile(GenericApplicationContext context, Consumer<GenericApplicationContext> freshContext) {
+		TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
+		ClassName className = new ApplicationContextAotGenerator().generateApplicationContext(context,
+				generationContext);
+		generationContext.writeGeneratedContent();
+		TestCompiler.forSystem().withFiles(generationContext.getGeneratedFiles()).compile((compiled) -> {
+			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
+			ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
+					.getInstance(ApplicationContextInitializer.class, className.toString());
+			initializer.initialize(freshApplicationContext);
+			freshContext.accept(freshApplicationContext);
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(JavaBeanSampleBean.class)
+	static class JavaBeanSampleBeanConfiguration {
+
+	}
+
 	@ConfigurationProperties("test")
 	public static class JavaBeanSampleBean {
 
@@ -88,6 +176,12 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ValueObjectSampleBean.class)
+	static class ValueObjectSampleBeanConfiguration {
+
+	}
+
 	@ConfigurationProperties("test")
 	public static class ValueObjectSampleBean {
 
@@ -97,6 +191,16 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 		ValueObjectSampleBean(String name) {
 			this.name = name;
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConfigurationPropertiesScan(basePackageClasses = BScanConfiguration.class)
+	static class ScanTestConfiguration {
+
+	}
+
+	static class TestTarget {
 
 	}
 

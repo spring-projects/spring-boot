@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import java.lang.reflect.Executable;
+import java.util.function.Predicate;
 
 import javax.lang.model.element.Modifier;
 
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.aot.BeanRegistrationCodeFragments;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.InstanceSupplier;
 import org.springframework.beans.factory.support.RegisteredBean;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.javapoet.CodeBlock;
 
@@ -59,6 +61,9 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 
 	private static class ConfigurationPropertiesBeanRegistrationCodeFragments extends BeanRegistrationCodeFragments {
 
+		private static final Predicate<String> INCLUDE_BIND_METHOD_ATTRIBUTE_FILTER = (name) -> name
+				.equals(BindMethod.class.getName());
+
 		private static final String REGISTERED_BEAN_PARAMETER_NAME = "registeredBean";
 
 		private final RegisteredBean registeredBean;
@@ -67,6 +72,14 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 				RegisteredBean registeredBean) {
 			super(codeFragments);
 			this.registeredBean = registeredBean;
+		}
+
+		@Override
+		public CodeBlock generateSetBeanDefinitionPropertiesCode(GenerationContext generationContext,
+				BeanRegistrationCode beanRegistrationCode, RootBeanDefinition beanDefinition,
+				Predicate<String> attributeFilter) {
+			return super.generateSetBeanDefinitionPropertiesCode(generationContext, beanRegistrationCode,
+					beanDefinition, INCLUDE_BIND_METHOD_ATTRIBUTE_FILTER.or(attributeFilter));
 		}
 
 		@Override
