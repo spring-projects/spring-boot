@@ -53,7 +53,7 @@ import org.springframework.core.env.Environment;
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @EnableConfigurationProperties(WavefrontProperties.class)
-@ConditionalOnBean(WavefrontSender.class)
+@ConditionalOnClass(WavefrontSender.class)
 @Import(WavefrontSenderConfiguration.class)
 @ConditionalOnEnabledTracing
 public class WavefrontTracingAutoConfiguration {
@@ -80,6 +80,7 @@ public class WavefrontTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnBean(WavefrontSender.class)
 		WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
 				SpanMetrics spanMetrics, ApplicationTags applicationTags) {
 			return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,

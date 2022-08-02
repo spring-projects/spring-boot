@@ -47,7 +47,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
 		after = MetricsAutoConfiguration.class)
-@ConditionalOnBean({ Clock.class, WavefrontSender.class })
+@ConditionalOnBean(Clock.class)
 @ConditionalOnClass({ WavefrontMeterRegistry.class, WavefrontSender.class })
 @ConditionalOnEnabledMetricsExport("wavefront")
 @EnableConfigurationProperties(WavefrontProperties.class)
@@ -62,6 +62,7 @@ public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnBean(WavefrontSender.class)
 	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig, Clock clock,
 			WavefrontSender wavefrontSender) {
 		return WavefrontMeterRegistry.builder(wavefrontConfig).clock(clock).wavefrontSender(wavefrontSender).build();

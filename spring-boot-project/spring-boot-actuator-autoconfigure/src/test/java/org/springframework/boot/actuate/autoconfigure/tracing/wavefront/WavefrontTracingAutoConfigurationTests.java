@@ -58,7 +58,7 @@ class WavefrontTracingAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyBeansIfWavefrontSenderIsMissing() {
-		this.contextRunner.run((context) -> {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(WavefrontSender.class)).run((context) -> {
 			assertThat(context).doesNotHaveBean(ApplicationTags.class);
 			assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 			assertThat(context).doesNotHaveBean(SpanMetrics.class);
