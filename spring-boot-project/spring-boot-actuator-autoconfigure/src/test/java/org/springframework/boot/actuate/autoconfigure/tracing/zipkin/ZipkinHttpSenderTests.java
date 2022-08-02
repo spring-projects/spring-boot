@@ -58,11 +58,11 @@ abstract class ZipkinHttpSenderTests {
 
 	protected void makeRequest(List<byte[]> encodedSpans, boolean async) throws IOException {
 		if (async) {
-			CallbackResult callbackResult = this.makeAsyncRequest(encodedSpans);
+			CallbackResult callbackResult = makeAsyncRequest(encodedSpans);
 			assertThat(callbackResult.success()).isTrue();
 		}
 		else {
-			this.makeSyncRequest(encodedSpans);
+			makeSyncRequest(encodedSpans);
 		}
 	}
 
