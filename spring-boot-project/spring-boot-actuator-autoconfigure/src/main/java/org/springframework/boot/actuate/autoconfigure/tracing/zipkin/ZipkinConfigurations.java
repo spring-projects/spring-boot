@@ -60,8 +60,8 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
 		URLConnectionSender urlConnectionSender(ZipkinProperties properties) {
-			return URLConnectionSender.newBuilder().connectTimeout((int) properties.getConnectTimeout().getSeconds())
-					.readTimeout((int) properties.getReadTimeout().getSeconds()).endpoint(properties.getEndpoint())
+			return URLConnectionSender.newBuilder().connectTimeout((int) properties.getConnectTimeout().toMillis())
+					.readTimeout((int) properties.getReadTimeout().toMillis()).endpoint(properties.getEndpoint())
 					.build();
 		}
 
