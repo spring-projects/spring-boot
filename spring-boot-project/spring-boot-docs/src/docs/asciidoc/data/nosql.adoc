@@ -39,6 +39,39 @@ The following listing shows an example of such a bean:
 
 include::code:MyBean[]
 
+You can set the configprop:spring.redis.url[] property to change the URL and configure
+additional settings as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+    spring:
+      redis:
+        url: "redis://user:secret@redis.example.com:6379"
+----
+
+Alternatively, you can specify connection details using discrete properties. For example, you might
+declare the following settings in your `application.yml`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  redis:
+	    host: "redis.example.com"
+	    port: 6379
+	    username: "user"
+	    password: "secret"
+----
+When using both the URL and the discrete properties, any values that are set in the URL will take precedence over the values set in the properties.
+
+The url property supports the `redis` and `rediss` schemes as well as the following additional schemes when using Lettuce:
+
+* `redis+ssl`
+* `redis+tls`
+* `redis-sentinel`
+* `rediss-sentinel`
+* `redis-socket`
+* `redis+socket`
+
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
 `ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
 If you use Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
