@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.context;
+package org.springframework.boot.web.servlet.context;
 
+import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.context.WebServerBeforeStartEvent;
 import org.springframework.boot.web.server.WebServer;
 
 /**
- * Event to be published when the {@link WebServer} is ready. Useful for obtaining the
- * local port of a running server.
- *
- * @author Brian Clozel
- * @author Stephane Nicoll
- * @since 2.0.0
+ * Event to be published before the {@link WebServer} starts.
  */
-@SuppressWarnings("serial")
-public abstract class WebServerInitializedEvent extends WebServerEvent {
+public class ServletWebServerBeforeStartEvent extends WebServerBeforeStartEvent {
+	private final ServletWebServerApplicationContext applicationContext;
 
-	protected WebServerInitializedEvent(WebServer webServer) {
+	public ServletWebServerBeforeStartEvent(WebServer webServer, ServletWebServerApplicationContext applicationContext) {
 		super(webServer);
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public WebServerApplicationContext getApplicationContext() {
+		return applicationContext;
 	}
 }

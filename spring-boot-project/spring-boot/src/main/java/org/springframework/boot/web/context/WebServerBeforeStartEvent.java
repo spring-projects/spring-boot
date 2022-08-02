@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,12 @@ package org.springframework.boot.web.context;
 import org.springframework.boot.web.server.WebServer;
 
 /**
- * Event to be published when the {@link WebServer} is ready. Useful for obtaining the
- * local port of a running server.
- *
- * @author Brian Clozel
- * @author Stephane Nicoll
- * @since 2.0.0
+ * Event to be published before the {@link WebServer} starts.
+ * Useful for doing initialization work before server starts.
  */
-@SuppressWarnings("serial")
-public abstract class WebServerInitializedEvent extends WebServerEvent {
+public abstract class WebServerBeforeStartEvent extends WebServerEvent {
 
-	protected WebServerInitializedEvent(WebServer webServer) {
+	public WebServerBeforeStartEvent(WebServer webServer) {
 		super(webServer);
 	}
 }

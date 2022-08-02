@@ -138,10 +138,12 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("listener", new RootBeanDefinition(TestApplicationListener.class));
 		this.context.refresh();
 		List<ApplicationEvent> events = this.context.getBean(TestApplicationListener.class).receivedEvents();
-		assertThat(events).hasSize(2).extracting("class").containsExactly(ServletWebServerInitializedEvent.class,
-				ContextRefreshedEvent.class);
-		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(0);
+		assertThat(events).hasSize(3).extracting("class").containsExactly(ServletWebServerBeforeStartEvent.class, ServletWebServerInitializedEvent.class, ContextRefreshedEvent.class);
+		ServletWebServerBeforeStartEvent beforeStartEvent = (ServletWebServerBeforeStartEvent) events.get(0);
+		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(1);
+		assertThat(beforeStartEvent.getSource().getPort() >= 0).isTrue();
 		assertThat(initializedEvent.getSource().getPort() >= 0).isTrue();
+		assertThat(beforeStartEvent.getApplicationContext()).isEqualTo(this.context);
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
 	}
 
