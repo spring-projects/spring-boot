@@ -245,12 +245,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	@Override
-	public ApplicationContext loadContext(String... locations) throws Exception {
-		throw new UnsupportedOperationException(
-				"SpringApplicationContextLoader does not support the loadContext(String...) method");
-	}
-
-	@Override
 	protected String[] getResourceSuffixes() {
 		return new String[] { "-context.xml", "Context.groovy" };
 	}
