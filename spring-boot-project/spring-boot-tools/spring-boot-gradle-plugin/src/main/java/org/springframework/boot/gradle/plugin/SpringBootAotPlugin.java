@@ -24,6 +24,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.attributes.LibraryElements;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.Directory;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -77,16 +78,23 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			Configuration aotImplementation = configurations.getByName(aot.getImplementationConfigurationName());
 			aotImplementation.extendsFrom(configurations.getByName(main.getImplementationConfigurationName()));
 			aotImplementation.extendsFrom(configurations.getByName(main.getRuntimeOnlyConfigurationName()));
-			configurations.getByName(aot.getCompileClasspathConfigurationName())
-					.attributes((attributes) -> addLibraryElementsAttribute(project, attributes));
+			configurations.getByName(aot.getCompileClasspathConfigurationName()).attributes((attributes) -> {
+				configureClassesAndResourcesLibraryElementsAttribute(project, attributes);
+				configureJavaRuntimeUsageAttribute(project, attributes);
+			});
 		});
 		return aotSourceSet;
 	}
 
-	private AttributeContainer addLibraryElementsAttribute(Project project, AttributeContainer attributes) {
-		LibraryElements libraryElements = project.getObjects().named(LibraryElements.class,
+	private void configureClassesAndResourcesLibraryElementsAttribute(Project project, AttributeContainer attributes) {
+		LibraryElements classesAndResources = project.getObjects().named(LibraryElements.class,
 				LibraryElements.CLASSES_AND_RESOURCES);
-		return attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, libraryElements);
+		attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, classesAndResources);
+	}
+
+	private void configureJavaRuntimeUsageAttribute(Project project, AttributeContainer attributes) {
+		Usage javaRuntime = project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME);
+		attributes.attribute(Usage.USAGE_ATTRIBUTE, javaRuntime);
 	}
 
 	private void registerGenerateAotSourcesTask(Project project, SourceSet aotSourceSet) {
