@@ -97,10 +97,20 @@ public class WavefrontProperties extends PushRegistryProperties {
 
 	public static class Sender {
 
+		/**
+		 * Maximum queue size of the in-memory buffer.
+		 */
 		private int maxQueueSize = 50000;
 
+		/**
+		 * Interval at which points are flushed to the Wavefront server.
+		 */
 		private Duration flushInterval = Duration.ofSeconds(1);
 
+		/**
+		 * Maximum message size, such that each batch is reported as one or more messages
+		 * where no message exceeds the specified size.
+		 */
 		private DataSize messageSize = DataSize.ofBytes(Integer.MAX_VALUE);
 
 		public int getMaxQueueSize() {

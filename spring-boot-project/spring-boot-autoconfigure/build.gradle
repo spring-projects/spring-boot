@@ -266,3 +266,13 @@ dependencies {
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
 }
+
+tasks.named("checkSpringConfigurationMetadata").configure {
+	exclusions = [
+		"spring.datasource.dbcp2.*",
+		"spring.datasource.hikari.*",
+		"spring.datasource.oracleucp.*",
+		"spring.datasource.tomcat.*",
+		"spring.groovy.template.configuration.*"
+	]
+}

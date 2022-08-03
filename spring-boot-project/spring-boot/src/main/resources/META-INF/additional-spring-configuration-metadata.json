@@ -324,6 +324,7 @@
     {
       "name": "spring.jpa.defer-datasource-initialization",
       "type": "java.lang.Boolean",
+      "description": "Whether to defer DataSource initialization until after any EntityManagerFactory beans have been created and initialized.",
       "defaultValue": false
     },
     {

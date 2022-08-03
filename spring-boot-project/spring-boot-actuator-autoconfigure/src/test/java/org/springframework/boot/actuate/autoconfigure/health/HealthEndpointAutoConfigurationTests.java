@@ -123,7 +123,7 @@ class HealthEndpointAutoConfigurationTests {
 	@Test
 	void runWhenHasHttpCodeStatusMapperBeanIgnoresProperties() {
 		this.contextRunner.withUserConfiguration(HttpCodeStatusMapperConfiguration.class)
-				.withPropertyValues("management.health.status.http-mapping.up=123").run((context) -> {
+				.withPropertyValues("management.endpoint.health.status.http-mapping.up=123").run((context) -> {
 					HttpCodeStatusMapper mapper = context.getBean(HttpCodeStatusMapper.class);
 					assertThat(mapper.getStatusCode(Status.UP)).isEqualTo(456);
 				});
