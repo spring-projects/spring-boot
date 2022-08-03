@@ -1773,8 +1773,14 @@ public class ServerProperties {
 
 		public static class Options {
 
+			/**
+			 * Socket options as defined in org.xnio.Options.
+			 */
 			private Map<String, String> socket = new LinkedHashMap<>();
 
+			/**
+			 * Server options as defined in io.undertow.UndertowOptions.
+			 */
 			private Map<String, String> server = new LinkedHashMap<>();
 
 			public Map<String, String> getServer() {

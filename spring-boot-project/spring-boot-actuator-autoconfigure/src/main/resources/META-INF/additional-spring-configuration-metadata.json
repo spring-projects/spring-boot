@@ -116,10 +116,6 @@
       "defaultValue": "milliseconds"
     },
     {
-      "name": "management.ganglia.metrics.export.rate-units",
-      "defaultValue": "seconds"
-    },
-    {
       "name": "management.graphite.metrics.export.duration-units",
       "defaultValue": "milliseconds"
     },
@@ -266,15 +262,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Redis health check.",
       "defaultValue": true
-    },
-    {
-      "name": "management.health.status.order",
-      "defaultValue": [
-        "DOWN",
-        "OUT_OF_SERVICE",
-        "UP",
-        "UNKNOWN"
-      ]
     },
     {
       "name": "management.influx.metrics.export.consistency",
@@ -2014,6 +2001,14 @@
       }
     },
     {
+      "name": "management.server.ssl.certificate",
+      "description": "Path to a PEM-encoded SSL certificate file."
+    },
+    {
+      "name": "management.server.ssl.certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate."
+    },
+    {
       "name": "management.server.ssl.ciphers",
       "description": "Supported SSL ciphers."
     },
@@ -2058,6 +2053,14 @@
       "name": "management.server.ssl.protocol",
       "description": "SSL protocol to use.",
       "defaultValue": "TLS"
+    },
+    {
+      "name": "management.server.ssl.trust-certificate",
+      "description": "Path to a PEM-encoded SSL certificate authority file."
+    },
+    {
+      "name": "management.server.ssl.trust-certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
     },
     {
       "name": "management.server.ssl.trust-store",
