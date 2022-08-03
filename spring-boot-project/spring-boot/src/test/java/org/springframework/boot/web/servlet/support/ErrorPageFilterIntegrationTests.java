@@ -179,7 +179,13 @@ class ErrorPageFilterIntegrationTests {
 		private static final String[] EMPTY_RESOURCE_SUFFIXES = {};
 
 		@Override
-		public ApplicationContext loadContext(MergedContextConfiguration config) {
+		@Deprecated
+		public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+			return loadContext(mergedConfig, true);
+		}
+
+		@Override
+		public ApplicationContext loadContext(MergedContextConfiguration config, boolean refresh) {
 			AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 					config.getClasses());
 			context.registerShutdownHook();
