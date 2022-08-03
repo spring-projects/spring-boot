@@ -401,8 +401,13 @@ Access logging for Undertow can be configured in a similar fashion, as shown in 
 	    accesslog:
 	      enabled: true
 	      pattern: "%t %a %r %s (%D ms)"
+	    options:
+	      server:
+	        record-request-start-time: true
 ----
 
+Note that, in addition to enabling access logging and configuring its pattern, recording request start times has also been enabled.
+This is required when including the response time (`%D`) in the access log pattern.
 Logs are stored in a `logs` directory relative to the working directory of the application.
 You can customize this location by setting the configprop:server.undertow.accesslog.dir[] property.
 
