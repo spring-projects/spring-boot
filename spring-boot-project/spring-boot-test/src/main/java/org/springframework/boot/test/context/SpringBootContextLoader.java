@@ -84,7 +84,13 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 public class SpringBootContextLoader extends AbstractContextLoader {
 
 	@Override
+	@Deprecated
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
+		return loadContext(config, true);
+	}
+
+	@Override
+	public ApplicationContext loadContext(MergedContextConfiguration config, boolean refresh) throws Exception {
 		Class<?>[] configClasses = config.getClasses();
 		String[] configLocations = config.getLocations();
 		Assert.state(!ObjectUtils.isEmpty(configClasses) || !ObjectUtils.isEmpty(configLocations),
@@ -129,6 +135,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.addListeners(new PrepareEnvironmentListener(config));
 		}
 		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
+		Assert.isTrue(refresh, "SpringBootContextLoader and only return refreshed contexts");
 		return application.run(args);
 	}
 
