@@ -45,6 +45,8 @@ import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
@@ -136,6 +138,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
 
+	/**
+	 * The name of the {@link Lifecycle} bean used to handle cleanup.
+	 */
+	private static final String LOGGING_LIFECYCLE_BEAN_NAME = "springBootLoggingLifecycle";
+
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
 		MultiValueMap<String, String> loggers = new LinkedMultiValueMap<>();
@@ -218,9 +225,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		else if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-		else if (event instanceof ContextClosedEvent
-				&& ((ContextClosedEvent) event).getApplicationContext().getParent() == null) {
-			onContextClosedEvent();
+		else if (event instanceof ContextClosedEvent) {
+			onContextClosedEvent((ContextClosedEvent) event);
 		}
 		else if (event instanceof ApplicationFailedEvent) {
 			onApplicationFailedEvent();
@@ -241,7 +247,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext().getBeanFactory();
+		ConfigurableApplicationContext applicationContext = event.getApplicationContext();
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
@@ -251,18 +258,27 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGER_GROUPS_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGER_GROUPS_BEAN_NAME, this.loggerGroups);
 		}
+		if (!beanFactory.containsBean(LOGGING_LIFECYCLE_BEAN_NAME) && applicationContext.getParent() == null) {
+			beanFactory.registerSingleton(LOGGING_LIFECYCLE_BEAN_NAME, new Lifecycle());
+		}
 	}
 
-	private void onContextClosedEvent() {
+	private void onContextClosedEvent(ContextClosedEvent event) {
+		ApplicationContext applicationContext = event.getApplicationContext();
+		if (applicationContext.getParent() != null || applicationContext.containsBean(LOGGING_LIFECYCLE_BEAN_NAME)) {
+			return;
+		}
+		cleanupLoggingSystem();
+	}
+
+	void cleanupLoggingSystem() {
 		if (this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
 		}
 	}
 
 	private void onApplicationFailedEvent() {
-		if (this.loggingSystem != null) {
-			this.loggingSystem.cleanUp();
-		}
+		cleanupLoggingSystem();
 	}
 
 	/**
@@ -436,6 +452,34 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public void setParseArgs(boolean parseArgs) {
 		this.parseArgs = parseArgs;
+	}
+
+	private class Lifecycle implements SmartLifecycle {
+
+		private volatile boolean running;
+
+		@Override
+		public void start() {
+			this.running = true;
+		}
+
+		@Override
+		public void stop() {
+			this.running = false;
+			cleanupLoggingSystem();
+		}
+
+		@Override
+		public boolean isRunning() {
+			return this.running;
+		}
+
+		@Override
+		public int getPhase() {
+			// Shutdown late and always after WebServerStartStopLifecycle
+			return Integer.MIN_VALUE + 1;
+		}
+
 	}
 
 }
