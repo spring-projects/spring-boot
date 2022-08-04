@@ -265,6 +265,8 @@ task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs
 	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
 	output = file("$buildDir/example-output/remote-spring-application.txt")
 	expectedLogging = "Started RemoteSpringApplication in "
+	applicationJar = "/Users/myuser/.m2/repository/org/springframework/boot/spring-boot-devtools/${project.version}/spring-boot-devtools-${project.version}.jar"
+	normalizeLiveReloadPort()
 }
 
 task runSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
@@ -273,6 +275,7 @@ task runSpringApplicationExample(type: org.springframework.boot.build.docs.Appli
 	args = ["--server.port=0"]
 	output = file("$buildDir/example-output/spring-application.txt")
 	expectedLogging = "Started MyApplication in "
+	normalizeTomcatPort()
 }
 
 task runLoggingFormatExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
@@ -281,6 +284,7 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	args = ["--spring.main.banner-mode=off", "--server.port=0"]
 	output = file("$buildDir/example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
+	normalizeTomcatPort()
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
