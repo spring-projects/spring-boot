@@ -5,29 +5,19 @@ plugins {
 
 description = "Spring Boot cache smoke test"
 
-def caches = [
-	"caffeine": [
-		"com.github.ben-manes.caffeine:caffeine"
-	],
-	"couchbase": [
-			project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase")
-	],
-	"ehcache": [
-		"javax.cache:cache-api",
-		dependencies.create("org.ehcache:ehcache") {
-			artifact {
-				classifier = 'jakarta'
-			}
-		}
-	],
-	"hazelcast": [
-		"com.hazelcast:hazelcast",
-		"com.hazelcast:hazelcast-spring"
-	],
-	"redis": [
-		project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis")
-	]
-]
+sourceSets {
+	redisTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+
+configurations {
+	caffeine
+	couchbase
+	ehcache
+	hazelcast
+}
 
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
@@ -36,7 +26,55 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 
-	if (project.hasProperty("cache")) {
-		caches[project.getProperty("cache")].each { runtimeOnly it }
-	}
+	caffeine(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	caffeine("com.github.ben-manes.caffeine:caffeine")
+
+	couchbase(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	couchbase(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase"))
+
+	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	ehcache("javax.cache:cache-api")
+	ehcache("org.ehcache:ehcache::jakarta")
+
+	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	hazelcast("com.hazelcast:hazelcast")
+	hazelcast("com.hazelcast:hazelcast-spring")
+
+	redisTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
+	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
+	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	redisTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	redisTestImplementation("org.testcontainers:testcontainers")
+	redisTestImplementation("org.testcontainers:junit-jupiter")
+}
+
+def testCaffeine = tasks.register("testCaffeine", Test) {
+	description = "Runs the tests against Caffeine"
+	classpath = sourceSets.test.runtimeClasspath + configurations.caffeine
+}
+
+def testCouchbase = tasks.register("testCouchbase", Test) {
+	description = "Runs the tests against Couchbase"
+	classpath = sourceSets.test.runtimeClasspath + configurations.couchbase
+}
+
+def testEhcache = tasks.register("testEhcache", Test) {
+	description = "Runs the tests against Ehcache"
+	classpath = sourceSets.test.runtimeClasspath + configurations.ehcache
+	systemProperties = ["spring.cache.jcache.config" : "classpath:ehcache3.xml"]
+}
+
+def testHazelcast = tasks.register("testHazelcast", Test) {
+	description = "Runs the tests against Hazelcast"
+	classpath = sourceSets.test.runtimeClasspath + configurations.hazelcast
+}
+
+def testRedis = tasks.register("testRedis", Test) {
+	description = "Runs the tests against Redis"
+	classpath = sourceSets.redisTest.runtimeClasspath
+	testClassesDirs = sourceSets.redisTest.output.classesDirs
+}
+
+tasks.named("check").configure {
+	dependsOn testCaffeine, testCouchbase, testEhcache, testHazelcast, testRedis
 }
