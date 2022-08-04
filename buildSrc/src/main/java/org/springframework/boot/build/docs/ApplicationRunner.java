@@ -21,7 +21,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
@@ -51,6 +56,11 @@ public class ApplicationRunner extends DefaultTask {
 	private final Property<String> mainClass = getProject().getObjects().property(String.class);
 
 	private final Property<String> expectedLogging = getProject().getObjects().property(String.class);
+
+	private final Property<String> applicationJar = getProject().getObjects().property(String.class)
+			.convention("/opt/apps/myapp.jar");
+
+	private final Map<String, String> normalizations = new HashMap<>();
 
 	private FileCollection classpath;
 
@@ -83,6 +93,25 @@ public class ApplicationRunner extends DefaultTask {
 		return this.expectedLogging;
 	}
 
+	@Input
+	Map<String, String> getNormalizations() {
+		return this.normalizations;
+	}
+
+	@Input
+	public Property<String> getApplicationJar() {
+		return this.applicationJar;
+	}
+
+	public void normalizeTomcatPort() {
+		this.normalizations.put("(Tomcat started on port\\(s\\): )[\\d]+( \\(http\\))", "$18080$2");
+		this.normalizations.put("(Tomcat initialized with port\\(s\\): )[\\d]+( \\(http\\))", "$18080$2");
+	}
+
+	public void normalizeLiveReloadPort() {
+		this.normalizations.put("(LiveReload server is running on port )[\\d]+", "$135729");
+	}
+
 	@TaskAction
 	void runApplication() throws IOException {
 		List<String> command = new ArrayList<>();
@@ -98,6 +127,7 @@ public class ApplicationRunner extends DefaultTask {
 				.start();
 		awaitLogging(process);
 		process.destroy();
+		normalizeLogging();
 	}
 
 	private void awaitLogging(Process process) {
@@ -124,6 +154,59 @@ public class ApplicationRunner extends DefaultTask {
 		catch (IOException ex) {
 			throw new RuntimeException("Failed to read lines of output from '" + outputPath + "'", ex);
 		}
+	}
+
+	private void normalizeLogging() {
+		List<String> outputLines = outputLines();
+		List<String> normalizedLines = normalize(outputLines);
+		Path outputPath = this.output.get().getAsFile().toPath();
+		try {
+			Files.write(outputPath, normalizedLines);
+		}
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to write normalized lines of output to '" + outputPath + "'", ex);
+		}
+	}
+
+	private List<String> normalize(List<String> lines) {
+		List<String> normalizedLines = lines;
+		Map<String, String> normalizations = new HashMap<>(this.normalizations);
+		normalizations.put("(Starting .* using Java .* on ).*( with PID [\\d]+ \\().*( started by ).*( in ).*(\\))",
+				"$1myhost$2" + this.applicationJar.get() + "$3myuser$4/opt/apps/$5");
+		for (Entry<String, String> normalization : normalizations.entrySet()) {
+			Pattern pattern = Pattern.compile(normalization.getKey());
+			normalizedLines = normalize(normalizedLines, pattern, normalization.getValue());
+		}
+		return normalizedLines;
+	}
+
+	private List<String> normalize(List<String> lines, Pattern pattern, String replacement) {
+		boolean matched = false;
+		List<String> normalizedLines = new ArrayList<>();
+		for (String line : lines) {
+			Matcher matcher = pattern.matcher(line);
+			StringBuffer transformed = new StringBuffer();
+			while (matcher.find()) {
+				matched = true;
+				matcher.appendReplacement(transformed, replacement);
+			}
+			matcher.appendTail(transformed);
+			normalizedLines.add(transformed.toString());
+		}
+		if (!matched) {
+			reportUnmatchedNormalization(lines, pattern);
+		}
+		return normalizedLines;
+	}
+
+	private void reportUnmatchedNormalization(List<String> lines, Pattern pattern) {
+		StringBuilder message = new StringBuilder(
+				"'" + pattern + "' did not match any of the following lines of output:");
+		message.append(String.format("%n"));
+		for (String line : lines) {
+			message.append(String.format("%s%n", line));
+		}
+		throw new IllegalStateException(message.toString());
 	}
 
 }
