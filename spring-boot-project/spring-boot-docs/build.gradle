@@ -15,6 +15,8 @@ configurations {
 	configurationProperties
 	gradlePluginDocumentation
 	mavenPluginDocumentation
+	remoteSpringApplicationExample
+	springApplicationExample
 	testSlices
 }
 
@@ -159,6 +161,14 @@ dependencies {
 
 	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
+	remoteSpringApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	remoteSpringApplicationExample(project(":spring-boot-project:spring-boot-devtools"))
+	remoteSpringApplicationExample(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
+	remoteSpringApplicationExample("org.springframework:spring-web")
+
+	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")
@@ -245,8 +255,35 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
 
+task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+	classpath = configurations.remoteSpringApplicationExample
+	mainClass = "org.springframework.boot.devtools.RemoteSpringApplication"
+	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
+	output = file("$buildDir/example-output/remote-spring-application.txt")
+	expectedLogging = "Started RemoteSpringApplication in "
+}
+
+task runSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+	classpath = configurations.springApplicationExample + sourceSets.main.output
+	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
+	args = ["--server.port=0"]
+	output = file("$buildDir/example-output/spring-application.txt")
+	expectedLogging = "Started MyApplication in "
+}
+
+task runLoggingFormatExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+	classpath = configurations.springApplicationExample + sourceSets.main.output
+	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
+	args = ["--spring.main.banner-mode=off", "--server.port=0"]
+	output = file("$buildDir/example-output/logging-format.txt")
+	expectedLogging = "Started MyApplication in "
+}
+
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
+	inputs.files(runRemoteSpringApplicationExample).withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runSpringApplicationExample).withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runLoggingFormatExample).withPathSensitivity(PathSensitivity.RELATIVE)
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}
@@ -276,7 +313,10 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-security-version": securityVersion,
-					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]
+					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
+					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
+					"spring-application-output": runSpringApplicationExample.outputs.files.singleFile,
+					"logging-format-output": runLoggingFormatExample.outputs.files.singleFile
 	}
 }
 
