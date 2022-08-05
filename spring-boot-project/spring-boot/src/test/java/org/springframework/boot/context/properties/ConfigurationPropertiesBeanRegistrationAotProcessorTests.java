@@ -143,8 +143,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	@SuppressWarnings("unchecked")
 	private void compile(GenericApplicationContext context, Consumer<GenericApplicationContext> freshContext) {
 		TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
-		ClassName className = new ApplicationContextAotGenerator().generateApplicationContext(context,
-				generationContext);
+		ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
 		generationContext.writeGeneratedContent();
 		TestCompiler.forSystem().withFiles(generationContext.getGeneratedFiles()).compile((compiled) -> {
 			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();

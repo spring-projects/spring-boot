@@ -163,7 +163,7 @@ class ChildManagementContextInitializer
 		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
 			GenerationContext managementGenerationContext = generationContext.withName("Management");
 			ClassName generatedInitializerClassName = new ApplicationContextAotGenerator()
-					.generateApplicationContext(this.managementContext, managementGenerationContext);
+					.processAheadOfTime(this.managementContext, managementGenerationContext);
 			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethods().add("addManagementInitializer",
 					(method) -> method.addJavadoc("Use AOT management context initialization")
 							.addModifiers(Modifier.PRIVATE, Modifier.STATIC)

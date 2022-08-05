@@ -75,7 +75,7 @@ class ChildManagementContextInitializerAotTests {
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").prepare((context) -> {
 			TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
-			ClassName className = new ApplicationContextAotGenerator().generateApplicationContext(
+			ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(
 					(GenericApplicationContext) context.getSourceApplicationContext(), generationContext);
 			generationContext.writeGeneratedContent();
 			TestCompiler compiler = TestCompiler.forSystem();

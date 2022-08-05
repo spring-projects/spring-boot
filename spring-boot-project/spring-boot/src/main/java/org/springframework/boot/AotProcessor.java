@@ -147,8 +147,7 @@ public class AotProcessor {
 		DefaultGenerationContext generationContext = new DefaultGenerationContext(
 				new ClassNameGenerator(this.application), generatedFiles);
 		ApplicationContextAotGenerator generator = new ApplicationContextAotGenerator();
-		ClassName generatedInitializerClassName = generator.generateApplicationContext(applicationContext,
-				generationContext);
+		ClassName generatedInitializerClassName = generator.processAheadOfTime(applicationContext, generationContext);
 		registerEntryPointHint(generationContext, generatedInitializerClassName);
 		generationContext.writeGeneratedContent();
 		writeHints(generationContext.getRuntimeHints());
