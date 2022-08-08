@@ -1551,6 +1551,10 @@
       }
     },
     {
+      "name": "spring.jersey.type",
+      "defaultValue": "servlet"
+    },
+    {
       "name": "spring.jpa.hibernate.use-new-id-generator-mappings",
       "type": "java.lang.Boolean",
       "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",

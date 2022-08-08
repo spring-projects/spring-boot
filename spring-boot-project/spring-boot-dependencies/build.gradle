@@ -692,6 +692,13 @@ bom {
 			]
 		}
 	}
+	library("Jersey", "3.0.6") {
+		group("org.glassfish.jersey") {
+			imports = [
+				"jersey-bom"
+			]
+		}
+	}
 	library("Jetty EL", "10.0.14") {
 		group("org.mortbay.jasper") {
 			modules = [
@@ -1293,6 +1300,7 @@ bom {
 				"spring-boot-starter-hateoas",
 				"spring-boot-starter-integration",
 				"spring-boot-starter-jdbc",
+				"spring-boot-starter-jersey",
 				"spring-boot-starter-jetty",
 				"spring-boot-starter-jooq",
 				"spring-boot-starter-json",

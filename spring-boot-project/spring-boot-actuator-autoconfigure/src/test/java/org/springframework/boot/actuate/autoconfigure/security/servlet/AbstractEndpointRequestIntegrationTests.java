@@ -43,6 +43,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -76,8 +77,13 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();
-			webTestClient.get().uri("/actuator/").exchange().expectStatus().isNotFound();
+			webTestClient.get().uri("/actuator/").exchange().expectStatus()
+					.isEqualTo(expectedStatusWithTrailingSlash());
 		});
+	}
+
+	protected HttpStatus expectedStatusWithTrailingSlash() {
+		return HttpStatus.NOT_FOUND;
 	}
 
 	protected final WebApplicationContextRunner getContextRunner() {

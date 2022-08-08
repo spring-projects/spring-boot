@@ -96,6 +96,8 @@ dependencies {
 	implementation("org.assertj:assertj-core")
 	implementation("org.cache2k:cache2k-spring")
 	implementation("org.apache.groovy:groovy")
+	implementation("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	implementation("org.glassfish.jersey.core:jersey-server")
 	implementation("org.hibernate.orm:hibernate-jcache") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

@@ -123,7 +123,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	void operationWithTrailingSlashShouldNotMatch() {
+	protected void operationWithTrailingSlashShouldNotMatch() {
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/test/").exchange().expectStatus().isNotFound());
 	}
