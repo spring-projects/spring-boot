@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ class PluginXmlParser {
 		return input.replace("<code>", "`").replace("</code>", "`").replace("&lt;", "<").replace("&gt;", ">")
 				.replace("<br>", " ").replace("\n", " ").replace("&quot;", "\"").replaceAll("\\{@code (.*?)}", "`$1`")
 				.replaceAll("\\{@link (.*?)}", "`$1`").replaceAll("\\{@literal (.*?)}", "`$1`")
-				.replaceAll("<a href=.\"(.*?)\".>(.*?)</a>", "\\$1[\\$2]");
+				.replaceAll("<a href=.\"(.*?)\".>(.*?)</a>", "$1[$2]");
 	}
 
 	private static final class IterableNodeList implements Iterable<Node> {
