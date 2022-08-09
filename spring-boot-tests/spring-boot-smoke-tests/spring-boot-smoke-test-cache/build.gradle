@@ -21,6 +21,10 @@ configurations {
 	infinispan
 }
 
+def javaVersion() {
+	project.extensions.java.toolchain.languageVersion.map({ it.asInt() }).getOrElse(JavaVersion.current().majorVersion)
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-cache"))
@@ -37,9 +41,7 @@ dependencies {
 	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	ehcache("javax.cache:cache-api")
 	ehcache("org.ehcache:ehcache")
-	if (JavaVersion.current().java11Compatible) {
-		ehcache("org.glassfish.jaxb:jaxb-runtime")
-	}
+	ehcache(provider({ (javaVersion() >= 11) ? "org.glassfish.jaxb:jaxb-runtime" : null }))
 	ehcache2(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	ehcache2("net.sf.ehcache:ehcache")
 	
