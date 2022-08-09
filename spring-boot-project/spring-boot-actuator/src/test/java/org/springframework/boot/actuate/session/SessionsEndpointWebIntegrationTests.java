@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import net.minidev.json.JSONArray;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest.Infrastructure;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -45,7 +46,7 @@ class SessionsEndpointWebIntegrationTests {
 	private static final FindByIndexNameSessionRepository<Session> repository = mock(
 			FindByIndexNameSessionRepository.class);
 
-	@WebEndpointTest
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionsForUsernameWithoutUsernameParam(WebTestClient client) {
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions").build())
@@ -54,7 +55,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isBadRequest();
 	}
 
-	@WebEndpointTest
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionsForUsernameNoResults(WebTestClient client) {
 		given(repository.findByPrincipalName("user")).willReturn(Collections.emptyMap());
 		client.get()
@@ -67,7 +68,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isEmpty();
 	}
 
-	@WebEndpointTest
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionsForUsernameFound(WebTestClient client) {
 		given(repository.findByPrincipalName("user")).willReturn(Collections.singletonMap(session.getId(), session));
 		client.get()
@@ -80,7 +81,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isEqualTo(new JSONArray().appendElement(session.getId()));
 	}
 
-	@WebEndpointTest
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionForIdNotFound(WebTestClient client) {
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions/session-id-not-found").build())
@@ -89,12 +90,21 @@ class SessionsEndpointWebIntegrationTests {
 			.isNotFound();
 	}
 
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
+	void deleteSession(WebTestClient client) {
+		client.delete()
+			.uri((builder) -> builder.path("/actuator/sessions/{id}").build(session.getId()))
+			.exchange()
+			.expectStatus()
+			.isNoContent();
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean
 		SessionsEndpoint sessionsEndpoint() {
-			return new SessionsEndpoint(repository);
+			return new SessionsEndpoint(repository, repository);
 		}
 
 	}

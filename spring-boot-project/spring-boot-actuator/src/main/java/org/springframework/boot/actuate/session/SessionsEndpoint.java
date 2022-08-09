@@ -28,9 +28,12 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
+import org.springframework.session.SessionRepository;
+import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint @Endpoint} to expose a user's {@link Session}s.
+ * {@link Endpoint @Endpoint} to expose information about HTTP {@link Session}s on a
+ * Servlet stack.
  *
  * @author Vedran Pavic
  * @since 2.0.0
@@ -38,19 +41,28 @@ import org.springframework.session.Session;
 @Endpoint(id = "sessions")
 public class SessionsEndpoint {
 
-	private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
+	private final SessionRepository<? extends Session> sessionRepository;
+
+	private final FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
 
 	/**
 	 * Create a new {@link SessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
+	 * @param indexedSessionRepository the indexed session repository
 	 */
-	public SessionsEndpoint(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
+	public SessionsEndpoint(SessionRepository<? extends Session> sessionRepository,
+			FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
+		Assert.notNull(sessionRepository, "SessionRepository must not be null");
 		this.sessionRepository = sessionRepository;
+		this.indexedSessionRepository = indexedSessionRepository;
 	}
 
 	@ReadOperation
 	public SessionsDescriptor sessionsForUsername(String username) {
-		Map<String, ? extends Session> sessions = this.sessionRepository.findByPrincipalName(username);
+		if (this.indexedSessionRepository == null) {
+			return null;
+		}
+		Map<String, ? extends Session> sessions = this.indexedSessionRepository.findByPrincipalName(username);
 		return new SessionsDescriptor(sessions);
 	}
 
