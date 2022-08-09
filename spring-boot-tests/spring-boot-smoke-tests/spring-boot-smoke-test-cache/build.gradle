@@ -37,6 +37,9 @@ dependencies {
 	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	ehcache("javax.cache:cache-api")
 	ehcache("org.ehcache:ehcache")
+	if (JavaVersion.current().java11Compatible) {
+		ehcache("org.glassfish.jaxb:jaxb-runtime")
+	}
 	ehcache2(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	ehcache2("net.sf.ehcache:ehcache")
 	
