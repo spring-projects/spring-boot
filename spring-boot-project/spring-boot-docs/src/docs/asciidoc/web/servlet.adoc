@@ -127,7 +127,10 @@ If you set the configprop:spring.mvc.message-codes-resolver-format[] property `P
 By default, Spring Boot serves static content from a directory called `/static` (or `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root of the `ServletContext`.
 It uses the `ResourceHttpRequestHandler` from Spring MVC so that you can modify that behavior by adding your own `WebMvcConfigurer` and overriding the `addResourceHandlers` method.
 
-In a stand-alone web application, the default servlet from the container is also enabled and acts as a fallback, serving content from the root of the `ServletContext` if Spring decides not to handle it.
+In a stand-alone web application, the default servlet from the container is not enabled.
+It can be enabled using the configprop:server.servlet.register-default-servlet[] property.
+
+The default servlet acts as a fallback, serving content from the root of the `ServletContext` if Spring decides not to handle it.
 Most of the time, this does not happen (unless you modify the default MVC configuration), because Spring can always handle requests through the `DispatcherServlet`.
 
 By default, resources are mapped on `+/**+`, but you can tune that with the configprop:spring.mvc.static-path-pattern[] property.
