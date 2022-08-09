@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.sql.DatabaseMetaData;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -164,32 +165,25 @@ public class FlywayAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 					.resolveLocations(properties.getLocations()).toArray(new String[0]);
-			configureFailOnMissingLocations(configuration, properties.isFailOnMissingLocations());
+			map.from(properties.isFailOnMissingLocations()).to(configuration::failOnMissingLocations);
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
-			// No method reference for compatibility with Flyway < 7.15
-			map.from(properties.getConnectRetriesInterval())
-					.to((interval) -> configuration.connectRetriesInterval((int) interval.getSeconds()));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getLockRetryCount())
-					.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
-			// No method reference for compatibility with Flyway 5.x
-			map.from(properties.getDefaultSchema()).to((schema) -> configuration.defaultSchema(schema));
+			map.from(properties.getConnectRetriesInterval()).as(Duration::getSeconds).as(Long::intValue)
+					.to(configuration::connectRetriesInterval);
+			map.from(properties.getLockRetryCount()).to(configuration::lockRetryCount);
+			map.from(properties.getDefaultSchema()).to(configuration::defaultSchema);
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
-			configureCreateSchemas(configuration, properties.isCreateSchemas());
+			map.from(properties.isCreateSchemas()).to(configuration::createSchemas);
 			map.from(properties.getTable()).to(configuration::table);
-			// No method reference for compatibility with Flyway 5.x
-			map.from(properties.getTablespace()).to((tablespace) -> configuration.tablespace(tablespace));
+			map.from(properties.getTablespace()).to(configuration::tablespace);
 			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
 			map.from(properties.getInstalledBy()).to(configuration::installedBy);
 			map.from(properties.getPlaceholders()).to(configuration::placeholders);
 			map.from(properties.getPlaceholderPrefix()).to(configuration::placeholderPrefix);
 			map.from(properties.getPlaceholderSuffix()).to(configuration::placeholderSuffix);
-			// No method reference for compatibility with Flyway version < 8.0
-			map.from(properties.getPlaceholderSeparator())
-					.to((placeHolderSeparator) -> configuration.placeholderSeparator(placeHolderSeparator));
+			map.from(properties.getPlaceholderSeparator()).to(configuration::placeholderSeparator);
 			map.from(properties.isPlaceholderReplacement()).to(configuration::placeholderReplacement);
 			map.from(properties.getSqlMigrationPrefix()).to(configuration::sqlMigrationPrefix);
 			map.from(properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
@@ -205,7 +199,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
-			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
+			map.from(properties.isValidateMigrationNaming()).to(configuration::validateMigrationNaming);
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
 			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
 					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
@@ -214,63 +208,27 @@ public class FlywayAutoConfiguration {
 					.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
 			map.from(properties.getScriptPlaceholderSuffix())
 					.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
-			// Pro properties
+			// Flyway Teams properties
 			map.from(properties.getBatch()).to(configuration::batch);
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
 			map.from(properties.getErrorOverrides()).to(configuration::errorOverrides);
 			map.from(properties.getLicenseKey()).to(configuration::licenseKey);
 			map.from(properties.getOracleSqlplus()).to(configuration::oracleSqlplus);
-			// No method reference for compatibility with Flyway 5.x
-			map.from(properties.getOracleSqlplusWarn())
-					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
+			map.from(properties.getOracleSqlplusWarn()).to(configuration::oracleSqlplusWarn);
 			map.from(properties.getStream()).to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).to(configuration::undoSqlMigrationPrefix);
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getCherryPick()).to((cherryPick) -> configuration.cherryPick(cherryPick));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty)
-					.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getKerberosConfigFile())
-					.to((configFile) -> configuration.kerberosConfigFile(configFile));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getOracleKerberosCacheFile())
-					.to((cacheFile) -> configuration.oracleKerberosCacheFile(cacheFile));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getOutputQueryResults())
-					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
+			map.from(properties.getCherryPick()).to(configuration::cherryPick);
+			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty).to(configuration::jdbcProperties);
+			map.from(properties.getKerberosConfigFile()).to(configuration::kerberosConfigFile);
+			map.from(properties.getOracleKerberosCacheFile()).to(configuration::oracleKerberosCacheFile);
+			map.from(properties.getOutputQueryResults()).to(configuration::outputQueryResults);
 			map.from(properties.getSqlServerKerberosLoginFile()).whenNonNull()
 					.to((sqlServerKerberosLoginFile) -> configureSqlServerKerberosLoginFile(configuration,
 							sqlServerKerberosLoginFile));
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getSkipExecutingMigrations())
-					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
-			// No method reference for compatibility with Flyway < 7.8
+			map.from(properties.getSkipExecutingMigrations()).to(configuration::skipExecutingMigrations);
 			map.from(properties.getIgnoreMigrationPatterns()).whenNot(List::isEmpty)
-					.to((ignoreMigrationPatterns) -> configuration
-							.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
-			// No method reference for compatibility with Flyway version < 7.9
-			map.from(properties.getDetectEncoding())
-					.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
-		}
-
-		private void configureFailOnMissingLocations(FluentConfiguration configuration,
-				boolean failOnMissingLocations) {
-			try {
-				configuration.failOnMissingLocations(failOnMissingLocations);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 7.9
-			}
-		}
-
-		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
-			try {
-				configuration.createSchemas(createSchemas);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 6.5
-			}
+					.as((patterns) -> patterns.toArray(new String[0])).to(configuration::ignoreMigrationPatterns);
+			map.from(properties.getDetectEncoding()).to(configuration::detectEncoding);
 		}
 
 		private void configureSqlServerKerberosLoginFile(FluentConfiguration configuration,
@@ -279,16 +237,6 @@ public class FlywayAutoConfiguration {
 					.getPlugin(SQLServerConfigurationExtension.class);
 			Assert.state(sqlServerConfigurationExtension != null, "Flyway SQL Server extension missing");
 			sqlServerConfigurationExtension.setKerberosLoginFile(sqlServerKerberosLoginFile);
-		}
-
-		private void configureValidateMigrationNaming(FluentConfiguration configuration,
-				boolean validateMigrationNaming) {
-			try {
-				configuration.validateMigrationNaming(validateMigrationNaming);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 6.2
-			}
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
@@ -305,12 +253,7 @@ public class FlywayAutoConfiguration {
 
 		private void configureJavaMigrations(FluentConfiguration flyway, List<JavaMigration> migrations) {
 			if (!migrations.isEmpty()) {
-				try {
-					flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
-				}
-				catch (NoSuchMethodError ex) {
-					// Flyway 5.x
-				}
+				flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
 			}
 		}
 

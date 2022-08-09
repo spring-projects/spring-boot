@@ -1279,15 +1279,11 @@
       }
     },
     {
-      "name": "spring.flyway.connect-retries-interval",
-      "defaultValue": 120
-    },
-    {
       "name": "spring.flyway.dry-run-output",
       "type": "java.io.OutputStream",
       "deprecation": {
         "level": "error",
-        "reason": "Flyway pro edition only."
+        "reason": "Flyway Teams only."
       }
     },
     {
@@ -1295,7 +1291,7 @@
       "type": "org.flywaydb.core.api.errorhandler.ErrorHandler[]",
       "deprecation": {
         "level": "error",
-        "reason": "Flyway pro edition only."
+        "reason": "Flyway Teams only."
       }
     },
     {
@@ -1346,28 +1342,12 @@
       ]
     },
     {
-      "name": "spring.flyway.lock-retry-count",
-      "defaultValue": 50
-    },
-    {
       "name": "spring.flyway.oracle-kerberos-config-file",
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.flyway.kerberos-config-file",
         "level": "error"
       }
-    },
-    {
-      "name": "spring.flyway.placeholder-separator",
-      "defaultValue": ":"
-    },
-    {
-      "name": "spring.flyway.script-placeholder-prefix",
-      "defaultValue": "FP__"
-    },
-    {
-      "name": "spring.flyway.script-placeholder-suffix",
-      "defaultValue": "__"
     },
     {
       "name": "spring.flyway.sql-migration-suffix",
@@ -1389,7 +1369,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Flyway pro edition only."
+        "reason": "Flyway Teams only."
       }
     },
     {

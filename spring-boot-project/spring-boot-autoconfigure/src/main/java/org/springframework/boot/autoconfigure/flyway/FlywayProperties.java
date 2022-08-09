@@ -73,12 +73,12 @@ public class FlywayProperties {
 	 * duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration connectRetriesInterval;
+	private Duration connectRetriesInterval = Duration.ofSeconds(120);
 
 	/**
 	 * Maximum number of retries when trying to obtain a lock.
 	 */
-	private Integer lockRetryCount;
+	private int lockRetryCount = 50;
 
 	/**
 	 * Default schema name managed by Flyway (case-sensitive).
@@ -141,7 +141,7 @@ public class FlywayProperties {
 	/**
 	 * Separator of default placeholders.
 	 */
-	private String placeholderSeparator;
+	private String placeholderSeparator = ":";
 
 	/**
 	 * Perform placeholder replacement in migration scripts.
@@ -355,12 +355,12 @@ public class FlywayProperties {
 	/**
 	 * Prefix of placeholders in migration scripts.
 	 */
-	private String scriptPlaceholderPrefix;
+	private String scriptPlaceholderPrefix = "FP__";
 
 	/**
 	 * Suffix of placeholders in migration scripts.
 	 */
-	private String scriptPlaceholderSuffix;
+	private String scriptPlaceholderSuffix = "__";
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -410,7 +410,7 @@ public class FlywayProperties {
 		this.connectRetriesInterval = connectRetriesInterval;
 	}
 
-	public Integer getLockRetryCount() {
+	public int getLockRetryCount() {
 		return this.lockRetryCount;
 	}
 
