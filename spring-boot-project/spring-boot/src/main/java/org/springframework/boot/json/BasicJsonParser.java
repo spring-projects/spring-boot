@@ -67,7 +67,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 			return parseListInternal(nesting + 1, json);
 		}
 		if (json.startsWith("{")) {
-			return parseMapInternal(nesting, json);
+			return parseMapInternal(nesting + 1, json);
 		}
 		if (json.startsWith("\"")) {
 			return trimTrailingCharacter(trimLeadingCharacter(json, '"'), '"');

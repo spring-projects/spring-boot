@@ -66,4 +66,9 @@ class YamlJsonParserTests extends AbstractJsonParserTests {
 	void largeMalformed() throws IOException {
 	}
 
+	@Override
+	@Disabled("SnakeYaml does not protect against deeply nested JSON")
+	void deeplyNestedMap() throws IOException {
+	}
+
 }

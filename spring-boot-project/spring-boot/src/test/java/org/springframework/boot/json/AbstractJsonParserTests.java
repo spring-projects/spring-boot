@@ -205,4 +205,12 @@ abstract class AbstractJsonParserTests {
 		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input));
 	}
 
+	@Test // gh-32029
+	void deeplyNestedMap() throws IOException {
+		String input = StreamUtils.copyToString(
+				AbstractJsonParserTests.class.getResourceAsStream("deeply-nested-map-json.txt"),
+				StandardCharsets.UTF_8);
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input));
+	}
+
 }
