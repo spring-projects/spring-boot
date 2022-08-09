@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.observation;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
+import io.micrometer.observation.Observation.GlobalObservationConvention;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -48,11 +48,11 @@ public class ObservationAutoConfiguration {
 	static ObservationRegistryPostProcessor observationRegistryPostProcessor(
 			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders,
+			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
-				keyValuesProviders, observationHandlers, observationHandlerGrouping);
+				observationConventions, observationHandlers, observationHandlerGrouping);
 	}
 
 	@Bean
@@ -66,9 +66,9 @@ public class ObservationAutoConfiguration {
 	static class MetricsConfiguration {
 
 		@Bean
-		TimerObservationHandlerObservationRegistryCustomizer enableTimerObservationHandler(
+		DefaultMeterObservationHandlerObservationRegistryCustomizer enableDefaultMeterObservationHandler(
 				MeterRegistry meterRegistry) {
-			return new TimerObservationHandlerObservationRegistryCustomizer(meterRegistry);
+			return new DefaultMeterObservationHandlerObservationRegistryCustomizer(meterRegistry);
 		}
 
 	}
