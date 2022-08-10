@@ -34,16 +34,16 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJava18()) {
-			return Arrays.asList("7.3.3", "7.4.2", "7.5");
+			return Arrays.asList("7.3.3", "7.4.2", "7.5.1");
 		}
 		if (isJava17()) {
-			return Arrays.asList("7.2", "7.3.3", "7.4.2", "7.5");
+			return Arrays.asList("7.2", "7.3.3", "7.4.2", "7.5.1");
 		}
 		if (isJava16()) {
-			return Arrays.asList("7.0.2", "7.1", "7.2", "7.3.3", "7.4.2", "7.5");
+			return Arrays.asList("7.0.2", "7.1", "7.2", "7.3.3", "7.4.2", "7.5.1");
 		}
 		return Arrays.asList("6.8.3", GradleVersion.current().getVersion(), "7.0.2", "7.1.1", "7.2", "7.3.3", "7.4.2",
-				"7.5");
+				"7.5.1");
 	}
 
 	public static String currentOrMinimumCompatible() {
