@@ -267,7 +267,7 @@ public class FlywayAutoConfiguration {
 				map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
 				map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
 			}
-			catch (BootstrapMethodError ex) {
+			catch (BootstrapMethodError | NoSuchMethodError ex) {
 				// Flyway 9+
 			}
 		}
