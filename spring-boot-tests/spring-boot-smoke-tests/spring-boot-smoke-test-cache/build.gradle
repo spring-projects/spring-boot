@@ -21,8 +21,8 @@ configurations {
 	infinispan
 }
 
-def javaVersion() {
-	project.extensions.java.toolchain.languageVersion.map({ it.asInt() }).getOrElse(JavaVersion.current().majorVersion)
+int javaVersion() {
+	project.extensions.java.toolchain.languageVersion.map({ it.asInt() }).getOrElse(Integer.valueOf(JavaVersion.current().majorVersion))
 }
 
 dependencies {
