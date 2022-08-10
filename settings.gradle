@@ -28,6 +28,8 @@ plugins {
 
 rootProject.name="spring-boot-build"
 
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
 settings.gradle.projectsLoaded {
 	gradleEnterprise {
 		buildScan {
