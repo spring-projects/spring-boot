@@ -62,6 +62,11 @@ public class ElasticsearchProperties {
 	 */
 	private String pathPrefix;
 
+	/**
+	 * Whether to enable keepalive between client and Elasticsearch.
+	 */
+	private boolean keepalive = true;
+
 	private final Restclient restclient = new Restclient();
 
 	public List<String> getUris() {
@@ -110,6 +115,14 @@ public class ElasticsearchProperties {
 
 	public void setPathPrefix(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
+	}
+
+	public boolean isKeepalive() {
+		return this.keepalive;
+	}
+
+	public void setKeepalive(boolean keepalive) {
+		this.keepalive = keepalive;
 	}
 
 	public Restclient getRestclient() {

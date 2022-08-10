@@ -27,6 +27,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.sniff.Sniffer;
@@ -155,6 +156,8 @@ class ElasticsearchRestClientConfigurations {
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
 			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
+			map.from(this.properties::isKeepalive).whenTrue()
+					.to(keepalive -> builder.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepalive).build()));
 		}
 
 		@Override
