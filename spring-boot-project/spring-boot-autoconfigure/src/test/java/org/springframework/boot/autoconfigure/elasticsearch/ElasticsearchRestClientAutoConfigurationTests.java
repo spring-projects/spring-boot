@@ -184,8 +184,19 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void configureWithKeepalive() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.keepalive=true").run(
+	void configureWithNoSocketKeepAliveApplyDefaults() {
+		this.contextRunner.run(
+				context -> {
+					assertThat(context).hasSingleBean(RestClient.class);
+					RestClient client = context.getBean(RestClient.class);
+					assertThat(client.getHttpClient()).extracting("connmgr.ioReactor.config.soKeepAlive").isEqualTo(Boolean.FALSE);
+				}
+		);
+	}
+
+	@Test
+	void configureWithCustomSocketKeepAlive() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.socket-keep-alive=true").run(
 				context -> {
 					RestClient client = context.getBean(RestClient.class);
 					assertThat(client.getHttpClient()).extracting("connmgr.ioReactor.config.soKeepAlive").isEqualTo(Boolean.TRUE);

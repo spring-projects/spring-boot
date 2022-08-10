@@ -156,7 +156,7 @@ class ElasticsearchRestClientConfigurations {
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
 			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
-			map.from(this.properties::isKeepalive).whenTrue()
+			map.from(this.properties::isSocketKeepAlive).whenTrue()
 					.to(keepalive -> builder.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepalive).build()));
 		}
 

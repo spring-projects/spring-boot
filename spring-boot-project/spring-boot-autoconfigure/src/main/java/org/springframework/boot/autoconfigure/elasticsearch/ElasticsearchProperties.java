@@ -63,9 +63,9 @@ public class ElasticsearchProperties {
 	private String pathPrefix;
 
 	/**
-	 * Whether to enable keepalive between client and Elasticsearch.
+	 * Whether to enable socket keep alive between client and Elasticsearch.
 	 */
-	private boolean keepalive = true;
+	private boolean socketKeepAlive = false;
 
 	private final Restclient restclient = new Restclient();
 
@@ -117,12 +117,12 @@ public class ElasticsearchProperties {
 		this.pathPrefix = pathPrefix;
 	}
 
-	public boolean isKeepalive() {
-		return this.keepalive;
+	public boolean isSocketKeepAlive() {
+		return this.socketKeepAlive;
 	}
 
-	public void setKeepalive(boolean keepalive) {
-		this.keepalive = keepalive;
+	public void setSocketKeepAlive(boolean socketKeepAlive) {
+		this.socketKeepAlive = socketKeepAlive;
 	}
 
 	public Restclient getRestclient() {
