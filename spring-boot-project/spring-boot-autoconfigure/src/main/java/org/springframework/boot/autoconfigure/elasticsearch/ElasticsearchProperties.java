@@ -62,6 +62,11 @@ public class ElasticsearchProperties {
 	 */
 	private String pathPrefix;
 
+	/**
+	 * Whether to enable socket keep alive between client and Elasticsearch.
+	 */
+	private boolean socketKeepAlive = false;
+
 	private final Restclient restclient = new Restclient();
 
 	public List<String> getUris() {
@@ -110,6 +115,14 @@ public class ElasticsearchProperties {
 
 	public void setPathPrefix(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
+	}
+
+	public boolean isSocketKeepAlive() {
+		return this.socketKeepAlive;
+	}
+
+	public void setSocketKeepAlive(boolean socketKeepAlive) {
+		this.socketKeepAlive = socketKeepAlive;
 	}
 
 	public Restclient getRestclient() {
