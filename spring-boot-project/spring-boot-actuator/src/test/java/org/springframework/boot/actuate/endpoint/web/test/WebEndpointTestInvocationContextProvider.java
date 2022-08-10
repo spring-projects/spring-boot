@@ -35,6 +35,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.platform.commons.util.AnnotationUtils;
 
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -44,6 +45,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDisco
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest.Infrastructure;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -90,16 +92,12 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(
 			ExtensionContext extensionContext) {
-		return Stream.of(
-				new WebEndpointsInvocationContext("Jersey",
-						WebEndpointTestInvocationContextProvider::createJerseyContext),
-				new WebEndpointsInvocationContext("WebMvc",
-						WebEndpointTestInvocationContextProvider::createWebMvcContext),
-				new WebEndpointsInvocationContext("WebFlux",
-						WebEndpointTestInvocationContextProvider::createWebFluxContext));
+		WebEndpointTest webEndpointTest = AnnotationUtils
+				.findAnnotation(extensionContext.getRequiredTestMethod(), WebEndpointTest.class).get();
+		return Stream.of(webEndpointTest.infrastructure()).distinct().map(Infrastructure::createInvocationContext);
 	}
 
-	private static ConfigurableApplicationContext createJerseyContext(List<Class<?>> classes) {
+	static ConfigurableApplicationContext createJerseyContext(List<Class<?>> classes) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		classes.add(JerseyEndpointConfiguration.class);
 		context.register(ClassUtils.toClassArray(classes));
@@ -107,7 +105,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		return context;
 	}
 
-	private static ConfigurableApplicationContext createWebMvcContext(List<Class<?>> classes) {
+	static ConfigurableApplicationContext createWebMvcContext(List<Class<?>> classes) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		classes.add(WebMvcEndpointConfiguration.class);
 		context.register(ClassUtils.toClassArray(classes));
@@ -115,7 +113,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		return context;
 	}
 
-	private static ConfigurableApplicationContext createWebFluxContext(List<Class<?>> classes) {
+	static ConfigurableApplicationContext createWebFluxContext(List<Class<?>> classes) {
 		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
 		classes.add(WebFluxEndpointConfiguration.class);
 		context.register(ClassUtils.toClassArray(classes));
