@@ -103,7 +103,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		TaskProvider<GenerateAotSources> generateAotSources = project.getTasks()
 				.register(GENERATE_AOT_SOURCES_TASK_NAME, GenerateAotSources.class, (task) -> {
 					Provider<Directory> generatedClasses = project.getLayout().getBuildDirectory()
-							.dir("build/generated/aotClasses");
+							.dir("generated/aotClasses");
 					aotSourceSet.getOutput().dir(generatedClasses);
 					task.getApplicationClass().set(resolveMainClassName.flatMap((thing) -> thing.readMainClassName()));
 					task.setClasspath(aotSourceSet.getCompileClasspath());
