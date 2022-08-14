@@ -20,6 +20,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -47,13 +48,20 @@ class OriginTrackedPropertiesLoader {
 
 	private final Resource resource;
 
+	private Charset charset;
+
+	private boolean expandLists;
+
 	/**
 	 * Create a new {@link OriginTrackedPropertiesLoader} instance.
 	 * @param resource the resource of the {@code .properties} data
 	 */
-	OriginTrackedPropertiesLoader(Resource resource) {
+	OriginTrackedPropertiesLoader(Resource resource, Charset charset, boolean expandLists) {
 		Assert.notNull(resource, "Resource must not be null");
+		Assert.notNull(charset, "Charset must not be null");
 		this.resource = resource;
+		this.charset = charset;
+		this.expandLists = expandLists;
 	}
 
 	/**
@@ -62,7 +70,7 @@ class OriginTrackedPropertiesLoader {
 	 * @throws IOException on read error
 	 */
 	List<Document> load() throws IOException {
-		return load(true);
+		return load(expandLists);
 	}
 
 	/**
@@ -76,7 +84,7 @@ class OriginTrackedPropertiesLoader {
 		List<Document> documents = new ArrayList<>();
 		Document document = new Document();
 		StringBuilder buffer = new StringBuilder();
-		try (CharacterReader reader = new CharacterReader(this.resource)) {
+		try (CharacterReader reader = new CharacterReader(this.resource, this.charset)) {
 			while (reader.read()) {
 				if (reader.isPoundCharacter()) {
 					if (isNewDocument(reader)) {
@@ -198,9 +206,8 @@ class OriginTrackedPropertiesLoader {
 
 		private boolean lastLineComment;
 
-		CharacterReader(Resource resource) throws IOException {
-			this.reader = new LineNumberReader(
-					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
+		CharacterReader(Resource resource, Charset charset) throws IOException {
+			this.reader = new LineNumberReader(new InputStreamReader(resource.getInputStream(), charset));
 		}
 
 		@Override

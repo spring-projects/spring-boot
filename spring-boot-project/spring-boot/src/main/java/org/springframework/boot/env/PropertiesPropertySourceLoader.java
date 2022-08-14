@@ -17,6 +17,8 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +41,18 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 
 	private static final String XML_FILE_EXTENSION = ".xml";
 
+	protected Charset charset = StandardCharsets.ISO_8859_1;
+
+	protected boolean expandLists = true;
+
+	protected Charset getCharset(String name, Resource resource) {
+		return charset;
+	}
+
+	protected boolean isExpandLists(String name, Resource resource) {
+		return expandLists;
+	}
+
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "properties", "xml" };
@@ -46,7 +60,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 
 	@Override
 	public List<PropertySource<?>> load(String name, Resource resource) throws IOException {
-		List<Map<String, ?>> properties = loadProperties(resource);
+		List<Map<String, ?>> properties = loadProperties(name, resource);
 		if (properties.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -60,14 +74,15 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<Map<String, ?>> loadProperties(Resource resource) throws IOException {
+	private List<Map<String, ?>> loadProperties(String name, Resource resource) throws IOException {
 		String filename = resource.getFilename();
 		List<Map<String, ?>> result = new ArrayList<>();
 		if (filename != null && filename.endsWith(XML_FILE_EXTENSION)) {
 			result.add((Map) PropertiesLoaderUtils.loadProperties(resource));
 		}
 		else {
-			List<Document> documents = new OriginTrackedPropertiesLoader(resource).load();
+			List<Document> documents = new OriginTrackedPropertiesLoader(resource, this.getCharset(name, resource),
+					this.isExpandLists(name, resource)).load();
 			documents.forEach((document) -> result.add(document.asMap()));
 		}
 		return result;
