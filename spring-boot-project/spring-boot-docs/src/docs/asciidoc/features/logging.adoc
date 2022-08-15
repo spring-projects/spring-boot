@@ -336,6 +336,10 @@ To help with the customization, some other properties are transferred from the S
 | `CONSOLE_LOG_CHARSET`
 | The charset to use for console logging.
 
+| configprop:logging.threshold.console[]
+| `CONSOLE_LOG_THRESHOLD`
+| The log level threshold to use for console logging.
+
 | configprop:logging.pattern.file[]
 | `FILE_LOG_PATTERN`
 | The log pattern to use in a file (if `LOG_FILE` is enabled).
@@ -343,6 +347,10 @@ To help with the customization, some other properties are transferred from the S
 | configprop:logging.charset.file[]
 | `FILE_LOG_CHARSET`
 | The charset to use for file logging (if `LOG_FILE` is enabled).
+
+| configprop:logging.threshold.file[]
+| `FILE_LOG_THRESHOLD`
+| The log level threshold to use for file logging.
 
 | configprop:logging.pattern.level[]
 | `LOG_LEVEL_PATTERN`

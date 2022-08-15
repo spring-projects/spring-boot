@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
@@ -75,11 +76,13 @@ class DefaultLogbackConfiguration {
 		String defaultCharset = Charset.defaultCharset().name();
 		config.getContext().putProperty("CONSOLE_LOG_CHARSET",
 				resolve(config, "${CONSOLE_LOG_CHARSET:-" + defaultCharset + "}"));
+		config.getContext().putProperty("CONSOLE_LOG_THRESHOLD", resolve(config, "${CONSOLE_LOG_THRESHOLD:-TRACE}"));
 		config.getContext().putProperty("FILE_LOG_PATTERN", resolve(config, "${FILE_LOG_PATTERN:-"
 				+ "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] "
 				+ "%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
 		config.getContext().putProperty("FILE_LOG_CHARSET",
 				resolve(config, "${FILE_LOG_CHARSET:-" + defaultCharset + "}"));
+		config.getContext().putProperty("FILE_LOG_THRESHOLD", resolve(config, "${FILE_LOG_THRESHOLD:-TRACE}"));
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -92,6 +95,9 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
+		ThresholdFilter filter = new ThresholdFilter();
+		filter.setLevel(resolve(config, "${CONSOLE_LOG_THRESHOLD}"));
+		appender.addFilter(filter);
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
 		encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
@@ -103,6 +109,9 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
+		ThresholdFilter filter = new ThresholdFilter();
+		filter.setLevel(resolve(config, "${FILE_LOG_THRESHOLD}"));
+		appender.addFilter(filter);
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
 		encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
