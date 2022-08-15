@@ -63,7 +63,7 @@ class SpringBootAotPluginIntegrationTests {
 	@TestTemplate
 	void generateAotSourcesHasTransitiveRuntimeDependenciesOnItsClasspath() {
 		String output = this.gradleBuild.build("generateAotSourcesClasspath").getOutput();
-		assertThat(output).contains("org.jboss.logging/jboss-logging");
+		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
 	}
 
 }
