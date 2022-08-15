@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Sascha Woo
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jersey")
@@ -36,6 +37,11 @@ public class JerseyProperties {
 	 * Jersey integration type.
 	 */
 	private Type type = Type.SERVLET;
+
+	/**
+	 * Jersey feature. By default {@code JacksonFeature} is enabled.
+	 */
+	private Feature feature = Feature.JACKSON;
 
 	/**
 	 * Init parameters to pass to Jersey through the servlet or filter.
@@ -83,10 +89,24 @@ public class JerseyProperties {
 	public void setApplicationPath(String applicationPath) {
 		this.applicationPath = applicationPath;
 	}
+	
+	public Feature getFeature() {
+		return feature;
+	}
+	
+	public void setFeature(Feature feature) {
+		this.feature = feature;
+	}
 
 	public enum Type {
 
 		SERVLET, FILTER
+
+	}
+
+	public enum Feature {
+
+		NONE, JACKSON
 
 	}
 

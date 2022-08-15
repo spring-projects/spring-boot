@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.jersey;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
@@ -94,6 +96,25 @@ class JerseyAutoConfigurationTests {
 					ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
 					assertThat(objectMapper.getSerializationConfig().getAnnotationIntrospector().allIntrospectors()
 							.stream().filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).isEmpty();
+				});
+	}
+
+	@Test
+	void whenFeatureIsJacksonTheJacksonFeatureIsRegistered() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
+			assertThat(context).hasSingleBean(ResourceConfig.class);
+			ResourceConfig config = context.getBean(ResourceConfig.class);
+			assertThat(config.isRegistered(JacksonFeature.class)).isTrue();
+		});
+	}
+
+	@Test
+	void whenFeatureIsNoneTheJacksonFeatureIsNotRegistered() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+				.withPropertyValues("spring.jersey.feature=none").run((context) -> {
+					assertThat(context).hasSingleBean(ResourceConfig.class);
+					ResourceConfig config = context.getBean(ResourceConfig.class);
+					assertThat(config.isRegistered(JacksonFeature.class)).isFalse();
 				});
 	}
 

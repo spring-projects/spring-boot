@@ -74,6 +74,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Sascha Woo
  * @since 1.2.0
  */
 @AutoConfiguration(before = DispatcherServletAutoConfiguration.class, after = JacksonAutoConfiguration.class)
@@ -182,6 +183,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "feature", havingValue = "jackson", matchIfMissing = true)
 	static class JacksonResourceConfigCustomizer {
 
 		@Bean
