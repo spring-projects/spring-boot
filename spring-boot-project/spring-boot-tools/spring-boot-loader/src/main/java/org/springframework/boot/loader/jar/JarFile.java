@@ -26,11 +26,8 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.security.Permission;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Supplier;
@@ -95,8 +92,6 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	private volatile boolean closed;
 
 	private volatile JarFileWrapper wrapper;
-
-	private final List<JarFile> nestedJars = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
@@ -340,10 +335,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 							+ "mechanism used to create your executable jar file");
 		}
 		RandomAccessData entryData = this.entries.getEntryData(entry.getName());
-		JarFile nestedJar = new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(), entryData,
+		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(), entryData,
 				JarFileType.NESTED_JAR);
-		this.nestedJars.add(nestedJar);
-		return nestedJar;
 	}
 
 	@Override
@@ -367,12 +360,6 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 			super.close();
 			if (this.type == JarFileType.DIRECT) {
 				this.rootFile.close();
-			}
-			if (this.wrapper != null) {
-				this.wrapper.close();
-			}
-			for (JarFile nestedJar : this.nestedJars) {
-				nestedJar.close();
 			}
 			this.closed = true;
 		}
