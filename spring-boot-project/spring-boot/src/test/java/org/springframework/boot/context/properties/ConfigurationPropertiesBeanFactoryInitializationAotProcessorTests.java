@@ -46,6 +46,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,8 +87,10 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@Test
 	void registerConfigurationPropertiesAnnotation() {
 		RuntimeHints runtimeHints = process(SampleProperties.class);
-		assertThat(runtimeHints.reflection().getTypeHint(ConfigurationProperties.class)).satisfies(
-				(hint) -> assertThat(hint.getMemberCategories()).contains(MemberCategory.INVOKE_DECLARED_METHODS));
+		assertThat(runtimeHints.proxies().jdkProxies()).singleElement()
+				.satisfies((hint) -> assertThat(hint.getProxiedInterfaces()).containsExactly(
+						TypeReference.of(ConfigurationProperties.class),
+						TypeReference.of(SynthesizedAnnotation.class)));
 	}
 
 	@Test
@@ -111,7 +114,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithMap.class));
 		assertThat(typeHints).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(typeHints).hasSize(3);
+		assertThat(typeHints).hasSize(2);
 	}
 
 	@Test
@@ -120,7 +123,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithList.class));
 		assertThat(typeHints).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(typeHints).hasSize(3);
+		assertThat(typeHints).hasSize(2);
 	}
 
 	@Test
@@ -129,7 +132,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithArray.class));
 		assertThat(typeHints).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(typeHints).hasSize(3);
+		assertThat(typeHints).hasSize(2);
 	}
 
 	@Test
@@ -137,7 +140,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithSimpleList.class);
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints).anySatisfy(javaBeanBinding(SamplePropertiesWithSimpleList.class));
-		assertThat(typeHints).hasSize(2);
+		assertThat(typeHints).hasSize(1);
 	}
 
 	@Test
@@ -146,7 +149,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints).anySatisfy(valueObjectBinding(SampleImmutableProperties.class,
 				SampleImmutableProperties.class.getDeclaredConstructors()[0]));
-		assertThat(typeHints).hasSize(2);
+		assertThat(typeHints).hasSize(1);
 	}
 
 	@Test
@@ -155,7 +158,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints).anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithSeveralConstructors.class,
 				SampleImmutablePropertiesWithSeveralConstructors.class.getDeclaredConstructor(String.class)));
-		assertThat(typeHints).hasSize(2);
+		assertThat(typeHints).hasSize(1);
 	}
 
 	@Test
@@ -166,7 +169,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 				SampleImmutablePropertiesWithList.class.getDeclaredConstructors()[0]));
 		assertThat(typeHints).anySatisfy(valueObjectBinding(Person.class, Person.class.getDeclaredConstructors()[0]));
 		assertThat(typeHints).anySatisfy(valueObjectBinding(Address.class, Address.class.getDeclaredConstructors()[0]));
-		assertThat(typeHints).hasSize(4);
+		assertThat(typeHints).hasSize(3);
 	}
 
 	@Test
@@ -182,7 +185,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		assertThat(runtimeHints.reflection().typeHints())
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithExternalNested.class))
 				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class))
-				.hasSize(4);
+				.hasSize(3);
 	}
 
 	@Test
@@ -190,7 +193,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithRecursive.class);
 		assertThat(runtimeHints.reflection().typeHints())
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithRecursive.class))
-				.anySatisfy(javaBeanBinding(Recursive.class)).hasSize(3);
+				.anySatisfy(javaBeanBinding(Recursive.class)).hasSize(2);
 	}
 
 	@Test
@@ -201,16 +204,14 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 						SampleImmutablePropertiesWithRecursive.class.getDeclaredConstructors()[0]))
 				.anySatisfy(valueObjectBinding(ImmutableRecursive.class,
 						ImmutableRecursive.class.getDeclaredConstructors()[0]))
-				.hasSize(3);
+				.hasSize(2);
 	}
 
 	@Test
 	void processConfigurationPropertiesWithWellKnownTypes() {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithWellKnownTypes.class);
 		assertThat(runtimeHints.reflection().typeHints())
-				.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class))
-				// TODO
-				.hasSize(2);
+				.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class)).hasSize(1);
 	}
 
 	@Test
@@ -219,7 +220,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		assertThat(runtimeHints.reflection().typeHints())
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithCrossReference.class))
 				.anySatisfy(javaBeanBinding(CrossReferenceA.class)).anySatisfy(javaBeanBinding(CrossReferenceB.class))
-				.hasSize(4);
+				.hasSize(3);
 	}
 
 	@Test
