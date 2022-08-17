@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -28,6 +27,8 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.CloudFoundryWebFluxEndpointHandlerMapping.CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints;
@@ -44,8 +45,6 @@ import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -88,6 +87,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 	class CloudFoundryLinksHandler implements LinksHandler {
 
 		@Override
+		@Reflective
 		public Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
 			ServerHttpRequest request = exchange.getRequest();
 			return CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor.preHandle(exchange, "")
@@ -156,14 +156,13 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 
 	static class CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			Method linksMethod = ReflectionUtils.findMethod(CloudFoundryLinksHandler.class, "links",
-					ServerWebExchange.class);
-			Assert.state(linksMethod != null, "Unable to find 'links' method");
-			hints.reflection().registerMethod(linksMethod);
+			this.reflectiveRegistrar.registerRuntimeHints(hints, CloudFoundryLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 

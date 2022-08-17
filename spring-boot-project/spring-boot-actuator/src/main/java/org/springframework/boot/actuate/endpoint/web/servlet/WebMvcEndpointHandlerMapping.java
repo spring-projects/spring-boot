@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -26,6 +25,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -34,8 +35,6 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.aot.BindingReflectionHintsRegistrar;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
@@ -83,6 +82,7 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 
 		@Override
 		@ResponseBody
+		@Reflective
 		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			return Collections.singletonMap("_links",
 					WebMvcEndpointHandlerMapping.this.linksResolver.resolveLinks(request.getRequestURL().toString()));
@@ -97,14 +97,13 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 
 	static class WebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			Method linksMethod = ReflectionUtils.findMethod(WebMvcLinksHandler.class, "links", HttpServletRequest.class,
-					HttpServletResponse.class);
-			Assert.state(linksMethod != null, "Unable to find 'links' method");
-			hints.reflection().registerMethod(linksMethod);
+			this.reflectiveRegistrar.registerRuntimeHints(hints, WebMvcLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 

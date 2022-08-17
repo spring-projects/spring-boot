@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -32,8 +33,6 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping.WebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.aot.BindingReflectionHintsRegistrar;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
@@ -84,6 +83,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 
 		@Override
 		@ResponseBody
+		@Reflective
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
 			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
 					.toUriString();
@@ -100,14 +100,13 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 
 	static class WebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			Method linksMethod = ReflectionUtils.findMethod(WebFluxLinksHandler.class, "links",
-					ServerWebExchange.class);
-			Assert.state(linksMethod != null, "Unable to find 'links' method");
-			hints.reflection().registerMethod(linksMethod);
+			this.reflectiveRegistrar.registerRuntimeHints(hints, WebFluxLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}
 
