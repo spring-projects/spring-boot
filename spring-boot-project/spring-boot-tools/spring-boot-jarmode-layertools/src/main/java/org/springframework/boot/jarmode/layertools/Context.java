@@ -55,7 +55,8 @@ class Context {
 	 * @param workingDir the working directory
 	 */
 	Context(File archiveFile, File workingDir) {
-		Assert.state(isExistingFile(archiveFile) && isJarOrWar(archiveFile), "Unable to find source archive");
+		Assert.state(isExistingFile(archiveFile), "Unable to find source archive");
+		Assert.state(isJarOrWar(archiveFile), "Source archive " + archiveFile + " must end with .jar or .war");
 		this.archiveFile = archiveFile;
 		this.workingDir = workingDir;
 		this.relativeDir = deduceRelativeDir(archiveFile.getParentFile(), this.workingDir);
