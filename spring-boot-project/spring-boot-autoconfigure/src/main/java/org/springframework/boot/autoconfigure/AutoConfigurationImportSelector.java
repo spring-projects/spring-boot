@@ -235,7 +235,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		Set<String> excluded = new LinkedHashSet<>();
 		excluded.addAll(asList(attributes, "exclude"));
-		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
+		excluded.addAll(asList(attributes, "excludeName"));
 		excluded.addAll(getExcludeAutoConfigurationsProperty());
 		return excluded;
 	}
