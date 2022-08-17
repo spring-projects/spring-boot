@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -77,6 +78,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -134,6 +136,7 @@ import org.springframework.boot.web.servlet.server.Session.SessionTrackingMode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -956,6 +959,20 @@ public abstract class AbstractServletWebServerFactoryTests {
 			assertThat(configuredMimeMappings).containsEntry(mapping.getExtension(), mapping.getMimeType());
 		}
 		assertThat(configuredMimeMappings.size()).isEqualTo(expectedMimeMappings.size());
+	}
+
+	@Test
+	void mimeMappingsContainsDefaultsOfTomcat() throws IOException {
+		AbstractServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer();
+		Map<String, String> configuredMimeMappings = getActualMimeMappings();
+		// override defaults, see org.apache.catalina.startup.MimeTypeMappings.properties
+		Properties tomcatDefaultMimeMappings = PropertiesLoaderUtils
+				.loadProperties(new ClassPathResource("MimeTypeMappings.properties", Tomcat.class));
+		for (String extension : tomcatDefaultMimeMappings.stringPropertyNames()) {
+			assertThat(configuredMimeMappings).containsEntry(extension,
+					tomcatDefaultMimeMappings.getProperty(extension));
+		}
 	}
 
 	@Test
