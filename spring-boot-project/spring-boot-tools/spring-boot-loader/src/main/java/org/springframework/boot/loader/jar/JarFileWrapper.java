@@ -40,9 +40,7 @@ class JarFileWrapper extends AbstractJarFile {
 	JarFileWrapper(JarFile parent) throws IOException {
 		super(parent.getRootJarFile().getFile());
 		this.parent = parent;
-		if (System.getSecurityManager() == null) {
-			super.close();
-		}
+		super.close();
 	}
 
 	@Override

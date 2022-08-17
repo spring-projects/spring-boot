@@ -128,9 +128,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
 			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
-		if (System.getSecurityManager() == null) {
-			super.close();
-		}
+		super.close();
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
