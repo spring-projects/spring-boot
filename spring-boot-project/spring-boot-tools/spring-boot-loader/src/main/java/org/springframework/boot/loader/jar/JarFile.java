@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,6 +128,9 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
 			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
+		if (System.getSecurityManager() == null) {
+			super.close();
+		}
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
@@ -139,7 +142,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		}
 		catch (RuntimeException ex) {
 			try {
-				close();
+				this.rootFile.close();
+				super.close();
 			}
 			catch (IOException ioex) {
 			}
@@ -184,13 +188,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	JarFileWrapper getWrapper() throws IOException {
 		JarFileWrapper wrapper = this.wrapper;
 		if (wrapper == null) {
-			synchronized (this) {
-				if (this.wrapper != null) {
-					return this.wrapper;
-				}
-				wrapper = new JarFileWrapper(this);
-				this.wrapper = wrapper;
-			}
+			wrapper = new JarFileWrapper(this);
+			this.wrapper = wrapper;
 		}
 		return wrapper;
 	}
@@ -356,13 +355,11 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		if (this.closed) {
 			return;
 		}
-		synchronized (this) {
-			super.close();
-			if (this.type == JarFileType.DIRECT) {
-				this.rootFile.close();
-			}
-			this.closed = true;
+		super.close();
+		if (this.type == JarFileType.DIRECT) {
+			this.rootFile.close();
 		}
+		this.closed = true;
 	}
 
 	private void ensureOpen() {
