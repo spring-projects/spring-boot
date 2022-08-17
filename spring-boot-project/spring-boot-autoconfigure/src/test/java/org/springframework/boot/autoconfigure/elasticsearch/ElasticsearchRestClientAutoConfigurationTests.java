@@ -184,6 +184,22 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void configureWithNoSocketKeepAliveApplyDefault() {
+		RestClient client = RestClient.builder(new HttpHost("localhost", 9201, "http")).build();
+		assertThat(client.getHttpClient()).extracting("connmgr.ioReactor.config.soKeepAlive").isEqualTo(Boolean.FALSE);
+	}
+
+	@Test
+	void configureWithCustomSocketKeepAlive() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.socket-keep-alive=true").run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient client = context.getBean(RestClient.class);
+			assertThat(client.getHttpClient()).extracting("connmgr.ioReactor.config.soKeepAlive")
+					.isEqualTo(Boolean.TRUE);
+		});
+	}
+
+	@Test
 	void configureWithoutSnifferLibraryShouldNotCreateSniffer() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.elasticsearch.client.sniff"))
 				.run((context) -> assertThat(context).hasSingleBean(RestClient.class).doesNotHaveBean(Sniffer.class));
