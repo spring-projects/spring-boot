@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class ContextTests {
 		File zip = new File(this.temp, "test.zip");
 		Files.createFile(zip.toPath());
 		assertThatIllegalStateException().isThrownBy(() -> new Context(zip, this.temp))
-				.withMessage("Unable to find source archive");
+				.withMessageContaining("test.zip must end with .jar or .war");
 	}
 
 	@Test
