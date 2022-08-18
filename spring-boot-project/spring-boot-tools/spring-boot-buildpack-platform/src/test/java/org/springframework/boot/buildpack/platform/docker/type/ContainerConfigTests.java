@@ -61,12 +61,13 @@ class ContainerConfigTests extends AbstractJsonTests {
 			update.withEnv("name1", "value1");
 			update.withEnv("name2", "value2");
 			update.withNetworkMode("test");
+			update.withSecurityOption("option=value");
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		containerConfig.writeTo(outputStream);
 		String actualJson = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("container-config.json"), StandardCharsets.UTF_8);
-		JSONAssert.assertEquals(expectedJson, actualJson, false);
+		JSONAssert.assertEquals(expectedJson, actualJson, true);
 	}
 
 }
