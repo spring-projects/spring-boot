@@ -57,7 +57,6 @@ public abstract class AbstractJsonParser implements JsonParser {
 				throw new JsonParseException(ex);
 			}
 			ReflectionUtils.rethrowRuntimeException(ex);
-			throw new IllegalStateException(ex);
 		}
 	}
 

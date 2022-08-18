@@ -60,7 +60,6 @@ final class DurationToNumberConverter implements GenericConverter {
 		}
 		catch (Exception ex) {
 			ReflectionUtils.rethrowRuntimeException(ex);
-			throw new IllegalStateException(ex);
 		}
 	}
 

@@ -322,7 +322,6 @@ public class SpringApplication {
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, listeners);
-			throw new IllegalStateException(ex);
 		}
 		try {
 			if (context.isRunning()) {
@@ -332,7 +331,6 @@ public class SpringApplication {
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);
-			throw new IllegalStateException(ex);
 		}
 		SpringApplicationHooks.hooks().postRun(this, context);
 		return context;
