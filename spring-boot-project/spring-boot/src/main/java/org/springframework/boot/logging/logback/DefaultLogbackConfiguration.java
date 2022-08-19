@@ -41,6 +41,7 @@ import org.springframework.boot.logging.LogFile;
  * @author Vedran Pavic
  * @author Robert Thornton
  * @author Scott Frederick
+ * @author Pavel Anisimov
  */
 class DefaultLogbackConfiguration {
 
@@ -68,10 +69,13 @@ class DefaultLogbackConfiguration {
 		config.conversionRule("clr", ColorConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
-		config.getContext().putProperty("CONSOLE_LOG_PATTERN", resolve(config, "${CONSOLE_LOG_PATTERN:-"
-				+ "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) "
-				+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
-				+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
+		String defaultConsoleLogPattern = resolveBoolean(config, "${CONSOLE_LOG_PATTERN_SIMPLE:-false}")
+				? "%black(%d{HH:mm:ss.SSS}) %highlight(%.-1level) %cyan(%40.40logger{39}): %msg%n%throwable"
+				: "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) "
+						+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
+						+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
+		config.getContext().putProperty("CONSOLE_LOG_PATTERN",
+				resolve(config, "${CONSOLE_LOG_PATTERN:-" + defaultConsoleLogPattern + "}"));
 		String defaultCharset = Charset.defaultCharset().name();
 		config.getContext().putProperty("CONSOLE_LOG_CHARSET",
 				resolve(config, "${CONSOLE_LOG_CHARSET:-" + defaultCharset + "}"));

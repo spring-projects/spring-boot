@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Robert Thornton
  * @author Eddú Meléndez
+ * @author Pavel Anisimov
  * @since 2.0.0
  */
 public class LoggingSystemProperties {
@@ -64,6 +65,12 @@ public class LoggingSystemProperties {
 	 * The name of the System property that contains the console log pattern.
 	 */
 	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
+
+	/**
+	 * The name of the System property that contains boolean flag indicating whether to
+	 * use simple console log pattern or not.
+	 */
+	public static final String CONSOLE_LOG_PATTERN_SIMPLE = "CONSOLE_LOG_PATTERN_SIMPLE";
 
 	/**
 	 * The name of the System property that contains the console log charset.
@@ -138,6 +145,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD, "logging.exception-conversion-word");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "logging.pattern.console");
+		setSystemProperty(resolver, CONSOLE_LOG_PATTERN_SIMPLE, "logging.pattern.console.simple");
 		setSystemProperty(resolver, CONSOLE_LOG_CHARSET, "logging.charset.console", getDefaultCharset().name());
 		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "logging.pattern.dateformat");
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");

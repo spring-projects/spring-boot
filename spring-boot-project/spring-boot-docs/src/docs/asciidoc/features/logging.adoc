@@ -328,6 +328,10 @@ To help with the customization, some other properties are transferred from the S
 | `CONSOLE_LOG_PATTERN`
 | The log pattern to use on the console (stdout).
 
+| configprop:logging.pattern.console.simple[]
+| `CONSOLE_LOG_PATTERN_SIMPLE`
+| Boolean flag which indicates whether to use simple log pattern on the console (stdout) or not. Ignored, if `CONSOLE_LOG_PATTERN` is specified.
+
 | configprop:logging.pattern.dateformat[]
 | `LOG_DATEFORMAT_PATTERN`
 | Appender pattern for log date format.
