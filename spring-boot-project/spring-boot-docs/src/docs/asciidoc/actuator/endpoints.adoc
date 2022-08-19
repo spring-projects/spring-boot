@@ -146,109 +146,8 @@ If you want to change only the technologies over which an endpoint is exposed, u
 
 [[actuator.endpoints.exposing]]
 === Exposing Endpoints
+By default, only the health endpoint is exposed over HTTP and JMX.
 Since Endpoints may contain sensitive information, you should carefully consider when to expose them.
-The following table shows the default exposure for the built-in endpoints:
-
-[cols="1,1,1"]
-|===
-| ID | JMX | Web
-
-| `auditevents`
-| Yes
-| No
-
-| `beans`
-| Yes
-| No
-
-| `caches`
-| Yes
-| No
-
-| `conditions`
-| Yes
-| No
-
-| `configprops`
-| Yes
-| No
-
-| `env`
-| Yes
-| No
-
-| `flyway`
-| Yes
-| No
-
-| `health`
-| Yes
-| Yes
-
-| `heapdump`
-| N/A
-| No
-
-| `httptrace`
-| Yes
-| No
-
-| `info`
-| Yes
-| No
-
-| `integrationgraph`
-| Yes
-| No
-
-| `logfile`
-| N/A
-| No
-
-| `loggers`
-| Yes
-| No
-
-| `liquibase`
-| Yes
-| No
-
-| `metrics`
-| Yes
-| No
-
-| `mappings`
-| Yes
-| No
-
-| `prometheus`
-| N/A
-| No
-
-| `quartz`
-| Yes
-| No
-
-| `scheduledtasks`
-| Yes
-| No
-
-| `sessions`
-| Yes
-| No
-
-| `shutdown`
-| Yes
-| No
-
-| `startup`
-| Yes
-| No
-
-| `threaddump`
-| Yes
-| No
-|===
 
 To change which endpoints are exposed, use the following technology-specific `include` and `exclude` properties:
 
@@ -274,7 +173,7 @@ The `exclude` property lists the IDs of the endpoints that should not be exposed
 The `exclude` property takes precedence over the `include` property.
 You can configure both the `include` and the `exclude` properties with a list of endpoint IDs.
 
-For example, to stop exposing all endpoints over JMX and only expose the `health` and `info` endpoints, use the following property:
+For example, to only expose the `health` and `info` endpoints over JMX, use the following property:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

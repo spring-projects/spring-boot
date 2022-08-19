@@ -175,7 +175,7 @@ bom {
 			]
 		}
 	}
-	library("Dependency Management Plugin", "1.0.12.RELEASE") {
+	library("Dependency Management Plugin", "1.0.13.RELEASE") {
 		group("io.spring.gradle") {
 			modules = [
 				"dependency-management-plugin"
@@ -1446,7 +1446,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "6.0.0-M4") {
+	library("Spring Integration", "6.0.0-SNAPSHOT") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
@@ -1461,7 +1461,7 @@ bom {
 			]
 		}
 	}
-	library("Spring LDAP", "3.0.0-M2") {
+	library("Spring LDAP", "3.0.0-SNAPSHOT") {
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",

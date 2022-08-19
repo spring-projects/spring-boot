@@ -17,6 +17,9 @@
 		"Binds": [
 			"bind-source:bind-dest"
 		],
-		"NetworkMode": "test"
+		"NetworkMode": "test",
+		"SecurityOpt": [
+			"option=value"
+		]
 	}
 }

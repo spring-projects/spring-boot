@@ -30,6 +30,8 @@ import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
 import jakarta.annotation.PreDestroy;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -40,6 +42,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties;
+import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -50,6 +53,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -72,6 +76,7 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
 @ConditionalOnClass(InMemoryDirectoryServer.class)
 @Conditional(EmbeddedLdapAutoConfiguration.EmbeddedLdapCondition.class)
+@ImportRuntimeHints(EmbeddedLdapAutoConfigurationRuntimeHints.class)
 public class EmbeddedLdapAutoConfiguration {
 
 	private static final String PROPERTY_SOURCE_NAME = "ldap.ports";
@@ -206,6 +211,16 @@ public class EmbeddedLdapAutoConfiguration {
 			}
 			source.setUrls(properties.determineUrls(environment));
 			return source;
+		}
+
+	}
+
+	static class EmbeddedLdapAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPatternIfPresent(classLoader, "schema.ldif",
+					(hint) -> hint.includes("schema.ldif"));
 		}
 
 	}

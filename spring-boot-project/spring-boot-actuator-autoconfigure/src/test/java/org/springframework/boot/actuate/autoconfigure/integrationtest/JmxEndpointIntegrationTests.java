@@ -59,18 +59,20 @@ class JmxEndpointIntegrationTests {
 			.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
 	@Test
-	void jmxEndpointsAreExposed() {
+	void jmxEndpointsExposeHealthByDefault() {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env", "health",
-					"info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
+			checkEndpointMBeans(mBeanServer, new String[] { "health" }, new String[] { "beans", "conditions",
+					"configprops", "env", "info", "mappings", "threaddump", "httptrace", "shutdown" });
 		});
 	}
 
 	@Test
 	void jmxEndpointsAreExposedWhenLazyInitializationIsEnabled() {
-		this.contextRunner.withBean(LazyInitializationBeanFactoryPostProcessor.class,
-				LazyInitializationBeanFactoryPostProcessor::new).run((context) -> {
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include:*")
+				.withBean(LazyInitializationBeanFactoryPostProcessor.class,
+						LazyInitializationBeanFactoryPostProcessor::new)
+				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env",
 							"health", "info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });

@@ -20,6 +20,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import com.sun.jna.Platform;
+
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
@@ -200,6 +202,9 @@ class Lifecycle implements Closeable {
 		}
 		else {
 			phase.withBinding(Binding.from(DOMAIN_SOCKET_PATH, DOMAIN_SOCKET_PATH));
+		}
+		if (!Platform.isWindows()) {
+			phase.withSecurityOption("label=disable");
 		}
 	}
 

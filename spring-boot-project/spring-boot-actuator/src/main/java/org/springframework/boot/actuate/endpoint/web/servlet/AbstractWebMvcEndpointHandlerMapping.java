@@ -34,6 +34,8 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
@@ -417,6 +419,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		@ResponseBody
+		@Reflective
 		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
 		}
@@ -483,12 +486,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	static class AbstractWebMvcEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			Method handlerMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
-					HttpServletRequest.class, Map.class);
-			Assert.state(handlerMethod != null, "Unable to find 'handler' method");
-			hints.reflection().registerMethod(handlerMethod);
+			this.reflectiveRegistrar.registerRuntimeHints(hints, OperationHandler.class);
 		}
 
 	}

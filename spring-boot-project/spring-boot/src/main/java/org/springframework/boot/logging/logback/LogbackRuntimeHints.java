@@ -17,8 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.pattern.SyslogStartConverter;
@@ -73,12 +71,8 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 	}
 
 	private void registerForPublicConstructorInvocation(ReflectionHints reflection, Class<?>... classes) {
-		reflection.registerTypes(typeReferences(classes),
+		reflection.registerTypes(TypeReference.listOf(classes),
 				(hint) -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
-	}
-
-	private Iterable<TypeReference> typeReferences(Class<?>... classes) {
-		return Stream.of(classes).map(TypeReference::of).collect(Collectors.toList());
 	}
 
 }

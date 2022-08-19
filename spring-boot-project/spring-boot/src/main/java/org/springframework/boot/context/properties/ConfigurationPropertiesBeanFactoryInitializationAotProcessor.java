@@ -67,7 +67,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
-			RuntimeHintsUtils.registerAnnotation(generationContext.getRuntimeHints(), ConfigurationProperties.class);
+			RuntimeHintsUtils.registerSynthesizedAnnotation(generationContext.getRuntimeHints(),
+					ConfigurationProperties.class);
 			for (Class<?> type : this.types) {
 				ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(type,
 						generationContext.getRuntimeHints().reflection());

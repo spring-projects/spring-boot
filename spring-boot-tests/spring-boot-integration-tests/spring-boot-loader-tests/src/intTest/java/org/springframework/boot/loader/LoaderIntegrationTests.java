@@ -51,7 +51,7 @@ class LoaderIntegrationTests {
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
-		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-app")) {
+		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
 			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from").doesNotContain("WARNING:")
@@ -59,32 +59,17 @@ class LoaderIntegrationTests {
 		}
 	}
 
-	@ParameterizedTest
-	@MethodSource("javaRuntimes")
-	void runSignedJarWhenUnpacked(JavaRuntime javaRuntime) {
-		try (GenericContainer<?> container = createContainer(javaRuntime,
-				"spring-boot-loader-tests-signed-jar-unpack-app")) {
-			container.start();
-			System.out.println(this.output.toUtf8String());
-			assertThat(this.output.toUtf8String()).contains("Legion of the Bouncy Castle");
-		}
-	}
-
-	private GenericContainer<?> createContainer(JavaRuntime javaRuntime, String name) {
+	private GenericContainer<?> createContainer(JavaRuntime javaRuntime) {
 		return javaRuntime.getContainer().withLogConsumer(this.output)
-				.withCopyFileToContainer(findApplication(name), "/app.jar")
+				.withCopyFileToContainer(MountableFile.forHostPath(findApplication().toPath()), "/app.jar")
 				.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
 				.withCommand("java", "-jar", "app.jar");
 	}
 
-	private MountableFile findApplication(String name) {
-		return MountableFile.forHostPath(findJarFile(name).toPath());
-	}
-
-	private File findJarFile(String name) {
-		String path = String.format("build/%1$s/build/libs/%1$s.jar", name);
-		File jar = new File(path);
-		Assert.state(jar.isFile(), () -> "Could not find " + path + ". Have you built it?");
+	private File findApplication() {
+		String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-loader-tests-app");
+		File jar = new File(name);
+		Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
 		return jar;
 	}
 

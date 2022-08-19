@@ -58,6 +58,11 @@ public class ElasticsearchProperties {
 	private Duration socketTimeout = Duration.ofSeconds(30);
 
 	/**
+	 * Whether to enable socket keep alive between client and Elasticsearch.
+	 */
+	private boolean socketKeepAlive = false;
+
+	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 */
 	private String pathPrefix;
@@ -102,6 +107,14 @@ public class ElasticsearchProperties {
 
 	public void setSocketTimeout(Duration socketTimeout) {
 		this.socketTimeout = socketTimeout;
+	}
+
+	public boolean isSocketKeepAlive() {
+		return this.socketKeepAlive;
+	}
+
+	public void setSocketKeepAlive(boolean socketKeepAlive) {
+		this.socketKeepAlive = socketKeepAlive;
 	}
 
 	public String getPathPrefix() {

@@ -32,6 +32,8 @@ import reactor.core.scheduler.Schedulers;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
@@ -59,7 +61,6 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -410,6 +411,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
+		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(exchange, body);
@@ -434,6 +436,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
+		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
 		}
@@ -492,15 +495,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	static class AbstractWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
 
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			Method writeOperationHandleMethod = ReflectionUtils.findMethod(WriteOperationHandler.class, "handle",
-					ServerWebExchange.class, Map.class);
-			Assert.state(writeOperationHandleMethod != null, () -> "Unable to find write operation 'handle' method");
-			Method readOperationHandleMethod = ReflectionUtils.findMethod(ReadOperationHandler.class, "handle",
-					ServerWebExchange.class);
-			Assert.state(readOperationHandleMethod != null, () -> "Unable to find read operation 'handle' method");
-			hints.reflection().registerMethod(writeOperationHandleMethod).registerMethod(readOperationHandleMethod);
+			this.reflectiveRegistrar.registerRuntimeHints(hints, WriteOperationHandler.class,
+					ReadOperationHandler.class);
 		}
 
 	}

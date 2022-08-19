@@ -21,14 +21,10 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.core.annotation.SynthesizedAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,16 +44,6 @@ class ActuatorAnnotationsRuntimeHintsTests {
 	void setUp() {
 		this.runtimeHints = new RuntimeHints();
 		this.registrar.registerHints(this.runtimeHints, getClass().getClassLoader());
-	}
-
-	@Test
-	void shouldRegisterReflectionHints() {
-		Set<Class<?>> annotations = Set.of(Endpoint.class, ReadOperation.class, WriteOperation.class,
-				DeleteOperation.class, EndpointExtension.class);
-		for (Class<?> annotation : annotations) {
-			assertThat(RuntimeHintsPredicates.reflection().onType(annotation)
-					.withAnyMemberCategory(MemberCategory.INVOKE_DECLARED_METHODS)).accepts(this.runtimeHints);
-		}
 	}
 
 	@Test

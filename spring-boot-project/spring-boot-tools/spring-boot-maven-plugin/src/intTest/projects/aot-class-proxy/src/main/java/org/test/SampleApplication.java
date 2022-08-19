@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loaderapp;
-
-import java.security.Security;
-import javax.crypto.Cipher;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+package org.test;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-@SpringBootApplication
-public class LoaderSignedJarTestApplication {
+@Configuration(proxyBeanMethods = false)
+@ComponentScan
+@EnableAsync
+public class SampleApplication {
 
-	public static void main(String[] args) throws Exception {
-		Security.addProvider(new BouncyCastleProvider());
-		Cipher.getInstance("AES/CBC/PKCS5Padding","BC");
-		System.out.println("Legion of the Bouncy Castle");
-		SpringApplication.run(LoaderSignedJarTestApplication.class, args);
+	public static void main(String[] args) {
+		SpringApplication.run(SampleApplication.class, args);
 	}
 
 }
