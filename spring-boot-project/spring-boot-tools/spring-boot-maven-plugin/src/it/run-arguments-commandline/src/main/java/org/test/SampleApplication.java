@@ -22,7 +22,7 @@ public class SampleApplication {
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			throw new IllegalArgumentException("Missing arguments " + Arrays.toString(args) + "");
+			throw new IllegalArgumentException("Missing arguments " + Arrays.toString(args));
 		}
 		if (!args[0].startsWith("--management.endpoints.web.exposure.include=")) {
 			throw new IllegalArgumentException("Invalid argument " + args[0]);

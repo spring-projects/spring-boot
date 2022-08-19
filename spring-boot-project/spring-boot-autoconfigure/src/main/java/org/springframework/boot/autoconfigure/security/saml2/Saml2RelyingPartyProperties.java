@@ -59,7 +59,7 @@ public class Saml2RelyingPartyProperties {
 			return this.signing;
 		}
 
-		Identityprovider getIdentityprovider() {
+		public Identityprovider getIdentityprovider() {
 			return this.identityprovider;
 		}
 

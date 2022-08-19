@@ -380,7 +380,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", useDefaultFilters = false,
 			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
 					classes = ScannedFactoryBeanConfiguration.class))
 	static class ComponentScannedFactoryBeanBeanMethodConfiguration {
@@ -388,7 +388,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", useDefaultFilters = false,
 			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
 					classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
 	static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
