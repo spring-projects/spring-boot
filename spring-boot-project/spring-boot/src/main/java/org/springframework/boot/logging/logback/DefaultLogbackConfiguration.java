@@ -70,7 +70,7 @@ class DefaultLogbackConfiguration {
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
 		String defaultConsoleLogPattern = resolveBoolean(config, "${CONSOLE_LOG_PATTERN_SIMPLE:-false}")
-				? "%black(%d{HH:mm:ss.SSS}) %highlight(%.-1level) %cyan(%40.40logger{39}): %msg%n%throwable"
+				? "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%.-1p) %clr(%-40.40logger{39}){cyan}%clr(:){faint} %m%n%wEx"
 				: "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) "
 						+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
 						+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
