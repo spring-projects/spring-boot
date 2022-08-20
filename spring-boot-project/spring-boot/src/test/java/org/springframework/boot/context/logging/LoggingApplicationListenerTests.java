@@ -92,6 +92,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Ben Hale
  * @author Fahim Farook
  * @author Eddú Meléndez
+ * @author Pavel Anisimov
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("log4j*.jar")
@@ -570,6 +571,24 @@ class LoggingApplicationListenerTests {
 		assertTraceEnabled("com.foo", false);
 		assertTraceEnabled("com.foo.bar", true);
 		assertTraceEnabled("com.foo.baz", true);
+	}
+
+	@Test
+	void enableLoggingPatternConsoleSimpleProperty() {
+		addPropertiesToEnvironment(this.context, "logging.pattern.console.simple=true");
+		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		this.logger.info("An1s9n");
+		assertThat(this.output).contains("I .s.b.c.l.LoggingApplicationListenerTests: An1s9n");
+	}
+
+	@Test
+	void explicitLoggingPatternOverridesSimpleLogFormat() {
+		addPropertiesToEnvironment(this.context, "logging.pattern.console.simple=true",
+				"logging.pattern.console=my-custom-log: %m%n");
+		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		this.logger.info("An1s9n");
+		assertThat(this.output).doesNotContain("I .s.b.c.l.LoggingApplicationListenerTests: An1s9n");
+		assertThat(this.output).contains("my-custom-log: An1s9n");
 	}
 
 	private void assertTraceEnabled(String name, boolean expected) {
