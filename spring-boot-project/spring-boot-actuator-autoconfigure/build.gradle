@@ -222,11 +222,17 @@ asciidoctor {
 	sources {
 		include "index.adoc"
 	}
+	forkOptions {
+		jvmArgs "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.io=ALL-UNNAMED"
+	}
 }
 
 task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
+	}
+	forkOptions {
+		jvmArgs "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.io=ALL-UNNAMED"
 	}
 }
 
