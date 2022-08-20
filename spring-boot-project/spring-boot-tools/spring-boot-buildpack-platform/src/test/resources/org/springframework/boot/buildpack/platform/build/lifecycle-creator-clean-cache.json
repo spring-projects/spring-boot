@@ -32,6 +32,9 @@
       "pack-app-aaaaaaaaaa:/workspace",
       "pack-cache-b35197ac41ea.build:/cache",
       "pack-cache-b35197ac41ea.launch:/launch-cache"
+    ],
+    "SecurityOpt" : [
+      "label=disable"
     ]
   }
 }

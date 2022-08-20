@@ -47,6 +47,8 @@ class Phase {
 
 	private final Map<String, String> env = new LinkedHashMap<>();
 
+	private final List<String> securityOptions = new ArrayList<>();
+
 	private String networkMode;
 
 	/**
@@ -111,6 +113,14 @@ class Phase {
 	}
 
 	/**
+	 * Update this phase with a security option.
+	 * @param option the security option
+	 */
+	void withSecurityOption(String option) {
+		this.securityOptions.add(option);
+	}
+
+	/**
 	 * Return the name of the phase.
 	 * @return the phase name
 	 */
@@ -138,6 +148,7 @@ class Phase {
 		if (this.networkMode != null) {
 			update.withNetworkMode(this.networkMode);
 		}
+		this.securityOptions.forEach(update::withSecurityOption);
 	}
 
 }
