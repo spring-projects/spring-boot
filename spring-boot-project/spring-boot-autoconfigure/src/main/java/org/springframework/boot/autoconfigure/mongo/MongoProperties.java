@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.List;
+
 import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
 
@@ -33,6 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Nasko Vasilev
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Safeer Ansari
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
@@ -104,6 +107,11 @@ public class MongoProperties {
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
+
+	/**
+	 * List of additional hosts to connect with different hosts in a replica set.
+	 */
+	private List<String> additionalHosts;
 
 	public String getHost() {
 		return this.host;
@@ -206,6 +214,14 @@ public class MongoProperties {
 
 	public void setAutoIndexCreation(Boolean autoIndexCreation) {
 		this.autoIndexCreation = autoIndexCreation;
+	}
+
+	public List<String> getAdditionalHosts() {
+		return this.additionalHosts;
+	}
+
+	public void setAdditionalHosts(List<String> additionalHosts) {
+		this.additionalHosts = additionalHosts;
 	}
 
 	public static class Gridfs {

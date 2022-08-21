@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -30,6 +31,7 @@ import org.springframework.core.Ordered;
  * {@link MongoProperties} to a {@link MongoClientSettings}.
  *
  * @author Scott Frederick
+ * @author Safeer Ansari
  * @since 2.4.0
  */
 public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
@@ -63,10 +65,19 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 			String host = getOrDefault(this.properties.getHost(), "localhost");
 			int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
 			ServerAddress serverAddress = new ServerAddress(host, port);
-			settings.applyToClusterSettings((cluster) -> cluster.hosts(Collections.singletonList(serverAddress)));
+			List<ServerAddress> serverAddressList = new ArrayList<>(List.of(serverAddress));
+			applyAdditionalHosts(serverAddressList);
+			settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddressList));
 			return;
 		}
 		settings.applyConnectionString(new ConnectionString(MongoProperties.DEFAULT_URI));
+	}
+
+	private void applyAdditionalHosts(List<ServerAddress> serverAddressList) {
+		if (this.properties.getAdditionalHosts() != null && !this.properties.getAdditionalHosts().isEmpty()) {
+			this.properties.getAdditionalHosts()
+					.forEach((additionalHost) -> serverAddressList.add(new ServerAddress(additionalHost)));
+		}
 	}
 
 	private void applyCredentials(MongoClientSettings.Builder builder) {
