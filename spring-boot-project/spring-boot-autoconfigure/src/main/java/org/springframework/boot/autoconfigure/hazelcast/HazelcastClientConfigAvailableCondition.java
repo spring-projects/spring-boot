@@ -39,7 +39,8 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 
 	HazelcastClientConfigAvailableCondition() {
 		super(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml",
-				"classpath:/hazelcast-client.xml", "file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml");
+				"classpath:/hazelcast-client.xml", "file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml",
+				"file:./hazelcast-client.yml", "classpath:/hazelcast-client.yml");
 	}
 
 	@Override
