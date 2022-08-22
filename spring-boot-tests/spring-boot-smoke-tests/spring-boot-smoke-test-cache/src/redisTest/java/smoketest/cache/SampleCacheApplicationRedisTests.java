@@ -46,7 +46,7 @@ class SampleCacheApplicationRedisTests {
 	@DynamicPropertySource
 	static void redisProperties(DynamicPropertyRegistry properties) {
 		properties.add("spring.data.redis.url",
-				() -> "redis://" + redis.getContainerIpAddress() + ":" + redis.getFirstMappedPort());
+				() -> "redis://" + redis.getHost() + ":" + redis.getFirstMappedPort());
 	}
 
 	@Test
