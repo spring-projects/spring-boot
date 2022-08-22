@@ -17,10 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -40,9 +37,6 @@ import org.springframework.core.Ordered;
 public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
 
 	private final MongoProperties properties;
-
-	private static final Pattern ADDITIONAL_HOSTS_PATTERN = Pattern
-			.compile("^\\[[0-9a-zA-Z]+(.)*(:)*(,[0-9a-zA-Z]+(.)*(:)*)*]$");
 
 	private int order = 0;
 
@@ -81,14 +75,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private void applyAdditionalHosts(List<ServerAddress> serverAddressList) {
 		if (this.properties.getAdditionalHosts() != null && !this.properties.getAdditionalHosts().isEmpty()) {
-			Matcher matcher = ADDITIONAL_HOSTS_PATTERN.matcher((this.properties.getAdditionalHosts()));
-			if (!matcher.matches()) {
-				return;
-			}
-
-			String[] additionalHosts = this.properties.getAdditionalHosts()
-					.substring(1, this.properties.getAdditionalHosts().length() - 1).split(",");
-			Arrays.stream(additionalHosts)
+			this.properties.getAdditionalHosts()
 					.forEach((additionalHost) -> serverAddressList.add(new ServerAddress(additionalHost)));
 		}
 	}

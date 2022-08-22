@@ -981,12 +981,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.data.mongodb.additional-hosts",
-      "type": "java.lang.String",
-      "description": "List of additional hosts to connect with different hosts in a replica set.",
-      "defaultValue": ""
-    },
-    {
       "name": "spring.data.mongodb.grid-fs-database",
       "type": "java.lang.String",
       "deprecation": {

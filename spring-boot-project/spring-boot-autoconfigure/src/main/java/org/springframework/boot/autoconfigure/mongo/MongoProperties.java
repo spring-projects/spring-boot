@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.List;
+
 import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
 
@@ -106,7 +108,10 @@ public class MongoProperties {
 	 */
 	private Boolean autoIndexCreation;
 
-	private String additionalHosts;
+	/**
+	 * List of additional hosts to connect with different hosts in a replica set.
+	 */
+	private List<String> additionalHosts;
 
 	public String getHost() {
 		return this.host;
@@ -211,11 +216,11 @@ public class MongoProperties {
 		this.autoIndexCreation = autoIndexCreation;
 	}
 
-	public String getAdditionalHosts() {
+	public List<String> getAdditionalHosts() {
 		return this.additionalHosts;
 	}
 
-	public void setAdditionalHosts(String additionalHosts) {
+	public void setAdditionalHosts(List<String> additionalHosts) {
 		this.additionalHosts = additionalHosts;
 	}
 

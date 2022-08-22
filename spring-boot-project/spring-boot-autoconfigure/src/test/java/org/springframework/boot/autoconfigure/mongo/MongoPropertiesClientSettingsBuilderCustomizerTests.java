@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.mongodb.MongoClientSettings;
@@ -56,7 +57,7 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	@Test
 	void additionalHostCanBeAdded() {
 		this.properties.setHost("mongo.example.com");
-		this.properties.setAdditionalHosts("[mongo.example.com:33, mongo.example2.com]");
+		this.properties.setAdditionalHosts(Arrays.asList("mongo.example.com:33", "mongo.example2.com"));
 		MongoClientSettings settings = customizeSettings();
 		List<ServerAddress> allAddresses = getAllAddresses(settings);
 		assertThat(allAddresses).hasSize(3);
