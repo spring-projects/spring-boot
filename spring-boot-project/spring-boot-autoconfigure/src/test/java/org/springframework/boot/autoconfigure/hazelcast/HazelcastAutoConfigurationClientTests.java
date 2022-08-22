@@ -82,6 +82,14 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
+	void systemPropertyWithYml() {
+		this.contextRunner
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.yml")
+				.run(assertSpecificHazelcastClient("explicit-yml"));
+	}
+
+	@Test
 	void explicitConfigFileWithXml() {
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
 				+ "hazelcast/hazelcast-client-specific.xml").run(assertSpecificHazelcastClient("explicit-xml"));
@@ -93,6 +101,14 @@ class HazelcastAutoConfigurationClientTests {
 				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
 						+ "hazelcast/hazelcast-client-specific.yaml")
 				.run(assertSpecificHazelcastClient("explicit-yaml"));
+	}
+
+	@Test
+	void explicitConfigFileWithYml() {
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+						+ "hazelcast/hazelcast-client-specific.yml")
+				.run(assertSpecificHazelcastClient("explicit-yml"));
 	}
 
 	@Test
@@ -109,6 +125,14 @@ class HazelcastAutoConfigurationClientTests {
 				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
 						+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml")
 				.run(assertSpecificHazelcastClient("explicit-yaml"));
+	}
+
+	@Test
+	void explicitConfigUrlWithYml() {
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
+						+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yml")
+				.run(assertSpecificHazelcastClient("explicit-yml"));
 	}
 
 	@Test

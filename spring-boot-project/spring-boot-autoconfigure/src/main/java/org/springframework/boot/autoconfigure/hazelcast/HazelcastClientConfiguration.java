@@ -72,7 +72,7 @@ class HazelcastClientConfiguration {
 		private ClientConfig loadClientConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
 			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml")) {
+			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 				return new YamlClientConfigBuilder(configUrl).build();
 			}
 			return new XmlClientConfigBuilder(configUrl).build();
