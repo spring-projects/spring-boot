@@ -143,4 +143,18 @@ class PhaseTests {
 		then(update).shouldHaveNoMoreInteractions();
 	}
 
+	@Test
+	void applyWhenWithSecurityOptionsUpdatesConfigurationWithSecurityOptions() {
+		Phase phase = new Phase("test", true);
+		phase.withSecurityOption("option1=value1");
+		phase.withSecurityOption("option2=value2");
+		Update update = mock(Update.class);
+		phase.apply(update);
+		then(update).should().withCommand("/cnb/lifecycle/test");
+		then(update).should().withLabel("author", "spring-boot");
+		then(update).should().withSecurityOption("option1=value1");
+		then(update).should().withSecurityOption("option2=value2");
+		then(update).shouldHaveNoMoreInteractions();
+	}
+
 }
