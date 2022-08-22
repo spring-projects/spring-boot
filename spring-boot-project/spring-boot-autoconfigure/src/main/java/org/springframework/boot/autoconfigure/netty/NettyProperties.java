@@ -32,7 +32,7 @@ public class NettyProperties {
 	/**
 	 * Level of leak detection for reference-counted buffers.
 	 */
-	private LeakDetection leakDetection = LeakDetection.SIMPLE;
+	private LeakDetection leakDetection = null;
 
 	public LeakDetection getLeakDetection() {
 		return this.leakDetection;
