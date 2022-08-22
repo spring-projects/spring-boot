@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Nasko Vasilev
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Safeer Ansari
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
@@ -104,6 +105,8 @@ public class MongoProperties {
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
+
+	private String additionalHosts;
 
 	public String getHost() {
 		return this.host;
@@ -206,6 +209,14 @@ public class MongoProperties {
 
 	public void setAutoIndexCreation(Boolean autoIndexCreation) {
 		this.autoIndexCreation = autoIndexCreation;
+	}
+
+	public String getAdditionalHosts() {
+		return additionalHosts;
+	}
+
+	public void setAdditionalHosts(String additionalHosts) {
+		this.additionalHosts = additionalHosts;
 	}
 
 	public static class Gridfs {

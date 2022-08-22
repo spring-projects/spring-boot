@@ -54,6 +54,18 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	}
 
 	@Test
+	void additionalHostCanBeAdded() {
+		this.properties.setHost("mongo.example.com");
+		this.properties.setAdditionalHosts("[mongo.example.com:33, mongo.example2.com]");
+		MongoClientSettings settings = customizeSettings();
+		List<ServerAddress> allAddresses = getAllAddresses(settings);
+		assertThat(allAddresses).hasSize(3);
+		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
+		assertServerAddress(allAddresses.get(1), "mongo.example.com", 33);
+		assertServerAddress(allAddresses.get(2), "mongo.example2.com", 27017);
+	}
+
+	@Test
 	void credentialsCanBeCustomized() {
 		this.properties.setUsername("user");
 		this.properties.setPassword("secret".toCharArray());

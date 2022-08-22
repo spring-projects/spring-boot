@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -30,11 +34,15 @@ import org.springframework.core.Ordered;
  * {@link MongoProperties} to a {@link MongoClientSettings}.
  *
  * @author Scott Frederick
+ * @author Safeer Ansari
  * @since 2.4.0
  */
 public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
 
 	private final MongoProperties properties;
+
+	private static final Pattern ADDITIONAL_HOSTS_PATTERN = Pattern
+			.compile("^\\[[0-9a-zA-Z]+(.)*(:)*(,[0-9a-zA-Z]+(.)*(:)*)*]$");
 
 	private int order = 0;
 
@@ -63,10 +71,26 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 			String host = getOrDefault(this.properties.getHost(), "localhost");
 			int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
 			ServerAddress serverAddress = new ServerAddress(host, port);
-			settings.applyToClusterSettings((cluster) -> cluster.hosts(Collections.singletonList(serverAddress)));
+			List<ServerAddress> serverAddressList = new ArrayList<>(List.of(serverAddress));
+			applyAdditionalHosts(serverAddressList);
+			settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddressList));
 			return;
 		}
 		settings.applyConnectionString(new ConnectionString(MongoProperties.DEFAULT_URI));
+	}
+
+	private void applyAdditionalHosts(List<ServerAddress> serverAddressList) {
+		if (this.properties.getAdditionalHosts() != null && !this.properties.getAdditionalHosts().isEmpty()) {
+			Matcher matcher = ADDITIONAL_HOSTS_PATTERN.matcher((this.properties.getAdditionalHosts()));
+			if (!matcher.matches()) {
+				return;
+			}
+
+			String[] additionalHosts = this.properties.getAdditionalHosts()
+					.substring(1, this.properties.getAdditionalHosts().length() - 1).split(",");
+			Arrays.stream(additionalHosts)
+					.forEach((additionalHost) -> serverAddressList.add(new ServerAddress(additionalHost)));
+		}
 	}
 
 	private void applyCredentials(MongoClientSettings.Builder builder) {
