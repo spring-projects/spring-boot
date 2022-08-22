@@ -212,7 +212,7 @@ public class MongoProperties {
 	}
 
 	public String getAdditionalHosts() {
-		return additionalHosts;
+		return this.additionalHosts;
 	}
 
 	public void setAdditionalHosts(String additionalHosts) {

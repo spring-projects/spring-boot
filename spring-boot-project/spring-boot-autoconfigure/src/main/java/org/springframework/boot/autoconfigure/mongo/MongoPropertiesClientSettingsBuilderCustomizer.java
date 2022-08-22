@@ -18,11 +18,9 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -91,7 +89,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 			String[] additionalHosts = this.properties.getAdditionalHosts()
 					.substring(1, this.properties.getAdditionalHosts().length() - 1).split(",");
 			Arrays.stream(additionalHosts)
-					.forEach(additionalHost -> serverAddressList.add(new ServerAddress(additionalHost)));
+					.forEach((additionalHost) -> serverAddressList.add(new ServerAddress(additionalHost)));
 		}
 	}
 
