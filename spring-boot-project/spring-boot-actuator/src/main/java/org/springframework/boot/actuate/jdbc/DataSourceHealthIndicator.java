@@ -81,7 +81,6 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	 */
 	public DataSourceHealthIndicator(DataSource dataSource, String query) {
 		super("DataSource health check failed");
-		Assert.notNull(dataSource,"DataSource is null");
 		this.dataSource = dataSource;
 		Assert.hasText(query,"Query is null");
 		this.query = query;
