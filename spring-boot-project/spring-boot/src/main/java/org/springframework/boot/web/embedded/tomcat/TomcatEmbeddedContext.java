@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +31,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.ManagerBase;
 
+import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ClassUtils;
 
@@ -43,6 +45,8 @@ import org.springframework.util.ClassUtils;
 class TomcatEmbeddedContext extends StandardContext {
 
 	private TomcatStarter starter;
+
+	private MimeMappings mimeMappings;
 
 	@Override
 	public boolean loadOnStartup(Container[] children) {
@@ -116,6 +120,29 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	TomcatStarter getStarter() {
 		return this.starter;
+	}
+
+	void setMimeMappings(MimeMappings mimeMappings) {
+		this.mimeMappings = mimeMappings;
+	}
+
+	@Override
+	public String[] findMimeMappings() {
+		List<String> mappings = new ArrayList<>();
+		mappings.addAll(Arrays.asList(super.findMimeMappings()));
+		if (this.mimeMappings != null) {
+			this.mimeMappings.forEach((mapping) -> mappings.add(mapping.getExtension()));
+		}
+		return mappings.toArray(String[]::new);
+	}
+
+	@Override
+	public String findMimeMapping(String extension) {
+		String mimeMapping = super.findMimeMapping(extension);
+		if (mimeMapping != null) {
+			return mimeMapping;
+		}
+		return (this.mimeMappings != null) ? this.mimeMappings.get(extension) : null;
 	}
 
 }
