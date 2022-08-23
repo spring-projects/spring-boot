@@ -174,9 +174,11 @@ class MimeMappingsTests {
 
 	@Test
 	void commonMappingsAreSubsetOfAllMappings() {
+		MimeMappings defaultMappings = new DefaultMimeMappings();
 		MimeMappings commonMappings = (MimeMappings) ReflectionTestUtils.getField(DefaultMimeMappings.class, "COMMON");
+		defaultMappings.getAll();
 		for (Mapping commonMapping : commonMappings) {
-			assertThat(MimeMappings.DEFAULT.get(commonMapping.getExtension())).isEqualTo(commonMapping.getMimeType());
+			assertThat(defaultMappings.get(commonMapping.getExtension())).isEqualTo(commonMapping.getMimeType());
 		}
 	}
 

@@ -261,14 +261,14 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			mappings.add("jpg", "image/jpeg");
 			mappings.add("js", "application/javascript");
 			mappings.add("json", "application/json");
-			mappings.add("otf", "application/x-font-opentype");
+			mappings.add("otf", "font/otf");
 			mappings.add("pdf", "application/pdf");
 			mappings.add("png", "image/png");
 			mappings.add("ps", "application/postscript");
 			mappings.add("tar", "application/x-tar");
 			mappings.add("tif", "image/tiff");
 			mappings.add("tiff", "image/tiff");
-			mappings.add("ttf", "application/x-font-ttf");
+			mappings.add("ttf", "font/ttf");
 			mappings.add("txt", "text/plain");
 			mappings.add("xht", "application/xhtml+xml");
 			mappings.add("xhtml", "application/xhtml+xml");
