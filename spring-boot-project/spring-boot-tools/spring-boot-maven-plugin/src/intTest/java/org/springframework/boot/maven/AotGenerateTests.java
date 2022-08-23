@@ -48,7 +48,7 @@ public class AotGenerateTests {
 	void whenAotRunsResourcesAreGenerated(MavenBuild mavenBuild) {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
-			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).containsOnly(
+			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).contains(
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
 							"reflect-config.json"),
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
@@ -62,7 +62,7 @@ public class AotGenerateTests {
 	void whenAotRunsWithJdkProxyResourcesIncludeProxyConfig(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-jdk-proxy").goals("package").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
-			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).containsOnly(
+			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).contains(
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-jdk-proxy",
 							"reflect-config.json"),
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-jdk-proxy",
