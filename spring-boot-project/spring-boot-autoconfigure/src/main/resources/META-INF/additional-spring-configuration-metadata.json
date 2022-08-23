@@ -2106,10 +2106,6 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
-      "name": "spring.netty.leak-detection",
-      "defaultValue": "simple"
-    },
-    {
       "name": "spring.quartz.jdbc.comment-prefix",
       "defaultValue": [
         "#",

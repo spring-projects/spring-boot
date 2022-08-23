@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class NettyProperties {
 
 	/**
-	 * Level of leak detection for reference-counted buffers.
+	 * Level of leak detection for reference-counted buffers. If not configured via
+	 * 'ResourceLeakDetector.setLevel' or the 'io.netty.leakDetection.level' system
+	 * property, default to 'simple'.
 	 */
-	private LeakDetection leakDetection = LeakDetection.SIMPLE;
+	private LeakDetection leakDetection;
 
 	public LeakDetection getLeakDetection() {
 		return this.leakDetection;
