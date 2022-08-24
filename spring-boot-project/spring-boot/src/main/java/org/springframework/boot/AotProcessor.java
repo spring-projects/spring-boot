@@ -25,14 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.springframework.aot.generate.ClassNameGenerator;
 import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.FileSystemGeneratedFiles;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
-import org.springframework.aot.hint.ExecutableHint;
-import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
@@ -57,9 +54,6 @@ import org.springframework.util.FileSystemUtils;
  * @since 3.0.0
  */
 public class AotProcessor {
-
-	private static final Consumer<ExecutableHint.Builder> INVOKE_CONSTRUCTOR_HINT = (hint) -> hint
-			.setModes(ExecutableMode.INVOKE);
 
 	private final Class<?> application;
 
@@ -161,8 +155,8 @@ public class AotProcessor {
 		ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
 		reflection.registerType(applicationType, (hint) -> {
 		});
-		reflection.registerType(generatedType, (hint) -> hint.onReachableType(applicationType)
-				.withConstructor(Collections.emptyList(), INVOKE_CONSTRUCTOR_HINT));
+		reflection.registerType(generatedType,
+				(hint) -> hint.onReachableType(applicationType).withConstructor(Collections.emptyList()));
 	}
 
 	private Path getRoot(Kind kind) {
