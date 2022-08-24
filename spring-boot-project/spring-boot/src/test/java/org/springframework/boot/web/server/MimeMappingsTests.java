@@ -16,12 +16,15 @@
 
 package org.springframework.boot.web.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
+import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -29,6 +32,8 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.web.server.MimeMappings.DefaultMimeMappings;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -208,6 +213,15 @@ class MimeMappingsTests {
 		mappings.add("json", "two/json");
 		lazyCopy.add("json", "other/json");
 		assertThat(lazyCopy.get("json")).isEqualTo("other/json");
+	}
+
+	@Test
+	void mimeMappingsMatchesTomcatDefaults() throws IOException {
+		Properties ourDefaultMimeMappings = PropertiesLoaderUtils
+				.loadProperties(new ClassPathResource("mime-mappings.properties", getClass()));
+		Properties tomcatDefaultMimeMappings = PropertiesLoaderUtils
+				.loadProperties(new ClassPathResource("MimeTypeMappings.properties", Tomcat.class));
+		assertThat(ourDefaultMimeMappings).isEqualTo(tomcatDefaultMimeMappings);
 	}
 
 	@Test
