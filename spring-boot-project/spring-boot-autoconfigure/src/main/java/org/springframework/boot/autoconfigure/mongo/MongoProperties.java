@@ -62,6 +62,13 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
+	 * Additional server hosts. Cannot be set with URI or if 'host' is not specified.
+	 * Additional hosts will use the default mongo port of 27017, if you want to use a
+	 * different port you can use the "host:port" syntax.
+	 */
+	private List<String> additionalHosts;
+
+	/**
 	 * Mongo database URI. Overrides host, port, username, password, and database.
 	 */
 	private String uri;
@@ -107,11 +114,6 @@ public class MongoProperties {
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
-
-	/**
-	 * List of additional hosts to connect with different hosts in a replica set.
-	 */
-	private List<String> additionalHosts;
 
 	public String getHost() {
 		return this.host;

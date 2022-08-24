@@ -25,6 +25,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 import org.springframework.core.Ordered;
+import org.springframework.util.CollectionUtils;
 
 /**
  * A {@link MongoClientSettingsBuilderCustomizer} that applies properties from a
@@ -64,20 +65,15 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 		if (this.properties.getHost() != null || this.properties.getPort() != null) {
 			String host = getOrDefault(this.properties.getHost(), "localhost");
 			int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
-			ServerAddress serverAddress = new ServerAddress(host, port);
-			List<ServerAddress> serverAddressList = new ArrayList<>(List.of(serverAddress));
-			applyAdditionalHosts(serverAddressList);
-			settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddressList));
+			List<ServerAddress> serverAddresses = new ArrayList<>();
+			serverAddresses.add(new ServerAddress(host, port));
+			if (!CollectionUtils.isEmpty(this.properties.getAdditionalHosts())) {
+				this.properties.getAdditionalHosts().stream().map(ServerAddress::new).forEach(serverAddresses::add);
+			}
+			settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddresses));
 			return;
 		}
 		settings.applyConnectionString(new ConnectionString(MongoProperties.DEFAULT_URI));
-	}
-
-	private void applyAdditionalHosts(List<ServerAddress> serverAddressList) {
-		if (this.properties.getAdditionalHosts() != null && !this.properties.getAdditionalHosts().isEmpty()) {
-			this.properties.getAdditionalHosts()
-					.forEach((additionalHost) -> serverAddressList.add(new ServerAddress(additionalHost)));
-		}
 	}
 
 	private void applyCredentials(MongoClientSettings.Builder builder) {
