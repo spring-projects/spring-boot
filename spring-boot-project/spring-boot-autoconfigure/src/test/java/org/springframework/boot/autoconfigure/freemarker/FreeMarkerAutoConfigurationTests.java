@@ -55,6 +55,13 @@ class FreeMarkerAutoConfigurationTests {
 	}
 
 	@Test
+	void templateResolverDisabled(CapturedOutput output) {
+		this.contextRunner
+				.withPropertyValues("spring.freemarker.enabled:false")
+				.run((context) -> assertThat(output).doesNotContain("Cannot find template location"));
+    }
+
+	@Test
 	void nonExistentTemplateLocation(CapturedOutput output) {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"

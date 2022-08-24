@@ -61,7 +61,7 @@ public class FreeMarkerAutoConfiguration {
 	}
 
 	public void checkTemplateLocationExists() {
-		if (logger.isWarnEnabled() && this.properties.isCheckTemplateLocation()) {
+		if (logger.isWarnEnabled() && this.properties.isEnabled() && this.properties.isCheckTemplateLocation()) {
 			List<TemplateLocation> locations = getLocations();
 			if (locations.stream().noneMatch(this::locationExists)) {
 				logger.warn("Cannot find template location(s): " + locations + " (please add some templates, "
