@@ -12,8 +12,8 @@ dependencies {
 	implementation "org.hibernate.orm:hibernate-core:6.1.1.Final"
 }
 
-task('generateAotSourcesClasspath') {
+task('processAotClasspath') {
 	doFirst {
-		tasks.findByName('generateAotSources').classpath.files.each { println it }
+		tasks.findByName('processAot').classpath.files.each { println it }
 	}
 }
