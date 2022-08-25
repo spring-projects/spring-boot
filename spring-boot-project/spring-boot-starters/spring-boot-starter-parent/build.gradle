@@ -233,9 +233,9 @@ publishing.publications.withType(MavenPublication) {
 								delegate.artifactId('spring-boot-maven-plugin')
 								executions {
 									execution {
-										delegate.id('aot-generate')
+										delegate.id('process-aot')
 										goals {
-											delegate.goal('aot-generate')
+											delegate.goal('process-aot')
 										}
 									}
 								}
