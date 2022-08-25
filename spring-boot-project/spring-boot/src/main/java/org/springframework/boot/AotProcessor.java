@@ -95,7 +95,7 @@ public class AotProcessor {
 	/**
 	 * Trigger the processing of the application managed by this instance.
 	 */
-	public void process() throws IOException {
+	public void process() {
 		deleteExistingOutput();
 		AotProcessorHook hook = new AotProcessorHook();
 		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
@@ -136,7 +136,7 @@ public class AotProcessor {
 		}
 	}
 
-	private void performAotProcessing(GenericApplicationContext applicationContext) throws IOException {
+	private void performAotProcessing(GenericApplicationContext applicationContext) {
 		FileSystemGeneratedFiles generatedFiles = new FileSystemGeneratedFiles(this::getRoot);
 		DefaultGenerationContext generationContext = new DefaultGenerationContext(
 				new ClassNameGenerator(this.application), generatedFiles);
