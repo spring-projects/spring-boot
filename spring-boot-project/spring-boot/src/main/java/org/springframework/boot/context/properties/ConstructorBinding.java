@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
  * @since 2.2.0
  * @see ConfigurationProperties
  */
-@Target(ElementType.CONSTRUCTOR)
+@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConstructorBinding {
