@@ -39,30 +39,30 @@ class SpringBootAotPluginIntegrationTests {
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	void noGenerateAotSourcesTaskWithoutAotPluginApplied() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=generateAotSources").getOutput())
-				.contains("generateAotSources exists = false");
+	void noProcessAotTaskWithoutAotPluginApplied() {
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processAot").getOutput())
+				.contains("processAot exists = false");
 	}
 
 	@TestTemplate
-	void applyingAotPluginCreatesGenerateAotSourcesTask() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=generateAotSources").getOutput())
-				.contains("generateAotSources exists = true");
+	void applyingAotPluginCreatesProcessAotTask() {
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processAot").getOutput())
+				.contains("processAot exists = true");
 	}
 
 	@TestTemplate
-	void generateAotSourcesHasLibraryResourcesOnItsClasspath() throws IOException {
+	void processAotHasLibraryResourcesOnItsClasspath() throws IOException {
 		File settings = new File(this.gradleBuild.getProjectDir(), "settings.gradle");
 		Files.write(settings.toPath(), List.of("include 'library'"));
 		File library = new File(this.gradleBuild.getProjectDir(), "library");
 		library.mkdirs();
 		Files.write(library.toPath().resolve("build.gradle"), List.of("plugins {", "    id 'java-library'", "}"));
-		assertThat(this.gradleBuild.build("generateAotSourcesClasspath").getOutput()).contains("library.jar");
+		assertThat(this.gradleBuild.build("processAotClasspath").getOutput()).contains("library.jar");
 	}
 
 	@TestTemplate
-	void generateAotSourcesHasTransitiveRuntimeDependenciesOnItsClasspath() {
-		String output = this.gradleBuild.build("generateAotSourcesClasspath").getOutput();
+	void processAotHasTransitiveRuntimeDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processAotClasspath").getOutput();
 		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
 	}
 

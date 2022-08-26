@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.env;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -48,9 +48,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
-import org.springframework.util.SystemPropertyUtils;
 
 /**
  * {@link Endpoint @Endpoint} to expose {@link ConfigurableEnvironment environment}
@@ -71,50 +69,48 @@ public class EnvironmentEndpoint {
 
 	private final Environment environment;
 
-	public EnvironmentEndpoint(Environment environment) {
-		this(environment, Collections.emptyList());
-	}
+	private final Show showValues;
 
-	public EnvironmentEndpoint(Environment environment, Iterable<SanitizingFunction> sanitizingFunctions) {
+	public EnvironmentEndpoint(Environment environment, Iterable<SanitizingFunction> sanitizingFunctions,
+			Show showValues) {
 		this.environment = environment;
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
-	}
-
-	public void setKeysToSanitize(String... keysToSanitize) {
-		this.sanitizer.setKeysToSanitize(keysToSanitize);
-	}
-
-	public void keysToSanitize(String... keysToSanitize) {
-		this.sanitizer.keysToSanitize(keysToSanitize);
+		this.showValues = showValues;
 	}
 
 	@ReadOperation
 	public EnvironmentDescriptor environment(@Nullable String pattern) {
+		boolean showUnsanitized = this.showValues.isShown(true);
+		return getEnvironmentDescriptor(pattern, showUnsanitized);
+	}
+
+	EnvironmentDescriptor getEnvironmentDescriptor(String pattern, boolean showUnsanitized) {
 		if (StringUtils.hasText(pattern)) {
-			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate());
+			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate(), showUnsanitized);
 		}
-		return getEnvironmentDescriptor((name) -> true);
+		return getEnvironmentDescriptor((name) -> true, showUnsanitized);
 	}
 
-	@ReadOperation
-	public EnvironmentEntryDescriptor environmentEntry(@Selector String toMatch) {
-		return getEnvironmentEntryDescriptor(toMatch);
-	}
-
-	private EnvironmentDescriptor getEnvironmentDescriptor(Predicate<String> propertyNamePredicate) {
-		PlaceholdersResolver resolver = getResolver();
+	private EnvironmentDescriptor getEnvironmentDescriptor(Predicate<String> propertyNamePredicate,
+			boolean showUnsanitized) {
 		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> {
 			if (source instanceof EnumerablePropertySource) {
-				propertySources.add(describeSource(sourceName, (EnumerablePropertySource<?>) source, resolver,
-						propertyNamePredicate));
+				propertySources.add(describeSource(sourceName, (EnumerablePropertySource<?>) source,
+						propertyNamePredicate, showUnsanitized));
 			}
 		});
 		return new EnvironmentDescriptor(Arrays.asList(this.environment.getActiveProfiles()), propertySources);
 	}
 
-	private EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName) {
-		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName);
+	@ReadOperation
+	public EnvironmentEntryDescriptor environmentEntry(@Selector String toMatch) {
+		boolean showUnsanitized = this.showValues.isShown(true);
+		return getEnvironmentEntryDescriptor(toMatch, showUnsanitized);
+	}
+
+	EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName, boolean showUnsanitized) {
+		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName, showUnsanitized);
 		PropertySummaryDescriptor summary = getPropertySummaryDescriptor(descriptors);
 		return new EnvironmentEntryDescriptor(summary, Arrays.asList(this.environment.getActiveProfiles()),
 				toPropertySourceDescriptors(descriptors));
@@ -136,33 +132,29 @@ public class EnvironmentEndpoint {
 		return null;
 	}
 
-	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName) {
+	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName,
+			boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
-		PlaceholdersResolver resolver = getResolver();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> propertySources.put(sourceName,
-				source.containsProperty(propertyName) ? describeValueOf(propertyName, source, resolver) : null));
+				source.containsProperty(propertyName) ? describeValueOf(propertyName, source, showUnsanitized) : null));
 		return propertySources;
 	}
 
 	private PropertySourceDescriptor describeSource(String sourceName, EnumerablePropertySource<?> source,
-			PlaceholdersResolver resolver, Predicate<String> namePredicate) {
+			Predicate<String> namePredicate, boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
 		Stream.of(source.getPropertyNames()).filter(namePredicate)
-				.forEach((name) -> properties.put(name, describeValueOf(name, source, resolver)));
+				.forEach((name) -> properties.put(name, describeValueOf(name, source, showUnsanitized)));
 		return new PropertySourceDescriptor(sourceName, properties);
 	}
 
 	@SuppressWarnings("unchecked")
-	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source,
-			PlaceholdersResolver resolver) {
+	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source, boolean showUnsanitized) {
+		PlaceholdersResolver resolver = new PropertySourcesPlaceholdersResolver(getPropertySources());
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
 		Origin origin = ((source instanceof OriginLookup) ? ((OriginLookup<Object>) source).getOrigin(name) : null);
-		Object sanitizedValue = sanitize(source, name, resolved);
+		Object sanitizedValue = sanitize(source, name, resolved, showUnsanitized);
 		return new PropertyValueDescriptor(stringifyIfNecessary(sanitizedValue), origin);
-	}
-
-	private PlaceholdersResolver getResolver() {
-		return new PropertySourcesPlaceholdersSanitizingResolver(getPropertySources(), this.sanitizer);
 	}
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
@@ -193,8 +185,8 @@ public class EnvironmentEndpoint {
 		}
 	}
 
-	private Object sanitize(PropertySource<?> source, String name, Object value) {
-		return this.sanitizer.sanitize(new SanitizableData(source, name, value));
+	private Object sanitize(PropertySource<?> source, String name, Object value, boolean showUnsanitized) {
+		return this.sanitizer.sanitize(new SanitizableData(source, name, value), showUnsanitized);
 	}
 
 	protected Object stringifyIfNecessary(Object value) {
@@ -206,40 +198,6 @@ public class EnvironmentEndpoint {
 			return value.toString();
 		}
 		return "Complex property type " + value.getClass().getName();
-	}
-
-	/**
-	 * {@link PropertySourcesPlaceholdersResolver} that sanitizes sensitive placeholders
-	 * if present.
-	 */
-	private static class PropertySourcesPlaceholdersSanitizingResolver extends PropertySourcesPlaceholdersResolver {
-
-		private final Sanitizer sanitizer;
-
-		private final Iterable<PropertySource<?>> sources;
-
-		PropertySourcesPlaceholdersSanitizingResolver(Iterable<PropertySource<?>> sources, Sanitizer sanitizer) {
-			super(sources, new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
-					SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true));
-			this.sources = sources;
-			this.sanitizer = sanitizer;
-		}
-
-		@Override
-		protected String resolvePlaceholder(String placeholder) {
-			if (this.sources != null) {
-				for (PropertySource<?> source : this.sources) {
-					Object value = source.getProperty(placeholder);
-					if (value != null) {
-						SanitizableData data = new SanitizableData(source, placeholder, value);
-						Object sanitized = this.sanitizer.sanitize(data);
-						return (sanitized != null) ? String.valueOf(sanitized) : null;
-					}
-				}
-			}
-			return null;
-		}
-
 	}
 
 	/**
@@ -278,7 +236,7 @@ public class EnvironmentEndpoint {
 
 		private final List<PropertySourceEntryDescriptor> propertySources;
 
-		private EnvironmentEntryDescriptor(PropertySummaryDescriptor property, List<String> activeProfiles,
+		EnvironmentEntryDescriptor(PropertySummaryDescriptor property, List<String> activeProfiles,
 				List<PropertySourceEntryDescriptor> propertySources) {
 			this.property = property;
 			this.activeProfiles = activeProfiles;

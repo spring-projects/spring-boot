@@ -31,30 +31,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.endpoint.configprops.keys-to-sanitize",
-      "defaultValue": [
-        "password",
-        "secret",
-        "key",
-        "token",
-        ".*credentials.*",
-        "vcap_services",
-        "sun.java.command"
-      ]
-    },
-    {
-      "name": "management.endpoint.env.keys-to-sanitize",
-      "defaultValue": [
-        "password",
-        "secret",
-        "key",
-        "token",
-        ".*credentials.*",
-        "vcap_services",
-        "sun.java.command"
-      ]
-    },
-    {
       "name": "management.endpoint.health.probes.add-additional-paths",
       "type": "java.lang.Boolean",
       "description": "Whether to make the liveness and readiness health groups available on the main server port.",

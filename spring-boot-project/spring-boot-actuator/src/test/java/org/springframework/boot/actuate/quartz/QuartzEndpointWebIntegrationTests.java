@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -175,12 +176,12 @@ class QuartzEndpointWebIntegrationTests {
 
 		@Bean
 		QuartzEndpoint endpoint(Scheduler scheduler) {
-			return new QuartzEndpoint(scheduler);
+			return new QuartzEndpoint(scheduler, Collections.emptyList());
 		}
 
 		@Bean
 		QuartzEndpointWebExtension quartzEndpointWebExtension(QuartzEndpoint endpoint) {
-			return new QuartzEndpointWebExtension(endpoint);
+			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
 		}
 
 		private void mockJobs(Scheduler scheduler, JobDetail... jobs) throws SchedulerException {

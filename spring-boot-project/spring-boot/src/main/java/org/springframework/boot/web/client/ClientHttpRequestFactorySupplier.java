@@ -38,10 +38,13 @@ import org.springframework.util.ClassUtils;
  */
 public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
 
-	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent("org.apache.http.client.HttpClient",
-			null);
+	private static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.http.client.HttpClient";
 
-	private static final boolean OKHTTP_CLIENT_PRESENT = ClassUtils.isPresent("okhttp3.OkHttpClient", null);
+	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, null);
+
+	private static final String OKHTTP_CLIENT_CLASS = "okhttp3.OkHttpClient";
+
+	private static final boolean OKHTTP_CLIENT_PRESENT = ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, null);
 
 	@Override
 	public ClientHttpRequestFactory get() {
@@ -57,10 +60,14 @@ public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequ
 	static class ClientHttpRequestFactorySupplierRuntimeHints {
 
 		static void registerHints(RuntimeHints hints, ClassLoader classLoader, Consumer<Builder> callback) {
-			hints.reflection().registerType(HttpComponentsClientHttpRequestFactory.class, (hint) -> callback
-					.accept(hint.onReachableType(TypeReference.of("org.apache.http.client.HttpClient"))));
-			hints.reflection().registerType(OkHttp3ClientHttpRequestFactory.class,
-					(hint) -> callback.accept(hint.onReachableType(TypeReference.of("okhttp3.OkHttpClient"))));
+			if (ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, classLoader)) {
+				hints.reflection().registerType(HttpComponentsClientHttpRequestFactory.class,
+						(hint) -> callback.accept(hint.onReachableType(TypeReference.of(APACHE_HTTP_CLIENT_CLASS))));
+			}
+			if (ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, classLoader)) {
+				hints.reflection().registerType(OkHttp3ClientHttpRequestFactory.class,
+						(hint) -> callback.accept(hint.onReachableType(TypeReference.of(OKHTTP_CLIENT_CLASS))));
+			}
 			hints.reflection().registerType(SimpleClientHttpRequestFactory.class, (hint) -> callback
 					.accept(hint.onReachableType(TypeReference.of(SimpleClientHttpRequestFactory.class))));
 		}

@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,7 +46,6 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -176,81 +176,9 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	void sanitizeWithDefaultSettings() {
-		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
-				.run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("******");
-					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
-				}));
-	}
-
-	@Test
-	void sanitizeWithCustomKey() {
-		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
-				.withPropertyValues("test.keys-to-sanitize=property").run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("123456");
-					assertThat(properties.get("myTestProperty")).isEqualTo("******");
-				}));
-	}
-
-	@Test
-	void sanitizeWithCustomKeyPattern() {
-		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
-				.withPropertyValues("test.keys-to-sanitize=.*pass.*").run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("******");
-					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
-				}));
-	}
-
-	@Test
-	void sanitizeWithCustomPatternUsingCompositeKeys() {
-		this.contextRunner.withUserConfiguration(Gh4415PropertiesConfiguration.class)
-				.withPropertyValues("test.keys-to-sanitize=.*\\.secrets\\..*,.*\\.hidden\\..*")
-				.run(assertProperties("gh4415", (properties) -> {
-					Map<String, Object> secrets = (Map<String, Object>) properties.get("secrets");
-					Map<String, Object> hidden = (Map<String, Object>) properties.get("hidden");
-					assertThat(secrets.get("mine")).isEqualTo("******");
-					assertThat(secrets.get("yours")).isEqualTo("******");
-					assertThat(hidden.get("mine")).isEqualTo("******");
-				}));
-	}
-
-	@Test
-	void sanitizeUriWithSensitiveInfo() {
-		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
-				.withPropertyValues("sensible.sensitiveUri=http://user:password@localhost:8080")
-				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("sensitiveUri"))
-						.isEqualTo("http://user:******@localhost:8080"), (inputs) -> {
-							Map<String, Object> sensitiveUri = (Map<String, Object>) inputs.get("sensitiveUri");
-							assertThat(sensitiveUri.get("value")).isEqualTo("http://user:******@localhost:8080");
-							assertThat(sensitiveUri.get("origin"))
-									.isEqualTo("\"sensible.sensitiveUri\" from property source \"test\"");
-						}));
-	}
-
-	@Test
-	void sanitizeUriWithNoPassword() {
-		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
-				.withPropertyValues("sensible.noPasswordUri=http://user:@localhost:8080")
-				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("noPasswordUri"))
-						.isEqualTo("http://user:******@localhost:8080"), (inputs) -> {
-							Map<String, Object> noPasswordUri = (Map<String, Object>) inputs.get("noPasswordUri");
-							assertThat(noPasswordUri.get("value")).isEqualTo("http://user:******@localhost:8080");
-							assertThat(noPasswordUri.get("origin"))
-									.isEqualTo("\"sensible.noPasswordUri\" from property source \"test\"");
-						}));
-	}
-
-	@Test
-	void sanitizeAddressesFieldContainingMultipleRawSensitiveUris() {
-		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
-				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("rawSensitiveAddresses"))
-						.isEqualTo("http://user:******@localhost:8080,http://user2:******@localhost:8082")));
-	}
-
-	@Test
 	void sanitizeLists() {
-		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+		new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfigWithShowNever.class, SensiblePropertiesConfiguration.class)
 				.withPropertyValues("sensible.listItems[0].some-password=password")
 				.run(assertProperties("sensible", (properties) -> {
 					assertThat(properties.get("listItems")).isInstanceOf(List.class);
@@ -271,7 +199,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	void listsOfListsAreSanitized() {
-		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+		new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfigWithShowNever.class, SensiblePropertiesConfiguration.class)
 				.withPropertyValues("sensible.listOfListItems[0][0].some-password=password")
 				.run(assertProperties("sensible", (properties) -> {
 					assertThat(properties.get("listOfListItems")).isInstanceOf(List.class);
@@ -311,7 +240,7 @@ class ConfigurationPropertiesReportEndpointTests {
 				.withUserConfiguration(CustomSanitizingEndpointConfig.class,
 						PropertySourceBasedSanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
 				.withPropertyValues("test.my-test-property=abcde").run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("dbPassword")).isEqualTo("123456");
 					assertThat(properties.get("myTestProperty")).isEqualTo("$$$");
 				}));
 	}
@@ -336,6 +265,26 @@ class ConfigurationPropertiesReportEndpointTests {
 					assertThat(somePassword.get("value")).isEqualTo("$$$");
 					assertThat(somePassword.get("origin"))
 							.isEqualTo("\"sensible.listItems[0].custom\" from property source \"test\"");
+				}));
+	}
+
+	@Test
+	void noSanitizationWhenShowAlways() {
+		new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfigWithShowAlways.class, TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("123456");
+					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
+				}));
+	}
+
+	@Test
+	void sanitizationWhenShowNever() {
+		new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfigWithShowNever.class, TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("myTestProperty")).isEqualTo("******");
 				}));
 	}
 
@@ -367,8 +316,9 @@ class ConfigurationPropertiesReportEndpointTests {
 		return (context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ContextConfigurationProperties allProperties = endpoint.configurationProperties().getContexts()
-					.get(context.getId());
+			ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties configurationProperties = endpoint
+					.configurationProperties();
+			ContextConfigurationProperties allProperties = configurationProperties.getContexts().get(context.getId());
 			Optional<String> key = allProperties.getBeans().keySet().stream()
 					.filter((id) -> findIdFromPrefix(prefix, id)).findAny();
 			assertThat(key).describedAs("No configuration properties with prefix '%s' found", prefix).isPresent();
@@ -421,12 +371,33 @@ class ConfigurationPropertiesReportEndpointTests {
 	static class EndpointConfig {
 
 		@Bean
-		ConfigurationPropertiesReportEndpoint endpoint(Environment environment) {
-			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			String[] keys = environment.getProperty("test.keys-to-sanitize", String[].class);
-			if (keys != null) {
-				endpoint.setKeysToSanitize(keys);
-			}
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
+					Collections.emptyList(), Show.WHEN_AUTHORIZED);
+			return endpoint;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EndpointConfigWithShowAlways {
+
+		@Bean
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
+					Collections.emptyList(), Show.ALWAYS);
+			return endpoint;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EndpointConfigWithShowNever {
+
+		@Bean
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
+					Collections.emptyList(), Show.NEVER);
 			return endpoint;
 		}
 
@@ -891,13 +862,9 @@ class ConfigurationPropertiesReportEndpointTests {
 	static class CustomSanitizingEndpointConfig {
 
 		@Bean
-		ConfigurationPropertiesReportEndpoint endpoint(Environment environment, SanitizingFunction sanitizingFunction) {
+		ConfigurationPropertiesReportEndpoint endpoint(SanitizingFunction sanitizingFunction) {
 			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
-					Collections.singletonList(sanitizingFunction));
-			String[] keys = environment.getProperty("test.keys-to-sanitize", String[].class);
-			if (keys != null) {
-				endpoint.setKeysToSanitize(keys);
-			}
+					Collections.singletonList(sanitizingFunction), Show.ALWAYS);
 			return endpoint;
 		}
 

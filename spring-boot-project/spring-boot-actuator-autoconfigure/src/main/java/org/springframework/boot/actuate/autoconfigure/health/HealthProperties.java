@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -100,29 +100,6 @@ public abstract class HealthProperties {
 		public Map<String, Integer> getHttpMapping() {
 			return this.httpMapping;
 		}
-
-	}
-
-	/**
-	 * Options for showing items in responses from the {@link HealthEndpoint} web
-	 * extensions.
-	 */
-	public enum Show {
-
-		/**
-		 * Never show the item in the response.
-		 */
-		NEVER,
-
-		/**
-		 * Show the item in the response when accessed by an authorized user.
-		 */
-		WHEN_AUTHORIZED,
-
-		/**
-		 * Always show the item in the response.
-		 */
-		ALWAYS
 
 	}
 

@@ -22,7 +22,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.pattern.SyslogStartConverter;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
@@ -55,9 +54,7 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 
 	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
 		reflection.registerType(LoggerContext.class, DEFAULT_HINT);
-		if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", classLoader)) {
-			reflection.registerType(SLF4JBridgeHandler.class, DEFAULT_HINT);
-		}
+		reflection.registerTypeIfPresent(classLoader, "org.slf4j.bridge.SLF4JBridgeHandler", DEFAULT_HINT);
 	}
 
 	private void registerHintsForBuiltInLogbackConverters(ReflectionHints reflection) {

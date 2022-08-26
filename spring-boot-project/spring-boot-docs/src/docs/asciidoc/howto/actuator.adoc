@@ -36,31 +36,37 @@ See also the section on "`<<web#web.servlet.spring-mvc.error-handling, Error Han
 
 [[howto.actuator.sanitize-sensitive-values]]
 === Sanitize Sensitive Values
-Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (that is their values are replaced by `+******+`).
-Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
-Additionally, any key that holds the word `credentials` (configured as a regular expression, that is `+.*credentials.*+`) as part of the key is also entirely sanitized.
+Information returned by the `/env`, `/configprops` and `/quartz` endpoints can be somewhat sensitive.
+All values are sanitized by default (that is replaced by `+******+`).
+Viewing original values in the unsanitized form can be configured per endpoint using the `showValues` property for that endpoint.
+This property can be configured to have the following values:
 
-Furthermore, Spring Boot sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
+- `ALWAYS` - all values are shown in their unsanitized form to all users
+- `NEVER  - all values are always sanitized (that is replaced by `+******+`)
+- `WHEN_AUTHORIZED` - all values are shown in their unsanitized form to authorized users
 
-- `address`
-- `addresses`
-- `uri`
-- `uris`
-- `url`
-- `urls`
+For HTTP endpoints, a user is considered to be authorized if they have authenticated and have the roles configured by the endpoint's roles property.
+By default, any authenticated user is authorized.
+For JMX endpoints, all users are always authorized.
 
-The sensitive portion of the URI is identified using the format `<scheme>://<username>:<password>@<host>:<port>/`.
-For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
-`++http://user1:******@localhost:8081++`.
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoint:
+	    env:
+	      show-values: WHEN_AUTHORIZED
+	      roles: "admin"
+----
+
+The configuration above enables the ability for all users with the `admin` role to view all values in their original form from the `/env` endpoint.
+
+NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitization applied by a `<<howto#howto.actuator.sanitize-sensitive-values.customizing-sanitization, SanitizingFunction>>` will still be applied.
 
 
 
 [[howto.actuator.sanitize-sensitive-values.customizing-sanitization]]
 ==== Customizing Sanitization
 Sanitization can be customized in two different ways.
-
-The default patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
-Alternatively, additional patterns can be configured using configprop:management.endpoint.env.additional-keys-to-sanitize[] and configprop:management.endpoint.configprops.additional-keys-to-sanitize[].
 
 To take more control over the sanitization, define a `SanitizingFunction` bean.
 The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.

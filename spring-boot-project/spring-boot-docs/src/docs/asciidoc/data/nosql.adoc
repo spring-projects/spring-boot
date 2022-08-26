@@ -80,7 +80,7 @@ You can set the configprop:spring.data.mongodb.uri[] property to change the URL 
 	spring:
 	  data:
 	    mongodb:
-	      uri: "mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test"
+	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
 ----
 
 Alternatively, you can specify connection details using discrete properties.
@@ -91,15 +91,23 @@ For example, you might declare the following settings in your `application.prope
 	spring:
 	  data:
 	    mongodb:
-	      host: "mongoserver.example.com"
+	      host: "mongoserver1.example.com"
 	      port: 27017
+	      additional-hosts:
+	      - "mongoserver2.example.com:23456"
 	      database: "test"
 	      username: "user"
 	      password: "secret"
 ----
 
-TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
+[TIP]
+====
+If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
+
+You can also specify the port as part of the host address by using the `host:port` syntax.
+This format should be used if you need to change the port of an `additional-hosts` entry.
+====
 
 TIP: If you do not use Spring Data MongoDB, you can inject a `MongoClient` bean instead of using `MongoDatabaseFactory`.
 If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDatabaseFactory` or `MongoClient` bean.

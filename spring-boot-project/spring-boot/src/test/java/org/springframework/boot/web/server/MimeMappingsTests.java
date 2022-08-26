@@ -16,13 +16,25 @@
 
 package org.springframework.boot.web.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
+import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.web.server.MimeMappings.DefaultMimeMappings;
+import org.springframework.boot.web.server.MimeMappings.Mapping;
+import org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -31,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link MimeMappings}.
  *
  * @author Phillip Webb
+ * @author Guirong Hu
  */
 class MimeMappingsTests {
 
@@ -141,6 +154,82 @@ class MimeMappingsTests {
 		String regName = "[A-Za-z0-9!#$&.+\\-^_]{1,127}";
 		Pattern pattern = Pattern.compile("^" + regName + "\\/" + regName + "$");
 		assertThat(MimeMappings.DEFAULT).allSatisfy((mapping) -> assertThat(mapping.getMimeType()).matches(pattern));
+	}
+
+	@Test
+	void getCommonTypeOnDefaultMimeMappingsDoesNotLoadMappings() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		assertThat(mappings.get("json")).isEqualTo("application/json");
+		assertThat((Object) mappings).extracting("loaded").isNull();
+	}
+
+	@Test
+	void getExoticTypeOnDefaultMimeMappingsLoadsMappings() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		assertThat(mappings.get("123")).isEqualTo("application/vnd.lotus-1-2-3");
+		assertThat((Object) mappings).extracting("loaded").isNotNull();
+	}
+
+	@Test
+	void iterateOnDefaultMimeMappingsLoadsMappings() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		assertThat(mappings).isNotEmpty();
+		assertThat((Object) mappings).extracting("loaded").isNotNull();
+	}
+
+	@Test
+	void commonMappingsAreSubsetOfAllMappings() {
+		MimeMappings defaultMappings = new DefaultMimeMappings();
+		MimeMappings commonMappings = (MimeMappings) ReflectionTestUtils.getField(DefaultMimeMappings.class, "COMMON");
+		defaultMappings.getAll();
+		for (Mapping commonMapping : commonMappings) {
+			assertThat(defaultMappings.get(commonMapping.getExtension())).isEqualTo(commonMapping.getMimeType());
+		}
+	}
+
+	@Test
+	void lazyCopyWhenNotMutatedDelegates() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		assertThat(lazyCopy.get("json")).isEqualTo("application/json");
+		assertThat((Object) mappings).extracting("loaded").isNull();
+	}
+
+	@Test
+	void lazyCopyWhenMutatedCreatesCopy() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		lazyCopy.add("json", "other/json");
+		assertThat(lazyCopy.get("json")).isEqualTo("other/json");
+		assertThat((Object) mappings).extracting("loaded").isNotNull();
+	}
+
+	@Test
+	void lazyCopyWhenMutatedCreatesCopyOnlyOnce() {
+		MimeMappings mappings = new MimeMappings();
+		mappings.add("json", "one/json");
+		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		assertThat(lazyCopy.get("json")).isEqualTo("one/json");
+		mappings.add("json", "two/json");
+		lazyCopy.add("json", "other/json");
+		assertThat(lazyCopy.get("json")).isEqualTo("other/json");
+	}
+
+	@Test
+	void mimeMappingsMatchesTomcatDefaults() throws IOException {
+		Properties ourDefaultMimeMappings = PropertiesLoaderUtils
+				.loadProperties(new ClassPathResource("mime-mappings.properties", getClass()));
+		Properties tomcatDefaultMimeMappings = PropertiesLoaderUtils
+				.loadProperties(new ClassPathResource("MimeTypeMappings.properties", Tomcat.class));
+		assertThat(ourDefaultMimeMappings).isEqualTo(tomcatDefaultMimeMappings);
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new MimeMappingsRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource()
+				.forResource("org/springframework/boot/web/server/mime-mappings.properties")).accepts(runtimeHints);
 	}
 
 }

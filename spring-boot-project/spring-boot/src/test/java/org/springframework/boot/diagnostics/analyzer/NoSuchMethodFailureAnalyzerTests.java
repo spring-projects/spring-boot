@@ -55,6 +55,24 @@ class NoSuchMethodFailureAnalyzerTests {
 	}
 
 	@Test
+	void parseOpenJ9ErrorMessage() {
+		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
+				"org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z "
+						+ "(loaded from ...) "
+						+ "called from class org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzerTests "
+						+ "(loaded from ... "
+						+ "by org.springframework.boot.testsupport.classpath.ModifiedClassPathClassLoader@e0ce6310).");
+		assertThat(descriptor).isNotNull();
+		assertThat(descriptor.getErrorMessage())
+				.isEqualTo("org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z");
+		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
+		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
+		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
+		assertThat(typeHierarchy).hasSize(1);
+		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
+	}
+
+	@Test
 	void whenAMethodOnAClassIsMissingThenNoSuchMethodErrorIsAnalyzed() {
 		Throwable failure = createFailureForMissingMethod();
 		assertThat(failure).isNotNull();

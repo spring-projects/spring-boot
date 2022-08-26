@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -77,13 +80,13 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 
 		@Bean
 		ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), null);
 		}
 
 		@Bean
 		ConfigurationPropertiesReportEndpointWebExtension endpointWebExtension(
 				ConfigurationPropertiesReportEndpoint endpoint) {
-			return new ConfigurationPropertiesReportEndpointWebExtension(endpoint);
+			return new ConfigurationPropertiesReportEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
 		}
 
 		@Bean

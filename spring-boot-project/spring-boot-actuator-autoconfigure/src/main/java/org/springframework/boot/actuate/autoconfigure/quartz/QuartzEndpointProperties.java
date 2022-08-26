@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.context.properties;
+package org.springframework.boot.actuate.autoconfigure.quartz;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.endpoint.Show;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for {@link ConfigurationPropertiesReportEndpoint}.
+ * Configuration properties for {@link QuartzEndpoint}.
  *
- * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 2.0.0
+ * @since 3.0.0
  */
-@ConfigurationProperties("management.endpoint.configprops")
-public class ConfigurationPropertiesReportEndpointProperties {
+@ConfigurationProperties("management.endpoint.quartz")
+public class QuartzEndpointProperties {
 
 	/**
-	 * When to show unsanitized values.
+	 * When to show unsanitized job or trigger values.
 	 */
 	private Show showValues = Show.NEVER;
 
 	/**
-	 * Roles used to determine whether a user is authorized to be shown unsanitized
-	 * values. When empty, all authenticated users are authorized.
+	 * Roles used to determine whether a user is authorized to be shown unsanitized job or
+	 * trigger values. When empty, all authenticated users are authorized.
 	 */
 	private Set<String> roles = new HashSet<>();
 

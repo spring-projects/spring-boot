@@ -57,10 +57,10 @@ import org.springframework.util.ObjectUtils;
  * @author Andy Wilkinson
  * @since 3.0.0
  */
-@Mojo(name = "aot-generate", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, threadSafe = true,
+@Mojo(name = "process-aot", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class AotGenerateMojo extends AbstractDependencyFilterMojo {
+public class ProcessAotMojo extends AbstractDependencyFilterMojo {
 
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.AotProcessor";
 

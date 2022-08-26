@@ -26,6 +26,7 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask;
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorTask;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
@@ -118,6 +119,7 @@ class AsciidoctorConventions {
 		asciidoctorTask.configurations(EXTENSIONS_CONFIGURATION_NAME);
 		configureCommonAttributes(project, asciidoctorTask);
 		configureOptions(asciidoctorTask);
+		configureForkOptions(asciidoctorTask);
 		asciidoctorTask.baseDirFollowsSourceDir();
 		createSyncDocumentationSourceTask(project, asciidoctorTask);
 		if (asciidoctorTask instanceof AsciidoctorTask task) {
@@ -134,6 +136,14 @@ class AsciidoctorConventions {
 		attributes.put("spring-boot-artifactory-repo", ArtifactoryRepository.forProject(project));
 		attributes.put("revnumber", null);
 		asciidoctorTask.attributes(attributes);
+	}
+
+	// See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/597
+	private void configureForkOptions(AbstractAsciidoctorTask asciidoctorTask) {
+		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+			asciidoctorTask.forkOptions((options) -> options.jvmArgs("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
+					"--add-opens", "java.base/java.io=ALL-UNNAMED"));
+		}
 	}
 
 	private String determineGitHubTag(Project project) {

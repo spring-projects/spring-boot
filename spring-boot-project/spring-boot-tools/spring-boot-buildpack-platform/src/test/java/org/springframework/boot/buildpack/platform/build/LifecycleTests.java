@@ -28,9 +28,13 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.sun.jna.Platform;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
@@ -318,9 +322,19 @@ class LifecycleTests {
 
 	private IOConsumer<ContainerConfig> withExpectedConfig(String name) {
 		return (config) -> {
-			InputStream in = getClass().getResourceAsStream(name);
-			String json = FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
-			assertThat(config.toString()).isEqualToIgnoringWhitespace(json);
+			try {
+				InputStream in = getClass().getResourceAsStream(name);
+				String jsonString = FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
+				JSONObject json = new JSONObject(jsonString);
+				if (Platform.isWindows()) {
+					JSONObject hostConfig = json.getJSONObject("HostConfig");
+					hostConfig.remove("SecurityOpt");
+				}
+				JSONAssert.assertEquals(config.toString(), json, true);
+			}
+			catch (JSONException ex) {
+				throw new IOException(ex);
+			}
 		};
 	}
 

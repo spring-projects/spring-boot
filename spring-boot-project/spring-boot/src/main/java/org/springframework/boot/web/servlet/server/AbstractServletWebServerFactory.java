@@ -69,7 +69,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	private boolean registerDefaultServlet = false;
 
-	private MimeMappings mimeMappings = new MimeMappings(MimeMappings.DEFAULT);
+	private MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
 
 	private List<ServletContextInitializer> initializers = new ArrayList<>();
 
@@ -173,6 +173,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	@Override
 	public void setMimeMappings(MimeMappings mimeMappings) {
+		Assert.notNull(mimeMappings, "MimeMappings must not be null");
 		this.mimeMappings = new MimeMappings(mimeMappings);
 	}
 
