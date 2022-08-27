@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Conditional;
  * potentially processed method references which will fail if the class is not present. To
  * handle this scenario, a separate {@code @Configuration} class should be used to isolate
  * the condition. For example: <pre class="code">
- * &#064;Configuration(proxyBeanMethods = false)
+ * &#064;AutoConfiguration
  * public class MyAutoConfiguration {
  *
  * 	&#64;Configuration(proxyBeanMethods = false)
