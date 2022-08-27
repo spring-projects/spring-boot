@@ -22,7 +22,9 @@ import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -39,6 +41,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Sam Brannen
+ * @author Pavel Anisimov
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */
@@ -97,7 +100,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	@Override
 	public String getAll() {
-		return get((type) -> true);
+		return get(Type.filterAll);
 	}
 
 	/**
@@ -106,7 +109,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	@Override
 	public String getOut() {
-		return get(Type.OUT::equals);
+		return get(Type.filterOut);
 	}
 
 	/**
@@ -115,7 +118,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	@Override
 	public String getErr() {
-		return get(Type.ERR::equals);
+		return get(Type.filterErr);
 	}
 
 	/**
@@ -136,7 +139,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * A capture session that captures {@link System#out System.out} and {@link System#out
+	 * A capture session that captures {@link System#out System.out} and {@link System#err
 	 * System.err}.
 	 */
 	private static class SystemCapture {
@@ -148,6 +151,8 @@ class OutputCapture implements CapturedOutput {
 		private final PrintStreamCapture err;
 
 		private final List<CapturedString> capturedStrings = new ArrayList<>();
+
+		private final Map<Predicate<Type>, String> filter2CachedCapturedStrings = new HashMap<>();
 
 		SystemCapture() {
 			this.out = new PrintStreamCapture(System.out, this::captureOut);
@@ -163,28 +168,41 @@ class OutputCapture implements CapturedOutput {
 
 		private void captureOut(String string) {
 			synchronized (this.monitor) {
+				filter2CachedCapturedStrings.remove(Type.filterOut);
+				filter2CachedCapturedStrings.remove(Type.filterAll);
 				this.capturedStrings.add(new CapturedString(Type.OUT, string));
 			}
 		}
 
 		private void captureErr(String string) {
 			synchronized (this.monitor) {
+				filter2CachedCapturedStrings.remove(Type.filterErr);
+				filter2CachedCapturedStrings.remove(Type.filterAll);
 				this.capturedStrings.add(new CapturedString(Type.ERR, string));
 			}
 		}
 
 		void append(StringBuilder builder, Predicate<Type> filter) {
 			synchronized (this.monitor) {
+				String cachedCapturedStrings = filter2CachedCapturedStrings.get(filter);
+				if (cachedCapturedStrings != null) {
+					builder.append(cachedCapturedStrings);
+					return;
+				}
+				StringBuilder cacheBuilder = new StringBuilder();
 				for (CapturedString stringCapture : this.capturedStrings) {
 					if (filter.test(stringCapture.getType())) {
 						builder.append(stringCapture);
+						cacheBuilder.append(stringCapture);
 					}
 				}
+				filter2CachedCapturedStrings.put(filter, cacheBuilder.toString());
 			}
 		}
 
 		void reset() {
 			synchronized (this.monitor) {
+				filter2CachedCapturedStrings.clear();
 				this.capturedStrings.clear();
 			}
 		}
@@ -278,7 +296,13 @@ class OutputCapture implements CapturedOutput {
 	 */
 	private enum Type {
 
-		OUT, ERR
+		OUT, ERR;
+
+		private static final Predicate<Type> filterOut = OUT::equals;
+
+		private static final Predicate<Type> filterErr = ERR::equals;
+
+		private static final Predicate<Type> filterAll = type -> true;
 
 	}
 
