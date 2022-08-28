@@ -19,7 +19,6 @@ package org.springframework.boot.ansi;
 import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,30 +31,31 @@ import org.springframework.util.Assert;
  * @author Ruben Dijkstra
  * @author Phillip Webb
  * @author Michael Simons
+ * @author TomXin
  * @since 1.4.0
  */
 public final class AnsiColors {
 
-	private static final Map<AnsiElement, LabColor> ANSI_COLOR_MAP;
+	private static final Map<AnsiColorWrapper, LabColor> ANSI_COLOR_MAP;
 
 	static {
-		Map<AnsiColor, LabColor> colorMap = new EnumMap<>(AnsiColor.class);
-		colorMap.put(AnsiColor.BLACK, new LabColor(0x000000));
-		colorMap.put(AnsiColor.RED, new LabColor(0xAA0000));
-		colorMap.put(AnsiColor.GREEN, new LabColor(0x00AA00));
-		colorMap.put(AnsiColor.YELLOW, new LabColor(0xAA5500));
-		colorMap.put(AnsiColor.BLUE, new LabColor(0x0000AA));
-		colorMap.put(AnsiColor.MAGENTA, new LabColor(0xAA00AA));
-		colorMap.put(AnsiColor.CYAN, new LabColor(0x00AAAA));
-		colorMap.put(AnsiColor.WHITE, new LabColor(0xAAAAAA));
-		colorMap.put(AnsiColor.BRIGHT_BLACK, new LabColor(0x555555));
-		colorMap.put(AnsiColor.BRIGHT_RED, new LabColor(0xFF5555));
-		colorMap.put(AnsiColor.BRIGHT_GREEN, new LabColor(0x55FF00));
-		colorMap.put(AnsiColor.BRIGHT_YELLOW, new LabColor(0xFFFF55));
-		colorMap.put(AnsiColor.BRIGHT_BLUE, new LabColor(0x5555FF));
-		colorMap.put(AnsiColor.BRIGHT_MAGENTA, new LabColor(0xFF55FF));
-		colorMap.put(AnsiColor.BRIGHT_CYAN, new LabColor(0x55FFFF));
-		colorMap.put(AnsiColor.BRIGHT_WHITE, new LabColor(0xFFFFFF));
+		Map<AnsiColorWrapper, LabColor> colorMap = new LinkedHashMap<>(16);
+		colorMap.put(new AnsiColorWrapper(30, BitDepth.FOUR), new LabColor(0x000000));
+		colorMap.put(new AnsiColorWrapper(31, BitDepth.FOUR), new LabColor(0xAA0000));
+		colorMap.put(new AnsiColorWrapper(32, BitDepth.FOUR), new LabColor(0x00AA00));
+		colorMap.put(new AnsiColorWrapper(33, BitDepth.FOUR), new LabColor(0xAA5500));
+		colorMap.put(new AnsiColorWrapper(34, BitDepth.FOUR), new LabColor(0x0000AA));
+		colorMap.put(new AnsiColorWrapper(35, BitDepth.FOUR), new LabColor(0xAA00AA));
+		colorMap.put(new AnsiColorWrapper(36, BitDepth.FOUR), new LabColor(0x00AAAA));
+		colorMap.put(new AnsiColorWrapper(37, BitDepth.FOUR), new LabColor(0xAAAAAA));
+		colorMap.put(new AnsiColorWrapper(90, BitDepth.FOUR), new LabColor(0x555555));
+		colorMap.put(new AnsiColorWrapper(91, BitDepth.FOUR), new LabColor(0xFF5555));
+		colorMap.put(new AnsiColorWrapper(92, BitDepth.FOUR), new LabColor(0x55FF00));
+		colorMap.put(new AnsiColorWrapper(93, BitDepth.FOUR), new LabColor(0xFFFF55));
+		colorMap.put(new AnsiColorWrapper(94, BitDepth.FOUR), new LabColor(0x5555FF));
+		colorMap.put(new AnsiColorWrapper(95, BitDepth.FOUR), new LabColor(0xFF55FF));
+		colorMap.put(new AnsiColorWrapper(96, BitDepth.FOUR), new LabColor(0x55FFFF));
+		colorMap.put(new AnsiColorWrapper(97, BitDepth.FOUR), new LabColor(0xFFFFFF));
 		ANSI_COLOR_MAP = Collections.unmodifiableMap(colorMap);
 	}
 
@@ -87,7 +87,7 @@ public final class AnsiColors {
 			0x808080, 0x8a8a8a, 0x949494, 0x9e9e9e, 0xa8a8a8, 0xb2b2b2, 0xbcbcbc, 0xc6c6c6, 0xd0d0d0, 0xdadada,
 			0xe4e4e4, 0xeeeeee };
 
-	private final Map<AnsiElement, LabColor> lookup;
+	private final Map<AnsiColorWrapper, LabColor> lookup;
 
 	/**
 	 * Create a new {@link AnsiColors} instance with the specified bit depth.
@@ -97,11 +97,11 @@ public final class AnsiColors {
 		this.lookup = getLookup(bitDepth);
 	}
 
-	private Map<AnsiElement, LabColor> getLookup(BitDepth bitDepth) {
+	private Map<AnsiColorWrapper, LabColor> getLookup(BitDepth bitDepth) {
 		if (bitDepth == BitDepth.EIGHT) {
-			Map<Ansi8BitColor, LabColor> lookup = new LinkedHashMap<>();
+			Map<AnsiColorWrapper, LabColor> lookup = new LinkedHashMap<>(256);
 			for (int i = 0; i < ANSI_8BIT_COLOR_CODE_LOOKUP.length; i++) {
-				lookup.put(Ansi8BitColor.foreground(i), new LabColor(ANSI_8BIT_COLOR_CODE_LOOKUP[i]));
+				lookup.put(new AnsiColorWrapper(i, BitDepth.EIGHT), new LabColor(ANSI_8BIT_COLOR_CODE_LOOKUP[i]));
 			}
 			return Collections.unmodifiableMap(lookup);
 		}
@@ -113,14 +113,14 @@ public final class AnsiColors {
 	 * @param color the AWT color
 	 * @return the closest ANSI color
 	 */
-	public AnsiElement findClosest(Color color) {
+	public AnsiColorWrapper findClosest(Color color) {
 		return findClosest(new LabColor(color));
 	}
 
-	private AnsiElement findClosest(LabColor color) {
-		AnsiElement closest = null;
+	private AnsiColorWrapper findClosest(LabColor color) {
+		AnsiColorWrapper closest = null;
 		double closestDistance = Float.MAX_VALUE;
-		for (Map.Entry<AnsiElement, LabColor> entry : this.lookup.entrySet()) {
+		for (Map.Entry<AnsiColorWrapper, LabColor> entry : this.lookup.entrySet()) {
 			double candidateDistance = color.getDistance(entry.getValue());
 			if (closest == null || candidateDistance < closestDistance) {
 				closestDistance = candidateDistance;
@@ -190,12 +190,14 @@ public final class AnsiColors {
 
 		/**
 		 * 4 bits (16 color).
+		 *
 		 * @see AnsiColor
 		 */
 		FOUR(4),
 
 		/**
 		 * 8 bits (256 color).
+		 *
 		 * @see Ansi8BitColor
 		 */
 		EIGHT(8);
