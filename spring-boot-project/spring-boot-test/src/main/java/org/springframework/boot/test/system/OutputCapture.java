@@ -133,7 +133,7 @@ class OutputCapture implements CapturedOutput {
 	private String get(Predicate<Type> filter) {
 		Assert.state(!this.systemCaptures.isEmpty(),
 				"No system captures found. Please check your output capture registration.");
-		String cachedCapturedStrings = filter2CachedCapturedStrings.get(filter);
+		String cachedCapturedStrings = this.filter2CachedCapturedStrings.get(filter);
 		if (cachedCapturedStrings != null) {
 			return cachedCapturedStrings;
 		}
@@ -142,7 +142,7 @@ class OutputCapture implements CapturedOutput {
 			systemCapture.append(builder, filter);
 		}
 		String capturedStrings = builder.toString();
-		filter2CachedCapturedStrings.put(filter, capturedStrings);
+		this.filter2CachedCapturedStrings.put(filter, capturedStrings);
 		return capturedStrings;
 	}
 
@@ -177,16 +177,16 @@ class OutputCapture implements CapturedOutput {
 
 		private void captureOut(String string) {
 			synchronized (this.monitor) {
-				owner.filter2CachedCapturedStrings.remove(Type.filterOut);
-				owner.filter2CachedCapturedStrings.remove(Type.filterAll);
+				this.owner.filter2CachedCapturedStrings.remove(Type.filterOut);
+				this.owner.filter2CachedCapturedStrings.remove(Type.filterAll);
 				this.capturedStrings.add(new CapturedString(Type.OUT, string));
 			}
 		}
 
 		private void captureErr(String string) {
 			synchronized (this.monitor) {
-				owner.filter2CachedCapturedStrings.remove(Type.filterErr);
-				owner.filter2CachedCapturedStrings.remove(Type.filterAll);
+				this.owner.filter2CachedCapturedStrings.remove(Type.filterErr);
+				this.owner.filter2CachedCapturedStrings.remove(Type.filterAll);
 				this.capturedStrings.add(new CapturedString(Type.ERR, string));
 			}
 		}
@@ -203,7 +203,7 @@ class OutputCapture implements CapturedOutput {
 
 		void reset() {
 			synchronized (this.monitor) {
-				owner.filter2CachedCapturedStrings.clear();
+				this.owner.filter2CachedCapturedStrings.clear();
 				this.capturedStrings.clear();
 			}
 		}
@@ -303,7 +303,7 @@ class OutputCapture implements CapturedOutput {
 
 		private static final Predicate<Type> filterErr = ERR::equals;
 
-		private static final Predicate<Type> filterAll = type -> true;
+		private static final Predicate<Type> filterAll = (type) -> true;
 
 	}
 
