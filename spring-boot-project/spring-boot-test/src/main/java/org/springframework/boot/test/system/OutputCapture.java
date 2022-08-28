@@ -22,9 +22,9 @@ import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -51,6 +51,8 @@ class OutputCapture implements CapturedOutput {
 
 	private AnsiOutputState ansiOutputState;
 
+	private final Map<Predicate<Type>, String> filter2CachedCapturedStrings = new ConcurrentHashMap<>();
+
 	/**
 	 * Push a new system capture session onto the stack.
 	 */
@@ -58,7 +60,7 @@ class OutputCapture implements CapturedOutput {
 		if (this.systemCaptures.isEmpty()) {
 			this.ansiOutputState = AnsiOutputState.saveAndDisable();
 		}
-		this.systemCaptures.addLast(new SystemCapture());
+		this.systemCaptures.addLast(new SystemCapture(this));
 	}
 
 	/**
@@ -131,11 +133,17 @@ class OutputCapture implements CapturedOutput {
 	private String get(Predicate<Type> filter) {
 		Assert.state(!this.systemCaptures.isEmpty(),
 				"No system captures found. Please check your output capture registration.");
+		String cachedCapturedStrings = filter2CachedCapturedStrings.get(filter);
+		if (cachedCapturedStrings != null) {
+			return cachedCapturedStrings;
+		}
 		StringBuilder builder = new StringBuilder();
 		for (SystemCapture systemCapture : this.systemCaptures) {
 			systemCapture.append(builder, filter);
 		}
-		return builder.toString();
+		String capturedStrings = builder.toString();
+		filter2CachedCapturedStrings.put(filter, capturedStrings);
+		return capturedStrings;
 	}
 
 	/**
@@ -152,11 +160,12 @@ class OutputCapture implements CapturedOutput {
 
 		private final List<CapturedString> capturedStrings = new ArrayList<>();
 
-		private final Map<Predicate<Type>, String> filter2CachedCapturedStrings = new HashMap<>();
+		private final OutputCapture owner;
 
-		SystemCapture() {
+		SystemCapture(OutputCapture owner) {
 			this.out = new PrintStreamCapture(System.out, this::captureOut);
 			this.err = new PrintStreamCapture(System.err, this::captureErr);
+			this.owner = owner;
 			System.setOut(this.out);
 			System.setErr(this.err);
 		}
@@ -168,41 +177,33 @@ class OutputCapture implements CapturedOutput {
 
 		private void captureOut(String string) {
 			synchronized (this.monitor) {
-				filter2CachedCapturedStrings.remove(Type.filterOut);
-				filter2CachedCapturedStrings.remove(Type.filterAll);
+				owner.filter2CachedCapturedStrings.remove(Type.filterOut);
+				owner.filter2CachedCapturedStrings.remove(Type.filterAll);
 				this.capturedStrings.add(new CapturedString(Type.OUT, string));
 			}
 		}
 
 		private void captureErr(String string) {
 			synchronized (this.monitor) {
-				filter2CachedCapturedStrings.remove(Type.filterErr);
-				filter2CachedCapturedStrings.remove(Type.filterAll);
+				owner.filter2CachedCapturedStrings.remove(Type.filterErr);
+				owner.filter2CachedCapturedStrings.remove(Type.filterAll);
 				this.capturedStrings.add(new CapturedString(Type.ERR, string));
 			}
 		}
 
 		void append(StringBuilder builder, Predicate<Type> filter) {
 			synchronized (this.monitor) {
-				String cachedCapturedStrings = filter2CachedCapturedStrings.get(filter);
-				if (cachedCapturedStrings != null) {
-					builder.append(cachedCapturedStrings);
-					return;
-				}
-				StringBuilder cacheBuilder = new StringBuilder();
 				for (CapturedString stringCapture : this.capturedStrings) {
 					if (filter.test(stringCapture.getType())) {
 						builder.append(stringCapture);
-						cacheBuilder.append(stringCapture);
 					}
 				}
-				filter2CachedCapturedStrings.put(filter, cacheBuilder.toString());
 			}
 		}
 
 		void reset() {
 			synchronized (this.monitor) {
-				filter2CachedCapturedStrings.clear();
+				owner.filter2CachedCapturedStrings.clear();
 				this.capturedStrings.clear();
 			}
 		}
