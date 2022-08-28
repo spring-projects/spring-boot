@@ -171,6 +171,7 @@ class OutputCapture implements CapturedOutput {
 		}
 
 		void release() {
+			this.owner.filter2CachedCapturedStrings.clear();
 			System.setOut(this.out.getParent());
 			System.setErr(this.err.getParent());
 		}
