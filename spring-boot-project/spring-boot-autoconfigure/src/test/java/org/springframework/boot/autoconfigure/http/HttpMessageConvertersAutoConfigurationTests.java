@@ -23,7 +23,6 @@ import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -67,6 +66,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sebastien Deleuze
  * @author Eddú Meléndez
  * @author Moritz Halbritter
+ * @author Sebastien Deleuze
  */
 class HttpMessageConvertersAutoConfigurationTests {
 
@@ -281,9 +281,12 @@ class HttpMessageConvertersAutoConfigurationTests {
 	void shouldRegisterHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "shouldForce")).rejects(hints);
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {
