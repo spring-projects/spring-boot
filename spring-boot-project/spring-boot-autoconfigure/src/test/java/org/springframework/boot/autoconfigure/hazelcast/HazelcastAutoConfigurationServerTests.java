@@ -264,7 +264,6 @@ class HazelcastAutoConfigurationServerTests {
 
 	}
 
-
 	@SpringAware
 	static class SpringAwareEntryProcessor<V> implements EntryProcessor<String, V, String> {
 
