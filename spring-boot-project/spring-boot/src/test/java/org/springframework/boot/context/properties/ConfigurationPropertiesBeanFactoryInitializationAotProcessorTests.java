@@ -31,7 +31,6 @@ import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
 import org.springframework.aot.hint.ExecutableHint;
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
@@ -57,6 +56,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Sebastien Deleuze
  */
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
@@ -233,26 +233,17 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	@Test
 	void processConfigurationPropertiesWithNestedGenerics() {
 		RuntimeHints runtimeHints = process(NestedGenerics.class);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.Nested.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.class)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(NestedGenerics.Nested.class)).accepts(runtimeHints);
 	}
 
 	@Test
 	void processConfigurationPropertiesWithMultipleNestedClasses() {
 		RuntimeHints runtimeHints = process(TripleNested.class);
-		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.Nested.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.class)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.class)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.Nested.class))
+				.accepts(runtimeHints);
 	}
 
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type) {
@@ -263,8 +254,9 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(TypeReference.of(type));
 			assertThat(entry.constructors()).singleElement().satisfies(match(constructor));
-			assertThat(entry.getMemberCategories()).containsOnly(MemberCategory.INVOKE_DECLARED_METHODS,
-					MemberCategory.INVOKE_PUBLIC_METHODS);
+			assertThat(entry.getMemberCategories()).isEmpty();
+			assertThat(entry.methods()).allMatch((t) -> t.getName().startsWith("set") || t.getName().startsWith("get")
+					|| t.getName().startsWith("is"));
 		};
 	}
 
@@ -272,8 +264,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(TypeReference.of(type));
 			assertThat(entry.constructors()).singleElement().satisfies(match(constructor));
-			assertThat(entry.getMemberCategories()).containsOnly(MemberCategory.INVOKE_DECLARED_METHODS,
-					MemberCategory.INVOKE_PUBLIC_METHODS);
+			assertThat(entry.getMemberCategories()).isEmpty();
+			assertThat(entry.methods()).isEmpty();
 		};
 	}
 

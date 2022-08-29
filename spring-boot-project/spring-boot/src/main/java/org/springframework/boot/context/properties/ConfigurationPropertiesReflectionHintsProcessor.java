@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
@@ -44,6 +44,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Sebastien Deleuze
  * @since 3.0.0
  */
 public final class ConfigurationPropertiesReflectionHintsProcessor {
@@ -95,8 +96,6 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 			return;
 		}
 		this.seen.add(this.type);
-		reflectionHints.registerType(this.type, (hint) -> hint.withMembers(MemberCategory.INVOKE_DECLARED_METHODS,
-				MemberCategory.INVOKE_PUBLIC_METHODS));
 		handleConstructor(reflectionHints);
 		if (this.bindConstructor != null) {
 			handleValueObjectProperties(reflectionHints);
@@ -129,14 +128,19 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private void handleJavaBeanProperties(ReflectionHints reflectionHints) {
 		for (PropertyDescriptor propertyDescriptor : this.beanInfo.getPropertyDescriptors()) {
+			Method writeMethod = propertyDescriptor.getWriteMethod();
+			if (writeMethod != null) {
+				reflectionHints.registerMethod(writeMethod, ExecutableMode.INVOKE);
+			}
 			Method readMethod = propertyDescriptor.getReadMethod();
 			if (readMethod != null) {
 				ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
 				String propertyName = propertyDescriptor.getName();
-				if (isSetterMandatory(propertyName, propertyType) && propertyDescriptor.getWriteMethod() == null) {
+				if (isSetterMandatory(propertyName, propertyType) && writeMethod == null) {
 					continue;
 				}
 				handleProperty(reflectionHints, propertyName, propertyType);
+				reflectionHints.registerMethod(readMethod, ExecutableMode.INVOKE);
 			}
 		}
 	}
