@@ -206,6 +206,22 @@ class HazelcastAutoConfigurationServerTests {
 		});
 	}
 
+	@Test
+	void configWithDefaultLoggingTypeSlf4j() {
+		this.contextRunner.run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE)).isEqualTo("slf4j");
+		});
+	}
+
+	@Test
+	void configWithExplicitLoggingType() {
+		this.contextRunner.withUserConfiguration(HazelcastConfigWithJDKLogging.class).run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE)).isEqualTo("jdk");
+		});
+	}
+
 	private static Config createTestConfig(String instanceName) {
 		Config config = new Config(instanceName);
 		JoinConfig join = config.getNetworkConfig().getJoin();
@@ -235,6 +251,19 @@ class HazelcastAutoConfigurationServerTests {
 		}
 
 	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HazelcastConfigWithJDKLogging {
+
+		@Bean
+		Config anotherHazelcastConfig() {
+			Config config = new Config();
+			config.setProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE, "jdk");
+			return config;
+		}
+
+	}
+
 
 	@SpringAware
 	static class SpringAwareEntryProcessor<V> implements EntryProcessor<String, V, String> {
