@@ -118,6 +118,7 @@ public final class AnsiColors {
 	 */
 	private static final int CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_WHITE = 97;
 
+	// @formatter:off
 	static {
 		Map<AnsiColorWrapper, LabColor> colorMap = new LinkedHashMap<>(16);
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BLACK, BitDepth.FOUR), new LabColor(0x000000));
@@ -128,22 +129,17 @@ public final class AnsiColors {
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_MAGENTA, BitDepth.FOUR), new LabColor(0xAA00AA));
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_CYAN, BitDepth.FOUR), new LabColor(0x00AAAA));
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_WHITE, BitDepth.FOUR), new LabColor(0xAAAAAA));
-		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_BLACK, BitDepth.FOUR),
-				new LabColor(0x555555));
+		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_BLACK, BitDepth.FOUR), new LabColor(0x555555));
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_RED, BitDepth.FOUR), new LabColor(0xFF5555));
-		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_GREEN, BitDepth.FOUR),
-				new LabColor(0x55FF00));
-		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_YELLOW, BitDepth.FOUR),
-				new LabColor(0xFFFF55));
+		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_GREEN, BitDepth.FOUR), new LabColor(0x55FF00));
+		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_YELLOW, BitDepth.FOUR), new LabColor(0xFFFF55));
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_BLUE, BitDepth.FOUR), new LabColor(0x5555FF));
-		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_MAGENTA, BitDepth.FOUR),
-				new LabColor(0xFF55FF));
+		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_MAGENTA, BitDepth.FOUR), new LabColor(0xFF55FF));
 		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_CYAN, BitDepth.FOUR), new LabColor(0x55FFFF));
-		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_WHITE, BitDepth.FOUR),
-				new LabColor(0xFFFFFF));
+		colorMap.put(new AnsiColorWrapper(CODE_OF_4_BIT_ANSI_COLOR_BRIGHT_WHITE, BitDepth.FOUR), new LabColor(0xFFFFFF));
 		ANSI_COLOR_MAP = Collections.unmodifiableMap(colorMap);
 	}
-
+	// @formatter:on
 	private static final int[] ANSI_8BIT_COLOR_CODE_LOOKUP = new int[] { 0x000000, 0x800000, 0x008000, 0x808000,
 			0x000080, 0x800080, 0x008080, 0xc0c0c0, 0x808080, 0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff,
 			0x00ffff, 0xffffff, 0x000000, 0x00005f, 0x000087, 0x0000af, 0x0000d7, 0x0000ff, 0x005f00, 0x005f5f,
