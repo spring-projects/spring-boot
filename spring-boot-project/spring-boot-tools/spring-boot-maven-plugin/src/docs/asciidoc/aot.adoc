@@ -1,7 +1,13 @@
 [[aot]]
-= Optimizing Your Application at Build-Time
+= Ahead-of-Time Processing
+Spring AOT is a process that analyzes your code at build-time in order to generate an optimized version of it.
+It is most often used to help generate GraalVM native images.
 
-Spring AOT inspects an application at build-time and generates an optimized version of it.
+The Spring Boot Maven plugin offers goals that can be used to perform AOT processing on both application and test code.
+
+
+
+== Processing Applications
 Based on your `@SpringBootApplication`-annotated main class, the AOT engine generates a persistent view of the beans that are going to be contributed at runtime in a way that bean instantiation is as straightforward as possible.
 Additional post-processing of the factory is possible using callbacks.
 For instance, these are used to generate the necessary reflection configuration that GraalVM needs to initialize the context in a native image.
@@ -18,5 +24,21 @@ This has an important difference compared to what a regular Spring Boot applicat
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
 The `process-aot` goal shares a number of properties with the <<run,run goal>> for that reason.
 
-
 include::goals/process-aot.adoc[leveloffset=+1]
+
+
+
+== Processing Tests
+The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
+Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitialzer` code.
+
+To configure your application to use this feature, add an execution for the `process-test-aot` goal, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/aot-test/pom.xml[tags=aot]
+----
+
+As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
+
+include::goals/process-test-aot.adoc[leveloffset=+1]

@@ -133,6 +133,13 @@ publishing.publications.withType(MavenPublication) {
 							}
 						}
 						plugin {
+							delegate.groupId('org.graalvm.buildtools')
+							delegate.artifactId('native-maven-plugin')
+							configuration {
+								delegate.extensions('true')
+							}
+						}
+						plugin {
 							delegate.groupId('io.github.git-commit-id')
 							delegate.artifactId('git-commit-id-maven-plugin')
 							executions {
@@ -226,6 +233,13 @@ publishing.publications.withType(MavenPublication) {
 			profiles {
 				profile {
 					delegate.id("native")
+					delegate.dependencies {
+						dependency {
+							delegate.groupId('org.junit.platform')
+							delegate.artifactId('junit-platform-launcher')
+							delegate.scope('test')
+						}
+					}
 					build {
 						plugins {
 							plugin {
@@ -238,7 +252,12 @@ publishing.publications.withType(MavenPublication) {
 											delegate.goal('process-aot')
 										}
 									}
-								}
+									execution {
+										delegate.id('process-test-aot')
+										goals {
+											delegate.goal('process-test-aot')
+										}
+									}								}
 							}
 							plugin {
 								delegate.groupId('org.graalvm.buildtools')

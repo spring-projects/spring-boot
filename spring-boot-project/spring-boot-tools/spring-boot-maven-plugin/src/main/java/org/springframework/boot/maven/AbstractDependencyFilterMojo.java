@@ -20,12 +20,14 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -157,15 +159,34 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		return cleaned.toString();
 	}
 
-	protected static class TestScopeArtifactFilter extends AbstractArtifactFeatureFilter {
+	/**
+	 * {@link ArtifactFilter} to exclude test scope dependencies.
+	 */
+	protected static class ExcludeTestScopeArtifactFilter extends AbstractArtifactFeatureFilter {
 
-		TestScopeArtifactFilter() {
+		ExcludeTestScopeArtifactFilter() {
 			super("", Artifact.SCOPE_TEST);
 		}
 
 		@Override
 		protected String getArtifactFeature(Artifact artifact) {
 			return artifact.getScope();
+		}
+
+	}
+
+	/**
+	 * {@link ArtifactFilter} that only include runtime scopes.
+	 */
+	protected static class RuntimeArtifactFilter implements ArtifactFilter {
+
+		private static final Collection<String> SCOPES = List.of(Artifact.SCOPE_COMPILE,
+				Artifact.SCOPE_COMPILE_PLUS_RUNTIME, Artifact.SCOPE_RUNTIME);
+
+		@Override
+		public boolean include(Artifact artifact) {
+			String scope = artifact.getScope();
+			return !artifact.isOptional() && (scope == null || SCOPES.contains(scope));
 		}
 
 	}

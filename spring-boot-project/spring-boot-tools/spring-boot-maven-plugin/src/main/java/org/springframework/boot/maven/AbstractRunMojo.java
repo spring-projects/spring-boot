@@ -371,7 +371,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
 		Set<Artifact> artifacts = (this.useTestClasspath) ? filterDependencies(this.project.getArtifacts())
-				: filterDependencies(this.project.getArtifacts(), new TestScopeArtifactFilter());
+				: filterDependencies(this.project.getArtifacts(), new ExcludeTestScopeArtifactFilter());
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
 				urls.add(artifact.getFile().toURI().toURL());

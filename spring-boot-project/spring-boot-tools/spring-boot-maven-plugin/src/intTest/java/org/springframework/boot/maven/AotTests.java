@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(MavenBuildExtension.class)
-public class AotGenerateTests {
+public class AotTests {
 
 	@TestTemplate
 	void whenAotRunsSourcesAreGenerated(MavenBuild mavenBuild) {
@@ -110,6 +110,20 @@ public class AotGenerateTests {
 			Path classesDirectory = project.toPath().resolve("target/classes/");
 			assertThat(collectRelativePaths(classesDirectory))
 					.contains(Path.of("org", "test", "SampleRunner$$SpringCGLIB$$0.class"));
+		});
+	}
+
+	@TestTemplate
+	void whenAotTestRunsSourcesAndResourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test").goals("test").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources"))).contains(Path.of("org", "test",
+					"SampleApplicationTests__TestContext001_ApplicationContextInitializer.java"));
+			Path testClassesDirectory = project.toPath().resolve("target/test-classes");
+			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("META-INF", "native-image",
+					"org.springframework.boot.maven.it", "aot-test", "reflect-config.json"));
+			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("org", "test",
+					"SampleApplicationTests__TestContext001_ApplicationContextInitializer.class"));
 		});
 	}
 
