@@ -2758,6 +2758,20 @@
       "defaultValue": "on-save"
     },
     {
+      "name": "spring.session.redis.repository",
+      "description": "Redis session repository implementation to use.",
+      "values": [
+        {
+          "value": "default",
+          "description": "Use default Redis session repository."
+        },
+        {
+          "value": "indexed",
+          "description": "Use indexed Redis session repository."
+        }
+      ]
+    },
+    {
       "name": "spring.session.redis.save-mode",
       "defaultValue": "on-set-attribute"
     },

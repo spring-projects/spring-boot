@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,7 @@ import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
+import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisIndexedHttpSessionConfiguration;
 
 /**
@@ -50,30 +52,62 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisIn
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
-		return switch (redisSessionProperties.getConfigureAction()) {
-			case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsAction();
-			case NONE -> ConfigureRedisAction.NO_OP;
-		};
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository", havingValue = "default",
+			matchIfMissing = true)
+	static class DefaultRedisSessionConfiguration {
+
+		@Configuration(proxyBeanMethods = false)
+		public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
+
+			@Autowired
+			public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+					ServerProperties serverProperties) {
+				Duration timeout = sessionProperties
+						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
+				if (timeout != null) {
+					setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
+				}
+				setRedisNamespace(redisSessionProperties.getNamespace());
+				setFlushMode(redisSessionProperties.getFlushMode());
+				setSaveMode(redisSessionProperties.getSaveMode());
+			}
+
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class SpringBootRedisHttpSessionConfiguration extends RedisIndexedHttpSessionConfiguration {
+	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository", havingValue = "indexed")
+	static class IndexedRedisSessionConfiguration {
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
-				ServerProperties serverProperties) {
-			Duration timeout = sessionProperties
-					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
-			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
+		@Bean
+		@ConditionalOnMissingBean
+		ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
+			return switch (redisSessionProperties.getConfigureAction()) {
+				case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsAction();
+				case NONE -> ConfigureRedisAction.NO_OP;
+			};
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		public static class SpringBootRedisIndexedHttpSessionConfiguration
+				extends RedisIndexedHttpSessionConfiguration {
+
+			@Autowired
+			public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+					ServerProperties serverProperties) {
+				Duration timeout = sessionProperties
+						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
+				if (timeout != null) {
+					setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
+				}
+				setRedisNamespace(redisSessionProperties.getNamespace());
+				setFlushMode(redisSessionProperties.getFlushMode());
+				setSaveMode(redisSessionProperties.getSaveMode());
+				setCleanupCron(redisSessionProperties.getCleanupCron());
 			}
-			setRedisNamespace(redisSessionProperties.getNamespace());
-			setFlushMode(redisSessionProperties.getFlushMode());
-			setSaveMode(redisSessionProperties.getSaveMode());
-			setCleanupCron(redisSessionProperties.getCleanupCron());
+
 		}
 
 	}
