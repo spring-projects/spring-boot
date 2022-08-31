@@ -29,7 +29,7 @@ dependencies {
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
-	implementation("org.gradle:test-retry-gradle-plugin:1.4.0")
+	implementation("org.gradle:test-retry-gradle-plugin:1.4.1")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
 	implementation("org.springframework:spring-core")
