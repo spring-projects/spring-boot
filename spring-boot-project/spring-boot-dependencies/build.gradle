@@ -14,6 +14,16 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
+	library("ANTLR2", "2.7.7") {
+		prohibit("20030911") {
+			because "it is old version that used a different versioning scheme"
+		}
+		group("antlr") {
+			modules = [
+				"antlr"
+			]
+		}
+	}
 	library("Artemis", "2.23.1") {
 		group("org.apache.activemq") {
 			modules = [
