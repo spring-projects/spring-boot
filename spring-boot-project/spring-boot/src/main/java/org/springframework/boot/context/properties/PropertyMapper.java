@@ -295,8 +295,8 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Complete the mapping for any non-filtered value by apply the given function to
-		 * an existing instance and returning a new one. For filtered values, the
+		 * Complete the mapping for any non-filtered value by applying the given function
+		 * to an existing instance and returning a new one. For filtered values, the
 		 * {@code instance} parameter is returned unchanged. The method is designed to be
 		 * used with immutable objects.
 		 * @param <R> the result type
