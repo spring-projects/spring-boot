@@ -21,15 +21,21 @@ import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
+import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
+import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Answers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -63,7 +69,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SdkTracerProvider.class);
 			assertThat(context).hasSingleBean(ContextPropagators.class);
 			assertThat(context).hasSingleBean(Sampler.class);
-			assertThat(context).hasSingleBean(SpanProcessor.class);
 			assertThat(context).hasSingleBean(Tracer.class);
 		});
 	}
@@ -108,10 +113,71 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasBean("customSampler");
 			assertThat(context).hasSingleBean(Sampler.class);
 			assertThat(context).hasBean("customSpanProcessor");
-			assertThat(context).hasSingleBean(SpanProcessor.class);
 			assertThat(context).hasBean("customTracer");
 			assertThat(context).hasSingleBean(Tracer.class);
 		});
+	}
+
+	@Test
+	void shouldSupplyBaggageAndSlf4jEventListenersWhenMdcOnClasspath() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Slf4JEventListener.class);
+			assertThat(context).hasSingleBean(Slf4JBaggageEventListener.class);
+		});
+	}
+
+	@Test
+	void shouldSupplySlf4jEventListenersWhenMdcOnClasspathAndBaggageCorrelationDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false").run((context) -> {
+			assertThat(context).hasSingleBean(Slf4JEventListener.class);
+			assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class);
+		});
+	}
+
+	@Test
+	void shouldSupplySlf4jEventListenersWhenMdcOnClasspathAndBaggageDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
+			assertThat(context).hasSingleBean(Slf4JEventListener.class);
+			assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class);
+		});
+	}
+
+	@Test
+	void shouldNotSupplySlf4jEventListenersWhenMdcNotOnClasspath() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.slf4j")).run((context) -> {
+			assertThat(context).doesNotHaveBean(Slf4JEventListener.class);
+			assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyB3PropagationIfPropagationPropertySet() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
+			assertThat(context).hasSingleBean(B3Propagator.class);
+			assertThat(context).hasBean("b3TextMapPropagator");
+			assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationWithBaggageByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithBaggage"));
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
+				.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
+	}
+
+	@Test
+	void shouldSupplyB3PropagationWithoutBaggageWhenBaggageDisabledAndB3PropagationEnabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
+				"management.tracing.propagation.type=B3").run((context) -> {
+					assertThat(context).hasBean("b3TextMapPropagator");
+					assertThat(context).hasSingleBean(B3Propagator.class);
+					assertThat(context).doesNotHaveBean("w3cTextMapPropagatorWithoutBaggage");
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -170,6 +236,36 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		Tracer customTracer() {
 			return mock(Tracer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class OpenTelemetryConfiguration {
+
+		@Bean
+		OpenTelemetry openTelemetry() {
+			return mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class ContextPropagatorsConfiguration {
+
+		@Bean
+		ContextPropagators contextPropagators() {
+			return mock(ContextPropagators.class, Answers.RETURNS_MOCKS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomFactoryConfiguration {
+
+		@Bean
+		TextMapPropagator customPropagationFactory() {
+			return mock(TextMapPropagator.class);
 		}
 
 	}

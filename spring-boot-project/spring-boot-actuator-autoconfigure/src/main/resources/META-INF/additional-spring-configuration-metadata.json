@@ -2086,6 +2086,10 @@
         "replacement": "management.trace.http.include",
         "level": "error"
       }
+    },
+    {
+      "name": "management.tracing.propagation.type",
+      "defaultValue": "W3C"
     }
   ],
   "hints": [
