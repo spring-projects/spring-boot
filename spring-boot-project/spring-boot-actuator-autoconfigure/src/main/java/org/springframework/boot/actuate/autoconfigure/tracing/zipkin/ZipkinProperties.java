@@ -44,6 +44,11 @@ public class ZipkinProperties {
 	 */
 	private Duration readTimeout = Duration.ofSeconds(10);
 
+	/**
+	 * Name of this application registered in Zipkin. Defaults to {@code spring.application.name}.
+	 */
+	private String serviceName;
+
 	public String getEndpoint() {
 		return this.endpoint;
 	}
@@ -68,4 +73,11 @@ public class ZipkinProperties {
 		this.readTimeout = readTimeout;
 	}
 
+	public String getServiceName() {
+		return this.serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
 }

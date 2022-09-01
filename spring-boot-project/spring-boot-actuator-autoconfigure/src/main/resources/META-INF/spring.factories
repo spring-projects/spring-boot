@@ -1,2 +1,5 @@
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer
+
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.actuate.autoconfigure.tracing.TracingEnvironmentPostProcessor

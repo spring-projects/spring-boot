@@ -51,6 +51,7 @@ dependencies {
 	optional("io.micrometer:micrometer-core")
 	optional("io.micrometer:micrometer-tracing")
 	optional("io.micrometer:micrometer-tracing-bridge-brave")
+	optional("io.zipkin.aws:brave-propagation-aws:0.23.4") // TODO: How should we align to this version?
 	optional("io.micrometer:micrometer-tracing-bridge-otel")
 	optional("io.micrometer:micrometer-tracing-reporter-wavefront")
 	optional("io.micrometer:micrometer-registry-appoptics")

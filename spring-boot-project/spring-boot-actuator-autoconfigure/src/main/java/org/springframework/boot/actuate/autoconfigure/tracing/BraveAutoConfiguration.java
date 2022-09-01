@@ -17,10 +17,21 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
+import java.util.Set;
 
+import brave.Tags;
 import brave.Tracing;
 import brave.Tracing.Builder;
 import brave.TracingCustomizer;
+import brave.baggage.BaggageField;
+import brave.baggage.BaggagePropagation;
+import brave.baggage.BaggagePropagationConfig;
+import brave.baggage.BaggagePropagationCustomizer;
+import brave.baggage.CorrelationScopeConfig;
+import brave.baggage.CorrelationScopeCustomizer;
+import brave.baggage.CorrelationScopeDecorator;
+import brave.context.slf4j.MDCScopeDecorator;
+import brave.handler.MutableSpan;
 import brave.handler.SpanHandler;
 import brave.http.HttpClientHandler;
 import brave.http.HttpClientRequest;
@@ -33,21 +44,31 @@ import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.CurrentTraceContextCustomizer;
+import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.propagation.ThreadLocalCurrentTraceContext;
+import brave.propagation.TraceContext;
+import brave.propagation.aws.AWSPropagation;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import org.slf4j.MDC;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
@@ -105,10 +126,15 @@ public class BraveAutoConfiguration {
 		return builder.build();
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public Factory bravePropagationFactory() {
-		return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingClass("io.micrometer.tracing.brave.bridge.BraveTracer")
+	static class BraveMicrometerMissing {
+		@Bean
+		@ConditionalOnMissingBean
+		public Factory bravePropagationFactory() {
+			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+		}
+
 	}
 
 	@Bean
@@ -166,6 +192,133 @@ public class BraveAutoConfiguration {
 			return new BraveHttpClientHandler(httpClientHandler);
 		}
 
-	}
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(B3Propagation.class)
+		static class BraveBaggageConfiguration {
 
+			// TO: Add W3C Propagation Factory (we need tracing snapshots for that)
+//	@Bean
+//	@ConditionalOnMissingBean
+//	@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
+//	BaggagePropagation.FactoryBuilder w3cPropagationFactory() {
+//		return BaggagePropagation.newFactoryBuilder();
+//	}
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3", matchIfMissing = true)
+			BaggagePropagation.FactoryBuilder b3PropagationFactory() {
+				return BaggagePropagation.newFactoryBuilder(B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build());
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "AWS")
+			@ConditionalOnClass(AWSPropagation.class)
+			BaggagePropagation.FactoryBuilder awsPropagationFactory() {
+				return BaggagePropagation.newFactoryBuilder(AWSPropagation.FACTORY);
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			Propagation.Factory micrometerTracingPropagationWithB3Baggage(BaggagePropagation.FactoryBuilder factoryBuilder,
+					TracingProperties tracingProperties, ObjectProvider<List<BaggagePropagationCustomizer>> baggagePropagationCustomizers) {
+				Set<String> localFields = tracingProperties.getBaggage().getLocalFields();
+				for (String fieldName : localFields) {
+					factoryBuilder.add(BaggagePropagationConfig.SingleBaggageField.local(BaggageField.create(fieldName)));
+				}
+				Set<String> remoteFields = tracingProperties.getBaggage().getRemoteFields();
+				for (String fieldName : remoteFields) {
+					factoryBuilder.add(BaggagePropagationConfig.SingleBaggageField.remote(BaggageField.create(fieldName)));
+				}
+				baggagePropagationCustomizers.ifAvailable(customizers -> customizers.forEach(customizer -> customizer.customize(factoryBuilder)));
+				return factoryBuilder.build();
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnClass(MDC.class)
+			CorrelationScopeDecorator.Builder correlationScopeDecoratorBuilder() {
+				return MDCScopeDecorator.newBuilder();
+			}
+
+			@Bean
+			@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
+			@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
+			@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled", matchIfMissing = true)
+			ScopeDecorator correlationScopeDecorator(
+					TracingProperties properties, ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
+				Set<String> correlationFields = properties.getBaggage().getCorrelationFields();
+				// Add fields from properties
+				CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
+				for (String field : correlationFields) {
+					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field)).build());
+				}
+				correlationScopeCustomizers.ifAvailable(customizers -> customizers.forEach(customizer -> customizer.customize(builder)));
+				return builder.build();
+			}
+
+			/**
+			 * This has to be conditional as it creates a bean of type {@link SpanHandler}.
+			 *
+			 * <p>
+			 * {@link SpanHandler} beans, even if {@link SpanHandler#NOOP}, can trigger {@code SamplerCondition}
+			 */
+			@Configuration(proxyBeanMethods = false)
+			@Conditional(BaggageTagSpanHandlerCondition.class)
+			static class BaggageTagSpanHandlerConfiguration {
+
+				@Bean
+				SpanHandler baggageTagSpanHandler(TracingProperties properties) {
+					Set<String> tagFields = properties.getBaggage().getTagFields();
+					if (tagFields.isEmpty()) {
+						return SpanHandler.NOOP; // Brave ignores these
+					}
+					return new BaggageTagSpanHandler(tagFields.stream().map(BaggageField::create).toArray(BaggageField[]::new));
+				}
+
+			}
+
+			/**
+			 * We need a special condition as it users could use either comma or yaml encoding,
+			 * possibly with a deprecated prefix.
+			 */
+			static class BaggageTagSpanHandlerCondition extends AnyNestedCondition {
+
+				BaggageTagSpanHandlerCondition() {
+					super(ConfigurationPhase.PARSE_CONFIGURATION);
+				}
+
+				@ConditionalOnProperty("management.tracing.baggage.tag-fields")
+				static class TagFieldsProperty {
+
+				}
+
+				@ConditionalOnProperty("management.tracing.baggage.tag-fields[0]")
+				static class TagFieldsYamlListProperty {
+
+				}
+
+			}
+
+			static final class BaggageTagSpanHandler extends SpanHandler {
+
+				final BaggageField[] fieldsToTag;
+
+				BaggageTagSpanHandler(BaggageField[] fieldsToTag) {
+					this.fieldsToTag = fieldsToTag;
+				}
+
+				@Override
+				public boolean end(TraceContext context, MutableSpan span, Cause cause) {
+					for (BaggageField field : fieldsToTag) {
+						Tags.BAGGAGE_FIELD.tag(field, context, span);
+					}
+					return true;
+				}
+
+			}
+
+		}
+
+	}
 }
