@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
@@ -65,7 +67,6 @@ class OpenTelemetryConfigurationsSdkConfigurationTests {
 			assertThat(context).hasBean("customSampler");
 			assertThat(context).hasSingleBean(Sampler.class);
 			assertThat(context).hasBean("customSpanProcessor");
-			assertThat(context).hasSingleBean(SpanProcessor.class);
 		});
 	}
 
@@ -78,6 +79,36 @@ class OpenTelemetryConfigurationsSdkConfigurationTests {
 			assertThat(context).doesNotHaveBean(Sampler.class);
 			assertThat(context).doesNotHaveBean(SpanProcessor.class);
 		});
+	}
+
+	@Test
+	void shouldSupplyB3PropagationIfPropagationPropertySet() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
+			assertThat(context).hasSingleBean(B3Propagator.class);
+			assertThat(context).hasBean("b3TextMapPropagator");
+			assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationWithBaggageByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithBaggage"));
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
+				.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
+	}
+
+	@Test
+	void shouldSupplyB3PropagationWithoutBaggageWhenBaggageDisabledAndB3PropagationEnabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
+				"management.tracing.propagation.type=B3").run((context) -> {
+					assertThat(context).hasBean("b3TextMapPropagator");
+					assertThat(context).hasSingleBean(B3Propagator.class);
+					assertThat(context).doesNotHaveBean("w3cTextMapPropagatorWithoutBaggage");
+				});
 	}
 
 	private static class CustomBeans {

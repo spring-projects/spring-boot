@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,8 +35,26 @@ public class TracingProperties {
 	 */
 	private final Sampling sampling = new Sampling();
 
+	/**
+	 * Baggage configuration.
+	 */
+	private final Baggage baggage = new Baggage();
+
+	/**
+	 * Propagation configuration.
+	 */
+	private final Propagation propagation = new Propagation();
+
 	public Sampling getSampling() {
 		return this.sampling;
+	}
+
+	public Baggage getBaggage() {
+		return this.baggage;
+	}
+
+	public Propagation getPropagation() {
+		return this.propagation;
 	}
 
 	public static class Sampling {
@@ -49,6 +70,83 @@ public class TracingProperties {
 
 		public void setProbability(float probability) {
 			this.probability = probability;
+		}
+
+	}
+
+	public static class Baggage {
+
+		/**
+		 * Whether to enable correlation of the baggage context with logging contexts.
+		 */
+		private boolean correlationEnabled = true;
+
+		/**
+		 * List of fields that should be correlated with the logging context. That means
+		 * that these fields would end up as key-value pairs in e.g. MDC.
+		 */
+		private List<String> correlationFields = new ArrayList<>();
+
+		/**
+		 * List of fields that are referenced the same in-process as it is on the wire.
+		 * For example, the field "x-vcap-request-id" would be set as-is including the
+		 * prefix.
+		 */
+		private List<String> remoteFields = new ArrayList<>();
+
+		public boolean isCorrelationEnabled() {
+			return this.correlationEnabled;
+		}
+
+		public void setCorrelationEnabled(boolean correlationEnabled) {
+			this.correlationEnabled = correlationEnabled;
+		}
+
+		public List<String> getCorrelationFields() {
+			return this.correlationFields;
+		}
+
+		public void setCorrelationFields(List<String> correlationFields) {
+			this.correlationFields = correlationFields;
+		}
+
+		public List<String> getRemoteFields() {
+			return this.remoteFields;
+		}
+
+		public void setRemoteFields(List<String> remoteFields) {
+			this.remoteFields = remoteFields;
+		}
+
+	}
+
+	public static class Propagation {
+
+		/**
+		 * Tracing context propagation types.
+		 */
+		private PropagationType type = PropagationType.W3C;
+
+		public PropagationType getType() {
+			return this.type;
+		}
+
+		public void setType(PropagationType type) {
+			this.type = type;
+		}
+
+		enum PropagationType {
+
+			/**
+			 * B3 propagation type.
+			 */
+			B3,
+
+			/**
+			 * W3C propagation type.
+			 */
+			W3C
+
 		}
 
 	}

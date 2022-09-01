@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import brave.Tracer;
 import brave.Tracing;
+import brave.baggage.BaggagePropagation;
 import brave.http.HttpClientHandler;
 import brave.http.HttpClientRequest;
 import brave.http.HttpClientResponse;
@@ -26,6 +27,7 @@ import brave.http.HttpServerRequest;
 import brave.http.HttpServerResponse;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
@@ -65,6 +67,8 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(HttpTracing.class);
 			assertThat(context).hasSingleBean(HttpServerHandler.class);
 			assertThat(context).hasSingleBean(HttpClientHandler.class);
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
+			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
 
@@ -94,7 +98,6 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyMicrometerBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveBaggageManager.class);
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
@@ -111,6 +114,18 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasBean("customBraveHttpClientHandler");
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
+		});
+	}
+
+	@Test
+	void shouldBackOffOnCustomPropagationBeans() {
+		this.contextRunner.withUserConfiguration(CustomFactoryConfiguration.class).run((context) -> {
+			assertThat(context).hasBean("customPropagationFactory");
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
+			assertThat(context).hasBean("customHttpServerHandler");
+			assertThat(context).hasSingleBean(HttpServerHandler.class);
+			assertThat(context).hasBean("customHttpClientHandler");
+			assertThat(context).hasSingleBean(HttpClientHandler.class);
 		});
 	}
 
@@ -135,6 +150,39 @@ class BraveAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(BraveBaggageManager.class);
 			assertThat(context).doesNotHaveBean(BraveHttpServerHandler.class);
 			assertThat(context).doesNotHaveBean(BraveHttpClientHandler.class);
+			assertThat(context).doesNotHaveBean(BraveHttpClientHandler.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyB3PropagationIfMicrometerIsMissing() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer")).run((context) -> {
+			assertThat(context).hasBean("bravePropagationFactory");
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
+		});
+	}
+
+	@Test
+	void shouldFailIfMicrometerIsMissingAndW3CPropagationIsPicked() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer"))
+				.withPropertyValues("management.tracing.propagation.type=W3C")
+				.run((context) -> assertThat(context).getFailure()
+						.hasMessageContaining("No qualifying bean of type 'brave.propagation.Propagation$Factory'"));
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationFactoryByDefault() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasBean("w3cPropagationFactory");
+			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyB3PropagationFactoryViaProperty() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
+			assertThat(context).hasBean("b3PropagationFactory");
+			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
 
@@ -150,6 +198,46 @@ class BraveAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(HttpServerHandler.class);
 			assertThat(context).doesNotHaveBean(HttpClientHandler.class);
 		});
+	}
+
+	@Test
+	void shouldNotSupplyMdcCorrelationScopeWhenMdcNotOnClasspath() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.slf4j")).run((context) -> {
+			assertThat(context).doesNotHaveBean("mdcCorrelationScopeDecoratorBuilder");
+			assertThat(context).doesNotHaveBean("correlationScopeDecorator");
+		});
+	}
+
+	@Test
+	void shouldNotSupplyCorrelationScopeDecoratorIfBaggageDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean("correlationScopeDecorator"));
+	}
+
+	@Test
+	void shouldSupplyW3CWithoutBaggageByDefaultIfBaggageDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
+				.run((context) -> assertThat(context).hasBean("w3cPropagationNoBaggageFactory"));
+	}
+
+	@Test
+	void shouldSupplyB3WithoutBaggageIfBaggageDisabledAndB3Picked() {
+		this.contextRunner
+				.withPropertyValues("management.tracing.baggage.enabled=false",
+						"management.tracing.propagation.type=B3")
+				.run((context) -> assertThat(context).hasBean("b3PropagationNoBaggageFactory"));
+	}
+
+	@Test
+	void shouldNotSupplyCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation-enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean("correlationFieldsCorrelationScopeDecorator"));
+	}
+
+	@Test
+	void shouldSupplyMdcCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation-enabled=false")
+				.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -220,6 +308,28 @@ class BraveAutoConfigurationTests {
 		@Bean
 		BraveHttpClientHandler customBraveHttpClientHandler() {
 			return mock(BraveHttpClientHandler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomFactoryConfiguration {
+
+		@Bean
+		Propagation.Factory customPropagationFactory() {
+			return mock(Propagation.Factory.class);
+		}
+
+		@Bean
+		HttpServerHandler<HttpServerRequest, HttpServerResponse> customHttpServerHandler() {
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpServerHandler.create(httpTracing);
+		}
+
+		@Bean
+		HttpClientHandler<HttpClientRequest, HttpClientResponse> customHttpClientHandler() {
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpClientHandler.create(httpTracing);
 		}
 
 	}
