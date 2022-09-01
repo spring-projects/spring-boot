@@ -44,7 +44,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
-import org.springframework.graphql.execution.ThreadLocalAccessor;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
@@ -98,11 +97,9 @@ public class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
-			ObjectProvider<WebGraphQlInterceptor> interceptorsProvider,
-			ObjectProvider<ThreadLocalAccessor> accessorsProvider) {
+			ObjectProvider<WebGraphQlInterceptor> interceptorsProvider) {
 		return WebGraphQlHandler.builder(service)
-				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList()))
-				.threadLocalAccessors(accessorsProvider.orderedStream().collect(Collectors.toList())).build();
+				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList())).build();
 	}
 
 	@Bean
@@ -185,13 +182,14 @@ public class GraphQlWebMvcAutoConfiguration {
 		}
 
 		@Bean
+		@SuppressWarnings("deprecation")
 		public HandlerMapping graphQlWebSocketMapping(GraphQlWebSocketHandler handler, GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
 			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
 			WebSocketHandlerMapping mapping = new WebSocketHandlerMapping();
 			mapping.setWebSocketUpgradeMatch(true);
 			mapping.setUrlMap(Collections.singletonMap(path,
-					handler.asWebSocketHttpRequestHandler(new DefaultHandshakeHandler())));
+					handler.initWebSocketHttpRequestHandler(new DefaultHandshakeHandler())));
 			mapping.setOrder(2); // Ahead of HTTP endpoint ("routerFunctionMapping" bean)
 			return mapping;
 		}
