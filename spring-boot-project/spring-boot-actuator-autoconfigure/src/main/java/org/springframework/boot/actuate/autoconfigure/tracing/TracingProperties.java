@@ -32,8 +32,17 @@ public class TracingProperties {
 	 */
 	private final Sampling sampling = new Sampling();
 
+	/**
+	 * Propagation configuration.
+	 */
+	private final Propagation propagation = new Propagation();
+
 	public Sampling getSampling() {
 		return this.sampling;
+	}
+
+	public Propagation getPropagation() {
+		return this.propagation;
 	}
 
 	public static class Sampling {
@@ -49,6 +58,37 @@ public class TracingProperties {
 
 		public void setProbability(float probability) {
 			this.probability = probability;
+		}
+
+	}
+
+	public static class Propagation {
+
+		/**
+		 * Tracing context propagation types.
+		 */
+		private PropagationType type = PropagationType.W3C;
+
+		public PropagationType getType() {
+			return this.type;
+		}
+
+		public void setType(PropagationType type) {
+			this.type = type;
+		}
+
+		enum PropagationType {
+
+			/**
+			 * B3 propagation type.
+			 */
+			B3,
+
+			/**
+			 * W3C propagation type.
+			 */
+			W3C
+
 		}
 
 	}

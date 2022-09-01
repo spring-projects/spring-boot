@@ -40,12 +40,16 @@ import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
+import io.micrometer.tracing.brave.bridge.BravePropagator;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import io.micrometer.tracing.brave.bridge.W3CPropagation;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +59,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for Brave.
  *
  * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
@@ -107,12 +112,6 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Factory bravePropagationFactory() {
-		return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public Sampler braveSampler(TracingProperties properties) {
 		return Sampler.create(properties.getSampling().getProbability());
 	}
@@ -136,20 +135,34 @@ public class BraveAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(BraveTracer.class)
-	static class BraveMicrometer {
+	@ConditionalOnMissingClass("io.micrometer.tracing.brave.bridge.BraveTracer")
+	static class BraveMicrometerMissing {
 
 		@Bean
 		@ConditionalOnMissingBean
-		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext,
-				BraveBaggageManager braveBaggageManager) {
-			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
+		@ConditionalOnProperty(value = "management.tracing.propagation.type", havingValue = "B3", matchIfMissing = true)
+		Factory bravePropagationFactory() {
+			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(BraveTracer.class)
+	static class BraveMicrometer {
+
+		private static final BraveBaggageManager BRAVE_BAGGAGE_MANAGER = new BraveBaggageManager();
+
+		@Bean
+		@ConditionalOnMissingBean
+		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
+			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), BRAVE_BAGGAGE_MANAGER);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		BraveBaggageManager braveBaggageManager() {
-			return new BraveBaggageManager();
+		BravePropagator bravePropagator(Tracing tracing) {
+			return new BravePropagator(tracing);
 		}
 
 		@Bean
@@ -164,6 +177,33 @@ public class BraveAutoConfiguration {
 		BraveHttpClientHandler braveHttpClientHandler(
 				HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
 			return new BraveHttpClientHandler(httpClientHandler);
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class BraveNoBaggageConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(value = "management.tracing.propagation.type", havingValue = "W3C",
+					matchIfMissing = true)
+			Factory w3cPropagationNoBaggageFactory() {
+				return new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of()); // TODO: Use
+																				// snapshots
+																				// of
+																				// tracing
+																				// to not
+																				// use
+																				// baggage
+																				// for W3C
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(value = "management.tracing.propagation.type", havingValue = "B3")
+			Factory b3PropagationNoBaggageFactory() {
+				return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+			}
+
 		}
 
 	}

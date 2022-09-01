@@ -23,17 +23,23 @@ import java.util.stream.Collectors;
 import io.micrometer.tracing.SamplerFunction;
 import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
 import io.micrometer.tracing.otel.bridge.DefaultHttpServerAttributesExtractor;
+import io.micrometer.tracing.otel.bridge.EventListener;
+import io.micrometer.tracing.otel.bridge.EventPublishingContextWrapper;
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
+import io.micrometer.tracing.otel.bridge.OtelPropagator;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
@@ -48,6 +54,7 @@ import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +65,7 @@ import org.springframework.core.env.Environment;
  * {@link OpenTelemetryAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  */
 class OpenTelemetryConfigurations {
 
@@ -105,10 +113,41 @@ class OpenTelemetryConfigurations {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
 		SpanProcessor otelSpanProcessor(List<SpanExporter> spanExporter) {
 			return SpanProcessor.composite(spanExporter.stream()
 					.map((exporter) -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class PropagationConfiguration {
+
+			@Configuration(proxyBeanMethods = false)
+			@ConditionalOnClass(B3Propagator.class)
+			static class B3NoBaggagePropagatorConfiguration {
+
+				@Bean
+				@ConditionalOnMissingBean
+				@ConditionalOnProperty(value = "management.tracing.propagation.type", havingValue = "B3")
+				B3Propagator b3TextMapPropagator() {
+					return B3Propagator.injectingSingleHeader();
+				}
+
+			}
+
+			@Configuration(proxyBeanMethods = false)
+			@ConditionalOnClass(W3CTraceContextPropagator.class)
+			static class W3CNoBaggagePropagatorConfiguration {
+
+				@Bean
+				@ConditionalOnMissingBean
+				@ConditionalOnProperty(value = "management.tracing.propagation.type", havingValue = "W3C",
+						matchIfMissing = true)
+				W3CTraceContextPropagator w3cTextMapPropagatorWithoutBaggage() {
+					return W3CTraceContextPropagator.getInstance();
+				}
+
+			}
+
 		}
 
 	}
@@ -128,6 +167,7 @@ class OpenTelemetryConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(OtelTracer.class)
+	@EnableConfigurationProperties(TracingProperties.class)
 	static class MicrometerConfiguration {
 
 		@Bean
@@ -141,14 +181,21 @@ class OpenTelemetryConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		EventPublisher otelTracerEventPublisher() {
-			return (event) -> {
-			};
+		@ConditionalOnBean({ Tracer.class, ContextPropagators.class })
+		OtelPropagator otelPropagator(ContextPropagators contextPropagators, Tracer tracer) {
+			return new OtelPropagator(contextPropagators, tracer);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		OtelCurrentTraceContext otelCurrentTraceContext() {
+		EventPublisher otelTracerEventPublisher(List<EventListener> eventListeners) {
+			return new OTelEventPublisher(eventListeners);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		OtelCurrentTraceContext otelCurrentTraceContext(EventPublisher publisher) {
+			ContextStorage.addWrapper(new EventPublishingContextWrapper(publisher));
 			return new OtelCurrentTraceContext();
 		}
 
@@ -166,6 +213,23 @@ class OpenTelemetryConfigurations {
 		OtelHttpServerHandler otelHttpServerHandler(OpenTelemetry openTelemetry) {
 			return new OtelHttpServerHandler(openTelemetry, null, null, Pattern.compile(""),
 					new DefaultHttpServerAttributesExtractor());
+		}
+
+		static class OTelEventPublisher implements EventPublisher {
+
+			private final List<EventListener> listeners;
+
+			OTelEventPublisher(List<EventListener> listeners) {
+				this.listeners = listeners;
+			}
+
+			@Override
+			public void publishEvent(Object event) {
+				for (EventListener listener : this.listeners) {
+					listener.onEvent(event);
+				}
+			}
+
 		}
 
 	}

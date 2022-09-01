@@ -19,10 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
+import io.micrometer.tracing.otel.bridge.OtelPropagator;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -48,13 +51,14 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.withUserConfiguration(TracerConfiguration.class, OpenTelemetryConfiguration.class)
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class, OpenTelemetryConfiguration.class,
+				ContextPropagatorsConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(OtelTracer.class);
 					assertThat(context).hasSingleBean(EventPublisher.class);
 					assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
 					assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
 					assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
+					assertThat(context).hasSingleBean(OtelPropagator.class);
 				});
 	}
 
@@ -67,6 +71,7 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 					assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
 					assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
 					assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
+					assertThat(context).doesNotHaveBean(OtelPropagator.class);
 				});
 	}
 
@@ -96,6 +101,8 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
 			assertThat(context).hasBean("customOtelHttpServerHandler");
 			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
+			assertThat(context).hasBean("customOtelPropagator");
+			assertThat(context).hasSingleBean(OtelPropagator.class);
 		});
 	}
 
@@ -127,6 +134,11 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			return mock(OtelHttpServerHandler.class);
 		}
 
+		@Bean
+		OtelPropagator customOtelPropagator() {
+			return mock(OtelPropagator.class);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -145,6 +157,26 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 		@Bean
 		OpenTelemetry openTelemetry() {
 			return mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class ContextPropagatorsConfiguration {
+
+		@Bean
+		ContextPropagators contextPropagators() {
+			return mock(ContextPropagators.class, Answers.RETURNS_MOCKS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomFactoryConfiguration {
+
+		@Bean
+		TextMapPropagator customPropagationFactory() {
+			return mock(TextMapPropagator.class);
 		}
 
 	}

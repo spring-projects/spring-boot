@@ -26,6 +26,7 @@ import brave.http.HttpServerRequest;
 import brave.http.HttpServerResponse;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
@@ -65,6 +66,7 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(HttpTracing.class);
 			assertThat(context).hasSingleBean(HttpServerHandler.class);
 			assertThat(context).hasSingleBean(HttpClientHandler.class);
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
 		});
 	}
 
@@ -94,7 +96,6 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyMicrometerBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveBaggageManager.class);
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
@@ -111,6 +112,18 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasBean("customBraveHttpClientHandler");
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
+		});
+	}
+
+	@Test
+	void shouldBackOffOnCustomPropagationBeans() {
+		this.contextRunner.withUserConfiguration(CustomFactoryConfiguration.class).run((context) -> {
+			assertThat(context).hasBean("customPropagationFactory");
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
+			assertThat(context).hasBean("customHttpServerHandler");
+			assertThat(context).hasSingleBean(HttpServerHandler.class);
+			assertThat(context).hasBean("customHttpClientHandler");
+			assertThat(context).hasSingleBean(HttpClientHandler.class);
 		});
 	}
 
@@ -136,6 +149,33 @@ class BraveAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(BraveHttpServerHandler.class);
 			assertThat(context).doesNotHaveBean(BraveHttpClientHandler.class);
 		});
+	}
+
+	@Test
+	void shouldSupplyB3PropagationIfMicrometerIsMissing() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer")).run((context) -> {
+			assertThat(context).hasBean("bravePropagationFactory");
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
+		});
+	}
+
+	@Test
+	void shouldFailIfMicrometerIsMissingAndW3CPropagationIsPicked() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer"))
+				.withPropertyValues("management.tracing.propagation.type=W3C")
+				.run((context) -> assertThat(context).getFailure()
+						.hasMessageContaining("No qualifying bean of type 'brave.propagation.Propagation$Factory'"));
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationFactoryByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("w3cPropagationNoBaggageFactory"));
+	}
+
+	@Test
+	void shouldSupplyB3PropagationFactoryViaProperty() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3")
+				.run((context) -> assertThat(context).hasBean("b3PropagationNoBaggageFactory"));
 	}
 
 	@Test
@@ -220,6 +260,28 @@ class BraveAutoConfigurationTests {
 		@Bean
 		BraveHttpClientHandler customBraveHttpClientHandler() {
 			return mock(BraveHttpClientHandler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomFactoryConfiguration {
+
+		@Bean
+		Propagation.Factory customPropagationFactory() {
+			return mock(Propagation.Factory.class);
+		}
+
+		@Bean
+		HttpServerHandler<HttpServerRequest, HttpServerResponse> customHttpServerHandler() {
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpServerHandler.create(httpTracing);
+		}
+
+		@Bean
+		HttpClientHandler<HttpClientRequest, HttpClientResponse> customHttpClientHandler() {
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpClientHandler.create(httpTracing);
 		}
 
 	}
