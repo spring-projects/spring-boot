@@ -22,6 +22,7 @@ import org.quartz.SchedulerException;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.BindingReflectionHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -34,7 +35,6 @@ import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSumm
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummary;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension.QuartzEndpointWebExtensionRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link QuartzEndpoint}.

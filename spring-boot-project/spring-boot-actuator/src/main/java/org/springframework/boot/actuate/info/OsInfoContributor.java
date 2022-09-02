@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.info;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.BindingReflectionHintsRegistrar;
 import org.springframework.boot.actuate.info.OsInfoContributor.OsInfoContributorRuntimeHints;
 import org.springframework.boot.info.OsInfo;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 
 /**
  * An {@link InfoContributor} that exposes {@link OsInfo}.
