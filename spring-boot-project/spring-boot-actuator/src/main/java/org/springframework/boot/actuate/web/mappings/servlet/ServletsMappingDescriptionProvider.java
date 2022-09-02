@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.annotation.BindingReflectionHintsRegistrar;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider.ServletsMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;

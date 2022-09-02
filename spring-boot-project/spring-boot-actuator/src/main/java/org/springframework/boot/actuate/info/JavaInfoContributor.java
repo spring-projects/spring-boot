@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.info;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.annotation.BindingReflectionHintsRegistrar;
 import org.springframework.boot.actuate.info.Info.Builder;
 import org.springframework.boot.actuate.info.JavaInfoContributor.JavaInfoContributorRuntimeHints;
 import org.springframework.boot.info.JavaInfo;
