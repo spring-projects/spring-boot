@@ -20,20 +20,32 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import brave.propagation.aws.AWSPropagation;
+import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.SamplerFunction;
+import io.micrometer.tracing.otel.bridge.BaggageTaggingSpanProcessor;
 import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
 import io.micrometer.tracing.otel.bridge.DefaultHttpServerAttributesExtractor;
+import io.micrometer.tracing.otel.bridge.EventPublishingContextWrapper;
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
+import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
+import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
+import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.extension.aws.AwsXrayPropagator;
+import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
@@ -43,13 +55,21 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
+import org.slf4j.MDC;
 
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
@@ -105,7 +125,6 @@ class OpenTelemetryConfigurations {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
 		SpanProcessor otelSpanProcessor(List<SpanExporter> spanExporter) {
 			return SpanProcessor.composite(spanExporter.stream()
 					.map((exporter) -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
@@ -141,14 +160,14 @@ class OpenTelemetryConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		EventPublisher otelTracerEventPublisher() {
-			return (event) -> {
-			};
+		EventPublisher otelTracerEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+			return applicationEventPublisher::publishEvent;
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		OtelCurrentTraceContext otelCurrentTraceContext() {
+		OtelCurrentTraceContext otelCurrentTraceContext(EventPublisher publisher) {
+			ContextStorage.addWrapper(new EventPublishingContextWrapper(publisher));
 			return new OtelCurrentTraceContext();
 		}
 
@@ -168,6 +187,139 @@ class OpenTelemetryConfigurations {
 					new DefaultHttpServerAttributesExtractor());
 		}
 
+		@Configuration(proxyBeanMethods = false)
+		static class PropagationConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3", matchIfMissing = true)
+			TextMapPropagator b3TextMapPropagator() {
+				return B3Propagator.injectingSingleHeader();
+			}
+
+			@Configuration(proxyBeanMethods = false)
+			@ConditionalOnProperty(value = "management.tracing.baggage.enabled", havingValue = "false")
+			static class NoBaggagePropagatorConfiguration {
+				@Bean
+				@ConditionalOnMissingBean
+				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C")
+				TextMapPropagator w3cTextMapPropagator() {
+					return W3CTraceContextPropagator.getInstance();
+				}
+
+			}
+
+			@Bean
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "AWS")
+			@ConditionalOnClass(AWSPropagation.class)
+			TextMapPropagator awsTextMapPropagator() {
+				return AwsXrayPropagator.getInstance();
+			}
+
+			@Configuration(proxyBeanMethods = false)
+			@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
+			static class BaggagePropagatorConfiguration {
+
+				@Bean
+				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3")
+				TextMapPropagator baggageTextMapPropagator(TracingProperties properties, BaggageManager baggageManager) {
+					return new BaggageTextMapPropagator(properties.getBaggage().getRemoteFields(), baggageManager);
+				}
+
+				@Bean
+				@ConditionalOnMissingBean
+				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C")
+				TextMapPropagator w3cTextMapPropagator() {
+					return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance());
+				}
+
+				@Bean
+				@Conditional(BaggageTagSpanHandlerCondition.class)
+				BaggageTaggingSpanProcessor baggageTaggingSpanProcessor(TracingProperties properties) {
+					return new BaggageTaggingSpanProcessor(properties.getBaggage().getTagFields());
+				}
+
+				/**
+				 * We need a special condition as it users could use either comma or yaml encoding,
+				 * possibly with a deprecated prefix.
+				 */
+				static class BaggageTagSpanHandlerCondition extends AnyNestedCondition {
+
+					BaggageTagSpanHandlerCondition() {
+						super(ConfigurationPhase.PARSE_CONFIGURATION);
+					}
+
+					@ConditionalOnProperty("management.tracing.baggage.tag-fields")
+					static class TagFieldsProperty {
+
+					}
+
+					@ConditionalOnProperty("management.tracing.baggage.tag-fields[0]")
+					static class TagFieldsYamlListProperty {
+
+					}
+
+				}
+
+				@Configuration(proxyBeanMethods = false)
+				@ConditionalOnClass(MDC.class)
+				static class Slf4jConfiguration {
+
+					@Bean
+					@ConditionalOnMissingBean
+					Slf4jBaggageApplicationListener otelSlf4jBaggageApplicationListener(TracingProperties tracingProperties) {
+						return new Slf4jBaggageApplicationListener(tracingProperties.getBaggage().getCorrelationFields());
+					}
+
+					// TODO: Move this class out so that it can be overridden
+					static class Slf4jBaggageApplicationListener implements ApplicationListener<ApplicationEvent> {
+
+						private final Slf4JBaggageEventListener listener;
+
+						Slf4jBaggageApplicationListener(List<String> correlationFields) {
+							this.listener = new Slf4JBaggageEventListener(correlationFields);
+						}
+
+						@Override
+						public void onApplicationEvent(ApplicationEvent event) {
+							Object actualEvent = event;
+							if (event instanceof PayloadApplicationEvent<?>) {
+								actualEvent = ((PayloadApplicationEvent<?>) event).getPayload();
+							}
+							this.listener.onEvent(actualEvent);
+						}
+					}
+				}
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(MDC.class)
+		static class Slf4jConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			Slf4jApplicationListener otelSlf4jApplicationListener() {
+				return new Slf4jApplicationListener();
+			}
+
+			// TODO: Move this class out so that it can be overridden
+			static class Slf4jApplicationListener implements ApplicationListener<ApplicationEvent> {
+
+				private final Slf4JEventListener listener = new Slf4JEventListener();
+
+				@Override
+				public void onApplicationEvent(ApplicationEvent event) {
+					Object actualEvent = event;
+					if (event instanceof PayloadApplicationEvent<?>) {
+						actualEvent = ((PayloadApplicationEvent<?>) event).getPayload();
+					}
+					this.listener.onEvent(actualEvent);
+				}
+			}
+
+		}
 	}
 
 }

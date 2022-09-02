@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -84,24 +86,24 @@ public class TracingProperties {
 		/**
 		 * List of fields that should be propagated over the wire.
 		 */
-		private Set<String> correlationFields = new HashSet<>();
+		private List<String> correlationFields = new ArrayList<>();
 
 		/**
 		 * List of fields that should be accessible within the JVM process but not propagated
 		 * over the wire.
 		 */
-		private Set<String> localFields = new HashSet<>();
+		private List<String> localFields = new ArrayList<>();
 
 		/**
 		 * List of fields that are referenced the same in-process as it is on the wire. For
 		 * example, the field "x-vcap-request-id" would be set as-is including the prefix.
 		 */
-		private Set<String> remoteFields = new HashSet<>();
+		private List<String> remoteFields = new ArrayList<>();
 
 		/**
 		 * List of fields that should automatically become tags.
 		 */
-		private Set<String> tagFields = new HashSet<>();
+		private List<String> tagFields = new ArrayList<>();
 
 		public boolean isCorrelationEnabled() {
 			return correlationEnabled;
@@ -111,35 +113,35 @@ public class TracingProperties {
 			this.correlationEnabled = correlationEnabled;
 		}
 
-		public Set<String> getCorrelationFields() {
+		public List<String> getCorrelationFields() {
 			return correlationFields;
 		}
 
-		public void setCorrelationFields(Set<String> correlationFields) {
+		public void setCorrelationFields(List<String> correlationFields) {
 			this.correlationFields = correlationFields;
 		}
 
-		public Set<String> getLocalFields() {
+		public List<String> getLocalFields() {
 			return localFields;
 		}
 
-		public void setLocalFields(Set<String> localFields) {
+		public void setLocalFields(List<String> localFields) {
 			this.localFields = localFields;
 		}
 
-		public Set<String> getRemoteFields() {
+		public List<String> getRemoteFields() {
 			return remoteFields;
 		}
 
-		public void setRemoteFields(Set<String> remoteFields) {
+		public void setRemoteFields(List<String> remoteFields) {
 			this.remoteFields = remoteFields;
 		}
 
-		public Set<String> getTagFields() {
+		public List<String> getTagFields() {
 			return this.tagFields;
 		}
 
-		public void setTagFields(Set<String> tagFields) {
+		public void setTagFields(List<String> tagFields) {
 			this.tagFields = tagFields;
 		}
 
@@ -150,6 +152,7 @@ public class TracingProperties {
 		/**
 		 * Tracing context propagation types.
 		 */
+		// TODO: Should this be the default?
 		private PropagationType type = PropagationType.B3;
 
 		public PropagationType getType() {
@@ -175,6 +178,16 @@ public class TracingProperties {
 			 * W3C propagation type.
 			 */
 			W3C,
+
+			/**
+			 * Jaeger propagation type.
+			 */
+			JAEGER, // TODO: Supported by OTel, not by Brave - my suggestion is not to support it
+
+			/**
+			 * OpenTracing propagation type.
+			 */
+			OT_TRACER, // TODO: Supported by OTel, not by Brave - my suggestion is not to support it
 
 			/**
 			 * Custom propagation type. If picked, requires bean registration overriding the

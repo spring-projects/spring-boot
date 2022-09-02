@@ -55,6 +55,7 @@ import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import io.micrometer.tracing.brave.bridge.W3CPropagation;
 import org.slf4j.MDC;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -167,15 +168,8 @@ public class BraveAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext,
-				BraveBaggageManager braveBaggageManager) {
-			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		BraveBaggageManager braveBaggageManager() {
-			return new BraveBaggageManager();
+		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
+			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), new BraveBaggageManager());
 		}
 
 		@Bean
@@ -193,16 +187,17 @@ public class BraveAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(B3Propagation.class)
+		// TODO: Add this to JSON
+		@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
 		static class BraveBaggageConfiguration {
 
-			// TO: Add W3C Propagation Factory (we need tracing snapshots for that)
-//	@Bean
-//	@ConditionalOnMissingBean
-//	@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
-//	BaggagePropagation.FactoryBuilder w3cPropagationFactory() {
-//		return BaggagePropagation.newFactoryBuilder();
-//	}
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
+			BaggagePropagation.FactoryBuilder w3cPropagationFactory(BraveBaggageManager braveBaggageManager, TracingProperties tracingProperties) {
+				return new W3CPropagation(braveBaggageManager, tracingProperties.getBaggage().getLocalFields());
+			}
+
 			@Bean
 			@ConditionalOnMissingBean
 			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3", matchIfMissing = true)
@@ -222,39 +217,16 @@ public class BraveAutoConfiguration {
 			@ConditionalOnMissingBean
 			Propagation.Factory micrometerTracingPropagationWithB3Baggage(BaggagePropagation.FactoryBuilder factoryBuilder,
 					TracingProperties tracingProperties, ObjectProvider<List<BaggagePropagationCustomizer>> baggagePropagationCustomizers) {
-				Set<String> localFields = tracingProperties.getBaggage().getLocalFields();
+				List<String> localFields = tracingProperties.getBaggage().getLocalFields();
 				for (String fieldName : localFields) {
 					factoryBuilder.add(BaggagePropagationConfig.SingleBaggageField.local(BaggageField.create(fieldName)));
 				}
-				Set<String> remoteFields = tracingProperties.getBaggage().getRemoteFields();
+				List<String> remoteFields = tracingProperties.getBaggage().getRemoteFields();
 				for (String fieldName : remoteFields) {
 					factoryBuilder.add(BaggagePropagationConfig.SingleBaggageField.remote(BaggageField.create(fieldName)));
 				}
 				baggagePropagationCustomizers.ifAvailable(customizers -> customizers.forEach(customizer -> customizer.customize(factoryBuilder)));
 				return factoryBuilder.build();
-			}
-
-			@Bean
-			@ConditionalOnMissingBean
-			@ConditionalOnClass(MDC.class)
-			CorrelationScopeDecorator.Builder correlationScopeDecoratorBuilder() {
-				return MDCScopeDecorator.newBuilder();
-			}
-
-			@Bean
-			@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
-			@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
-			@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled", matchIfMissing = true)
-			ScopeDecorator correlationScopeDecorator(
-					TracingProperties properties, ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
-				Set<String> correlationFields = properties.getBaggage().getCorrelationFields();
-				// Add fields from properties
-				CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
-				for (String field : correlationFields) {
-					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field)).build());
-				}
-				correlationScopeCustomizers.ifAvailable(customizers -> customizers.forEach(customizer -> customizer.customize(builder)));
-				return builder.build();
 			}
 
 			/**
@@ -269,7 +241,7 @@ public class BraveAutoConfiguration {
 
 				@Bean
 				SpanHandler baggageTagSpanHandler(TracingProperties properties) {
-					Set<String> tagFields = properties.getBaggage().getTagFields();
+					List<String> tagFields = properties.getBaggage().getTagFields();
 					if (tagFields.isEmpty()) {
 						return SpanHandler.NOOP; // Brave ignores these
 					}
@@ -319,6 +291,32 @@ public class BraveAutoConfiguration {
 			}
 
 		}
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class PropagationConfiguration {
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnClass(MDC.class)
+			CorrelationScopeDecorator.Builder correlationScopeDecoratorBuilder() {
+				return MDCScopeDecorator.newBuilder();
+			}
+
+			@Bean
+			@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
+			@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
+			@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled", matchIfMissing = true)
+			ScopeDecorator correlationScopeDecorator(
+					TracingProperties properties, ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
+				List<String> correlationFields = properties.getBaggage().getCorrelationFields();
+				// Add fields from properties
+				CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
+				for (String field : correlationFields) {
+					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field)).build());
+				}
+				correlationScopeCustomizers.ifAvailable(customizers -> customizers.forEach(customizer -> customizer.customize(builder)));
+				return builder.build();
+			}
 
 	}
 }

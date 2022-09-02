@@ -16,11 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
-import brave.baggage.BaggageField;
-import brave.baggage.CorrelationScopeConfig;
 import brave.http.HttpClientHandler;
 import brave.http.HttpClientRequest;
 import brave.http.HttpClientResponse;
@@ -35,23 +32,15 @@ import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.slf4j.MDC;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static brave.propagation.CurrentTraceContext.Scope.NOOP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -161,149 +150,6 @@ class BraveAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(HttpServerHandler.class);
 			assertThat(context).doesNotHaveBean(HttpClientHandler.class);
 		});
-	}
-
-	@Nested
-	class BaggageTests {
-
-		private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
-				.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code",
-						"management.tracing.baggage.local-fields=bp", "management.tracing.baggage.correlation-fields=country-code,bp");
-		static final BaggageField COUNTRY_CODE = BaggageField.create("country-code");
-		static final BaggageField BUSINESS_PROCESS = BaggageField.create("bp");
-
-		Span span;
-
-		@BeforeEach
-		@AfterEach
-		void setup() {
-			MDC.clear();
-		}
-
-		@Test
-		void shouldSetEntriesToMdcFromSpan() {
-			contextRunner.run(context -> {
-				startSpan(context);
-				// can't use NOOP as it is special cased
-				try (CurrentTraceContext.Scope scope = scopeDecorator(context).decorateScope(this.span.context(), () -> {
-				})) {
-					assertThat(MDC.get("traceId")).isEqualTo(this.span.context().traceIdString());
-				}
-
-				assertThat(MDC.get("traceId")).isNullOrEmpty();
-			});
-		}
-
-		private void startSpan(ApplicationContext context) {
-			this.span = tracer(context).nextSpan().name("span").start();
-		}
-
-		private Tracer tracer(ApplicationContext context) {
-			return context.getBean(Tracer.class);
-		}
-
-		private CurrentTraceContext.ScopeDecorator scopeDecorator(ApplicationContext context) {
-			return context.getBean(CurrentTraceContext.ScopeDecorator.class);
-		}
-
-		@Test
-		void shouldSetEntriesToMdcFromSpanWithBaggage() {
-			contextRunner.run(context -> {
-				startSpan(context);
-				COUNTRY_CODE.updateValue(this.span.context(), "FO");
-				BUSINESS_PROCESS.updateValue(this.span.context(), "ALM");
-
-				try (CurrentTraceContext.Scope scope = scopeDecorator(context).decorateScope(this.span.context(), NOOP)) {
-					assertThat(MDC.get(COUNTRY_CODE.name())).isEqualTo("FO");
-					assertThat(MDC.get(BUSINESS_PROCESS.name())).isEqualTo("ALM");
-				}
-
-				assertThat(MDC.get(COUNTRY_CODE.name())).isNull();
-				assertThat(MDC.get(BUSINESS_PROCESS.name())).isNull();
-			});
-		}
-
-		@Test
-		void shouldRemoveEntriesFromMdcForNullSpan() {
-			contextRunner.run(context -> {
-				startSpan(context);
-				COUNTRY_CODE.updateValue(this.span.context(), "FO");
-
-				try (CurrentTraceContext.Scope scope1 = scopeDecorator(context).decorateScope(this.span.context(), NOOP)) {
-					assertThat(MDC.get(COUNTRY_CODE.name())).isEqualTo("FO");
-
-					try (CurrentTraceContext.Scope scope2 = scopeDecorator(context).decorateScope(null, NOOP)) {
-						assertThat(MDC.get(COUNTRY_CODE.name())).isNullOrEmpty();
-					}
-				}
-			});
-		}
-
-		@Test
-		void shouldRemoveEntriesFromMdcForNullSpanAndMdcFieldsSetDirectly() {
-			contextRunner.run(context -> {
-				startSpan(context);
-				MDC.put(COUNTRY_CODE.name(), "FO");
-
-				// the span is holding no baggage so it clears the preceding values
-				try (CurrentTraceContext.Scope scope = scopeDecorator(context).decorateScope(this.span.context(), NOOP)) {
-					assertThat(MDC.get(COUNTRY_CODE.name())).isNullOrEmpty();
-				}
-
-				assertThat(MDC.get(COUNTRY_CODE.name())).isEqualTo("FO");
-
-				try (CurrentTraceContext.Scope scope = scopeDecorator(context).decorateScope(null, NOOP)) {
-					assertThat(MDC.get(COUNTRY_CODE.name())).isNullOrEmpty();
-				}
-
-				assertThat(MDC.get(COUNTRY_CODE.name())).isEqualTo("FO");
-			});
-		}
-
-		@Test
-		void shouldRemoveEntriesFromMdcFromNullSpan() {
-			contextRunner.run(context -> {
-				startSpan(context);
-				MDC.put("traceId", "A");
-
-				// can't use NOOP as it is special cased
-				try (CurrentTraceContext.Scope scope = scopeDecorator(context).decorateScope(null, () -> {
-				})) {
-					assertThat(MDC.get("traceId")).isNullOrEmpty();
-				}
-
-				assertThat(MDC.get("traceId")).isEqualTo("A");
-			});
-
-		}
-
-		@Test
-		void shouldOnlyIncludeWhitelist() {
-			contextRunner.run(context -> {
-				assertThat(scopeDecorator(context)).extracting("fields")
-						.asInstanceOf(InstanceOfAssertFactories.array(CorrelationScopeConfig.SingleCorrelationField[].class))
-						.extracting(CorrelationScopeConfig.SingleCorrelationField::name).containsOnly("traceId", "spanId", "bp", COUNTRY_CODE.name());
-			});
-		}
-
-		@Test
-		void shouldPickPreviousMdcEntriesWhenTheirKeysAreWhitelisted() {
-			contextRunner.run(context -> {
-				startSpan(context);
-				MDC.put(COUNTRY_CODE.name(), "FO");
-
-				try (CurrentTraceContext.Scope scope = scopeDecorator(context).decorateScope(this.span.context(), NOOP)) {
-					MDC.put(COUNTRY_CODE.name(), "BV");
-
-					assertThat(MDC.get(COUNTRY_CODE.name())).isEqualTo("BV");
-				}
-
-				assertThat(MDC.get(COUNTRY_CODE.name())).isEqualTo("FO");
-
-			});
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
