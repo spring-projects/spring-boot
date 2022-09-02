@@ -62,7 +62,7 @@ public enum DurationStyle {
 	/**
 	 * ISO-8601 formatting.
 	 */
-	ISO8601("^[+-]?P.*$") {
+	ISO8601("^[+-]?[pP].*$") {
 
 		@Override
 		public Duration parse(String value, ChronoUnit unit) {
