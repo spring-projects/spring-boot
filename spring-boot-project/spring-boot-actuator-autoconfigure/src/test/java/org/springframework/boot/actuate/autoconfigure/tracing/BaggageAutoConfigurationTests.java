@@ -170,15 +170,15 @@ class BaggageAutoConfigurationTests {
 	enum AutoConfig implements Supplier<ApplicationContextRunner> {
 
 
-//		BRAVE {
-//			@Override
-//			public ApplicationContextRunner get() {
-//				return new ApplicationContextRunner()
-//						.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
-//						.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code",
-//								"management.tracing.baggage.local-fields=bp", "management.tracing.baggage.correlation-fields=country-code,bp");
-//			}
-//		},
+		BRAVE {
+			@Override
+			public ApplicationContextRunner get() {
+				return new ApplicationContextRunner()
+						.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
+						.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code",
+								"management.tracing.baggage.local-fields=bp", "management.tracing.baggage.correlation-fields=country-code,bp");
+			}
+		},
 
 		OTEL {
 			@Override
