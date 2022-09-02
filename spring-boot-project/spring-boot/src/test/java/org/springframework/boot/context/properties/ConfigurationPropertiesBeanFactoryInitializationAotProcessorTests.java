@@ -45,7 +45,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,15 +81,6 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(beanFactory);
 		assertThat(runtimeHints.reflection().getTypeHint(SampleProperties.class))
 				.satisfies(javaBeanBinding(SampleProperties.class));
-	}
-
-	@Test
-	void registerConfigurationPropertiesAnnotation() {
-		RuntimeHints runtimeHints = process(SampleProperties.class);
-		assertThat(runtimeHints.proxies().jdkProxies()).singleElement()
-				.satisfies((hint) -> assertThat(hint.getProxiedInterfaces()).containsExactly(
-						TypeReference.of(ConfigurationProperties.class),
-						TypeReference.of(SynthesizedAnnotation.class)));
 	}
 
 	@Test
