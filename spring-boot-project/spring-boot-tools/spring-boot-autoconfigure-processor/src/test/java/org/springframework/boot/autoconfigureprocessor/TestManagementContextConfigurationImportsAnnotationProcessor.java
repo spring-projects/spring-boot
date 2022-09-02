@@ -19,19 +19,13 @@ package org.springframework.boot.autoconfigureprocessor;
 import javax.annotation.processing.SupportedAnnotationTypes;
 
 /**
- * Annotation processor to generate a
- * {@code META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports}
- * file from {@code @AutoConfiguration} annotations.
+ * An extension of {@link ManagementContextConfigurationImportsAnnotationProcessor} used
+ * for testing.
  *
  * @author Scott Frederick
- * @since 3.0.0
  */
-@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.AutoConfiguration" })
-public class AutoConfigurationImportsAnnotationProcessor extends AbstractImportsAnnotationProcessor {
-
-	@Override
-	protected String getImportsFilePath() {
-		return "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
-	}
+@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigureprocessor.TestManagementContextConfiguration" })
+public class TestManagementContextConfigurationImportsAnnotationProcessor
+		extends ManagementContextConfigurationImportsAnnotationProcessor {
 
 }

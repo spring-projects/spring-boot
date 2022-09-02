@@ -16,22 +16,21 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import javax.annotation.processing.SupportedAnnotationTypes;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Annotation processor to generate a
- * {@code META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports}
- * file from {@code @AutoConfiguration} annotations.
+ * Alternative to {@code @ManagementContextConfiguration} for testing (removes the need
+ * for a dependency on the real annotation).
  *
  * @author Scott Frederick
- * @since 3.0.0
  */
-@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.AutoConfiguration" })
-public class AutoConfigurationImportsAnnotationProcessor extends AbstractImportsAnnotationProcessor {
-
-	@Override
-	protected String getImportsFilePath() {
-		return "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
-	}
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface TestManagementContextConfiguration {
 
 }

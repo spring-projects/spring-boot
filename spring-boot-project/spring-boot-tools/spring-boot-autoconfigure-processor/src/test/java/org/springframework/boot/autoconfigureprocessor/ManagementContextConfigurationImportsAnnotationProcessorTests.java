@@ -32,11 +32,11 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AutoConfigurationImportsAnnotationProcessor}.
+ * Tests for {@link ManagementContextConfigurationImportsAnnotationProcessor}.
  *
  * @author Scott Frederick
  */
-class AutoConfigurationImportsAnnotationProcessorTests {
+class ManagementContextConfigurationImportsAnnotationProcessorTests {
 
 	@TempDir
 	File tempDir;
@@ -50,22 +50,22 @@ class AutoConfigurationImportsAnnotationProcessorTests {
 
 	@Test
 	void annotatedClasses() throws Exception {
-		List<String> classes = compile(TestAutoConfigurationConfiguration.class,
-				TestAutoConfigurationOnlyConfiguration.class);
+		List<String> classes = compile(TestManagementContextConfigurationOne.class,
+				TestManagementContextConfigurationTwo.class);
 		assertThat(classes).hasSize(2);
 		assertThat(classes).containsExactly(
-				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration",
-				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration");
+				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationOne",
+				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationTwo");
 	}
 
 	@Test
 	void notAnnotatedClasses() throws Exception {
-		List<String> classes = compile(TestAutoConfigurationImportsAnnotationProcessor.class);
+		List<String> classes = compile(TestAutoConfigurationConfiguration.class);
 		assertThat(classes).isNull();
 	}
 
 	private List<String> compile(Class<?>... types) throws IOException {
-		TestAutoConfigurationImportsAnnotationProcessor processor = new TestAutoConfigurationImportsAnnotationProcessor();
+		TestManagementContextConfigurationImportsAnnotationProcessor processor = new TestManagementContextConfigurationImportsAnnotationProcessor();
 		this.compiler.getTask(types).call(processor);
 		return getWrittenImports(processor.getImportsFilePath());
 	}
