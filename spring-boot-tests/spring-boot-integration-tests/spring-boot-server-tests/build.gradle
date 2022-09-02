@@ -21,6 +21,7 @@ dependencies {
 
 	testRepository(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-json", configuration: "mavenRepository"))

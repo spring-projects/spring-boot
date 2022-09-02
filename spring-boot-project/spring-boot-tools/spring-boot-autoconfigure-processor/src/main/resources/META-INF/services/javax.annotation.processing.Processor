@@ -1,1 +1,2 @@
 org.springframework.boot.autoconfigureprocessor.AutoConfigureAnnotationProcessor
+org.springframework.boot.autoconfigureprocessor.AutoConfigurationImportsAnnotationProcessor

@@ -1,1 +1,2 @@
 org.springframework.boot.autoconfigureprocessor.AutoConfigureAnnotationProcessor,aggregating
+org.springframework.boot.autoconfigureprocessor.AutoConfigurationImportsAnnotationProcessor,aggregating
