@@ -61,26 +61,26 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.test.context.aot.TestAotProcessor";
 
 	/**
-	 * Directory containing the classes and resource files that should be packaged into
-	 * the archive.
+	 * Directory containing the classes and resource files that should be used to run the
+	 * tests.
 	 */
 	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
 	private File classesDirectory;
 
 	/**
-	 * Directory containing the generated sources.
+	 * Directory containing the generated test sources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/sources", required = true)
 	private File generatedSources;
 
 	/**
-	 * Directory containing the generated resources.
+	 * Directory containing the generated test resources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/resources", required = true)
 	private File generatedResources;
 
 	/**
-	 * Directory containing the generated classes.
+	 * Directory containing the generated test classes.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/classes", required = true)
 	private File generatedClasses;
@@ -92,7 +92,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	private ArtifactRepository localRepository;
 
 	/**
-	 * Remove artifact repositories used to resolve JUnit platform launcher jars.
+	 * Remote artifact repositories used to resolve JUnit platform launcher jars.
 	 */
 	@Parameter(defaultValue = "${project.remoteArtifactRepositories}", required = true, readonly = true)
 	private List<ArtifactRepository> remoteRepositories;
