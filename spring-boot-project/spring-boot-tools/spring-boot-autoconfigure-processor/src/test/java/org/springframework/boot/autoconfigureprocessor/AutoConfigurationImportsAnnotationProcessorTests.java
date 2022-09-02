@@ -50,8 +50,8 @@ class AutoConfigurationImportsAnnotationProcessorTests {
 
 	@Test
 	void annotatedClasses() throws Exception {
-		List<String> classes = compile(TestAutoConfigurationConfiguration.class,
-				TestAutoConfigurationOnlyConfiguration.class);
+		List<String> classes = compile(TestAutoConfigurationOnlyConfiguration.class,
+				TestAutoConfigurationConfiguration.class);
 		assertThat(classes).hasSize(2);
 		assertThat(classes).containsExactly(
 				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration",

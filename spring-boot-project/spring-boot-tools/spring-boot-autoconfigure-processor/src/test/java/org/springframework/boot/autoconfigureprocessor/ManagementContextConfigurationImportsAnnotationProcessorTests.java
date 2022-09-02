@@ -50,8 +50,8 @@ class ManagementContextConfigurationImportsAnnotationProcessorTests {
 
 	@Test
 	void annotatedClasses() throws Exception {
-		List<String> classes = compile(TestManagementContextConfigurationOne.class,
-				TestManagementContextConfigurationTwo.class);
+		List<String> classes = compile(TestManagementContextConfigurationTwo.class,
+				TestManagementContextConfigurationOne.class);
 		assertThat(classes).hasSize(2);
 		assertThat(classes).containsExactly(
 				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationOne",
