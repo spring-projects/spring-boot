@@ -45,9 +45,21 @@ class SpringBootAotPluginIntegrationTests {
 	}
 
 	@TestTemplate
+	void noProcessTestAotTaskWithoutAotPluginApplied() {
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processTestAot").getOutput())
+				.contains("processTestAot exists = false");
+	}
+
+	@TestTemplate
 	void applyingAotPluginCreatesProcessAotTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processAot").getOutput())
 				.contains("processAot exists = true");
+	}
+
+	@TestTemplate
+	void applyingAotPluginCreatesProcessTestAotTask() {
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processTestAot").getOutput())
+				.contains("processTestAot exists = true");
 	}
 
 	@TestTemplate
@@ -61,8 +73,24 @@ class SpringBootAotPluginIntegrationTests {
 	}
 
 	@TestTemplate
+	void processTestAotHasLibraryResourcesOnItsClasspath() throws IOException {
+		File settings = new File(this.gradleBuild.getProjectDir(), "settings.gradle");
+		Files.write(settings.toPath(), List.of("include 'library'"));
+		File library = new File(this.gradleBuild.getProjectDir(), "library");
+		library.mkdirs();
+		Files.write(library.toPath().resolve("build.gradle"), List.of("plugins {", "    id 'java-library'", "}"));
+		assertThat(this.gradleBuild.build("processTestAotClasspath").getOutput()).contains("library.jar");
+	}
+
+	@TestTemplate
 	void processAotHasTransitiveRuntimeDependenciesOnItsClasspath() {
 		String output = this.gradleBuild.build("processAotClasspath").getOutput();
+		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
+	}
+
+	@TestTemplate
+	void processTestAotHasTransitiveRuntimeDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
 		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
 	}
 
