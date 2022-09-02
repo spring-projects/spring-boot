@@ -89,8 +89,7 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(ServletEndpointFilter.class,
-					(hint) -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			hints.reflection().registerType(ServletEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

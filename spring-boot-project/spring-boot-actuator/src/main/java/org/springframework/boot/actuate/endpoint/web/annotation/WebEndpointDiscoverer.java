@@ -97,8 +97,7 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(WebEndpointFilter.class,
-					(hint) -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			hints.reflection().registerType(WebEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

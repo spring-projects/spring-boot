@@ -86,7 +86,7 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection().registerType(CloudFoundryEndpointFilter.class,
-					(hint) -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

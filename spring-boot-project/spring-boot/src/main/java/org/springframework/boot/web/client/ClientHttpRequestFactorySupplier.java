@@ -61,15 +61,15 @@ public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequ
 
 		static void registerHints(RuntimeHints hints, ClassLoader classLoader, Consumer<Builder> callback) {
 			if (ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, classLoader)) {
-				hints.reflection().registerType(HttpComponentsClientHttpRequestFactory.class,
-						(hint) -> callback.accept(hint.onReachableType(TypeReference.of(APACHE_HTTP_CLIENT_CLASS))));
+				hints.reflection().registerType(HttpComponentsClientHttpRequestFactory.class, (typeHint) -> callback
+						.accept(typeHint.onReachableType(TypeReference.of(APACHE_HTTP_CLIENT_CLASS))));
 			}
 			if (ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, classLoader)) {
 				hints.reflection().registerType(OkHttp3ClientHttpRequestFactory.class,
-						(hint) -> callback.accept(hint.onReachableType(TypeReference.of(OKHTTP_CLIENT_CLASS))));
+						(typeHint) -> callback.accept(typeHint.onReachableType(TypeReference.of(OKHTTP_CLIENT_CLASS))));
 			}
-			hints.reflection().registerType(SimpleClientHttpRequestFactory.class, (hint) -> callback
-					.accept(hint.onReachableType(TypeReference.of(SimpleClientHttpRequestFactory.class))));
+			hints.reflection().registerType(SimpleClientHttpRequestFactory.class, (typeHint) -> callback
+					.accept(typeHint.onReachableType(TypeReference.of(SimpleClientHttpRequestFactory.class))));
 		}
 
 	}

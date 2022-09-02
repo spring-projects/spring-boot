@@ -84,8 +84,7 @@ public enum WebApplicationType {
 
 		private void registerTypeIfPresent(String typeName, ClassLoader classLoader, RuntimeHints hints) {
 			if (ClassUtils.isPresent(typeName, classLoader)) {
-				hints.reflection().registerType(TypeReference.of(typeName), (hint) -> {
-				});
+				hints.reflection().registerType(TypeReference.of(typeName));
 			}
 		}
 
