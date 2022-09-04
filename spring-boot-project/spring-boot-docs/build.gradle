@@ -285,11 +285,21 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	normalizeTomcatPort()
 }
 
+task runConditionsReportExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+	classpath = configurations.springApplicationExample + sourceSets.main.output
+	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
+	args = ["--spring.main.banner-mode=off", "--server.port=0","--debug"]
+	output = file("$buildDir/example-output/conditions-report.txt")
+	expectedLogging = "Started MyApplication in "
+	normalizeTomcatPort()
+}
+
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
 	inputs.files(runRemoteSpringApplicationExample).withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runSpringApplicationExample).withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runLoggingFormatExample).withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runConditionsReportExample).withPathSensitivity(PathSensitivity.RELATIVE)
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}
@@ -322,7 +332,8 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
 					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
 					"spring-application-output": runSpringApplicationExample.outputs.files.singleFile,
-					"logging-format-output": runLoggingFormatExample.outputs.files.singleFile
+					"logging-format-output": runLoggingFormatExample.outputs.files.singleFile,
+					"conditions-report-output":runConditionsReportExample.outputs.files.singleFile
 	}
 }
 

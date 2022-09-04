@@ -19,7 +19,14 @@ For example, if you add your own `DataSource` bean, the default embedded databas
 If you need to find out what auto-configuration is currently being applied, and why, start your application with the `--debug` switch.
 Doing so enables debug logs for a selection of core loggers and logs a conditions report to the console.
 
-
+.Sample log with Conditions Report
+[%collapsible]
+====
+[indent=0,subs="verbatim,attributes"]
+----
+include::{conditions-report-output}[]
+----
+====
 
 [[using.auto-configuration.disabling-specific]]
 === Disabling Specific Auto-configuration Classes
