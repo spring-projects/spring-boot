@@ -80,7 +80,7 @@ public class ProcessTestAot extends AbstractAot {
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();
-		args.add(this.testClassesDirs.getFiles().stream().map(File::getAbsolutePath)
+		args.add(this.testClassesDirs.getFiles().stream().filter(File::exists).map(File::getAbsolutePath)
 				.collect(Collectors.joining(File.pathSeparator)));
 		args.addAll(processorArgs());
 		this.setArgs(args);
