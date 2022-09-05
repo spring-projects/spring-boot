@@ -29,6 +29,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
@@ -42,7 +43,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 @CacheableTask
 public class ProcessTestAot extends AbstractAot {
 
-	private final FileCollection junitPlatformLauncher;
+	private final Configuration junitPlatformLauncher;
 
 	private FileCollection testClassesDirs;
 
@@ -84,7 +85,14 @@ public class ProcessTestAot extends AbstractAot {
 				.collect(Collectors.joining(File.pathSeparator)));
 		args.addAll(processorArgs());
 		this.setArgs(args);
+		this.classpath(this.junitPlatformLauncher);
 		super.exec();
+	}
+
+	public void setTestSourceSet(SourceSet testSourceSet) {
+		setTestClassesDirs(testSourceSet.getOutput().getClassesDirs());
+		this.junitPlatformLauncher.extendsFrom(
+				getProject().getConfigurations().getByName(testSourceSet.getImplementationConfigurationName()));
 	}
 
 }

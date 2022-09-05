@@ -86,7 +86,8 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		return sourceSets.create(newSourceSetName, (sourceSet) -> {
 			sourceSet.getJava().setSrcDirs(List.of("build/generated/" + newSourceSetName + "Sources"));
 			sourceSet.getResources().setSrcDirs(List.of("build/generated/" + newSourceSetName + "Resources"));
-			sourceSet.setCompileClasspath(sourceSet.getCompileClasspath().plus(existingSourceSet.getOutput()));
+			sourceSet.setCompileClasspath(sourceSet.getCompileClasspath().plus(existingSourceSet.getCompileClasspath())
+					.plus(existingSourceSet.getOutput()));
 			existingSourceSet.setRuntimeClasspath(existingSourceSet.getRuntimeClasspath().plus(sourceSet.getOutput()));
 			ConfigurationContainer configurations = project.getConfigurations();
 			Configuration implementation = configurations.getByName(sourceSet.getImplementationConfigurationName());
@@ -151,7 +152,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 				ProcessTestAot.class, (task) -> {
 					configureAotTask(project, aotTestSourceSet, task,
 							project.getLayout().getBuildDirectory().dir("generated/aotTestClasses"));
-					task.setTestClassesDirs(testSourceSet.getOutput().getClassesDirs());
+					task.setTestSourceSet(testSourceSet);
 				});
 		configureDependsOn(project, aotTestSourceSet, processTestAot);
 	}
