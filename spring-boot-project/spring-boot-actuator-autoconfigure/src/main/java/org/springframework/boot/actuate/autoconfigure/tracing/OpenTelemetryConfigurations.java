@@ -33,8 +33,6 @@ import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
-import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
-import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
@@ -64,10 +62,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -127,7 +122,7 @@ class OpenTelemetryConfigurations {
 		@Bean
 		SpanProcessor otelSpanProcessor(List<SpanExporter> spanExporter) {
 			return SpanProcessor.composite(spanExporter.stream()
-					.map((exporter) -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
+					.map(exporter -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
 		}
 
 	}
@@ -267,27 +262,8 @@ class OpenTelemetryConfigurations {
 
 					@Bean
 					@ConditionalOnMissingBean
-					Slf4jBaggageApplicationListener otelSlf4jBaggageApplicationListener(TracingProperties tracingProperties) {
-						return new Slf4jBaggageApplicationListener(tracingProperties.getBaggage().getCorrelationFields());
-					}
-
-					// TODO: Move this class out so that it can be overridden
-					static class Slf4jBaggageApplicationListener implements ApplicationListener<ApplicationEvent> {
-
-						private final Slf4JBaggageEventListener listener;
-
-						Slf4jBaggageApplicationListener(List<String> correlationFields) {
-							this.listener = new Slf4JBaggageEventListener(correlationFields);
-						}
-
-						@Override
-						public void onApplicationEvent(ApplicationEvent event) {
-							Object actualEvent = event;
-							if (event instanceof PayloadApplicationEvent<?>) {
-								actualEvent = ((PayloadApplicationEvent<?>) event).getPayload();
-							}
-							this.listener.onEvent(actualEvent);
-						}
+					OpenTelemetrySlf4jBaggageApplicationListener otelSlf4jBaggageApplicationListener(TracingProperties tracingProperties) {
+						return new OpenTelemetrySlf4jBaggageApplicationListener(tracingProperties.getBaggage().getCorrelationFields());
 					}
 				}
 			}
@@ -300,23 +276,8 @@ class OpenTelemetryConfigurations {
 
 			@Bean
 			@ConditionalOnMissingBean
-			Slf4jApplicationListener otelSlf4jApplicationListener() {
-				return new Slf4jApplicationListener();
-			}
-
-			// TODO: Move this class out so that it can be overridden
-			static class Slf4jApplicationListener implements ApplicationListener<ApplicationEvent> {
-
-				private final Slf4JEventListener listener = new Slf4JEventListener();
-
-				@Override
-				public void onApplicationEvent(ApplicationEvent event) {
-					Object actualEvent = event;
-					if (event instanceof PayloadApplicationEvent<?>) {
-						actualEvent = ((PayloadApplicationEvent<?>) event).getPayload();
-					}
-					this.listener.onEvent(actualEvent);
-				}
+			OpenTelemetrySlf4jApplicationListener otelSlf4jApplicationListener() {
+				return new OpenTelemetrySlf4jApplicationListener();
 			}
 
 		}

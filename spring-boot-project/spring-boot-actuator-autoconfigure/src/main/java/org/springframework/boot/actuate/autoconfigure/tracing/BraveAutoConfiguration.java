@@ -71,6 +71,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
 /**
@@ -168,8 +169,15 @@ public class BraveAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
-			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), new BraveBaggageManager());
+		@Primary // TODO: Tracer implements BaggageManager but there are 2 BaggageManager beans (Tracer and BraveBaggageManager)
+		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext, BraveBaggageManager braveBaggageManager) {
+			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		BraveBaggageManager braveBaggageManager() {
+			return new BraveBaggageManager();
 		}
 
 		@Bean
@@ -187,15 +195,14 @@ public class BraveAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		// TODO: Add this to JSON
 		@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
 		static class BraveBaggageConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
 			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
-			BaggagePropagation.FactoryBuilder w3cPropagationFactory(BraveBaggageManager braveBaggageManager, TracingProperties tracingProperties) {
-				return new W3CPropagation(braveBaggageManager, tracingProperties.getBaggage().getLocalFields());
+			BaggagePropagation.FactoryBuilder w3cPropagationFactory(TracingProperties tracingProperties, BraveBaggageManager braveBaggageManager) {
+				return BaggagePropagation.newFactoryBuilder(new W3CPropagation(braveBaggageManager, tracingProperties.getBaggage().getLocalFields()));
 			}
 
 			@Bean

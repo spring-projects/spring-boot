@@ -21,6 +21,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfi
 import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.TracerConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
 @Import({ SdkConfiguration.class, TracerConfiguration.class, MicrometerConfiguration.class })
+@EnableConfigurationProperties(TracingProperties.class)
 @ConditionalOnEnabledTracing
 public class OpenTelemetryAutoConfiguration {
 

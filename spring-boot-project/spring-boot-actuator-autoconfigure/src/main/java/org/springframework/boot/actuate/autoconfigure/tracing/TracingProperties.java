@@ -17,9 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -183,11 +181,6 @@ public class TracingProperties {
 			 * Jaeger propagation type.
 			 */
 			JAEGER, // TODO: Supported by OTel, not by Brave - my suggestion is not to support it
-
-			/**
-			 * OpenTracing propagation type.
-			 */
-			OT_TRACER, // TODO: Supported by OTel, not by Brave - my suggestion is not to support it
 
 			/**
 			 * Custom propagation type. If picked, requires bean registration overriding the

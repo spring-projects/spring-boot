@@ -2086,6 +2086,12 @@
         "replacement": "management.trace.http.include",
         "level": "error"
       }
+    },
+    {
+      "name": "management.tracing.baggage.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Micrometer Tracing baggage propagation.",
+      "defaultValue": true
     }
   ],
   "hints": [

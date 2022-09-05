@@ -65,7 +65,6 @@ class OpenTelemetryConfigurationsSdkConfigurationTests {
 			assertThat(context).hasBean("customSampler");
 			assertThat(context).hasSingleBean(Sampler.class);
 			assertThat(context).hasBean("customSpanProcessor");
-			assertThat(context).hasSingleBean(SpanProcessor.class);
 		});
 	}
 
