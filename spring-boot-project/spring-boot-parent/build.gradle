@@ -164,6 +164,13 @@ bom {
 			]
 		}
 	}
+	library("SnakeYAML", "1.31") {
+		group("org.yaml") {
+			modules = [
+				"snakeyaml"
+			]
+		}
+	}
 	library("Spock Framework", "2.0-groovy-3.0") {
 		group("org.spockframework") {
 			modules = [

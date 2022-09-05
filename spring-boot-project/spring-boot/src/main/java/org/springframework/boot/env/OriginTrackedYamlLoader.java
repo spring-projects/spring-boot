@@ -45,6 +45,7 @@ import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.Resource;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Class to load {@code .yml} files into a map of {@code String} to
@@ -54,6 +55,9 @@ import org.springframework.core.io.Resource;
  * @author Phillip Webb
  */
 class OriginTrackedYamlLoader extends YamlProcessor {
+
+	private static final boolean HAS_RESOLVER_LIMIT = ReflectionUtils.findMethod(Resolver.class, "addImplicitResolver",
+			Tag.class, Pattern.class, String.class, int.class) != null;
 
 	private final Resource resource;
 
@@ -75,7 +79,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
 		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
-		LimitedResolver resolver = new LimitedResolver();
+		Resolver resolver = HAS_RESOLVER_LIMIT ? new NoTimestampResolverWithLimit() : new NoTimestampResolver();
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
@@ -167,7 +171,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	/**
 	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags.
 	 */
-	private static class LimitedResolver extends Resolver {
+	private static class NoTimestampResolver extends Resolver {
 
 		@Override
 		public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
@@ -175,6 +179,21 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 				return;
 			}
 			super.addImplicitResolver(tag, regexp, first);
+		}
+
+	}
+
+	/**
+	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags.
+	 */
+	private static class NoTimestampResolverWithLimit extends Resolver {
+
+		@Override
+		public void addImplicitResolver(Tag tag, Pattern regexp, String first, int limit) {
+			if (tag == Tag.TIMESTAMP) {
+				return;
+			}
+			super.addImplicitResolver(tag, regexp, first, limit);
 		}
 
 	}

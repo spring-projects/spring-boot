@@ -231,9 +231,11 @@ class JavaConventions {
 				.matching((configuration) -> configuration.getName().endsWith("Classpath")
 						|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
 				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
-		Dependency springBootParent = project.getDependencies().enforcedPlatform(project.getDependencies()
-				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
-		dependencyManagement.getDependencies().add(springBootParent);
+		String path = project.getName().contains("spring-boot-starter")
+				? ":spring-boot-project:spring-boot-dependencies" : ":spring-boot-project:spring-boot-parent";
+		Dependency dependency = project.getDependencies()
+				.enforcedPlatform(project.getDependencies().project(Collections.singletonMap("path", path)));
+		dependencyManagement.getDependencies().add(dependency);
 		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
 				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
 	}
