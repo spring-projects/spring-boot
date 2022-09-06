@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2020 the original author or authors.
+ * Copyright 2002-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
+ * @author Valentine Wu
  * @since 2.3.0
  * @see Period
  */
@@ -102,7 +103,7 @@ public enum PeriodStyle {
 	/**
 	 * ISO-8601 formatting.
 	 */
-	ISO8601("^[+-]?P.*$", 0) {
+	ISO8601("^[+-]?P.*$", Pattern.CASE_INSENSITIVE) {
 
 		@Override
 		public Period parse(String value, ChronoUnit unit) {

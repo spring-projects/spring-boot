@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
+ * @author Valentine Wu
  */
 class PeriodStyleTests {
 
@@ -40,6 +41,7 @@ class PeriodStyleTests {
 
 	@Test
 	void detectAndParseWhenIso8601ShouldReturnPeriod() {
+		assertThat(PeriodStyle.detectAndParse("p15m")).isEqualTo(Period.parse("p15m"));
 		assertThat(PeriodStyle.detectAndParse("P15M")).isEqualTo(Period.parse("P15M"));
 		assertThat(PeriodStyle.detectAndParse("-P15M")).isEqualTo(Period.parse("P-15M"));
 		assertThat(PeriodStyle.detectAndParse("+P15M")).isEqualTo(Period.parse("P15M"));
@@ -123,6 +125,7 @@ class PeriodStyleTests {
 
 	@Test
 	void detectWhenIso8601ShouldReturnIso8601() {
+		assertThat(PeriodStyle.detect("p20")).isEqualTo(PeriodStyle.ISO8601);
 		assertThat(PeriodStyle.detect("P20")).isEqualTo(PeriodStyle.ISO8601);
 		assertThat(PeriodStyle.detect("-P15M")).isEqualTo(PeriodStyle.ISO8601);
 		assertThat(PeriodStyle.detect("+P15M")).isEqualTo(PeriodStyle.ISO8601);
@@ -140,6 +143,7 @@ class PeriodStyleTests {
 
 	@Test
 	void parseIso8601ShouldParse() {
+		assertThat(PeriodStyle.ISO8601.parse("p20d")).isEqualTo(Period.parse("p20d"));
 		assertThat(PeriodStyle.ISO8601.parse("P20D")).isEqualTo(Period.parse("P20D"));
 		assertThat(PeriodStyle.ISO8601.parse("P15M")).isEqualTo(Period.parse("P15M"));
 		assertThat(PeriodStyle.ISO8601.parse("+P15M")).isEqualTo(Period.parse("P15M"));
@@ -151,6 +155,7 @@ class PeriodStyleTests {
 
 	@Test
 	void parseIso8601WithUnitShouldIgnoreUnit() {
+		assertThat(PeriodStyle.ISO8601.parse("p20d", ChronoUnit.SECONDS)).isEqualTo(Period.parse("p20d"));
 		assertThat(PeriodStyle.ISO8601.parse("P20D", ChronoUnit.SECONDS)).isEqualTo(Period.parse("P20D"));
 		assertThat(PeriodStyle.ISO8601.parse("P15M", ChronoUnit.SECONDS)).isEqualTo(Period.parse("P15M"));
 		assertThat(PeriodStyle.ISO8601.parse("+P15M", ChronoUnit.SECONDS)).isEqualTo(Period.parse("P15M"));
