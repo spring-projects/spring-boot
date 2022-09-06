@@ -57,11 +57,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 		project.getPlugins().apply(DeployedPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			project.getPlugins().apply(ConfigurationPropertiesPlugin.class);
-			Configuration annotationProcessors = project.getConfigurations()
-					.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
-			annotationProcessors.getDependencies()
-					.add(project.getDependencies().project(Collections.singletonMap("path",
-							":spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor")));
+			configureAutoConfigurationAnnotationProcessor(project);
 			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
 				SourceSet main = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
@@ -72,6 +68,13 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 						project.provider(task::getOutputFile), (artifact) -> artifact.builtBy(task));
 			});
 		});
+	}
+
+	private void configureAutoConfigurationAnnotationProcessor(Project project) {
+		Configuration annotationProcessors = project.getConfigurations()
+				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
+		annotationProcessors.getDependencies().add(project.getDependencies().project(Collections.singletonMap("path",
+				":spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor")));
 	}
 
 }
