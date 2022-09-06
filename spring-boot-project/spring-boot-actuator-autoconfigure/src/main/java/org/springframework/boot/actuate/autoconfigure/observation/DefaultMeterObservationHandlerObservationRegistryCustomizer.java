@@ -17,26 +17,27 @@
 package org.springframework.boot.actuate.autoconfigure.observation;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.observation.TimerObservationHandler;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.observation.ObservationRegistry;
 
 /**
- * Registers the {@link TimerObservationHandler} with an {@link ObservationRegistry}.
+ * Registers the {@link DefaultMeterObservationHandler} with an
+ * {@link ObservationRegistry}.
  *
  * @author Moritz Halbritter
  */
-class TimerObservationHandlerObservationRegistryCustomizer
+class DefaultMeterObservationHandlerObservationRegistryCustomizer
 		implements ObservationRegistryCustomizer<ObservationRegistry> {
 
 	private final MeterRegistry meterRegistry;
 
-	TimerObservationHandlerObservationRegistryCustomizer(MeterRegistry meterRegistry) {
+	DefaultMeterObservationHandlerObservationRegistryCustomizer(MeterRegistry meterRegistry) {
 		this.meterRegistry = meterRegistry;
 	}
 
 	@Override
 	public void customize(ObservationRegistry registry) {
-		registry.observationConfig().observationHandler(new TimerObservationHandler(this.meterRegistry));
+		registry.observationConfig().observationHandler(new DefaultMeterObservationHandler(this.meterRegistry));
 	}
 
 }

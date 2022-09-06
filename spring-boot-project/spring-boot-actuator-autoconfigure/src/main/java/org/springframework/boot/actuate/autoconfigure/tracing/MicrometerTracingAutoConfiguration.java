@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
-import io.micrometer.tracing.handler.HttpClientTracingObservationHandler;
-import io.micrometer.tracing.handler.HttpServerTracingObservationHandler;
-import io.micrometer.tracing.http.HttpClientHandler;
-import io.micrometer.tracing.http.HttpServerHandler;
+import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
+import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
+import io.micrometer.tracing.propagation.Propagator;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,40 +49,39 @@ public class MicrometerTracingAutoConfiguration {
 
 	/**
 	 * {@code @Order} value of
-	 * {@link #httpServerTracingObservationHandler(Tracer, HttpServerHandler)}.
+	 * {@link #propagatingReceiverTracingObservationHandler(Tracer, Propagator)}.
 	 */
-	public static final int HTTP_SERVER_TRACING_OBSERVATION_HANDLER_ORDER = 1000;
+	public static final int RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER = 1000;
 
 	/**
 	 * {@code @Order} value of
-	 * {@link #httpClientTracingObservationHandler(Tracer, HttpClientHandler)}.
+	 * {@link #propagatingSenderTracingObservationHandler(Tracer, Propagator)}.
 	 */
-	public static final int HTTP_CLIENT_TRACING_OBSERVATION_HANDLER_ORDER = 2000;
+	public static final int SENDER_TRACING_OBSERVATION_HANDLER_ORDER = 2000;
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(Tracer.class)
-	@Order(DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER)
 	public DefaultTracingObservationHandler defaultTracingObservationHandler(Tracer tracer) {
 		return new DefaultTracingObservationHandler(tracer);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean({ Tracer.class, HttpServerHandler.class })
-	@Order(HTTP_SERVER_TRACING_OBSERVATION_HANDLER_ORDER)
-	public HttpServerTracingObservationHandler httpServerTracingObservationHandler(Tracer tracer,
-			HttpServerHandler httpServerHandler) {
-		return new HttpServerTracingObservationHandler(tracer, httpServerHandler);
+	@ConditionalOnBean({ Tracer.class, Propagator.class })
+	@Order(SENDER_TRACING_OBSERVATION_HANDLER_ORDER)
+	public PropagatingSenderTracingObservationHandler<?> propagatingSenderTracingObservationHandler(Tracer tracer,
+			Propagator propagator) {
+		return new PropagatingSenderTracingObservationHandler<>(tracer, propagator);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean({ Tracer.class, HttpClientHandler.class })
-	@Order(HTTP_CLIENT_TRACING_OBSERVATION_HANDLER_ORDER)
-	public HttpClientTracingObservationHandler httpClientTracingObservationHandler(Tracer tracer,
-			HttpClientHandler httpClientHandler) {
-		return new HttpClientTracingObservationHandler(tracer, httpClientHandler);
+	@ConditionalOnBean({ Tracer.class, Propagator.class })
+	@Order(RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER)
+	public PropagatingReceiverTracingObservationHandler<?> propagatingReceiverTracingObservationHandler(Tracer tracer,
+			Propagator propagator) {
+		return new PropagatingReceiverTracingObservationHandler<>(tracer, propagator);
 	}
 
 }

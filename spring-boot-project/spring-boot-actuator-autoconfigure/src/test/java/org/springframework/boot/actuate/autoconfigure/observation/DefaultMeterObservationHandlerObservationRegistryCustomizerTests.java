@@ -25,16 +25,16 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TimerObservationHandlerObservationRegistryCustomizer}.
+ * Tests for {@link DefaultMeterObservationHandlerObservationRegistryCustomizer}.
  *
  * @author Moritz Halbritter
  */
-class TimerObservationHandlerObservationRegistryCustomizerTests {
+class DefaultMeterObservationHandlerObservationRegistryCustomizerTests {
 
 	@Test
-	void customizeInstallsTimerObservationHandler() {
+	void customizeInstallsDefaultMeterObservationHandler() {
 		MeterRegistry meterRegistry = new SimpleMeterRegistry();
-		TimerObservationHandlerObservationRegistryCustomizer sut = new TimerObservationHandlerObservationRegistryCustomizer(
+		DefaultMeterObservationHandlerObservationRegistryCustomizer sut = new DefaultMeterObservationHandlerObservationRegistryCustomizer(
 				meterRegistry);
 		ObservationRegistry observationRegistry = ObservationRegistry.create();
 		sut.customize(observationRegistry);
