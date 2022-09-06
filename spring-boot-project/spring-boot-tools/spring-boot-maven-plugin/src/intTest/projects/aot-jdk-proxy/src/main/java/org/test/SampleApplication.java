@@ -18,9 +18,9 @@ package org.test;
 
 import org.test.SampleApplication.SampleApplicationRuntimeHints;
 
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.support.RuntimeHintsUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -39,7 +39,7 @@ public class SampleApplication {
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			// Force creation of at least one JDK proxy
-			RuntimeHintsUtils.registerAnnotation(hints, Service.class);
+			hints.proxies().registerJdkProxy(AopProxyUtils.completeJdkProxyInterfaces(Service.class));
 		}
 	}
 
