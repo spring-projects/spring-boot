@@ -52,6 +52,8 @@ class HazelcastServerConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
+	static final String HAZELCAST_LOGGING_TYPE = "hazelcast.logging.type";
+
 	private static HazelcastInstance getHazelcastInstance(Config config) {
 		if (StringUtils.hasText(config.getInstanceName())) {
 			return Hazelcast.getOrCreateHazelcastInstance(config);
@@ -118,6 +120,22 @@ class HazelcastServerConfiguration {
 				SpringManagedContext managementContext = new SpringManagedContext();
 				managementContext.setApplicationContext(applicationContext);
 				config.setManagedContext(managementContext);
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.slf4j.Logger.class)
+	static class HazelcastLoggingConfigCustomizerConfiguration {
+
+		@Bean
+		@Order(0)
+		HazelcastConfigCustomizer loggingHazelcastConfigCustomizer() {
+			return (config) -> {
+				if (!config.getProperties().containsKey(HAZELCAST_LOGGING_TYPE)) {
+					config.setProperty(HAZELCAST_LOGGING_TYPE, "slf4j");
+				}
 			};
 		}
 
