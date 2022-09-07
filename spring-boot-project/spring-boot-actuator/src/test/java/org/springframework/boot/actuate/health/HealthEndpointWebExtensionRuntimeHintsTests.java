@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class HealthEndpointWebExtensionRuntimeHintsTest {
+class HealthEndpointWebExtensionRuntimeHintsTests {
 
 	@Test
 	void shouldRegisterHints() {

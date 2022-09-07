@@ -30,13 +30,13 @@ import org.springframework.core.io.ClassPathResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TemplateRuntimeHints}.$
+ * Tests for {@link TemplateRuntimeHints}.
  *
  * @author Stephane Nicoll
  */
 class TemplateRuntimeHintsTests {
 
-	public static final Predicate<RuntimeHints> TEST_PREDICATE = RuntimeHintsPredicates.resource()
+	private static final Predicate<RuntimeHints> TEST_PREDICATE = RuntimeHintsPredicates.resource()
 			.forResource("templates/something/hello.html");
 
 	@Test
