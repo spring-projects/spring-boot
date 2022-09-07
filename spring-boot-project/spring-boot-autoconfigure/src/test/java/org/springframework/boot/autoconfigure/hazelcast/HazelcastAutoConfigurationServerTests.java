@@ -207,7 +207,7 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	void configWithDefaultLoggingTypeSlf4j() {
+	void autoConfiguredConfigSetsHazelcastLoggingToSlf4j() {
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
 			assertThat(config.getProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE)).isEqualTo("slf4j");
@@ -215,7 +215,7 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	void configWithExplicitLoggingType() {
+	void autoConfiguredConfigCanOverrideHazelcastLogging() {
 		this.contextRunner.withUserConfiguration(HazelcastConfigWithJDKLogging.class).run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
 			assertThat(config.getProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE)).isEqualTo("jdk");

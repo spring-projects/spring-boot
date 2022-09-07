@@ -51,6 +51,7 @@ import org.springframework.util.StringUtils;
 class HazelcastServerConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
+
 	static final String HAZELCAST_LOGGING_TYPE = "hazelcast.logging.type";
 
 	private static HazelcastInstance getHazelcastInstance(Config config) {
@@ -126,7 +127,7 @@ class HazelcastServerConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.slf4j.Logger.class)
-	static class LoggingHazelcastConfigCustomizerConfiguration {
+	static class HazelcastLoggingConfigCustomizerConfiguration {
 
 		@Bean
 		@Order(0)
