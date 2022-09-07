@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class HazelcastClientConfiguration {
 		private ClientConfig loadClientConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
 			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml")) {
+			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 				return new YamlClientConfigBuilder(configUrl).build();
 			}
 			return new XmlClientConfigBuilder(configUrl).build();

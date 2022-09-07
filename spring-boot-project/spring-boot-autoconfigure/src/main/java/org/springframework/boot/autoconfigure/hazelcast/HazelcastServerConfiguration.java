@@ -90,7 +90,7 @@ class HazelcastServerConfiguration {
 
 		private static Config loadConfig(URL configUrl) throws IOException {
 			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml")) {
+			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 				return new YamlConfigBuilder(configUrl).build();
 			}
 			return new XmlConfigBuilder(configUrl).build();
@@ -149,7 +149,7 @@ class HazelcastServerConfiguration {
 
 		ConfigAvailableCondition() {
 			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml", "classpath:/hazelcast.xml", "file:./hazelcast.yaml",
-					"classpath:/hazelcast.yaml");
+					"classpath:/hazelcast.yaml", "file:./hazelcast.yml", "classpath:/hazelcast.yml");
 		}
 
 	}
