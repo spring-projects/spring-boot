@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ class HazelcastServerConfiguration {
 
 		private static Config loadConfig(URL configUrl) throws IOException {
 			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml")) {
+			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 				return new YamlConfigBuilder(configUrl).build();
 			}
 			return new XmlConfigBuilder(configUrl).build();
@@ -109,7 +109,7 @@ class HazelcastServerConfiguration {
 
 		ConfigAvailableCondition() {
 			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml", "classpath:/hazelcast.xml", "file:./hazelcast.yaml",
-					"classpath:/hazelcast.yaml");
+					"classpath:/hazelcast.yaml", "file:./hazelcast.yml", "classpath:/hazelcast.yml");
 		}
 
 	}
