@@ -1,5 +1,6 @@
 plugins {
 	id "java"
+	id "eclipse"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
@@ -11,10 +12,12 @@ configurations {
 	dependenciesBom
 	loader
 	testRepository
+	compileOnlyProject
+	compileClasspath.extendsFrom(compileOnlyProject)
 }
 
 dependencies {
-	compileOnly(project(":spring-boot-project:spring-boot"))
+	compileOnlyProject(project(":spring-boot-project:spring-boot"))
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 	compileOnly("org.apache.groovy:groovy-templates")
 	compileOnly("org.springframework:spring-web")
@@ -199,3 +202,6 @@ publishing {
 	}
 }
 
+eclipse.classpath { // https://github.com/eclipse/buildship/issues/939
+	plusConfigurations += [ configurations.compileOnlyProject ]
+}

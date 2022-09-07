@@ -2,6 +2,7 @@ plugins {
 	id "java-gradle-plugin"
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
+	id "eclipse"
 }
 
 repositories {
@@ -110,3 +111,10 @@ gradlePlugin {
 test {
 	useJUnitPlatform()
 }
+
+eclipse.classpath.file.whenMerged {
+	def jreEntry = entries.find { it.path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") }
+	jreEntry.entryAttributes['module'] = 'true'
+	jreEntry.entryAttributes['limit-modules'] = 'java.base'
+}
+
