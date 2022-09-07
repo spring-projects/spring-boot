@@ -22,8 +22,8 @@
       label="Checkout Location"/>
   <setupTask
       xsi:type="jdt:JRETask"
-      version="JavaSE-1.8"
-      location="${jre.location-1.8}">
+      version="JavaSE-17"
+      location="${jre.location-17}">
     <description>
       Define the JRE needed to compile and run the Java
       projects of ${scope.project.label}
@@ -117,14 +117,14 @@
   </setupTask>
   <setupTask
       xsi:type="oomph:GradleImportTask"
-      javaHome="${jre.location-1.8}">
+      javaHome="${jre.location-17}">
     <sourceLocator
         rootFolder="${checkout.location}"
         locateNestedProjects="true"/>
   </setupTask>
   <setupTask
       xsi:type="oomph:GradleImportTask"
-      javaHome="${jre.location-1.8}">
+      javaHome="${jre.location-17}">
     <sourceLocator
         rootFolder="${checkout.location}/buildSrc"/>
   </setupTask>
