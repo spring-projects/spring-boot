@@ -468,6 +468,17 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void callbackAndMigrationBeansAreAppliedToConfigurationBeforeCustomizersAreCalled() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayJavaMigrationsConfiguration.class,
+						CallbackConfiguration.class)
+				.withBean(FlywayConfigurationCustomizer.class, () -> (configuration) -> {
+					assertThat(configuration.getCallbacks()).isNotEmpty();
+					assertThat(configuration.getJavaMigrations()).isNotEmpty();
+				}).run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
 	void batchIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.batch=true").run(validateFlywayTeamsPropertyOnly("batch"));
