@@ -28,6 +28,7 @@ import org.mockito.Answers;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.MicrometerConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,8 @@ import static org.mockito.Mockito.mock;
 class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MicrometerConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(MicrometerConfiguration.class))
+			.withUserConfiguration(PropertiesConfiguration.class);
 
 	@Test
 	void shouldSupplyBeans() {
@@ -97,6 +99,12 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			assertThat(context).hasBean("customOtelHttpServerHandler");
 			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(TracingProperties.class)
+	private static class PropertiesConfiguration {
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

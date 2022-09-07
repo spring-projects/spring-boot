@@ -316,10 +316,10 @@ public class BraveAutoConfiguration {
 			ScopeDecorator correlationScopeDecorator(
 					TracingProperties properties, ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
 				List<String> correlationFields = properties.getBaggage().getCorrelationFields();
-				// Add fields from properties
 				CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
 				for (String field : correlationFields) {
-					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field)).build());
+					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field))
+									.flushOnUpdate().build());
 				}
 				correlationScopeCustomizers.ifAvailable(customizers -> customizers.forEach(customizer -> customizer.customize(builder)));
 				return builder.build();
