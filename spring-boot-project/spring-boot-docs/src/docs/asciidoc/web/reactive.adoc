@@ -84,7 +84,8 @@ If you do so, the default welcome page detection switches to your custom locatio
 So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.
 
 In addition to the "`standard`" static resource locations listed earlier, a special case is made for https://www.webjars.org/[Webjars content].
-Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+By default, any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+The path can be customized with the configprop:spring.webflux.webjars-path-pattern[] property.
 
 TIP: Spring WebFlux applications do not strictly depend on the servlet API, so they cannot be deployed as war files and do not use the `src/main/webapp` directory.
 

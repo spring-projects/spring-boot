@@ -189,8 +189,9 @@ public class WebFluxAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			if (!registry.hasMappingForPattern("/webjars/**")) {
-				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
+			String webjarsPathPattern = this.webFluxProperties.getWebjarsPathPattern();
+			if (!registry.hasMappingForPattern(webjarsPathPattern)) {
+				ResourceHandlerRegistration registration = registry.addResourceHandler(webjarsPathPattern)
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);

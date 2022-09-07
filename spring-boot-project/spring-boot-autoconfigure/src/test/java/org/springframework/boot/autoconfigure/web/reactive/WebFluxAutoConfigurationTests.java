@@ -109,6 +109,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
+ * @author Vedran Pavic
  */
 class WebFluxAutoConfigurationTests {
 
@@ -183,6 +184,18 @@ class WebFluxAutoConfigurationTests {
 			assertThat(hm.getUrlMap().get("/static/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/static/**");
 			assertThat(staticHandler).extracting("locationValues").asList().hasSize(4);
+		});
+	}
+
+	@Test
+	void shouldMapWebjarsToCustomPath() {
+		this.contextRunner.withPropertyValues("spring.webflux.webjars-path-pattern:/assets/**").run((context) -> {
+			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
+			assertThat(hm.getUrlMap().get("/assets/**")).isInstanceOf(ResourceWebHandler.class);
+			ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap().get("/assets/**");
+			assertThat(webjarsHandler.getLocations()).hasSize(1);
+			assertThat(webjarsHandler.getLocations().get(0))
+					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
 		});
 	}
 
