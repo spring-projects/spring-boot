@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class HazelcastAutoConfigurationTests {
 	void defaultConfigFile() {
 		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
 		// this also asserts that XML has priority over YAML
-		// as both hazelcast.yaml, hazelcast.yml and hazelcast.xml in test classpath.
+		// as hazelcast.yaml, hazelcast.yml, and hazelcast.xml are available.
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
 			assertThat(config.getConfigurationUrl()).isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
