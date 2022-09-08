@@ -1640,6 +1640,13 @@ bom {
 			]
 		}
 	}
+	library("Zipkin Propagation AWS", "0.23.4") {
+		group("io.zipkin.aws") {
+			modules = [
+				"brave-propagation-aws"
+			]
+		}
+	}
 }
 
 generateMetadataFileForMavenPublication {

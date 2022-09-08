@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
-import java.util.Set;
 
 import brave.Tags;
 import brave.Tracing;
@@ -71,13 +70,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Brave.
  *
  * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
@@ -167,17 +166,12 @@ public class BraveAutoConfiguration {
 	@ConditionalOnClass(BraveTracer.class)
 	static class BraveMicrometer {
 
-		@Bean
-		@ConditionalOnMissingBean
-		@Primary // TODO: Tracer implements BaggageManager but there are 2 BaggageManager beans (Tracer and BraveBaggageManager)
-		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext, BraveBaggageManager braveBaggageManager) {
-			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
-		}
+		private static final BraveBaggageManager BRAVE_BAGGAGE_MANAGER = new BraveBaggageManager();
 
 		@Bean
 		@ConditionalOnMissingBean
-		BraveBaggageManager braveBaggageManager() {
-			return new BraveBaggageManager();
+		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
+			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), BRAVE_BAGGAGE_MANAGER);
 		}
 
 		@Bean
@@ -201,8 +195,8 @@ public class BraveAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean
 			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
-			BaggagePropagation.FactoryBuilder w3cPropagationFactory(TracingProperties tracingProperties, BraveBaggageManager braveBaggageManager) {
-				return BaggagePropagation.newFactoryBuilder(new W3CPropagation(braveBaggageManager, tracingProperties.getBaggage().getLocalFields()));
+			BaggagePropagation.FactoryBuilder w3cPropagationFactory(TracingProperties tracingProperties) {
+				return BaggagePropagation.newFactoryBuilder(new W3CPropagation(BRAVE_BAGGAGE_MANAGER, tracingProperties.getBaggage().getLocalFields()));
 			}
 
 			@Bean
@@ -258,8 +252,7 @@ public class BraveAutoConfiguration {
 			}
 
 			/**
-			 * We need a special condition as it users could use either comma or yaml encoding,
-			 * possibly with a deprecated prefix.
+			 * We need a special condition as it users could use either comma or yaml encoding.
 			 */
 			static class BaggageTagSpanHandlerCondition extends AnyNestedCondition {
 

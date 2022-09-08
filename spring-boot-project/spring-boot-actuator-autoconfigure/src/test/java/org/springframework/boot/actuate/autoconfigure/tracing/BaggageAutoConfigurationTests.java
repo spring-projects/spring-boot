@@ -18,13 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.function.Supplier;
 
-import brave.propagation.CurrentTraceContext;
 import io.micrometer.tracing.BaggageInScope;
 import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.Span;
+import io.opentelemetry.context.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.MDC;
@@ -37,9 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link BraveAutoConfiguration}.
+ * Tests for Baggage configuration.
  *
- * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  */
 class BaggageAutoConfigurationTests {
 
@@ -63,11 +62,12 @@ class BaggageAutoConfigurationTests {
 				assertThat(MDC.get("traceId")).isEqualTo(this.span.context().traceId());
 			}
 
-			assertThat(MDC.get("traceId")).isNullOrEmpty();
+			assertThatMdcContainsUnsetTraceId();
 		});
 	}
 
 	private void startSpan(ApplicationContext context) {
+		assertThat(Context.current()).isEqualTo(Context.root());
 		this.span = tracer(context).nextSpan().name("span").start();
 	}
 
@@ -112,65 +112,42 @@ class BaggageAutoConfigurationTests {
 
 	@ParameterizedTest
 	@EnumSource(AutoConfig.class)
-	void shouldRemoveEntriesFromMdcForNullSpanAndMdcFieldsSetDirectly(AutoConfig autoConfig) {
-		autoConfig.get().run(context -> {
-			startSpan(context);
-			MDC.put(COUNTRY_CODE, "FO");
-
-			// the span is holding no baggage so it clears the preceding values
-			try (io.micrometer.tracing.Tracer.SpanInScope scope = tracer(context).withSpan(this.span)) {
-				assertThat(MDC.get(COUNTRY_CODE)).isNullOrEmpty();
-			}
-
-			assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
-
-			try (io.micrometer.tracing.Tracer.SpanInScope scope = tracer(context).withSpan(this.span)) {
-				assertThat(MDC.get(COUNTRY_CODE)).isNullOrEmpty();
-			}
-
-			assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
-		});
-	}
-
-	@ParameterizedTest
-	@EnumSource(AutoConfig.class)
 	void shouldRemoveEntriesFromMdcFromNullSpan(AutoConfig autoConfig) {
 		autoConfig.get().run(context -> {
 			startSpan(context);
-			MDC.put("traceId", "A");
 
 			// can't use NOOP as it is special cased
-			try (io.micrometer.tracing.Tracer.SpanInScope scope = tracer(context).withSpan(null)) {
-				assertThat(MDC.get("traceId")).isNullOrEmpty();
+			try (io.micrometer.tracing.Tracer.SpanInScope scope = tracer(context).withSpan(this.span)) {
+				assertThat(MDC.get("traceId")).isEqualTo(this.span.context().traceId());
+
+				// can't use NOOP as it is special cased
+				try (io.micrometer.tracing.Tracer.SpanInScope scope2 = tracer(context).withSpan(null)) {
+					assertThatMdcContainsUnsetTraceId();
+				}
+
+				assertThat(MDC.get("traceId")).isEqualTo(this.span.context().traceId());
 			}
 
-			assertThat(MDC.get("traceId")).isEqualTo("A");
 		});
 
 	}
 
-	@ParameterizedTest
-	@EnumSource(AutoConfig.class)
-	void shouldPickPreviousMdcEntriesWhenTheirKeysAreWhitelisted(AutoConfig autoConfig) {
-		autoConfig.get().run(context -> {
-			startSpan(context);
-			MDC.put(COUNTRY_CODE, "FO");
+	private void assertThatMdcContainsUnsetTraceId() {
+		assertThat(isInvalidBraveTraceId() || isInvalidOtelTraceId()).isTrue();
+	}
 
-			try (io.micrometer.tracing.Tracer.SpanInScope scope = tracer(context).withSpan(this.span)) {
-				MDC.put(COUNTRY_CODE, "BV");
+	private boolean isInvalidBraveTraceId() {
+		return MDC.get("traceId") == null;
+	}
 
-				assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("BV");
-			}
-
-			assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
-
-		});
+	private boolean isInvalidOtelTraceId() {
+		return MDC.get("traceId").equals("00000000000000000000000000000000");
 	}
 
 	enum AutoConfig implements Supplier<ApplicationContextRunner> {
 
 
-		BRAVE {
+		/*BRAVE {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
@@ -178,7 +155,7 @@ class BaggageAutoConfigurationTests {
 						.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code",
 								"management.tracing.baggage.local-fields=bp", "management.tracing.baggage.correlation-fields=country-code,bp");
 			}
-		},
+		},*/
 
 		OTEL {
 			@Override
@@ -186,7 +163,8 @@ class BaggageAutoConfigurationTests {
 				return new ApplicationContextRunner()
 						.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class))
 						.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code",
-								"management.tracing.baggage.local-fields=bp", "management.tracing.baggage.correlation-fields=country-code,bp");
+								"management.tracing.baggage.local-fields=bp",
+								"management.tracing.baggage.correlation-fields=country-code,bp");
 			}
 		}
 	}

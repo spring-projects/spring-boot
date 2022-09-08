@@ -45,7 +45,7 @@ public class ZipkinProperties {
 	private Duration readTimeout = Duration.ofSeconds(10);
 
 	/**
-	 * Name of this application registered in Zipkin. Defaults to {@code spring.application.name}.
+	 * Name of this application registered in Zipkin. Defaults to spring.application.name.
 	 */
 	private String serviceName;
 

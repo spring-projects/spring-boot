@@ -73,6 +73,7 @@ import org.springframework.core.env.Environment;
  * {@link OpenTelemetryAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  */
 class OpenTelemetryConfigurations {
 
@@ -122,7 +123,7 @@ class OpenTelemetryConfigurations {
 		@Bean
 		SpanProcessor otelSpanProcessor(List<SpanExporter> spanExporter) {
 			return SpanProcessor.composite(spanExporter.stream()
-					.map(exporter -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
+					.map((exporter) -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
 		}
 
 	}
@@ -142,6 +143,7 @@ class OpenTelemetryConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(OtelTracer.class)
+	@EnableConfigurationProperties(TracingProperties.class)
 	static class MicrometerConfiguration {
 
 		@Bean
@@ -188,7 +190,7 @@ class OpenTelemetryConfigurations {
 			@Bean
 			@ConditionalOnMissingBean
 			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3", matchIfMissing = true)
-			TextMapPropagator b3TextMapPropagator() {
+			B3Propagator b3TextMapPropagator() {
 				return B3Propagator.injectingSingleHeader();
 			}
 
@@ -198,7 +200,7 @@ class OpenTelemetryConfigurations {
 				@Bean
 				@ConditionalOnMissingBean
 				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C")
-				TextMapPropagator w3cTextMapPropagator() {
+				W3CTraceContextPropagator w3cTextMapPropagator() {
 					return W3CTraceContextPropagator.getInstance();
 				}
 
@@ -207,7 +209,7 @@ class OpenTelemetryConfigurations {
 			@Bean
 			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "AWS")
 			@ConditionalOnClass(AWSPropagation.class)
-			TextMapPropagator awsTextMapPropagator() {
+			AwsXrayPropagator awsTextMapPropagator() {
 				return AwsXrayPropagator.getInstance();
 			}
 
@@ -217,7 +219,7 @@ class OpenTelemetryConfigurations {
 
 				@Bean
 				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3")
-				TextMapPropagator baggageTextMapPropagator(TracingProperties properties, BaggageManager baggageManager) {
+				BaggageTextMapPropagator baggageTextMapPropagator(TracingProperties properties, BaggageManager baggageManager) {
 					return new BaggageTextMapPropagator(properties.getBaggage().getRemoteFields(), baggageManager);
 				}
 
@@ -235,8 +237,7 @@ class OpenTelemetryConfigurations {
 				}
 
 				/**
-				 * We need a special condition as it users could use either comma or yaml encoding,
-				 * possibly with a deprecated prefix.
+				 * We need a special condition as it users could use either comma or yaml encoding.
 				 */
 				static class BaggageTagSpanHandlerCondition extends AnyNestedCondition {
 
