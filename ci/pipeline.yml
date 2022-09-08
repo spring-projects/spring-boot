@@ -199,6 +199,12 @@ resources:
   source:
     <<: *registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci-jdk18
+- name: ci-image-jdk19
+  type: registry-image
+  icon: docker
+  source:
+    <<: *registry-image-resource-source
+    repository: ((docker-hub-organization))/spring-boot-ci-jdk19
 - name: paketo-builder-base-image
   type: registry-image
   icon: docker
@@ -245,6 +251,14 @@ resources:
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk18-build
+- name: repo-status-jdk19-build
+  type: github-status-resource
+  icon: eye-check-outline
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-ci-status-token))
+    branch: ((branch))
+    context: jdk19-build
 - name: slack-alert
   type: slack-notification
   icon: slack
@@ -305,6 +319,14 @@ jobs:
       vars:
         ci-image-name: ci-image-jdk18
         <<: *docker-hub-mirror-vars
+    - task: build-ci-image-jdk19
+      privileged: true
+      file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-jdk19
+      vars:
+        ci-image-name: ci-image-jdk19
+        <<: *docker-hub-mirror-vars
   - in_parallel:
     - put: ci-image
       params:
@@ -318,6 +340,9 @@ jobs:
     - put: ci-image-jdk18
       params:
         image: ci-image-jdk18/image.tar
+    - put: ci-image-jdk19
+      params:
+        image: ci-image-jdk19/image.tar
 - name: detect-jdk-updates
   plan:
   - get: git-repo
@@ -521,6 +546,38 @@ jobs:
             params:
               <<: *slack-fail-params
     - put: repo-status-jdk18-build
+      params: { state: "success", commit: "git-repo" }
+    - put: slack-alert
+      params:
+        <<: *slack-success-params
+- name: jdk19-build
+  serial: true
+  public: true
+  plan:
+    - get: ci-image-jdk19
+    - get: git-repo
+      trigger: true
+    - put: repo-status-jdk19-build
+      params: { state: "pending", commit: "git-repo" }
+    - do:
+        - task: build-project
+          image: ci-image-jdk19
+          privileged: true
+          timeout: ((task-timeout))
+          file: git-repo/ci/tasks/build-project.yml
+          params:
+            BRANCH: ((branch))
+            TOOLCHAIN_JAVA_VERSION: 19
+            <<: *gradle-enterprise-task-params
+            <<: *docker-hub-task-params
+      on_failure:
+        do:
+          - put: repo-status-jdk19-build
+            params: { state: "failure", commit: "git-repo" }
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: repo-status-jdk19-build
       params: { state: "success", commit: "git-repo" }
     - put: slack-alert
       params:
@@ -878,13 +935,42 @@ jobs:
     - put: slack-alert
       params:
         <<: *slack-success-params
+- name: jdk19-run-system-tests
+  serial: true
+  public: true
+  plan:
+    - get: ci-image-jdk19
+    - get: git-repo
+    - get: paketo-builder-base-image
+      trigger: true
+    - get: daily
+      trigger: true
+    - do:
+        - task: run-system-tests
+          image: ci-image-jdk19
+          privileged: true
+          timeout: ((task-timeout))
+          file: git-repo/ci/tasks/run-system-tests.yml
+          params:
+            BRANCH: ((branch))
+            TOOLCHAIN_JAVA_VERSION: 19
+            <<: *gradle-enterprise-task-params
+            <<: *docker-hub-task-params
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: slack-alert
+      params:
+        <<: *slack-success-params
 groups:
 - name: "builds"
-  jobs: ["build", "jdk11-build", "jdk17-build", "jdk18-build", "windows-build"]
+  jobs: ["build", "jdk11-build", "jdk17-build", "jdk18-build", "jdk19-build", "windows-build"]
 - name: "releases"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-gradle-plugin", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "system-tests"
-  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk17-run-system-tests", "jdk18-run-system-tests"]
+  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk17-run-system-tests", "jdk18-run-system-tests", "jdk19-run-system-tests"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
