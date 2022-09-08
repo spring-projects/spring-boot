@@ -26,6 +26,7 @@ import io.micrometer.tracing.SamplerFunction;
 import io.micrometer.tracing.otel.bridge.BaggageTaggingSpanProcessor;
 import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
 import io.micrometer.tracing.otel.bridge.DefaultHttpServerAttributesExtractor;
+import io.micrometer.tracing.otel.bridge.EventListener;
 import io.micrometer.tracing.otel.bridge.EventPublishingContextWrapper;
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
@@ -33,6 +34,8 @@ import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
+import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
+import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
@@ -157,8 +160,26 @@ class OpenTelemetryConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		EventPublisher otelTracerEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-			return applicationEventPublisher::publishEvent;
+		EventPublisher otelTracerEventPublisher(TracingProperties tracingProperties) {
+			return new OTelEventPublisher(List.of(
+					new Slf4JEventListener(),
+					new Slf4JBaggageEventListener(tracingProperties.getBaggage().getCorrelationFields())
+			));
+		}
+
+		static class OTelEventPublisher implements EventPublisher {
+			private final List<EventListener> listeners;
+
+			OTelEventPublisher(List<EventListener> listeners) {
+				this.listeners = listeners;
+			}
+
+			@Override
+			public void publishEvent(Object event) {
+				for (EventListener listener : this.listeners) {
+					listener.onEvent(event);
+				}
+			}
 		}
 
 		@Bean
