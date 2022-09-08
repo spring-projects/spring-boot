@@ -18,9 +18,6 @@ configurations {
 
 dependencies {
 	compileOnlyProject(project(":spring-boot-project:spring-boot"))
-	compileOnly("jakarta.servlet:jakarta.servlet-api")
-	compileOnly("org.apache.groovy:groovy-templates")
-	compileOnly("org.springframework:spring-web")
 
 	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
@@ -31,30 +28,10 @@ dependencies {
 	implementation("org.apache.httpcomponents:httpclient") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	implementation("org.apache.maven:maven-model")
-	implementation("org.apache.maven:maven-resolver-provider") {
-		exclude group: "com.google.guava", module: "guava"
-		exclude group: "javax.inject", module: "javax.inject"
-	}
-	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
-	implementation("org.apache.maven.resolver:maven-resolver-transport-file")
-	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
-	implementation("org.apache.maven:maven-settings-builder") {
-		exclude group: "javax.inject", module: "javax.inject"
-	}
-	implementation("org.apache.groovy:groovy")
 	implementation("org.slf4j:slf4j-simple")
-	implementation("org.sonatype.plexus:plexus-sec-dispatcher")
-	implementation("org.sonatype.sisu:sisu-inject-plexus") {
-		exclude group: "javax.enterprise", module: "cdi-api"
-		exclude group: "org.sonatype.sisu", module: "sisu-inject-bean"
-	}
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework.security:spring-security-crypto")
 
-	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
@@ -62,47 +39,14 @@ dependencies {
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
-	testCompileOnly("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation(project(":spring-boot-project:spring-boot"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.apache.groovy:groovy-templates")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-test")
-
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-amqp", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-aop", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-artemis", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-batch", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-data-jpa", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-integration", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-security", configuration: "mavenRepository"))
-	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository"))
-}
-
-task syncSpringBootDependenciesBom(type: Sync) {
-	destinationDir = file("${buildDir}/generated-resources/org/springframework/boot/cli/compiler/dependencies")
-	from configurations.dependenciesBom
-}
-
-task syncTestRepository(type: Sync) {
-	destinationDir = file("${buildDir}/test-repository")
-	from configurations.testRepository
-}
-
-sourceSets {
-	main {
-		output.dir("${buildDir}/generated-resources", builtBy: "syncSpringBootDependenciesBom")
-	}
-}
-
-test {
-	dependsOn syncTestRepository
 }
 
 task fullJar(type: Jar) {
@@ -124,7 +68,6 @@ task fullJar(type: Jar) {
 	}
 	manifest {
 		attributes(
-			"Class-Loader": "groovy.lang.GroovyClassLoader",
 			"Main-Class": "org.springframework.boot.loader.JarLauncher",
 			"Start-Class": "org.springframework.boot.cli.SpringCli"
 		)
@@ -155,7 +98,7 @@ task zip(type: Zip) {
 }
 
 intTest {
-	dependsOn syncTestRepository, zip
+	dependsOn zip
 }
 
 task tar(type: Tar) {

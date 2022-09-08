@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "groovy"
 	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"

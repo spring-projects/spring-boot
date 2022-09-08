@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,9 @@ import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
-import org.springframework.boot.cli.command.archive.JarCommand;
-import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.encodepassword.EncodePasswordCommand;
-import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.init.InitCommand;
-import org.springframework.boot.cli.command.install.InstallCommand;
-import org.springframework.boot.cli.command.install.UninstallCommand;
-import org.springframework.boot.cli.command.run.RunCommand;
 
 /**
  * Default implementation of {@link CommandFactory}.
@@ -46,12 +40,6 @@ public class DefaultCommandFactory implements CommandFactory {
 	static {
 		List<Command> defaultCommands = new ArrayList<>();
 		defaultCommands.add(new VersionCommand());
-		defaultCommands.add(new RunCommand());
-		defaultCommands.add(new GrabCommand());
-		defaultCommands.add(new JarCommand());
-		defaultCommands.add(new WarCommand());
-		defaultCommands.add(new InstallCommand());
-		defaultCommands.add(new UninstallCommand());
 		defaultCommands.add(new InitCommand());
 		defaultCommands.add(new EncodePasswordCommand());
 		DEFAULT_COMMANDS = Collections.unmodifiableList(defaultCommands);

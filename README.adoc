@@ -125,12 +125,6 @@ For example, if you want to get started using Spring and JPA for database access
 
 
 
-=== spring-boot-cli
-The Spring command-line application compiles and runs Groovy source, allowing you to write the absolute minimum amount of code to get an application running.
-Spring CLI can also watch files, automatically recompiling and restarting when they change.
-
-
-
 === spring-boot-actuator
 Actuator endpoints let you monitor and interact with your application.
 Spring Boot Actuator provides the infrastructure required for actuator endpoints.
@@ -167,12 +161,6 @@ Generally, you will not need to use `spring-boot-loader` directly but work with 
 === spring-boot-devtools
 The spring-boot-devtools module provides additional development-time features, such as automatic restarts, for a smoother application development experience.
 Developer tools are automatically disabled when running a fully packaged application.
-
-
-
-== Samples
-Groovy samples for use with the command line application are available in link:spring-boot-project/spring-boot-cli/samples[spring-boot-cli/samples].
-To run the CLI samples, type `spring run <sample>.groovy` from the samples directory.
 
 
 
