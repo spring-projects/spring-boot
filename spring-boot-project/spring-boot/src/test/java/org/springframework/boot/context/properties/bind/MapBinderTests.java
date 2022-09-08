@@ -27,9 +27,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
 import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
@@ -50,6 +51,7 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -329,7 +331,7 @@ class MapBinderTests {
 	@Test
 	void bindToMapShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		BindHandler handler = mockBindHandler();
 		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP;
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
@@ -341,7 +343,7 @@ class MapBinderTests {
 	@Test
 	void bindToMapStringArrayShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "a,b,c", "line1"));
-		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		BindHandler handler = mockBindHandler();
 		Bindable<Map<String, String[]>> target = STRING_ARRAY_MAP;
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
@@ -614,6 +616,14 @@ class MapBinderTests {
 		return Bindable.of(ResolvableType.forClassWithGenerics(List.class, type));
 	}
 
+	private BindHandler mockBindHandler() {
+		BindHandler handler = mock(BindHandler.class);
+		given(handler.onStart(any(), any(), any())).willAnswer(InvocationArgument.index(1));
+		given(handler.onCreate(any(), any(), any(), any())).willAnswer(InvocationArgument.index(3));
+		given(handler.onSuccess(any(), any(), any(), any())).willAnswer(InvocationArgument.index(3));
+		return handler;
+	}
+
 	static class Foo {
 
 		private String pattern;
@@ -730,6 +740,25 @@ class MapBinderTests {
 
 		void setAddresses(Map<String, ? extends List<? extends InetAddress>> addresses) {
 			this.addresses = addresses;
+		}
+
+	}
+
+	private static final class InvocationArgument<T> implements Answer<T> {
+
+		private final int index;
+
+		private InvocationArgument(int index) {
+			this.index = index;
+		}
+
+		@Override
+		public T answer(InvocationOnMock invocation) throws Throwable {
+			return invocation.getArgument(this.index);
+		}
+
+		private static <T> InvocationArgument<T> index(int index) {
+			return new InvocationArgument<>(index);
 		}
 
 	}
