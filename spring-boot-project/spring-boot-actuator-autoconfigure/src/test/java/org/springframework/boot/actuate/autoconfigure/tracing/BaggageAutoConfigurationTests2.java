@@ -86,9 +86,9 @@ class BaggageAutoConfigurationTests2 {
 				span.end();
 			}
 
+			assertThatMdcContainsUnsetTraceId();
 			assertThat(MDC.get(COUNTRY_CODE)).isNull();
 			assertThat(MDC.get(BUSINESS_PROCESS)).isNull();
-			assertThatMdcContainsUnsetTraceId();
 		});
 	}
 
@@ -98,18 +98,24 @@ class BaggageAutoConfigurationTests2 {
 		autoConfig.get().run(context -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
-			try (Tracer.SpanInScope scope1 = tracer.withSpan(span.start());
+			try (Tracer.SpanInScope scope = tracer.withSpan(span.start());
 				 BaggageInScope fo = context.getBean(BaggageManager.class).createBaggage(COUNTRY_CODE).set(span.context(), "FO")) {
+				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
 				assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
 
 				try (Tracer.SpanInScope scope2 = tracer.withSpan(null)) {
+					assertThatMdcContainsUnsetTraceId();
 					assertThat(MDC.get(COUNTRY_CODE)).isNullOrEmpty();
 				}
+
+				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
+				assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
 			}
 			finally {
 				span.end();
 			}
 			assertThatMdcContainsUnsetTraceId();
+			assertThat(MDC.get(COUNTRY_CODE)).isNullOrEmpty();
 		});
 	}
 
