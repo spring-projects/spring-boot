@@ -1,5 +1,7 @@
 package org.test
 
+import org.springframework.transaction.TransactionManager
+
 @Grab("hsqldb")
 @Configuration(proxyBeanMethods = false)
 @EnableBatchProcessing
@@ -10,6 +12,9 @@ class JobConfig {
 
 	@Autowired
 	private StepBuilderFactory steps
+	
+	@Autowired
+	private TransactionManager transactionManager
 
 	@Bean
 	protected Tasklet tasklet() {
@@ -28,6 +33,6 @@ class JobConfig {
 
 	@Bean
 	protected Step step1() throws Exception {
-		return steps.get("step1").tasklet(tasklet()).build()
+		return steps.get("step1").tasklet(tasklet()).transactionManager(this.transactionManager).build()
 	}
 }
