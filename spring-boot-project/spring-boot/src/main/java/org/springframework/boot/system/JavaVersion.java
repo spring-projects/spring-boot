@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import org.springframework.util.ClassUtils;
@@ -89,7 +90,12 @@ public enum JavaVersion {
 	/**
 	 * Java 18.
 	 */
-	EIGHTEEN("18", Duration.class, "isPositive");
+	EIGHTEEN("18", Duration.class, "isPositive"),
+
+	/**
+	 * Java 19.
+	 */
+	NINETEEN("19", Future.class, "state");
 
 	private final String name;
 
