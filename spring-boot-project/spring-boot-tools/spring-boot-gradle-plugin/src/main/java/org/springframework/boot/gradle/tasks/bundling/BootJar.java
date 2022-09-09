@@ -34,6 +34,7 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -44,6 +45,7 @@ import org.gradle.api.tasks.bundling.Jar;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@DisableCachingByDefault(because = "Not worth caching")
 public class BootJar extends Jar implements BootArchive {
 
 	private static final String LAUNCHER = "org.springframework.boot.loader.JarLauncher";

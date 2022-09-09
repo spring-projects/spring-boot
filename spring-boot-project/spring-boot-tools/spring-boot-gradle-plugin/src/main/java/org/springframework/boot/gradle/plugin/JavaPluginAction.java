@@ -36,7 +36,6 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -98,8 +97,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
-		SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		SourceSet mainSourceSet = sourceSets(project).getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		Configuration developmentOnly = project.getConfigurations()
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
@@ -125,8 +123,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 			buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
 			buildImage.setGroup(BasePlugin.BUILD_GROUP);
 			buildImage.getArchiveFile().set(bootJar.get().getArchiveFile());
-			buildImage.getTargetJavaVersion()
-					.set(project.provider(() -> javaPluginConvention(project).getTargetCompatibility()));
+			buildImage.getTargetJavaVersion().set(project.provider(
+					() -> project.getExtensions().getByType(JavaPluginExtension.class).getTargetCompatibility()));
 		});
 	}
 
@@ -135,8 +133,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
-		Callable<FileCollection> classpath = () -> javaPluginConvention(project).getSourceSets()
-				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().filter(new JarTypeFileSpec());
+		Callable<FileCollection> classpath = () -> sourceSets(project).findByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getRuntimeClasspath().filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
 				classpath);
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
@@ -160,8 +158,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 		run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
 	}
 
-	private JavaPluginConvention javaPluginConvention(Project project) {
-		return project.getConvention().getPlugin(JavaPluginConvention.class);
+	@SuppressWarnings("deprecation")
+	private SourceSetContainer sourceSets(Project project) {
+		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
 	}
 
 	private void configureUtf8Encoding(Project evaluatedProject) {
@@ -189,9 +188,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
-		SourceSetContainer sourceSets = compile.getProject().getConvention().getPlugin(JavaPluginConvention.class)
-				.getSourceSets();
-		sourceSets.stream().filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
+		sourceSets(compile.getProject()).stream()
+				.filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
 				.map((match) -> match.getResources().getSrcDirs()).findFirst()
 				.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
