@@ -96,7 +96,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -458,7 +457,7 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
 		@Deprecated
 		@SuppressWarnings("deprecation")
-		public ThemeResolver themeResolver() {
+		public org.springframework.web.servlet.ThemeResolver themeResolver() {
 			return super.themeResolver();
 		}
 
