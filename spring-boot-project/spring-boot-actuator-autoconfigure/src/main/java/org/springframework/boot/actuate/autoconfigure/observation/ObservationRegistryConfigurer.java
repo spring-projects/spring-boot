@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.observation;
 
 import java.util.List;
 
-import io.micrometer.observation.Observation.GlobalObservationConvention;
+import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
