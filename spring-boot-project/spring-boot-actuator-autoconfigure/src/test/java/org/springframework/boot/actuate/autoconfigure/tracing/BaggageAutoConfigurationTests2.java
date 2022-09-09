@@ -32,7 +32,6 @@ import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Marcin Grzejszczak
  */
-@DirtiesContext
 class BaggageAutoConfigurationTests2 {
 
 	static final String COUNTRY_CODE = "country-code";
