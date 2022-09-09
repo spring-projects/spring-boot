@@ -1684,7 +1684,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Framework", "5.3.22") {
+	library("Spring Framework", "5.3.23-SNAPSHOT") {
 		prohibit("[6.0.0-M1,)") {
 			because "we upgrade in Spring Boot 3.x"
 		}
