@@ -34,9 +34,4 @@ class SampleBatchApplicationTests {
 		assertThat(output).contains("completed with the following parameters");
 	}
 
-	public static void main(String[] args) throws ClassNotFoundException {
-		System.getProperties().forEach((k, v) -> System.out.println(k + "=" + v));
-		Class.forName("org.springframework.boot.web.servlet.context.ServletWebServerApplicationContextFactory");
-	}
-
 }
