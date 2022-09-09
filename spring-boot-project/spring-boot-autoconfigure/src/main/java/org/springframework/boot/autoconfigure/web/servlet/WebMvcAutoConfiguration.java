@@ -456,6 +456,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
+		@Deprecated
+		@SuppressWarnings("deprecation")
 		public ThemeResolver themeResolver() {
 			return super.themeResolver();
 		}
