@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
@@ -112,8 +112,12 @@ public class SpringBootExtension {
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {
-		return this.project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir();
+		return sourceSets(this.project).getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir();
+	}
+
+	@SuppressWarnings("deprecation")
+	private SourceSetContainer sourceSets(Project project) {
+		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
 	}
 
 	private String determineArtifactBaseName() {

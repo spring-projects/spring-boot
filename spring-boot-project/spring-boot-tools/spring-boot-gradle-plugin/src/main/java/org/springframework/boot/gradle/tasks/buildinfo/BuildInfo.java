@@ -30,6 +30,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.work.DisableCachingByDefault;
 
 import org.springframework.boot.loader.tools.BuildPropertiesWriter;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
@@ -41,6 +42,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@DisableCachingByDefault(because = "Not worth caching")
 public class BuildInfo extends ConventionTask {
 
 	private final BuildInfoProperties properties = new BuildInfoProperties(getProject());

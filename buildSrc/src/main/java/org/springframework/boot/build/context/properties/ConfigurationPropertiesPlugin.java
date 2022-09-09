@@ -16,9 +16,7 @@
 
 package org.springframework.boot.build.context.properties;
 
-import java.io.File;
 import java.util.Collections;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import org.gradle.api.Plugin;
@@ -27,7 +25,7 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
@@ -94,20 +92,19 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	private void disableIncrementalCompilation(Project project) {
-		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		project.getTasks().named(mainSourceSet.getCompileJavaTaskName(), JavaCompile.class)
 				.configure((compileJava) -> compileJava.getOptions().setIncremental(false));
 	}
 
 	private void addMetadataArtifact(Project project) {
-		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		project.getConfigurations().maybeCreate(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME);
 		project.afterEvaluate((evaluatedProject) -> evaluatedProject.getArtifacts().add(
 				CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
-				evaluatedProject.provider((Callable<File>) () -> new File(mainSourceSet.getJava().getOutputDir(),
-						"META-INF/spring-configuration-metadata.json")),
+				mainSourceSet.getJava().getDestinationDirectory().dir("META-INF/spring-configuration-metadata.json"),
 				(artifact) -> artifact
 						.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
 	}
@@ -117,7 +114,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
 		((Task) compileJava).getInputs().files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME))
 				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("processed resources");
-		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		compileJava.getOptions().getCompilerArgs()
 				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + StringUtils
@@ -130,7 +127,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				.register(CHECK_ADDITIONAL_SPRING_CONFIGURATION_METADATA_TASK_NAME,
 						CheckAdditionalSpringConfigurationMetadata.class);
 		checkConfigurationMetadata.configure((check) -> {
-			SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+			SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			check.setSource(mainSourceSet.getResources());
 			check.include("META-INF/additional-spring-configuration-metadata.json");
@@ -145,7 +142,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		TaskProvider<CheckSpringConfigurationMetadata> checkConfigurationMetadata = project.getTasks()
 				.register(CHECK_SPRING_CONFIGURATION_METADATA_TASK_NAME, CheckSpringConfigurationMetadata.class);
 		checkConfigurationMetadata.configure((check) -> {
-			SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+			SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			Provider<RegularFile> metadataLocation = project.getTasks()
 					.named(mainSourceSet.getCompileJavaTaskName(), JavaCompile.class)

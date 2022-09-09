@@ -31,7 +31,7 @@ import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPlugin;
-import org.gradle.api.plugins.ApplicationPluginConvention;
+import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.jvm.application.tasks.CreateStartScripts;
@@ -45,21 +45,20 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		ApplicationPluginConvention applicationConvention = project.getConvention()
-				.getPlugin(ApplicationPluginConvention.class);
+		JavaApplication javaApplication = project.getExtensions().getByType(JavaApplication.class);
 		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
 		distribution.getDistributionBaseName()
-				.convention((project.provider(() -> applicationConvention.getApplicationName() + "-boot")));
+				.convention((project.provider(() -> javaApplication.getApplicationName() + "-boot")));
 		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks().register("bootStartScripts",
 				CreateStartScripts.class,
-				(task) -> configureCreateStartScripts(project, applicationConvention, distribution, task));
+				(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
 	}
 
-	private void configureCreateStartScripts(Project project, ApplicationPluginConvention applicationConvention,
+	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
 			Distribution distribution, CreateStartScripts createStartScripts) {
 		createStartScripts
 				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
@@ -75,9 +74,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		});
 		createStartScripts.getConventionMapping().map("outputDir",
 				() -> new File(project.getBuildDir(), "bootScripts"));
-		createStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
-		createStartScripts.getConventionMapping().map("defaultJvmOpts",
-				applicationConvention::getApplicationDefaultJvmArgs);
+		createStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
+		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 	}
 
 	private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Layers;
@@ -133,7 +132,7 @@ public class LayeredSpec {
 	 * @param closure the closure
 	 */
 	public void application(Closure<?> closure) {
-		application(ConfigureUtil.configureUsing(closure));
+		application(Closures.asAction(closure));
 	}
 
 	/**
@@ -168,7 +167,7 @@ public class LayeredSpec {
 	 * @param closure the closure
 	 */
 	public void dependencies(Closure<?> closure) {
-		dependencies(ConfigureUtil.configureUsing(closure));
+		dependencies(Closures.asAction(closure));
 	}
 
 	/**
@@ -245,7 +244,7 @@ public class LayeredSpec {
 		}
 
 		public void intoLayer(String layer, Closure<?> closure) {
-			intoLayer(layer, ConfigureUtil.configureUsing(closure));
+			intoLayer(layer, Closures.asAction(closure));
 		}
 
 		public void intoLayer(String layer, Action<IntoLayerSpec> action) {

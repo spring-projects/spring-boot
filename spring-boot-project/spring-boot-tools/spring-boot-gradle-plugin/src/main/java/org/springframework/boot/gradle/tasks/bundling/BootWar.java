@@ -35,6 +35,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
@@ -43,6 +44,7 @@ import org.gradle.api.tasks.bundling.War;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@DisableCachingByDefault(because = "Not worth caching")
 public class BootWar extends War implements BootArchive {
 
 	private static final String LAUNCHER = "org.springframework.boot.loader.WarLauncher";

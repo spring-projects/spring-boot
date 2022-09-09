@@ -66,10 +66,15 @@ public class BuildInfoProperties implements Serializable {
 	}
 
 	private Provider<String> projectVersion(Project project) {
-		Provider<String> externalVersionProperty = project.getProviders().gradleProperty("version")
-				.forUseAtConfigurationTime();
+		Provider<String> externalVersionProperty = forUseAtConfigurationTime(
+				project.getProviders().gradleProperty("version"));
 		externalVersionProperty.getOrNull();
 		return project.provider(() -> project.getVersion().toString());
+	}
+
+	@SuppressWarnings("deprecation")
+	private Provider<String> forUseAtConfigurationTime(Provider<String> provider) {
+		return provider.forUseAtConfigurationTime();
 	}
 
 	/**

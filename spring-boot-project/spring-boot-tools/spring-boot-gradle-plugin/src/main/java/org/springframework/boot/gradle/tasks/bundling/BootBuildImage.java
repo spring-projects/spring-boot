@@ -36,7 +36,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
-import org.gradle.util.ConfigureUtil;
+import org.gradle.work.DisableCachingByDefault;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
@@ -62,6 +62,7 @@ import org.springframework.util.StringUtils;
  * @author Julian Liebig
  * @since 2.3.0
  */
+@DisableCachingByDefault
 public class BootBuildImage extends DefaultTask {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
@@ -465,7 +466,7 @@ public class BootBuildImage extends DefaultTask {
 	 * @param closure the closure
 	 */
 	public void buildCache(Closure<?> closure) {
-		buildCache(ConfigureUtil.configureUsing(closure));
+		buildCache(Closures.asAction(closure));
 	}
 
 	/**
@@ -493,7 +494,7 @@ public class BootBuildImage extends DefaultTask {
 	 * @param closure the closure
 	 */
 	public void launchCache(Closure<?> closure) {
-		launchCache(ConfigureUtil.configureUsing(closure));
+		launchCache(Closures.asAction(closure));
 	}
 
 	/**
@@ -521,7 +522,7 @@ public class BootBuildImage extends DefaultTask {
 	 * @since 2.4.0
 	 */
 	public void docker(Closure<?> closure) {
-		docker(ConfigureUtil.configureUsing(closure));
+		docker(Closures.asAction(closure));
 	}
 
 	@TaskAction

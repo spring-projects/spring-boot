@@ -22,7 +22,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 
@@ -110,7 +109,7 @@ public class DockerSpec {
 	 * @param closure the closure to apply
 	 */
 	public void builderRegistry(Closure<?> closure) {
-		builderRegistry(ConfigureUtil.configureUsing(closure));
+		builderRegistry(Closures.asAction(closure));
 	}
 
 	/**
@@ -138,7 +137,7 @@ public class DockerSpec {
 	 * @param closure the closure to apply
 	 */
 	public void publishRegistry(Closure<?> closure) {
-		publishRegistry(ConfigureUtil.configureUsing(closure));
+		publishRegistry(Closures.asAction(closure));
 	}
 
 	/**
