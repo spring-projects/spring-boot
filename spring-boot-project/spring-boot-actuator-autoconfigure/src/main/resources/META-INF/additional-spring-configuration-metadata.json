@@ -2092,6 +2092,16 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Micrometer Tracing baggage propagation.",
       "defaultValue": true
+    },
+    {
+      "name": "management.tracing.log-service-name",
+      "type": "java.lang.String",
+      "description": "Service name to be used in log. Defaults to spring.application.name ."
+    },
+    {
+      "name": "management.tracing.default-logging-pattern-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable automated log format that contains tracing information."
     }
   ],
   "hints": [

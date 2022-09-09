@@ -160,25 +160,8 @@ class OpenTelemetryConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		EventPublisher otelTracerEventPublisher(TracingProperties tracingProperties) {
-			return new OTelEventPublisher(List.of(
-					new Slf4JEventListener(),
-					new Slf4JBaggageEventListener(tracingProperties.getBaggage().getCorrelationFields())
-			));
-		}
-
-		static class OTelEventPublisher implements EventPublisher {
-			private final List<EventListener> listeners;
-
-			OTelEventPublisher(List<EventListener> listeners) {
-				this.listeners = listeners;
-			}
-
-			@Override
-			public void publishEvent(Object event) {
-				for (EventListener listener : this.listeners) {
-					listener.onEvent(event);
-				}
-			}
+			return new OTelEventPublisher(List.of(new Slf4JEventListener(),
+					new Slf4JBaggageEventListener(tracingProperties.getBaggage().getCorrelationFields())));
 		}
 
 		@Bean
@@ -204,6 +187,23 @@ class OpenTelemetryConfigurations {
 					new DefaultHttpServerAttributesExtractor());
 		}
 
+		static class OTelEventPublisher implements EventPublisher {
+
+			private final List<EventListener> listeners;
+
+			OTelEventPublisher(List<EventListener> listeners) {
+				this.listeners = listeners;
+			}
+
+			@Override
+			public void publishEvent(Object event) {
+				for (EventListener listener : this.listeners) {
+					listener.onEvent(event);
+				}
+			}
+
+		}
+
 		@Configuration(proxyBeanMethods = false)
 		static class PropagationConfiguration {
 
@@ -214,9 +214,17 @@ class OpenTelemetryConfigurations {
 				return B3Propagator.injectingSingleHeader();
 			}
 
+			@Bean
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "AWS")
+			@ConditionalOnClass(AWSPropagation.class)
+			AwsXrayPropagator awsTextMapPropagator() {
+				return AwsXrayPropagator.getInstance();
+			}
+
 			@Configuration(proxyBeanMethods = false)
 			@ConditionalOnProperty(value = "management.tracing.baggage.enabled", havingValue = "false")
 			static class NoBaggagePropagatorConfiguration {
+
 				@Bean
 				@ConditionalOnMissingBean
 				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C")
@@ -226,20 +234,14 @@ class OpenTelemetryConfigurations {
 
 			}
 
-			@Bean
-			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "AWS")
-			@ConditionalOnClass(AWSPropagation.class)
-			AwsXrayPropagator awsTextMapPropagator() {
-				return AwsXrayPropagator.getInstance();
-			}
-
 			@Configuration(proxyBeanMethods = false)
 			@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
 			static class BaggagePropagatorConfiguration {
 
 				@Bean
 				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3")
-				BaggageTextMapPropagator baggageTextMapPropagator(TracingProperties properties, BaggageManager baggageManager) {
+				BaggageTextMapPropagator baggageTextMapPropagator(TracingProperties properties,
+						BaggageManager baggageManager) {
 					return new BaggageTextMapPropagator(properties.getBaggage().getRemoteFields(), baggageManager);
 				}
 
@@ -247,7 +249,8 @@ class OpenTelemetryConfigurations {
 				@ConditionalOnMissingBean
 				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C")
 				TextMapPropagator w3cTextMapPropagator() {
-					return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance());
+					return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(),
+							W3CBaggagePropagator.getInstance());
 				}
 
 				@Bean
@@ -257,7 +260,8 @@ class OpenTelemetryConfigurations {
 				}
 
 				/**
-				 * We need a special condition as it users could use either comma or yaml encoding.
+				 * We need a special condition as it users could use either comma or yaml
+				 * encoding.
 				 */
 				static class BaggageTagSpanHandlerCondition extends AnyNestedCondition {
 
@@ -283,10 +287,14 @@ class OpenTelemetryConfigurations {
 
 					@Bean
 					@ConditionalOnMissingBean
-					OpenTelemetrySlf4jBaggageApplicationListener otelSlf4jBaggageApplicationListener(TracingProperties tracingProperties) {
-						return new OpenTelemetrySlf4jBaggageApplicationListener(tracingProperties.getBaggage().getCorrelationFields());
+					OpenTelemetrySlf4jBaggageApplicationListener otelSlf4jBaggageApplicationListener(
+							TracingProperties tracingProperties) {
+						return new OpenTelemetrySlf4jBaggageApplicationListener(
+								tracingProperties.getBaggage().getCorrelationFields());
 					}
+
 				}
+
 			}
 
 		}
@@ -302,6 +310,7 @@ class OpenTelemetryConfigurations {
 			}
 
 		}
+
 	}
 
 }

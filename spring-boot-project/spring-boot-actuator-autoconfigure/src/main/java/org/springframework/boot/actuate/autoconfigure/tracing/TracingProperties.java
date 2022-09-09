@@ -54,7 +54,7 @@ public class TracingProperties {
 	}
 
 	public Propagation getPropagation() {
-		return propagation;
+		return this.propagation;
 	}
 
 	public static class Sampling {
@@ -87,14 +87,15 @@ public class TracingProperties {
 		private List<String> correlationFields = new ArrayList<>();
 
 		/**
-		 * List of fields that should be accessible within the JVM process but not propagated
-		 * over the wire.
+		 * List of fields that should be accessible within the JVM process but not
+		 * propagated over the wire.
 		 */
 		private List<String> localFields = new ArrayList<>();
 
 		/**
-		 * List of fields that are referenced the same in-process as it is on the wire. For
-		 * example, the field "x-vcap-request-id" would be set as-is including the prefix.
+		 * List of fields that are referenced the same in-process as it is on the wire.
+		 * For example, the field "x-vcap-request-id" would be set as-is including the
+		 * prefix.
 		 */
 		private List<String> remoteFields = new ArrayList<>();
 
@@ -104,7 +105,7 @@ public class TracingProperties {
 		private List<String> tagFields = new ArrayList<>();
 
 		public boolean isCorrelationEnabled() {
-			return correlationEnabled;
+			return this.correlationEnabled;
 		}
 
 		public void setCorrelationEnabled(boolean correlationEnabled) {
@@ -112,7 +113,7 @@ public class TracingProperties {
 		}
 
 		public List<String> getCorrelationFields() {
-			return correlationFields;
+			return this.correlationFields;
 		}
 
 		public void setCorrelationFields(List<String> correlationFields) {
@@ -120,7 +121,7 @@ public class TracingProperties {
 		}
 
 		public List<String> getLocalFields() {
-			return localFields;
+			return this.localFields;
 		}
 
 		public void setLocalFields(List<String> localFields) {
@@ -128,7 +129,7 @@ public class TracingProperties {
 		}
 
 		public List<String> getRemoteFields() {
-			return remoteFields;
+			return this.remoteFields;
 		}
 
 		public void setRemoteFields(List<String> remoteFields) {
@@ -162,6 +163,7 @@ public class TracingProperties {
 		}
 
 		enum PropagationType {
+
 			/**
 			 * AWS propagation type.
 			 */
@@ -180,13 +182,17 @@ public class TracingProperties {
 			/**
 			 * Jaeger propagation type.
 			 */
-			JAEGER, // TODO: Supported by OTel, not by Brave - my suggestion is not to support it
+			JAEGER, // TODO: Supported by OTel, not by Brave - my suggestion is not to
+					// support it
 
 			/**
-			 * Custom propagation type. If picked, requires bean registration overriding the
-			 * default propagation mechanisms.
+			 * Custom propagation type. If picked, requires bean registration overriding
+			 * the default propagation mechanisms.
 			 */
 			CUSTOM
+
 		}
+
 	}
+
 }

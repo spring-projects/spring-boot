@@ -32,7 +32,6 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Dave Syer
  * @author Marcin Grzejszczak
- * @since 3.0.0
  */
 class TracingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
@@ -44,10 +43,11 @@ class TracingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 		// This doesn't work with all logging systems but it's a useful default so you see
 		// traces in logs without having to configure it.
 		if (Boolean.parseBoolean(environment.getProperty("management.tracing.enabled", "true"))) {
-			// TODO: Add management.tracing.default-logging-pattern-enabled as a property in the json
-			if (Boolean
-					.parseBoolean(environment.getProperty("management.tracing.default-logging-pattern-enabled", "true"))) {
-				map.put("logging.pattern.level", "%5p [${management.zipkin.tracing.service-name:"
+			// TODO: Add management.tracing.default-logging-pattern-enabled as a property
+			// in the json
+			if (Boolean.parseBoolean(
+					environment.getProperty("management.tracing.default-logging-pattern-enabled", "true"))) {
+				map.put("logging.pattern.level", "%5p [${management.tracing.log-service-name:"
 						+ "${spring.application.name:}},%X{traceId:-},%X{spanId:-}]");
 			}
 		}

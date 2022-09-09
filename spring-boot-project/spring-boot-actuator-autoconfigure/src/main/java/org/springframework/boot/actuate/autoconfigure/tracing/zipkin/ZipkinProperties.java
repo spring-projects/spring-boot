@@ -80,4 +80,5 @@ public class ZipkinProperties {
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
+
 }

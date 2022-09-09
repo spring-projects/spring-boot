@@ -41,4 +41,5 @@ public class OpenTelemetrySlf4jBaggageApplicationListener implements Application
 		}
 		this.listener.onEvent(actualEvent);
 	}
+
 }

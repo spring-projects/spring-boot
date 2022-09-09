@@ -35,4 +35,5 @@ public class OpenTelemetrySlf4jApplicationListener implements ApplicationListene
 		}
 		this.listener.onEvent(actualEvent);
 	}
+
 }
