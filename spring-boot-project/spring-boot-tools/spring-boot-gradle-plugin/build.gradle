@@ -127,3 +127,7 @@ task zip(type: Zip) {
 artifacts {
 	"documentation" zip
 }
+
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(18)
+}

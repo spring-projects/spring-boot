@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -68,7 +70,7 @@ class ArrayBinderTests {
 	@Test
 	void bindToCollectionShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		BindHandler handler = mockBindHandler();
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
@@ -198,7 +200,7 @@ class ArrayBinderTests {
 	@Test
 	void bindToArrayShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		BindHandler handler = mockBindHandler();
 		Bindable<Integer[]> target = INTEGER_ARRAY;
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
@@ -283,6 +285,33 @@ class ArrayBinderTests {
 		this.sources.add(source);
 		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get()).containsExactly(RuntimeException.class,
 				IllegalStateException.class);
+	}
+
+	private BindHandler mockBindHandler() {
+		BindHandler handler = mock(BindHandler.class);
+		given(handler.onStart(any(), any(), any())).willAnswer(InvocationArgument.index(1));
+		given(handler.onCreate(any(), any(), any(), any())).willAnswer(InvocationArgument.index(3));
+		given(handler.onSuccess(any(), any(), any(), any())).willAnswer(InvocationArgument.index(3));
+		return handler;
+	}
+
+	private static final class InvocationArgument<T> implements Answer<T> {
+
+		private final int index;
+
+		private InvocationArgument(int index) {
+			this.index = index;
+		}
+
+		@Override
+		public T answer(InvocationOnMock invocation) throws Throwable {
+			return invocation.getArgument(this.index);
+		}
+
+		private static <T> InvocationArgument<T> index(int index) {
+			return new InvocationArgument<>(index);
+		}
+
 	}
 
 }
