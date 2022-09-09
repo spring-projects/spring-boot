@@ -456,11 +456,14 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		return switch (this.webApplicationType) {
-			case SERVLET -> new ApplicationServletEnvironment();
-			case REACTIVE -> new ApplicationReactiveWebEnvironment();
-			default -> new ApplicationEnvironment();
-		};
+		switch (this.webApplicationType) {
+			case SERVLET:
+				return new ApplicationServletEnvironment();
+			case REACTIVE:
+				return new ApplicationReactiveWebEnvironment();
+			default:
+				return new ApplicationEnvironment();
+		}
 	}
 
 	/**
