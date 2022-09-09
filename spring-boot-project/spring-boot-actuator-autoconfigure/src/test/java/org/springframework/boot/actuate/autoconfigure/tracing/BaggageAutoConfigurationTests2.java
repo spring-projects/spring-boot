@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.tracing.BaggageAutoConfigurationTests2.AutoConfig.OTEL;
 
 /**
  * Tests for Baggage configuration.
@@ -57,6 +58,7 @@ class BaggageAutoConfigurationTests2 {
 		autoConfig.get().run(context -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
+			assertThatTracingContextIsInitialized(autoConfig);
 			try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
 				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
 			}
@@ -73,6 +75,7 @@ class BaggageAutoConfigurationTests2 {
 		autoConfig.get().run(context -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
+			assertThatTracingContextIsInitialized(autoConfig);
 			try (Tracer.SpanInScope scope = tracer.withSpan(span.start());
 				 BaggageInScope fo = context.getBean(BaggageManager.class).createBaggage(COUNTRY_CODE).set(span.context(), "FO");
 				 BaggageInScope bp = context.getBean(BaggageManager.class).createBaggage(BUSINESS_PROCESS).set(span.context(), "ALM")) {
@@ -96,6 +99,7 @@ class BaggageAutoConfigurationTests2 {
 		autoConfig.get().run(context -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
+			assertThatTracingContextIsInitialized(autoConfig);
 			try (Tracer.SpanInScope scope = tracer.withSpan(span.start());
 				 BaggageInScope fo = context.getBean(BaggageManager.class).createBaggage(COUNTRY_CODE).set(span.context(), "FO")) {
 				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
@@ -123,6 +127,7 @@ class BaggageAutoConfigurationTests2 {
 		autoConfig.get().run(context -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
+			assertThatTracingContextIsInitialized(autoConfig);
 			// can't use NOOP as it is special cased
 			try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
 				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
@@ -144,12 +149,17 @@ class BaggageAutoConfigurationTests2 {
 	}
 
 	private Span createSpan(Tracer tracer) {
-		assertThat(Context.current()).isEqualTo(Context.root());
 		return tracer.nextSpan().name("span");
 	}
 
 	private Tracer tracer(ApplicationContext context) {
 		return context.getBean(Tracer.class);
+	}
+
+	private void assertThatTracingContextIsInitialized(AutoConfig autoConfig) {
+		if (autoConfig == OTEL) {
+			assertThat(Context.current()).isEqualTo(Context.root());
+		}
 	}
 
 	private void assertThatMdcContainsUnsetTraceId() {
@@ -166,7 +176,7 @@ class BaggageAutoConfigurationTests2 {
 
 	enum AutoConfig implements Supplier<ApplicationContextRunner> {
 
-		/*BRAVE {
+		BRAVE {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
@@ -174,7 +184,7 @@ class BaggageAutoConfigurationTests2 {
 						.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code",
 								"management.tracing.baggage.local-fields=bp", "management.tracing.baggage.correlation-fields=country-code,bp");
 			}
-		},*/
+		},
 
 		OTEL {
 			@Override
