@@ -151,8 +151,7 @@ public class TracingProperties {
 		/**
 		 * Tracing context propagation types.
 		 */
-		// TODO: Should this be the default?
-		private PropagationType type = PropagationType.B3;
+		private PropagationType type = PropagationType.W3C;
 
 		public PropagationType getType() {
 			return this.type;
@@ -178,12 +177,6 @@ public class TracingProperties {
 			 * W3C propagation type.
 			 */
 			W3C,
-
-			/**
-			 * Jaeger propagation type.
-			 */
-			JAEGER, // TODO: Supported by OTel, not by Brave - my suggestion is not to
-					// support it
 
 			/**
 			 * Custom propagation type. If picked, requires bean registration overriding

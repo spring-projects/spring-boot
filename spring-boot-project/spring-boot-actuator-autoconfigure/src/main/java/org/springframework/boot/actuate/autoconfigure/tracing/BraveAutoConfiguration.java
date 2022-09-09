@@ -153,12 +153,22 @@ public class BraveAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("io.micrometer.tracing.brave.bridge.BraveTracer")
+	@Conditional(OnNonCustomPropagationCondition.class)
 	static class BraveMicrometerMissing {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3", matchIfMissing = true)
 		Factory bravePropagationFactory() {
 			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "AWS")
+		@ConditionalOnClass(AWSPropagation.class)
+		Factory awsPropagationFactory() {
+			return AWSPropagation.FACTORY;
 		}
 
 	}
@@ -191,6 +201,7 @@ public class BraveAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
+		@Conditional(OnNonCustomPropagationCondition.class)
 		static class BraveBaggageConfiguration {
 
 			@Bean
@@ -203,7 +214,7 @@ public class BraveAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3", matchIfMissing = true)
+			@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "B3")
 			BaggagePropagation.FactoryBuilder b3PropagationFactory() {
 				return BaggagePropagation.newFactoryBuilder(
 						B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build());
@@ -219,7 +230,7 @@ public class BraveAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			Propagation.Factory micrometerTracingPropagationWithB3Baggage(
+			Propagation.Factory micrometerTracingPropagationWithBaggage(
 					BaggagePropagation.FactoryBuilder factoryBuilder, TracingProperties tracingProperties,
 					ObjectProvider<List<BaggagePropagationCustomizer>> baggagePropagationCustomizers) {
 				List<String> localFields = tracingProperties.getBaggage().getLocalFields();
