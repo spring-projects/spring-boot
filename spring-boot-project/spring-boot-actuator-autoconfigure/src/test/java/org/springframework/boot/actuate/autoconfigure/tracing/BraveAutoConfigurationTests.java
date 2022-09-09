@@ -94,7 +94,6 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyMicrometerBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveBaggageManager.class);
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
