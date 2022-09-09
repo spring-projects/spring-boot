@@ -18,38 +18,36 @@ package smoketest.batch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootApplication
 @EnableBatchProcessing
 public class SampleBatchApplication {
 
-	@Autowired
 	private JobBuilderFactory jobs;
 
-	@Autowired
 	private StepBuilderFactory steps;
+
+	private PlatformTransactionManager transactionManager;
+
+	public SampleBatchApplication(JobBuilderFactory jobs, StepBuilderFactory steps,
+			PlatformTransactionManager transactionManager) {
+		this.jobs = jobs;
+		this.steps = steps;
+		this.transactionManager = transactionManager;
+	}
 
 	@Bean
 	protected Tasklet tasklet() {
-
-		return new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution, ChunkContext context) {
-				return RepeatStatus.FINISHED;
-			}
-		};
-
+		return (contribution, context) -> RepeatStatus.FINISHED;
 	}
 
 	@Bean
@@ -59,7 +57,7 @@ public class SampleBatchApplication {
 
 	@Bean
 	protected Step step1() {
-		return this.steps.get("step1").tasklet(tasklet()).build();
+		return this.steps.get("step1").tasklet(tasklet()).transactionManager(this.transactionManager).build();
 	}
 
 	public static void main(String[] args) {

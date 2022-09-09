@@ -98,9 +98,11 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void retryFailedExecution() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
+							.transactionManager(transactionManager).build())
 					.incrementer(new RunIdIncrementer()).build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
@@ -111,9 +113,10 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void runDifferentInstances() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
-			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build()).build();
+			Job job = jobLauncherContext.jobBuilder().start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
+					.transactionManager(transactionManager).build()).build();
 			// start a job instance
 			JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
@@ -128,9 +131,11 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void retryFailedExecutionOnNonRestartableJob() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder().preventRestart()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
+							.transactionManager(transactionManager).build())
 					.incrementer(new RunIdIncrementer()).build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParameters());
@@ -149,9 +154,11 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void retryFailedExecutionWithNonIdentifyingParameters() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
+							.transactionManager(transactionManager).build())
 					.incrementer(new RunIdIncrementer()).build();
 			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
 					.toJobParameters();
@@ -187,9 +194,11 @@ class JobLauncherApplicationRunnerTests {
 		JobLauncherApplicationRunnerContext(ApplicationContext context) {
 			JobLauncher jobLauncher = context.getBean(JobLauncher.class);
 			JobRepository jobRepository = context.getBean(JobRepository.class);
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			this.jobs = new JobBuilderFactory(jobRepository);
-			this.steps = new StepBuilderFactory(jobRepository, context.getBean(PlatformTransactionManager.class));
-			this.step = this.steps.get("step").tasklet((contribution, chunkContext) -> null).build();
+			this.steps = new StepBuilderFactory(jobRepository);
+			this.step = this.steps.get("step").tasklet((contribution, chunkContext) -> null)
+					.transactionManager(transactionManager).build();
 			this.job = this.jobs.get("job").start(this.step).build();
 			this.jobExplorer = context.getBean(JobExplorer.class);
 			this.runner = new JobLauncherApplicationRunner(jobLauncher, this.jobExplorer, jobRepository);
