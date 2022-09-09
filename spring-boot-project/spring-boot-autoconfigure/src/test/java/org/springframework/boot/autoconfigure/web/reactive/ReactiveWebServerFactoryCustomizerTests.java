@@ -59,7 +59,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 	@Test
 	void testCustomizeServerAddress() {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
-		InetAddress address = mock(InetAddress.class);
+		InetAddress address = InetAddress.getLoopbackAddress();
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
 		then(factory).should().setAddress(address);

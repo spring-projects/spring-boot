@@ -19,12 +19,9 @@ package org.springframework.boot.context.properties.source;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link FilteredIterableConfigurationPropertiesSource}.
@@ -64,8 +61,7 @@ class FilteredConfigurationPropertiesSourceTests {
 	@Test
 	void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.UNKNOWN);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().unknown(name);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
@@ -73,8 +69,7 @@ class FilteredConfigurationPropertiesSourceTests {
 	@Test
 	void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.ABSENT);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().absent(name);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
@@ -82,8 +77,7 @@ class FilteredConfigurationPropertiesSourceTests {
 	@Test
 	void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.PRESENT);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().present(name);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
