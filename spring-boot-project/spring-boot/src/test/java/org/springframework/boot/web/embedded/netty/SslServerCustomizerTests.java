@@ -86,7 +86,7 @@ class SslServerCustomizerTests {
 	}
 
 	/**
-	 * Null/undefined keystore not allowed except if type is PKCS11.
+	 * Null/undefined keystore is not valid unless keystore type is PKCS11.
 	 */
 	@Test
 	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsWebServerException() {
@@ -109,11 +109,11 @@ class SslServerCustomizerTests {
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
 				.withCauseInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining("keystore location is not valid for keystore type 'PKCS11'");
+				.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
 	}
 
 	@Test
-	void getKeyManagerFactoryWhenSslIsEnabledWithPkcs11AndKeyStoreProviderThrowsNoSuchProviderException() {
+	void getKeyManagerFactoryWhenSslIsEnabledWithPkcs11AndKeyStoreProvider() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
 		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
