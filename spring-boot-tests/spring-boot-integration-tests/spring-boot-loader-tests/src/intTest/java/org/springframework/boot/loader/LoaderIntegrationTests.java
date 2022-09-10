@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @DisabledIfDockerUnavailable
+@EnabledForJreRange(max = JRE.JAVA_18)
 class LoaderIntegrationTests {
 
 	private final ToStringConsumer output = new ToStringConsumer();
