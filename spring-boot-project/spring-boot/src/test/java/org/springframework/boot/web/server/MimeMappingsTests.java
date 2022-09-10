@@ -181,7 +181,6 @@ class MimeMappingsTests {
 	void commonMappingsAreSubsetOfAllMappings() {
 		MimeMappings defaultMappings = new DefaultMimeMappings();
 		MimeMappings commonMappings = (MimeMappings) ReflectionTestUtils.getField(DefaultMimeMappings.class, "COMMON");
-		defaultMappings.getAll();
 		for (Mapping commonMapping : commonMappings) {
 			assertThat(defaultMappings.get(commonMapping.getExtension())).isEqualTo(commonMapping.getMimeType());
 		}
@@ -209,10 +208,11 @@ class MimeMappingsTests {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("json", "one/json");
 		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		lazyCopy.add("first", "copy/yes");
 		assertThat(lazyCopy.get("json")).isEqualTo("one/json");
 		mappings.add("json", "two/json");
-		lazyCopy.add("json", "other/json");
-		assertThat(lazyCopy.get("json")).isEqualTo("other/json");
+		lazyCopy.add("second", "copy/no");
+		assertThat(lazyCopy.get("json")).isEqualTo("one/json");
 	}
 
 	@Test
