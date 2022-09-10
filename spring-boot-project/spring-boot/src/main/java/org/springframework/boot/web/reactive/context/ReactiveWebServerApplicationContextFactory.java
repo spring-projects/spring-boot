@@ -33,11 +33,14 @@ class ReactiveWebServerApplicationContextFactory implements ApplicationContextFa
 
 	@Override
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
-		if (webApplicationType != WebApplicationType.REACTIVE) {
-			return null;
+		return (webApplicationType != WebApplicationType.REACTIVE) ? null : createContext();
+	}
+
+	private ConfigurableApplicationContext createContext() {
+		if (!AotDetector.useGeneratedArtifacts()) {
+			return new AnnotationConfigReactiveWebServerApplicationContext();
 		}
-		return AotDetector.useGeneratedArtifacts() ? new ReactiveWebServerApplicationContext()
-				: new AnnotationConfigReactiveWebServerApplicationContext();
+		return new ReactiveWebServerApplicationContext();
 	}
 
 }

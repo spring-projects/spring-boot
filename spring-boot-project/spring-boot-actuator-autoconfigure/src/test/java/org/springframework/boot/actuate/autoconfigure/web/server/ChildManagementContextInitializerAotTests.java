@@ -26,8 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.aot.AotDetector;
-import org.springframework.aot.test.generator.compile.CompileWithTargetClassAccess;
-import org.springframework.aot.test.generator.compile.TestCompiler;
+import org.springframework.aot.test.generate.TestGenerationContext;
+import org.springframework.aot.test.generate.compile.CompileWithTargetClassAccess;
+import org.springframework.aot.test.generate.compile.TestCompiler;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
@@ -43,7 +44,6 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
-import org.springframework.test.aot.generate.TestGenerationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 

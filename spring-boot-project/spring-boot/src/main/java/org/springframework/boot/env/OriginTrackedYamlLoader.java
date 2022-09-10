@@ -75,7 +75,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
 		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
-		LimitedResolver resolver = new LimitedResolver();
+		NoTimestampResolver resolver = new NoTimestampResolver();
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
@@ -167,14 +167,14 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	/**
 	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags.
 	 */
-	private static class LimitedResolver extends Resolver {
+	private static class NoTimestampResolver extends Resolver {
 
 		@Override
-		public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
+		public void addImplicitResolver(Tag tag, Pattern regexp, String first, int limit) {
 			if (tag == Tag.TIMESTAMP) {
 				return;
 			}
-			super.addImplicitResolver(tag, regexp, first);
+			super.addImplicitResolver(tag, regexp, first, limit);
 		}
 
 	}

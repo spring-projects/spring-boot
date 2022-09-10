@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.annotation.Reflective;
@@ -43,7 +44,6 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseBody;

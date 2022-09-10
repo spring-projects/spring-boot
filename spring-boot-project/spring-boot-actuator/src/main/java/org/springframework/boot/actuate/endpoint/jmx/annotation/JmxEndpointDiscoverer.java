@@ -79,8 +79,7 @@ public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoi
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(JmxEndpointFilter.class,
-					(hint) -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			hints.reflection().registerType(JmxEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

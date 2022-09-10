@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
-import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
+import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -38,7 +38,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<ObservationPredicate> observationPredicates;
 
-	private final ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders;
+	private final ObjectProvider<GlobalObservationConvention<?>> observationConventions;
 
 	private final ObjectProvider<ObservationHandler<?>> observationHandlers;
 
@@ -48,12 +48,12 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalKeyValuesProvider<?>> keyValuesProviders,
+			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
 		this.observationRegistryCustomizers = observationRegistryCustomizers;
 		this.observationPredicates = observationPredicates;
-		this.keyValuesProviders = keyValuesProviders;
+		this.observationConventions = observationConventions;
 		this.observationHandlers = observationHandlers;
 		this.observationHandlerGrouping = observationHandlerGrouping;
 	}
@@ -69,7 +69,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 	private ObservationRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
 			this.configurer = new ObservationRegistryConfigurer(this.observationRegistryCustomizers,
-					this.observationPredicates, this.keyValuesProviders, this.observationHandlers,
+					this.observationPredicates, this.observationConventions, this.observationHandlers,
 					this.observationHandlerGrouping);
 		}
 		return this.configurer;

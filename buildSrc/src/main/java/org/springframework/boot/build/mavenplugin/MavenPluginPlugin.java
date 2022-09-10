@@ -446,6 +446,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			effectiveBom.property("spring-framework.version", versions::setProperty);
 			effectiveBom.property("jakarta-servlet.version", versions::setProperty);
 			effectiveBom.property("kotlin.version", versions::setProperty);
+			effectiveBom.property("assertj.version", versions::setProperty);
+			effectiveBom.property("junit-jupiter.version", versions::setProperty);
 			return versions;
 		}
 

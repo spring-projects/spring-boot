@@ -41,7 +41,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.CachedIntrospectionResults;
@@ -158,7 +157,7 @@ import static org.mockito.Mockito.spy;
  * @author Marten Deinum
  * @author Nguyen Bao Sach
  * @author Chris Bono
- * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -1309,9 +1308,12 @@ class SpringApplicationTests {
 	void shouldRegisterHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new SpringApplicationRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(SpringApplication.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS))
-						.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(SpringApplication.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "setBannerMode"))
+				.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "getSources")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "setSources")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "load")).rejects(hints);
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(

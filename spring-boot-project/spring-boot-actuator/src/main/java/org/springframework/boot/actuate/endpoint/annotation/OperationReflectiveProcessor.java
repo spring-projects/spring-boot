@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.endpoint.annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.annotation.ReflectiveProcessor;
 import org.springframework.aot.hint.annotation.SimpleReflectiveProcessor;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 

@@ -185,7 +185,7 @@ public class ApplicationRunner extends DefaultTask {
 		List<String> normalizedLines = new ArrayList<>();
 		for (String line : lines) {
 			Matcher matcher = pattern.matcher(line);
-			StringBuffer transformed = new StringBuffer();
+			StringBuilder transformed = new StringBuilder();
 			while (matcher.find()) {
 				matched = true;
 				matcher.appendReplacement(transformed, replacement);

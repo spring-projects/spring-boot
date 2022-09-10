@@ -96,7 +96,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -329,7 +328,8 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-			addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
+			addResourceHandler(registry, this.mvcProperties.getWebjarsPathPattern(),
+					"classpath:/META-INF/resources/webjars/");
 			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
 				registration.addResourceLocations(this.resourceProperties.getStaticLocations());
 				if (this.servletContext != null) {
@@ -455,7 +455,9 @@ public class WebMvcAutoConfiguration {
 		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
-		public ThemeResolver themeResolver() {
+		@Deprecated
+		@SuppressWarnings("deprecation")
+		public org.springframework.web.servlet.ThemeResolver themeResolver() {
 			return super.themeResolver();
 		}
 

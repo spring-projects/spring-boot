@@ -24,9 +24,9 @@ import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
+import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
-import io.micrometer.observation.Observation.GlobalKeyValuesProvider;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
@@ -65,22 +65,22 @@ class ObservationAutoConfigurationTests {
 			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	@Test
-	void autoConfiguresTimerObservationHandler() {
+	void autoConfiguresDefaultMeterObservationHandler() {
 		this.contextRunner.run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test-observation", observationRegistry).stop();
-			// When a TimerObservationHandler is registered, every stopped Observation
-			// leads to a timer
+			// When a DefaultMeterObservationHandler is registered, every stopped
+			// Observation leads to a timer
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.get("test-observation").timer().count()).isEqualTo(1);
 		});
 	}
 
 	@Test
-	void allowsTimerObservationHandlerToBeDisabled() {
+	void allowsDefaultMeterObservationHandlerToBeDisabled() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(MeterRegistry.class))
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(TimerObservationHandlerObservationRegistryCustomizer.class));
+						.doesNotHaveBean(DefaultMeterObservationHandlerObservationRegistryCustomizer.class));
 	}
 
 	@Test
@@ -177,8 +177,8 @@ class ObservationAutoConfigurationTests {
 	static class GlobalKeyValuesProviders {
 
 		@Bean
-		Observation.GlobalKeyValuesProvider<?> customKeyValuesProvider() {
-			return new GlobalKeyValuesProvider<>() {
+		GlobalObservationConvention<?> customConvention() {
+			return new GlobalObservationConvention<>() {
 				@Override
 				public boolean supportsContext(Context context) {
 					return true;

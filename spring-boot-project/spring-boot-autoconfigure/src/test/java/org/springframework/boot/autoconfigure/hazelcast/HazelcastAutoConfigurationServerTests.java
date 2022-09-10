@@ -88,6 +88,17 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	void systemPropertyWithYml() {
+		this.contextRunner
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
+				});
+	}
+
+	@Test
 	void explicitConfigFileWithXml() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
@@ -106,6 +117,15 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	void explicitConfigFileWithYml() {
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-specific.yml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yml"));
+	}
+
+	@Test
 	void explicitConfigUrlWithXml() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
@@ -121,6 +141,15 @@ class HazelcastAutoConfigurationServerTests {
 						+ "boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
 				.run(assertSpecificHazelcastServer(
 						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml"));
+	}
+
+	@Test
+	void explicitConfigUrlWithYml() {
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
+						+ "boot/autoconfigure/hazelcast/hazelcast-specific.yml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yml"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastServer(String location) {
@@ -206,6 +235,22 @@ class HazelcastAutoConfigurationServerTests {
 		});
 	}
 
+	@Test
+	void autoConfiguredConfigSetsHazelcastLoggingToSlf4j() {
+		this.contextRunner.run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE)).isEqualTo("slf4j");
+		});
+	}
+
+	@Test
+	void autoConfiguredConfigCanOverrideHazelcastLogging() {
+		this.contextRunner.withUserConfiguration(HazelcastConfigWithJDKLogging.class).run((context) -> {
+			Config config = context.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE)).isEqualTo("jdk");
+		});
+	}
+
 	private static Config createTestConfig(String instanceName) {
 		Config config = new Config(instanceName);
 		JoinConfig join = config.getNetworkConfig().getJoin();
@@ -231,6 +276,18 @@ class HazelcastAutoConfigurationServerTests {
 		Config anotherHazelcastConfig() {
 			Config config = createTestConfig("another-test-instance");
 			config.addQueueConfig(new QueueConfig("another-queue"));
+			return config;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HazelcastConfigWithJDKLogging {
+
+		@Bean
+		Config anotherHazelcastConfig() {
+			Config config = new Config();
+			config.setProperty(HazelcastServerConfiguration.HAZELCAST_LOGGING_TYPE, "jdk");
 			return config;
 		}
 

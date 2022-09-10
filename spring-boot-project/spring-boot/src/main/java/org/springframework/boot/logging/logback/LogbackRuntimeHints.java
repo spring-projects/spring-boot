@@ -16,8 +16,6 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.util.function.Consumer;
-
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.pattern.SyslogStartConverter;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
@@ -27,7 +25,6 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.TypeHint.Builder;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.util.ClassUtils;
 
@@ -37,9 +34,6 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  */
 class LogbackRuntimeHints implements RuntimeHintsRegistrar {
-
-	private static final Consumer<Builder> DEFAULT_HINT = (hint) -> {
-	};
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
@@ -53,8 +47,9 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 	}
 
 	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
-		reflection.registerType(LoggerContext.class, DEFAULT_HINT);
-		reflection.registerTypeIfPresent(classLoader, "org.slf4j.bridge.SLF4JBridgeHandler", DEFAULT_HINT);
+		reflection.registerType(LoggerContext.class);
+		reflection.registerTypeIfPresent(classLoader, "org.slf4j.bridge.SLF4JBridgeHandler", (typeHint) -> {
+		});
 	}
 
 	private void registerHintsForBuiltInLogbackConverters(ReflectionHints reflection) {

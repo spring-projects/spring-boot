@@ -26,13 +26,13 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.FixedDelayTask;

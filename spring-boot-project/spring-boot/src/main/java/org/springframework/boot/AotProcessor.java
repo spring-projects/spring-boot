@@ -153,10 +153,9 @@ public class AotProcessor {
 		TypeReference generatedType = TypeReference.of(generatedInitializerClassName.canonicalName());
 		TypeReference applicationType = TypeReference.of(this.application);
 		ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
-		reflection.registerType(applicationType, (hint) -> {
-		});
+		reflection.registerType(applicationType);
 		reflection.registerType(generatedType,
-				(hint) -> hint.onReachableType(applicationType).withConstructor(Collections.emptyList()));
+				(typeHint) -> typeHint.onReachableType(applicationType).withConstructor(Collections.emptyList()));
 	}
 
 	private Path getRoot(Kind kind) {

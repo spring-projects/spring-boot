@@ -33,11 +33,14 @@ class ServletWebServerApplicationContextFactory implements ApplicationContextFac
 
 	@Override
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
-		if (webApplicationType != WebApplicationType.SERVLET) {
-			return null;
+		return (webApplicationType != WebApplicationType.SERVLET) ? null : createContext();
+	}
+
+	private ConfigurableApplicationContext createContext() {
+		if (!AotDetector.useGeneratedArtifacts()) {
+			return new AnnotationConfigServletWebServerApplicationContext();
 		}
-		return AotDetector.useGeneratedArtifacts() ? new ServletWebServerApplicationContext()
-				: new AnnotationConfigServletWebServerApplicationContext();
+		return new ServletWebServerApplicationContext();
 	}
 
 }

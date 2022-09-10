@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @DisabledIfDockerUnavailable
+@EnabledForJreRange(max = JRE.JAVA_18)
 class LoaderIntegrationTests {
 
 	private final ToStringConsumer output = new ToStringConsumer();

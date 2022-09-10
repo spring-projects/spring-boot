@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ class StringToPeriodConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenIso8601ShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "p2y")).isEqualTo(Period.parse("p2y"));
 		assertThat(convert(conversionService, "P2Y")).isEqualTo(Period.parse("P2Y"));
 		assertThat(convert(conversionService, "P3M")).isEqualTo(Period.parse("P3M"));
 		assertThat(convert(conversionService, "P4W")).isEqualTo(Period.parse("P4W"));

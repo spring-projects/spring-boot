@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.graphql.execution.SecurityContextThreadLocalAccessor;
 import org.springframework.graphql.execution.SecurityDataFetcherExceptionResolver;
 import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -48,12 +47,6 @@ public class GraphQlWebMvcSecurityAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SecurityDataFetcherExceptionResolver securityDataFetcherExceptionResolver() {
 		return new SecurityDataFetcherExceptionResolver();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public SecurityContextThreadLocalAccessor securityContextThreadLocalAccessor() {
-		return new SecurityContextThreadLocalAccessor();
 	}
 
 }

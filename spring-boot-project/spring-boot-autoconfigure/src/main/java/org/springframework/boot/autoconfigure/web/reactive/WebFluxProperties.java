@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties properties} for Spring WebFlux.
  *
  * @author Brian Clozel
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.webflux")
@@ -39,6 +40,11 @@ public class WebFluxProperties {
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
+
+	/**
+	 * Path pattern used for WebJar assets.
+	 */
+	private String webjarsPathPattern = "/webjars/**";
 
 	public String getBasePath() {
 		return this.basePath;
@@ -74,6 +80,14 @@ public class WebFluxProperties {
 
 	public void setStaticPathPattern(String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
+	}
+
+	public String getWebjarsPathPattern() {
+		return this.webjarsPathPattern;
+	}
+
+	public void setWebjarsPathPattern(String webjarsPathPattern) {
+		this.webjarsPathPattern = webjarsPathPattern;
 	}
 
 	public static class Format {

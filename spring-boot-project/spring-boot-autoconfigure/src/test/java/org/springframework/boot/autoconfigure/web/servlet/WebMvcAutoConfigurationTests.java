@@ -94,7 +94,6 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -126,7 +125,6 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.resource.VersionStrategy;
 import org.springframework.web.servlet.support.AbstractFlashMapManager;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
-import org.springframework.web.servlet.theme.FixedThemeResolver;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.util.UrlPathHelper;
@@ -146,6 +144,7 @@ import static org.mockito.Mockito.mock;
  * @author Kristine Jetzke
  * @author Artsiom Yudovin
  * @author Scott Frederick
+ * @author Vedran Pavic
  */
 class WebMvcAutoConfigurationTests {
 
@@ -192,6 +191,17 @@ class WebMvcAutoConfigurationTests {
 			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
 			assertThat(locations.get("/static/**")).hasSize(5);
 			assertThat(getResourceResolvers(context, "/static/**")).hasSize(1);
+		});
+	}
+
+	@Test
+	void customWebjarsHandlerMapping() {
+		this.contextRunner.withPropertyValues("spring.mvc.webjars-path-pattern:/assets/**").run((context) -> {
+			Map<String, List<Resource>> locations = getResourceMappingLocations(context);
+			assertThat(locations.get("/assets/**")).hasSize(1);
+			assertThat(locations.get("/assets/**").get(0))
+					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
+			assertThat(getResourceResolvers(context, "/assets/**")).hasSize(1);
 		});
 	}
 
@@ -361,20 +371,25 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	void customThemeResolverWithMatchingNameReplacesDefaultThemeResolver() {
 		this.contextRunner.withBean("themeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
 				.run((context) -> {
-					assertThat(context).hasSingleBean(ThemeResolver.class);
+					assertThat(context).hasSingleBean(org.springframework.web.servlet.ThemeResolver.class);
 					assertThat(context.getBean("themeResolver")).isInstanceOf(CustomThemeResolver.class);
 				});
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	void customThemeResolverWithDifferentNameDoesNotReplaceDefaultThemeResolver() {
 		this.contextRunner.withBean("customThemeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
 				.run((context) -> {
 					assertThat(context.getBean("customThemeResolver")).isInstanceOf(CustomThemeResolver.class);
-					assertThat(context.getBean("themeResolver")).isInstanceOf(FixedThemeResolver.class);
+					assertThat(context.getBean("themeResolver"))
+							.isInstanceOf(org.springframework.web.servlet.theme.FixedThemeResolver.class);
 				});
 	}
 
@@ -1470,7 +1485,8 @@ class WebMvcAutoConfigurationTests {
 
 	}
 
-	static class CustomThemeResolver implements ThemeResolver {
+	@Deprecated
+	static class CustomThemeResolver implements org.springframework.web.servlet.ThemeResolver {
 
 		@Override
 		public String resolveThemeName(HttpServletRequest request) {

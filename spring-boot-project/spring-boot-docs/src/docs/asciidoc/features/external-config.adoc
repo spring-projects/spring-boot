@@ -105,8 +105,8 @@ Spring Boot will automatically find and load `application.properties` and `appli
 .. The classpath `/config` package
 . From the current directory
 .. The current directory
-.. The `/config` subdirectory in the current directory
-.. Immediate child directories of the `/config` subdirectory
+.. The `config/` subdirectory in the current directory
+.. Immediate child directories of the `config/` subdirectory
 
 The list is ordered by precedence (with values from lower items overriding earlier ones).
 Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
@@ -732,11 +732,9 @@ Default values can be specified using `@DefaultValue` on constructor parameters 
 The conversion service will be applied to coerce the annotation's `String` value to the target type of a missing property.
 
 Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
-
-If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
+To make it contain a non-null instance of `Security` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `Security` to be declared as nullable as they do not have default values), use an empty `@DefaultValue` annotation:
 
 include::code:nonnull/MyProperties[tag=*]
-
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)

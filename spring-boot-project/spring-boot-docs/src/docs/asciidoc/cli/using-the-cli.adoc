@@ -11,32 +11,78 @@ If you run `spring` without any arguments, a help screen is displayed, as follow
 
 	Available commands are:
 
-	  run [options] <files> [--] [args]
-	    Run a spring groovy script
+	  init [options] [location]
+	    Initialize a new project using Spring Initializr (start.spring.io)
 
-	  _... more command help is shown here_
+	  encodepassword [options] <password to encode>
+	    Encode a password for use with Spring Security
+
+	  shell
+	    Start a nested shell
+
+	Common options:
+
+	  --debug Verbose mode
+	    Print additional status information for the command you are running
+
+
+	See 'spring help <command>' for more information on a specific command.
 ----
 
 You can type `spring help` to get more details about any of the supported commands, as shown in the following example:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-	$ spring help run
-	spring run - Run a spring groovy script
+	$ spring help init
+	spring init - Initialize a new project using Spring Initializr (start.spring.io)
 
-	usage: spring run [options] <files> [--] [args]
+	usage: spring init [options] [location]
 
-	Option                     Description
-	------                     -----------
-	--autoconfigure [Boolean]  Add autoconfigure compiler
-	                             transformations (default: true)
-	--classpath, -cp           Additional classpath entries
-	--no-guess-dependencies    Do not attempt to guess dependencies
-	--no-guess-imports         Do not attempt to guess imports
-	-q, --quiet                Quiet logging
-	-v, --verbose              Verbose logging of dependency
-	                             resolution
-	--watch                    Watch the specified file for changes
+	Option                       Description
+	------                       -----------
+	-a, --artifact-id <String>   Project coordinates; infer archive name (for
+	                               example 'test')
+	-b, --boot-version <String>  Spring Boot version (for example '1.2.0.RELEASE')
+	--build <String>             Build system to use (for example 'maven' or
+	                               'gradle') (default: maven)
+	-d, --dependencies <String>  Comma-separated list of dependency identifiers to
+	                               include in the generated project
+	--description <String>       Project description
+	-f, --force                  Force overwrite of existing files
+	--format <String>            Format of the generated content (for example
+	                               'build' for a build file, 'project' for a
+	                               project archive) (default: project)
+	-g, --group-id <String>      Project coordinates (for example 'org.test')
+	-j, --java-version <String>  Language level (for example '1.8')
+	-l, --language <String>      Programming language  (for example 'java')
+	--list                       List the capabilities of the service. Use it to
+	                               discover the dependencies and the types that are
+	                               available
+	-n, --name <String>          Project name; infer application name
+	-p, --packaging <String>     Project packaging (for example 'jar')
+	--package-name <String>      Package name
+	-t, --type <String>          Project type. Not normally needed if you use --
+	                               build and/or --format. Check the capabilities of
+	                               the service (--list) for more details
+	--target <String>            URL of the service to use (default: https://start.
+	                               spring.io)
+	-v, --version <String>       Project version (for example '0.0.1-SNAPSHOT')
+	-x, --extract                Extract the project archive. Inferred if a
+	                               location is specified without an extension
+
+	examples:
+
+	    To list all the capabilities of the service:
+	        $ spring init --list
+
+	    To creates a default project:
+	        $ spring init
+
+	    To create a web my-app.zip:
+	        $ spring init -d=web my-app.zip
+
+	    To create a web/data-jpa gradle project unpacked:
+	        $ spring init -d=web,jpa --build=gradle my-dir
 ----
 
 The `version` command provides a quick way to check which version of Spring Boot you are using, as follows:
@@ -46,196 +92,6 @@ The `version` command provides a quick way to check which version of Spring Boot
 	$ spring version
 	Spring CLI v{spring-boot-version}
 ----
-
-
-
-[[cli.using-the-cli.run]]
-=== Running Applications with the CLI
-You can compile and run Groovy source code by using the `run` command.
-The Spring Boot CLI is completely self-contained, so you do not need any external Groovy installation.
-
-The following example shows a "`hello world`" web application written in Groovy:
-
-.hello.groovy
-[source,groovy,indent=0,subs="verbatim"]
-----
-include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]
-----
-
-To compile and run the application, type the following command:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring run hello.groovy
-----
-
-To pass command-line arguments to the application, use `--` to separate the commands from the "`spring`" command arguments, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring run hello.groovy -- --server.port=9000
-----
-
-To set JVM command line arguments, you can use the `JAVA_OPTS` environment variable, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
-----
-
-NOTE: When setting `JAVA_OPTS` on Microsoft Windows, make sure to quote the entire instruction, such as `set "JAVA_OPTS=-Xms256m -Xmx2048m"`.
-Doing so ensures the values are properly passed to the process.
-
-
-
-[[cli.using-the-cli.run.deduced-grab-annotations]]
-==== Deduced "`grab`" Dependencies
-Standard Groovy includes a `@Grab` annotation, which lets you declare dependencies on third-party libraries.
-This useful technique lets Groovy download jars in the same way as Maven or Gradle would but without requiring you to use a build tool.
-
-Spring Boot extends this technique further and tries to deduce which libraries to "`grab`" based on your code.
-For example, since the `WebApplication` code shown previously uses `@RestController` annotations, Spring Boot grabs "Tomcat" and "Spring MVC".
-
-The following items are used as "`grab hints`":
-
-|===
-| Items | Grabs
-
-| `JdbcTemplate`, `NamedParameterJdbcTemplate`, `DataSource`
-| JDBC Application.
-
-| `@EnableJms`
-| JMS Application.
-
-| `@EnableCaching`
-| Caching abstraction.
-
-| `@Test`
-| JUnit.
-
-| `@EnableRabbit`
-| RabbitMQ.
-
-| extends `Specification`
-| Spock test.
-
-| `@EnableBatchProcessing`
-| Spring Batch.
-
-| `@MessageEndpoint` `@EnableIntegration`
-| Spring Integration.
-
-| `@Controller` `@RestController` `@EnableWebMvc`
-| Spring MVC + Embedded Tomcat.
-
-| `@EnableWebSecurity`
-| Spring Security.
-
-| `@EnableTransactionManagement`
-| Spring Transaction Management.
-|===
-
-TIP: See subclasses of {spring-boot-cli-module-code}/compiler/CompilerAutoConfiguration.java[`CompilerAutoConfiguration`] in the Spring Boot CLI source code to understand exactly how customizations are applied.
-
-
-
-[[cli.using-the-cli.run.deduced-grab-coordinates]]
-==== Deduced "`grab`" Coordinates
-Spring Boot extends Groovy's standard `@Grab` support by letting you specify a dependency without a group or version (for example, `@Grab('freemarker')`).
-Doing so consults Spring Boot's default dependency metadata to deduce the artifact's group and version.
-
-NOTE: The default metadata is tied to the version of the CLI that you use.
-It changes only when you move to a new version of the CLI, putting you in control of when the versions of your dependencies may change.
-A table showing the dependencies and their versions that are included in the default metadata can be found in the <<dependency-versions#appendix.dependency-versions,appendix>>.
-
-
-
-[[cli.using-the-cli.run.default-import-statements]]
-==== Default Import Statements
-To help reduce the size of your Groovy code, several `import` statements are automatically included.
-Notice how the preceding example refers to `@Component`, `@RestController`, and `@RequestMapping` without needing to use fully-qualified names or `import` statements.
-
-TIP: Many Spring annotations work without using `import` statements.
-Try running your application to see what fails before adding imports.
-
-
-
-[[cli.using-the-cli.run.automatic-main-method]]
-==== Automatic Main Method
-Unlike the equivalent Java application, you do not need to include a `public static void main(String[] args)` method with your `Groovy` scripts.
-A `SpringApplication` is automatically created, with your compiled code acting as the `source`.
-
-
-
-[[cli.using-the-cli.run.custom-dependency-management]]
-==== Custom Dependency Management
-By default, the CLI uses the dependency management declared in `spring-boot-dependencies` when resolving `@Grab` dependencies.
-Additional dependency management, which overrides the default dependency management, can be configured by using the `@DependencyManagementBom` annotation.
-The annotation's value should specify the coordinates (`groupId:artifactId:version`) of one or more Maven BOMs.
-
-For example, consider the following declaration:
-
-[source,groovy,indent=0,subs="verbatim"]
-----
-include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/single/CustomDependencyManagement.groovy[tag=*]
-----
-
-The preceding declaration picks up `custom-bom-1.0.0.pom` in a Maven repository under `com/example/custom-versions/1.0.0/`.
-
-When you specify multiple BOMs, they are applied in the order in which you declare them, as shown in the following example:
-
-[source,groovy,indent=0,subs="verbatim"]
-----
-include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/multiple/CustomDependencyManagement.groovy[tag=*]
-----
-
-The preceding example indicates that the dependency management in `another-bom` overrides the dependency management in `custom-bom`.
-
-You can use `@DependencyManagementBom` anywhere that you can use `@Grab`.
-However, to ensure consistent ordering of the dependency management, you can use `@DependencyManagementBom` at most once in your application.
-
-
-
-[[cli.using-the-cli.multiple-source-files]]
-=== Applications with Multiple Source Files
-You can use "`shell globbing`" with all commands that accept file input.
-Doing so lets you use multiple files from a single directory, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring run *.groovy
-----
-
-
-
-[[cli.using-the-cli.packaging]]
-=== Packaging Your Application
-You can use the `jar` command to package your application into a self-contained executable jar file, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring jar my-app.jar *.groovy
-----
-
-The resulting jar contains the classes produced by compiling the application and all of the application's dependencies so that it can then be run by using `java -jar`.
-The jar file also contains entries from the application's classpath.
-You can add and remove explicit paths to the jar by using `--include` and `--exclude`.
-Both are comma-separated, and both accept prefixes, in the form of "`+`" and "`-`", to signify that they should be removed from the defaults.
-The default includes are as follows:
-
-[indent=0]
-----
-	public/**, resources/**, static/**, templates/**, META-INF/**, *
-----
-
-The default excludes are as follows:
-
-[indent=0]
-----
-	.*, repository/**, build/**, target/**, **/*.jar, **/*.groovy
-----
-
-Type `spring help jar` on the command line for more information.
 
 
 
@@ -316,32 +172,3 @@ If you need to run a native command, you can use the `!` prefix.
 To exit the embedded shell, press `ctrl-c`.
 
 
-
-[[cli.using-the-cli.extensions]]
-=== Adding Extensions to the CLI
-You can add extensions to the CLI by using the `install` command.
-The command takes one or more sets of artifact coordinates in the format `group:artifact:version`, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring install com.example:spring-boot-cli-extension:1.0.0.RELEASE
-----
-
-In addition to installing the artifacts identified by the coordinates you supply, all of the artifacts' dependencies are also installed.
-
-To uninstall a dependency, use the `uninstall` command.
-As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring uninstall com.example:spring-boot-cli-extension:1.0.0.RELEASE
-----
-
-It uninstalls the artifacts identified by the coordinates you supply and their dependencies.
-
-To uninstall all additional dependencies, you can use the `--all` option, as shown in the following example:
-
-[source,shell,indent=0,subs="verbatim"]
-----
-	$ spring uninstall --all
-----

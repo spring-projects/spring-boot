@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider.ServletsMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.web.context.WebApplicationContext;
 
 /**

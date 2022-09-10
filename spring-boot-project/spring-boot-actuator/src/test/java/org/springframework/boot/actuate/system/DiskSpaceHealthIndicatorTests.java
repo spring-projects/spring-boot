@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,11 +61,13 @@ class DiskSpaceHealthIndicatorTests {
 		long freeSpace = THRESHOLD.toBytes() + 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		given(this.fileMock.getAbsolutePath()).willReturn("/absolute-path");
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails().get("path")).isEqualTo("/absolute-path");
 		assertThat(health.getDetails().get("exists")).isEqualTo(true);
 	}
 
@@ -75,11 +77,13 @@ class DiskSpaceHealthIndicatorTests {
 		long freeSpace = THRESHOLD.toBytes() - 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		given(this.fileMock.getAbsolutePath()).willReturn("/absolute-path");
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails().get("path")).isEqualTo("/absolute-path");
 		assertThat(health.getDetails().get("exists")).isEqualTo(true);
 	}
 

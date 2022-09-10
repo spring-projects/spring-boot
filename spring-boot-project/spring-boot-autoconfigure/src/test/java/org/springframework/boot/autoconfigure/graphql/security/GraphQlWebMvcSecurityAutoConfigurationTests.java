@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
-import org.springframework.graphql.execution.SecurityContextThreadLocalAccessor;
 import org.springframework.graphql.execution.SecurityDataFetcherExceptionResolver;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -78,10 +77,8 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 	@Test
 	void contributesSecurityComponents() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(SecurityDataFetcherExceptionResolver.class);
-			assertThat(context).hasSingleBean(SecurityContextThreadLocalAccessor.class);
-		});
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(SecurityDataFetcherExceptionResolver.class));
 	}
 
 	@Test

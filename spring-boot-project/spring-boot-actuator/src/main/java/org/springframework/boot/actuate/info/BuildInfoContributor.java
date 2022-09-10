@@ -19,12 +19,12 @@ package org.springframework.boot.actuate.info;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.info.BuildInfoContributor.BuildInfoContributorRuntimeHints;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.context.aot.BindingReflectionHintsRegistrar;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 

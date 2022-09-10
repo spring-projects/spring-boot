@@ -19,42 +19,25 @@ package org.springframework.boot.gradle.tasks.aot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
-import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 /**
- * Custom {@link JavaExec} task for processing code ahead-of-time.
+ * Custom {@link JavaExec} task for processing main code ahead-of-time.
  *
  * @author Andy Wilkinson
  * @since 3.0.0
  */
 @CacheableTask
-public class ProcessAot extends JavaExec {
+public class ProcessAot extends AbstractAot {
 
 	private final Property<String> applicationClass;
 
-	private final DirectoryProperty sourcesDir;
-
-	private final DirectoryProperty resourcesDir;
-
-	private final DirectoryProperty classesDir;
-
-	private final Property<String> groupId;
-
-	private final Property<String> artifactId;
-
 	public ProcessAot() {
 		this.applicationClass = getProject().getObjects().property(String.class);
-		this.sourcesDir = getProject().getObjects().directoryProperty();
-		this.resourcesDir = getProject().getObjects().directoryProperty();
-		this.classesDir = getProject().getObjects().directoryProperty();
-		this.groupId = getProject().getObjects().property(String.class);
-		this.artifactId = getProject().getObjects().property(String.class);
 		getMainClass().set("org.springframework.boot.AotProcessor");
 	}
 
@@ -63,42 +46,12 @@ public class ProcessAot extends JavaExec {
 		return this.applicationClass;
 	}
 
-	@Input
-	public Property<String> getGroupId() {
-		return this.groupId;
-	}
-
-	@Input
-	public Property<String> getArtifactId() {
-		return this.artifactId;
-	}
-
-	@OutputDirectory
-	public DirectoryProperty getSourcesDir() {
-		return this.sourcesDir;
-	}
-
-	@OutputDirectory
-	public DirectoryProperty getResourcesDir() {
-		return this.resourcesDir;
-	}
-
-	@OutputDirectory
-	public DirectoryProperty getClassesDir() {
-		return this.classesDir;
-	}
-
 	@Override
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();
 		args.add(this.applicationClass.get());
-		args.add(this.sourcesDir.getAsFile().get().getAbsolutePath());
-		args.add(this.resourcesDir.getAsFile().get().getAbsolutePath());
-		args.add(this.classesDir.getAsFile().get().getAbsolutePath());
-		args.add(this.groupId.get());
-		args.add(this.artifactId.get());
-		args.addAll(super.getArgs());
+		args.addAll(processorArgs());
 		this.setArgs(args);
 		super.exec();
 	}

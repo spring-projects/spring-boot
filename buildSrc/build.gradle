@@ -2,6 +2,7 @@ plugins {
 	id "java-gradle-plugin"
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
+	id "eclipse"
 }
 
 repositories {
@@ -25,11 +26,12 @@ ext {
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
 	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
+	implementation("com.diffplug.gradle:goomph:3.37.2")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.11.4")
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
-	implementation("org.gradle:test-retry-gradle-plugin:1.4.0")
+	implementation("org.gradle:test-retry-gradle-plugin:1.4.1")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
 	implementation("org.springframework:spring-core")
@@ -91,6 +93,10 @@ gradlePlugin {
 			id = "org.springframework.boot.optional-dependencies"
 			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
 		}
+		processedAnnotationsPlugin {
+			id = "org.springframework.boot.processed-annotations"
+			implementationClass = "org.springframework.boot.build.processors.ProcessedAnnotationsPlugin"
+		}
 		starterPlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
@@ -105,3 +111,10 @@ gradlePlugin {
 test {
 	useJUnitPlatform()
 }
+
+eclipse.classpath.file.whenMerged {
+	def jreEntry = entries.find { it.path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") }
+	jreEntry.entryAttributes['module'] = 'true'
+	jreEntry.entryAttributes['limit-modules'] = 'java.base'
+}
+

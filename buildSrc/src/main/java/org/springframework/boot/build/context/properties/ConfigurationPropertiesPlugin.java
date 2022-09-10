@@ -34,6 +34,7 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
+import org.springframework.boot.build.processors.ProcessedAnnotationsPlugin;
 import org.springframework.util.StringUtils;
 
 /**
@@ -76,7 +77,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
-			addConfigurationProcessorDependency(project);
+			configureConfigurationPropertiesAnnotationProcessor(project);
 			disableIncrementalCompilation(project);
 			configureAdditionalMetadataLocationsCompilerArgument(project);
 			registerCheckAdditionalMetadataTask(project);
@@ -85,11 +86,12 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		});
 	}
 
-	private void addConfigurationProcessorDependency(Project project) {
+	private void configureConfigurationPropertiesAnnotationProcessor(Project project) {
 		Configuration annotationProcessors = project.getConfigurations()
 				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
 		annotationProcessors.getDependencies().add(project.getDependencies().project(Collections.singletonMap("path",
 				":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
+		project.getPlugins().apply(ProcessedAnnotationsPlugin.class);
 	}
 
 	private void disableIncrementalCompilation(Project project) {

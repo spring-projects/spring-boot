@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -236,8 +237,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(PersistenceManagedTypes.class);
 			EntityManager entityManager = context.getBean(EntityManagerFactory.class).createEntityManager();
-			assertThat(entityManager.getMetamodel().getManagedTypes().stream().map(ManagedType::getJavaType)
-					.toArray(Class<?>[]::new)).contains(City.class).doesNotContain(Country.class);
+			assertThat(getManagedJavaTypes(entityManager)).contains(City.class).doesNotContain(Country.class);
 		});
 	}
 
@@ -248,8 +248,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(PersistenceManagedTypes.class);
 					EntityManager entityManager = context.getBean(EntityManagerFactory.class).createEntityManager();
-					assertThat(entityManager.getMetamodel().getManagedTypes().stream().map(ManagedType::getJavaType)
-							.toArray(Class<?>[]::new)).contains(Country.class).doesNotContain(City.class);
+					assertThat(getManagedJavaTypes(entityManager)).contains(Country.class).doesNotContain(City.class);
 				});
 	}
 
@@ -275,6 +274,11 @@ abstract class AbstractJpaAutoConfigurationTests {
 					assertThat(persistenceUnitInfo.getManagedClassNames())
 							.contains("customized.attribute.converter.class.name");
 				});
+	}
+
+	private Class<?>[] getManagedJavaTypes(EntityManager entityManager) {
+		Set<ManagedType<?>> managedTypes = entityManager.getMetamodel().getManagedTypes();
+		return managedTypes.stream().map(ManagedType::getJavaType).toArray(Class<?>[]::new);
 	}
 
 	@Configuration(proxyBeanMethods = false)

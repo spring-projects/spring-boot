@@ -52,6 +52,10 @@ class NativeImagePluginAction implements PluginApplicationAction {
 			SourceSet aotSourceSet = sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME);
 			project.getTasks().named(NativeImagePlugin.NATIVE_COMPILE_TASK_NAME, BuildNativeImageTask.class,
 					(nativeCompile) -> nativeCompile.getOptions().get().classpath(aotSourceSet.getOutput()));
+			SourceSet aotTestSourceSet = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME);
+			project.getTasks().named("nativeTestCompile", BuildNativeImageTask.class,
+					(nativeTestCompile) -> nativeTestCompile.getOptions().get()
+							.classpath(aotTestSourceSet.getOutput()));
 		});
 		GraalVMExtension graalVmExtension = project.getExtensions().getByType(GraalVMExtension.class);
 		graalVmExtension.getToolchainDetection().set(false);

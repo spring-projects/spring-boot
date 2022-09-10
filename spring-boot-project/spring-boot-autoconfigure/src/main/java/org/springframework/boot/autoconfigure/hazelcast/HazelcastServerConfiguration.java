@@ -52,6 +52,8 @@ class HazelcastServerConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
+	static final String HAZELCAST_LOGGING_TYPE = "hazelcast.logging.type";
+
 	private static HazelcastInstance getHazelcastInstance(Config config) {
 		if (StringUtils.hasText(config.getInstanceName())) {
 			return Hazelcast.getOrCreateHazelcastInstance(config);
@@ -88,7 +90,7 @@ class HazelcastServerConfiguration {
 
 		private static Config loadConfig(URL configUrl) throws IOException {
 			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml")) {
+			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 				return new YamlConfigBuilder(configUrl).build();
 			}
 			return new XmlConfigBuilder(configUrl).build();
@@ -123,6 +125,22 @@ class HazelcastServerConfiguration {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.slf4j.Logger.class)
+	static class HazelcastLoggingConfigCustomizerConfiguration {
+
+		@Bean
+		@Order(0)
+		HazelcastConfigCustomizer loggingHazelcastConfigCustomizer() {
+			return (config) -> {
+				if (!config.getProperties().containsKey(HAZELCAST_LOGGING_TYPE)) {
+					config.setProperty(HAZELCAST_LOGGING_TYPE, "slf4j");
+				}
+			};
+		}
+
+	}
+
 	/**
 	 * {@link HazelcastConfigResourceCondition} that checks if the
 	 * {@code spring.hazelcast.config} configuration key is defined.
@@ -131,7 +149,7 @@ class HazelcastServerConfiguration {
 
 		ConfigAvailableCondition() {
 			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml", "classpath:/hazelcast.xml", "file:./hazelcast.yaml",
-					"classpath:/hazelcast.yaml");
+					"classpath:/hazelcast.yaml", "file:./hazelcast.yml", "classpath:/hazelcast.yml");
 		}
 
 	}
