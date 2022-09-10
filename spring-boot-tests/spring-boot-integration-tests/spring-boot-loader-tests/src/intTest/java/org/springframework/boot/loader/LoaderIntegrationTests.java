@@ -53,7 +53,6 @@ class LoaderIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
-	@EnabledForJreRange(max = JRE.JAVA_18)
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
 		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
