@@ -105,8 +105,8 @@ Spring Boot will automatically find and load `application.properties` and `appli
 .. The classpath `/config` package
 . From the current directory
 .. The current directory
-.. The `/config` subdirectory in the current directory
-.. Immediate child directories of the `/config` subdirectory
+.. The `config/` subdirectory in the current directory
+.. Immediate child directories of the `config/` subdirectory
 
 The list is ordered by precedence (with values from lower items overriding earlier ones).
 Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
