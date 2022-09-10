@@ -16,12 +16,8 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +26,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.linesOf;
 
 /**
  * Tests for {@link ManagementContextConfigurationImportsAnnotationProcessor}.
  *
  * @author Scott Frederick
+ * @author Stephane Nicoll
  */
 class ManagementContextConfigurationImportsAnnotationProcessorTests {
 
@@ -49,34 +47,24 @@ class ManagementContextConfigurationImportsAnnotationProcessorTests {
 	}
 
 	@Test
-	void annotatedClasses() throws Exception {
-		List<String> classes = compile(TestManagementContextConfigurationTwo.class,
+	void annotatedClasses() {
+		File generatedFile = generateAnnotatedClasses(TestManagementContextConfigurationTwo.class,
 				TestManagementContextConfigurationOne.class);
-		assertThat(classes).hasSize(2);
-		assertThat(classes).containsExactly(
+		assertThat(generatedFile).exists().isFile();
+		assertThat(linesOf(generatedFile)).containsExactly(
 				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationOne",
 				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationTwo");
 	}
 
 	@Test
-	void notAnnotatedClasses() throws Exception {
-		List<String> classes = compile(TestAutoConfigurationConfiguration.class);
-		assertThat(classes).isNull();
+	void notAnnotatedClasses() {
+		assertThat(generateAnnotatedClasses(TestAutoConfigurationImportsAnnotationProcessor.class)).doesNotExist();
 	}
 
-	private List<String> compile(Class<?>... types) throws IOException {
+	private File generateAnnotatedClasses(Class<?>... types) {
 		TestManagementContextConfigurationImportsAnnotationProcessor processor = new TestManagementContextConfigurationImportsAnnotationProcessor();
 		this.compiler.getTask(types).call(processor);
-		return getWrittenImports(processor.getImportsFilePath());
-	}
-
-	private List<String> getWrittenImports(String importsFilePath) throws IOException {
-		File file = new File(this.tempDir, importsFilePath);
-		if (!file.exists()) {
-			return null;
-		}
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		return reader.lines().collect(Collectors.toList());
+		return new File(this.tempDir, processor.getImportsFilePath());
 	}
 
 }
