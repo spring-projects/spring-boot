@@ -141,14 +141,15 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	}
 
 	private void configureSslKeyStore(SSLHostConfigCertificate certificate, Ssl ssl) {
-		final String keystoreType = Objects.requireNonNullElse (ssl.getKeyStoreType(), "JKS");
-		final String keystoreLocation =  ssl.getKeyStore();
+		final String keystoreType = Objects.requireNonNullElse(ssl.getKeyStoreType(), "JKS");
+		final String keystoreLocation = ssl.getKeyStore();
 		if (keystoreType.equalsIgnoreCase("PKCS11")) {
 			if (keystoreLocation != null && !keystoreLocation.isBlank()) {
 				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
 						+ keystoreLocation + "'. Must be undefined / null.");
 			}
-		} else {
+		}
+		else {
 			try {
 				certificate.setCertificateKeystoreFile(ResourceUtils.getURL(keystoreLocation).toString());
 			}

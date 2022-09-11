@@ -222,14 +222,15 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private void configureSslKeyStore(SslContextFactory.Server factory, Ssl ssl) {
-		final String keystoreType = Objects.requireNonNullElse (ssl.getKeyStoreType(), "JKS");
+		final String keystoreType = Objects.requireNonNullElse(ssl.getKeyStoreType(), "JKS");
 		final String keystoreLocation = ssl.getKeyStore();
-		if(keystoreType.equalsIgnoreCase("PKCS11")) {
+		if (keystoreType.equalsIgnoreCase("PKCS11")) {
 			if (keystoreLocation != null && !keystoreLocation.isBlank()) {
 				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
 						+ keystoreLocation + "'. Must be undefined / null.");
 			}
-		} else {
+		}
+		else {
 			try {
 				URL url = ResourceUtils.getURL(keystoreLocation);
 				factory.setKeyStoreResource(Resource.newResource(url));
