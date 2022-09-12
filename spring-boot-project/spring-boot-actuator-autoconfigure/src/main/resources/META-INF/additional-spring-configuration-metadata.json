@@ -2102,6 +2102,14 @@
       "name": "management.tracing.log-service-name",
       "type": "java.lang.String",
       "description": "Service name to be used in log. Defaults to spring.application.name ."
+    },
+    {
+      "name": "management.tracing.propagation.type",
+      "defaultValue": "W3C"
+    },
+    {
+      "name": "management.tracing.sampling.probability",
+      "defaultValue": "0.10"
     }
   ],
   "hints": [
