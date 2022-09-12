@@ -317,7 +317,7 @@ public class BraveAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class PropagationConfiguration {
+	static class MdcPropagationConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -331,9 +331,9 @@ public class BraveAutoConfiguration {
 		@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
 		@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled", matchIfMissing = true)
 		ScopeDecorator correlationScopeDecorator(TracingProperties properties,
-				ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
+				ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers,
+				CorrelationScopeDecorator.Builder builder) {
 			List<String> correlationFields = properties.getBaggage().getCorrelationFields();
-			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
 			for (String field : correlationFields) {
 				builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field))
 						.flushOnUpdate().build());

@@ -35,7 +35,7 @@ import org.springframework.core.env.PropertySource;
  */
 class TracingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-	static final String PROPERTY_SOURCE_NAME = "defaultProperties";
+	static final String PROPERTY_SOURCE_NAME = "tracingProperties";
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -43,8 +43,6 @@ class TracingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 		// This doesn't work with all logging systems but it's a useful default so you see
 		// traces in logs without having to configure it.
 		if (Boolean.parseBoolean(environment.getProperty("management.tracing.enabled", "true"))) {
-			// TODO: Add management.tracing.default-logging-pattern-enabled as a property
-			// in the json
 			if (Boolean.parseBoolean(
 					environment.getProperty("management.tracing.default-logging-pattern-enabled", "true"))) {
 				map.put("logging.pattern.level", "%5p [${management.tracing.log-service-name:"
@@ -60,7 +58,8 @@ class TracingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 			PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);
 			if (source instanceof MapPropertySource) {
 				target = (MapPropertySource) source;
-				for (String key : map.keySet()) {
+				for (Map.Entry<String, Object> entry : map.entrySet()) {
+					String key = entry.getKey();
 					if (!target.containsProperty(key)) {
 						target.getSource().put(key, map.get(key));
 					}
@@ -71,7 +70,7 @@ class TracingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 			target = new MapPropertySource(PROPERTY_SOURCE_NAME, map);
 		}
 		if (!propertySources.contains(PROPERTY_SOURCE_NAME)) {
-			propertySources.addLast(target);
+			propertySources.addFirst(target);
 		}
 	}
 
