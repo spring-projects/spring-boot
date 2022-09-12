@@ -30,6 +30,7 @@ import org.springframework.aot.generate.ClassNameGenerator;
 import org.springframework.aot.generate.DefaultGenerationContext;
 import org.springframework.aot.generate.FileSystemGeneratedFiles;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
+import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
@@ -154,8 +155,8 @@ public class AotProcessor {
 		TypeReference applicationType = TypeReference.of(this.application);
 		ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
 		reflection.registerType(applicationType);
-		reflection.registerType(generatedType,
-				(typeHint) -> typeHint.onReachableType(applicationType).withConstructor(Collections.emptyList()));
+		reflection.registerType(generatedType, (typeHint) -> typeHint.onReachableType(applicationType)
+				.withConstructor(Collections.emptyList(), ExecutableMode.INVOKE));
 	}
 
 	private Path getRoot(Kind kind) {

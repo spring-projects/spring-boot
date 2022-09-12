@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 
 import reactor.netty.http.client.HttpClientRequest;
 
+import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
@@ -803,9 +804,10 @@ public class RestTemplateBuilder {
 					ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory")));
 			ClientHttpRequestFactorySupplier.ClientHttpRequestFactorySupplierRuntimeHints.registerHints(hints,
 					classLoader, (hint) -> {
-						hint.withMethod("setConnectTimeout", TypeReference.listOf(int.class));
-						hint.withMethod("setReadTimeout", TypeReference.listOf(int.class));
-						hint.withMethod("setBufferRequestBody", TypeReference.listOf(boolean.class));
+						hint.withMethod("setConnectTimeout", TypeReference.listOf(int.class), ExecutableMode.INVOKE);
+						hint.withMethod("setReadTimeout", TypeReference.listOf(int.class), ExecutableMode.INVOKE);
+						hint.withMethod("setBufferRequestBody", TypeReference.listOf(boolean.class),
+								ExecutableMode.INVOKE);
 					});
 		}
 

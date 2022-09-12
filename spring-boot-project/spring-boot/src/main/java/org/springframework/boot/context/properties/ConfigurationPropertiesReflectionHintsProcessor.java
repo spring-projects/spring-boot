@@ -107,11 +107,11 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private void handleConstructor(ReflectionHints reflectionHints) {
 		if (this.bindConstructor != null) {
-			reflectionHints.registerConstructor(this.bindConstructor);
+			reflectionHints.registerConstructor(this.bindConstructor, ExecutableMode.INVOKE);
 			return;
 		}
 		Arrays.stream(this.type.getDeclaredConstructors()).filter(this::hasNoParameters).findFirst()
-				.ifPresent(reflectionHints::registerConstructor);
+				.ifPresent((constructor) -> reflectionHints.registerConstructor(constructor, ExecutableMode.INVOKE));
 	}
 
 	private boolean hasNoParameters(Constructor<?> candidate) {
