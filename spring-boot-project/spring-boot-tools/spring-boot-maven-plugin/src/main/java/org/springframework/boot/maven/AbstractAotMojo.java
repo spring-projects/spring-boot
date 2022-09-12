@@ -137,11 +137,10 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	protected final URL[] getClassPath(File classesDirectory, File generatedClassesDirectory,
-			ArtifactsFilter... artifactFilters) throws MojoExecutionException {
+	protected final URL[] getClassPath(File[] directories, ArtifactsFilter... artifactFilters)
+			throws MojoExecutionException {
 		List<URL> urls = new ArrayList<>();
-		urls.add(toURL(classesDirectory));
-		urls.add(toURL(generatedClassesDirectory));
+		Arrays.stream(directories).map(this::toURL).forEach(urls::add);
 		urls.addAll(getDependencyURLs(artifactFilters));
 		return urls.toArray(URL[]::new);
 	}

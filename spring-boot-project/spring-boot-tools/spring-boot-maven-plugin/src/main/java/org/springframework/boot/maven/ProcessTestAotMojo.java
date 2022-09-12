@@ -61,14 +61,21 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.test.context.aot.TestAotProcessor";
 
 	/**
+	 * Directory containing the classes and resource files that should be packaged into
+	 * the archive.
+	 */
+	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	private File testClassesDirectory;
+
+	/**
 	 * Directory containing the classes and resource files that should be used to run the
 	 * tests.
 	 */
-	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
 	private File classesDirectory;
 
 	/**
-	 * Directory containing the generated test sources.
+	 * Directory containing the generated sources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/sources", required = true)
 	private File generatedSources;
@@ -83,6 +90,12 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	 * Directory containing the generated test classes.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/classes", required = true)
+	private File generatedTestClasses;
+
+	/**
+	 * Directory containing the generated test classes.
+	 */
+	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
 	private File generatedClasses;
 
 	/**
@@ -115,25 +128,27 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 			return;
 		}
 		generateAotAssets(getClassPath(true), AOT_PROCESSOR_CLASS_NAME, getAotArguments());
-		compileSourceFiles(getClassPath(false), this.generatedSources, this.classesDirectory);
+		compileSourceFiles(getClassPath(false), this.generatedSources, this.testClassesDirectory);
 		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
-				this.classesDirectory.toPath().resolve("META-INF/native-image"));
-		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
+				this.testClassesDirectory.toPath().resolve("META-INF/native-image"));
+		copyAll(this.generatedTestClasses.toPath(), this.testClassesDirectory.toPath());
 	}
 
 	private String[] getAotArguments() {
 		List<String> aotArguments = new ArrayList<>();
-		aotArguments.add(this.classesDirectory.toPath().toAbsolutePath().normalize().toString());
+		aotArguments.add(this.testClassesDirectory.toPath().toAbsolutePath().normalize().toString());
 		aotArguments.add(this.generatedSources.toString());
 		aotArguments.add(this.generatedResources.toString());
-		aotArguments.add(this.generatedClasses.toString());
+		aotArguments.add(this.generatedTestClasses.toString());
 		aotArguments.add(this.project.getGroupId());
 		aotArguments.add(this.project.getArtifactId());
 		return aotArguments.toArray(String[]::new);
 	}
 
 	protected URL[] getClassPath(boolean includeJUnitPlatformLauncher) throws Exception {
-		URL[] classPath = getClassPath(this.classesDirectory, this.generatedClasses);
+		File[] directories = new File[] { this.testClassesDirectory, this.generatedTestClasses, this.classesDirectory,
+				this.generatedClasses };
+		URL[] classPath = getClassPath(directories);
 		if (!includeJUnitPlatformLauncher || this.project.getArtifactMap()
 				.containsKey(JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID)) {
 			return classPath;
