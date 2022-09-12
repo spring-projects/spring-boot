@@ -23,6 +23,7 @@ import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -99,6 +100,19 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldFailToStartApplicationContextWhenCustomPropagationAndNoCustomPropagationFactoryWasSet() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=CUSTOM")
+				.run((context) -> assertThat(context).getBeans(TextMapPropagator.class).isEmpty());
+	}
+
+	@Test
+	void shouldSupplySinglePropagationFactoryForCustomPropagation() {
+		this.contextRunner.withUserConfiguration(CustomFactoryConfiguration.class)
+				.withPropertyValues("management.tracing.propagation.type=CUSTOM").run((context) -> assertThat(context)
+						.hasSingleBean(TextMapPropagator.class).hasBean("customPropagationFactory"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomConfiguration {
 
@@ -145,6 +159,16 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 		@Bean
 		OpenTelemetry openTelemetry() {
 			return mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomFactoryConfiguration {
+
+		@Bean
+		TextMapPropagator customPropagationFactory() {
+			return mock(TextMapPropagator.class);
 		}
 
 	}
