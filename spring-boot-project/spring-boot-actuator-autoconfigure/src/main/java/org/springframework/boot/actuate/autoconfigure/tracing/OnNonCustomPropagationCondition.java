@@ -24,7 +24,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks if propagation is not {@link TracingProperties.Propagation.PropagationType#CUSTOM}.
+ * {@link Condition} that checks if propagation is not
+ * {@link TracingProperties.Propagation.PropagationType#CUSTOM}.
  *
  * @author Marcin Grzejszczak
  */
@@ -34,9 +35,11 @@ class OnNonCustomPropagationCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		TracingProperties.Propagation.PropagationType type = context.getEnvironment().getProperty(PROPERTY_NAME, TracingProperties.Propagation.PropagationType.class);
-		return new ConditionOutcome(type != TracingProperties.Propagation.PropagationType.CUSTOM, ConditionMessage.forCondition("Tracing Propagation Type must not be custom")
-				.because(PROPERTY_NAME + " is " + TracingProperties.Propagation.PropagationType.CUSTOM.name()));
+		TracingProperties.Propagation.PropagationType type = context.getEnvironment().getProperty(PROPERTY_NAME,
+				TracingProperties.Propagation.PropagationType.class);
+		return new ConditionOutcome(type != TracingProperties.Propagation.PropagationType.CUSTOM,
+				ConditionMessage.forCondition("Tracing Propagation Type must not be custom")
+						.because(PROPERTY_NAME + " is " + TracingProperties.Propagation.PropagationType.CUSTOM.name()));
 	}
 
 }

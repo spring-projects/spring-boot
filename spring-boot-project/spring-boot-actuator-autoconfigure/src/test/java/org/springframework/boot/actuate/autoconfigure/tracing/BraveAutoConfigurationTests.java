@@ -26,6 +26,7 @@ import brave.http.HttpServerRequest;
 import brave.http.HttpServerResponse;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
@@ -138,6 +139,20 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldFailToStartApplicationContextWhenCustomPropagationAndNoCustomPropagationFactoryWasSet() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=CUSTOM")
+				.run((context) -> assertThat(context).getFailure()
+						.hasMessageContaining("No qualifying bean of type 'brave.propagation.Propagation$Factory'"));
+	}
+
+	@Test
+	void shouldSupplySinglePropagationFactoryForCustomPropagation() {
+		this.contextRunner.withUserConfiguration(CustomFactoryConfiguration.class)
+				.withPropertyValues("management.tracing.propagation.type=CUSTOM")
+				.run((context) -> assertThat(context).hasSingleBean(Factory.class).hasBean("customPropagationFactory"));
+	}
+
+	@Test
 	void shouldNotSupplyBraveBeansIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
 			assertThat(context).doesNotHaveBean(Tracing.class);
@@ -219,6 +234,28 @@ class BraveAutoConfigurationTests {
 		@Bean
 		BraveHttpClientHandler customBraveHttpClientHandler() {
 			return mock(BraveHttpClientHandler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomFactoryConfiguration {
+
+		@Bean
+		Propagation.Factory customPropagationFactory() {
+			return mock(Propagation.Factory.class);
+		}
+
+		@Bean
+		HttpServerHandler<HttpServerRequest, HttpServerResponse> customHttpServerHandler() {
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpServerHandler.create(httpTracing);
+		}
+
+		@Bean
+		HttpClientHandler<HttpClientRequest, HttpClientResponse> customHttpClientHandler() {
+			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
+			return HttpClientHandler.create(httpTracing);
 		}
 
 	}

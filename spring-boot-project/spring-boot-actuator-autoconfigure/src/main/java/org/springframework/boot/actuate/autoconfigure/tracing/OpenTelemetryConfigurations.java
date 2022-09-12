@@ -159,7 +159,8 @@ class OpenTelemetryConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		EventPublisher otelTracerEventPublisher(TracingProperties tracingProperties, List<EventListener> eventListeners) {
+		EventPublisher otelTracerEventPublisher(TracingProperties tracingProperties,
+				List<EventListener> eventListeners) {
 			return new OTelEventPublisher(eventListeners);
 		}
 
@@ -227,7 +228,8 @@ class OpenTelemetryConfigurations {
 
 				@Bean
 				@ConditionalOnMissingBean
-				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
+				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C",
+						matchIfMissing = true)
 				W3CTraceContextPropagator w3cTextMapPropagator() {
 					return W3CTraceContextPropagator.getInstance();
 				}
@@ -247,7 +249,8 @@ class OpenTelemetryConfigurations {
 
 				@Bean
 				@ConditionalOnMissingBean
-				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C", matchIfMissing = true)
+				@ConditionalOnProperty(value = "management.tracing.propagation", havingValue = "W3C",
+						matchIfMissing = true)
 				TextMapPropagator w3cTextMapPropagator() {
 					return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(),
 							W3CBaggagePropagator.getInstance());
@@ -287,10 +290,8 @@ class OpenTelemetryConfigurations {
 
 					@Bean
 					@ConditionalOnMissingBean
-					Slf4JBaggageEventListener otelSlf4JBaggageEventListener(
-							TracingProperties tracingProperties) {
-						return new Slf4JBaggageEventListener(
-								tracingProperties.getBaggage().getCorrelationFields());
+					Slf4JBaggageEventListener otelSlf4JBaggageEventListener(TracingProperties tracingProperties) {
+						return new Slf4JBaggageEventListener(tracingProperties.getBaggage().getCorrelationFields());
 					}
 
 				}
