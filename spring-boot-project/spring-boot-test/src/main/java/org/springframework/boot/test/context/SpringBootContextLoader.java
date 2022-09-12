@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.AotApplicationContextInitializer;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
@@ -55,6 +56,8 @@ import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.SmartContextLoader;
+import org.springframework.test.context.aot.AotContextLoader;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.test.context.support.AnnotationConfigContextLoaderUtils;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -90,15 +93,31 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @since 1.4.0
  * @see SpringBootTest
  */
-public class SpringBootContextLoader extends AbstractContextLoader {
+public class SpringBootContextLoader extends AbstractContextLoader implements AotContextLoader {
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+		return loadContext(mergedConfig, Mode.STANDARD, null);
+	}
+
+	@Override
+	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig) throws Exception {
+		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null);
+	}
+
+	@Override
+	public ApplicationContext loadContextForAotRuntime(MergedContextConfiguration mergedConfig,
+			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
+		return loadContext(mergedConfig, Mode.AOT_RUNTIME, initializer);
+	}
+
+	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
+			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
 		UseMainMethod useMainMethod = annotation.getUseMainMethod();
-		ContextLoaderHook hook = new ContextLoaderHook(mergedConfig);
+		ContextLoaderHook hook = new ContextLoaderHook(mergedConfig, mode, initializer);
 		if (useMainMethod != UseMainMethod.NEVER) {
 			Method mainMethod = getMainMethod(mergedConfig, useMainMethod);
 			if (mainMethod != null) {
@@ -298,6 +317,31 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	/**
+	 * Modes that the {@link SpringBootContextLoader} can operate.
+	 */
+	private enum Mode {
+
+		/**
+		 * Load for regular usage.
+		 * @see SmartContextLoader#loadContext
+		 */
+		STANDARD,
+
+		/**
+		 * Load for AOT processing.
+		 * @see AotContextLoader#loadContextForAotProcessing
+		 */
+		AOT_PROCESSING,
+
+		/**
+		 * Load for AOT runtime.
+		 * @see AotContextLoader#loadContextForAotRuntime
+		 */
+		AOT_RUNTIME
+
+	}
+
+	/**
 	 * Inner class to configure {@link WebMergedContextConfiguration}.
 	 */
 	private static class WebConfigurer {
@@ -417,8 +461,15 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 		private final MergedContextConfiguration mergedConfig;
 
-		ContextLoaderHook(MergedContextConfiguration mergedConfig) {
+		private final Mode mode;
+
+		private final ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
+
+		ContextLoaderHook(MergedContextConfiguration mergedConfig, Mode mode,
+				ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
 			this.mergedConfig = mergedConfig;
+			this.mode = mode;
+			this.initializer = initializer;
 		}
 
 		@Override
@@ -428,6 +479,17 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				@Override
 				public void starting(ConfigurableBootstrapContext bootstrapContext) {
 					SpringBootContextLoader.this.configure(ContextLoaderHook.this.mergedConfig, application);
+					if (ContextLoaderHook.this.initializer != null) {
+						application.addInitializers(
+								AotApplicationContextInitializer.of(ContextLoaderHook.this.initializer));
+					}
+				}
+
+				@Override
+				public void contextLoaded(ConfigurableApplicationContext context) {
+					if (ContextLoaderHook.this.mode == Mode.AOT_PROCESSING) {
+						throw new AbandonedRunException(context);
+					}
 				}
 
 				@Override
