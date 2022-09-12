@@ -168,8 +168,8 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	}
 
 	/**
-	 * Crate a new lazy copy of the given mappings will only copy entries if the mappings
-	 * are mutated.
+	 * Create a new lazy copy of the given mappings that will only copy entries if the
+	 * mappings are mutated.
 	 * @param mappings the source mappings
 	 * @return a new mappings instance
 	 * @since 3.0.0
@@ -349,7 +349,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		private final MimeMappings source;
 
-		private AtomicBoolean copied = new AtomicBoolean();
+		private final AtomicBoolean copied = new AtomicBoolean();
 
 		LazyMimeMappingsCopy(MimeMappings source) {
 			this.source = source;
