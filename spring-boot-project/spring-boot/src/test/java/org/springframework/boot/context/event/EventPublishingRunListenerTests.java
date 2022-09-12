@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.DefaultBootstrapContext;
@@ -31,6 +30,8 @@ import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -40,46 +41,47 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link EventPublishingRunListener}
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  */
 class EventPublishingRunListenerTests {
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
-
-	private SpringApplication application;
-
-	private EventPublishingRunListener runListener;
-
-	private TestApplicationListener eventListener;
-
-	@BeforeEach
-	void setup() {
-		this.eventListener = new TestApplicationListener();
-		this.application = mock(SpringApplication.class);
-		given(this.application.getListeners()).willReturn(Collections.singleton(this.eventListener));
-		this.runListener = new EventPublishingRunListener(this.application, null);
+	@Test
+	void shouldPublishLifecycleEvents() {
+		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+		StaticApplicationContext context = new StaticApplicationContext();
+		TestApplicationListener applicationListener = new TestApplicationListener();
+		SpringApplication application = mock(SpringApplication.class);
+		given(application.getListeners()).willReturn(Collections.singleton(applicationListener));
+		EventPublishingRunListener publishingListener = new EventPublishingRunListener(application, null);
+		applicationListener.assertReceivedNoEvents();
+		publishingListener.starting(bootstrapContext);
+		applicationListener.assertReceivedEvent(ApplicationStartingEvent.class);
+		publishingListener.environmentPrepared(bootstrapContext, null);
+		applicationListener.assertReceivedEvent(ApplicationEnvironmentPreparedEvent.class);
+		publishingListener.contextPrepared(context);
+		applicationListener.assertReceivedEvent(ApplicationContextInitializedEvent.class);
+		publishingListener.contextLoaded(context);
+		applicationListener.assertReceivedEvent(ApplicationPreparedEvent.class);
+		context.refresh();
+		publishingListener.started(context, null);
+		applicationListener.assertReceivedEvent(ApplicationStartedEvent.class, AvailabilityChangeEvent.class);
+		publishingListener.ready(context, null);
+		applicationListener.assertReceivedEvent(ApplicationReadyEvent.class, AvailabilityChangeEvent.class);
 	}
 
 	@Test
-	void shouldPublishLifecycleEvents() {
-		StaticApplicationContext context = new StaticApplicationContext();
-		assertThat(this.eventListener.receivedEvents()).isEmpty();
-		this.runListener.starting(this.bootstrapContext);
-		checkApplicationEvents(ApplicationStartingEvent.class);
-		this.runListener.environmentPrepared(this.bootstrapContext, null);
-		checkApplicationEvents(ApplicationEnvironmentPreparedEvent.class);
-		this.runListener.contextPrepared(context);
-		checkApplicationEvents(ApplicationContextInitializedEvent.class);
-		this.runListener.contextLoaded(context);
-		checkApplicationEvents(ApplicationPreparedEvent.class);
-		context.refresh();
-		this.runListener.started(context, null);
-		checkApplicationEvents(ApplicationStartedEvent.class, AvailabilityChangeEvent.class);
-		this.runListener.ready(context, null);
-		checkApplicationEvents(ApplicationReadyEvent.class, AvailabilityChangeEvent.class);
-	}
-
-	void checkApplicationEvents(Class<?>... eventClasses) {
-		assertThat(this.eventListener.receivedEvents()).extracting("class").contains((Object[]) eventClasses);
+	void initialEventListenerCanAddAdditionalListenersToApplication() {
+		SpringApplication application = new SpringApplication();
+		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		TestApplicationListener lateAddedApplicationListener = new TestApplicationListener();
+		ApplicationListener<ApplicationStartingEvent> listener = (event) -> event.getSpringApplication()
+				.addListeners(lateAddedApplicationListener);
+		application.addListeners(listener);
+		EventPublishingRunListener runListener = new EventPublishingRunListener(application, null);
+		runListener.starting(bootstrapContext);
+		runListener.environmentPrepared(bootstrapContext, environment);
+		lateAddedApplicationListener.assertReceivedEvent(ApplicationEnvironmentPreparedEvent.class);
 	}
 
 	static class TestApplicationListener implements ApplicationListener<ApplicationEvent> {
@@ -91,12 +93,16 @@ class EventPublishingRunListenerTests {
 			this.events.add(event);
 		}
 
-		List<ApplicationEvent> receivedEvents() {
+		void assertReceivedNoEvents() {
+			assertThat(this.events).isEmpty();
+		}
+
+		void assertReceivedEvent(Class<?>... eventClasses) {
 			List<ApplicationEvent> receivedEvents = new ArrayList<>();
 			while (!this.events.isEmpty()) {
 				receivedEvents.add(this.events.pollFirst());
 			}
-			return receivedEvents;
+			assertThat(receivedEvents).extracting("class").contains((Object[]) eventClasses);
 		}
 
 	}
