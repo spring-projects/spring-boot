@@ -77,7 +77,7 @@ public class TracingProperties {
 	public static class Baggage {
 
 		/**
-		 * Enables correlating the baggage context with logging contexts.
+		 * Whether to enable correlation of the baggage context with logging contexts.
 		 */
 		private boolean correlationEnabled = true;
 
