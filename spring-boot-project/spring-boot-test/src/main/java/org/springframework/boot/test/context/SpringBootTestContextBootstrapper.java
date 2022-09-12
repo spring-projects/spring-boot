@@ -362,8 +362,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	protected final MergedContextConfiguration createModifiedConfig(MergedContextConfiguration mergedConfig,
 			Class<?>[] classes, String[] propertySourceProperties) {
 		Set<ContextCustomizer> contextCustomizers = new LinkedHashSet<>(mergedConfig.getContextCustomizers());
-		contextCustomizers.add(new SpringBootTestArgs(mergedConfig.getTestClass()));
-		contextCustomizers.add(new SpringBootTestWebEnvironment(mergedConfig.getTestClass()));
+		contextCustomizers.add(new SpringBootTestAnnotation(mergedConfig.getTestClass()));
 		return new MergedContextConfiguration(mergedConfig.getTestClass(), mergedConfig.getLocations(), classes,
 				mergedConfig.getContextInitializerClasses(), mergedConfig.getActiveProfiles(),
 				mergedConfig.getPropertySourceLocations(), propertySourceProperties, contextCustomizers,

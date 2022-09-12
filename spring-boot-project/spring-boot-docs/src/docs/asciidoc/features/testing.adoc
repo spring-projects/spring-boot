@@ -137,6 +137,44 @@ Therefore, as long as your tests share the same configuration (no matter how it 
 
 
 
+[[features.testing.spring-boot-applications.using-main]]
+==== Using the Test Configuration Main Method
+Typically the test configuration discovered by `@SpringBootTest` will be your main `@SpringBootApplication`.
+In most well structured applications, this configuration class will also include the `main` method used to launch the application.
+
+For example, the following is a very common code pattern for a typical Spring Boot application:
+
+include::code:typical/MyApplication[]
+
+In the example above, the `main` method doesn't do anything other than delegate to `SpringApplication.run`.
+It is, however, possible to have a more complex `main` method that applies customizations before calling `SpringApplication.run`.
+
+For example, here is an application that changes the banner mode and sets additional profiles:
+
+include::code:custom/MyApplication[]
+
+Since customizations in the `main` method can affect the resulting `ApplicationContext`, Spring Boot will also attempt to use the `main` method for tests.
+By default, `@SpringBootTest` will detect any `main` method on your `@SpringBootConfiguration` and run it up to the point that the `SpringApplication.run` method is called.
+If your `@SpringBootConfiguration` class doesn't have a main method, the class itself is used directly to create the `ApplicationContext`.
+
+In some situations, you may find that you can't or don't want to run the `main` method in your tests.
+If that's the case, you can change the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.NEVER`.
+
+For example, you might have the following application class:
+
+include::code:never/MyApplication[]
+
+If a test wants to use the `MyApplication` configuration without calling the main method, it can be written as follows:
+
+include::code:never/MyApplicationTests[]
+
+The test above will still use `MyApplication` to create the `ApplicationContext`, however, it won't call `MyCode.expensiveOperation()` since the `main` method is not invoked.
+
+If you want to do the opposite, and ensure that the `main` method is always invoked, you can set the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.ALWAYS`.
+If this property is set, and no `main` method can be found the test will fail.
+
+
+
 [[features.testing.spring-boot-applications.excluding-configuration]]
 ==== Excluding Test Configuration
 If your application uses component scanning (for example, if you use `@SpringBootApplication` or `@ComponentScan`), you may find top-level configuration classes that you created only for specific tests accidentally get picked up everywhere.

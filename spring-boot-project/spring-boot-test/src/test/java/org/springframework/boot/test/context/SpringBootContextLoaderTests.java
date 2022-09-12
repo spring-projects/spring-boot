@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +43,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link SpringBootContextLoader}
@@ -114,8 +118,7 @@ class SpringBootContextLoaderTests {
 		assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2");
 	}
 
-	@Test
-	// gh-28776
+	@Test // gh-28776
 	void testPropertyValuesShouldTakePrecedenceWhenInlinedPropertiesPresent() {
 		TestContext context = new ExposedTestContextManager(SimpleConfig.class).getExposedTestContext();
 		StandardEnvironment environment = (StandardEnvironment) context.getApplicationContext().getEnvironment();
@@ -160,6 +163,37 @@ class SpringBootContextLoaderTests {
 		TestContext context = new ExposedTestContextManager(ChangingWebApplicationTypeToReactive.class)
 				.getExposedTestContext();
 		assertThat(context.getApplicationContext()).isInstanceOf(GenericReactiveWebApplicationContext.class);
+	}
+
+	@Test
+	void whenUseMainMethodAlwaysAndMainMethodThrowsException() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodAlwaysAndMainMethodThrowsException.class)
+				.getExposedTestContext();
+		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext).havingCause()
+				.withMessageContaining("ThrownFromMain");
+	}
+
+	@Test
+	void whenUseMainMethodWhenAvailableAndNoMainMethod() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndNoMainMethod.class)
+				.getExposedTestContext();
+		ApplicationContext applicationContext = testContext.getApplicationContext();
+		assertThat(applicationContext.getEnvironment().getActiveProfiles()).isEmpty();
+	}
+
+	@Test
+	void whenUseMainMethodWhenAvailableAndMainMethod() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndMainMethod.class)
+				.getExposedTestContext();
+		ApplicationContext applicationContext = testContext.getApplicationContext();
+		assertThat(applicationContext.getEnvironment().getActiveProfiles()).contains("frommain");
+	}
+
+	@Test
+	void whenUseMainMethodNever() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodNever.class).getExposedTestContext();
+		ApplicationContext applicationContext = testContext.getApplicationContext();
+		assertThat(applicationContext.getEnvironment().getActiveProfiles()).isEmpty();
 	}
 
 	private String[] getActiveProfiles(Class<?> testClass) {
@@ -239,11 +273,6 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	static class Config {
-
-	}
-
 	@SpringBootTest(classes = Config.class, args = "--spring.main.web-application-type=none")
 	static class ChangingWebApplicationTypeToNone {
 
@@ -251,6 +280,57 @@ class SpringBootContextLoaderTests {
 
 	@SpringBootTest(classes = Config.class, args = "--spring.main.web-application-type=reactive")
 	static class ChangingWebApplicationTypeToReactive {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithThrowingMain.class, useMainMethod = UseMainMethod.ALWAYS)
+	static class UseMainMethodAlwaysAndMainMethodThrowsException {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithNoMain.class, useMainMethod = UseMainMethod.WHEN_AVAILABLE)
+	static class UseMainMethodWhenAvailableAndNoMainMethod {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithMain.class, useMainMethod = UseMainMethod.WHEN_AVAILABLE)
+	static class UseMainMethodWhenAvailableAndMainMethod {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithMain.class, useMainMethod = UseMainMethod.NEVER)
+	static class UseMainMethodNever {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class Config {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@SpringBootConfiguration
+	public static class ConfigWithMain {
+
+		public static void main(String[] args) {
+			new SpringApplication(ConfigWithMain.class).run("--spring.profiles.active=frommain");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@SpringBootConfiguration
+	static class ConfigWithNoMain {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@SpringBootConfiguration
+	public static class ConfigWithThrowingMain {
+
+		public static void main(String[] args) {
+			throw new RuntimeException("ThrownFromMain");
+		}
 
 	}
 

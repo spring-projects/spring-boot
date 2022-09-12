@@ -126,6 +126,14 @@ public @interface SpringBootTest {
 	WebEnvironment webEnvironment() default WebEnvironment.MOCK;
 
 	/**
+	 * The type of main method usage to employ when creating the {@link SpringApplication}
+	 * under test.
+	 * @return the type of main method usage
+	 * @since 3.0.0
+	 */
+	UseMainMethod useMainMethod() default UseMainMethod.WHEN_AVAILABLE;
+
+	/**
 	 * An enumeration web environment modes.
 	 */
 	enum WebEnvironment {
@@ -172,6 +180,36 @@ public @interface SpringBootTest {
 		public boolean isEmbedded() {
 			return this.embedded;
 		}
+
+	}
+
+	/**
+	 * Enumeration of how the main method of the
+	 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class is used
+	 * when creating and running the {@link SpringApplication} under test.
+	 */
+	enum UseMainMethod {
+
+		/**
+		 * Always use the {@code main} method. A failure will occur if there is no
+		 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class or
+		 * that class does not have a main method.
+		 */
+		ALWAYS,
+
+		/**
+		 * Never use the {@code main} method, creating a test-specific
+		 * {@link SpringApplication} instead.
+		 */
+		NEVER,
+
+		/**
+		 * Use the {@code main} method when it is available. If there is no
+		 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class or
+		 * that class does not have a main method, a test-specific
+		 * {@link SpringApplication} will be used.
+		 */
+		WHEN_AVAILABLE;
 
 	}
 

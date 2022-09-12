@@ -16,16 +16,23 @@
 
 package org.springframework.boot.test.context;
 
+import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplication.AbandonedRunException;
+import org.springframework.boot.SpringApplicationHook;
+import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.util.TestPropertyValues.Type;
@@ -54,7 +61,9 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
@@ -86,7 +95,47 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
+		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
+		String[] args = annotation.getArgs();
+		UseMainMethod useMainMethod = annotation.getUseMainMethod();
+		ContextLoaderHook hook = new ContextLoaderHook(mergedConfig);
+		if (useMainMethod != UseMainMethod.NEVER) {
+			Method mainMethod = getMainMethod(mergedConfig, useMainMethod);
+			if (mainMethod != null) {
+				return hook.run(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
+			}
+		}
 		SpringApplication application = getSpringApplication();
+		return hook.run(() -> application.run(args));
+	}
+
+	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
+		boolean hasClasses = !ObjectUtils.isEmpty(mergedConfig.getClasses());
+		boolean hasLocations = !ObjectUtils.isEmpty(mergedConfig.getLocations());
+		Assert.state(hasClasses || hasLocations,
+				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
+						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
+						+ SpringVersion.getVersion() + ").");
+	}
+
+	private Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
+		Class<?> springBootConfiguration = Arrays.stream(mergedConfig.getClasses())
+				.filter(this::isSpringBootConfiguration).findFirst().orElse(null);
+		Assert.state(springBootConfiguration != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
+				"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
+		Method mainMethod = (springBootConfiguration != null)
+				? ReflectionUtils.findMethod(springBootConfiguration, "main", String[].class) : null;
+		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
+				() -> "Main method not found on '%s'".formatted(springBootConfiguration.getName()));
+		return mainMethod;
+	}
+
+	private boolean isSpringBootConfiguration(Class<?> candidate) {
+		return MergedAnnotations.from(candidate, SearchStrategy.TYPE_HIERARCHY)
+				.isPresent(SpringBootConfiguration.class);
+	}
+
+	private void configure(MergedContextConfiguration mergedConfig, SpringApplication application) {
 		application.setMainApplicationClass(mergedConfig.getTestClass());
 		application.addPrimarySources(Arrays.asList(mergedConfig.getClasses()));
 		application.getSources().addAll(Arrays.asList(mergedConfig.getLocations()));
@@ -103,7 +152,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
-		application.setApplicationContextFactory((type) -> getApplicationContextFactory(mergedConfig, type));
+		application.setApplicationContextFactory(
+				(webApplicationType) -> getApplicationContextFactory(mergedConfig, webApplicationType));
 		application.setInitializers(initializers);
 		ConfigurableEnvironment environment = getEnvironment();
 		if (environment != null) {
@@ -113,30 +163,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		else {
 			application.addListeners(new PrepareEnvironmentListener(mergedConfig));
 		}
-		String[] args = SpringBootTestArgs.get(mergedConfig.getContextCustomizers());
-		return application.run(args);
-	}
-
-	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
-		boolean hasClasses = !ObjectUtils.isEmpty(mergedConfig.getClasses());
-		boolean hasLocations = !ObjectUtils.isEmpty(mergedConfig.getLocations());
-		Assert.state(hasClasses || hasLocations,
-				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
-						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
-						+ SpringVersion.getVersion() + ").");
 	}
 
 	private ConfigurableApplicationContext getApplicationContextFactory(MergedContextConfiguration mergedConfig,
-			WebApplicationType type) {
-		if (type != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
-			if (type == WebApplicationType.REACTIVE) {
+			WebApplicationType webApplicationType) {
+		if (webApplicationType != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
+			if (webApplicationType == WebApplicationType.REACTIVE) {
 				return new GenericReactiveWebApplicationContext();
 			}
-			if (type == WebApplicationType.SERVLET) {
+			if (webApplicationType == WebApplicationType.SERVLET) {
 				return new GenericWebApplicationContext();
 			}
 		}
-		return ApplicationContextFactory.DEFAULT.create(type);
+		return ApplicationContextFactory.DEFAULT.create(webApplicationType);
 	}
 
 	private void prepareEnvironment(MergedContextConfiguration mergedConfig, SpringApplication application,
@@ -165,9 +204,10 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
-	 * override this method to add custom behavior
-	 * @return {@link org.springframework.boot.SpringApplication} instance
+	 * Builds new {@link org.springframework.boot.SpringApplication} instance. This method
+	 * is only called when a {@code main} method isn't being used to create the
+	 * {@link SpringApplication}.
+	 * @return a {@link SpringApplication} instance
 	 */
 	protected SpringApplication getSpringApplication() {
 		return new SpringApplication();
@@ -215,16 +255,14 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
 		if (mergedConfig.getParent() != null) {
-			initializers
-					.add(new ParentContextApplicationContextInitializer(mergedConfig.getParentApplicationContext()));
+			ApplicationContext parentApplicationContext = mergedConfig.getParentApplicationContext();
+			initializers.add(new ParentContextApplicationContextInitializer(parentApplicationContext));
 		}
 		return initializers;
 	}
 
 	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration mergedConfig) {
-		return MergedAnnotations.from(mergedConfig.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
-				.get(SpringBootTest.class).getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE)
-				.isEmbedded();
+		return SpringBootTestAnnotation.get(mergedConfig).getWebEnvironment().isEmbedded();
 	}
 
 	@Override
@@ -367,6 +405,47 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			prepareEnvironment(this.mergedConfig, event.getSpringApplication(), event.getEnvironment(), true);
+		}
+
+	}
+
+	/**
+	 * {@link SpringApplicationHook} used to capture the {@link ApplicationContext} and to
+	 * trigger early exit for the {@link Mode#AOT_PROCESSING} mode.
+	 */
+	private class ContextLoaderHook implements SpringApplicationHook {
+
+		private final MergedContextConfiguration mergedConfig;
+
+		ContextLoaderHook(MergedContextConfiguration mergedConfig) {
+			this.mergedConfig = mergedConfig;
+		}
+
+		@Override
+		public SpringApplicationRunListener getRunListener(SpringApplication application) {
+			return new SpringApplicationRunListener() {
+
+				@Override
+				public void starting(ConfigurableBootstrapContext bootstrapContext) {
+					SpringBootContextLoader.this.configure(ContextLoaderHook.this.mergedConfig, application);
+				}
+
+				@Override
+				public void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+					throw new AbandonedRunException(context);
+				}
+
+			};
+		}
+
+		private <T> ApplicationContext run(ThrowingSupplier<T> action) {
+			try {
+				SpringApplication.withHook(this, action);
+				throw new IllegalStateException("ApplicationContext not loaded");
+			}
+			catch (AbandonedRunException ex) {
+				return ex.getApplicationContext();
+			}
 		}
 
 	}

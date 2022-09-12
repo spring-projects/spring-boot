@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-package smoketest.profile;
+package org.springframework.boot.docs.features.testing.springbootapplications.usingmain.never;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-// gh-29169
-@SpringBootTest(useMainMethod = UseMainMethod.NEVER, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AttributeInjectionTests {
-
-	@Autowired(required = false)
-	private org.springframework.boot.web.servlet.error.ErrorAttributes errorAttributesServlet;
-
-	@Autowired(required = false)
-	private org.springframework.boot.web.reactive.error.ErrorAttributes errorAttributesReactive;
+@SpringBootTest(useMainMethod = UseMainMethod.NEVER)
+public class MyApplicationTests {
 
 	@Test
-	void contextLoads() {
-		assertThat(this.errorAttributesServlet).isNull();
-		assertThat(this.errorAttributesReactive).isNotNull();
+	void exampleTest() {
+		// ...
 	}
 
 }

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,7 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "enableEnvironmentPostProcessor=true" }) // gh-28530
+@SpringBootTest(useMainMethod = UseMainMethod.NEVER, webEnvironment = WebEnvironment.NONE,
+		properties = { "enableEnvironmentPostProcessor=true" }) // gh-28530
 @ActiveProfiles("hello")
 class ActiveProfilesTests {
 
