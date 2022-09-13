@@ -34,6 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -398,6 +400,24 @@ public class UndertowWebServer implements WebServer {
 	 * {@link Closeable} {@link HttpHandler}.
 	 */
 	private interface CloseableHttpHandler extends HttpHandler, Closeable {
+
+	}
+
+	/**
+	 * {@link RuntimeHintsRegistrar} that allows Undertow's configured and actual ports to
+	 * be retrieved at runtime in a native image.
+	 */
+	static class UndertowWebServerRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerTypeIfPresent(classLoader, "io.undertow.Undertow",
+					(hint) -> hint.withField("listeners").withField("channels"));
+			hints.reflection().registerTypeIfPresent(classLoader, "io.undertow.Undertow$ListenerConfig",
+					(hint) -> hint.withField("type").withField("port"));
+			hints.reflection().registerTypeIfPresent(classLoader,
+					"io.undertow.protocols.ssl.UndertowAcceptingSslChannel", (hint) -> hint.withField("ssl"));
+		}
 
 	}
 
