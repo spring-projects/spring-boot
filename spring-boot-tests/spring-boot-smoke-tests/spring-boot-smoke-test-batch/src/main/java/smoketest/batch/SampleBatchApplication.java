@@ -19,8 +19,9 @@ package smoketest.batch;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.boot.SpringApplication;
@@ -32,32 +33,20 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableBatchProcessing
 public class SampleBatchApplication {
 
-	private JobBuilderFactory jobs;
-
-	private StepBuilderFactory steps;
-
-	private PlatformTransactionManager transactionManager;
-
-	public SampleBatchApplication(JobBuilderFactory jobs, StepBuilderFactory steps,
-			PlatformTransactionManager transactionManager) {
-		this.jobs = jobs;
-		this.steps = steps;
-		this.transactionManager = transactionManager;
-	}
-
 	@Bean
-	protected Tasklet tasklet() {
+	Tasklet tasklet() {
 		return (contribution, context) -> RepeatStatus.FINISHED;
 	}
 
 	@Bean
-	public Job job() {
-		return this.jobs.get("job").start(step1()).build();
+	Job job(JobRepository jobRepository, Step step) {
+		return new JobBuilder("job").repository(jobRepository).start(step).build();
 	}
 
 	@Bean
-	protected Step step1() {
-		return this.steps.get("step1").tasklet(tasklet()).transactionManager(this.transactionManager).build();
+	Step step1(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
+		return new StepBuilder("step1").repository(jobRepository).tasklet(tasklet)
+				.transactionManager(transactionManager).build();
 	}
 
 	public static void main(String[] args) {

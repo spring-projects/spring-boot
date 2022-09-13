@@ -30,8 +30,6 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.builder.SimpleJobBuilder;
@@ -183,11 +181,11 @@ class JobLauncherApplicationRunnerTests {
 
 		private final JobExplorer jobExplorer;
 
-		private final JobBuilderFactory jobs;
-
-		private final StepBuilderFactory steps;
+		private final JobBuilder jobBuilder;
 
 		private final Job job;
+
+		private final StepBuilder stepBuilder;
 
 		private final Step step;
 
@@ -195,11 +193,11 @@ class JobLauncherApplicationRunnerTests {
 			JobLauncher jobLauncher = context.getBean(JobLauncher.class);
 			JobRepository jobRepository = context.getBean(JobRepository.class);
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
-			this.jobs = new JobBuilderFactory(jobRepository);
-			this.steps = new StepBuilderFactory(jobRepository);
-			this.step = this.steps.get("step").tasklet((contribution, chunkContext) -> null)
+			this.stepBuilder = new StepBuilder("step").repository(jobRepository);
+			this.step = this.stepBuilder.tasklet((contribution, chunkContext) -> null)
 					.transactionManager(transactionManager).build();
-			this.job = this.jobs.get("job").start(this.step).build();
+			this.jobBuilder = new JobBuilder("job").repository(jobRepository);
+			this.job = this.jobBuilder.start(this.step).build();
 			this.jobExplorer = context.getBean(JobExplorer.class);
 			this.runner = new JobLauncherApplicationRunner(jobLauncher, this.jobExplorer, jobRepository);
 		}
@@ -213,15 +211,15 @@ class JobLauncherApplicationRunnerTests {
 		}
 
 		JobBuilder jobBuilder() {
-			return this.jobs.get("job");
+			return this.jobBuilder;
 		}
 
 		StepBuilder stepBuilder() {
-			return this.steps.get("step");
+			return this.stepBuilder;
 		}
 
 		SimpleJobBuilder configureJob() {
-			return this.jobs.get("job").start(this.step);
+			return this.jobBuilder.start(this.step);
 		}
 
 	}
