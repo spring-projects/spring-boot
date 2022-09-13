@@ -107,7 +107,7 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	}
 
 	protected URL[] getClassPath() throws Exception {
-		return getClassPath(this.classesDirectory, new ExcludeTestScopeArtifactFilter());
+		return getClassPath(this.classesDirectory, this.generatedClasses, new ExcludeTestScopeArtifactFilter());
 	}
 
 }
