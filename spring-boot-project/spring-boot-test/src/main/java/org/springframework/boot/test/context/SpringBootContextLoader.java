@@ -84,62 +84,69 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 public class SpringBootContextLoader extends AbstractContextLoader {
 
 	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
-		Class<?>[] configClasses = config.getClasses();
-		String[] configLocations = config.getLocations();
-		Assert.state(!ObjectUtils.isEmpty(configClasses) || !ObjectUtils.isEmpty(configLocations),
-				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
-						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
-						+ SpringVersion.getVersion() + ").");
+	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+		assertHasClassesOrLocations(mergedConfig);
 		SpringApplication application = getSpringApplication();
-		application.setMainApplicationClass(config.getTestClass());
-		application.addPrimarySources(Arrays.asList(configClasses));
-		application.getSources().addAll(Arrays.asList(configLocations));
-		List<ApplicationContextInitializer<?>> initializers = getInitializers(config, application);
-		if (config instanceof WebMergedContextConfiguration) {
+		application.setMainApplicationClass(mergedConfig.getTestClass());
+		application.addPrimarySources(Arrays.asList(mergedConfig.getClasses()));
+		application.getSources().addAll(Arrays.asList(mergedConfig.getLocations()));
+		List<ApplicationContextInitializer<?>> initializers = getInitializers(mergedConfig, application);
+		if (mergedConfig instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
-			if (!isEmbeddedWebEnvironment(config)) {
-				new WebConfigurer().configure(config, application, initializers);
+			if (!isEmbeddedWebEnvironment(mergedConfig)) {
+				new WebConfigurer().configure(mergedConfig, application, initializers);
 			}
 		}
-		else if (config instanceof ReactiveWebMergedContextConfiguration) {
+		else if (mergedConfig instanceof ReactiveWebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.REACTIVE);
 		}
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
-		application.setApplicationContextFactory((type) -> {
-			if (type != WebApplicationType.NONE && !isEmbeddedWebEnvironment(config)) {
-				if (type == WebApplicationType.REACTIVE) {
-					return new GenericReactiveWebApplicationContext();
-				}
-				else if (type == WebApplicationType.SERVLET) {
-					return new GenericWebApplicationContext();
-				}
-			}
-			return ApplicationContextFactory.DEFAULT.create(type);
-		});
+		application.setApplicationContextFactory((type) -> getApplicationContextFactory(mergedConfig, type));
 		application.setInitializers(initializers);
 		ConfigurableEnvironment environment = getEnvironment();
 		if (environment != null) {
-			prepareEnvironment(config, application, environment, false);
+			prepareEnvironment(mergedConfig, application, environment, false);
 			application.setEnvironment(environment);
 		}
 		else {
-			application.addListeners(new PrepareEnvironmentListener(config));
+			application.addListeners(new PrepareEnvironmentListener(mergedConfig));
 		}
-		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
+		String[] args = SpringBootTestArgs.get(mergedConfig.getContextCustomizers());
 		return application.run(args);
 	}
 
-	private void prepareEnvironment(MergedContextConfiguration config, SpringApplication application,
+	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
+		boolean hasClasses = !ObjectUtils.isEmpty(mergedConfig.getClasses());
+		boolean hasLocations = !ObjectUtils.isEmpty(mergedConfig.getLocations());
+		Assert.state(hasClasses || hasLocations,
+				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
+						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
+						+ SpringVersion.getVersion() + ").");
+	}
+
+	private ConfigurableApplicationContext getApplicationContextFactory(MergedContextConfiguration mergedConfig,
+			WebApplicationType type) {
+		if (type != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
+			if (type == WebApplicationType.REACTIVE) {
+				return new GenericReactiveWebApplicationContext();
+			}
+			if (type == WebApplicationType.SERVLET) {
+				return new GenericWebApplicationContext();
+			}
+		}
+		return ApplicationContextFactory.DEFAULT.create(type);
+	}
+
+	private void prepareEnvironment(MergedContextConfiguration mergedConfig, SpringApplication application,
 			ConfigurableEnvironment environment, boolean applicationEnvironment) {
-		setActiveProfiles(environment, config.getActiveProfiles(), applicationEnvironment);
+		setActiveProfiles(environment, mergedConfig.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
-				config.getPropertySourceLocations());
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
+				mergedConfig.getPropertySourceLocations());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(mergedConfig));
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
@@ -176,16 +183,12 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return null;
 	}
 
-	protected String[] getInlinedProperties(MergedContextConfiguration config) {
+	protected String[] getInlinedProperties(MergedContextConfiguration mergedConfig) {
 		ArrayList<String> properties = new ArrayList<>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
-		disableJmx(properties);
-		properties.addAll(Arrays.asList(config.getPropertySourceProperties()));
-		return StringUtils.toStringArray(properties);
-	}
-
-	private void disableJmx(List<String> properties) {
 		properties.add("spring.jmx.enabled=false");
+		properties.addAll(Arrays.asList(mergedConfig.getPropertySourceProperties()));
+		return StringUtils.toStringArray(properties);
 	}
 
 	/**
@@ -195,31 +198,33 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * initializers} and add
 	 * {@link MergedContextConfiguration#getContextInitializerClasses() initializers
 	 * specified on the test}.
-	 * @param config the source context configuration
+	 * @param mergedConfig the source context configuration
 	 * @param application the application instance
 	 * @return the initializers to apply
 	 * @since 2.0.0
 	 */
-	protected List<ApplicationContextInitializer<?>> getInitializers(MergedContextConfiguration config,
+	protected List<ApplicationContextInitializer<?>> getInitializers(MergedContextConfiguration mergedConfig,
 			SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
-		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
-			initializers.add(new ContextCustomizerAdapter(contextCustomizer, config));
+		for (ContextCustomizer contextCustomizer : mergedConfig.getContextCustomizers()) {
+			initializers.add(new ContextCustomizerAdapter(contextCustomizer, mergedConfig));
 		}
 		initializers.addAll(application.getInitializers());
-		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
+		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
 				.getContextInitializerClasses()) {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
-		if (config.getParent() != null) {
-			initializers.add(new ParentContextApplicationContextInitializer(config.getParentApplicationContext()));
+		if (mergedConfig.getParent() != null) {
+			initializers
+					.add(new ParentContextApplicationContextInitializer(mergedConfig.getParentApplicationContext()));
 		}
 		return initializers;
 	}
 
-	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
-				.getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE).isEmbedded();
+	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration mergedConfig) {
+		return MergedAnnotations.from(mergedConfig.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
+				.get(SpringBootTest.class).getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE)
+				.isEmbedded();
 	}
 
 	@Override
@@ -259,16 +264,16 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	private static class WebConfigurer {
 
-		void configure(MergedContextConfiguration configuration, SpringApplication application,
+		void configure(MergedContextConfiguration mergedConfig, SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
-			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
-			addMockServletContext(initializers, webConfiguration);
+			WebMergedContextConfiguration webMergedConfig = (WebMergedContextConfiguration) mergedConfig;
+			addMockServletContext(initializers, webMergedConfig);
 		}
 
 		private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
-				WebMergedContextConfiguration webConfiguration) {
+				WebMergedContextConfiguration webMergedConfig) {
 			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
-					webConfiguration.getResourceBasePath());
+					webMergedConfig.getResourceBasePath());
 			initializers.add(0, new DefensiveWebApplicationContextInitializer(
 					new ServletContextApplicationContextInitializer(servletContext, true)));
 		}
@@ -308,16 +313,16 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 		private final ContextCustomizer contextCustomizer;
 
-		private final MergedContextConfiguration config;
+		private final MergedContextConfiguration mergedConfig;
 
-		ContextCustomizerAdapter(ContextCustomizer contextCustomizer, MergedContextConfiguration config) {
+		ContextCustomizerAdapter(ContextCustomizer contextCustomizer, MergedContextConfiguration mergedConfig) {
 			this.contextCustomizer = contextCustomizer;
-			this.config = config;
+			this.mergedConfig = mergedConfig;
 		}
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
-			this.contextCustomizer.customizeContext(applicationContext, this.config);
+			this.contextCustomizer.customizeContext(applicationContext, this.mergedConfig);
 		}
 
 	}
@@ -348,10 +353,10 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	private class PrepareEnvironmentListener
 			implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, PriorityOrdered {
 
-		private final MergedContextConfiguration config;
+		private final MergedContextConfiguration mergedConfig;
 
-		PrepareEnvironmentListener(MergedContextConfiguration config) {
-			this.config = config;
+		PrepareEnvironmentListener(MergedContextConfiguration mergedConfig) {
+			this.mergedConfig = mergedConfig;
 		}
 
 		@Override
@@ -361,7 +366,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-			prepareEnvironment(this.config, event.getSpringApplication(), event.getEnvironment(), true);
+			prepareEnvironment(this.mergedConfig, event.getSpringApplication(), event.getEnvironment(), true);
 		}
 
 	}
