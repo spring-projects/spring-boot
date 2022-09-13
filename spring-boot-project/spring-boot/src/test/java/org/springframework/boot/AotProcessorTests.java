@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link AotProcessor}.
@@ -59,7 +60,7 @@ class AotProcessorTests {
 	void processApplicationWithMainMethodThatDoesNotRun(@TempDir Path directory) {
 		AotProcessor processor = new AotProcessor(BrokenApplication.class, new String[0], directory.resolve("source"),
 				directory.resolve("resource"), directory.resolve("class"), "com.example", "example");
-		assertThatIllegalArgumentException().isThrownBy(processor::process)
+		assertThatIllegalStateException().isThrownBy(processor::process)
 				.withMessageContaining("Does it run a SpringApplication?");
 		assertThat(directory).isEmptyDirectory();
 	}

@@ -17,7 +17,7 @@
 package org.springframework.boot;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +35,7 @@ import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.nativex.FileNativeConfigurationWriter;
-import org.springframework.boot.SpringApplicationHooks.Hook;
+import org.springframework.boot.SpringApplication.AbandonedRunException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
@@ -43,6 +43,8 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
 import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * Entry point for AOT processing of a {@link SpringApplication}.
@@ -98,11 +100,10 @@ public class AotProcessor {
 	 */
 	public void process() {
 		deleteExistingOutput();
-		AotProcessorHook hook = new AotProcessorHook();
-		SpringApplicationHooks.withHook(hook, this::callApplicationMainMethod);
-		GenericApplicationContext applicationContext = hook.getApplicationContext();
-		Assert.notNull(applicationContext, "No application context available after calling main method of '"
-				+ this.application.getName() + "'. Does it run a SpringApplication?");
+		GenericApplicationContext applicationContext = new AotProcessorHook().run(() -> {
+			Method mainMethod = this.application.getMethod("main", String[].class);
+			return ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { this.applicationArgs });
+		});
 		performAotProcessing(applicationContext);
 	}
 
@@ -118,22 +119,6 @@ public class AotProcessor {
 			catch (IOException ex) {
 				throw new RuntimeException("Failed to delete existing output in '" + path + "'");
 			}
-		}
-	}
-
-	private void callApplicationMainMethod() {
-		try {
-			this.application.getMethod("main", String[].class).invoke(null, new Object[] { this.applicationArgs });
-		}
-		catch (InvocationTargetException ex) {
-			Throwable targetException = ex.getTargetException();
-			if (!(targetException instanceof MainMethodSilentExitException)) {
-				throw (targetException instanceof RuntimeException runtimeEx) ? runtimeEx
-						: new RuntimeException(targetException);
-			}
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
 		}
 	}
 
@@ -214,38 +199,38 @@ public class AotProcessor {
 	}
 
 	/**
-	 * Hook used to capture the {@link ApplicationContext} and trigger early exit of main
-	 * method.
+	 * {@link SpringApplicationHook} used to capture the {@link ApplicationContext} and
+	 * trigger early exit of main method.
 	 */
-	private static class AotProcessorHook implements Hook {
-
-		private GenericApplicationContext context;
+	private class AotProcessorHook implements SpringApplicationHook {
 
 		@Override
-		public boolean preRefresh(SpringApplication application, ConfigurableApplicationContext context) {
-			Assert.isInstanceOf(GenericApplicationContext.class, context,
-					() -> "AOT processing requires a GenericApplicationContext but got a "
-							+ context.getClass().getName());
-			this.context = (GenericApplicationContext) context;
-			return false;
+		public SpringApplicationRunListener getRunListener(SpringApplication application) {
+			return new SpringApplicationRunListener() {
+
+				@Override
+				public void contextLoaded(ConfigurableApplicationContext context) {
+					throw new AbandonedRunException(context);
+				}
+
+			};
 		}
 
-		@Override
-		public void postRun(SpringApplication application, ConfigurableApplicationContext context) {
-			throw new MainMethodSilentExitException();
+		private <T> GenericApplicationContext run(ThrowingSupplier<T> action) {
+			try {
+				SpringApplication.withHook(this, action);
+			}
+			catch (AbandonedRunException ex) {
+				ApplicationContext context = ex.getApplicationContext();
+				Assert.isInstanceOf(GenericApplicationContext.class, context,
+						() -> "AOT processing requires a GenericApplicationContext but got a "
+								+ context.getClass().getName());
+				return (GenericApplicationContext) context;
+			}
+			throw new IllegalStateException(
+					"No application context available after calling main method of '%s'. Does it run a SpringApplication?"
+							.formatted(AotProcessor.this.application.getName()));
 		}
-
-		GenericApplicationContext getApplicationContext() {
-			return this.context;
-		}
-
-	}
-
-	/**
-	 * Internal exception used to prevent main method to continue once
-	 * {@code SpringApplication#run} completes.
-	 */
-	private static class MainMethodSilentExitException extends RuntimeException {
 
 	}
 

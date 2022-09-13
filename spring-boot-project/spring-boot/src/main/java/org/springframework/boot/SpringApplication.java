@@ -93,6 +93,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * Class that can be used to bootstrap and launch a Spring application from a Java main
@@ -187,6 +188,8 @@ public class SpringApplication {
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
 	static final SpringApplicationShutdownHook shutdownHook = new SpringApplicationShutdownHook();
+
+	private static final ThreadLocal<SpringApplicationHook> applicationHook = new ThreadLocal<>();
 
 	private Set<Class<?>> primarySources;
 
@@ -294,7 +297,6 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		SpringApplicationHooks.hooks().preRun(this);
 		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
@@ -309,18 +311,19 @@ public class SpringApplication {
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
-			if (refreshContext(context)) {
-				afterRefresh(context, applicationArguments);
-				Duration timeTakenToStartup = Duration.ofNanos(System.nanoTime() - startTime);
-				if (this.logStartupInfo) {
-					new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(),
-							timeTakenToStartup);
-				}
-				listeners.started(context, timeTakenToStartup);
-				callRunners(context, applicationArguments);
+			refreshContext(context);
+			afterRefresh(context, applicationArguments);
+			Duration timeTakenToStartup = Duration.ofNanos(System.nanoTime() - startTime);
+			if (this.logStartupInfo) {
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakenToStartup);
 			}
+			listeners.started(context, timeTakenToStartup);
+			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
+			if (ex instanceof AbandonedRunException) {
+				throw ex;
+			}
 			handleRunFailure(context, ex, listeners);
 			throw new IllegalStateException(ex);
 		}
@@ -331,10 +334,12 @@ public class SpringApplication {
 			}
 		}
 		catch (Throwable ex) {
+			if (ex instanceof AbandonedRunException) {
+				throw ex;
+			}
 			handleRunFailure(context, ex, null);
 			throw new IllegalStateException(ex);
 		}
-		SpringApplicationHooks.hooks().postRun(this, context);
 		return context;
 	}
 
@@ -420,15 +425,11 @@ public class SpringApplication {
 		}
 	}
 
-	private boolean refreshContext(ConfigurableApplicationContext context) {
-		if (!SpringApplicationHooks.hooks().preRefresh(this, context)) {
-			return false;
-		}
+	private void refreshContext(ConfigurableApplicationContext context) {
 		if (this.registerShutdownHook) {
 			shutdownHook.registerApplicationContext(context);
 		}
 		refresh(context);
-		return true;
 	}
 
 	private void configureHeadlessProperty() {
@@ -439,16 +440,22 @@ public class SpringApplication {
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
 		ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
 		argumentResolver = argumentResolver.and(String[].class, args);
-		Collection<SpringApplicationRunListener> listeners = getSpringFactoriesInstances(
-				SpringApplicationRunListener.class, argumentResolver);
+		List<SpringApplicationRunListener> listeners = getSpringFactoriesInstances(SpringApplicationRunListener.class,
+				argumentResolver);
+		SpringApplicationHook hook = applicationHook.get();
+		SpringApplicationRunListener hookListener = (hook != null) ? hook.getRunListener(this) : null;
+		if (hookListener != null) {
+			listeners = new ArrayList<>(listeners);
+			listeners.add(0, hookListener);
+		}
 		return new SpringApplicationRunListeners(logger, listeners, this.applicationStartup);
 	}
 
-	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
+	private <T> List<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, null);
 	}
 
-	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
+	private <T> List<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
 		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader()).load(type, argumentResolver);
 	}
 
@@ -1359,6 +1366,41 @@ public class SpringApplication {
 		return exitCode;
 	}
 
+	/**
+	 * Perform the given action with the given {@link SpringApplicationHook} attached if
+	 * the action triggers an {@link SpringApplication#run(String...) application run}.
+	 * @param hook the hook to apply
+	 * @param action the action to run
+	 * @since 3.0.0
+	 * @see #withHook(SpringApplicationHook, ThrowingSupplier)
+	 */
+	public static void withHook(SpringApplicationHook hook, Runnable action) {
+		withHook(hook, () -> {
+			action.run();
+			return null;
+		});
+	}
+
+	/**
+	 * Perform the given action with the given {@link SpringApplicationHook} attached if
+	 * the action triggers an {@link SpringApplication#run(String...) application run}.
+	 * @param <T> the result type
+	 * @param hook the hook to apply
+	 * @param action the action to run
+	 * @return the result of the action
+	 * @since 3.0.0
+	 * @see #withHook(SpringApplicationHook, Runnable)
+	 */
+	public static <T> T withHook(SpringApplicationHook hook, ThrowingSupplier<T> action) {
+		applicationHook.set(hook);
+		try {
+			return action.get();
+		}
+		finally {
+			applicationHook.set(null);
+		}
+	}
+
 	private static void close(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext closable) {
 			closable.close();
@@ -1401,6 +1443,44 @@ public class SpringApplication {
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(SpringApplication.class,
 					hints.reflection());
+		}
+
+	}
+
+	/**
+	 * Exception that can be thrown to silently exit a running {@link SpringApplication}
+	 * without handling run failures.
+	 *
+	 * @since 3.0.0
+	 */
+	public static class AbandonedRunException extends RuntimeException {
+
+		private final ConfigurableApplicationContext applicationContext;
+
+		/**
+		 * Create a new {@link AbandonedRunException} instance.
+		 */
+		public AbandonedRunException() {
+			this(null);
+		}
+
+		/**
+		 * Create a new {@link AbandonedRunException} instance with the given application
+		 * context.
+		 * @param applicationContext the application context that was available when the
+		 * run was abandoned
+		 */
+		public AbandonedRunException(ConfigurableApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		/**
+		 * Return the application context that was available when the run was abandoned or
+		 * {@code null} if no context was available.
+		 * @return the application context
+		 */
+		public ConfigurableApplicationContext getApplicationContext() {
+			return this.applicationContext;
 		}
 
 	}
