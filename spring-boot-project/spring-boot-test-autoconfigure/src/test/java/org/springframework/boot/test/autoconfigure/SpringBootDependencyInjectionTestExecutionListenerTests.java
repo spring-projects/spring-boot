@@ -53,8 +53,10 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void prepareFailingTestInstanceShouldPrintReport(CapturedOutput output) throws Exception {
 		TestContext testContext = mock(TestContext.class);
+		given(testContext.getTestClass()).willReturn((Class) Config.class);
 		given(testContext.getTestInstance()).willThrow(new IllegalStateException());
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -71,8 +73,10 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void originalFailureIsThrownWhenReportGenerationFails() {
 		TestContext testContext = mock(TestContext.class);
+		given(testContext.getTestClass()).willReturn((Class) Config.class);
 		IllegalStateException originalFailure = new IllegalStateException();
 		given(testContext.getTestInstance()).willThrow(originalFailure);
 		SpringApplication application = new SpringApplication(Config.class);
