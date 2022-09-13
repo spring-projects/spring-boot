@@ -33,6 +33,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.boot.gradle.tasks.aot.AbstractAot;
 import org.springframework.boot.gradle.tasks.aot.ProcessAot;
@@ -115,13 +116,16 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 	private void registerProcessAotTask(Project project, SourceSet aotSourceSet) {
 		TaskProvider<ResolveMainClassName> resolveMainClassName = project.getTasks()
 				.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
+		Provider<Directory> aotClasses = project.getLayout().getBuildDirectory().dir("generated/aotClasses");
 		TaskProvider<ProcessAot> processAot = project.getTasks().register(PROCESS_AOT_TASK_NAME, ProcessAot.class,
 				(task) -> {
-					configureAotTask(project, aotSourceSet, task,
-							project.getLayout().getBuildDirectory().dir("generated/aotClasses"));
+					configureAotTask(project, aotSourceSet, task, aotClasses);
 					task.getApplicationClass()
 							.set(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 				});
+		project.getTasks().named(aotSourceSet.getCompileJavaTaskName(), JavaCompile.class).configure(
+				(javaCompile) -> javaCompile.setClasspath(javaCompile.getClasspath().plus(project.files(aotClasses))));
+		aotSourceSet.getOutput().dir(aotClasses);
 		configureDependsOn(project, aotSourceSet, processAot);
 	}
 
@@ -133,7 +137,6 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		task.getClassesDir().set(generatedClasses);
 		task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
 		task.getArtifactId().set(project.provider(() -> project.getName()));
-		sourceSet.getOutput().dir(generatedClasses);
 	}
 
 	private void configureDependsOn(Project project, SourceSet aotSourceSet,
