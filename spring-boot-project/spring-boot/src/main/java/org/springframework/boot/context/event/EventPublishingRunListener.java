@@ -49,9 +49,8 @@ import org.springframework.util.ErrorHandler;
  * @author Artsiom Yudovin
  * @author Brian Clozel
  * @author Chris Bono
- * @since 1.0.0
  */
-public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
+class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
 	private final SpringApplication application;
 
@@ -59,7 +58,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	private final SimpleApplicationEventMulticaster initialMulticaster;
 
-	public EventPublishingRunListener(SpringApplication application, String[] args) {
+	EventPublishingRunListener(SpringApplication application, String[] args) {
 		this.application = application;
 		this.args = args;
 		this.initialMulticaster = new SimpleApplicationEventMulticaster();
