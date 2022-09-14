@@ -244,6 +244,8 @@ public final class ConnectionFactoryBuilder {
 					.to(builder::maxIdleTime);
 			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_CREATE_CONNECTION_TIME)).as(this::toDuration)
 					.to(builder::maxCreateConnectionTime);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MIN_IDLE)).as(this::toInteger)
+					.to(builder::minIdle);
 			map.from(options.getValue(PoolingConnectionFactoryProvider.POOL_NAME)).as(this::toString).to(builder::name);
 			map.from(options.getValue(PoolingConnectionFactoryProvider.PRE_RELEASE)).to((function) -> builder
 					.preRelease((Function<? super Connection, ? extends Publisher<Void>>) function));
