@@ -99,7 +99,7 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setDatabaseChangeLogLockTable(this.properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
-			liquibase.setLabels(this.properties.getLabels());
+			liquibase.setLabelFilter(this.properties.getLabelFilter());
 			liquibase.setChangeLogParameters(this.properties.getParameters());
 			liquibase.setRollbackFile(this.properties.getRollbackFile());
 			liquibase.setTestRollbackOnUpdate(this.properties.isTestRollbackOnUpdate());

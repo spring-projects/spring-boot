@@ -296,10 +296,18 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void overrideLabels() {
+	void overrideLabelFilter() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.labels:test, production")
-				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabels()).isEqualTo("test, production")));
+				.withPropertyValues("spring.liquibase.label-filter:test, production").run(assertLiquibase(
+						(liquibase) -> assertThat(liquibase.getLabelFilter()).isEqualTo("test, production")));
+	}
+
+	@Test
+	@Deprecated
+	void overrideLabelFilterWithDeprecatedLabelsProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.labels:test, production").run(assertLiquibase(
+						(liquibase) -> assertThat(liquibase.getLabelFilter()).isEqualTo("test, production")));
 	}
 
 	@Test
