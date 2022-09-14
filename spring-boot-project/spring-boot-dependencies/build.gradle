@@ -1049,7 +1049,7 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "10.2.1.jre17") {
+	library("MSSQL JDBC", "11.2.1.jre17") {
 		group("com.microsoft.sqlserver") {
 			modules = [
 				"mssql-jdbc"
