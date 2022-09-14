@@ -47,9 +47,9 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 
 	private final DataSource dataSource;
 
-	private PlatformTransactionManager transactionManager;
-
 	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+	private PlatformTransactionManager transactionManager;
 
 	private JobRepository jobRepository;
 
@@ -77,11 +77,6 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	}
 
 	@Override
-	public PlatformTransactionManager getTransactionManager() {
-		return this.transactionManager;
-	}
-
-	@Override
 	public JobLauncher getJobLauncher() {
 		return this.jobLauncher;
 	}
@@ -98,7 +93,6 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 
 	public void initialize() {
 		try {
-			this.transactionManager = buildTransactionManager();
 			this.jobRepository = createJobRepository();
 			this.jobLauncher = createJobLauncher();
 			this.jobExplorer = createJobExplorer();
@@ -130,7 +124,7 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 		map.from(this.dataSource).to(factory::setDataSource);
 		map.from(this::determineIsolationLevel).whenNonNull().to(factory::setIsolationLevelForCreate);
 		map.from(this.properties.getJdbc()::getTablePrefix).whenHasText().to(factory::setTablePrefix);
-		map.from(this::getTransactionManager).to(factory::setTransactionManager);
+		map.from(this::buildTransactionManager).to(factory::setTransactionManager);
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
@@ -153,7 +147,12 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 		if (this.transactionManagerCustomizers != null) {
 			this.transactionManagerCustomizers.customize(transactionManager);
 		}
+		this.transactionManager = transactionManager;
 		return transactionManager;
+	}
+
+	PlatformTransactionManager getTransactionManager() {
+		return this.transactionManager;
 	}
 
 }

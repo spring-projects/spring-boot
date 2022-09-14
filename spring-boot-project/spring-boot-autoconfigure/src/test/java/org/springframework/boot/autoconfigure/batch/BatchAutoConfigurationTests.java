@@ -309,7 +309,7 @@ class BatchAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(BatchConfigurer.class);
 					JpaTransactionManager transactionManager = JpaTransactionManager.class
-							.cast(context.getBean(BatchConfigurer.class).getTransactionManager());
+							.cast(context.getBean(BasicBatchConfigurer.class).getTransactionManager());
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
@@ -323,7 +323,7 @@ class BatchAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(BatchConfigurer.class);
 					DataSourceTransactionManager transactionManager = DataSourceTransactionManager.class
-							.cast(context.getBean(BatchConfigurer.class).getTransactionManager());
+							.cast(context.getBean(BasicBatchConfigurer.class).getTransactionManager());
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
@@ -336,7 +336,7 @@ class BatchAutoConfigurationTests {
 					assertThat(context).hasSingleBean(BatchConfigurer.class)
 							.hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class).hasBean("batchDataSource");
 					DataSource batchDataSource = context.getBean("batchDataSource", DataSource.class);
-					assertThat(context.getBean(BatchConfigurer.class)).hasFieldOrPropertyWithValue("dataSource",
+					assertThat(context.getBean(BasicBatchConfigurer.class)).hasFieldOrPropertyWithValue("dataSource",
 							batchDataSource);
 					assertThat(context.getBean(BatchDataSourceScriptDatabaseInitializer.class))
 							.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
