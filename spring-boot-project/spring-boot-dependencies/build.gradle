@@ -338,7 +338,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "6.1.1.Final") {
+	library("Hibernate", "6.1.3.Final") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
