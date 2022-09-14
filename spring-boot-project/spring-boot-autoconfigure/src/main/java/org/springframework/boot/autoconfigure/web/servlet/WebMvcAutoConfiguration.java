@@ -413,9 +413,14 @@ public class WebMvcAutoConfiguration {
 				@Qualifier("mvcValidator") Validator validator) {
 			RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter(contentNegotiationManager,
 					conversionService, validator);
+			setIgnoreDefaultModelOnRedirect(adapter);
+			return adapter;
+		}
+
+		@SuppressWarnings("deprecation")
+		private void setIgnoreDefaultModelOnRedirect(RequestMappingHandlerAdapter adapter) {
 			adapter.setIgnoreDefaultModelOnRedirect(
 					this.mvcProperties == null || this.mvcProperties.isIgnoreDefaultModelOnRedirect());
-			return adapter;
 		}
 
 		@Override

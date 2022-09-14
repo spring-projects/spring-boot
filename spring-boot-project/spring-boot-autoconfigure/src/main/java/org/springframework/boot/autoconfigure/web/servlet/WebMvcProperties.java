@@ -130,10 +130,13 @@ public class WebMvcProperties {
 		return this.format;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "Deprecated for removal in Spring MVC")
 	public boolean isIgnoreDefaultModelOnRedirect() {
 		return this.ignoreDefaultModelOnRedirect;
 	}
 
+	@Deprecated
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
 	}
