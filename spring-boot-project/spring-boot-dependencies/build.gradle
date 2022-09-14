@@ -359,7 +359,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate Validator", "7.0.4.Final") {
+	library("Hibernate Validator", "7.0.5.Final") {
 		prohibit("[8.0.0.Alpha1,)") {
 			because "it exceeds our Jakarta EE 9 baseline"
 		}
