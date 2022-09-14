@@ -93,7 +93,7 @@ class R2dbcAutoConfigurationTests {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
 							.hasSingleBean(R2dbcProperties.class);
 					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
-					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ofNanos(-1));
+					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ofMillis(-1));
 				});
 	}
 

@@ -1407,7 +1407,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Bom", "Borca-SR1") {
+	library("R2DBC Bom", "Borca-SR2") {
 		group("io.r2dbc") {
 			imports = [
 					"r2dbc-bom"
