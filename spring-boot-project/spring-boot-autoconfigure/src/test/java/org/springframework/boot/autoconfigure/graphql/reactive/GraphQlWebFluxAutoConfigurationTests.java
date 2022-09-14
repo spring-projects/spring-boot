@@ -151,7 +151,7 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void routerFunctionShouldHaveOrderZero() throws Exception {
+	void routerFunctionShouldHaveOrderZero() {
 		this.contextRunner.withUserConfiguration(CustomRouterFunctions.class).run((context) -> {
 			Map<String, ?> beans = context.getBeansOfType(RouterFunction.class);
 			Object[] ordered = context.getBeanProvider(RouterFunction.class).orderedStream().toArray();
