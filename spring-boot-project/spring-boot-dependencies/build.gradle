@@ -893,7 +893,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Assembly Plugin", "3.4.1") {
+	library("Maven Assembly Plugin", "3.4.2") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-assembly-plugin"
