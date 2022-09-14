@@ -14,7 +14,7 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("Artemis", "2.23.1") {
+	library("Artemis", "2.25.0") {
 		group("org.apache.activemq") {
 			modules = [
 				"artemis-amqp-protocol",
