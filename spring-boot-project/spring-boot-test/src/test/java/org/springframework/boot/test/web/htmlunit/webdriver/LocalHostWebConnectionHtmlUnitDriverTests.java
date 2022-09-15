@@ -19,6 +19,7 @@ package org.springframework.boot.test.web.htmlunit.webdriver;
 import java.net.URL;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebConsole;
@@ -35,8 +36,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -94,7 +95,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		then(this.webClient).should().getPage(isNull(), requestToUrl(new URL("http://localhost:8080/test")));
+		then(this.webClient).should().getPage(any(TopLevelWindow.class),
+				requestToUrl(new URL("http://localhost:8080/test")));
 	}
 
 	@Test
@@ -103,7 +105,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		environment.setProperty("local.server.port", "8181");
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		then(this.webClient).should().getPage(isNull(), requestToUrl(new URL("http://localhost:8181/test")));
+		then(this.webClient).should().getPage(any(TopLevelWindow.class),
+				requestToUrl(new URL("http://localhost:8181/test")));
 	}
 
 	private WebRequest requestToUrl(URL url) {

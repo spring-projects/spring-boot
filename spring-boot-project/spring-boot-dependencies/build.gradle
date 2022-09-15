@@ -1329,7 +1329,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.2.2") {
+	library("Selenium", "4.4.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"selenium-api",
@@ -1345,7 +1345,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "3.62.0") {
+	library("Selenium HtmlUnit", "3.64.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
