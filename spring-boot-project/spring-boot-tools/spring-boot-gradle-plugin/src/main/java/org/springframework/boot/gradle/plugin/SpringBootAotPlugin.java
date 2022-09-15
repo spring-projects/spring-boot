@@ -33,7 +33,6 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.boot.gradle.tasks.aot.AbstractAot;
 import org.springframework.boot.gradle.tasks.aot.ProcessAot;
@@ -123,8 +122,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 					task.getApplicationClass()
 							.set(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 				});
-		project.getTasks().named(aotSourceSet.getCompileJavaTaskName(), JavaCompile.class).configure(
-				(javaCompile) -> javaCompile.setClasspath(javaCompile.getClasspath().plus(project.files(aotClasses))));
+		project.getDependencies().add(aotSourceSet.getImplementationConfigurationName(), project.files(aotClasses));
 		aotSourceSet.getOutput().dir(aotClasses);
 		configureDependsOn(project, aotSourceSet, processAot);
 	}
