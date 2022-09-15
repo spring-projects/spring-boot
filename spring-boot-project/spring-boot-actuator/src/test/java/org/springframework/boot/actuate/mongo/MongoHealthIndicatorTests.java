@@ -40,26 +40,26 @@ class MongoHealthIndicatorTests {
 	@Test
 	void mongoIsUp() {
 		Document commandResult = mock(Document.class);
-		given(commandResult.getString("version")).willReturn("2.6.4");
+		given(commandResult.getInteger("maxWireVersion")).willReturn(10);
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(commandResult);
+		given(mongoTemplate.executeCommand("{ isMaster: 1 }")).willReturn(commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo("2.6.4");
-		then(commandResult).should().getString("version");
-		then(mongoTemplate).should().executeCommand("{ buildInfo: 1 }");
+		assertThat(health.getDetails().get("maxWireVersion")).isEqualTo(10);
+		then(commandResult).should().getInteger("maxWireVersion");
+		then(mongoTemplate).should().executeCommand("{ isMaster: 1 }");
 	}
 
 	@Test
 	void mongoIsDown() {
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
+		given(mongoTemplate.executeCommand("{ isMaster: 1 }")).willThrow(new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		then(mongoTemplate).should().executeCommand("{ buildInfo: 1 }");
+		then(mongoTemplate).should().executeCommand("{ isMaster: 1 }");
 	}
 
 }

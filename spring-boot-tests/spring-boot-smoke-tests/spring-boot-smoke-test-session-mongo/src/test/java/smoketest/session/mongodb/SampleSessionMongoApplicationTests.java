@@ -29,6 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +54,9 @@ public class SampleSessionMongoApplicationTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	@LocalServerPort
+	private int port;
+
 	@Container
 	static MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
 			.withStartupTimeout(Duration.ofMinutes(2));
@@ -71,6 +75,15 @@ public class SampleSessionMongoApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
 		assertThat(sessions.size()).isEqualTo(1);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void health() {
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
+		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		assertThat(entity.getBody()).contains("maxWireVersion");
 	}
 
 	private void createSession(URI uri) {
