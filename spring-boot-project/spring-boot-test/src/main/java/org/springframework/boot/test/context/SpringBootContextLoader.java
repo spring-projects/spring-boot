@@ -17,10 +17,11 @@
 package org.springframework.boot.test.context;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.AotApplicationContextInitializer;
@@ -95,6 +96,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  */
 public class SpringBootContextLoader extends AbstractContextLoader implements AotContextLoader {
 
+	private static final Consumer<SpringApplication> ALREADY_CONFIGURED = (springApplication) -> {
+	};
+
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
 		return loadContext(mergedConfig, Mode.STANDARD, null);
@@ -117,15 +121,19 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
 		UseMainMethod useMainMethod = annotation.getUseMainMethod();
-		ContextLoaderHook hook = new ContextLoaderHook(mergedConfig, mode, initializer);
-		if (useMainMethod != UseMainMethod.NEVER) {
-			Method mainMethod = getMainMethod(mergedConfig, useMainMethod);
-			if (mainMethod != null) {
-				return hook.run(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
-			}
+		Method mainMethod = getMainMethod(mergedConfig, useMainMethod);
+		if (mainMethod != null) {
+			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
+					(application) -> configure(mergedConfig, application));
+			return hook.run(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
 		}
 		SpringApplication application = getSpringApplication();
-		return hook.run(() -> application.run(args));
+		configure(mergedConfig, application);
+		if (mode == Mode.AOT_PROCESSING || mode == Mode.AOT_RUNTIME) {
+			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer, ALREADY_CONFIGURED);
+			return hook.run(() -> application.run(args));
+		}
+		return application.run(args);
 	}
 
 	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
@@ -138,6 +146,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
+		if (useMainMethod == UseMainMethod.NEVER) {
+			return null;
+		}
 		Class<?> springBootConfiguration = Arrays.stream(mergedConfig.getClasses())
 				.filter(this::isSpringBootConfiguration).findFirst().orElse(null);
 		Assert.state(springBootConfiguration != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
@@ -459,17 +470,19 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	 */
 	private class ContextLoaderHook implements SpringApplicationHook {
 
-		private final MergedContextConfiguration mergedConfig;
-
 		private final Mode mode;
 
 		private final ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
 
-		ContextLoaderHook(MergedContextConfiguration mergedConfig, Mode mode,
-				ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
-			this.mergedConfig = mergedConfig;
+		private final Consumer<SpringApplication> configurer;
+
+		private final List<ApplicationContext> contexts = Collections.synchronizedList(new ArrayList<>());
+
+		ContextLoaderHook(Mode mode, ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
+				Consumer<SpringApplication> configurer) {
 			this.mode = mode;
 			this.initializer = initializer;
+			this.configurer = configurer;
 		}
 
 		@Override
@@ -478,8 +491,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 				@Override
 				public void starting(ConfigurableBootstrapContext bootstrapContext) {
-					SpringBootContextLoader.this.configure(ContextLoaderHook.this.mergedConfig, application);
-					if (ContextLoaderHook.this.initializer != null) {
+					ContextLoaderHook.this.configurer.accept(application);
+					if (ContextLoaderHook.this.mode == Mode.AOT_RUNTIME) {
 						application.addInitializers(
 								AotApplicationContextInitializer.of(ContextLoaderHook.this.initializer));
 					}
@@ -487,14 +500,10 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 				@Override
 				public void contextLoaded(ConfigurableApplicationContext context) {
+					ContextLoaderHook.this.contexts.add(context);
 					if (ContextLoaderHook.this.mode == Mode.AOT_PROCESSING) {
 						throw new AbandonedRunException(context);
 					}
-				}
-
-				@Override
-				public void ready(ConfigurableApplicationContext context, Duration timeTaken) {
-					throw new AbandonedRunException(context);
 				}
 
 			};
@@ -503,11 +512,14 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		private <T> ApplicationContext run(ThrowingSupplier<T> action) {
 			try {
 				SpringApplication.withHook(this, action);
-				throw new IllegalStateException("ApplicationContext not loaded");
 			}
 			catch (AbandonedRunException ex) {
-				return ex.getApplicationContext();
 			}
+			List<ApplicationContext> rootContexts = this.contexts.stream()
+					.filter((context) -> context.getParent() == null).toList();
+			Assert.state(!rootContexts.isEmpty(), "No root application context located");
+			Assert.state(rootContexts.size() == 1, "No unique root application context located");
+			return rootContexts.get(0);
 		}
 
 	}

@@ -154,7 +154,7 @@ For example, here is an application that changes the banner mode and sets additi
 include::code:custom/MyApplication[]
 
 Since customizations in the `main` method can affect the resulting `ApplicationContext`, Spring Boot will also attempt to use the `main` method for tests.
-By default, `@SpringBootTest` will detect any `main` method on your `@SpringBootConfiguration` and run it up to the point that the `SpringApplication.run` method is called.
+By default, `@SpringBootTest` will detect any `main` method on your `@SpringBootConfiguration` and run it in order to capture the `ApplicationContext`.
 If your `@SpringBootConfiguration` class doesn't have a main method, the class itself is used directly to create the `ApplicationContext`.
 
 In some situations, you may find that you can't or don't want to run the `main` method in your tests.
