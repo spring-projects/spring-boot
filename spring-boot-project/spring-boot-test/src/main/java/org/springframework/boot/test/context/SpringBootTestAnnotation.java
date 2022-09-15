@@ -55,7 +55,7 @@ class SpringBootTestAnnotation implements ContextCustomizer {
 	private SpringBootTestAnnotation(SpringBootTest annotation) {
 		this.args = (annotation != null) ? annotation.args() : NO_ARGS;
 		this.webEnvironment = (annotation != null) ? annotation.webEnvironment() : WebEnvironment.NONE;
-		this.useMainMethod = (annotation != null) ? annotation.useMainMethod() : UseMainMethod.WHEN_AVAILABLE;
+		this.useMainMethod = (annotation != null) ? annotation.useMainMethod() : UseMainMethod.NEVER;
 	}
 
 	@Override

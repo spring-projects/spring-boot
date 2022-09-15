@@ -20,12 +20,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // gh-29169
-@SpringBootTest(useMainMethod = UseMainMethod.NEVER, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AttributeInjectionTests {
 
 	@Autowired(required = false)

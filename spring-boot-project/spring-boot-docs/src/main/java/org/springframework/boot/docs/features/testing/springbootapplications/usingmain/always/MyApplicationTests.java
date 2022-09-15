@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.usingmain.never;
+package org.springframework.boot.docs.features.testing.springbootapplications.usingmain.always;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.junit.jupiter.api.Test;
 
-@SpringBootApplication
-public class MyApplication {
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 
-	public static void main(String[] args) {
-		MyCode.expensiveOperation();
-		SpringApplication.run(MyApplication.class, args);
+@SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
+public class MyApplicationTests {
+
+	@Test
+	void exampleTest() {
+		// ...
 	}
 
 }

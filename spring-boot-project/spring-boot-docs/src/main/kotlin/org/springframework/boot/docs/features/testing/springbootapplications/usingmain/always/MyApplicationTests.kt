@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testing.springbootapplications.usingmain.custom.never
+package org.springframework.boot.docs.features.testing.springbootapplications.usingmain.custom.always
 
-class MyCode {
-	companion object {
-		fun expensiveOperation() {
-		}
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
+import org.springframework.context.annotation.Import
+
+@SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
+class MyApplicationTests {
+
+	@Test
+	fun exampleTest() {
+		// ...
 	}
+
 }

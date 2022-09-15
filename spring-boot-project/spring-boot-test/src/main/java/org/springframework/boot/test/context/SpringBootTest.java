@@ -131,7 +131,7 @@ public @interface SpringBootTest {
 	 * @return the type of main method usage
 	 * @since 3.0.0
 	 */
-	UseMainMethod useMainMethod() default UseMainMethod.WHEN_AVAILABLE;
+	UseMainMethod useMainMethod() default UseMainMethod.NEVER;
 
 	/**
 	 * An enumeration web environment modes.

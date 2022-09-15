@@ -153,25 +153,17 @@ For example, here is an application that changes the banner mode and sets additi
 
 include::code:custom/MyApplication[]
 
-Since customizations in the `main` method can affect the resulting `ApplicationContext`, Spring Boot will also attempt to use the `main` method for tests.
-By default, `@SpringBootTest` will detect any `main` method on your `@SpringBootConfiguration` and run it in order to capture the `ApplicationContext`.
-If your `@SpringBootConfiguration` class doesn't have a main method, the class itself is used directly to create the `ApplicationContext`.
+Since customizations in the `main` method can affect the resulting `ApplicationContext`, it's possible that you might also want to use the `main` method to create the `ApplicationContext` used in your tests.
+By default, `@SpringBootTest` will not call your `main` method, and instead the class itself is used directly to create the `ApplicationContext`
 
-In some situations, you may find that you can't or don't want to run the `main` method in your tests.
-If that's the case, you can change the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.NEVER`.
+If you want to change this behavior, you can change the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.ALWAYS` or `UseMainMethod.WHEN_AVAILABLE`.
+When set to `ALWAYS`, the test will fail if no `main` method can be found.
+When set to `WHEN_AVAILABLE` the `main` method will be used if it is available, otherwise the standard loading mechanism will be used.
 
-For example, you might have the following application class:
+For example, the following test will invoke the `main` method of `MyApplication` in order to create the `ApplicationContext`.
+If the main method sets additional profiles then those will be active when the `ApplicationContext` starts.
 
-include::code:never/MyApplication[]
-
-If a test wants to use the `MyApplication` configuration without calling the main method, it can be written as follows:
-
-include::code:never/MyApplicationTests[]
-
-The test above will still use `MyApplication` to create the `ApplicationContext`, however, it won't call `MyCode.expensiveOperation()` since the `main` method is not invoked.
-
-If you want to do the opposite, and ensure that the `main` method is always invoked, you can set the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.ALWAYS`.
-If this property is set, and no `main` method can be found the test will fail.
+include::code:always/MyApplicationTests[]
 
 
 
