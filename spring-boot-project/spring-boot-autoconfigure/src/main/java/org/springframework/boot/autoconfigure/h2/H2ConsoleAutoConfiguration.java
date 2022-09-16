@@ -65,9 +65,20 @@ public class H2ConsoleAutoConfiguration {
 		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet(), urlMapping);
 		configureH2ConsoleSettings(registration, properties.getSettings());
 		if (logger.isInfoEnabled()) {
-			logDataSources(dataSource, path);
+			withThreadContextClassLoader(getClass().getClassLoader(), () -> logDataSources(dataSource, path));
 		}
 		return registration;
+	}
+
+	private void withThreadContextClassLoader(ClassLoader classLoader, Runnable action) {
+		ClassLoader previous = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			action.run();
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(previous);
+		}
 	}
 
 	private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
