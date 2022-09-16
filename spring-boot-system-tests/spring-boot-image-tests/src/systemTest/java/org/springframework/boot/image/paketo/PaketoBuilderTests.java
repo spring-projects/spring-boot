@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @ExtendWith({ GradleBuildInjectionExtension.class, GradleBuildExtension.class })
-@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_17)
+@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_18)
 class PaketoBuilderTests {
 
 	GradleBuild gradleBuild;
