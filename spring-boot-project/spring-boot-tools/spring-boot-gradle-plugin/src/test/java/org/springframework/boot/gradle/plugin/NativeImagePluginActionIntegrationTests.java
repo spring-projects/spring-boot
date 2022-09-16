@@ -16,6 +16,18 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -27,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link NativeImagePluginAction}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @GradleCompatibility(configurationCache = true)
 class NativeImagePluginActionIntegrationTests {
@@ -37,6 +50,54 @@ class NativeImagePluginActionIntegrationTests {
 	void applyingNativeImagePluginAppliesAotPlugin() {
 		assertThat(this.gradleBuild.build("aotPluginApplied").getOutput())
 				.contains("org.springframework.boot.aot applied = true");
+	}
+
+	@TestTemplate
+	void reachabilityMetadataConfigurationFilesAreCopiedToJar() throws IOException {
+		writeDummyAotProcessorMainClass();
+		BuildResult result = this.gradleBuild.build("bootJar");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(buildLibs.listFiles()).contains(jarFile);
+		assertThat(getEntryNames(jarFile)).contains(
+				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/jni-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/proxy-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
+	}
+
+	private void writeDummyAotProcessorMainClass() {
+		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/org/springframework/boot");
+		examplePackage.mkdirs();
+		File main = new File(examplePackage, "AotProcessor.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(main))) {
+			writer.println("package org.springframework.boot;");
+			writer.println();
+			writer.println("import java.io.IOException;");
+			writer.println();
+			writer.println("public class AotProcessor {");
+			writer.println();
+			writer.println("    public static void main(String[] args) {");
+			writer.println("    }");
+			writer.println();
+			writer.println("}");
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	protected List<String> getEntryNames(File file) throws IOException {
+		List<String> entryNames = new ArrayList<>();
+		try (JarFile jarFile = new JarFile(file)) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				entryNames.add(entries.nextElement().getName());
+			}
+		}
+		return entryNames;
 	}
 
 }

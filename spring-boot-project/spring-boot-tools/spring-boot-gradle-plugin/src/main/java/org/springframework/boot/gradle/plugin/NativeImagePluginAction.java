@@ -16,24 +16,32 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import org.graalvm.buildtools.gradle.NativeImagePlugin;
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension;
 import org.graalvm.buildtools.gradle.dsl.GraalVMReachabilityMetadataRepositoryExtension;
+import org.graalvm.buildtools.gradle.dsl.NativeImageOptions;
 import org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
+import org.springframework.boot.gradle.tasks.bundling.BootJar;
+
 /**
  * {@link Action} that is executed in response to the {@link NativeImagePlugin} being
  * applied.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class NativeImagePluginAction implements PluginApplicationAction {
 
@@ -49,23 +57,53 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		project.getPlugins().withType(JavaPlugin.class).all((plugin) -> {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
-			SourceSet aotSourceSet = sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME);
-			project.getTasks().named(NativeImagePlugin.NATIVE_COMPILE_TASK_NAME, BuildNativeImageTask.class,
-					(nativeCompile) -> nativeCompile.getOptions().get().classpath(aotSourceSet.getOutput()));
-			SourceSet aotTestSourceSet = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME);
-			project.getTasks().named("nativeTestCompile", BuildNativeImageTask.class,
-					(nativeTestCompile) -> nativeTestCompile.getOptions().get()
-							.classpath(aotTestSourceSet.getOutput()));
+			configureTaskClasspath(project, NativeImagePlugin.NATIVE_COMPILE_TASK_NAME,
+					sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME));
+			configureTaskClasspath(project, NativeImagePlugin.NATIVE_TEST_COMPILE_TASK_NAME,
+					sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME));
+			GraalVMExtension graalVmExtension = configureGraalVmExtension(project);
+			configureGraalVmReachabilityExtension(graalVmExtension);
+			copyReachabilityMetadataToBootJar(project, graalVmExtension);
 		});
-		GraalVMExtension graalVmExtension = project.getExtensions().getByType(GraalVMExtension.class);
-		graalVmExtension.getToolchainDetection().set(false);
-		reachabilityExtensionOn(graalVmExtension).getEnabled().set(true);
 	}
 
-	private static GraalVMReachabilityMetadataRepositoryExtension reachabilityExtensionOn(
-			GraalVMExtension graalVmExtension) {
-		return ((ExtensionAware) graalVmExtension).getExtensions()
+	private void configureTaskClasspath(Project project, String taskName, SourceSet sourceSet) {
+		project.getTasks().named(taskName, BuildNativeImageTask.class,
+				(nativeCompile) -> nativeCompile.getOptions().get().classpath(sourceSet.getOutput()));
+	}
+
+	private GraalVMExtension configureGraalVmExtension(Project project) {
+		GraalVMExtension extension = project.getExtensions().getByType(GraalVMExtension.class);
+		extension.getToolchainDetection().set(false);
+		return extension;
+	}
+
+	private void configureGraalVmReachabilityExtension(GraalVMExtension graalVmExtension) {
+		GraalVMReachabilityMetadataRepositoryExtension extension = ((ExtensionAware) graalVmExtension).getExtensions()
 				.getByType(GraalVMReachabilityMetadataRepositoryExtension.class);
+		extension.getEnabled().set(true);
+	}
+
+	private void copyReachabilityMetadataToBootJar(Project project, GraalVMExtension graalVmExtension) {
+		Path repositoryCacheDir = new File(project.getGradle().getGradleUserHomeDir(),
+				"native-build-tools/repositories").toPath();
+		project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class).configure((bootJar) -> {
+			NativeImageOptions options = graalVmExtension.getBinaries().named(NativeImagePlugin.NATIVE_MAIN_EXTENSION)
+					.get();
+			bootJar.from(options.getConfigurationFileDirectories())
+					.eachFile((file) -> normalizePathIfNecessary(repositoryCacheDir, file));
+		});
+	}
+
+	private void normalizePathIfNecessary(Path repositoryCacheDir, FileCopyDetails configurationFile) {
+		Path configurationFilePath = configurationFile.getFile().toPath();
+		if (configurationFilePath.startsWith(repositoryCacheDir)) {
+			Path versionDir = configurationFilePath.getParent();
+			Path artifactDir = versionDir.getParent();
+			Path groupDir = artifactDir.getParent();
+			Path gavParentDir = groupDir.getParent();
+			configurationFile.setPath("/META-INF/native-image/" + gavParentDir.relativize(configurationFilePath));
+		}
 	}
 
 }
