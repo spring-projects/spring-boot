@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class HeapDumpWebEndpoint {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {
-					return new WebEndpointResponse<>(dumpHeap((live != null) ? live : true));
+					return new WebEndpointResponse<>(dumpHeap(live));
 				}
 				finally {
 					this.lock.unlock();
@@ -96,27 +96,12 @@ public class HeapDumpWebEndpoint {
 		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
 
-	private Resource dumpHeap(boolean live) throws IOException, InterruptedException {
+	private Resource dumpHeap(Boolean live) throws IOException, InterruptedException {
 		if (this.heapDumper == null) {
 			this.heapDumper = createHeapDumper();
 		}
-		File file = createTempFile();
-		this.heapDumper.dumpHeap(file, live);
+		File file = this.heapDumper.dumpHeap(live);
 		return new TemporaryFileSystemResource(file);
-	}
-
-	private File createTempFile() throws IOException {
-		String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
-		File file = File.createTempFile("heap-" + date, "." + determineDumpSuffix());
-		file.delete();
-		return file;
-	}
-
-	private String determineDumpSuffix() {
-		if (this.heapDumper instanceof OpenJ9DiagnosticsMXBeanHeapDumper) {
-			return "phd";
-		}
-		return "hprof";
 	}
 
 	/**
@@ -140,14 +125,17 @@ public class HeapDumpWebEndpoint {
 	protected interface HeapDumper {
 
 		/**
-		 * Dump the current heap to the specified file.
-		 * @param file the file to dump the heap to
+		 * Dump the current heap to a file.
 		 * @param live if only <em>live</em> objects (i.e. objects that are reachable from
-		 * others) should be dumped
+		 * others) should be dumped. May be {@code null} to use a JVM-specific default.
+		 * @return the file containing the heap dump
 		 * @throws IOException on IO error
 		 * @throws InterruptedException on thread interruption
+		 * @throws IllegalArgumentException if live is non-null and is not supported by
+		 * the JVM
+		 * @since 3.0.0
 		 */
-		void dumpHeap(File file, boolean live) throws IOException, InterruptedException;
+		File dumpHeap(Boolean live) throws IOException, InterruptedException;
 
 	}
 
@@ -177,8 +165,18 @@ public class HeapDumpWebEndpoint {
 		}
 
 		@Override
-		public void dumpHeap(File file, boolean live) {
-			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, file.getAbsolutePath(), live);
+		public File dumpHeap(Boolean live) throws IOException {
+			File file = createTempFile();
+			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, file.getAbsolutePath(),
+					(live != null) ? live : true);
+			return file;
+		}
+
+		private File createTempFile() throws IOException {
+			String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
+			File file = File.createTempFile("heap-" + date, ".hprof");
+			file.delete();
+			return file;
 		}
 
 	}
@@ -209,8 +207,13 @@ public class HeapDumpWebEndpoint {
 		}
 
 		@Override
-		public void dumpHeap(File file, boolean live) throws IOException, InterruptedException {
-			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, "heap", file.getAbsolutePath());
+		public File dumpHeap(Boolean live) throws IOException, InterruptedException {
+			if (live != null) {
+				throw new IllegalArgumentException(
+						"OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
+			}
+			return new File(
+					(String) ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, "heap", null));
 		}
 
 	}

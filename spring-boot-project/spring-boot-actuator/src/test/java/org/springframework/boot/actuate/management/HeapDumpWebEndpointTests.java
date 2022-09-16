@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.management;
 
+import java.nio.file.Files;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.Test;
@@ -37,9 +38,10 @@ class HeapDumpWebEndpointTests {
 
 			@Override
 			protected HeapDumper createHeapDumper() {
-				return (file, live) -> {
+				return (live) -> {
 					dumpingLatch.countDown();
 					blockingLatch.await();
+					return Files.createTempFile("heap-", ".dump").toFile();
 				};
 			}
 
