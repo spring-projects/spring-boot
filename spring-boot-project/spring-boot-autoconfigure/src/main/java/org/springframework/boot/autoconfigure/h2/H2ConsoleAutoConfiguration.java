@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,9 +67,20 @@ public class H2ConsoleAutoConfiguration {
 		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet(), urlMapping);
 		configureH2ConsoleSettings(registration, properties.getSettings());
 		if (logger.isInfoEnabled()) {
-			logDataSources(dataSource, path);
+			withThreadContextClassLoader(getClass().getClassLoader(), () -> logDataSources(dataSource, path));
 		}
 		return registration;
+	}
+
+	private void withThreadContextClassLoader(ClassLoader classLoader, Runnable action) {
+		ClassLoader previous = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			action.run();
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(previous);
+		}
 	}
 
 	private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
