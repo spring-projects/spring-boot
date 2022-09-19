@@ -298,11 +298,19 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		try {
 			List<Configuration> configurations = new ArrayList<>();
 			LoggerContext context = getLoggerContext();
-			configurations.add(load(location, context));
-			for (String override : overrides) {
-				configurations.add(load(override, context));
+			Configuration configuration = load(location, context);
+			if (configuration != null) {
+				configurations.add(load(location, context));
+			} else {
+				throw new FileNotFoundException("Cannot locate file: " + location);
 			}
-			Configuration configuration = (configurations.size() > 1) ? createComposite(configurations)
+			for (String override : overrides) {
+				configuration = load(override, context);
+				if (configuration != null) {
+					configurations.add(configuration);
+				}
+			}
+			configuration = (configurations.size() > 1) ? createComposite(configurations)
 					: configurations.iterator().next();
 			context.start(configuration);
 		}
@@ -314,7 +322,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private Configuration load(String location, LoggerContext context) throws IOException, URISyntaxException {
 		URL url = ResourceUtils.getURL(location);
 		ConfigurationSource source = getConfigurationSource(url);
-		return ConfigurationFactory.getInstance().getConfiguration(context, source);
+		return source != null ? ConfigurationFactory.getInstance().getConfiguration(context, source) : null;
 	}
 
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException, URISyntaxException {
