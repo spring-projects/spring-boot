@@ -40,13 +40,12 @@ public class SampleBatchApplication {
 
 	@Bean
 	Job job(JobRepository jobRepository, Step step) {
-		return new JobBuilder("job").repository(jobRepository).start(step).build();
+		return new JobBuilder("job", jobRepository).start(step).build();
 	}
 
 	@Bean
 	Step step1(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
-		return new StepBuilder("step1").repository(jobRepository).tasklet(tasklet)
-				.transactionManager(transactionManager).build();
+		return new StepBuilder("step1", jobRepository).tasklet(tasklet, transactionManager).build();
 	}
 
 	public static void main(String[] args) {
