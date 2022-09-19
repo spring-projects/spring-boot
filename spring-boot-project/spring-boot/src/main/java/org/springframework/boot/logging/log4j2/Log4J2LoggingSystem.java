@@ -16,14 +16,19 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -43,9 +48,16 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.net.UrlConnectionFactory;
+import org.apache.logging.log4j.core.net.ssl.SslConfiguration;
+import org.apache.logging.log4j.core.net.ssl.SslConfigurationFactory;
+import org.apache.logging.log4j.core.util.AuthorizationProvider;
+import org.apache.logging.log4j.core.util.FileUtils;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -59,6 +71,7 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -78,9 +91,15 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String FILE_PROTOCOL = "file";
 
+	private static final String HTTPS = "https";
+
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
+
+	public static final String ENVIRONMENT_KEY = "SpringEnvironment";
+
+	private static org.apache.logging.log4j.Logger LOGGER = StatusLogger.getLogger();
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
@@ -138,6 +157,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
 		}
 		supportedConfigLocations.add("log4j2.xml");
+		PropertiesUtil props = new PropertiesUtil(new Properties());
+		String location = props.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+		if (location != null) {
+			supportedConfigLocations.add(location);
+		}
 		return StringUtils.toStringArray(supportedConfigLocations);
 	}
 
@@ -228,6 +252,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
+		Environment environment = initializationContext.getEnvironment();
+		PropertiesUtil.getProperties().addPropertySource(new SpringPropertySource(environment));
+		getLoggerContext().putObjectIfAbsent(ENVIRONMENT_KEY, environment);
 		loggerContext.getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
 		markAsInitialized(loggerContext);
@@ -284,18 +311,29 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private Configuration load(String location, LoggerContext context) throws IOException {
+	private Configuration load(String location, LoggerContext context) throws IOException, URISyntaxException {
 		URL url = ResourceUtils.getURL(location);
 		ConfigurationSource source = getConfigurationSource(url);
 		return ConfigurationFactory.getInstance().getConfiguration(context, source);
 	}
 
-	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
-		InputStream stream = url.openStream();
-		if (FILE_PROTOCOL.equals(url.getProtocol())) {
-			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
+	private ConfigurationSource getConfigurationSource(URL url) throws IOException, URISyntaxException {
+		AuthorizationProvider provider = ConfigurationFactory.authorizationProvider(PropertiesUtil.getProperties());
+		SslConfiguration sslConfiguration = url.getProtocol().equals(HTTPS)
+				? SslConfigurationFactory.getSslConfiguration() : null;
+		URLConnection urlConnection = UrlConnectionFactory.createConnection(url, 0, sslConfiguration, provider);
+
+		File file = FileUtils.fileFromUri(url.toURI());
+		try {
+			if (file != null) {
+				return new ConfigurationSource(urlConnection.getInputStream(), FileUtils.fileFromUri(url.toURI()));
+			}
+			return new ConfigurationSource(urlConnection.getInputStream(), url, urlConnection.getLastModified());
 		}
-		return new ConfigurationSource(stream, url);
+		catch (FileNotFoundException ex) {
+			LOGGER.info("Unable to locate file {}, ignoring.", url.toString());
+			return null;
+		}
 	}
 
 	private CompositeConfiguration createComposite(List<Configuration> configurations) {
@@ -324,7 +362,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			try {
 				configurations.add((AbstractConfiguration) load(override, context));
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				throw new RuntimeException("Failed to load overriding configuration from '" + override + "'", ex);
 			}
 		}
