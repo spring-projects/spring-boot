@@ -143,6 +143,7 @@ class BeanDefinitionLoader {
 	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?> clazz) {
+			/** source是启动类，则进入到这个条件处理 */
 			load(clazz);
 			return;
 		}

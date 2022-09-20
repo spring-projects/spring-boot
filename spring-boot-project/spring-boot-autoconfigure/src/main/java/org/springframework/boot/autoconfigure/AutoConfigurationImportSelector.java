@@ -121,9 +121,12 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		if (!isEnabled(annotationMetadata)) {
 			return EMPTY_ENTRY;
 		}
+		/** 获取annotationMetadata的注解@EnableAutoConfiguration的属性 */
 		AnnotationAttributes attributes = getAttributes(annotationMetadata);
+		/** 读取默认资源路径下的EnableAutoConfiguration（autoconfigure包）的所有类 */
 		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
 		configurations = removeDuplicates(configurations);
+		/** 通过@EnableAutoConfiguration设置exclude的相关属性，可以排除指定的自动配置类 */
 		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
 		checkExcludedClasses(configurations, exclusions);
 		configurations.removeAll(exclusions);
@@ -179,6 +182,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+		/** getSpringFactoriesLoaderFactoryClass——返回注解类EnableAutoConfiguration
+		 *  loadFactoryNames——从默认资源路径（META-INF/spring.factories）读取所有自动配置类 */
 		@SuppressWarnings("deprecation")
 		List<String> configurations = new ArrayList<>(
 				SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));
@@ -437,6 +442,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 					() -> String.format("Only %s implementations are supported, got %s",
 							AutoConfigurationImportSelector.class.getSimpleName(),
 							deferredImportSelector.getClass().getName()));
+			/** 取出autoconfigure配置*/
 			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
 					.getAutoConfigurationEntry(annotationMetadata);
 			this.autoConfigurationEntries.add(autoConfigurationEntry);

@@ -269,6 +269,12 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+		/**
+		 * 	自动装配原理①
+		 * 	当启动springboot应用程序时，会先创建SpringApplication对象，在对象的构造方法中会进行某些参数的初始化工作，
+		 * 	初始化工作：上下文初始化器、监听器
+		 * 	加载整个应用程序中的spring.factories文件，将内容放到缓存中（getSpringFactoriesInstances）
+		 * */
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
@@ -297,6 +303,11 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		/**
+		 * 自动装配原理②
+		 * SpringApplication对象创建完之后，开始执行run方法，来完成整个启动
+		 * 启动过程中最主要的两个方法：prepareContext、refreshContext
+		 * */
 		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
@@ -305,12 +316,15 @@ public class SpringApplication {
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			/** 准备环境配置：读取当前系统环境 */
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
+			/** 重要：准备上下文（识别到启动类） */
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+			/** 调用spring的refresh方法 */
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			Duration timeTakenToStartup = Duration.ofNanos(System.nanoTime() - startTime);
@@ -376,6 +390,13 @@ public class SpringApplication {
 		};
 	}
 
+	/**
+	 * 自动装配原理③
+	 * 主要完成对上下文对象的初始化操作，包括属性值的设置（环境对象）
+	 * 重要的方法load，用于将当前启动类作为一个beanDefinition注册到registry中，
+	 * 方便后续在进行BeanFactoryPostProcessor调用执行时，找到对应的主类，
+	 * 来完成@SpringBootApplication、@EnableAutoConfiguration等注解的解析工作
+	 * */
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
@@ -390,6 +411,7 @@ public class SpringApplication {
 			logStartupProfileInfo(context);
 		}
 		// Add boot specific singleton beans
+		/** 注册到beanFactory */
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
 		if (printedBanner != null) {
@@ -407,10 +429,13 @@ public class SpringApplication {
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
 		if (!AotDetector.useGeneratedArtifacts()) {
 			// Load the sources
+			/** 找到启动类 */
 			Set<Object> sources = getAllSources();
 			Assert.notEmpty(sources, "Sources must not be empty");
+			/** 加载启动类 */
 			load(context, sources.toArray(new Object[0]));
 		}
+		/** 通知监听器，加载完成 */
 		listeners.contextLoaded(context);
 	}
 
@@ -435,6 +460,14 @@ public class SpringApplication {
 		}
 	}
 
+	/**
+	 * 自动装配原理④
+	 * 进行整个容器刷新过程，调用spring中的refresh方法（老朋友了，13个关键方法），来完成整个spring应用程序启动。
+	 * 自动装配过程中，会调用invokeBeanFactoryPostProcessor方法，主要是对ConfigurationClassPostProcessor类的处理，
+	 * 本次过程会调用BDRPP的postProcessBeanDefinitionRegistry方法（实现类为ConfigurationClassPostProcessor），执行时会解析处理各种注解，
+	 * 	包括@PropertySource、@ComponentScans、@Bean、@Import（最主要）等
+	 *
+	 * */
 	private void refreshContext(ConfigurableApplicationContext context) {
 		if (this.registerShutdownHook) {
 			shutdownHook.registerApplicationContext(context);
@@ -1320,6 +1353,7 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+		/** 初始化SpringApplication 并进行run */
 		return new SpringApplication(primarySources).run(args);
 	}
 
