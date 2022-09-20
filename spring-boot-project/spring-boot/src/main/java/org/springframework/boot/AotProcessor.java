@@ -125,7 +125,7 @@ public class AotProcessor {
 	private void performAotProcessing(GenericApplicationContext applicationContext) {
 		FileSystemGeneratedFiles generatedFiles = new FileSystemGeneratedFiles(this::getRoot);
 		DefaultGenerationContext generationContext = new DefaultGenerationContext(
-				new ClassNameGenerator(this.application), generatedFiles);
+				new ClassNameGenerator(ClassName.get(this.application)), generatedFiles);
 		ApplicationContextAotGenerator generator = new ApplicationContextAotGenerator();
 		ClassName generatedInitializerClassName = generator.processAheadOfTime(applicationContext, generationContext);
 		registerEntryPointHint(generationContext, generatedInitializerClassName);

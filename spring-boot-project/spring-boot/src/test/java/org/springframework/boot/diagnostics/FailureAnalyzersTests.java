@@ -27,7 +27,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.core.mock.MockSpringFactoriesLoader;
+import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.same;

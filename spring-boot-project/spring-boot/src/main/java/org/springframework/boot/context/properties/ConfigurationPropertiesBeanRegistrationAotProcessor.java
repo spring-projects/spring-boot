@@ -28,6 +28,7 @@ import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
 import org.springframework.beans.factory.aot.BeanRegistrationCodeFragments;
+import org.springframework.beans.factory.aot.BeanRegistrationCodeFragmentsDecorator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.InstanceSupplier;
 import org.springframework.beans.factory.support.RegisteredBean;
@@ -48,7 +49,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 		if (!isImmutableConfigurationPropertiesBeanDefinition(registeredBean.getMergedBeanDefinition())) {
 			return null;
 		}
-		return BeanRegistrationAotContribution.ofBeanRegistrationCodeFragmentsCustomizer(
+		return BeanRegistrationAotContribution.withCustomCodeFragments(
 				(codeFragments) -> new ConfigurationPropertiesBeanRegistrationCodeFragments(codeFragments,
 						registeredBean));
 
@@ -59,7 +60,8 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 				&& BindMethod.VALUE_OBJECT.equals(beanDefinition.getAttribute(BindMethod.class.getName()));
 	}
 
-	private static class ConfigurationPropertiesBeanRegistrationCodeFragments extends BeanRegistrationCodeFragments {
+	private static class ConfigurationPropertiesBeanRegistrationCodeFragments
+			extends BeanRegistrationCodeFragmentsDecorator {
 
 		private static final Predicate<String> INCLUDE_BIND_METHOD_ATTRIBUTE_FILTER = (name) -> name
 				.equals(BindMethod.class.getName());

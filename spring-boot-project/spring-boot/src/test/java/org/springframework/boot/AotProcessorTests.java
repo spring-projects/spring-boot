@@ -110,9 +110,8 @@ class AotProcessorTests {
 			assertThat(directory.resolve(
 					"source/org/springframework/boot/AotProcessorTests_SampleApplication__ApplicationContextInitializer.java"))
 							.exists().isRegularFile();
-			assertThat(directory.resolve(
-					"source/org/springframework/boot/AotProcessorTests_SampleApplication__BeanDefinitions.java"))
-							.exists().isRegularFile();
+			assertThat(directory.resolve("source/org/springframework/boot/AotProcessorTests__BeanDefinitions.java"))
+					.exists().isRegularFile();
 			assertThat(directory.resolve(
 					"source/org/springframework/boot/AotProcessorTests_SampleApplication__BeanFactoryRegistrations.java"))
 							.exists().isRegularFile();

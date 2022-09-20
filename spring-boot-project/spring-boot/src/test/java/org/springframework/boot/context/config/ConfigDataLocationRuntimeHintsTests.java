@@ -29,7 +29,7 @@ import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.mock.MockSpringFactoriesLoader;
+import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
