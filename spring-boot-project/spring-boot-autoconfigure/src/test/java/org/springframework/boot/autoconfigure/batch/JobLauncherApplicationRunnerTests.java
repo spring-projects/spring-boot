@@ -99,8 +99,7 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
-							.transactionManager(transactionManager).build())
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 					.incrementer(new RunIdIncrementer()).build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
@@ -113,8 +112,9 @@ class JobLauncherApplicationRunnerTests {
 		this.contextRunner.run((context) -> {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
-			Job job = jobLauncherContext.jobBuilder().start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
-					.transactionManager(transactionManager).build()).build();
+			Job job = jobLauncherContext.jobBuilder()
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+					.build();
 			// start a job instance
 			JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
@@ -132,8 +132,7 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder().preventRestart()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
-							.transactionManager(transactionManager).build())
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 					.incrementer(new RunIdIncrementer()).build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParameters());
@@ -155,8 +154,7 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet())
-							.transactionManager(transactionManager).build())
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 					.incrementer(new RunIdIncrementer()).build();
 			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
 					.toJobParameters();
@@ -193,10 +191,9 @@ class JobLauncherApplicationRunnerTests {
 			JobLauncher jobLauncher = context.getBean(JobLauncher.class);
 			JobRepository jobRepository = context.getBean(JobRepository.class);
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
-			this.stepBuilder = new StepBuilder("step").repository(jobRepository);
-			this.step = this.stepBuilder.tasklet((contribution, chunkContext) -> null)
-					.transactionManager(transactionManager).build();
-			this.jobBuilder = new JobBuilder("job").repository(jobRepository);
+			this.stepBuilder = new StepBuilder("step", jobRepository);
+			this.step = this.stepBuilder.tasklet((contribution, chunkContext) -> null, transactionManager).build();
+			this.jobBuilder = new JobBuilder("job", jobRepository);
 			this.job = this.jobBuilder.start(this.step).build();
 			this.jobExplorer = context.getBean(JobExplorer.class);
 			this.runner = new JobLauncherApplicationRunner(jobLauncher, this.jobExplorer, jobRepository);

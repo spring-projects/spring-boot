@@ -60,14 +60,14 @@ import org.springframework.util.ReflectionUtils;
  */
 class ImportsContextCustomizer implements ContextCustomizer {
 
-	static final String TEST_CLASS_ATTRIBUTE = "testClass";
+	private static final String TEST_CLASS_NAME_ATTRIBUTE = "testClassName";
 
-	private final Class<?> testClass;
+	private final String testClassName;
 
 	private final ContextCustomizerKey key;
 
 	ImportsContextCustomizer(Class<?> testClass) {
-		this.testClass = testClass;
+		this.testClassName = testClass.getName();
 		this.key = new ContextCustomizerKey(testClass);
 	}
 
@@ -84,13 +84,13 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		BeanDefinition definition = registerBean(registry, reader, ImportsCleanupPostProcessor.BEAN_NAME,
 				ImportsCleanupPostProcessor.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		definition.getConstructorArgumentValues().addIndexedArgumentValue(0, this.testClass);
+		definition.getConstructorArgumentValues().addIndexedArgumentValue(0, this.testClassName);
 	}
 
 	private void registerImportsConfiguration(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
 		BeanDefinition definition = registerBean(registry, reader, ImportsConfiguration.BEAN_NAME,
 				ImportsConfiguration.class);
-		definition.setAttribute(TEST_CLASS_ATTRIBUTE, this.testClass);
+		definition.setAttribute(TEST_CLASS_NAME_ATTRIBUTE, this.testClassName);
 	}
 
 	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
@@ -162,8 +162,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			BeanDefinition definition = this.beanFactory.getBeanDefinition(ImportsConfiguration.BEAN_NAME);
-			Object testClass = (definition != null) ? definition.getAttribute(TEST_CLASS_ATTRIBUTE) : null;
-			return (testClass != null) ? new String[] { ((Class<?>) testClass).getName() } : NO_IMPORTS;
+			Object testClassName = definition.getAttribute(TEST_CLASS_NAME_ATTRIBUTE);
+			return (testClassName != null) ? new String[] { (String) testClassName } : NO_IMPORTS;
 		}
 
 	}
@@ -177,10 +177,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		static final String BEAN_NAME = ImportsCleanupPostProcessor.class.getName();
 
-		private final Class<?> testClass;
+		private final String testClassName;
 
-		ImportsCleanupPostProcessor(Class<?> testClass) {
-			this.testClass = testClass;
+		ImportsCleanupPostProcessor(String testClassName) {
+			this.testClassName = testClassName;
 		}
 
 		@Override
@@ -193,7 +193,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 				String[] names = registry.getBeanDefinitionNames();
 				for (String name : names) {
 					BeanDefinition definition = registry.getBeanDefinition(name);
-					if (this.testClass.getName().equals(definition.getBeanClassName())) {
+					if (this.testClassName.equals(definition.getBeanClassName())) {
 						registry.removeBeanDefinition(name);
 					}
 				}
