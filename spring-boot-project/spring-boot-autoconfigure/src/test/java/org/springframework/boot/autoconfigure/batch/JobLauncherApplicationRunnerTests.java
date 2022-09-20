@@ -43,7 +43,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -221,14 +220,13 @@ class JobLauncherApplicationRunnerTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	static class BatchConfiguration extends BasicBatchConfigurer {
+	@Configuration(proxyBeanMethods = false)
+	static class BatchConfiguration {
 
 		private final DataSource dataSource;
 
 		protected BatchConfiguration(DataSource dataSource) {
-			super(new BatchProperties(), dataSource, new TransactionManagerCustomizers(null));
 			this.dataSource = dataSource;
 		}
 

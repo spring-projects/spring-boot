@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.batch;
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.ListableJobLocator;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -35,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +45,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,11 +65,12 @@ import org.springframework.util.StringUtils;
  * @author Mahmoud Ben Hassine
  * @since 1.0.0
  */
-@AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
+@AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, DatabasePopulator.class })
-@ConditionalOnBean({ DataSource.class, JobLauncher.class })
+@ConditionalOnBean({ DataSource.class, PlatformTransactionManager.class })
+@ConditionalOnMissingBean(value = DefaultBatchConfiguration.class, annotation = EnableBatchProcessing.class)
 @EnableConfigurationProperties(BatchProperties.class)
-@Import({ BatchConfigurerConfiguration.class, DatabaseInitializationDependencyConfigurer.class })
+@Import(DatabaseInitializationDependencyConfigurer.class)
 public class BatchAutoConfiguration {
 
 	@Bean
@@ -98,6 +104,46 @@ public class BatchAutoConfiguration {
 		factory.setJobRepository(jobRepository);
 		jobParametersConverter.ifAvailable(factory::setJobParametersConverter);
 		return factory;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SpringBootBatchConfiguration extends DefaultBatchConfiguration {
+
+		private final DataSource dataSource;
+
+		private final PlatformTransactionManager transactionManager;
+
+		private final BatchProperties properties;
+
+		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
+				PlatformTransactionManager transactionManager, BatchProperties properties) {
+			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
+			this.transactionManager = transactionManager;
+			this.properties = properties;
+		}
+
+		@Override
+		protected DataSource getDataSource() {
+			return this.dataSource;
+		}
+
+		@Override
+		protected PlatformTransactionManager getTransactionManager() {
+			return this.transactionManager;
+		}
+
+		@Override
+		protected String getTablePrefix() {
+			String tablePrefix = this.properties.getJdbc().getTablePrefix();
+			return (tablePrefix != null) ? tablePrefix : super.getTablePrefix();
+		}
+
+		@Override
+		protected Isolation getIsolationLevelForCreate() {
+			Isolation isolation = this.properties.getJdbc().getIsolationLevelForCreate();
+			return (isolation != null) ? isolation : super.getIsolationLevelForCreate();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

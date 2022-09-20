@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.transaction.annotation.Isolation;
 
 /**
  * Configuration properties for Spring Batch.
@@ -131,47 +132,6 @@ public class BatchProperties {
 
 		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
-		}
-
-	}
-
-	/**
-	 * Available transaction isolation levels.
-	 */
-	public enum Isolation {
-
-		/**
-		 * Use the default isolation level of the underlying datastore.
-		 */
-		DEFAULT,
-
-		/**
-		 * Indicates that dirty reads, non-repeatable reads and phantom reads can occur.
-		 */
-		READ_UNCOMMITTED,
-
-		/**
-		 * Indicates that dirty reads are prevented; non-repeatable reads and phantom
-		 * reads can occur.
-		 */
-		READ_COMMITTED,
-
-		/**
-		 * Indicates that dirty reads and non-repeatable reads are prevented; phantom
-		 * reads can occur.
-		 */
-		REPEATABLE_READ,
-
-		/**
-		 * Indicate that dirty reads, non-repeatable reads and phantom reads are
-		 * prevented.
-		 */
-		SERIALIZABLE;
-
-		private static final String PREFIX = "ISOLATION_";
-
-		String toIsolationName() {
-			return PREFIX + name();
 		}
 
 	}
