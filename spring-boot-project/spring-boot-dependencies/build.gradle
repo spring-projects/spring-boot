@@ -1722,7 +1722,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.9-SNAPSHOT") {
+	library("Spring Kafka", "2.8.9") {
 		prohibit("[3.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
