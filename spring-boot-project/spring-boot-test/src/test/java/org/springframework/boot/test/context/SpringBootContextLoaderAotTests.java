@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
-import org.springframework.aot.test.generate.compile.CompileWithTargetClassAccess;
-import org.springframework.aot.test.generate.compile.TestCompiler;
+import org.springframework.aot.test.generate.CompilerFiles;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.SpringBootConfiguration;
@@ -32,6 +31,8 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.test.tools.CompileWithForkedClassLoader;
+import org.springframework.core.test.tools.TestCompiler;
 import org.springframework.test.context.BootstrapUtils;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
@@ -49,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@CompileWithTargetClassAccess
+@CompileWithForkedClassLoader
 class SpringBootContextLoaderAotTests {
 
 	@Test
@@ -58,7 +59,7 @@ class SpringBootContextLoaderAotTests {
 		TestContextAotGenerator generator = new TestContextAotGenerator(generatedFiles);
 		Class<?> testClass = ExampleTest.class;
 		generator.processAheadOfTime(Stream.of(testClass));
-		TestCompiler.forSystem().withFiles(generatedFiles).printFiles(System.out)
+		TestCompiler.forSystem().with(CompilerFiles.from(generatedFiles))
 				.compile(ThrowingConsumer.of((compiled) -> assertCompiledTest(testClass)));
 	}
 
