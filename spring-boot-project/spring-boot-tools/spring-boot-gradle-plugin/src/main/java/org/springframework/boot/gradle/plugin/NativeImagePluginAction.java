@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Path;
 
 import org.graalvm.buildtools.gradle.NativeImagePlugin;
@@ -31,6 +32,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
@@ -87,17 +89,24 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	private void copyReachabilityMetadataToBootJar(Project project, GraalVMExtension graalVmExtension) {
 		Path repositoryCacheDir = new File(project.getGradle().getGradleUserHomeDir(),
 				"native-build-tools/repositories").toPath();
+
 		project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class).configure((bootJar) -> {
 			NativeImageOptions options = graalVmExtension.getBinaries().named(NativeImagePlugin.NATIVE_MAIN_EXTENSION)
 					.get();
+			GraalVMReachabilityMetadataRepositoryExtension metadataRepositoryExtension = ((ExtensionAware) graalVmExtension)
+					.getExtensions().getByType(GraalVMReachabilityMetadataRepositoryExtension.class);
+			Property<URI> metadataRepositoryUri = metadataRepositoryExtension.getUri();
 			bootJar.from(options.getConfigurationFileDirectories())
-					.eachFile((file) -> normalizePathIfNecessary(repositoryCacheDir, file));
+					.eachFile((file) -> normalizePathIfNecessary(repositoryCacheDir, metadataRepositoryUri, file));
 		});
 	}
 
-	private void normalizePathIfNecessary(Path repositoryCacheDir, FileCopyDetails configurationFile) {
+	private void normalizePathIfNecessary(Path repositoryCacheDir, Property<URI> metadataRepositoryUri,
+			FileCopyDetails configurationFile) {
 		Path configurationFilePath = configurationFile.getFile().toPath();
-		if (configurationFilePath.startsWith(repositoryCacheDir)) {
+		Path repositoryMetadataRoot = ("file".equals(metadataRepositoryUri.get().getScheme()))
+				? Path.of(metadataRepositoryUri.get()) : repositoryCacheDir;
+		if (configurationFilePath.startsWith(repositoryMetadataRoot)) {
 			Path versionDir = configurationFilePath.getParent();
 			Path artifactDir = versionDir.getParent();
 			Path groupDir = artifactDir.getParent();

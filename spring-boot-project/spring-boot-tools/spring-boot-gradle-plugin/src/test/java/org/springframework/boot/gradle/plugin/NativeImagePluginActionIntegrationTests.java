@@ -32,6 +32,7 @@ import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,6 +56,24 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void reachabilityMetadataConfigurationFilesAreCopiedToJar() throws IOException {
 		writeDummyAotProcessorMainClass();
+		BuildResult result = this.gradleBuild.build("bootJar");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(buildLibs.listFiles()).contains(jarFile);
+		assertThat(getEntryNames(jarFile)).contains(
+				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/jni-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/proxy-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
+	}
+
+	@TestTemplate
+	void reachabilityMetadataConfigurationFilesFromFileRepositoryAreCopiedToJar() throws IOException {
+		writeDummyAotProcessorMainClass();
+		FileSystemUtils.copyRecursively(new File("src/test/resources/reachability-metadata-repository"),
+				new File(this.gradleBuild.getProjectDir(), "reachability-metadata-repository"));
 		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
