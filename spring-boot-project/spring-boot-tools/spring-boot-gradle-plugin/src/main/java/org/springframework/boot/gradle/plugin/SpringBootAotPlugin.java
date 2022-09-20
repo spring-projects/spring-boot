@@ -149,12 +149,15 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 		SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
 		SourceSet testSourceSet = sourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME);
+		Provider<Directory> aotTestClasses = project.getLayout().getBuildDirectory().dir("generated/aotTestClasses");
 		TaskProvider<ProcessTestAot> processTestAot = project.getTasks().register(PROCESS_TEST_AOT_TASK_NAME,
 				ProcessTestAot.class, (task) -> {
-					configureAotTask(project, aotTestSourceSet, task,
-							project.getLayout().getBuildDirectory().dir("generated/aotTestClasses"));
+					configureAotTask(project, aotTestSourceSet, task, aotTestClasses);
 					task.setTestSourceSet(testSourceSet);
 				});
+		project.getDependencies().add(aotTestSourceSet.getImplementationConfigurationName(),
+				project.files(aotTestClasses));
+		aotTestSourceSet.getOutput().dir(aotTestClasses);
 		configureDependsOn(project, aotTestSourceSet, processTestAot);
 	}
 
