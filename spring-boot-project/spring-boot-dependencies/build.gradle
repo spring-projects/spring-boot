@@ -285,7 +285,7 @@ bom {
 			]
 		}
 	}
-	library("GraphQL Java", "19.0") {
+	library("GraphQL Java", "19.2") {
 		group("com.graphql-java") {
 			modules = [
 					"graphql-java"
