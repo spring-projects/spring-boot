@@ -23,13 +23,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
@@ -41,17 +43,15 @@ import org.gradle.api.tasks.TaskAction;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.Opcodes;
 import org.springframework.core.CollectionFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link Task} for generating metadata describing a project's auto-configuration
  * classes.
  *
  * @author Andy Wilkinson
- * @author Scott Frederick
  */
 public class AutoConfigurationMetadata extends DefaultTask {
-
-	private static final String IMPORTS_FILE_PATH = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
 
 	private static final String COMMENT_START = "#";
 
@@ -60,7 +60,13 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	private File outputFile;
 
 	public AutoConfigurationMetadata() {
-		getInputs().file((Callable<File>) this::findAutoConfigurationImportsFile)
+		getInputs()
+				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+						"META-INF/spring.factories"))
+				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("spring.factories");
+		getInputs()
+				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+						"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
 				.withPathSensitivity(PathSensitivity.RELATIVE)
 				.withPropertyName("org.springframework.boot.autoconfigure.AutoConfiguration");
 
@@ -93,7 +99,9 @@ public class AutoConfigurationMetadata extends DefaultTask {
 
 	private Properties readAutoConfiguration() throws IOException {
 		Properties autoConfiguration = CollectionFactory.createSortedProperties(true);
-		List<String> classNames = readAutoConfigurationsFile();
+		Set<String> classNames = new LinkedHashSet<>();
+		classNames.addAll(readSpringFactories());
+		classNames.addAll(readAutoConfigurationsFile());
 		Set<String> publicClassNames = new LinkedHashSet<>();
 		for (String className : classNames) {
 			File classFile = findClassFile(className);
@@ -113,45 +121,73 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	}
 
 	/**
+	 * Reads auto-configurations from META-INF/spring.factories.
+	 * @return auto-configurations
+	 */
+	private Set<String> readSpringFactories() throws IOException {
+		File file = new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories");
+		if (!file.exists()) {
+			return Collections.emptySet();
+		}
+		Properties springFactories = readSpringFactories(file);
+		String enableAutoConfiguration = springFactories
+				.getProperty("org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+		return StringUtils.commaDelimitedListToSet(enableAutoConfiguration);
+	}
+
+	/**
 	 * Reads auto-configurations from
 	 * META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports.
 	 * @return auto-configurations
 	 */
 	private List<String> readAutoConfigurationsFile() throws IOException {
-		File file = findAutoConfigurationImportsFile();
-		if (file == null) {
+		File file = new File(this.sourceSet.getOutput().getResourcesDir(),
+				"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports");
+		if (!file.exists()) {
 			return Collections.emptyList();
 		}
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			return reader.lines().map(this::stripComment).filter((line) -> !line.isEmpty())
-					.collect(Collectors.toList());
+		// Nearly identical copy of
+		// org.springframework.boot.context.annotation.ImportCandidates.load
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+			List<String> autoConfigurations = new ArrayList<>();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = stripComment(line);
+				line = line.trim();
+				if (line.isEmpty()) {
+					continue;
+				}
+				autoConfigurations.add(line);
+			}
+			return autoConfigurations;
 		}
 	}
 
 	private String stripComment(String line) {
 		int commentStart = line.indexOf(COMMENT_START);
 		if (commentStart == -1) {
-			return line.trim();
+			return line;
 		}
-		return line.substring(0, commentStart).trim();
-	}
-
-	private File findAutoConfigurationImportsFile() {
-		return findFileInClassesDirs(IMPORTS_FILE_PATH);
+		return line.substring(0, commentStart);
 	}
 
 	private File findClassFile(String className) {
-		return findFileInClassesDirs(className.replace(".", "/") + ".class");
-	}
-
-	private File findFileInClassesDirs(String fileName) {
+		String classFileName = className.replace(".", "/") + ".class";
 		for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
-			File classFile = new File(classesDir, fileName);
+			File classFile = new File(classesDir, classFileName);
 			if (classFile.isFile()) {
 				return classFile;
 			}
 		}
 		return null;
+	}
+
+	private Properties readSpringFactories(File file) throws IOException {
+		Properties springFactories = new Properties();
+		try (Reader in = new FileReader(file)) {
+			springFactories.load(in);
+		}
+		return springFactories;
 	}
 
 }
