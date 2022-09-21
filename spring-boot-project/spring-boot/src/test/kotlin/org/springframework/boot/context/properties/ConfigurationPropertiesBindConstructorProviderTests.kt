@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,6 +113,12 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 		}
 	}
 
+	@Test
+	fun `data class with default values should use constructor binding`() {
+		val bindConstructor = this.constructorProvider.getBindConstructor(ConstructorBindingDataClassWithDefaultValues::class.java, false)
+		assertThat(bindConstructor).isNotNull();
+	}
+
 	@ConfigurationProperties(prefix = "foo")
 	class FooProperties
 
@@ -209,5 +215,8 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 
 	}
+
+	@ConfigurationProperties(prefix = "bing")
+	data class ConstructorBindingDataClassWithDefaultValues(val name: String = "Joan", val counter: Int = 42)
 
 }

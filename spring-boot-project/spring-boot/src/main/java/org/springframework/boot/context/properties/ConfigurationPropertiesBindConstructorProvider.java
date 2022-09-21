@@ -19,9 +19,11 @@ package org.springframework.boot.context.properties;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
 
@@ -94,6 +96,9 @@ public class ConfigurationPropertiesBindConstructorProvider implements BindConst
 				}
 				bind = findAnnotatedConstructor(type, bind, candidate);
 			}
+			if (bind == null && !hasAutowiredConstructor && isKotlinType(type)) {
+				bind = deduceKotlinBindConstructor(type);
+			}
 			return new Constructors(hasAutowiredConstructor, bind);
 		}
 
@@ -139,6 +144,18 @@ public class ConfigurationPropertiesBindConstructorProvider implements BindConst
 				constructor = candidate;
 			}
 			return constructor;
+		}
+
+		private static boolean isKotlinType(Class<?> type) {
+			return KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type);
+		}
+
+		private static Constructor<?> deduceKotlinBindConstructor(Class<?> type) {
+			Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
+			if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
+				return primaryConstructor;
+			}
+			return null;
 		}
 
 	}
