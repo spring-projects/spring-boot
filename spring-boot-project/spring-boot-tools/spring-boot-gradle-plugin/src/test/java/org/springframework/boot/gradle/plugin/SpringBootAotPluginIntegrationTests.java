@@ -102,9 +102,34 @@ class SpringBootAotPluginIntegrationTests {
 	}
 
 	@TestTemplate
+	void processAotRunsWhenProjectHasMainSource() throws IOException {
+		writeMainClass("org.springframework.boot", "AotProcessor");
+		writeMainClass("com.example", "Main");
+		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
 	void processTestAotIsSkippedWhenProjectHasNoTestSource() {
 		assertThat(this.gradleBuild.build("processTestAot").task(":processTestAot").getOutcome())
 				.isEqualTo(TaskOutcome.NO_SOURCE);
+	}
+
+	private void writeMainClass(String packageName, String className) throws IOException {
+		File java = new File(this.gradleBuild.getProjectDir(),
+				"src/main/java/" + packageName.replace(".", "/") + "/" + className + ".java");
+		java.getParentFile().mkdirs();
+		Files.writeString(java.toPath(), """
+				package %s;
+
+				public class %s {
+
+					public static void main(String[] args) {
+
+					}
+
+				}
+				""".formatted(packageName, className));
 	}
 
 }

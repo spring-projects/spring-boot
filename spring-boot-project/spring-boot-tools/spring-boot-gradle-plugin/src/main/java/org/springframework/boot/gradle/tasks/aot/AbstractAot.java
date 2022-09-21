@@ -92,7 +92,7 @@ public abstract class AbstractAot extends JavaExec {
 	@IgnoreEmptyDirectories
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public final FileCollection getInputClasses() {
-		return this.inputClasses.getAsFileTree().matching((filter) -> filter.include((spec) -> !spec.isDirectory()));
+		return this.inputClasses.getAsFileTree();
 	}
 
 	public void setInputClasses(FileCollection inputClasses) {
