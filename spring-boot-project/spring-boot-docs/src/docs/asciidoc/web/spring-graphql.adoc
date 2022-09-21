@@ -35,6 +35,9 @@ A Spring GraphQL application requires a defined schema at startup.
 By default, you can write ".graphqls" or ".gqls" schema files under `src/main/resources/graphql/**` and Spring Boot will pick them up automatically.
 You can customize the locations with configprop:spring.graphql.schema.locations[] and the file extensions with configprop:spring.graphql.schema.file-extensions[].
 
+NOTE: If you want Spring Boot to detect schema files in all your application modules and dependencies for that location,
+you can set configprop:spring.graphql.schema.locations[] to `+"classpath*:graphql/**/"+` (note the `classpath*:` prefix).
+
 In the following sections, we'll consider this sample GraphQL schema, defining two types and two queries:
 
 [source,json,indent=0,subs="verbatim,quotes"]
