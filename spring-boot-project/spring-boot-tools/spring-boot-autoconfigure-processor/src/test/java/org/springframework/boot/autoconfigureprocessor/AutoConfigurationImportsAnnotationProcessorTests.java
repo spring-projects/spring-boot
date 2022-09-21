@@ -32,7 +32,7 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AutoConfigurationImportsAnnotationProcessor}.
+ * Tests for {@link TestAutoConfigurationImportsAnnotationProcessor}.
  *
  * @author Scott Frederick
  */
@@ -67,16 +67,20 @@ class AutoConfigurationImportsAnnotationProcessorTests {
 	private List<String> compile(Class<?>... types) throws IOException {
 		TestAutoConfigurationImportsAnnotationProcessor processor = new TestAutoConfigurationImportsAnnotationProcessor();
 		this.compiler.getTask(types).call(processor);
-		return getWrittenImports(processor.getImportsFilePath());
+		return getWrittenImports();
 	}
 
-	private List<String> getWrittenImports(String importsFilePath) throws IOException {
-		File file = new File(this.tempDir, importsFilePath);
+	private List<String> getWrittenImports() throws IOException {
+		File file = getWrittenFile();
 		if (!file.exists()) {
 			return null;
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		return reader.lines().collect(Collectors.toList());
+	}
+
+	private File getWrittenFile() {
+		return new File(this.tempDir, AutoConfigurationImportsAnnotationProcessor.IMPORTS_FILE_PATH);
 	}
 
 }
