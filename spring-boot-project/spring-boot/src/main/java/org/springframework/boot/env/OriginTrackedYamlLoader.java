@@ -165,16 +165,38 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	}
 
 	/**
-	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags.
+	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags, keeps only true and false
+	 * as booleans, drops octal integers, base 2 integers, NaN numbers.
 	 */
 	private static class NoTimestampResolver extends Resolver {
 
+		public static final Pattern SPRING_BOOL = Pattern.compile("^(?:true|True|TRUE|false|False|FALSE)$");
+
+		public static final Pattern SPRING_FLOAT = Pattern
+				.compile("^(" + "[-+]?(?:[0-9][0-9_]*)\\.[0-9_]*(?:[eE][-+]?[0-9]+)?" + // (base
+																						// 10)
+						"|[-+]?(?:[0-9][0-9_]*)(?:[eE][-+]?[0-9]+)" + // (base 10,
+																		// scientific
+																		// notation
+																		// without .)
+						"|[-+]?\\.[0-9_]+(?:[eE][-+]?[0-9]+)?" + // (base 10, starting
+																	// with .)
+						"|[-+]?\\.(?:inf|Inf|INF)" + ")$");
+
+		public static final Pattern SPRING_INT = Pattern.compile("^(?:" + "|[-+]?(?:0|[1-9][0-9_]*)" + // (base
+																										// 10)
+				"|[-+]?0x_*[0-9a-fA-F][0-9a-fA-F_]*" + // (base 16)
+				")$");
 		@Override
-		public void addImplicitResolver(Tag tag, Pattern regexp, String first, int limit) {
-			if (tag == Tag.TIMESTAMP) {
-				return;
-			}
-			super.addImplicitResolver(tag, regexp, first, limit);
+		protected void addImplicitResolvers() {
+			addImplicitResolver(Tag.BOOL, SPRING_BOOL, "tfTF", 10);
+			// INT must be before FLOAT because the regular expression for FLOAT matches
+			// INT
+			addImplicitResolver(Tag.INT, SPRING_INT, "-+0123456789", 120);
+			addImplicitResolver(Tag.FLOAT, SPRING_FLOAT, "-+0123456789.", 120);
+			addImplicitResolver(Tag.MERGE, MERGE, "<", 10);
+			addImplicitResolver(Tag.NULL, NULL, "~nN\0", 10);
+			addImplicitResolver(Tag.NULL, EMPTY, null, 10);
 		}
 
 	}
