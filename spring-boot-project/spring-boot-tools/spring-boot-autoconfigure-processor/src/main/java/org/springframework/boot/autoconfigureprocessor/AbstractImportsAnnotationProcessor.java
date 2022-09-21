@@ -21,7 +21,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -75,7 +74,6 @@ abstract class AbstractImportsAnnotationProcessor extends AbstractProcessor {
 			Filer filer = this.processingEnv.getFiler();
 			FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", getImportsFilePath());
 			try (Writer writer = new OutputStreamWriter(file.openOutputStream(), StandardCharsets.UTF_8)) {
-				Collections.sort(this.qualifiedClassNames);
 				for (String className : this.qualifiedClassNames) {
 					writer.append(className);
 					writer.append(System.lineSeparator());
