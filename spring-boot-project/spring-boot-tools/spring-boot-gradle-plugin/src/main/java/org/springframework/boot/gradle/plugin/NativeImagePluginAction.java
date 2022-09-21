@@ -24,7 +24,6 @@ import org.graalvm.buildtools.gradle.NativeImagePlugin;
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension;
 import org.graalvm.buildtools.gradle.dsl.GraalVMReachabilityMetadataRepositoryExtension;
 import org.graalvm.buildtools.gradle.dsl.NativeImageOptions;
-import org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -33,8 +32,8 @@ import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.SourceSetOutput;
 
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 
@@ -59,19 +58,20 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		project.getPlugins().withType(JavaPlugin.class).all((plugin) -> {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
-			configureTaskClasspath(project, NativeImagePlugin.NATIVE_COMPILE_TASK_NAME,
-					sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME));
-			configureTaskClasspath(project, NativeImagePlugin.NATIVE_TEST_COMPILE_TASK_NAME,
-					sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME));
 			GraalVMExtension graalVmExtension = configureGraalVmExtension(project);
+			configureNativeBinaryClasspath(sourceSets, graalVmExtension, NativeImagePlugin.NATIVE_MAIN_EXTENSION,
+					SpringBootAotPlugin.AOT_SOURCE_SET_NAME);
+			configureNativeBinaryClasspath(sourceSets, graalVmExtension, NativeImagePlugin.NATIVE_TEST_EXTENSION,
+					SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME);
 			configureGraalVmReachabilityExtension(graalVmExtension);
 			copyReachabilityMetadataToBootJar(project, graalVmExtension);
 		});
 	}
 
-	private void configureTaskClasspath(Project project, String taskName, SourceSet sourceSet) {
-		project.getTasks().named(taskName, BuildNativeImageTask.class,
-				(nativeCompile) -> nativeCompile.getOptions().get().classpath(sourceSet.getOutput()));
+	private void configureNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension,
+			String binaryName, String sourceSetName) {
+		SourceSetOutput output = sourceSets.getByName(sourceSetName).getOutput();
+		graalVmExtension.getBinaries().getByName(binaryName).classpath(output);
 	}
 
 	private GraalVMExtension configureGraalVmExtension(Project project) {
