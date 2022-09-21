@@ -16,8 +16,12 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,13 +30,11 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.linesOf;
 
 /**
  * Tests for {@link AutoConfigurationImportsAnnotationProcessor}.
  *
  * @author Scott Frederick
- * @author Stephane Nicoll
  */
 class AutoConfigurationImportsAnnotationProcessorTests {
 
@@ -47,24 +49,34 @@ class AutoConfigurationImportsAnnotationProcessorTests {
 	}
 
 	@Test
-	void annotatedClasses() {
-		File generatedFile = generateAnnotatedClasses(TestAutoConfigurationOnlyConfiguration.class,
+	void annotatedClasses() throws Exception {
+		List<String> classes = compile(TestAutoConfigurationOnlyConfiguration.class,
 				TestAutoConfigurationConfiguration.class);
-		assertThat(generatedFile).exists().isFile();
-		assertThat(linesOf(generatedFile)).containsExactly(
+		assertThat(classes).hasSize(2);
+		assertThat(classes).containsExactly(
 				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration",
 				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration");
 	}
 
 	@Test
-	void notAnnotatedClasses() {
-		assertThat(generateAnnotatedClasses(TestAutoConfigurationImportsAnnotationProcessor.class)).doesNotExist();
+	void notAnnotatedClasses() throws Exception {
+		List<String> classes = compile(TestAutoConfigurationImportsAnnotationProcessor.class);
+		assertThat(classes).isNull();
 	}
 
-	private File generateAnnotatedClasses(Class<?>... types) {
+	private List<String> compile(Class<?>... types) throws IOException {
 		TestAutoConfigurationImportsAnnotationProcessor processor = new TestAutoConfigurationImportsAnnotationProcessor();
 		this.compiler.getTask(types).call(processor);
-		return new File(this.tempDir, processor.getImportsFilePath());
+		return getWrittenImports(processor.getImportsFilePath());
+	}
+
+	private List<String> getWrittenImports(String importsFilePath) throws IOException {
+		File file = new File(this.tempDir, importsFilePath);
+		if (!file.exists()) {
+			return null;
+		}
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		return reader.lines().collect(Collectors.toList());
 	}
 
 }
