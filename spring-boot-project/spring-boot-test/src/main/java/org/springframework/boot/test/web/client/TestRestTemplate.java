@@ -23,16 +23,21 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
+import javax.net.ssl.SSLContext;
+
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.http.ssl.TLS;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
@@ -997,8 +1002,8 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
-					: CookieSpecs.IGNORE_COOKIES);
+			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
+					: StandardCookieSpec.IGNORE);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
 			if (options.contains(HttpClientOption.SSL)) {
 				setHttpClient(createSslHttpClient());
@@ -1007,9 +1012,15 @@ public class TestRestTemplate {
 
 		private HttpClient createSslHttpClient() {
 			try {
-				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-						new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-				return HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+				SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+						.build();
+				SSLConnectionSocketFactory socketFactory = SSLConnectionSocketFactoryBuilder.create()
+						.setSslContext(sslContext).setTlsVersions(TLS.V_1_3, TLS.V_1_2).build();
+				PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
+						.create().setSSLSocketFactory(socketFactory).build();
+
+				return HttpClients.custom().setConnectionManager(connectionManager)
+						.setDefaultRequestConfig(getRequestConfig()).build();
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Unable to create SSL HttpClient", ex);
@@ -1024,9 +1035,8 @@ public class TestRestTemplate {
 		}
 
 		protected RequestConfig getRequestConfig() {
-			Builder builder = RequestConfig.custom().setCookieSpec(this.cookieSpec).setAuthenticationEnabled(false)
-					.setRedirectsEnabled(this.enableRedirects);
-			return builder.build();
+			return RequestConfig.custom().setCookieSpec(this.cookieSpec).setAuthenticationEnabled(false)
+					.setRedirectsEnabled(this.enableRedirects).build();
 		}
 
 	}
