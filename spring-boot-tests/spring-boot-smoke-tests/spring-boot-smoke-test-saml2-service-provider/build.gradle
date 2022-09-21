@@ -11,4 +11,5 @@ dependencies {
 	implementation("org.springframework.security:spring-security-saml2-service-provider")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

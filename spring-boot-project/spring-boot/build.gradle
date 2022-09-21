@@ -47,9 +47,6 @@ dependencies {
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
-	optional("org.apache.httpcomponents:httpclient") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
