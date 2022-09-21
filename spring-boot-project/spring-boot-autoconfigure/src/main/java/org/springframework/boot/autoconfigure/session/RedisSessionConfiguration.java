@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -53,16 +54,23 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisIn
 class RedisSessionConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository", havingValue = "default",
+	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "default",
 			matchIfMissing = true)
 	static class DefaultRedisSessionConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
+		static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
 
 			@Autowired
-			public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+			void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 					ServerProperties serverProperties) {
+				String cleanupCron = redisSessionProperties.getCleanupCron();
+				if (cleanupCron != null) {
+					throw new InvalidConfigurationPropertyValueException("spring.session.redis.cleanup-cron",
+							cleanupCron,
+							"Cron-based cleanup is only supported when spring.session.redis.repository-type is set to "
+									+ "indexed.");
+				}
 				Duration timeout = sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
 				if (timeout != null) {
@@ -78,7 +86,7 @@ class RedisSessionConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository", havingValue = "indexed")
+	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "indexed")
 	static class IndexedRedisSessionConfiguration {
 
 		@Bean
@@ -91,11 +99,12 @@ class RedisSessionConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		public static class SpringBootRedisIndexedHttpSessionConfiguration
-				extends RedisIndexedHttpSessionConfiguration {
+		static class SpringBootRedisIndexedHttpSessionConfiguration extends RedisIndexedHttpSessionConfiguration {
+
+			private static final String DEFAULT_CLEANUP_CRON = "0 * * * * *";
 
 			@Autowired
-			public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+			void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 					ServerProperties serverProperties) {
 				Duration timeout = sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
@@ -105,7 +114,8 @@ class RedisSessionConfiguration {
 				setRedisNamespace(redisSessionProperties.getNamespace());
 				setFlushMode(redisSessionProperties.getFlushMode());
 				setSaveMode(redisSessionProperties.getSaveMode());
-				setCleanupCron(redisSessionProperties.getCleanupCron());
+				String cleanupCron = redisSessionProperties.getCleanupCron();
+				setCleanupCron((cleanupCron != null) ? cleanupCron : DEFAULT_CLEANUP_CRON);
 			}
 
 		}

@@ -2750,6 +2750,10 @@
       "defaultValue": "on-set-attribute"
     },
     {
+      "name": "spring.session.redis.cleanup-cron",
+      "defaultValue": "0 * * * * *"
+    },
+    {
       "name": "spring.session.redis.configure-action",
       "defaultValue": "notify-keyspace-events"
     },
@@ -2758,18 +2762,8 @@
       "defaultValue": "on-save"
     },
     {
-      "name": "spring.session.redis.repository",
-      "description": "Redis session repository implementation to use.",
-      "values": [
-        {
-          "value": "default",
-          "description": "Use default Redis session repository."
-        },
-        {
-          "value": "indexed",
-          "description": "Use indexed Redis session repository."
-        }
-      ]
+      "name": "spring.session.redis.repository-type",
+      "defaultValue": "default"
     },
     {
       "name": "spring.session.redis.save-mode",
