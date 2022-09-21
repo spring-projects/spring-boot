@@ -144,18 +144,18 @@ class ObservationAutoConfigurationTests {
 			assertThat(handlers).hasSize(3);
 			// Regular handlers are registered first
 			assertThat(handlers.get(0)).isInstanceOf(CustomObservationHandler.class);
-			// Multiple MeterObservationHandler are wrapped in
-			// FirstMatchingCompositeObservationHandler, which calls only the first
-			// one
-			assertThat(handlers.get(1)).isInstanceOf(CustomMeterObservationHandler.class);
-			assertThat(((CustomMeterObservationHandler) handlers.get(1)).getName())
-					.isEqualTo("customMeterObservationHandler1");
 			// Multiple TracingObservationHandler are wrapped in
 			// FirstMatchingCompositeObservationHandler, which calls only the first
 			// one
-			assertThat(handlers.get(2)).isInstanceOf(CustomTracingObservationHandler.class);
-			assertThat(((CustomTracingObservationHandler) handlers.get(2)).getName())
+			assertThat(handlers.get(1)).isInstanceOf(CustomTracingObservationHandler.class);
+			assertThat(((CustomTracingObservationHandler) handlers.get(1)).getName())
 					.isEqualTo("customTracingHandler1");
+			// Multiple MeterObservationHandler are wrapped in
+			// FirstMatchingCompositeObservationHandler, which calls only the first
+			// one
+			assertThat(handlers.get(2)).isInstanceOf(CustomMeterObservationHandler.class);
+			assertThat(((CustomMeterObservationHandler) handlers.get(2)).getName())
+					.isEqualTo("customMeterObservationHandler1");
 		});
 	}
 

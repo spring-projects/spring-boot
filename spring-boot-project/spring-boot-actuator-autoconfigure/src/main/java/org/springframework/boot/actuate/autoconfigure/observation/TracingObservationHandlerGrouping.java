@@ -30,11 +30,10 @@ import io.micrometer.tracing.handler.TracingObservationHandler;
  * {@link ObservationHandlerGrouping} used by {@link ObservationAutoConfiguration} if
  * micrometer-tracing is on the classpath.
  *
- * Groups all {@link MeterObservationHandler} into a
- * {@link FirstMatchingCompositeObservationHandler}, and all
- * {@link TracingObservationHandler} into a
- * {@link FirstMatchingCompositeObservationHandler}. All other handlers are added to the
- * {@link ObservationConfig} directly.
+ * Groups all {@link TracingObservationHandler} into a
+ * {@link FirstMatchingCompositeObservationHandler}, and {@link MeterObservationHandler}
+ * into a {@link FirstMatchingCompositeObservationHandler}. All other handlers are added
+ * to the {@link ObservationConfig} directly.
  *
  * @author Moritz Halbritter
  */
@@ -45,21 +44,21 @@ class TracingObservationHandlerGrouping implements ObservationHandlerGrouping {
 		List<ObservationHandler<?>> meterObservationHandlers = new ArrayList<>();
 		List<ObservationHandler<?>> tracingObservationHandlers = new ArrayList<>();
 		for (ObservationHandler<?> handler : handlers) {
-			if (handler instanceof MeterObservationHandler<?>) {
-				meterObservationHandlers.add(handler);
-			}
-			else if (handler instanceof TracingObservationHandler<?>) {
+			if (handler instanceof TracingObservationHandler<?>) {
 				tracingObservationHandlers.add(handler);
+			}
+			else if (handler instanceof MeterObservationHandler<?>) {
+				meterObservationHandlers.add(handler);
 			}
 			else {
 				config.observationHandler(handler);
 			}
 		}
-		if (!meterObservationHandlers.isEmpty()) {
-			config.observationHandler(new FirstMatchingCompositeObservationHandler(meterObservationHandlers));
-		}
 		if (!tracingObservationHandlers.isEmpty()) {
 			config.observationHandler(new FirstMatchingCompositeObservationHandler(tracingObservationHandlers));
+		}
+		if (!meterObservationHandlers.isEmpty()) {
+			config.observationHandler(new FirstMatchingCompositeObservationHandler(meterObservationHandlers));
 		}
 	}
 
