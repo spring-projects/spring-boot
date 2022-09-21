@@ -38,7 +38,7 @@ import org.springframework.util.ClassUtils;
  */
 public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
 
-	private static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.http.client.HttpClient";
+	private static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.hc.client5.http.impl.classic.HttpClients";
 
 	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, null);
 
