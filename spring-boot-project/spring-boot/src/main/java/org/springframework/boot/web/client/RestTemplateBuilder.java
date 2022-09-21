@@ -783,11 +783,15 @@ public class RestTemplateBuilder {
 
 		private Method findMethod(ClientHttpRequestFactory requestFactory, String methodName, Class<?>... parameters) {
 			Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
-			if (method != null) {
-				return method;
+			if (method == null) {
+				throw new IllegalStateException("Request factory " + requestFactory.getClass()
+						+ " does not have a suitable " + methodName + " method");
 			}
-			throw new IllegalStateException("Request factory " + requestFactory.getClass()
-					+ " does not have a suitable " + methodName + " method");
+			else if (method.isAnnotationPresent(Deprecated.class)) {
+				throw new IllegalStateException("Request factory " + requestFactory.getClass() + " has the "
+						+ methodName + " method marked as deprecated");
+			}
+			return method;
 		}
 
 		private void invoke(ClientHttpRequestFactory requestFactory, Method method, Object... parameters) {
