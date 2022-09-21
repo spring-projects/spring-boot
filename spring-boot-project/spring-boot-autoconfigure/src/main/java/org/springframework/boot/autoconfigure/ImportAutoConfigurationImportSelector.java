@@ -32,7 +32,6 @@ import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,6 +45,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Scott Frederick
  */
 class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelector implements DeterminableImports {
 
@@ -96,11 +96,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	protected Collection<String> loadFactoryNames(Class<?> source) {
-		@SuppressWarnings("deprecation")
-		List<String> factoryNames = new ArrayList<>(
-				SpringFactoriesLoader.loadFactoryNames(source, getBeanClassLoader()));
-		ImportCandidates.load(source, getBeanClassLoader()).forEach(factoryNames::add);
-		return factoryNames;
+		return ImportCandidates.load(source, getBeanClassLoader()).getCandidates();
 	}
 
 	@Override

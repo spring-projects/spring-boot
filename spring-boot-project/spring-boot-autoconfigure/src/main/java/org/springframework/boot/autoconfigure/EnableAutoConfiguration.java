@@ -32,7 +32,6 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Enable auto-configuration of the Spring Application Context, attempting to guess and
@@ -61,9 +60,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * and classes can be searched.
  * <p>
  * Auto-configuration classes are regular Spring {@link Configuration @Configuration}
- * beans. They are located using {@link ImportCandidates} and the
- * {@link SpringFactoriesLoader} mechanism (keyed against this class). Generally
- * auto-configuration beans are {@link Conditional @Conditional} beans (most often using
+ * beans. They are located using {@link ImportCandidates}. Generally auto-configuration
+ * beans are {@link Conditional @Conditional} beans (most often using
  * {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
  *
