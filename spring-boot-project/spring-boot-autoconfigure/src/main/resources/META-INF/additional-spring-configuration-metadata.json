@@ -2750,12 +2750,20 @@
       "defaultValue": "on-set-attribute"
     },
     {
+      "name": "spring.session.redis.cleanup-cron",
+      "defaultValue": "0 * * * * *"
+    },
+    {
       "name": "spring.session.redis.configure-action",
       "defaultValue": "notify-keyspace-events"
     },
     {
       "name": "spring.session.redis.flush-mode",
       "defaultValue": "on-save"
+    },
+    {
+      "name": "spring.session.redis.repository-type",
+      "defaultValue": "default"
     },
     {
       "name": "spring.session.redis.save-mode",
