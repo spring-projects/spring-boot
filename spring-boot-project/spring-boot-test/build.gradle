@@ -18,9 +18,7 @@ dependencies {
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("junit:junit")
-	optional("org.apache.httpcomponents:httpclient") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.assertj:assertj-core")
 	optional("org.hamcrest:hamcrest-core")
 	optional("org.hamcrest:hamcrest-library")

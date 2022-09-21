@@ -86,6 +86,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 		exclude group: "xml-apis", module: "xml-apis"
 	}
+	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
