@@ -36,7 +36,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletContainer;
 import jakarta.servlet.ServletRegistration.Dynamic;
-import org.apache.http.HttpResponse;
+import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
@@ -207,8 +207,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
 		Object rejectedResult = initiateGetRequest(port, "/").get();
 		assertThat(rejectedResult).isInstanceOf(HttpResponse.class);
-		assertThat(((HttpResponse) rejectedResult).getStatusLine().getStatusCode())
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
+		assertThat(((HttpResponse) rejectedResult).getCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
 		this.webServer.stop();
 	}
 
