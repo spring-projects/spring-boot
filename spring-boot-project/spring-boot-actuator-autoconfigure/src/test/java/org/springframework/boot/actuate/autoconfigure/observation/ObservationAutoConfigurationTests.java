@@ -22,6 +22,7 @@ import java.util.List;
 import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.observation.GlobalObservationConvention;
@@ -67,6 +68,7 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void autoConfiguresDefaultMeterObservationHandler() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test-observation", observationRegistry).stop();
 			// When a DefaultMeterObservationHandler is registered, every stopped
@@ -74,13 +76,6 @@ class ObservationAutoConfigurationTests {
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.get("test-observation").timer().count()).isEqualTo(1);
 		});
-	}
-
-	@Test
-	void allowsDefaultMeterObservationHandlerToBeDisabled() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(MeterRegistry.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(DefaultMeterObservationHandlerObservationRegistryCustomizer.class));
 	}
 
 	@Test
@@ -109,11 +104,12 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresObservationHandler() {
+	void autoConfiguresObservationHandlers() {
 		this.contextRunner.withUserConfiguration(ObservationHandlers.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
 			Observation.start("test-observation", observationRegistry);
+			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 			assertThat(handlers).hasSize(2);
 			// Regular handlers are registered first
 			assertThat(handlers.get(0)).isInstanceOf(CustomObservationHandler.class);
