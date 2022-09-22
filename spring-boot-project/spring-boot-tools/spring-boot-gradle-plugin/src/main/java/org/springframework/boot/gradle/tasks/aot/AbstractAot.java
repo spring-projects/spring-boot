@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
@@ -52,7 +53,7 @@ public abstract class AbstractAot extends JavaExec {
 
 	private final Property<String> artifactId;
 
-	private FileCollection inputClasses;
+	private FileCollection classpathRoots;
 
 	protected AbstractAot() {
 		this.sourcesDir = getProject().getObjects().directoryProperty();
@@ -88,15 +89,21 @@ public abstract class AbstractAot extends JavaExec {
 	}
 
 	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
+	public final FileCollection getClasspathRoots() {
+		return this.classpathRoots;
+	}
+
+	@InputFiles
 	@SkipWhenEmpty
 	@IgnoreEmptyDirectories
 	@PathSensitive(PathSensitivity.RELATIVE)
-	public final FileCollection getInputClasses() {
-		return this.inputClasses.getAsFileTree();
+	final FileTree getInputClasses() {
+		return this.classpathRoots.getAsFileTree();
 	}
 
-	public void setInputClasses(FileCollection inputClasses) {
-		this.inputClasses = inputClasses;
+	public void setClasspathRoots(FileCollection classpathRoots) {
+		this.classpathRoots = classpathRoots;
 	}
 
 	List<String> processorArgs() {

@@ -138,7 +138,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		task.getClassesOutput().set(generatedClasses);
 		task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
 		task.getArtifactId().set(project.provider(() -> project.getName()));
-		task.setInputClasses(inputSourceSet.getOutput().getClassesDirs());
+		task.setClasspathRoots(inputSourceSet.getOutput().getClassesDirs());
 	}
 
 	private void configureDependsOn(Project project, SourceSet aotSourceSet,
