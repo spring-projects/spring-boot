@@ -38,7 +38,8 @@ public class SecurityConfig {
 		return http.csrf((csrf) -> csrf.disable())
 				// Demonstrate that method security works
 				// Best practice to use both for defense in depth
-				.authorizeRequests((requests) -> requests.anyRequest().permitAll()).httpBasic(withDefaults()).build();
+				.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll()).httpBasic(withDefaults())
+				.build();
 	}
 
 	@Bean

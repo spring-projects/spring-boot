@@ -54,7 +54,7 @@ class SpringBootWebSecurityConfiguration {
 		@Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER)
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated();
+			http.authorizeHttpRequests().anyRequest().authenticated();
 			http.formLogin();
 			http.httpBasic();
 			return http.build();

@@ -50,7 +50,7 @@ class RemoteDevtoolsSecurityConfiguration {
 	@ConditionalOnMissingBean(org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter.class)
 	@SuppressWarnings("deprecation")
 	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.requestMatcher(new AntPathRequestMatcher(this.url)).authorizeRequests().anyRequest().anonymous().and()
+		http.requestMatcher(new AntPathRequestMatcher(this.url)).authorizeHttpRequests().anyRequest().anonymous().and()
 				.csrf().disable();
 		return http.build();
 	}

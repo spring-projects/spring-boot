@@ -43,10 +43,10 @@ class ErrorPageTests extends AbstractErrorPageTests {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> {
+			http.authorizeHttpRequests((requests) -> {
 				requests.antMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
-				requests.filterSecurityInterceptorOncePerRequest(true);
+				requests.shouldFilterAllDispatcherTypes(false);
 			});
 			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
