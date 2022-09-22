@@ -187,6 +187,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 																										// 10)
 				"|[-+]?0x_*[0-9a-fA-F][0-9a-fA-F_]*" + // (base 16)
 				")$");
+
 		@Override
 		protected void addImplicitResolvers() {
 			addImplicitResolver(Tag.BOOL, SPRING_BOOL, "tfTF", 10);
