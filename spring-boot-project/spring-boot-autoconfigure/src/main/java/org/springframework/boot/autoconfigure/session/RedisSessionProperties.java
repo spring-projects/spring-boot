@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,6 @@ import org.springframework.session.SaveMode;
 @ConfigurationProperties(prefix = "spring.session.redis")
 public class RedisSessionProperties {
 
-	private static final String DEFAULT_CLEANUP_CRON = "0 * * * * *";
-
 	/**
 	 * Namespace for keys used to store sessions.
 	 */
@@ -55,9 +53,15 @@ public class RedisSessionProperties {
 	private ConfigureAction configureAction = ConfigureAction.NOTIFY_KEYSPACE_EVENTS;
 
 	/**
-	 * Cron expression for expired session cleanup job.
+	 * Cron expression for expired session cleanup job. Only supported when
+	 * repository-type is set to indexed.
 	 */
-	private String cleanupCron = DEFAULT_CLEANUP_CRON;
+	private String cleanupCron;
+
+	/**
+	 * Type of Redis session repository to configure.
+	 */
+	private RepositoryType repositoryType = RepositoryType.DEFAULT;
 
 	public String getNamespace() {
 		return this.namespace;
@@ -99,6 +103,14 @@ public class RedisSessionProperties {
 		this.configureAction = configureAction;
 	}
 
+	public RepositoryType getRepositoryType() {
+		return this.repositoryType;
+	}
+
+	public void setRepositoryType(RepositoryType repositoryType) {
+		this.repositoryType = repositoryType;
+	}
+
 	/**
 	 * Strategies for configuring and validating Redis.
 	 */
@@ -114,6 +126,23 @@ public class RedisSessionProperties {
 		 * No not attempt to apply any custom Redis configuration.
 		 */
 		NONE
+
+	}
+
+	/**
+	 * Type of Redis session repository to auto-configure.
+	 */
+	public enum RepositoryType {
+
+		/**
+		 * Auto-configure a RedisSessionRepository.
+		 */
+		DEFAULT,
+
+		/**
+		 * Auto-configure a RedisIndexedSessionRepository.
+		 */
+		INDEXED
 
 	}
 

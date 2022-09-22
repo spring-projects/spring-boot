@@ -1,0 +1,10 @@
+[
+  {
+    "latest": true,
+    "metadata-version": "3.21.0",
+    "module": "org.jline:jline",
+    "tested-versions": [
+      "3.21.0"
+    ]
+  }
+]

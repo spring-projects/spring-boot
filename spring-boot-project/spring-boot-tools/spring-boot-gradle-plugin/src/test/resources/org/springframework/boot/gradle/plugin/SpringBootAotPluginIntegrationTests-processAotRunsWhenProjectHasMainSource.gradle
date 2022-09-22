@@ -1,0 +1,13 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'org.springframework.boot.aot'
+	id 'java'
+}
+
+repositories {
+	mavenCentral()
+}
+
+springBoot {
+	mainClass = 'com.example.Main'
+}

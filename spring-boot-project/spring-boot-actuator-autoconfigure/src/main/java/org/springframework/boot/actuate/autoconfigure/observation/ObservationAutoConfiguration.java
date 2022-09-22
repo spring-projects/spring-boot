@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.observation;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
@@ -66,9 +68,9 @@ public class ObservationAutoConfiguration {
 	static class MetricsConfiguration {
 
 		@Bean
-		DefaultMeterObservationHandlerObservationRegistryCustomizer enableDefaultMeterObservationHandler(
-				MeterRegistry meterRegistry) {
-			return new DefaultMeterObservationHandlerObservationRegistryCustomizer(meterRegistry);
+		@ConditionalOnMissingBean(MeterObservationHandler.class)
+		DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry) {
+			return new DefaultMeterObservationHandler(meterRegistry);
 		}
 
 	}

@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '{bootVersion}'
 	id 'org.springframework.boot.aot' version '{bootVersion}'
 	id 'io.spring.dependency-management' version '{dependencyManagementPluginVersion}'
-	id 'org.graalvm.buildtools.native' version '0.9.13'
+	id 'org.graalvm.buildtools.native' version '0.9.14'
 	id 'java'
 }
 

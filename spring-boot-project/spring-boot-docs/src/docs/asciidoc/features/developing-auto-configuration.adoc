@@ -16,7 +16,7 @@ Additional `@Conditional` annotations are used to constrain when the auto-config
 Usually, auto-configuration classes use `@ConditionalOnClass` and `@ConditionalOnMissingBean` annotations.
 This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own `@Configuration`.
 
-You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@AutoConfiguration` classes that Spring provides.
+You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@AutoConfiguration` classes that Spring provides (see the {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
 
 
 
@@ -33,9 +33,6 @@ The file should list your configuration classes, with one class name per line, a
 ----
 
 TIP: You can add comments to the imports file using the `#` character.
-
-The auto-configuration imports file can be generated automatically using an annotation processor to collect all classes annotated with `@AutoConfiguration`.
-See <<features#features.developing-auto-configuration.autoconfigure-processor,Using the Auto-configuration Annotation Processor>> for more information.
 
 NOTE: Auto-configurations must be loaded _only_ by being named in the imports file.
 Make sure that they are defined in a specific package space and that they are never the target of component scanning.
@@ -263,32 +260,8 @@ If you do it that way, the library is not provided and, by default, Spring Boot 
 
 Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`).
 If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
-See <<features#features.developing-auto-configuration.autoconfigure-processor,Using the Auto-configuration Annotation Processor>> for more information.
 
-
-
-[[features.developing-auto-configuration.custom-starter.starter-module]]
-==== Starter Module
-The starter is really an empty jar.
-Its only purpose is to provide the necessary dependencies to work with the library.
-You can think of it as an opinionated view of what is required to get started.
-
-Do not make assumptions about the project in which your starter is added.
-If the library you are auto-configuring typically requires other starters, mention them as well.
-Providing a proper set of _default_ dependencies may be hard if the number of optional dependencies is high, as you should avoid including dependencies that are unnecessary for a typical usage of the library.
-In other words, you should not include optional dependencies.
-
-NOTE: Either way, your starter must reference the core Spring Boot starter (`spring-boot-starter`) directly or indirectly (there is no need to add it if your starter relies on another starter).
-If a project is created with only your custom starter, Spring Boot's core features will be honoured by the presence of the core starter.
-
-
-
-[[features.developing-auto-configuration.autoconfigure-processor]]
-=== Using the Auto-configuration Annotation Processor
-
-An auto-configuration annotation processor can be added to a project to automate the creation of the <<features.developing-auto-configuration.locating-auto-configuration-candidates,auto-configuration imports file>> and the <<features.developing-auto-configuration.custom-starter.autoconfigure-module,auto-configurations conditions metadata file>>.
-
-When building with Maven, add the following dependency in a module that contains auto-configurations:
+When building with Maven, it is recommended to add the following dependency in a module that contains auto-configurations:
 
 [source,xml,indent=0,subs="verbatim"]
 ----
@@ -332,3 +305,18 @@ With Gradle, the dependency should be declared in the `annotationProcessor` conf
 	}
 ----
 
+
+
+[[features.developing-auto-configuration.custom-starter.starter-module]]
+==== Starter Module
+The starter is really an empty jar.
+Its only purpose is to provide the necessary dependencies to work with the library.
+You can think of it as an opinionated view of what is required to get started.
+
+Do not make assumptions about the project in which your starter is added.
+If the library you are auto-configuring typically requires other starters, mention them as well.
+Providing a proper set of _default_ dependencies may be hard if the number of optional dependencies is high, as you should avoid including dependencies that are unnecessary for a typical usage of the library.
+In other words, you should not include optional dependencies.
+
+NOTE: Either way, your starter must reference the core Spring Boot starter (`spring-boot-starter`) directly or indirectly (there is no need to add it if your starter relies on another starter).
+If a project is created with only your custom starter, Spring Boot's core features will be honoured by the presence of the core starter.

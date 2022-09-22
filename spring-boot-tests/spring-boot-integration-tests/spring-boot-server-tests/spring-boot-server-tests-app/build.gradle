@@ -49,8 +49,6 @@ tasks.register("resourcesJar", Jar) { jar ->
 }
 
 dependencies {
-	annotationProcessor("org.springframework.boot:spring-boot-autoconfigure-processor")
-
 	compileOnly("org.eclipse.jetty:jetty-server")
 
 	implementation("org.springframework.boot:spring-boot-starter")

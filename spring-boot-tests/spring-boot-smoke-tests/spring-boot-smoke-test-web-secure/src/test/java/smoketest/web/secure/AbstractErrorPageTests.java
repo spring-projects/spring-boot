@@ -50,7 +50,7 @@ abstract class AbstractErrorPageTests {
 	@Test
 	void testBadCredentials() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "wrongpassword")
-				.exchange("/test", HttpMethod.GET, null, JsonNode.class);
+				.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
 		assertThat(jsonResponse).isNull();

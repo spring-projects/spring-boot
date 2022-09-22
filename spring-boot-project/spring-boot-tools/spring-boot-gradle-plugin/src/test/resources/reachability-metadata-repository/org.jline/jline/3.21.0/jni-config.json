@@ -1,0 +1,128 @@
+[
+  {
+    "condition": {
+      "typeReachable": "org.jline.terminal.impl.jansi.JansiNativePty"
+    },
+    "fields": [
+      {
+        "name": "HAVE_ISATTY"
+      },
+      {
+        "name": "HAVE_TTYNAME"
+      },
+      {
+        "name": "TCSADRAIN"
+      },
+      {
+        "name": "TCSAFLUSH"
+      },
+      {
+        "name": "TCSANOW"
+      },
+      {
+        "name": "TIOCGETD"
+      },
+      {
+        "name": "TIOCGWINSZ"
+      },
+      {
+        "name": "TIOCSETD"
+      },
+      {
+        "name": "TIOCSWINSZ"
+      }
+    ],
+    "name": "org.fusesource.jansi.internal.CLibrary"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.CLibrary$WinSize"
+    },
+    "name": "org.fusesource.jansi.internal.CLibrary$WinSize"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.CLibrary$Termios"
+    },
+    "name": "org.fusesource.jansi.internal.CLibrary$Termios"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$SMALL_RECT"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$SMALL_RECT"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$COORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$COORD"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$CONSOLE_SCREEN_BUFFER_INFO"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$CONSOLE_SCREEN_BUFFER_INFO"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$CHAR_INFO"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$CHAR_INFO"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$KEY_EVENT_RECORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$KEY_EVENT_RECORD"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$MOUSE_EVENT_RECORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$MOUSE_EVENT_RECORD"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$WINDOW_BUFFER_SIZE_RECORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$WINDOW_BUFFER_SIZE_RECORD"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$FOCUS_EVENT_RECORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$FOCUS_EVENT_RECORD"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$MENU_EVENT_RECORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$MENU_EVENT_RECORD"
+  },
+  {
+    "allDeclaredFields": true,
+    "condition": {
+      "typeReachable": "org.fusesource.jansi.internal.Kernel32$INPUT_RECORD"
+    },
+    "name": "org.fusesource.jansi.internal.Kernel32$INPUT_RECORD"
+  }
+]

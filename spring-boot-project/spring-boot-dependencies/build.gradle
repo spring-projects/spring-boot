@@ -65,7 +65,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.12.16") {
+	library("Byte Buddy", "1.12.17") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -165,7 +165,7 @@ bom {
 			]
 		}
 	}
-	library("Dependency Management Plugin", "1.0.13.RELEASE") {
+	library("Dependency Management Plugin", "1.0.14.RELEASE") {
 		group("io.spring.gradle") {
 			modules = [
 				"dependency-management-plugin"
@@ -221,7 +221,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "9.3.0") {
+	library("Flyway", "9.3.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
@@ -285,7 +285,7 @@ bom {
 			]
 		}
 	}
-	library("GraphQL Java", "19.0") {
+	library("GraphQL Java", "19.2") {
 		group("com.graphql-java") {
 			modules = [
 					"graphql-java"
@@ -703,7 +703,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "11.0.11") {
+	library("Jetty", "11.0.12") {
 		group("org.eclipse.jetty") {
 			imports = [
 				"jetty-bom"
@@ -773,14 +773,14 @@ bom {
 			]
 		}
 	}
-	library("JUnit Jupiter", "5.9.0") {
+	library("JUnit Jupiter", "5.9.1") {
 		group("org.junit") {
 			imports = [
 				"junit-bom"
 			]
 		}
 	}
-	library("Kafka", "3.2.2") {
+	library("Kafka", "3.2.3") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect",
@@ -845,7 +845,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "4.16.0") {
+	library("Liquibase", "4.16.1") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
@@ -879,7 +879,7 @@ bom {
 			]
 		}
 	}
-	library("MariaDB", "3.0.7") {
+	library("MariaDB", "3.0.8") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
@@ -963,7 +963,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Jar Plugin", "3.2.2") {
+	library("Maven Jar Plugin", "3.3.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-jar-plugin"
@@ -1389,7 +1389,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "3.0.0-SNAPSHOT") {
+	library("Spring AMQP", "3.0.0-M4") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1400,14 +1400,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "5.0.0-SNAPSHOT") {
+	library("Spring Batch", "5.0.0-M6") {
 		group("org.springframework.batch") {
 			imports = [
 				"spring-batch-bom"
 			]
 		}
 	}
-	library("Spring Data Bom", "2022.0.0-SNAPSHOT") {
+	library("Spring Data Bom", "2022.0.0-M6") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1421,7 +1421,7 @@ bom {
 			]
 		}
 	}
-	library("Spring GraphQL", "1.1.0-SNAPSHOT") {
+	library("Spring GraphQL", "1.1.0-M1") {
 		group("org.springframework.graphql") {
 			modules = [
 					"spring-graphql",
@@ -1436,14 +1436,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "6.0.0-SNAPSHOT") {
+	library("Spring Integration", "6.0.0-M5") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "3.0.0-SNAPSHOT") {
+	library("Spring Kafka", "3.0.0-M6") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1476,14 +1476,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "6.0.0-SNAPSHOT") {
+	library("Spring Security", "6.0.0-M7") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2022.0.0-M2") {
+	library("Spring Session Bom", "2022.0.0-M3") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"

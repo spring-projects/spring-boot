@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -92,6 +93,43 @@ class SpringBootAotPluginIntegrationTests {
 	void processTestAotHasTransitiveRuntimeDependenciesOnItsClasspath() {
 		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
 		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
+	}
+
+	@TestTemplate
+	void processAotIsSkippedWhenProjectHasNoMainSource() {
+		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
+				.isEqualTo(TaskOutcome.NO_SOURCE);
+	}
+
+	@TestTemplate
+	void processAotRunsWhenProjectHasMainSource() throws IOException {
+		writeMainClass("org.springframework.boot", "AotProcessor");
+		writeMainClass("com.example", "Main");
+		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
+	void processTestAotIsSkippedWhenProjectHasNoTestSource() {
+		assertThat(this.gradleBuild.build("processTestAot").task(":processTestAot").getOutcome())
+				.isEqualTo(TaskOutcome.NO_SOURCE);
+	}
+
+	private void writeMainClass(String packageName, String className) throws IOException {
+		File java = new File(this.gradleBuild.getProjectDir(),
+				"src/main/java/" + packageName.replace(".", "/") + "/" + className + ".java");
+		java.getParentFile().mkdirs();
+		Files.writeString(java.toPath(), """
+				package %s;
+
+				public class %s {
+
+					public static void main(String[] args) {
+
+					}
+
+				}
+				""".formatted(packageName, className));
 	}
 
 }

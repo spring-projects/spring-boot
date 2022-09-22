@@ -29,7 +29,6 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.JavaExec;
-import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
@@ -44,8 +43,6 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 public class ProcessTestAot extends AbstractAot {
 
 	private final Configuration junitPlatformLauncher;
-
-	private FileCollection testClassesDirs;
 
 	public ProcessTestAot() {
 		getMainClass().set("org.springframework.test.context.aot.TestAotProcessor");
@@ -64,15 +61,6 @@ public class ProcessTestAot extends AbstractAot {
 	}
 
 	@Classpath
-	public FileCollection getTestClassesDirs() {
-		return this.testClassesDirs;
-	}
-
-	public void setTestClassesDirs(FileCollection testClassesDirs) {
-		this.testClassesDirs = testClassesDirs;
-	}
-
-	@Classpath
 	FileCollection getJUnitPlatformLauncher() {
 		return this.junitPlatformLauncher;
 	}
@@ -81,7 +69,7 @@ public class ProcessTestAot extends AbstractAot {
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();
-		args.add(this.testClassesDirs.getFiles().stream().filter(File::exists).map(File::getAbsolutePath)
+		args.add(this.getClasspathRoots().getFiles().stream().filter(File::exists).map(File::getAbsolutePath)
 				.collect(Collectors.joining(File.pathSeparator)));
 		args.addAll(processorArgs());
 		this.setArgs(args);
@@ -89,10 +77,8 @@ public class ProcessTestAot extends AbstractAot {
 		super.exec();
 	}
 
-	public void setTestSourceSet(SourceSet testSourceSet) {
-		setTestClassesDirs(testSourceSet.getOutput().getClassesDirs());
-		this.junitPlatformLauncher.extendsFrom(
-				getProject().getConfigurations().getByName(testSourceSet.getImplementationConfigurationName()));
+	public void setTestRuntimeClasspath(Configuration configuration) {
+		this.junitPlatformLauncher.extendsFrom(configuration);
 	}
 
 }

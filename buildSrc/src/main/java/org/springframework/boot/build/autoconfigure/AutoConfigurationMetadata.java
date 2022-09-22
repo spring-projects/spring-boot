@@ -51,8 +51,6 @@ import org.springframework.core.CollectionFactory;
  */
 public class AutoConfigurationMetadata extends DefaultTask {
 
-	private static final String IMPORTS_FILE_PATH = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
-
 	private static final String COMMENT_START = "#";
 
 	private SourceSet sourceSet;
@@ -60,7 +58,9 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	private File outputFile;
 
 	public AutoConfigurationMetadata() {
-		getInputs().file((Callable<File>) this::findAutoConfigurationImportsFile)
+		getInputs()
+				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+						"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
 				.withPathSensitivity(PathSensitivity.RELATIVE)
 				.withPropertyName("org.springframework.boot.autoconfigure.AutoConfiguration");
 
@@ -118,8 +118,9 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	 * @return auto-configurations
 	 */
 	private List<String> readAutoConfigurationsFile() throws IOException {
-		File file = findAutoConfigurationImportsFile();
-		if (file == null) {
+		File file = new File(this.sourceSet.getOutput().getResourcesDir(),
+				"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports");
+		if (!file.exists()) {
 			return Collections.emptyList();
 		}
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -136,17 +137,10 @@ public class AutoConfigurationMetadata extends DefaultTask {
 		return line.substring(0, commentStart).trim();
 	}
 
-	private File findAutoConfigurationImportsFile() {
-		return findFileInClassesDirs(IMPORTS_FILE_PATH);
-	}
-
 	private File findClassFile(String className) {
-		return findFileInClassesDirs(className.replace(".", "/") + ".class");
-	}
-
-	private File findFileInClassesDirs(String fileName) {
+		String classFileName = className.replace(".", "/") + ".class";
 		for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
-			File classFile = new File(classesDir, fileName);
+			File classFile = new File(classesDir, classFileName);
 			if (classFile.isFile()) {
 				return classFile;
 			}

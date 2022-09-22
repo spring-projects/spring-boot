@@ -30,16 +30,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Indicates that a class provides configuration that can be automatically applied by
  * Spring Boot. Auto-configuration classes are regular
  * {@link Configuration @Configuration} with the exception that
  * {@literal Configuration#proxyBeanMethods() proxyBeanMethods} is always {@code false}.
- * <p>
- * They are located using {@link ImportCandidates} and the {@link SpringFactoriesLoader}
- * mechanism (keyed against {@link EnableAutoConfiguration}).
+ * They are located using {@link ImportCandidates}.
  * <p>
  * Generally auto-configuration classes are marked as {@link Conditional @Conditional}
  * (most often using {@link ConditionalOnClass @ConditionalOnClass} and

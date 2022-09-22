@@ -183,7 +183,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests((requests) -> {
+					http.authorizeHttpRequests((requests) -> {
 						requests.requestMatchers(EndpointRequest.toLinks()).permitAll();
 						requests.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll();
 						requests.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated();

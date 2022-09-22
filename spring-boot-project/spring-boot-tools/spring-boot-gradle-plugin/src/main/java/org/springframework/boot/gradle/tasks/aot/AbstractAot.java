@@ -20,10 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.work.DisableCachingByDefault;
 
 /**
@@ -46,6 +53,8 @@ public abstract class AbstractAot extends JavaExec {
 
 	private final Property<String> artifactId;
 
+	private FileCollection classpathRoots;
+
 	protected AbstractAot() {
 		this.sourcesDir = getProject().getObjects().directoryProperty();
 		this.resourcesDir = getProject().getObjects().directoryProperty();
@@ -65,25 +74,43 @@ public abstract class AbstractAot extends JavaExec {
 	}
 
 	@OutputDirectory
-	public final DirectoryProperty getSourcesDir() {
+	public final DirectoryProperty getSourcesOutput() {
 		return this.sourcesDir;
 	}
 
 	@OutputDirectory
-	public final DirectoryProperty getResourcesDir() {
+	public final DirectoryProperty getResourcesOutput() {
 		return this.resourcesDir;
 	}
 
 	@OutputDirectory
-	public final DirectoryProperty getClassesDir() {
+	public final DirectoryProperty getClassesOutput() {
 		return this.classesDir;
+	}
+
+	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
+	public final FileCollection getClasspathRoots() {
+		return this.classpathRoots;
+	}
+
+	@InputFiles
+	@SkipWhenEmpty
+	@IgnoreEmptyDirectories
+	@PathSensitive(PathSensitivity.RELATIVE)
+	final FileTree getInputClasses() {
+		return this.classpathRoots.getAsFileTree();
+	}
+
+	public void setClasspathRoots(FileCollection classpathRoots) {
+		this.classpathRoots = classpathRoots;
 	}
 
 	List<String> processorArgs() {
 		List<String> args = new ArrayList<>();
-		args.add(getSourcesDir().getAsFile().get().getAbsolutePath());
-		args.add(getResourcesDir().getAsFile().get().getAbsolutePath());
-		args.add(getClassesDir().getAsFile().get().getAbsolutePath());
+		args.add(getSourcesOutput().getAsFile().get().getAbsolutePath());
+		args.add(getResourcesOutput().getAsFile().get().getAbsolutePath());
+		args.add(getClassesOutput().getAsFile().get().getAbsolutePath());
 		args.add(getGroupId().get());
 		args.add(getArtifactId().get());
 		args.addAll(super.getArgs());
