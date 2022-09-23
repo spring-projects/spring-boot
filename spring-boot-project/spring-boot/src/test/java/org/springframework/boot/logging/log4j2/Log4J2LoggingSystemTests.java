@@ -79,7 +79,7 @@ import static org.mockito.Mockito.times;
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
-@ClassPathOverrides("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+@ClassPathOverrides("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
 class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();

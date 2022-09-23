@@ -19,7 +19,6 @@ package org.springframework.boot.logging.log4j2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -97,6 +96,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
+	/**
+	 * Identifies the Spring environment.
+	 */
 	public static final String ENVIRONMENT_KEY = "SpringEnvironment";
 
 	private static org.apache.logging.log4j.Logger LOGGER = StatusLogger.getLogger();
@@ -301,7 +303,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			Configuration configuration = load(location, context);
 			if (configuration != null) {
 				configurations.add(load(location, context));
-			} else {
+			}
+			else {
 				throw new FileNotFoundException("Cannot locate file: " + location);
 			}
 			for (String override : overrides) {
@@ -322,7 +325,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private Configuration load(String location, LoggerContext context) throws IOException, URISyntaxException {
 		URL url = ResourceUtils.getURL(location);
 		ConfigurationSource source = getConfigurationSource(url);
-		return source != null ? ConfigurationFactory.getInstance().getConfiguration(context, source) : null;
+		return (source != null) ? ConfigurationFactory.getInstance().getConfiguration(context, source) : null;
 	}
 
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException, URISyntaxException {
