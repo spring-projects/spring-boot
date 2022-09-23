@@ -456,7 +456,7 @@ public class SpringApplication {
 		SpringApplicationRunListener hookListener = (hook != null) ? hook.getRunListener(this) : null;
 		if (hookListener != null) {
 			listeners = new ArrayList<>(listeners);
-			listeners.add(0, hookListener);
+			listeners.add(hookListener);
 		}
 		return new SpringApplicationRunListeners(logger, listeners, this.applicationStartup);
 	}
