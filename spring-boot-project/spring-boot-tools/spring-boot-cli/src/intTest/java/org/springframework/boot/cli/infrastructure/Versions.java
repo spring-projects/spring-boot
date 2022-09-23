@@ -32,7 +32,7 @@ final class Versions {
 
 	static String getBootVersion() {
 		Properties gradleProperties = new Properties();
-		try (FileInputStream input = new FileInputStream("../../gradle.properties")) {
+		try (FileInputStream input = new FileInputStream("../../../gradle.properties")) {
 			gradleProperties.load(input);
 			return gradleProperties.getProperty("version");
 		}
