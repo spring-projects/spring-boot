@@ -152,6 +152,17 @@ class BraveAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldNotSupplyMdcCorrelationScopeWhenMdcNotOnClasspath() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.slf4j"))
+				.run((context) -> assertThat(context).doesNotHaveBean("mdcCorrelationScopeDecoratorBuilder"));
+	}
+
+	@Test
+	void shouldSupplyMdcCorrelationScopeDecoratorWhenMdcOnClasspath() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomBraveConfiguration {
 

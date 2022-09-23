@@ -23,15 +23,19 @@ import java.util.stream.Collectors;
 import io.micrometer.tracing.SamplerFunction;
 import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
 import io.micrometer.tracing.otel.bridge.DefaultHttpServerAttributesExtractor;
+import io.micrometer.tracing.otel.bridge.EventListener;
+import io.micrometer.tracing.otel.bridge.EventPublishingContextWrapper;
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
+import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -43,6 +47,7 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
+import org.slf4j.MDC;
 
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -141,14 +146,14 @@ class OpenTelemetryConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		EventPublisher otelTracerEventPublisher() {
-			return (event) -> {
-			};
+		EventPublisher otelTracerEventPublisher(List<EventListener> eventListeners) {
+			return new OTelEventPublisher(eventListeners);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		OtelCurrentTraceContext otelCurrentTraceContext() {
+		OtelCurrentTraceContext otelCurrentTraceContext(EventPublisher publisher) {
+			ContextStorage.addWrapper(new EventPublishingContextWrapper(publisher));
 			return new OtelCurrentTraceContext();
 		}
 
@@ -166,6 +171,35 @@ class OpenTelemetryConfigurations {
 		OtelHttpServerHandler otelHttpServerHandler(OpenTelemetry openTelemetry) {
 			return new OtelHttpServerHandler(openTelemetry, null, null, Pattern.compile(""),
 					new DefaultHttpServerAttributesExtractor());
+		}
+
+		static class OTelEventPublisher implements EventPublisher {
+
+			private final List<EventListener> listeners;
+
+			OTelEventPublisher(List<EventListener> listeners) {
+				this.listeners = listeners;
+			}
+
+			@Override
+			public void publishEvent(Object event) {
+				for (EventListener listener : this.listeners) {
+					listener.onEvent(event);
+				}
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(MDC.class)
+		static class Slf4jConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			Slf4JEventListener otelSlf4JEventListener() {
+				return new Slf4JEventListener();
+			}
+
 		}
 
 	}

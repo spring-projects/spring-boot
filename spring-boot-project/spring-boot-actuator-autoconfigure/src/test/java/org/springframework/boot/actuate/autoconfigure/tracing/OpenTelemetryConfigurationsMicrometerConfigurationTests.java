@@ -21,6 +21,7 @@ import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
+import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
 import org.junit.jupiter.api.Test;
@@ -97,6 +98,19 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			assertThat(context).hasBean("customOtelHttpServerHandler");
 			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 		});
+	}
+
+	@Test
+	void shouldSupplySlf4jEventListenersWhenMdcOnClasspath() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Slf4JEventListener.class));
+	}
+
+	@Test
+	void shouldNotSupplySlf4jEventListenersWhenMdcNotOnClasspath() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.slf4j"))
+				.withUserConfiguration(TracerConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(Slf4JEventListener.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

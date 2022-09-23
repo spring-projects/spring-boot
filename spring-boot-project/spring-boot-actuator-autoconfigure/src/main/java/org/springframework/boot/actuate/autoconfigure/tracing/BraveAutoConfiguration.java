@@ -21,6 +21,9 @@ import java.util.List;
 import brave.Tracing;
 import brave.Tracing.Builder;
 import brave.TracingCustomizer;
+import brave.baggage.CorrelationScopeCustomizer;
+import brave.baggage.CorrelationScopeDecorator;
+import brave.context.slf4j.MDCScopeDecorator;
 import brave.handler.SpanHandler;
 import brave.http.HttpClientHandler;
 import brave.http.HttpClientRequest;
@@ -41,9 +44,12 @@ import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import org.slf4j.MDC;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -164,6 +170,28 @@ public class BraveAutoConfiguration {
 		BraveHttpClientHandler braveHttpClientHandler(
 				HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
 			return new BraveHttpClientHandler(httpClientHandler);
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class CorrelationScopeDecoratorConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnClass(MDC.class)
+			CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder() {
+				return MDCScopeDecorator.newBuilder();
+			}
+
+			@Bean
+			@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
+			@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
+			ScopeDecorator correlationScopeDecorator(CorrelationScopeDecorator.Builder builder,
+					ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
+				correlationScopeCustomizers.ifAvailable(
+						(customizers) -> customizers.forEach((customizer) -> customizer.customize(builder)));
+				return builder.build();
+			}
+
 		}
 
 	}
