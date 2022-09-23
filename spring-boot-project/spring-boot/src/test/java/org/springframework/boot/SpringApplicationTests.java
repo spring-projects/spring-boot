@@ -1302,8 +1302,11 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void withHookWhenHookThrowsAbandonedRunExceptionAbandonsRun() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		ApplicationListener listener = mock(ApplicationListener.class);
+		application.addListeners(listener);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		SpringApplicationRunListener runListener = spy(new SpringApplicationRunListener() {
 
@@ -1321,6 +1324,11 @@ class SpringApplicationTests {
 		then(runListener).should().contextPrepared(any());
 		then(runListener).should(never()).ready(any(), any());
 		then(runListener).should(never()).failed(any(), any());
+		then(listener).should().onApplicationEvent(any(ApplicationStartingEvent.class));
+		then(listener).should().onApplicationEvent(any(ApplicationEnvironmentPreparedEvent.class));
+		then(listener).should().onApplicationEvent(any(ApplicationPreparedEvent.class));
+		then(listener).should(never()).onApplicationEvent(any(ApplicationReadyEvent.class));
+		then(listener).should(never()).onApplicationEvent(any(ApplicationFailedEvent.class));
 	}
 
 	@Test
