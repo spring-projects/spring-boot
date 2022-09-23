@@ -81,6 +81,11 @@ class RabbitStreamConfigurationTests {
 	}
 
 	@Test
+	void environmentIsAutoConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Environment.class));
+	}
+
+	@Test
 	void whenCustomEnvironmentIsDefinedThenAutoConfiguredEnvironmentBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomEnvironmentConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Environment.class);
@@ -156,13 +161,11 @@ class RabbitStreamConfigurationTests {
 
 	@Test
 	void testDefaultRabbitStreamTemplateConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
-					assertThat(context.getBean(RabbitStreamTemplate.class)).hasFieldOrPropertyWithValue("streamName",
-							"stream-test");
-				});
+		this.contextRunner.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
+			assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+			assertThat(context.getBean(RabbitStreamTemplate.class)).hasFieldOrPropertyWithValue("streamName",
+					"stream-test");
+		});
 	}
 
 	@Test
@@ -174,8 +177,7 @@ class RabbitStreamConfigurationTests {
 	@Test
 	void testRabbitStreamTemplateConfigurationWithCustomMessageConverter() {
 		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
 					assertThat(streamTemplate).hasFieldOrPropertyWithValue("streamName", "stream-test");
@@ -189,8 +191,7 @@ class RabbitStreamConfigurationTests {
 		this.contextRunner
 				.withBean("myStreamMessageConverter", StreamMessageConverter.class,
 						() -> mock(StreamMessageConverter.class))
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("messageConverter")
 							.isSameAs(context.getBean("myStreamMessageConverter"));
@@ -201,8 +202,7 @@ class RabbitStreamConfigurationTests {
 	void testRabbitStreamTemplateConfigurationWithCustomProducerCustomizer() {
 		this.contextRunner
 				.withBean("myProducerCustomizer", ProducerCustomizer.class, () -> mock(ProducerCustomizer.class))
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("producerCustomizer")
 							.isSameAs(context.getBean("myProducerCustomizer"));

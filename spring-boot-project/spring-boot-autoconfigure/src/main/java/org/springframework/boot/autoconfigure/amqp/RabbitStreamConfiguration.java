@@ -47,11 +47,11 @@ import org.springframework.rabbit.stream.support.converter.StreamMessageConverte
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
-@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
 class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
 			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
 			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
