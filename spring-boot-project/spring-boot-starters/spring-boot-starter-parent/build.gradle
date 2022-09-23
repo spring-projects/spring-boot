@@ -256,9 +256,9 @@ publishing.publications.withType(MavenPublication) {
 								}
 								executions {
 									execution {
-										delegate.id('native-build')
+										delegate.id('native-compile')
 										goals {
-											delegate.goal('build')
+											delegate.goal('compile-no-fork')
 										}
 									}
 								}
