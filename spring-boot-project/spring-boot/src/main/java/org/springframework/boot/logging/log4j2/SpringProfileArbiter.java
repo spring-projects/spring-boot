@@ -33,7 +33,7 @@ import org.springframework.core.env.Profiles;
 import org.springframework.util.StringUtils;
 
 /**
- * An Aribter that uses the active Spring profile to determine if configuration should be
+ * An Arbiter that uses the active Spring profile to determine if configuration should be
  * included.
  *
  * @author Ralph Goers
