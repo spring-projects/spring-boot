@@ -36,12 +36,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 /**
  * An {@link ApplicationListener} that inspects the {@link ConfigurableEnvironment
  * environment} for configuration keys that need to be migrated. Automatically renames the
- * keys that have a matching replacement and log a report of what was discovered.
+ * keys that have a matching replacement and logs a report of what was discovered.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public class PropertiesMigrationListener implements ApplicationListener<SpringApplicationEvent> {
+class PropertiesMigrationListener implements ApplicationListener<SpringApplicationEvent> {
 
 	private static final Log logger = LogFactory.getLog(PropertiesMigrationListener.class);
 

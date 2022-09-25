@@ -17,7 +17,6 @@
 package org.springframework.boot.system;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
@@ -93,13 +92,9 @@ class JavaVersionTests {
 	}
 
 	@Test
-	@EnabledIf("java19")
+	@EnabledOnJre(JRE.JAVA_19)
 	void currentJavaVersionNineteen() {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.NINETEEN);
-	}
-
-	static boolean java19() {
-		return "19".equals(System.getProperty("java.version"));
 	}
 
 }
