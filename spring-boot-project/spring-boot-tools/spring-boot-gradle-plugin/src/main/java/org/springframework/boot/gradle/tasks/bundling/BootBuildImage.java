@@ -32,8 +32,11 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
 import org.gradle.work.DisableCachingByDefault;
@@ -121,7 +124,8 @@ public class BootBuildImage extends DefaultTask {
 	 * Returns the property for the archive file from which the image will be built.
 	 * @return the archive file property
 	 */
-	@Input
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public RegularFileProperty getArchiveFile() {
 		return this.archiveFile;
 	}
