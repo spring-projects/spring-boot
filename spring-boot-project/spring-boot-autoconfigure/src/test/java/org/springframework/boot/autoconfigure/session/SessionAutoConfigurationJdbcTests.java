@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration.SpringBootJdbcHttpSessionConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
@@ -86,12 +85,10 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
 				(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
 		assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
+		assertThat(repository).hasFieldOrPropertyWithValue("cleanupCron", "0 * * * * *");
 		assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
 				.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 		assertThat(context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION")).isEmpty();
-		SpringBootJdbcHttpSessionConfiguration configuration = context
-				.getBean(SpringBootJdbcHttpSessionConfiguration.class);
-		assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", "0 * * * * *");
 	}
 
 	@Test
@@ -142,29 +139,27 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	void customCleanupCron() {
 		this.contextRunner.withPropertyValues("spring.session.jdbc.cleanup-cron=0 0 12 * * *").run((context) -> {
 			assertThat(context.getBean(JdbcSessionProperties.class).getCleanupCron()).isEqualTo("0 0 12 * * *");
-			SpringBootJdbcHttpSessionConfiguration configuration = context
-					.getBean(SpringBootJdbcHttpSessionConfiguration.class);
-			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", "0 0 12 * * *");
+			JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+					JdbcIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("cleanupCron", "0 0 12 * * *");
 		});
 	}
 
 	@Test
 	void customFlushMode() {
 		this.contextRunner.withPropertyValues("spring.session.jdbc.flush-mode=immediate").run((context) -> {
-			assertThat(context.getBean(JdbcSessionProperties.class).getFlushMode()).isEqualTo(FlushMode.IMMEDIATE);
-			SpringBootJdbcHttpSessionConfiguration configuration = context
-					.getBean(SpringBootJdbcHttpSessionConfiguration.class);
-			assertThat(configuration).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
+			JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+					JdbcIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
 		});
 	}
 
 	@Test
 	void customSaveMode() {
 		this.contextRunner.withPropertyValues("spring.session.jdbc.save-mode=on-get-attribute").run((context) -> {
-			assertThat(context.getBean(JdbcSessionProperties.class).getSaveMode()).isEqualTo(SaveMode.ON_GET_ATTRIBUTE);
-			SpringBootJdbcHttpSessionConfiguration configuration = context
-					.getBean(SpringBootJdbcHttpSessionConfiguration.class);
-			assertThat(configuration).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
+			JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+					JdbcIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
 		});
 	}
 
