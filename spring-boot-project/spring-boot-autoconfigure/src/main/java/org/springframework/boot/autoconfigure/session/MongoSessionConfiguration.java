@@ -16,17 +16,18 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.time.Duration;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.MongoHttpSessionConfiguration;
 
@@ -35,6 +36,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoOperations.class, MongoIndexedSessionRepository.class })
@@ -44,17 +46,20 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 class MongoSessionConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	public static class SpringBootMongoHttpSessionConfiguration extends MongoHttpSessionConfiguration {
+	@Import(MongoHttpSessionConfiguration.class)
+	static class SpringBootMongoHttpSessionConfiguration {
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
+		@Bean
+		SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+				SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
 				ServerProperties serverProperties) {
-			Duration timeout = sessionProperties
-					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
-			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
-			}
-			setCollectionName(mongoSessionProperties.getCollectionName());
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			return (sessionRepository) -> {
+				map.from(sessionProperties
+						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+						.to((timeout) -> sessionRepository.setMaxInactiveIntervalInSeconds((int) timeout.getSeconds()));
+				map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
+			};
 		}
 
 	}
