@@ -55,7 +55,7 @@ class BraveAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class));
 
 	@Test
-	void shouldSupplyBraveBeans() {
+	void shouldSupplyDefaultBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Tracing.class);
 			assertThat(context).hasSingleBean(Tracer.class);
@@ -65,12 +65,16 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(HttpTracing.class);
 			assertThat(context).hasSingleBean(HttpServerHandler.class);
 			assertThat(context).hasSingleBean(HttpClientHandler.class);
+			assertThat(context).hasSingleBean(BraveTracer.class);
+			assertThat(context).hasSingleBean(BraveBaggageManager.class);
+			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
+			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
 	}
 
 	@Test
-	void shouldBackOffOnCustomBraveBeans() {
-		this.contextRunner.withUserConfiguration(CustomBraveConfiguration.class).run((context) -> {
+	void shouldBackOffOnCustomBeans() {
+		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context).hasBean("customTracing");
 			assertThat(context).hasSingleBean(Tracing.class);
 			assertThat(context).hasBean("customTracer");
@@ -87,22 +91,6 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(HttpServerHandler.class);
 			assertThat(context).hasBean("customHttpClientHandler");
 			assertThat(context).hasSingleBean(HttpClientHandler.class);
-		});
-	}
-
-	@Test
-	void shouldSupplyMicrometerBeans() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveBaggageManager.class);
-			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
-			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
-		});
-	}
-
-	@Test
-	void shouldBackOffOnCustomMicrometerBraveBeans() {
-		this.contextRunner.withUserConfiguration(CustomMicrometerBraveConfiguration.class).run((context) -> {
 			assertThat(context).hasBean("customBraveTracer");
 			assertThat(context).hasSingleBean(BraveTracer.class);
 			assertThat(context).hasBean("customBraveBaggageManager");
@@ -115,45 +103,25 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyBraveBeansIfBraveIsMissing() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("brave")).run((context) -> {
-			assertThat(context).doesNotHaveBean(Tracing.class);
-			assertThat(context).doesNotHaveBean(Tracer.class);
-			assertThat(context).doesNotHaveBean(CurrentTraceContext.class);
-			assertThat(context).doesNotHaveBean(Factory.class);
-			assertThat(context).doesNotHaveBean(Sampler.class);
-			assertThat(context).doesNotHaveBean(HttpTracing.class);
-			assertThat(context).doesNotHaveBean(HttpServerHandler.class);
-			assertThat(context).doesNotHaveBean(HttpClientHandler.class);
-		});
+	void shouldNotSupplyBeansIfBraveIsMissing() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("brave"))
+				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
 	}
 
 	@Test
-	void shouldNotSupplyMicrometerBeansIfMicrometerIsMissing() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer")).run((context) -> {
-			assertThat(context).doesNotHaveBean(BraveTracer.class);
-			assertThat(context).doesNotHaveBean(BraveBaggageManager.class);
-			assertThat(context).doesNotHaveBean(BraveHttpServerHandler.class);
-			assertThat(context).doesNotHaveBean(BraveHttpClientHandler.class);
-		});
+	void shouldNotSupplyBeansIfMicrometerIsMissing() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("brave"))
+				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
 	}
 
 	@Test
-	void shouldNotSupplyBraveBeansIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
-			assertThat(context).doesNotHaveBean(Tracing.class);
-			assertThat(context).doesNotHaveBean(Tracer.class);
-			assertThat(context).doesNotHaveBean(CurrentTraceContext.class);
-			assertThat(context).doesNotHaveBean(Factory.class);
-			assertThat(context).doesNotHaveBean(Sampler.class);
-			assertThat(context).doesNotHaveBean(HttpTracing.class);
-			assertThat(context).doesNotHaveBean(HttpServerHandler.class);
-			assertThat(context).doesNotHaveBean(HttpClientHandler.class);
-		});
+	void shouldNotSupplyBeansIfTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class CustomBraveConfiguration {
+	private static class CustomConfiguration {
 
 		@Bean
 		Tracing customTracing() {
@@ -196,11 +164,6 @@ class BraveAutoConfigurationTests {
 			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
 			return HttpClientHandler.create(httpTracing);
 		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static class CustomMicrometerBraveConfiguration {
 
 		@Bean
 		BraveTracer customBraveTracer() {

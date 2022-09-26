@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
 
+import brave.Tracer;
 import brave.Tracing;
 import brave.Tracing.Builder;
 import brave.TracingCustomizer;
@@ -48,7 +49,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
@@ -58,7 +58,7 @@ import org.springframework.core.env.Environment;
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
-@ConditionalOnClass(brave.Tracer.class)
+@ConditionalOnClass({ Tracer.class, BraveTracer.class })
 @EnableConfigurationProperties(TracingProperties.class)
 @ConditionalOnEnabledTracing
 public class BraveAutoConfiguration {
@@ -135,37 +135,31 @@ public class BraveAutoConfiguration {
 		return HttpClientHandler.create(httpTracing);
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(BraveTracer.class)
-	static class BraveMicrometer {
+	@Bean
+	@ConditionalOnMissingBean
+	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext,
+			BraveBaggageManager braveBaggageManager) {
+		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
+	}
 
-		@Bean
-		@ConditionalOnMissingBean
-		BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext,
-				BraveBaggageManager braveBaggageManager) {
-			return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	BraveBaggageManager braveBaggageManager() {
+		return new BraveBaggageManager();
+	}
 
-		@Bean
-		@ConditionalOnMissingBean
-		BraveBaggageManager braveBaggageManager() {
-			return new BraveBaggageManager();
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	BraveHttpServerHandler braveHttpServerHandler(
+			HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler) {
+		return new BraveHttpServerHandler(httpServerHandler);
+	}
 
-		@Bean
-		@ConditionalOnMissingBean
-		BraveHttpServerHandler braveHttpServerHandler(
-				HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler) {
-			return new BraveHttpServerHandler(httpServerHandler);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		BraveHttpClientHandler braveHttpClientHandler(
-				HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
-			return new BraveHttpClientHandler(httpClientHandler);
-		}
-
+	@Bean
+	@ConditionalOnMissingBean
+	BraveHttpClientHandler braveHttpClientHandler(
+			HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
+		return new BraveHttpClientHandler(httpClientHandler);
 	}
 
 }
