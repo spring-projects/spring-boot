@@ -36,11 +36,12 @@ import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for Baggage configuration.
+ * Tests for Baggage propagation with Brave and OpenTelemetry using W3C and B3 propagation
+ * formats.
  *
  * @author Marcin Grzejszczak
  */
-class BaggageAutoConfigurationTests {
+class BaggagePropagationIntegrationTests {
 
 	static final String COUNTRY_CODE = "country-code";
 	static final String BUSINESS_PROCESS = "bp";

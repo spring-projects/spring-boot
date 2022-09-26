@@ -79,7 +79,7 @@ public class TracingProperties {
 		/**
 		 * Whether to enable Micrometer Tracing baggage propagation.
 		 */
-		private boolean enabled;
+		private boolean enabled = true;
 
 		/**
 		 * Correlation configuration.
