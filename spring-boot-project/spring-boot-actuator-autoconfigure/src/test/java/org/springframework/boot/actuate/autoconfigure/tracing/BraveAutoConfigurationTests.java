@@ -155,19 +155,11 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldSupplyB3PropagationIfMicrometerIsMissing() {
+	void shouldNotSetupTracingIfMicrometerIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer")).run((context) -> {
-			assertThat(context).hasBean("bravePropagationFactory");
-			assertThat(context).hasSingleBean(Propagation.Factory.class);
+			assertThat(context).doesNotHaveBean(Tracing.class);
+			assertThat(context).doesNotHaveBean(BraveTracer.class);
 		});
-	}
-
-	@Test
-	void shouldFailIfMicrometerIsMissingAndW3CPropagationIsPicked() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer"))
-				.withPropertyValues("management.tracing.propagation.type=W3C")
-				.run((context) -> assertThat(context).getFailure()
-						.hasMessageContaining("No qualifying bean of type 'brave.propagation.Propagation$Factory'"));
 	}
 
 	@Test

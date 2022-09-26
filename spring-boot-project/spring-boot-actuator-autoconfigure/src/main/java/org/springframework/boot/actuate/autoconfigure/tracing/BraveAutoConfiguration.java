@@ -60,7 +60,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -75,7 +74,7 @@ import org.springframework.core.env.Environment;
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
-@ConditionalOnClass(brave.Tracer.class)
+@ConditionalOnClass({ brave.Tracer.class, BraveTracer.class })
 @EnableConfigurationProperties(TracingProperties.class)
 @ConditionalOnEnabledTracing
 public class BraveAutoConfiguration {
@@ -147,20 +146,6 @@ public class BraveAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingClass("io.micrometer.tracing.brave.bridge.BraveTracer")
-	static class BraveMicrometerMissing {
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(value = "management.tracing.propagation.type", havingValue = "B3", matchIfMissing = true)
-		Factory bravePropagationFactory() {
-			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(BraveTracer.class)
 	static class BraveMicrometer {
 
 		private static final BraveBaggageManager BRAVE_BAGGAGE_MANAGER = new BraveBaggageManager();
@@ -202,13 +187,13 @@ public class BraveAutoConfiguration {
 					matchIfMissing = true)
 			Factory w3cPropagationNoBaggageFactory() {
 				return new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of()); // TODO: Use
-																				// snapshots
-																				// of
-																				// tracing
-																				// to not
-																				// use
-																				// baggage
-																				// for W3C
+				// snapshots
+				// of
+				// tracing
+				// to not
+				// use
+				// baggage
+				// for W3C
 			}
 
 			@Bean
@@ -295,17 +280,6 @@ public class BraveAutoConfiguration {
 		@ConditionalOnClass(MDC.class)
 		CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder() {
 			return MDCScopeDecorator.newBuilder();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
-		@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
-		@ConditionalOnMissingClass("io.micrometer.tracing.brave.bridge.BraveTracer")
-		ScopeDecorator correlationScopeDecorator(CorrelationScopeDecorator.Builder builder,
-				ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
-			correlationScopeCustomizers
-					.ifAvailable((customizers) -> customizers.forEach((customizer) -> customizer.customize(builder)));
-			return builder.build();
 		}
 
 	}
