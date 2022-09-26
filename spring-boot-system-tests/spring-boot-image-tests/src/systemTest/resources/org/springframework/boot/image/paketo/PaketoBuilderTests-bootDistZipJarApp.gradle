@@ -37,5 +37,5 @@ application {
 }
 
 bootBuildImage {
-	archiveFile = new File("${buildDir}/distributions/${project.name}-boot.zip")
+	archiveFile = bootDistZip.archiveFile
 }
