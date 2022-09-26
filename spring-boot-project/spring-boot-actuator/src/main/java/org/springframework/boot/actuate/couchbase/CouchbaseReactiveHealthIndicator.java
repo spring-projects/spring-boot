@@ -46,12 +46,10 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		return this.cluster.reactive()
-				.diagnostics()
-				.map(diagnostics -> {
-					new CouchbaseHealth(diagnostics).applyTo(builder);
-					return builder.build();
-				});
+		return this.cluster.reactive().diagnostics().map(diagnostics -> {
+			new CouchbaseHealth(diagnostics).applyTo(builder);
+			return builder.build();
+		});
 	}
 
 }
