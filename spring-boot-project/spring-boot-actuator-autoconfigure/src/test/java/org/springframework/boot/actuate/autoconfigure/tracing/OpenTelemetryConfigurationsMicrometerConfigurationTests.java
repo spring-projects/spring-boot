@@ -119,7 +119,7 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 	@Test
 	void shouldSupplySlf4jEventListenersWhenMdcOnClasspathAndBaggageCorrelationDisabled() {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class)
-				.withPropertyValues("management.tracing.baggage.correlation-enabled=false").run((context) -> {
+				.withPropertyValues("management.tracing.baggage.correlation.enabled=false").run((context) -> {
 					assertThat(context).hasSingleBean(Slf4JEventListener.class);
 					assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class);
 				});

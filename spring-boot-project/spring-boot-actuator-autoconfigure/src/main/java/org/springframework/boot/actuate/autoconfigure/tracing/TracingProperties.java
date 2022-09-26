@@ -77,15 +77,14 @@ public class TracingProperties {
 	public static class Baggage {
 
 		/**
-		 * Whether to enable correlation of the baggage context with logging contexts.
+		 * Whether to enable Micrometer Tracing baggage propagation.
 		 */
-		private boolean correlationEnabled = true;
+		private boolean enabled;
 
 		/**
-		 * List of fields that should be correlated with the logging context. That means
-		 * that these fields would end up as key-value pairs in e.g. MDC.
+		 * Correlation configuration.
 		 */
-		private List<String> correlationFields = new ArrayList<>();
+		private Correlation correlation = new Correlation();
 
 		/**
 		 * List of fields that are referenced the same in-process as it is on the wire.
@@ -94,20 +93,20 @@ public class TracingProperties {
 		 */
 		private List<String> remoteFields = new ArrayList<>();
 
-		public boolean isCorrelationEnabled() {
-			return this.correlationEnabled;
+		public boolean isEnabled() {
+			return this.enabled;
 		}
 
-		public void setCorrelationEnabled(boolean correlationEnabled) {
-			this.correlationEnabled = correlationEnabled;
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
-		public List<String> getCorrelationFields() {
-			return this.correlationFields;
+		public Correlation getCorrelation() {
+			return this.correlation;
 		}
 
-		public void setCorrelationFields(List<String> correlationFields) {
-			this.correlationFields = correlationFields;
+		public void setCorrelation(Correlation correlation) {
+			this.correlation = correlation;
 		}
 
 		public List<String> getRemoteFields() {
@@ -116,6 +115,37 @@ public class TracingProperties {
 
 		public void setRemoteFields(List<String> remoteFields) {
 			this.remoteFields = remoteFields;
+		}
+
+		public static class Correlation {
+
+			/**
+			 * Whether to enable correlation of the baggage context with logging contexts.
+			 */
+			private boolean enabled = true;
+
+			/**
+			 * List of fields that should be correlated with the logging context. That
+			 * means that these fields would end up as key-value pairs in e.g. MDC.
+			 */
+			private List<String> fields = new ArrayList<>();
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public List<String> getFields() {
+				return this.fields;
+			}
+
+			public void setFields(List<String> fields) {
+				this.fields = fields;
+			}
+
 		}
 
 	}

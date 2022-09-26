@@ -258,11 +258,11 @@ public class BraveAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
 			@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
-			@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled", matchIfMissing = true)
+			@ConditionalOnProperty(value = "management.tracing.baggage.correlation.enabled", matchIfMissing = true)
 			ScopeDecorator correlationFieldsCorrelationScopeDecorator(TracingProperties properties,
 					ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers,
 					CorrelationScopeDecorator.Builder builder) {
-				List<String> correlationFields = properties.getBaggage().getCorrelationFields();
+				List<String> correlationFields = properties.getBaggage().getCorrelation().getFields();
 				for (String field : correlationFields) {
 					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field))
 							.flushOnUpdate().build());
@@ -275,7 +275,7 @@ public class BraveAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
 			@ConditionalOnBean(CorrelationScopeDecorator.Builder.class)
-			@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled", havingValue = "false")
+			@ConditionalOnProperty(value = "management.tracing.baggage.correlation.enabled", havingValue = "false")
 			ScopeDecorator noCorrelationFieldsCorrelationScopeDecorator(CorrelationScopeDecorator.Builder builder,
 					ObjectProvider<List<CorrelationScopeCustomizer>> correlationScopeCustomizers) {
 				correlationScopeCustomizers.ifAvailable(

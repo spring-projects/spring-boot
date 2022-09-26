@@ -230,13 +230,13 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation-enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("correlationFieldsCorrelationScopeDecorator"));
 	}
 
 	@Test
 	void shouldSupplyMdcCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation-enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
 				.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
 	}
 

@@ -274,10 +274,11 @@ class OpenTelemetryConfigurations {
 
 					@Bean
 					@ConditionalOnMissingBean
-					@ConditionalOnProperty(value = "management.tracing.baggage.correlation-enabled",
+					@ConditionalOnProperty(value = "management.tracing.baggage.correlation.enabled",
 							matchIfMissing = true)
 					Slf4JBaggageEventListener otelSlf4JBaggageEventListener(TracingProperties tracingProperties) {
-						return new Slf4JBaggageEventListener(tracingProperties.getBaggage().getCorrelationFields());
+						return new Slf4JBaggageEventListener(
+								tracingProperties.getBaggage().getCorrelation().getFields());
 					}
 
 				}
