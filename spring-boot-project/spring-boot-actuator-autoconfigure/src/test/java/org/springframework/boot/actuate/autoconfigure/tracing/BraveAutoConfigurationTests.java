@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import brave.Tracer;
 import brave.Tracing;
+import brave.baggage.BaggagePropagation;
+import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.http.HttpClientHandler;
 import brave.http.HttpClientRequest;
 import brave.http.HttpClientResponse;
@@ -26,12 +28,16 @@ import brave.http.HttpServerRequest;
 import brave.http.HttpServerResponse;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.CurrentTraceContext.ScopeDecorator;
+import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import io.micrometer.tracing.brave.bridge.W3CPropagation;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -57,6 +63,7 @@ class BraveAutoConfigurationTests {
 	@Test
 	void shouldSupplyDefaultBeans() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(BraveAutoConfiguration.class);
 			assertThat(context).hasSingleBean(Tracing.class);
 			assertThat(context).hasSingleBean(Tracer.class);
 			assertThat(context).hasSingleBean(CurrentTraceContext.class);
@@ -66,7 +73,11 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(HttpServerHandler.class);
 			assertThat(context).hasSingleBean(HttpClientHandler.class);
 			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveBaggageManager.class);
+			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
+			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
+			assertThat(context).hasSingleBean(Propagation.Factory.class);
+			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
+			assertThat(context).hasSingleBean(BraveTracer.class);
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
@@ -99,6 +110,19 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
 			assertThat(context).hasBean("customBraveHttpClientHandler");
 			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
+			assertThat(context).hasBean("customHttpServerHandler");
+			assertThat(context).hasSingleBean(HttpServerHandler.class);
+			assertThat(context).hasBean("customHttpClientHandler");
+			assertThat(context).hasSingleBean(HttpClientHandler.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyMicrometerBeans() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(BraveTracer.class);
+			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
+			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 		});
 	}
 
@@ -110,14 +134,81 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyBeansIfMicrometerIsMissing() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("brave"))
+		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer"))
 				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
+	}
+
+	@Test
+	void shouldSupplyW3CPropagationFactoryByDefault() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasBean("propagationFactory");
+			assertThat(context).hasSingleBean(W3CPropagation.class);
+			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
+		});
+	}
+
+	@Test
+	void shouldSupplyB3PropagationFactoryViaProperty() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
+			assertThat(context).hasBean("propagationFactory");
+			assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
+		});
 	}
 
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
+	}
+
+	@Test
+	void shouldNotSupplyCorrelationScopeDecoratorIfBaggageDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean("correlationScopeDecorator"));
+	}
+
+	@Test
+	void shouldSupplyW3CWithoutBaggageByDefaultIfBaggageDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
+				.run((context) -> assertThat(context).hasSingleBean(W3CPropagation.class));
+	}
+
+	@Test
+	void shouldSupplyB3WithoutBaggageIfBaggageDisabledAndB3Picked() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
+				"management.tracing.propagation.type=B3").run((context) -> {
+					assertThat(context).hasBean("propagationFactory");
+					assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+				});
+	}
+
+	@Test
+	void shouldNotApplyCorrelationFieldsIfBaggageCorrelationDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false",
+				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
+					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
+					assertThat(scopeDecorator)
+							.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
+							.hasSize(2);
+				});
+	}
+
+	@Test
+	void shouldNotApplyCorrelationFieldsIfBaggageCorrelationEnabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=true",
+				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
+					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
+					assertThat(scopeDecorator)
+							.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
+							.hasSize(4);
+				});
+	}
+
+	@Test
+	void shouldSupplyMdcCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
+				.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

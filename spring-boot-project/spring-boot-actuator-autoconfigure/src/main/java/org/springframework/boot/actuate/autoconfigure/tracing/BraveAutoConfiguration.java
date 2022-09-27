@@ -22,6 +22,15 @@ import brave.Tracer;
 import brave.Tracing;
 import brave.Tracing.Builder;
 import brave.TracingCustomizer;
+import brave.baggage.BaggageField;
+import brave.baggage.BaggagePropagation;
+import brave.baggage.BaggagePropagation.FactoryBuilder;
+import brave.baggage.BaggagePropagationConfig;
+import brave.baggage.BaggagePropagationCustomizer;
+import brave.baggage.CorrelationScopeConfig;
+import brave.baggage.CorrelationScopeCustomizer;
+import brave.baggage.CorrelationScopeDecorator;
+import brave.context.slf4j.MDCScopeDecorator;
 import brave.handler.SpanHandler;
 import brave.http.HttpClientHandler;
 import brave.http.HttpClientRequest;
@@ -41,20 +50,27 @@ import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
+import io.micrometer.tracing.brave.bridge.BravePropagator;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import io.micrometer.tracing.brave.bridge.W3CPropagation;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Brave.
  *
  * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
@@ -62,6 +78,8 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(TracingProperties.class)
 @ConditionalOnEnabledTracing
 public class BraveAutoConfiguration {
+
+	private static final BraveBaggageManager BRAVE_BAGGAGE_MANAGER = new BraveBaggageManager();
 
 	/**
 	 * Default value for application name if {@code spring.application.name} is not set.
@@ -107,12 +125,6 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Factory bravePropagationFactory() {
-		return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public Sampler braveSampler(TracingProperties properties) {
 		return Sampler.create(properties.getSampling().getProbability());
 	}
@@ -137,15 +149,14 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext,
-			BraveBaggageManager braveBaggageManager) {
-		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), braveBaggageManager);
+	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
+		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), BRAVE_BAGGAGE_MANAGER);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	BraveBaggageManager braveBaggageManager() {
-		return new BraveBaggageManager();
+	BravePropagator bravePropagator(Tracing tracing) {
+		return new BravePropagator(tracing);
 	}
 
 	@Bean
@@ -160,6 +171,94 @@ public class BraveAutoConfiguration {
 	BraveHttpClientHandler braveHttpClientHandler(
 			HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
 		return new BraveHttpClientHandler(httpClientHandler);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(value = "management.tracing.baggage.enabled", havingValue = "false")
+	static class BraveNoBaggageConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		Factory propagationFactory(TracingProperties tracing) {
+			return switch (tracing.getPropagation().getType()) {
+				case B3 ->
+					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of());
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
+	static class BraveBaggageConfiguration {
+
+		private final TracingProperties tracingProperties;
+
+		BraveBaggageConfiguration(TracingProperties tracingProperties) {
+			this.tracingProperties = tracingProperties;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		BaggagePropagation.FactoryBuilder propagationFactoryBuilder(
+				ObjectProvider<BaggagePropagationCustomizer> baggagePropagationCustomizers) {
+			Factory delegate = switch (this.tracingProperties.getPropagation().getType()) {
+				case B3 ->
+					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of());
+			};
+			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(delegate);
+			baggagePropagationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			return builder;
+		}
+
+		@Bean
+		@Order(0)
+		BaggagePropagationCustomizer remoteFieldsBaggagePropagationCustomizer() {
+			return (builder) -> {
+				List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
+				for (String fieldName : remoteFields) {
+					builder.add(BaggagePropagationConfig.SingleBaggageField.remote(BaggageField.create(fieldName)));
+				}
+			};
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		Factory propagationFactory(BaggagePropagation.FactoryBuilder factoryBuilder) {
+			return factoryBuilder.build();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder(
+				ObjectProvider<CorrelationScopeCustomizer> correlationScopeCustomizers) {
+			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
+			correlationScopeCustomizers.forEach((customizer) -> customizer.customize(builder));
+			return builder;
+		}
+
+		@Bean
+		@Order(0)
+		@ConditionalOnProperty(prefix = "management.tracing.baggage.correlation", name = "enabled",
+				matchIfMissing = true)
+		CorrelationScopeCustomizer correlationFieldsCorrelationScopeCustomizer() {
+			return (builder) -> {
+				List<String> correlationFields = this.tracingProperties.getBaggage().getCorrelation().getFields();
+				for (String field : correlationFields) {
+					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field))
+							.flushOnUpdate().build());
+				}
+			};
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(CorrelationScopeDecorator.class)
+		ScopeDecorator correlationScopeDecorator(CorrelationScopeDecorator.Builder builder) {
+			return builder.build();
+		}
+
 	}
 
 }
