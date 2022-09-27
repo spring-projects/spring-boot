@@ -52,7 +52,7 @@ class SpringApplicationExtensionsTests {
 		val context = runApplication<ExampleWebConfig>("--debug", "spring", "boot")
 		val args = context.getBean<ApplicationArguments>()
 		assertThat(args.nonOptionArgs.toTypedArray()).containsExactly("spring", "boot")
-		assertThat(args.containsOption("debug")).isTrue
+		assertThat(args.containsOption("debug")).isEqualTo(true)
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class SpringApplicationExtensionsTests {
 		}
 		val args = context.getBean<ApplicationArguments>()
 		assertThat(args.nonOptionArgs.toTypedArray()).containsExactly("spring", "boot")
-		assertThat(args.containsOption("debug")).isTrue
+		assertThat(args.containsOption("debug")).isEqualTo(true)
 		assertThat(environment).isEqualTo(context.environment)
 	}
 
