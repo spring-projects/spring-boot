@@ -23,10 +23,14 @@ import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.SpanProcessor;
+import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryConfigurations.MicrometerConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -37,49 +41,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link MicrometerConfiguration}.
+ * Tests for {@link OpenTelemetryAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
-class OpenTelemetryConfigurationsMicrometerConfigurationTests {
+class OpenTelemetryAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MicrometerConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.withUserConfiguration(TracerConfiguration.class, OpenTelemetryConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(OtelTracer.class);
-					assertThat(context).hasSingleBean(EventPublisher.class);
-					assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-					assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
-					assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(OtelTracer.class);
+			assertThat(context).hasSingleBean(EventPublisher.class);
+			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
+			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
+			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
+			assertThat(context).hasSingleBean(OpenTelemetry.class);
+			assertThat(context).hasSingleBean(SdkTracerProvider.class);
+			assertThat(context).hasSingleBean(ContextPropagators.class);
+			assertThat(context).hasSingleBean(Sampler.class);
+			assertThat(context).hasSingleBean(SpanProcessor.class);
+			assertThat(context).hasSingleBean(Tracer.class);
+		});
 	}
 
-	@Test
-	void shouldNotSupplyBeansIfMicrometerTracingBridgeOtelIsMissing() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.tracing.otel"))
-				.withUserConfiguration(TracerConfiguration.class, OpenTelemetryConfiguration.class).run((context) -> {
-					assertThat(context).doesNotHaveBean(OtelTracer.class);
-					assertThat(context).doesNotHaveBean(EventPublisher.class);
-					assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
-					assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
-					assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
-				});
-	}
-
-	@Test
-	void shouldNotSupplyBeansIfTracerIsMissing() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(OtelTracer.class));
-	}
-
-	@Test
-	void shouldNotSupplyBeansIfOpenTelemetryIsMissing() {
-		this.contextRunner.withUserConfiguration(TracerConfiguration.class).run((context) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "io.micrometer.tracing.otel", "io.opentelemetry.sdk", "io.opentelemetry.api" })
+	void shouldNotSupplyBeansIfDependencyIsMissing(String packageName) {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(packageName)).run((context) -> {
+			assertThat(context).doesNotHaveBean(OtelTracer.class);
+			assertThat(context).doesNotHaveBean(EventPublisher.class);
+			assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
 			assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
 			assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
+			assertThat(context).doesNotHaveBean(OpenTelemetry.class);
+			assertThat(context).doesNotHaveBean(SdkTracerProvider.class);
+			assertThat(context).doesNotHaveBean(ContextPropagators.class);
+			assertThat(context).doesNotHaveBean(Sampler.class);
+			assertThat(context).doesNotHaveBean(SpanProcessor.class);
+			assertThat(context).doesNotHaveBean(Tracer.class);
 		});
 	}
 
@@ -96,6 +99,18 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
 			assertThat(context).hasBean("customOtelHttpServerHandler");
 			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
+			assertThat(context).hasBean("customOpenTelemetry");
+			assertThat(context).hasSingleBean(OpenTelemetry.class);
+			assertThat(context).hasBean("customSdkTracerProvider");
+			assertThat(context).hasSingleBean(SdkTracerProvider.class);
+			assertThat(context).hasBean("customContextPropagators");
+			assertThat(context).hasSingleBean(ContextPropagators.class);
+			assertThat(context).hasBean("customSampler");
+			assertThat(context).hasSingleBean(Sampler.class);
+			assertThat(context).hasBean("customSpanProcessor");
+			assertThat(context).hasSingleBean(SpanProcessor.class);
+			assertThat(context).hasBean("customTracer");
+			assertThat(context).hasSingleBean(Tracer.class);
 		});
 	}
 
@@ -127,24 +142,34 @@ class OpenTelemetryConfigurationsMicrometerConfigurationTests {
 			return mock(OtelHttpServerHandler.class);
 		}
 
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static class TracerConfiguration {
-
 		@Bean
-		Tracer tracer() {
-			return mock(Tracer.class);
+		OpenTelemetry customOpenTelemetry() {
+			return mock(OpenTelemetry.class);
 		}
 
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static class OpenTelemetryConfiguration {
+		@Bean
+		SdkTracerProvider customSdkTracerProvider() {
+			return SdkTracerProvider.builder().build();
+		}
 
 		@Bean
-		OpenTelemetry openTelemetry() {
-			return mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
+		ContextPropagators customContextPropagators() {
+			return mock(ContextPropagators.class);
+		}
+
+		@Bean
+		Sampler customSampler() {
+			return mock(Sampler.class);
+		}
+
+		@Bean
+		SpanProcessor customSpanProcessor() {
+			return mock(SpanProcessor.class);
+		}
+
+		@Bean
+		Tracer customTracer() {
+			return mock(Tracer.class);
 		}
 
 	}
