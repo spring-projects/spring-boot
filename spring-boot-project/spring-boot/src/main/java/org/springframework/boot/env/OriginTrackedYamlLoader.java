@@ -73,8 +73,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private Yaml createYaml(LoaderOptions loaderOptions) {
 		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
-		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
+		Representer representer = new Representer(dumperOptions);
 		NoTimestampResolver resolver = new NoTimestampResolver();
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
