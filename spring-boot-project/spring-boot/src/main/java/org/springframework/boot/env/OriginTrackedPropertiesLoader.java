@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,8 @@ class OriginTrackedPropertiesLoader {
 		StringBuilder buffer = new StringBuilder();
 		try (CharacterReader reader = new CharacterReader(this.resource)) {
 			while (reader.read()) {
-				if (reader.isPoundCharacter()) {
+				if (reader.isCommentPrefixCharacter()) {
+					char commentPrefixCharacter = reader.getCharacter();
 					if (isNewDocument(reader)) {
 						if (!document.isEmpty()) {
 							documents.add(document);
@@ -89,12 +90,12 @@ class OriginTrackedPropertiesLoader {
 						if (document.isEmpty() && !documents.isEmpty()) {
 							document = documents.remove(documents.size() - 1);
 						}
-						reader.setLastLineComment(true);
+						reader.setLastLineCommentPrefix(commentPrefixCharacter);
 						reader.skipComment();
 					}
 				}
 				else {
-					reader.setLastLineComment(false);
+					reader.setLastLineCommentPrefix(-1);
 					loadKeyAndValue(expandLists, document, reader, buffer);
 				}
 			}
@@ -161,10 +162,10 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	private boolean isNewDocument(CharacterReader reader) throws IOException {
-		if (reader.isLastLineComment()) {
+		if (reader.isSameLastLineCommentPrefix()) {
 			return false;
 		}
-		boolean result = reader.getLocation().getColumn() == 0 && reader.isPoundCharacter();
+		boolean result = reader.getLocation().getColumn() == 0;
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
@@ -196,7 +197,7 @@ class OriginTrackedPropertiesLoader {
 
 		private int character;
 
-		private boolean lastLineComment;
+		private int lastLineCommentPrefix;
 
 		CharacterReader(Resource resource) throws IOException {
 			this.reader = new LineNumberReader(
@@ -209,20 +210,11 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		boolean read() throws IOException {
-			return read(false);
-		}
-
-		boolean read(boolean wrappedLine) throws IOException {
 			this.escaped = false;
 			this.character = this.reader.read();
 			this.columnNumber++;
 			if (this.columnNumber == 0) {
 				skipWhitespace();
-				if (!wrappedLine) {
-					if (this.character == '!') {
-						skipComment();
-					}
-				}
 			}
 			if (this.character == '\\') {
 				this.escaped = true;
@@ -241,12 +233,8 @@ class OriginTrackedPropertiesLoader {
 			}
 		}
 
-		private void setLastLineComment(boolean lastLineComment) {
-			this.lastLineComment = lastLineComment;
-		}
-
-		private boolean isLastLineComment() {
-			return this.lastLineComment;
+		private void setLastLineCommentPrefix(int lastLineCommentPrefix) {
+			this.lastLineCommentPrefix = lastLineCommentPrefix;
 		}
 
 		private void skipComment() throws IOException {
@@ -264,7 +252,7 @@ class OriginTrackedPropertiesLoader {
 			}
 			else if (this.character == '\n') {
 				this.columnNumber = -1;
-				read(true);
+				read();
 			}
 			else if (this.character == 'u') {
 				readUnicode();
@@ -318,8 +306,12 @@ class OriginTrackedPropertiesLoader {
 			return new Location(this.reader.getLineNumber(), this.columnNumber);
 		}
 
-		boolean isPoundCharacter() {
-			return this.character == '#';
+		boolean isSameLastLineCommentPrefix() {
+			return this.lastLineCommentPrefix == this.character;
+		}
+
+		boolean isCommentPrefixCharacter() {
+			return this.character == '#' || this.character == '!';
 		}
 
 		boolean isHyphenCharacter() {
