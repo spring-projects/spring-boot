@@ -38,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * @author Nishant Raut
  * @author Brian Clozel
  */
+@SuppressWarnings("deprecation")
 class RestTemplateExchangeTagsTests {
 
 	@Test
