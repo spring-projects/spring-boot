@@ -88,7 +88,7 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String expandPlaceholders(String content, Map<?, ?> properties) throws IOException {
-		StringBuffer expanded = new StringBuffer();
+		StringBuilder expanded = new StringBuilder();
 		Matcher matcher = PLACEHOLDER_PATTERN.matcher(content);
 		while (matcher.find()) {
 			String name = matcher.group(1);
