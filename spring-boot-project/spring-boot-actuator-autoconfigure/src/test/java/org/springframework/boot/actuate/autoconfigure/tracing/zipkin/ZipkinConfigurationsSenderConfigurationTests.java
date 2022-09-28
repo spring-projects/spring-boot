@@ -77,7 +77,9 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldUseRestTemplateSenderIfUrlConnectionSenderIsNotAvailableAndWebAppIsNotReactive() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(
+						new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.reactive"))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
