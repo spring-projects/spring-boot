@@ -38,9 +38,9 @@ import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -290,7 +290,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private LoggerContext getLoggerContext() {
-		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		ILoggerFactory factory = LoggerFactory.getILoggerFactory();
 		Assert.isInstanceOf(LoggerContext.class, factory,
 				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "

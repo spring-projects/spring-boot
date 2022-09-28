@@ -23,7 +23,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -147,8 +147,8 @@ class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	private void withDebugLogging(Runnable runnable) {
-		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
-		Logger logger = context.getLogger(ConditionEvaluationReportLoggingListener.class);
+		Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory())
+				.getLogger(ConditionEvaluationReportLoggingListener.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

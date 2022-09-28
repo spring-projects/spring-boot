@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.junit.jupiter.api.Test;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
@@ -76,8 +76,7 @@ class MeterRegistryConfigurerIntegrationTests {
 	void counterIsIncrementedOncePerEventWithoutCompositeMeterRegistry() {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class)).run((context) -> {
-					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory())
-							.getLogger("test-logger");
+					Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
 					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
 					assertThat(registriesByName).hasSize(1);
@@ -92,8 +91,7 @@ class MeterRegistryConfigurerIntegrationTests {
 				.with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class,
 						PrometheusMetricsExportAutoConfiguration.class))
 				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class)).run((context) -> {
-					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory())
-							.getLogger("test-logger");
+					Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
 					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
 					assertThat(registriesByName).hasSize(3);
