@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,9 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SenderConfiguration.class));
 
+	private final WebApplicationContextRunner servletContextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(SenderConfiguration.class));
+
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.run((context) -> {
@@ -56,12 +60,62 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldUseWebClientSenderIfWebApplicationIsReactive() {
-		this.reactiveContextRunner.withUserConfiguration(WebClientConfiguration.class)
+	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndUrlSenderIsNotAvailable() {
+		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
 				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
+				});
+	}
+
+	@Test
+	void shouldPreferWebClientSenderIfWebApplicationIsServletAndUrlSenderIsNotAvailable() {
+		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+					assertThat(context).hasSingleBean(Sender.class);
+					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
+				});
+	}
+
+	@Test
+	void shouldPreferWebClientInNonWebApplicationAndUrlConnectionSenderIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+					assertThat(context).hasSingleBean(Sender.class);
+					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
+				});
+	}
+
+	@Test
+	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+					assertThat(context).hasSingleBean(Sender.class);
+					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
+				});
+	}
+
+	@Test
+	void willUseRestTemplateInServletWebApplicationIfUrlConnectionSenderIsNotAvailable() {
+		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+					assertThat(context).hasSingleBean(Sender.class);
+					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
+				});
+	}
+
+	@Test
+	void willUseRestTemplateInReactiveWebApplicationIfUrlConnectionSenderIsNotAvailable() {
+		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+					assertThat(context).hasSingleBean(Sender.class);
+					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 				});
 	}
 
@@ -72,18 +126,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			assertThat(context).hasSingleBean(Sender.class);
 			assertThat(context).hasSingleBean(URLConnectionSender.class);
 		});
-	}
-
-	@Test
-	void shouldUseRestTemplateSenderIfUrlConnectionSenderIsNotAvailableAndWebAppIsNotReactive() {
-		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(
-						new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.reactive"))
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
-					assertThat(context).hasSingleBean(Sender.class);
-					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
-				});
 	}
 
 	@Test
