@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import zipkin2.reporter.Sender;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
@@ -26,12 +27,12 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -66,6 +67,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
+					then(context.getBean(ZipkinWebClientBuilderCustomizer.class)).should()
+							.customize(ArgumentMatchers.any());
 				});
 	}
 
@@ -90,9 +93,9 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderIsNotAvailable() {
+	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderAndWebclientAreNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
@@ -100,9 +103,9 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void willUseRestTemplateInServletWebApplicationIfUrlConnectionSenderIsNotAvailable() {
+	void willUseRestTemplateInServletWebApplicationIfUrlConnectionSenderAndWebClientNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
@@ -110,9 +113,9 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void willUseRestTemplateInReactiveWebApplicationIfUrlConnectionSenderIsNotAvailable() {
+	void willUseRestTemplateInReactiveWebApplicationIfUrlConnectionSenderAndWebClientAreNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
@@ -140,8 +143,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private static class RestTemplateConfiguration {
 
 		@Bean
-		RestTemplateBuilder restTemplateBuilder() {
-			return new RestTemplateBuilder();
+		ZipkinRestTemplateBuilderCustomizer restTemplateBuilder() {
+			return mock(ZipkinRestTemplateBuilderCustomizer.class);
 		}
 
 	}
@@ -150,8 +153,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private static class WebClientConfiguration {
 
 		@Bean
-		WebClient.Builder webClientBuilder() {
-			return WebClient.builder();
+		ZipkinWebClientBuilderCustomizer webClientBuilder() {
+			return mock(ZipkinWebClientBuilderCustomizer.class);
 		}
 
 	}

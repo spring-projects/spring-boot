@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.util.List;
+
 import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import zipkin2.Span;
 import zipkin2.codec.BytesEncoder;
@@ -73,12 +75,12 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		@ConditionalOnBean(RestTemplateBuilder.class)
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
-				RestTemplateBuilder restTemplateBuilder) {
-			RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(properties.getConnectTimeout())
-					.setReadTimeout(properties.getReadTimeout()).build();
-			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplate);
+				List<ZipkinRestTemplateBuilderCustomizer> customizers) {
+			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
+					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
+			customizers.forEach((c) -> c.customize(restTemplateBuilder));
+			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
 		}
 
 	}
@@ -90,10 +92,11 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		@ConditionalOnBean(WebClient.Builder.class)
-		ZipkinWebClientSender webClientSender(ZipkinProperties properties, WebClient.Builder webClientBuilder) {
-			WebClient webClient = webClientBuilder.build();
-			return new ZipkinWebClientSender(properties.getEndpoint(), webClient);
+		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
+				List<ZipkinWebClientBuilderCustomizer> customizers) {
+			WebClient.Builder builder = WebClient.builder();
+			customizers.forEach((c) -> c.customize(builder));
+			return new ZipkinWebClientSender(properties.getEndpoint(), builder.build());
 		}
 
 	}
