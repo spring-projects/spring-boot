@@ -25,6 +25,7 @@ import zipkin2.reporter.Sender;
 import zipkin2.reporter.brave.ZipkinSpanHandler;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -73,12 +74,12 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		@ConditionalOnBean(RestTemplateBuilder.class)
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
-				RestTemplateBuilder restTemplateBuilder) {
-			RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(properties.getConnectTimeout())
-					.setReadTimeout(properties.getReadTimeout()).build();
-			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplate);
+				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
+			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
+					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
+			customizers.orderedStream().forEach((c) -> c.customize(restTemplateBuilder));
+			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
 		}
 
 	}
@@ -90,10 +91,11 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		@ConditionalOnBean(WebClient.Builder.class)
-		ZipkinWebClientSender webClientSender(ZipkinProperties properties, WebClient.Builder webClientBuilder) {
-			WebClient webClient = webClientBuilder.build();
-			return new ZipkinWebClientSender(properties.getEndpoint(), webClient);
+		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
+				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers) {
+			WebClient.Builder builder = WebClient.builder();
+			customizers.orderedStream().forEach((c) -> c.customize(builder));
+			return new ZipkinWebClientSender(properties.getEndpoint(), builder.build());
 		}
 
 	}
