@@ -28,7 +28,6 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +45,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ UrlConnectionSenderConfiguration.class, RestTemplateSenderConfiguration.class,
-			WebClientSenderConfiguration.class })
+	@Import({ UrlConnectionSenderConfiguration.class, WebClientSenderConfiguration.class,
+			RestTemplateSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
@@ -85,7 +84,7 @@ class ZipkinConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnClass(WebClient.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
 	static class WebClientSenderConfiguration {
 
