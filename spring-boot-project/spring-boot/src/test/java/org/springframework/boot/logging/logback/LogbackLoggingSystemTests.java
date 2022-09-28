@@ -43,8 +43,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.ILoggerFactory;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
@@ -103,7 +103,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.loggingSystem.cleanUp();
-		this.logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).getLogger(getClass());
+		this.logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(getClass());
 		this.environment = new MockEnvironment();
 		ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 		this.environment.setConversionService((ConfigurableConversionService) conversionService);
@@ -114,7 +114,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	void cleanUp() {
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 		this.loggingSystem.cleanUp();
-		((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).stop();
+		((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
 	}
 
 	@Test
@@ -243,7 +243,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	void getLoggingConfigurationForALL() {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
-		Logger logger = (Logger) StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger(getClass().getName());
+		Logger logger = (Logger) LoggerFactory.getILoggerFactory().getLogger(getClass().getName());
 		logger.setLevel(Level.ALL);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
@@ -255,7 +255,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.TRACE);
-		Logger logger = (Logger) StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger(getClass().getName());
+		Logger logger = (Logger) LoggerFactory.getILoggerFactory().getLogger(getClass().getName());
 		assertThat(logger.getLevel()).isEqualTo(Level.TRACE);
 	}
 
@@ -516,9 +516,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "20");
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
-		LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 		Map<String, String> properties = loggerContext.getCopyOfPropertyMap();
-		Set<String> expectedProperties = new HashSet<String>();
+		Set<String> expectedProperties = new HashSet<>();
 		ReflectionUtils.doWithFields(LogbackLoggingSystemProperties.class,
 				(field) -> expectedProperties.add((String) field.get(null)), this::isPublicStaticFinal);
 		expectedProperties.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH"));
@@ -533,7 +533,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void initializationIsOnlyPerformedOnceUntilCleanedUp() {
-		LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 		LoggerContextListener listener = mock(LoggerContextListener.class);
 		loggerContext.addListener(listener);
 		this.loggingSystem.beforeInitialize();
@@ -635,7 +635,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private static Logger getRootLogger() {
-		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		ILoggerFactory factory = LoggerFactory.getILoggerFactory();
 		LoggerContext context = (LoggerContext) factory;
 		return context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 	}

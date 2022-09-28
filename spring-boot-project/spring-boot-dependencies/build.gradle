@@ -863,7 +863,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.2.11") {
+	library("Logback", "1.4.1") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -1366,7 +1366,7 @@ bom {
 			]
 		}
 	}
-	library("SLF4J", "1.7.36") {
+	library("SLF4J", "2.0.2") {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",
@@ -1375,9 +1375,11 @@ bom {
 				"slf4j-api",
 				"slf4j-ext",
 				"slf4j-jcl",
+				"slf4j-jdk-platform-logging",
 				"slf4j-jdk14",
 				"slf4j-log4j12",
 				"slf4j-nop",
+				"slf4j-reload4j",
 				"slf4j-simple"
 			]
 		}

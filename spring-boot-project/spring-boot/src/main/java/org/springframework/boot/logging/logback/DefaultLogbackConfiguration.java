@@ -25,6 +25,7 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.spi.ScanException;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
@@ -146,7 +147,12 @@ class DefaultLogbackConfiguration {
 	}
 
 	private String resolve(LogbackConfigurator config, String val) {
-		return OptionHelper.substVars(val, config.getContext());
+		try {
+			return OptionHelper.substVars(val, config.getContext());
+		}
+		catch (ScanException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }
