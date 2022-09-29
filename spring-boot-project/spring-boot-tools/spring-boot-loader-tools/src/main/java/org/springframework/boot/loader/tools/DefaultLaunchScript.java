@@ -71,7 +71,7 @@ public class DefaultLaunchScript implements LaunchScript {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
-			return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+			return outputStream.toString(StandardCharsets.UTF_8);
 		}
 		finally {
 			inputStream.close();
