@@ -67,6 +67,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.aot.AotApplicationContextInitializer;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
@@ -85,7 +86,6 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
-import org.springframework.core.log.LogMessage;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -416,19 +416,11 @@ public class SpringApplication {
 
 	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
 		if (AotDetector.useGeneratedArtifacts()) {
-			List<AotApplicationContextInitializer<?>> aotInitializers = new ArrayList<>();
-			for (ApplicationContextInitializer<?> candidate : initializers) {
-				if (candidate instanceof AotApplicationContextInitializer<?> aotInitializer) {
-					aotInitializers.add(aotInitializer);
-				}
-			}
+			List<ApplicationContextInitializer<?>> aotInitializers = new ArrayList<>(
+					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
 			if (aotInitializers.isEmpty()) {
-				AotApplicationContextInitializer<?> aotInitializer = AotApplicationContextInitializer
-						.forMainApplicationClass(this.mainApplicationClass);
-				aotInitializers.add(aotInitializer);
-			}
-			for (AotApplicationContextInitializer<?> aotInitializer : aotInitializers) {
-				logger.debug(LogMessage.format("Using AOT generated initializer: %s", aotInitializer.getName()));
+				String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
+				aotInitializers.add(AotApplicationContextInitializer.forInitializerClasses(initializerClassName));
 			}
 			initializers.removeAll(aotInitializers);
 			initializers.addAll(0, aotInitializers);

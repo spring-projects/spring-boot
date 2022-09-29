@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.AotApplicationContextInitializer;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
@@ -44,6 +43,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.aot.AotApplicationContextInitializer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.SpringVersion;
@@ -494,7 +494,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 					ContextLoaderHook.this.configurer.accept(application);
 					if (ContextLoaderHook.this.mode == Mode.AOT_RUNTIME) {
 						application.addInitializers(
-								AotApplicationContextInitializer.of(ContextLoaderHook.this.initializer));
+								(AotApplicationContextInitializer<?>) ContextLoaderHook.this.initializer::initialize);
 					}
 				}
 
