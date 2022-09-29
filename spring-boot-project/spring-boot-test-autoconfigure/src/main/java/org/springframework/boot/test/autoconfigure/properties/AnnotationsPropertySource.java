@@ -111,7 +111,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private String toKebabCase(String name) {
 		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		while (matcher.find()) {
 			matcher.appendReplacement(result, matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
 		}
