@@ -35,6 +35,7 @@ import graphql.schema.idl.SchemaGenerator;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -46,6 +47,8 @@ import org.springframework.boot.actuate.metrics.AutoTimer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -65,14 +68,17 @@ class GraphQlMetricsInstrumentationTests {
 
 	private GraphQlMetricsInstrumentation instrumentation;
 
+	private GraphQlTagsProvider graphQlTagsProvider;
+
 	private InstrumentationState state;
 
 	private InstrumentationExecutionParameters parameters;
 
 	@BeforeEach
 	void setup() {
+		this.graphQlTagsProvider = mock(GraphQlTagsProvider.class);
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
-		this.instrumentation = new GraphQlMetricsInstrumentation(this.registry, mock(GraphQlTagsProvider.class),
+		this.instrumentation = new GraphQlMetricsInstrumentation(this.registry, this.graphQlTagsProvider,
 				AutoTimer.ENABLED);
 		this.state = this.instrumentation
 				.createState(new InstrumentationCreateStateParameters(this.schema, this.input));
@@ -117,6 +123,8 @@ class GraphQlMetricsInstrumentationTests {
 	void shouldRecordDataFetchingMetricWhenSuccess() throws Exception {
 		DataFetcher<String> dataFetcher = mock(DataFetcher.class);
 		given(dataFetcher.get(any())).willReturn("Hello");
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), any())).willReturn(Tags.of("tag1", "val1"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), eq("Hello"), any(), any())).willReturn(null);
 		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
 
 		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters,
@@ -124,7 +132,26 @@ class GraphQlMetricsInstrumentationTests {
 		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
 		instrumented.get(environment);
 
-		Timer timer = this.registry.find("graphql.datafetcher").timer();
+		Timer timer = this.registry.find("graphql.datafetcher").tag("tag1", "val1").timer();
+		assertThat(timer).isNotNull();
+		assertThat(timer.count()).isEqualTo(1);
+	}
+
+	@Test
+	void shouldRecordDataFetchingMetricWhenSuccessAndPassResultToTagsProvider() throws Exception {
+		DataFetcher<String> dataFetcher = mock(DataFetcher.class);
+		given(dataFetcher.get(any())).willReturn("Hello");
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), any())).willReturn(Tags.of("tag1", "val1"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), eq("Hello"), any(), any()))
+				.willReturn(Tags.of("tag2", "val2"));
+		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
+
+		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters,
+				this.state);
+		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
+		instrumented.get(environment);
+
+		Timer timer = this.registry.find("graphql.datafetcher").tag("tag1", "val1").tag("tag2", "val2").timer();
 		assertThat(timer).isNotNull();
 		assertThat(timer.count()).isEqualTo(1);
 	}
@@ -133,6 +160,9 @@ class GraphQlMetricsInstrumentationTests {
 	void shouldRecordDataFetchingMetricWhenSuccessCompletionStage() throws Exception {
 		DataFetcher<CompletionStage<String>> dataFetcher = mock(DataFetcher.class);
 		given(dataFetcher.get(any())).willReturn(CompletableFuture.completedFuture("Hello"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), any())).willReturn(Tags.of("tag1", "val1"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), eq("Hello"), any(), any()))
+				.willReturn(Tags.of("tag2", "val2"));
 		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
 
 		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters,
@@ -140,7 +170,45 @@ class GraphQlMetricsInstrumentationTests {
 		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
 		instrumented.get(environment);
 
-		Timer timer = this.registry.find("graphql.datafetcher").timer();
+		Timer timer = this.registry.find("graphql.datafetcher").tag("tag1", "val1").timer();
+		assertThat(timer).isNotNull();
+		assertThat(timer.count()).isEqualTo(1);
+	}
+
+	@Test
+	void shouldRecordDataFetchingMetricWithResultTagsWhenSuccessCompletionStage() throws Exception {
+		DataFetcher<CompletionStage<String>> dataFetcher = mock(DataFetcher.class);
+		given(dataFetcher.get(any())).willReturn(CompletableFuture.completedFuture("Hello"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), any())).willReturn(Tags.of("tag1", "val1"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), eq("Hello"), any(), any()))
+				.willReturn(Tags.of("tag2", "val2"));
+		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
+
+		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters,
+				this.state);
+		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
+		instrumented.get(environment);
+
+		Timer timer = this.registry.find("graphql.datafetcher").tag("tag1", "val1").tag("tag2", "val2").timer();
+		assertThat(timer).isNotNull();
+		assertThat(timer.count()).isEqualTo(1);
+	}
+
+	@Test
+	void shouldRecordDataFetchingMetricWithResultTagsAndDedupWhenSuccessCompletionStage() throws Exception {
+		DataFetcher<CompletionStage<String>> dataFetcher = mock(DataFetcher.class);
+		given(dataFetcher.get(any())).willReturn(CompletableFuture.completedFuture("Hello"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), any())).willReturn(Tags.of("tag1", "val1"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), any(), any()))
+				.willReturn(Tags.of("tag1", "val2"));
+		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
+
+		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters,
+				this.state);
+		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
+		instrumented.get(environment);
+
+		Timer timer = this.registry.find("graphql.datafetcher").tag("tag1", "val1").timer();
 		assertThat(timer).isNotNull();
 		assertThat(timer.count()).isEqualTo(1);
 	}
@@ -148,7 +216,12 @@ class GraphQlMetricsInstrumentationTests {
 	@Test
 	void shouldRecordDataFetchingMetricWhenError() throws Exception {
 		DataFetcher<CompletionStage<String>> dataFetcher = mock(DataFetcher.class);
-		given(dataFetcher.get(any())).willThrow(new IllegalStateException("test"));
+		IllegalStateException exception = new IllegalStateException("test");
+		given(dataFetcher.get(any())).willThrow(exception);
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), any(), eq(exception)))
+				.willReturn(Tags.of("tag1", "val1"));
+		given(this.graphQlTagsProvider.getDataFetchingTags(any(), isNull(), any(), eq(exception)))
+				.willReturn(Tags.of("tag2", "val2"));
 		InstrumentationFieldFetchParameters fieldFetchParameters = mockFieldFetchParameters(false);
 
 		DataFetcher<?> instrumented = this.instrumentation.instrumentDataFetcher(dataFetcher, fieldFetchParameters,
@@ -156,7 +229,7 @@ class GraphQlMetricsInstrumentationTests {
 		DataFetchingEnvironment environment = DataFetchingEnvironmentImpl.newDataFetchingEnvironment().build();
 		assertThatThrownBy(() -> instrumented.get(environment)).isInstanceOf(IllegalStateException.class);
 
-		Timer timer = this.registry.find("graphql.datafetcher").timer();
+		Timer timer = this.registry.find("graphql.datafetcher").tag("tag1", "val1").tag("tag2", "val2").timer();
 		assertThat(timer).isNotNull();
 		assertThat(timer.count()).isEqualTo(1);
 	}

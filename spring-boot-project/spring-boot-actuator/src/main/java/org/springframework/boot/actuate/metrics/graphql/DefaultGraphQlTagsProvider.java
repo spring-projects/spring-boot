@@ -74,4 +74,14 @@ public class DefaultGraphQlTagsProvider implements GraphQlTagsProvider {
 		return tags;
 	}
 
+	@Override
+	public Iterable<Tag> getDataFetchingTags(DataFetcher<?> dataFetcher, Object dataFetcherResult,
+			InstrumentationFieldFetchParameters parameters, Throwable exception) {
+		Tags tags = Tags.empty();
+		for (GraphQlTagsContributor contributor : this.contributors) {
+			tags = tags.and(contributor.getDataFetchingTags(dataFetcher, dataFetcherResult, parameters, exception));
+		}
+		return tags;
+	}
+
 }

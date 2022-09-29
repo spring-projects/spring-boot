@@ -31,6 +31,7 @@ import graphql.schema.DataFetcher;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
@@ -101,15 +102,15 @@ public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 					Object value = dataFetcher.get(environment);
 					if (value instanceof CompletionStage<?> completion) {
 						return completion.whenComplete((result, error) -> recordDataFetcherMetric(sample,
-								instrumentationState, dataFetcher, parameters, error));
+								instrumentationState, dataFetcher, result, parameters, error));
 					}
 					else {
-						recordDataFetcherMetric(sample, instrumentationState, dataFetcher, parameters, null);
+						recordDataFetcherMetric(sample, instrumentationState, dataFetcher, value, parameters, null);
 						return value;
 					}
 				}
 				catch (Throwable throwable) {
-					recordDataFetcherMetric(sample, instrumentationState, dataFetcher, parameters, throwable);
+					recordDataFetcherMetric(sample, instrumentationState, dataFetcher, null, parameters, throwable);
 					throw throwable;
 				}
 			};
@@ -118,9 +119,13 @@ public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 	}
 
 	private void recordDataFetcherMetric(Timer.Sample sample, RequestMetricsInstrumentationState instrumentationState,
-			DataFetcher<?> dataFetcher, InstrumentationFieldFetchParameters parameters, Throwable throwable) {
+			DataFetcher<?> dataFetcher, Object dataFetcherResult, InstrumentationFieldFetchParameters parameters,
+			Throwable throwable) {
 		Timer.Builder timer = this.autoTimer.builder("graphql.datafetcher");
-		timer.tags(this.tagsProvider.getDataFetchingTags(dataFetcher, parameters, throwable));
+		Tags tags = Tags.concat(
+				this.tagsProvider.getDataFetchingTags(dataFetcher, dataFetcherResult, parameters, throwable),
+				this.tagsProvider.getDataFetchingTags(dataFetcher, parameters, throwable));
+		timer.tags(tags);
 		sample.stop(timer.register(this.registry));
 		instrumentationState.incrementDataFetchingCount();
 	}

@@ -22,6 +22,7 @@ import graphql.execution.instrumentation.parameters.InstrumentationExecutionPara
 import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchParameters;
 import graphql.schema.DataFetcher;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
 /**
  * Provides {@link Tag Tags} for Spring GraphQL-based request handling.
@@ -38,5 +39,10 @@ public interface GraphQlTagsProvider {
 
 	Iterable<Tag> getDataFetchingTags(DataFetcher<?> dataFetcher, InstrumentationFieldFetchParameters parameters,
 			Throwable exception);
+
+	default Iterable<Tag> getDataFetchingTags(DataFetcher<?> dataFetcher, Object dataFetcherResult,
+			InstrumentationFieldFetchParameters parameters, Throwable exception) {
+		return Tags.empty();
+	}
 
 }
