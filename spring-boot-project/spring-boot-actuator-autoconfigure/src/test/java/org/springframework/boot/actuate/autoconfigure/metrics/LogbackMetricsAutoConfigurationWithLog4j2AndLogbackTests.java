@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -27,17 +28,18 @@ import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MetricsAutoConfiguration} when both Log4j2 and Logback are on the
- * classpath.
+ * Tests for {@link LogbackMetricsAutoConfiguration} when both Log4j2 and Logback are on
+ * the classpath.
  *
  * @author Andy Wilkinson
  */
 @ClassPathExclusions("log4j-to-slf4j-*.jar")
 @ClassPathOverrides({ "org.apache.logging.log4j:log4j-core:2.9.0", "org.apache.logging.log4j:log4j-slf4j-impl:2.9.0" })
-class MetricsAutoConfigurationWithLog4j2AndLogbackTests {
+class LogbackMetricsAutoConfigurationWithLog4j2AndLogbackTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+					SimpleMetricsExportAutoConfiguration.class, LogbackMetricsAutoConfiguration.class));
 
 	@Test
 	void doesNotConfigureLogbackMetrics() {
