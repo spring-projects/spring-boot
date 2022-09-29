@@ -316,7 +316,7 @@ class HttpClientTransportTests {
 	private String writeToString(HttpEntity entity) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		entity.writeTo(out);
-		return new String(out.toByteArray(), StandardCharsets.UTF_8);
+		return out.toString(StandardCharsets.UTF_8);
 	}
 
 	private void givenClientWillReturnResponse() throws IOException {
