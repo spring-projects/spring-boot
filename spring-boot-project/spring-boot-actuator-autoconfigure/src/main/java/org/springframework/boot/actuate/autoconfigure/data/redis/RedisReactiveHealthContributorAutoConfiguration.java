@@ -54,6 +54,7 @@ public class RedisReactiveHealthContributorAutoConfiguration extends
 
 	RedisReactiveHealthContributorAutoConfiguration(
 			Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories) {
+		super(RedisReactiveHealthIndicator::new);
 		this.redisConnectionFactories = redisConnectionFactories;
 	}
 

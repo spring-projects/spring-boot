@@ -18,18 +18,20 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfigurationTests.TestReactiveHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfigurationReflectionTests.TestReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 
 /**
- * Tests for {@link CompositeReactiveHealthContributorConfiguration}.
+ * Tests for {@link CompositeReactiveHealthContributorConfiguration} using reflection to
+ * create indicator instances.
  *
  * @author Phillip Webb
  */
-class CompositeReactiveHealthContributorConfigurationTests extends
+@Deprecated(since = "3.0.0", forRemoval = true)
+class CompositeReactiveHealthContributorConfigurationReflectionTests extends
 		AbstractCompositeHealthContributorConfigurationTests<ReactiveHealthContributor, TestReactiveHealthIndicator> {
 
 	@Override
@@ -39,10 +41,6 @@ class CompositeReactiveHealthContributorConfigurationTests extends
 
 	static class TestCompositeReactiveHealthContributorConfiguration
 			extends CompositeReactiveHealthContributorConfiguration<TestReactiveHealthIndicator, TestBean> {
-
-		TestCompositeReactiveHealthContributorConfiguration() {
-			super(TestReactiveHealthIndicator::new);
-		}
 
 	}
 

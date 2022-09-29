@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,10 @@ class CassandraHealthContributorConfigurations {
 	static class CassandraDriverConfiguration
 			extends CompositeHealthContributorConfiguration<CassandraDriverHealthIndicator, CqlSession> {
 
+		CassandraDriverConfiguration() {
+			super(CassandraDriverHealthIndicator::new);
+		}
+
 		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
 		HealthContributor cassandraHealthContributor(Map<String, CqlSession> sessions) {
@@ -55,6 +59,10 @@ class CassandraHealthContributorConfigurations {
 	@ConditionalOnBean(CqlSession.class)
 	static class CassandraReactiveDriverConfiguration extends
 			CompositeReactiveHealthContributorConfiguration<CassandraDriverReactiveHealthIndicator, CqlSession> {
+
+		CassandraReactiveDriverConfiguration() {
+			super(CassandraDriverReactiveHealthIndicator::new);
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })

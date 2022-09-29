@@ -16,30 +16,28 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfigurationTests.TestHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfigurationReflectionTests.TestHealthIndicator;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthContributor;
 
 /**
- * Tests for {@link CompositeHealthContributorConfiguration}.
+ * Tests for {@link CompositeHealthContributorConfiguration} using reflection to create
+ * indicator instances.
  *
  * @author Phillip Webb
  */
-class CompositeHealthContributorConfigurationTests
+@Deprecated(since = "3.0.0", forRemoval = true)
+class CompositeHealthContributorConfigurationReflectionTests
 		extends AbstractCompositeHealthContributorConfigurationTests<HealthContributor, TestHealthIndicator> {
 
 	@Override
 	protected AbstractCompositeHealthContributorConfiguration<HealthContributor, TestHealthIndicator, TestBean> newComposite() {
-		return new TestCompositeHealthContributorConfiguration();
+		return new ReflectiveTestCompositeHealthContributorConfiguration();
 	}
 
-	static class TestCompositeHealthContributorConfiguration
+	static class ReflectiveTestCompositeHealthContributorConfiguration
 			extends CompositeHealthContributorConfiguration<TestHealthIndicator, TestBean> {
-
-		TestCompositeHealthContributorConfiguration() {
-			super(TestHealthIndicator::new);
-		}
 
 	}
 
