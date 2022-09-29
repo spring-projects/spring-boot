@@ -53,7 +53,7 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
@@ -79,7 +79,7 @@ import static org.mockito.Mockito.times;
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
-@ClassPathOverrides("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+@ConfigureClasspathToPreferLog4j2
 class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
