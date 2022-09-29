@@ -75,6 +75,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Johannes Edmeier
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Rens Hoskens
  * @since 1.1.0
  */
 @AutoConfiguration
@@ -107,7 +108,6 @@ public class JacksonAutoConfiguration {
 	static class JacksonObjectMapperConfiguration {
 
 		@Bean
-		@Primary
 		@ConditionalOnMissingBean
 		ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
 			return builder.createXmlMapper(false).build();
