@@ -102,6 +102,7 @@ dependencies {
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.springframework:spring-core-test")
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")

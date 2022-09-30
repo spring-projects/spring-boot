@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.TypeUtils.TypeDescriptor;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -30,7 +28,8 @@ import org.springframework.boot.configurationprocessor.test.TestableAnnotationPr
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
 import org.springframework.boot.configurationsample.generic.AbstractIntermediateGenericProperties;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,11 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TypeUtils}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class TypeUtilsTests {
-
-	@TempDir
-	File tempDir;
 
 	@Test
 	void resolveTypeDescriptorOnConcreteClass() throws IOException {
@@ -82,10 +79,12 @@ class TypeUtilsTests {
 		});
 	}
 
-	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) throws IOException {
+	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) {
 		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(consumer, TypeUtils::new);
-		TestCompiler compiler = new TestCompiler(this.tempDir);
-		compiler.getTask(target).call(processor);
+		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor)
+				.withSources(SourceFile.forTestClass(target));
+		compiler.compile((compiled) -> {
+		});
 	}
 
 }

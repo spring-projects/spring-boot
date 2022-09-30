@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,31 +32,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Metadata generation tests for incremental builds.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void incrementalBuild() throws Exception {
-		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
-		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
-		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isTrue();
+		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
+		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
-		metadata = project.incrementalBuild(BarProperties.class);
+		metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		project.addSourceCode(BarProperties.class, BarProperties.class.getResourceAsStream("BarProperties.snippet"));
-		metadata = project.incrementalBuild(BarProperties.class);
+		metadata = project.compile();
 		assertThat(metadata).has(Metadata.withProperty("bar.extra"));
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 		project.revert(BarProperties.class);
-		metadata = project.incrementalBuild(BarProperties.class);
+		metadata = project.compile();
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.extra"));
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
@@ -64,20 +63,21 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 
 	@Test
 	void incrementalBuildAnnotationRemoved() throws Exception {
-		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
-		ConfigurationMetadata metadata = project.fullBuild();
+		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
+		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 		project.replaceText(BarProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
-		metadata = project.incrementalBuild(BarProperties.class);
+		project.replaceText(FooProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
+		metadata = project.compile();
 		assertThat(metadata).isNull();
 	}
 
 	@Test
 	@Disabled("gh-26271")
 	void incrementalBuildTypeRenamed() throws Exception {
-		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
-		ConfigurationMetadata metadata = project.fullBuild();
+		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
+		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
@@ -85,7 +85,7 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter").fromSource(RenamedBarProperties.class));
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
-		metadata = project.incrementalBuild(RenamedBarProperties.class);
+		metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
@@ -96,9 +96,9 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 
 	@Test
 	void incrementalBuildDoesNotDeleteItems() throws Exception {
-		TestProject project = new TestProject(this.tempDir, ClassWithNestedProperties.class, FooProperties.class);
-		ConfigurationMetadata initialMetadata = project.fullBuild();
-		ConfigurationMetadata updatedMetadata = project.incrementalBuild(FooProperties.class);
+		TestProject project = new TestProject(ClassWithNestedProperties.class, FooProperties.class);
+		ConfigurationMetadata initialMetadata = project.compile();
+		ConfigurationMetadata updatedMetadata = project.compile();
 		assertThat(initialMetadata.getItems()).isEqualTo(updatedMetadata.getItems());
 	}
 

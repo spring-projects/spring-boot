@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Metadata generation tests for Actuator endpoints.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -96,8 +97,8 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
-		TestProject project = new TestProject(this.tempDir, IncrementalEndpoint.class);
-		ConfigurationMetadata metadata = project.fullBuild();
+		TestProject project = new TestProject(IncrementalEndpoint.class);
+		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
@@ -105,7 +106,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
 				"id = \"incremental\", enableByDefault = false");
-		metadata = project.incrementalBuild(IncrementalEndpoint.class);
+		metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", false));
@@ -115,15 +116,15 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void incrementalEndpointBuildChangeCacheFlag() throws Exception {
-		TestProject project = new TestProject(this.tempDir, IncrementalEndpoint.class);
-		ConfigurationMetadata metadata = project.fullBuild();
+		TestProject project = new TestProject(IncrementalEndpoint.class);
+		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
-		metadata = project.incrementalBuild(IncrementalEndpoint.class);
+		metadata = project.compile();
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
@@ -132,14 +133,14 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
-		TestProject project = new TestProject(this.tempDir, SpecificEndpoint.class);
-		ConfigurationMetadata metadata = project.fullBuild();
+		TestProject project = new TestProject(SpecificEndpoint.class);
+		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(SpecificEndpoint.class, "enableByDefault = true", "enableByDefault = false");
-		metadata = project.incrementalBuild(SpecificEndpoint.class);
+		metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", false));
 		assertThat(metadata).has(cacheTtl("specific"));

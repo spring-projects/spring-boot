@@ -16,36 +16,31 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link ValueObjectBinder}.
@@ -368,26 +363,27 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	void bindToRecordWithDefaultValue(@TempDir File tempDir) throws IOException, ClassNotFoundException {
+	void bindToRecordWithDefaultValue() throws IOException {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.record.property1", "value-from-config-1");
 		this.sources.add(source);
-		File recordProperties = new File(tempDir, "RecordProperties.java");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(recordProperties))) {
-			writer.println("public record RecordProperties(");
-			writer.println(
-					"@org.springframework.boot.context.properties.bind.DefaultValue(\"default-value-1\") String property1,");
-			writer.println(
-					"@org.springframework.boot.context.properties.bind.DefaultValue(\"default-value-2\") String property2");
-			writer.println(") {");
-			writer.println("}");
-		}
-		TestCompiler compiler = new TestCompiler(tempDir);
-		compiler.getTask(Arrays.asList(recordProperties)).call();
-		ClassLoader ucl = new URLClassLoader(new URL[] { tempDir.toURI().toURL() });
-		Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, ucl)).get();
-		assertThat(bean).hasFieldOrPropertyWithValue("property1", "value-from-config-1")
-				.hasFieldOrPropertyWithValue("property2", "default-value-2");
+		String recordProperties = """
+				public record RecordProperties(
+					@org.springframework.boot.context.properties.bind.DefaultValue("default-value-1") String property1,
+					@org.springframework.boot.context.properties.bind.DefaultValue("default-value-2") String property2) {
+				}
+				""";
+		TestCompiler.forSystem().withSources(SourceFile.of(recordProperties)).compile((compiled) -> {
+			try {
+				ClassLoader cl = compiled.getClassLoader();
+				Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, cl)).get();
+				assertThat(bean).hasFieldOrPropertyWithValue("property1", "value-from-config-1")
+						.hasFieldOrPropertyWithValue("property2", "default-value-2");
+			}
+			catch (ClassNotFoundException ex) {
+				fail("Expected generated class 'RecordProperties' not found", ex);
+			}
+		});
 	}
 
 	private void noConfigurationProperty(BindException ex) {
