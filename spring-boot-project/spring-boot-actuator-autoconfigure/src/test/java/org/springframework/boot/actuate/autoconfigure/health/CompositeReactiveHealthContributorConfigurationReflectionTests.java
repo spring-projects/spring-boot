@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.health.ReactiveHealthContributor;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 @Deprecated(since = "3.0.0", forRemoval = true)
 class CompositeReactiveHealthContributorConfigurationReflectionTests extends
 		AbstractCompositeHealthContributorConfigurationTests<ReactiveHealthContributor, TestReactiveHealthIndicator> {
