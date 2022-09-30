@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.AotProcessor;
+import org.springframework.boot.SpringApplicationAotProcessor;
 
 /**
  * Utility to deduce if DevTools should be enabled in the current context.
@@ -37,7 +37,7 @@ public final class DevToolsEnablementDeducer {
 		skipped.add("org.junit.runners.");
 		skipped.add("org.junit.platform.");
 		skipped.add("org.springframework.boot.test.");
-		skipped.add(AotProcessor.class.getName());
+		skipped.add(SpringApplicationAotProcessor.class.getName());
 		skipped.add("cucumber.runtime.");
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}

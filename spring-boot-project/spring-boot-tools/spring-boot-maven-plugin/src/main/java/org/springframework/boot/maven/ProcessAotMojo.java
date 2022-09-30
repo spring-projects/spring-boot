@@ -40,7 +40,7 @@ import org.springframework.util.ObjectUtils;
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ProcessAotMojo extends AbstractAotMojo {
 
-	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.AotProcessor";
+	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.SpringApplicationAotProcessor";
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
