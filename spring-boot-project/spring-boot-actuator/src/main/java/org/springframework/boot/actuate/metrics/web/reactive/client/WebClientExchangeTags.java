@@ -34,7 +34,10 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @author Nishant Raut
  * @since 2.1.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.web.reactive.function.client.DefaultClientObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class WebClientExchangeTags {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
