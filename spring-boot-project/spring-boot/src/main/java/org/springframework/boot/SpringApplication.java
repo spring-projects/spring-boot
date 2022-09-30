@@ -420,8 +420,7 @@ public class SpringApplication {
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
 			if (aotInitializers.isEmpty()) {
 				String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
-				aotInitializers.add(AotApplicationContextInitializer
-						.forInitializerClasses(initializerClassName));
+				aotInitializers.add(AotApplicationContextInitializer.forInitializerClasses(initializerClassName));
 			}
 			initializers.removeAll(aotInitializers);
 			initializers.addAll(0, aotInitializers);
