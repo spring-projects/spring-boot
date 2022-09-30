@@ -41,6 +41,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.CachedIntrospectionResults;
@@ -1343,6 +1344,21 @@ class SpringApplicationTests {
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "load")).rejects(hints);
 	}
 
+	@Test // gh-32555
+	void shouldUseAotInitializer() {
+		SpringApplication application = new SpringApplication(ExampleAotProcessedMainClass.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setMainApplicationClass(ExampleAotProcessedMainClass.class);
+		System.setProperty(AotDetector.AOT_ENABLED, "true");
+		try {
+			ApplicationContext context = application.run();
+			assertThat(context.getBean("test")).isEqualTo("test");
+		}
+		finally {
+			System.clearProperty(AotDetector.AOT_ENABLED);
+		}
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
@@ -1887,6 +1903,20 @@ class SpringApplicationTests {
 		ExampleConfigurer configurer() {
 			return (example) -> {
 			};
+		}
+
+	}
+
+	static class ExampleAotProcessedMainClass {
+
+	}
+
+	static class ExampleAotProcessedMainClass__ApplicationContextInitializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		@Override
+		public void initialize(ConfigurableApplicationContext applicationContext) {
+			applicationContext.getBeanFactory().registerSingleton("test", "test");
 		}
 
 	}
