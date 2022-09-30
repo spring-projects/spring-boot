@@ -101,7 +101,6 @@ org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoC
 org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration

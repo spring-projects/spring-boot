@@ -15,6 +15,6 @@
  */
 
 /**
- * Classes shared between Wavefront tracing and metrics.
+ * Common classes for Wavefront metrics (can be extended later to support tracing too).
  */
 package org.springframework.boot.actuate.autoconfigure.wavefront;

@@ -36,19 +36,18 @@ import org.springframework.util.unit.DataSize;
 public class WavefrontProperties {
 
 	/**
-	 * URI to ship metrics and traces to.
+	 * URI to ship metrics to.
 	 */
 	private URI uri = URI.create("https://longboard.wavefront.com");
 
 	/**
-	 * Unique identifier for the app instance that is the source of metrics and traces
-	 * being published to Wavefront. Defaults to the local host name.
+	 * Unique identifier for the app instance that is the source of metrics being
+	 * published to Wavefront. Defaults to the local host name.
 	 */
 	private String source;
 
 	/**
-	 * API token used when publishing metrics and traces directly to the Wavefront API
-	 * host.
+	 * API token used when publishing metrics directly to the Wavefront API host.
 	 */
 	private String apiToken;
 
@@ -62,21 +61,12 @@ public class WavefrontProperties {
 	 */
 	private final Metrics metrics = new Metrics();
 
-	/**
-	 * Tracing configuration.
-	 */
-	private final Tracing tracing = new Tracing();
-
 	public Sender getSender() {
 		return this.sender;
 	}
 
 	public Metrics getMetrics() {
 		return this.metrics;
-	}
-
-	public Tracing getTracing() {
-		return this.tracing;
 	}
 
 	public URI getUri() {
@@ -254,36 +244,6 @@ public class WavefrontProperties {
 				throw new UnsupportedOperationException("Use Sender.setBatchSize(int) instead");
 			}
 
-		}
-
-	}
-
-	public static class Tracing {
-
-		/**
-		 * Application name. Defaults to 'spring.application.name'.
-		 */
-		private String applicationName;
-
-		/**
-		 * Service name. Defaults to 'spring.application.name'.
-		 */
-		private String serviceName;
-
-		public String getServiceName() {
-			return this.serviceName;
-		}
-
-		public void setServiceName(String serviceName) {
-			this.serviceName = serviceName;
-		}
-
-		public String getApplicationName() {
-			return this.applicationName;
-		}
-
-		public void setApplicationName(String applicationName) {
-			this.applicationName = applicationName;
 		}
 
 	}

@@ -22,7 +22,6 @@ import com.wavefront.sdk.common.WavefrontSender;
 import com.wavefront.sdk.common.clients.WavefrontClient.Builder;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,8 +32,7 @@ import org.springframework.util.unit.DataSize;
 
 /**
  * Configuration for Wavefront common infrastructure. This configuration is imported from
- * {@link WavefrontMetricsExportAutoConfiguration} and
- * {@link WavefrontTracingAutoConfiguration}.
+ * {@link WavefrontMetricsExportAutoConfiguration}.
  *
  * @author Moritz Halbritter
  * @since 3.0.0
