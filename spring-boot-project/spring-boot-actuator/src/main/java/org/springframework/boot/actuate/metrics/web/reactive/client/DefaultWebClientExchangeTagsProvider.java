@@ -32,7 +32,8 @@ import org.springframework.web.reactive.function.client.ClientResponse;
  * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
  * {@link org.springframework.web.reactive.function.client.DefaultClientObservationConvention}
  */
-@Deprecated
+@Deprecated(since = "3.0.0", forRemoval = true)
+@SuppressWarnings({ "deprecation", "removal" })
 public class DefaultWebClientExchangeTagsProvider implements WebClientExchangeTagsProvider {
 
 	@Override

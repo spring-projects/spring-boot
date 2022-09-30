@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -61,11 +62,15 @@ public class HttpClientObservationsAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpClientUriTagFilter(MetricsProperties properties) {
-			String metricName = properties.getWeb().getClient().getRequest().getMetricName();
-			MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String.format(
-					"Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?", metricName));
-			return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getClient().getMaxUriTags(),
+		@SuppressWarnings("deprecation")
+		MeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
+				MetricsProperties metricsProperties) {
+			String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();
+			String observationName = observationProperties.getHttp().getClient().getRequests().getName();
+			String name = (observationName != null) ? observationName : metricName;
+			MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String
+					.format("Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?", name));
+			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getClient().getMaxUriTags(),
 					denyFilter);
 		}
 

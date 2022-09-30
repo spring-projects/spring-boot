@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Nishant Raut
  */
-@SuppressWarnings({"deprecation", "removal"})
+@SuppressWarnings({ "deprecation", "removal" })
 class WebClientExchangeTagsTests {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
