@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,40 +21,37 @@ import io.micrometer.observation.ObservationRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
-import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer;
-import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.actuate.metrics.web.reactive.client.ObservationWebClientCustomizer;
+import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.observation.ClientHttpObservationConvention;
-import org.springframework.http.client.observation.DefaultClientHttpObservationConvention;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ClientObservationConvention;
+import org.springframework.web.reactive.function.client.DefaultClientObservationConvention;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Configure the instrumentation of {@link RestTemplate}.
+ * Configure the instrumentation of {@link WebClient}.
  *
  * @author Brian Clozel
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(RestTemplate.class)
-@ConditionalOnBean(RestTemplateBuilder.class)
+@ConditionalOnClass(WebClient.class)
 @SuppressWarnings("deprecation")
-class RestTemplateObservationConfiguration {
+class WebClientObservationConfiguration {
 
 	@Bean
-	ObservationRestTemplateCustomizer metricsRestTemplateCustomizer(ObservationRegistry observationRegistry,
-			ObservationProperties observationProperties, MetricsProperties metricsProperties,
-			ObjectProvider<RestTemplateExchangeTagsProvider> optionalTagsProvider) {
+	ObservationWebClientCustomizer metricsWebClientCustomizer(ObservationRegistry observationRegistry,
+			ObservationProperties observationProperties,
+			ObjectProvider<WebClientExchangeTagsProvider> optionalTagsProvider, MetricsProperties metricsProperties) {
 		String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();
 		String observationName = observationProperties.getHttp().getClient().getRequests().getName();
 		String name = (observationName != null) ? observationName : metricName;
-		RestTemplateExchangeTagsProvider tagsProvider = optionalTagsProvider.getIfAvailable();
-		ClientHttpObservationConvention observationConvention = (tagsProvider != null)
-				? new ClientHttpObservationConventionAdapter(name, tagsProvider)
-				: new DefaultClientHttpObservationConvention(name);
-		return new ObservationRestTemplateCustomizer(observationRegistry, observationConvention);
+		WebClientExchangeTagsProvider tagsProvider = optionalTagsProvider.getIfAvailable();
+		ClientObservationConvention observationConvention = (tagsProvider != null)
+				? new ClientObservationConventionAdapter(name, tagsProvider)
+				: new DefaultClientObservationConvention(name);
+		return new ObservationWebClientCustomizer(observationRegistry, observationConvention);
 	}
 
 }

@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
@@ -30,33 +32,43 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for HTTP client-related metrics.
+ * {@link EnableAutoConfiguration Auto-configuration} for HTTP client-related
+ * observations.
  *
  * @author Jon Schneider
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Raheela Aslam
- * @since 2.1.0
+ * @author Brian Clozel
+ * @since 3.0.0
  */
 @AutoConfiguration(after = { ObservationAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
 		RestTemplateAutoConfiguration.class, WebClientAutoConfiguration.class })
-@ConditionalOnClass(MeterRegistry.class)
-@ConditionalOnBean(MeterRegistry.class)
-@Import({ RestTemplateObservationConfiguration.class, WebClientMetricsConfiguration.class })
-public class HttpClientMetricsAutoConfiguration {
+@ConditionalOnClass(Observation.class)
+@ConditionalOnBean(ObservationRegistry.class)
+@Import({ RestTemplateObservationConfiguration.class, WebClientObservationConfiguration.class })
+public class HttpClientObservationsAutoConfiguration {
 
-	@Bean
-	@Order(0)
-	public MeterFilter metricsHttpClientUriTagFilter(MetricsProperties properties) {
-		String metricName = properties.getWeb().getClient().getRequest().getMetricName();
-		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getClient().getMaxUriTags(),
-				denyFilter);
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MeterRegistry.class)
+	@ConditionalOnBean(MeterRegistry.class)
+	class MeterFilterConfiguration {
+
+		@Bean
+		@Order(0)
+		MeterFilter metricsHttpClientUriTagFilter(MetricsProperties properties) {
+			String metricName = properties.getWeb().getClient().getRequest().getMetricName();
+			MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String.format(
+					"Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?", metricName));
+			return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getClient().getMaxUriTags(),
+					denyFilter);
+		}
+
 	}
 
 }

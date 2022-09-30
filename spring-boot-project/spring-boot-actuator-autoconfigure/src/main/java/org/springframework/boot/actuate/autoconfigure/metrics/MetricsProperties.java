@@ -149,16 +149,6 @@ public class MetricsProperties {
 				 */
 				private String metricName = "http.client.requests";
 
-				/**
-				 * Auto-timed request settings.
-				 */
-				@NestedConfigurationProperty
-				private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-				public AutoTimeProperties getAutotime() {
-					return this.autotime;
-				}
-
 				@DeprecatedConfigurationProperty(replacement = "management.observations.http.client.requests.name")
 				public String getMetricName() {
 					return this.metricName;

@@ -21,7 +21,7 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientObservationsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
@@ -64,7 +64,7 @@ class ZipkinAutoConfigurationIntegrationTests {
 		return runner
 				.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class,
 						ObservationAutoConfiguration.class, BraveAutoConfiguration.class, ZipkinAutoConfiguration.class,
-						HttpClientMetricsAutoConfiguration.class, MetricsAutoConfiguration.class,
+						HttpClientObservationsAutoConfiguration.class, MetricsAutoConfiguration.class,
 						SimpleMetricsExportAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class));
 	}

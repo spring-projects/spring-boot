@@ -60,7 +60,7 @@ class RestTemplateObservationConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withBean(ObservationRegistry.class, TestObservationRegistry::create)
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
+					RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
 
 	@Test
 	void contributesCustomizerBean() {
@@ -139,7 +139,7 @@ class RestTemplateObservationConfigurationTests {
 	@Test
 	void backsOffWhenRestTemplateBuilderIsMissing() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(HttpClientObservationsAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
 						.doesNotHaveBean(ObservationRestTemplateCustomizer.class));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,17 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import java.time.Duration;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.tck.TestObservationRegistry;
+import io.micrometer.observation.tck.TestObservationRegistryAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
+import org.springframework.boot.actuate.metrics.web.reactive.client.ObservationWebClientCustomizer;
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
@@ -47,22 +49,30 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebClientMetricsConfiguration}
+ * Tests for {@link WebClientObservationConfiguration}
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
-class WebClientMetricsConfigurationTests {
+@SuppressWarnings("deprecation")
+class WebClientObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withBean(ObservationRegistry.class, TestObservationRegistry::create)
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-					WebClientAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
+					WebClientAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
+
+	@Test
+	void contributesCustomizerBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationWebClientCustomizer.class)
+				.doesNotHaveBean(DefaultWebClientExchangeTagsProvider.class));
+	}
 
 	@Test
 	void webClientCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			validateWebClient(builder, registry);
 		});
@@ -77,8 +87,9 @@ class WebClientMetricsConfigurationTests {
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
-			MeterRegistry registry = getInitializedMeterRegistry(context);
-			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
+			TestObservationRegistry registry = getInitializedRegistry(context);
+			// TODO check size is 2
+			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests");
 			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
 					.contains("Are you using 'uriVariables'?");
 		});
@@ -87,30 +98,17 @@ class WebClientMetricsConfigurationTests {
 	@Test
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
-			MeterRegistry registry = getInitializedMeterRegistry(context);
-			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
+			TestObservationRegistry registry = getInitializedRegistry(context);
+			// TODO check size is 3
+			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests");
 			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
 					.doesNotContain("Are you using 'uriVariables'?");
 		});
 	}
 
-	@Test
-	void autoTimeRequestsCanBeConfigured() {
-		this.contextRunner.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
-				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
-				"management.metrics.web.client.request.autotime.percentiles-histogram=true").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					Timer timer = registry.get("http.client.requests").timer();
-					HistogramSnapshot snapshot = timer.takeSnapshot();
-					assertThat(snapshot.percentileValues()).hasSize(2);
-					assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
-					assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
-				});
-	}
-
-	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context) {
+	private TestObservationRegistry getInitializedRegistry(AssertableApplicationContext context) {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
-		MeterRegistry registry = context.getBean(MeterRegistry.class);
+		TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 		for (int i = 0; i < 3; i++) {
 			webClient.get().uri("https://example.org/projects/" + i).retrieve().toBodilessEntity()
 					.block(Duration.ofSeconds(30));
@@ -118,12 +116,13 @@ class WebClientMetricsConfigurationTests {
 		return registry;
 	}
 
-	private void validateWebClient(WebClient.Builder builder, MeterRegistry registry) {
+	private void validateWebClient(WebClient.Builder builder, TestObservationRegistry registry) {
 		WebClient webClient = mockWebClient(builder);
-		assertThat(registry.find("http.client.requests").meter()).isNull();
+		TestObservationRegistryAssert.assertThat(registry).doesNotHaveAnyObservation();
 		webClient.get().uri("https://example.org/projects/{project}", "spring-boot").retrieve().toBodilessEntity()
 				.block(Duration.ofSeconds(30));
-		assertThat(registry.find("http.client.requests").tags("uri", "/projects/{project}").meter()).isNotNull();
+		TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests").that()
+				.hasLowCardinalityKeyValue("uri", "https://example.org/projects/{project}");
 	}
 
 	private WebClient mockWebClient(WebClient.Builder builder) {
