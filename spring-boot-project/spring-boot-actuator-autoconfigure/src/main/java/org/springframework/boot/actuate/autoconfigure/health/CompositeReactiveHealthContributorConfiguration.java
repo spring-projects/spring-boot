@@ -42,6 +42,7 @@ public abstract class CompositeReactiveHealthContributorConfiguration<I extends 
 	 * @deprecated since 3.0.0 in favor of
 	 * {@link #CompositeReactiveHealthContributorConfiguration(Function)}
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(since = "3.0.0", forRemoval = true)
 	public CompositeReactiveHealthContributorConfiguration() {
 		super();
