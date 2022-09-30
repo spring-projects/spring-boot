@@ -38,7 +38,7 @@ import org.springframework.boot.test.autoconfigure.actuate.observability.AutoCon
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Deprecated
+@Deprecated(since = "3.0.0", forRemoval = true)
 @AutoConfigureObservability(tracing = false)
 public @interface AutoConfigureMetrics {
 

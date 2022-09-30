@@ -30,7 +30,7 @@ import org.springframework.http.client.observation.ClientHttpObservationConventi
  *
  * @author Brian Clozel
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "removal" })
 class ClientHttpObservationConventionAdapter implements ClientHttpObservationConvention {
 
 	private final String metricName;
@@ -48,6 +48,7 @@ class ClientHttpObservationConventionAdapter implements ClientHttpObservationCon
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public KeyValues getLowCardinalityKeyValues(ClientHttpObservationContext context) {
 		KeyValues keyValues = KeyValues.empty();
 		Iterable<Tag> tags = this.tagsProvider.getTags(context.getUriTemplate(), context.getCarrier(),

@@ -102,7 +102,7 @@ public class NettyWebServerFactoryCustomizer
 		}));
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "removal" })
 	private void maxChunkSize(PropertyMapper propertyMapper, HttpRequestDecoderSpec httpRequestDecoderSpec,
 			ServerProperties.Netty nettyProperties) {
 		propertyMapper.from(nettyProperties.getMaxChunkSize()).whenNonNull()

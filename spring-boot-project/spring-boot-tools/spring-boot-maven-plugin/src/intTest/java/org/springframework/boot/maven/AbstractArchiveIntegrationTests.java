@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,10 +59,10 @@ abstract class AbstractArchiveIntegrationTests {
 	}
 
 	protected AssertProvider<JarAssert> jar(File file) {
-		return new AssertProvider<JarAssert>() {
+		return new AssertProvider<>() {
 
 			@Override
-			@Deprecated
+			@Deprecated(since = "2.3.0", forRemoval = false)
 			public JarAssert assertThat() {
 				return new JarAssert(file);
 			}

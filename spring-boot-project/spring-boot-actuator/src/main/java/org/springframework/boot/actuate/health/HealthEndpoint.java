@@ -52,18 +52,6 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
-	 * @deprecated since 2.6.9 for removal in 3.0.0 in favor of
-	 * {@link #HealthEndpoint(HealthContributorRegistry, HealthEndpointGroups, Duration)}
-	 */
-	@Deprecated
-	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups) {
-		super(registry, groups, null);
-	}
-
-	/**
-	 * Create a new {@link HealthEndpoint} instance.
-	 * @param registry the health contributor registry
-	 * @param groups the health endpoint groups
 	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 * @since 2.6.9

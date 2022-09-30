@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
  * {@link DefaultClientHttpObservationConvention}
  */
-@Deprecated
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class RestTemplateExchangeTags {
 
 	private static final Pattern STRIP_URI_PATTERN = Pattern.compile("^https?://[^/]+/");

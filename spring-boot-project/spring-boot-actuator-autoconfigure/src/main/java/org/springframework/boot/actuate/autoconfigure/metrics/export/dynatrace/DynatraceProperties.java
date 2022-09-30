@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Dynatrace
@@ -56,45 +55,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 		this.apiToken = apiToken;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.dynatrace.metrics.export.v1.device-id")
-	public String getDeviceId() {
-		return this.v1.getDeviceId();
-	}
-
-	@Deprecated
-	public void setDeviceId(String deviceId) {
-		this.v1.setDeviceId(deviceId);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.dynatrace.metrics.export.v1.technology-type")
-	public String getTechnologyType() {
-		return this.v1.getTechnologyType();
-	}
-
-	@Deprecated
-	public void setTechnologyType(String technologyType) {
-		this.v1.setTechnologyType(technologyType);
-	}
-
 	public String getUri() {
 		return this.uri;
 	}
 
 	public void setUri(String uri) {
 		this.uri = uri;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.dynatrace.metrics.export.v1.group")
-	public String getGroup() {
-		return this.v1.getGroup();
-	}
-
-	@Deprecated
-	public void setGroup(String group) {
-		this.v1.setGroup(group);
 	}
 
 	public V1 getV1() {

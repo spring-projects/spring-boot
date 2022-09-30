@@ -34,7 +34,8 @@ import org.springframework.util.StringUtils;
  * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
  * {@link DefaultClientHttpObservationConvention}
  */
-@Deprecated
+@Deprecated(since = "3.0.0", forRemoval = true)
+@SuppressWarnings({ "deprecation", "removal" })
 public class DefaultRestTemplateExchangeTagsProvider implements RestTemplateExchangeTagsProvider {
 
 	@Override

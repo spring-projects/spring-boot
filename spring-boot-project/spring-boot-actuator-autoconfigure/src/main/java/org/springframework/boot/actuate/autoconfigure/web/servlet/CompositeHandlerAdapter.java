@@ -61,7 +61,7 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	}
 
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.4.9", forRemoval = false)
 	@SuppressWarnings("deprecation")
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);

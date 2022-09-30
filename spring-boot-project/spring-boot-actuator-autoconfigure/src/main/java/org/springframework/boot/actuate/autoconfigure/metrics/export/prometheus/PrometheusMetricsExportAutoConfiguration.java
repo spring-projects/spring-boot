@@ -30,8 +30,6 @@ import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -52,7 +50,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -120,8 +117,6 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@ConditionalOnProperty(prefix = "management.prometheus.metrics.export.pushgateway", name = "enabled")
 	public static class PrometheusPushGatewayConfiguration {
 
-		private static final Log logger = LogFactory.getLog(PrometheusPushGatewayConfiguration.class);
-
 		/**
 		 * The fallback job name. We use 'spring' since there's a history of Prometheus
 		 * spring integration defaulting to that name from when Prometheus integration
@@ -132,7 +127,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
-				PrometheusProperties prometheusProperties, Environment environment) {
+				PrometheusProperties prometheusProperties, Environment environment) throws MalformedURLException {
 			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
 			Duration pushRate = properties.getPushRate();
 			String job = getJob(properties, environment);
@@ -147,15 +142,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 					shutdownOperation);
 		}
 
-		private PushGateway initializePushGateway(String url) {
-			try {
-				return new PushGateway(new URL(url));
-			}
-			catch (MalformedURLException ex) {
-				logger.warn(LogMessage
-						.format("Invalid PushGateway base url '%s': update your configuration to a valid URL", url));
-				return new PushGateway(url);
-			}
+		private PushGateway initializePushGateway(String url) throws MalformedURLException {
+			return new PushGateway(new URL(url));
 		}
 
 		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {

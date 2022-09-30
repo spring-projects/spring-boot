@@ -1400,13 +1400,13 @@ public class ServerProperties {
 			this.initialBufferSize = initialBufferSize;
 		}
 
-		@Deprecated
+		@Deprecated(since = "3.0.0", forRemoval = true)
 		@DeprecatedConfigurationProperty(reason = "Deprecated for removal in Reactor Netty")
 		public DataSize getMaxChunkSize() {
 			return this.maxChunkSize;
 		}
 
-		@Deprecated
+		@Deprecated(since = "3.0.0", forRemoval = true)
 		public void setMaxChunkSize(DataSize maxChunkSize) {
 			this.maxChunkSize = maxChunkSize;
 		}

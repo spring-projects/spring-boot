@@ -149,12 +149,13 @@ public class MetricsProperties {
 				 */
 				private String metricName = "http.client.requests";
 
-				@Deprecated
+				@Deprecated(since = "3.0.0", forRemoval = true)
 				@DeprecatedConfigurationProperty(replacement = "management.observations.http.client.requests.name")
 				public String getMetricName() {
 					return this.metricName;
 				}
 
+				@Deprecated(since = "3.0.0", forRemoval = true)
 				public void setMetricName(String metricName) {
 					this.metricName = metricName;
 				}

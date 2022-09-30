@@ -135,7 +135,8 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	void shutdownWhenShutdownOperationIsPushPerformsPushAddOnShutdown() throws Exception {
 		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,

@@ -40,7 +40,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestTemplate.class)
 @ConditionalOnBean(RestTemplateBuilder.class)
-@SuppressWarnings("deprecation")
+@SuppressWarnings("removal")
 class RestTemplateObservationConfiguration {
 
 	@Bean

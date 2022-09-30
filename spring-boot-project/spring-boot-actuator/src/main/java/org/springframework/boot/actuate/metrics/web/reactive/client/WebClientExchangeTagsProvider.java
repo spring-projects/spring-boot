@@ -31,7 +31,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
  * {@link org.springframework.web.reactive.function.client.ClientObservationConvention}
  */
 @FunctionalInterface
-@Deprecated
+@Deprecated(since = "3.0.0", forRemoval = true)
 public interface WebClientExchangeTagsProvider {
 
 	/**

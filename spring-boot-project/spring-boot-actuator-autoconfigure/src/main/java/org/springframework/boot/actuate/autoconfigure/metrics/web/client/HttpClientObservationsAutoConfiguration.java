@@ -62,7 +62,7 @@ public class HttpClientObservationsAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		@SuppressWarnings("deprecation")
+		@SuppressWarnings("removal")
 		MeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {
 			String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();

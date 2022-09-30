@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "removal" })
 class ClientHttpObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";

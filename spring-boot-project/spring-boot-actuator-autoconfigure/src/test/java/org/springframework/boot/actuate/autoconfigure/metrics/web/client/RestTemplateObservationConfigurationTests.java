@@ -54,7 +54,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "removal" })
 class RestTemplateObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
@@ -161,6 +161,7 @@ class RestTemplateObservationConfigurationTests {
 
 	}
 
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	static class CustomTagsProvider implements RestTemplateExchangeTagsProvider {
 
 		@Override

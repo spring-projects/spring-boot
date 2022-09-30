@@ -46,7 +46,6 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
-import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -70,7 +69,6 @@ import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -78,10 +76,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
@@ -371,7 +367,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	@SuppressWarnings("deprecation")
 	void customThemeResolverWithMatchingNameReplacesDefaultThemeResolver() {
 		this.contextRunner.withBean("themeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
@@ -382,7 +378,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	@SuppressWarnings("deprecation")
 	void customThemeResolverWithDifferentNameDoesNotReplaceDefaultThemeResolver() {
 		this.contextRunner.withBean("customThemeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
@@ -424,15 +420,6 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void customDateFormat() {
 		this.contextRunner.withPropertyValues("spring.mvc.format.date:dd*MM*yyyy").run((context) -> {
-			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
-			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
-			assertThat(conversionService.convert(date, String.class)).isEqualTo("25*06*1988");
-		});
-	}
-
-	@Test
-	void customDateFormatWithDeprecatedProperty() {
-		this.contextRunner.withPropertyValues("spring.mvc.date-format:dd*MM*yyyy").run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
 			assertThat(conversionService.convert(date, String.class)).isEqualTo("25*06*1988");
@@ -570,10 +557,9 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
 	void customMediaTypes() {
-		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.media-types.yaml:text/yaml",
-				"spring.mvc.contentnegotiation.favor-path-extension:true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.media-types.yaml:text/yaml")
+				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
 					ContentNegotiationManager contentNegotiationManager = (ContentNegotiationManager) ReflectionTestUtils
 							.getField(adapter, "contentNegotiationManager");
@@ -842,44 +828,12 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void defaultPathMatching() {
-		this.contextRunner.run((context) -> {
-			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-			assertThat(handlerMapping.useSuffixPatternMatch()).isFalse();
-			assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isFalse();
-		});
-	}
-
-	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void useSuffixPatternMatch() {
-		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy=ant-path-matcher",
-				"spring.mvc.pathmatch.use-suffix-pattern:true",
-				"spring.mvc.pathmatch.use-registered-suffix-pattern:true").run((context) -> {
-					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
-					assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
-				});
-	}
-
-	@Test
 	void usePathPatternParser() {
 		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy:path_pattern_parser")
 				.run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
 					assertThat(handlerMapping.usesPathPatterns()).isTrue();
 				});
-	}
-
-	@Test
-	void incompatiblePathMatchingConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.mvc.pathmatch.matching-strategy:path_pattern_parser",
-						"spring.mvc.pathmatch.use-suffix-pattern:true")
-				.run((context) -> assertThat(context.getStartupFailure()).rootCause()
-						.isInstanceOf(IncompatibleConfigurationException.class));
 	}
 
 	@Test
@@ -893,19 +847,6 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void pathExtensionContentNegotiation() {
-		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.favor-path-extension:true")
-				.run((context) -> {
-					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-					ContentNegotiationManager contentNegotiationManager = handlerMapping.getContentNegotiationManager();
-					assertThat(contentNegotiationManager.getStrategies()).hasAtLeastOneElementOfType(
-							WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
-				});
-	}
-
-	@Test
-	@Deprecated
 	void queryParameterContentNegotiation() {
 		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.favor-parameter:true").run((context) -> {
 			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
@@ -923,21 +864,6 @@ class WebMvcAutoConfigurationTests {
 					(strategy) -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
 							.isAssignableFrom(strategy.getClass()));
 		});
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void contentNegotiationStrategySkipsPathExtension() throws Exception {
-		ContentNegotiationStrategy delegate = mock(ContentNegotiationStrategy.class);
-		ContentNegotiationStrategy strategy = new WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy(
-				delegate);
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute(
-				org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class.getName() + ".SKIP",
-				Boolean.TRUE);
-		ServletWebRequest webRequest = new ServletWebRequest(request);
-		List<MediaType> mediaTypes = strategy.resolveMediaTypes(webRequest);
-		assertThat(mediaTypes).containsOnly(MediaType.ALL);
 	}
 
 	@Test
@@ -1485,7 +1411,7 @@ class WebMvcAutoConfigurationTests {
 
 	}
 
-	@Deprecated
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	static class CustomThemeResolver implements org.springframework.web.servlet.ThemeResolver {
 
 		@Override

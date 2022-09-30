@@ -303,7 +303,7 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	void overrideLabelFilterWithDeprecatedLabelsProperty() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.labels:test, production").run(assertLiquibase(

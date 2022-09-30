@@ -1034,7 +1034,7 @@
       "description": "Login password of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.password",
-        "level": "warning"
+        "level": "error"
       }
     },
     {
@@ -1059,7 +1059,7 @@
       "description": "URI used by the driver. Auto-detected by default.",
       "deprecation": {
         "replacement": "spring.neo4j.uri",
-        "level": "warning"
+        "level": "error"
       }
     },
     {
@@ -1077,7 +1077,7 @@
       "description": "Login user of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.username",
-        "level": "warning"
+        "level": "error"
       }
     },
     {
@@ -2046,6 +2046,14 @@
       "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+    },
+    {
+      "name": "spring.mvc.date-format",
+      "type": "java.lang.String",
+      "description": "Date format to use, for example 'dd/MM/yyyy'.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.favicon.enabled",

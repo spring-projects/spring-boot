@@ -115,17 +115,6 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void autoConfiguredHikariDataSourceIsInstrumentedWhenUsingDeprecatedDataSourceInitialization() {
-		this.contextRunner.withPropertyValues("spring.datasource.schema:db/create-custom-schema.sql")
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class)).run((context) -> {
-					context.getBean(DataSource.class).getConnection();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("hikaricp.connections").meter();
-				});
-	}
-
-	@Test
 	void autoConfiguredHikariDataSourceIsInstrumentedWhenUsingDataSourceInitialization() {
 		this.contextRunner.withPropertyValues("spring.sql.init.schema:db/create-custom-schema.sql").withConfiguration(
 				AutoConfigurations.of(DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class))

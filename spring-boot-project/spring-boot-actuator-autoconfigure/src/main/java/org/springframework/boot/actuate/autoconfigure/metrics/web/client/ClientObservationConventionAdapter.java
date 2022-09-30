@@ -32,7 +32,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Brian Clozel
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "removal" })
 class ClientObservationConventionAdapter implements ClientObservationConvention {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";

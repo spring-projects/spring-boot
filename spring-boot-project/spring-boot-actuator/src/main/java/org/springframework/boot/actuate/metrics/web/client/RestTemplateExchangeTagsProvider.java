@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
  * {@link ClientHttpObservationConvention}
  */
 @FunctionalInterface
-@Deprecated
+@Deprecated(since = "3.0.0", forRemoval = true)
 public interface RestTemplateExchangeTagsProvider {
 
 	/**

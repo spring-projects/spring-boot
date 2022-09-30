@@ -182,18 +182,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void withCustomLegacyPushGatewayURL(CapturedOutput output) {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
-				.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true",
-						"management.prometheus.metrics.export.pushgateway.base-url=localhost:9090")
-				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					assertThat(output).contains("Invalid PushGateway base url").contains("localhost:9090");
-					hasGatewayURL(context, "http://localhost:9090/metrics/");
-				});
-	}
-
-	@Test
 	void withCustomPushGatewayURL() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true",

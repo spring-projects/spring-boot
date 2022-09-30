@@ -32,9 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Chris Bono
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings("removal")
 @SpringBootTest
 @AutoConfigureMetrics
+@Deprecated(since = "3.0.0", forRemoval = true)
 class AutoConfigureMetricsPresentIntegrationTests {
 
 	@Test
