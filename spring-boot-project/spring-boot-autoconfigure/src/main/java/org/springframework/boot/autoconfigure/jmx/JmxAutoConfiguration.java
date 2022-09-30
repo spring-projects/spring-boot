@@ -34,7 +34,6 @@ import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
 import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
-import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.util.StringUtils;
 
 /**
@@ -67,7 +66,7 @@ public class JmxAutoConfiguration {
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy, BeanFactory beanFactory) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
-		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
+		exporter.setRegistrationPolicy(this.properties.getRegistrationPolicy());
 		exporter.setNamingStrategy(namingStrategy);
 		String serverBean = this.properties.getServer();
 		if (StringUtils.hasLength(serverBean)) {
