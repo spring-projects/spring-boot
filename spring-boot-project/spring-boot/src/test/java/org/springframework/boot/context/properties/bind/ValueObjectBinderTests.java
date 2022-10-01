@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -293,29 +294,31 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	void bindWhenCollectionParameterWithEmptyDefaultValueShouldThrowException() {
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bindOrCreate("foo",
-						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForCollectionTypes.class)))
-				.withStackTraceContaining(
-						"Parameter of type java.util.List<java.lang.String> must have a non-empty default value.");
+	void bindWhenCollectionParameterWithEmptyDefaultValueShouldReturnEmptyInstance() {
+		NestedConstructorBeanWithEmptyDefaultValueForCollectionTypes bound = this.binder.bindOrCreate("foo",
+				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForCollectionTypes.class));
+		assertThat(bound.getListValue()).isEmpty();
 	}
 
 	@Test
-	void bindWhenMapParametersWithEmptyDefaultValueShouldThrowException() {
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bindOrCreate("foo",
-						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForMapTypes.class)))
-				.withStackTraceContaining(
-						"Parameter of type java.util.Map<java.lang.String, java.lang.String> must have a non-empty default value.");
+	void bindWhenMapParametersWithEmptyDefaultValueShouldReturnEmptyInstance() {
+		NestedConstructorBeanWithEmptyDefaultValueForMapTypes bound = this.binder.bindOrCreate("foo",
+				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForMapTypes.class));
+		assertThat(bound.getMapValue()).isEmpty();
 	}
 
 	@Test
-	void bindWhenArrayParameterWithEmptyDefaultValueShouldThrowException() {
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bindOrCreate("foo",
-						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForArrayTypes.class)))
-				.withStackTraceContaining("Parameter of type java.lang.String[] must have a non-empty default value.");
+	void bindWhenArrayParameterWithEmptyDefaultValueShouldReturnEmptyInstance() {
+		NestedConstructorBeanWithEmptyDefaultValueForArrayTypes bound = this.binder.bindOrCreate("foo",
+				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForArrayTypes.class));
+		assertThat(bound.getArrayValue()).isEmpty();
+	}
+
+	@Test
+	void bindWhenOptionalParameterWithEmptyDefaultValueShouldReturnEmptyInstance() {
+		NestedConstructorBeanWithEmptyDefaultValueForOptionalTypes bound = this.binder.bindOrCreate("foo",
+				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForOptionalTypes.class));
+		assertThat(bound.getOptionalValue()).isEmpty();
 	}
 
 	@Test
@@ -753,13 +756,26 @@ class ValueObjectBinderTests {
 
 		private final String[] arrayValue;
 
-		NestedConstructorBeanWithEmptyDefaultValueForArrayTypes(@DefaultValue String[] arrayValue,
-				@DefaultValue Integer intValue) {
+		NestedConstructorBeanWithEmptyDefaultValueForArrayTypes(@DefaultValue String[] arrayValue) {
 			this.arrayValue = arrayValue;
 		}
 
 		String[] getArrayValue() {
 			return this.arrayValue;
+		}
+
+	}
+
+	static class NestedConstructorBeanWithEmptyDefaultValueForOptionalTypes {
+
+		private final Optional<String> optionalValue;
+
+		NestedConstructorBeanWithEmptyDefaultValueForOptionalTypes(@DefaultValue Optional<String> optionalValue) {
+			this.optionalValue = optionalValue;
+		}
+
+		Optional<String> getOptionalValue() {
+			return this.optionalValue;
 		}
 
 	}
