@@ -131,10 +131,6 @@ class ValueObjectBinder implements DataObjectBinder {
 		Class<T> resolved = (Class<T>) type.resolve();
 		Assert.state(resolved == null || isEmptyDefaultValueAllowed(resolved),
 				() -> "Parameter of type " + type + " must have a non-empty default value.");
-		T instance = create(Bindable.of(type), context);
-		if (instance != null) {
-			return instance;
-		}
 		if (resolved != null) {
 			if (Optional.class == resolved) {
 				return (T) Optional.empty();
@@ -148,9 +144,12 @@ class ValueObjectBinder implements DataObjectBinder {
 			if (resolved.isArray()) {
 				return (T) Array.newInstance(resolved.getComponentType(), 0);
 			}
-			return BeanUtils.instantiateClass(resolved);
 		}
-		return null;
+		T instance = create(Bindable.of(type), context);
+		if (instance != null) {
+			return instance;
+		}
+		return (resolved != null) ? BeanUtils.instantiateClass(resolved) : null;
 	}
 
 	private boolean isEmptyDefaultValueAllowed(Class<?> type) {
