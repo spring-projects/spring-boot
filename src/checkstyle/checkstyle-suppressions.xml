@@ -68,4 +68,6 @@
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
+	<!-- Remove me once Spring Java Format supports this. -->
+	<suppress files="SpringBootTest" checks="SpringJavadoc" />
 </suppressions>
