@@ -55,8 +55,7 @@ class ClientHttpObservationConventionAdapterTests {
 
 	@BeforeEach
 	void setup() {
-		this.context = new ClientHttpObservationContext();
-		this.context.setCarrier(this.request);
+		this.context = new ClientHttpObservationContext(this.request);
 		this.context.setResponse(this.response);
 		this.context.setUriTemplate("/resource/{name}");
 	}

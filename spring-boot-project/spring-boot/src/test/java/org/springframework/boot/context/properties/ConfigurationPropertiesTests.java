@@ -2202,7 +2202,6 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConstructorBinding
 	@ConfigurationProperties(prefix = "test")
 	static class ConstructorParameterWithUnitProperties {
 
@@ -2212,6 +2211,7 @@ class ConfigurationPropertiesTests {
 
 		private final Period period;
 
+		@ConstructorBinding
 		ConstructorParameterWithUnitProperties(@DefaultValue("2") @DurationUnit(ChronoUnit.DAYS) Duration duration,
 				@DefaultValue("3") @DataSizeUnit(DataUnit.MEGABYTES) DataSize size,
 				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period) {
