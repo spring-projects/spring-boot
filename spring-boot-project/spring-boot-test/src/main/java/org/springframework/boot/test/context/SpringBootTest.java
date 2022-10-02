@@ -187,6 +187,7 @@ public @interface SpringBootTest {
 	 * Enumeration of how the main method of the
 	 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class is used
 	 * when creating and running the {@link SpringApplication} under test.
+	 * @since 3.0.0
 	 */
 	enum UseMainMethod {
 
