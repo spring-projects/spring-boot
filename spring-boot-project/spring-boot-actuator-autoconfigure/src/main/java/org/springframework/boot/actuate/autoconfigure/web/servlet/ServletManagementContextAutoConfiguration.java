@@ -47,7 +47,7 @@ import org.springframework.context.annotation.Configuration;
 public class ServletManagementContextAutoConfiguration {
 
 	@Bean
-	public ManagementContextFactory servletWebChildContextFactory() {
+	public static ManagementContextFactory servletWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
 				ServletWebServerFactoryAutoConfiguration.class);
 	}

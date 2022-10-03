@@ -190,7 +190,7 @@ public abstract class JpaBaseConfiguration {
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean
-		PersistenceManagedTypes persistenceManagedTypes(BeanFactory beanFactory, ResourceLoader resourceLoader) {
+		static PersistenceManagedTypes persistenceManagedTypes(BeanFactory beanFactory, ResourceLoader resourceLoader) {
 			String[] packagesToScan = getPackagesToScan(beanFactory);
 			return new PersistenceManagedTypesScanner(resourceLoader).scan(packagesToScan);
 		}

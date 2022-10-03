@@ -111,7 +111,7 @@ public class ManagementContextAutoConfiguration {
 	static class DifferentManagementContextConfiguration {
 
 		@Bean
-		ChildManagementContextInitializer childManagementContextInitializer(
+		static ChildManagementContextInitializer childManagementContextInitializer(
 				ManagementContextFactory managementContextFactory, ApplicationContext parentContext) {
 			return new ChildManagementContextInitializer(managementContextFactory, parentContext);
 		}

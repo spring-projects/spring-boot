@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Bean;
 public class ReactiveManagementContextAutoConfiguration {
 
 	@Bean
-	public ManagementContextFactory reactiveWebChildContextFactory() {
+	public static ManagementContextFactory reactiveWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
 				ReactiveWebServerFactoryAutoConfiguration.class);
 	}
