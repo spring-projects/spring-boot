@@ -94,8 +94,8 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresGlobalKeyValuesProvider() {
-		this.contextRunner.withUserConfiguration(GlobalKeyValuesProviders.class).run((context) -> {
+	void autoConfiguresGlobalObservationConventions() {
+		this.contextRunner.withUserConfiguration(CustomGlobalObservationConvention.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Context micrometerContext = new Context();
 			Observation.start("test-observation", micrometerContext, observationRegistry).stop();
@@ -170,7 +170,7 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class GlobalKeyValuesProviders {
+	static class CustomGlobalObservationConvention {
 
 		@Bean
 		GlobalObservationConvention<?> customConvention() {
