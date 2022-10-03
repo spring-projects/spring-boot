@@ -72,7 +72,8 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	static RelationalManagedTypes r2dbcManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
+	static RelationalManagedTypes r2dbcManagedTypes(ApplicationContext applicationContext)
+			throws ClassNotFoundException {
 		return RelationalManagedTypes.fromIterable(new EntityScanner(applicationContext).scan(Table.class));
 	}
 
