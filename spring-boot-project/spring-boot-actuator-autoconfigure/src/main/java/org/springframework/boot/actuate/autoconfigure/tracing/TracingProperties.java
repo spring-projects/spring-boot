@@ -31,6 +31,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class TracingProperties {
 
 	/**
+	 * Whether auto-configuration of tracing is enabled.
+	 */
+	private boolean enabled = true;
+
+	/**
 	 * Sampling configuration.
 	 */
 	private final Sampling sampling = new Sampling();
@@ -44,6 +49,14 @@ public class TracingProperties {
 	 * Propagation configuration.
 	 */
 	private final Propagation propagation = new Propagation();
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public Sampling getSampling() {
 		return this.sampling;
