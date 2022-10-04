@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.GenericServlet;
 import jakarta.servlet.ServletException;
@@ -100,8 +99,7 @@ class ServletEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
-					List<EndpointId> ids = endpoints.stream().map(ExposableServletEndpoint::getEndpointId)
-							.collect(Collectors.toList());
+					List<EndpointId> ids = endpoints.stream().map(ExposableServletEndpoint::getEndpointId).toList();
 					assertThat(ids).containsOnly(EndpointId.of("testservlet"));
 				}));
 	}

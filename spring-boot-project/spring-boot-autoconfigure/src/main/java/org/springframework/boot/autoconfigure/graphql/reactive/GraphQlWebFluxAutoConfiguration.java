@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.graphql.reactive;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import graphql.GraphQL;
 import org.apache.commons.logging.Log;
@@ -96,9 +95,8 @@ public class GraphQlWebFluxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
-			ObjectProvider<WebGraphQlInterceptor> interceptorsProvider) {
-		return WebGraphQlHandler.builder(service)
-				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList())).build();
+			ObjectProvider<WebGraphQlInterceptor> interceptors) {
+		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
 	}
 
 	@Bean

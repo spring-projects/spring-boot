@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
-import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
@@ -296,8 +295,7 @@ class JettyWebServerFactoryCustomizerTests {
 		server.start();
 		server.stop();
 		return Arrays.stream(server.getServer().getConnectors())
-				.filter((connector) -> connector instanceof AbstractConnector).map(Connector::getIdleTimeout)
-				.collect(Collectors.toList());
+				.filter((connector) -> connector instanceof AbstractConnector).map(Connector::getIdleTimeout).toList();
 	}
 
 	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {

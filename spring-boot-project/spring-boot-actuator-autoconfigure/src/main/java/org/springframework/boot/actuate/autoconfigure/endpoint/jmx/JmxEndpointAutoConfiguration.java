@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
-import java.util.stream.Collectors;
-
 import javax.management.MBeanServer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,8 +82,7 @@ public class JmxEndpointAutoConfiguration {
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
 			ObjectProvider<EndpointFilter<ExposableJmxEndpoint>> filters) {
 		return new JmxEndpointDiscoverer(this.applicationContext, parameterValueMapper,
-				invokerAdvisors.orderedStream().collect(Collectors.toList()),
-				filters.orderedStream().collect(Collectors.toList()));
+				invokerAdvisors.orderedStream().toList(), filters.orderedStream().toList());
 	}
 
 	@Bean

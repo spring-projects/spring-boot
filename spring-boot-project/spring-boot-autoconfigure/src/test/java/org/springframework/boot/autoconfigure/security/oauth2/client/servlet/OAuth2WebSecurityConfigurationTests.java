@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.Test;
@@ -169,7 +168,7 @@ class OAuth2WebSecurityConfigurationTests {
 		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = filterChains.get(0).getFilters();
-		return filters.stream().filter(filter::isInstance).collect(Collectors.toList());
+		return filters.stream().filter(filter::isInstance).toList();
 	}
 
 	private boolean isEqual(ClientRegistration reg1, ClientRegistration reg2) {

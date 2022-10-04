@@ -19,7 +19,6 @@ package org.springframework.boot.configurationprocessor;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -223,7 +222,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 
 	private VariableElement getConstructorParameter(TypeElement ownerElement, String name) {
 		List<ExecutableElement> constructors = ElementFilter.constructorsIn(ownerElement.getEnclosedElements()).stream()
-				.filter((constructor) -> !constructor.getParameters().isEmpty()).collect(Collectors.toList());
+				.filter((constructor) -> !constructor.getParameters().isEmpty()).toList();
 		if (constructors.size() != 1) {
 			throw new IllegalStateException("No candidate constructor for " + ownerElement);
 		}

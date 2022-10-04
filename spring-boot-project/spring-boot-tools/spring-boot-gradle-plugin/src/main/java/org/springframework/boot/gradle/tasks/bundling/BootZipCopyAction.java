@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
@@ -322,8 +321,7 @@ class BootZipCopyAction implements CopyAction {
 			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
 			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
 			if (classPathIndex != null) {
-				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"")
-						.collect(Collectors.toList());
+				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"").toList();
 				writeEntry(classPathIndex, ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines),
 						true);
 			}

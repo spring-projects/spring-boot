@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -66,7 +65,7 @@ public class Image extends MappedObject {
 		if (layers == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(Arrays.stream(layers).map(LayerId::of).collect(Collectors.toList()));
+		return Arrays.stream(layers).map(LayerId::of).toList();
 	}
 
 	/**

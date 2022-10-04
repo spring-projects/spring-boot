@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
@@ -74,7 +71,7 @@ class MeterRegistryConfigurer {
 
 	@SuppressWarnings("unchecked")
 	private void customize(MeterRegistry registry) {
-		LambdaSafe.callbacks(MeterRegistryCustomizer.class, asOrderedList(this.customizers), registry)
+		LambdaSafe.callbacks(MeterRegistryCustomizer.class, this.customizers.orderedStream().toList(), registry)
 				.withLogger(MeterRegistryConfigurer.class).invoke((customizer) -> customizer.customize(registry));
 	}
 
@@ -84,10 +81,6 @@ class MeterRegistryConfigurer {
 
 	private void addBinders(MeterRegistry registry) {
 		this.binders.orderedStream().forEach((binder) -> binder.bindTo(registry));
-	}
-
-	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
-		return provider.orderedStream().collect(Collectors.toList());
 	}
 
 }

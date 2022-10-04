@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -90,8 +89,7 @@ class WebEndpointAutoConfigurationTests {
 					WebEndpointDiscoverer discoverer = context.getBean(WebEndpointDiscoverer.class);
 					Collection<ExposableWebEndpoint> endpoints = discoverer.getEndpoints();
 					ExposableWebEndpoint[] webEndpoints = endpoints.toArray(new ExposableWebEndpoint[0]);
-					List<String> paths = Arrays.stream(webEndpoints).map(PathMappedEndpoint::getRootPath)
-							.collect(Collectors.toList());
+					List<String> paths = Arrays.stream(webEndpoints).map(PathMappedEndpoint::getRootPath).toList();
 					assertThat(paths).containsOnly("1/testone", "foo", "testtwo");
 				});
 	}

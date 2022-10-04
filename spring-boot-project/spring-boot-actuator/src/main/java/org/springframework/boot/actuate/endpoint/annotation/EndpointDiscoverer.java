@@ -100,7 +100,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private DiscoveredOperationsFactory<O> getOperationsFactory(ParameterValueMapper parameterValueMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors) {
-		return new DiscoveredOperationsFactory<O>(parameterValueMapper, invokerAdvisors) {
+		return new DiscoveredOperationsFactory<>(parameterValueMapper, invokerAdvisors) {
 
 			@Override
 			protected O createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
@@ -199,8 +199,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			addOperations(indexed, id, extensionBean.getBean(), true);
 		}
 		assertNoDuplicateOperations(endpointBean, indexed);
-		List<O> operations = indexed.values().stream().map(this::getLast).filter(Objects::nonNull)
-				.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+		List<O> operations = indexed.values().stream().map(this::getLast).filter(Objects::nonNull).toList();
 		return createEndpoint(endpointBean.getBean(), id, endpointBean.isEnabledByDefault(), operations);
 	}
 
@@ -224,7 +223,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private void assertNoDuplicateOperations(EndpointBean endpointBean, MultiValueMap<OperationKey, O> indexed) {
 		List<OperationKey> duplicates = indexed.entrySet().stream().filter((entry) -> entry.getValue().size() > 1)
-				.map(Map.Entry::getKey).collect(Collectors.toList());
+				.map(Map.Entry::getKey).toList();
 		if (!duplicates.isEmpty()) {
 			Set<ExtensionBean> extensions = endpointBean.getExtensions();
 			String extensionBeanNames = extensions.stream().map(ExtensionBean::getBeanName)

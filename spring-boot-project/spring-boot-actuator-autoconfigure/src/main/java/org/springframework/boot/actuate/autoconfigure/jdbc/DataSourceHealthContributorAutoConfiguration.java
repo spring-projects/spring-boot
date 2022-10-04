@@ -73,7 +73,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	public DataSourceHealthContributorAutoConfiguration(
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
+		this.metadataProviders = metadataProviders.orderedStream().toList();
 	}
 
 	@Override

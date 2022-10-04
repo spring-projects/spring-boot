@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.stream.Collectors;
-
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
@@ -57,7 +55,7 @@ public class MongoReactiveAutoConfiguration {
 	public MongoClient reactiveStreamsMongoClient(
 			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
 		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(
-				builderCustomizers.orderedStream().collect(Collectors.toList()));
+				builderCustomizers.orderedStream().toList());
 		return factory.createMongoClient(settings);
 	}
 

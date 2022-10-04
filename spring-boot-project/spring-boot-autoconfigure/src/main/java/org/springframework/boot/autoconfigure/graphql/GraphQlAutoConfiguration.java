@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.Instrumentation;
@@ -84,9 +83,9 @@ public class GraphQlAutoConfiguration {
 		Resource[] schemaResources = resolveSchemaResources(resourcePatternResolver, schemaLocations,
 				properties.getSchema().getFileExtensions());
 		GraphQlSource.SchemaResourceBuilder builder = GraphQlSource.schemaResourceBuilder()
-				.schemaResources(schemaResources).exceptionResolvers(toList(exceptionResolvers))
-				.subscriptionExceptionResolvers(toList(subscriptionExceptionResolvers))
-				.instrumentation(toList(instrumentations));
+				.schemaResources(schemaResources).exceptionResolvers(exceptionResolvers.orderedStream().toList())
+				.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
+				.instrumentation(instrumentations.orderedStream().toList());
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}
@@ -142,10 +141,6 @@ public class GraphQlAutoConfiguration {
 		controllerConfigurer
 				.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
 		return controllerConfigurer;
-	}
-
-	private <T> List<T> toList(ObjectProvider<T> provider) {
-		return provider.orderedStream().collect(Collectors.toList());
 	}
 
 }

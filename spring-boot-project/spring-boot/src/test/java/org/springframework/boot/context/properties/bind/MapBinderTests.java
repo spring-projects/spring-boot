@@ -364,7 +364,7 @@ class MapBinderTests {
 		source.put("foo.bar[2].value", "c");
 		this.sources.add(source);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<String> values = map.get("bar").stream().map(JavaBean::getValue).collect(Collectors.toList());
+		List<String> values = map.get("bar").stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 
 	}
@@ -429,7 +429,7 @@ class MapBinderTests {
 		mockSource.put("foo.bar.baz[2].value", "c");
 		this.sources.add(mockSource);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<String> values = map.get("bar.baz").stream().map(JavaBean::getValue).collect(Collectors.toList());
+		List<String> values = map.get("bar.baz").stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 	}
 

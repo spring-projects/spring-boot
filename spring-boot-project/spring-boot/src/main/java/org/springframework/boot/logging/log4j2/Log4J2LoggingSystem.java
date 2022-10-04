@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -299,8 +298,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private CompositeConfiguration createComposite(List<Configuration> configurations) {
-		return new CompositeConfiguration(
-				configurations.stream().map(AbstractConfiguration.class::cast).collect(Collectors.toList()));
+		return new CompositeConfiguration(configurations.stream().map(AbstractConfiguration.class::cast).toList());
 	}
 
 	@Override

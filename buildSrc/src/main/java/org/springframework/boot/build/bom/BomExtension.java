@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -301,7 +300,7 @@ public class BomExtension {
 			public void setModules(List<Object> modules) {
 				this.modules = modules.stream()
 						.map((input) -> (input instanceof Module module) ? module : new Module((String) input))
-						.collect(Collectors.toList());
+						.toList();
 			}
 
 			public void setImports(List<String> imports) {

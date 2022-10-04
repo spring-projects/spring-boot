@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
-import java.util.stream.Collectors;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
@@ -64,7 +62,7 @@ public class WebFluxMetricsAutoConfiguration {
 	@ConditionalOnMissingBean(WebFluxTagsProvider.class)
 	public DefaultWebFluxTagsProvider webFluxTagsProvider(ObjectProvider<WebFluxTagsContributor> contributors) {
 		return new DefaultWebFluxTagsProvider(this.properties.getWeb().getServer().getRequest().isIgnoreTrailingSlash(),
-				contributors.orderedStream().collect(Collectors.toList()));
+				contributors.orderedStream().toList());
 	}
 
 	@Bean

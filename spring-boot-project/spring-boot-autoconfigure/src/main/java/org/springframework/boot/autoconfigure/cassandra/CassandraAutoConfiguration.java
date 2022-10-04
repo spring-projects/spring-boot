@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 
@@ -222,8 +221,7 @@ public class CassandraAutoConfiguration {
 	private List<String> mapContactPoints(CassandraProperties properties) {
 		if (properties.getContactPoints() != null) {
 			return properties.getContactPoints().stream()
-					.map((candidate) -> formatContactPoint(candidate, properties.getPort()))
-					.collect(Collectors.toList());
+					.map((candidate) -> formatContactPoint(candidate, properties.getPort())).toList();
 		}
 		return null;
 	}

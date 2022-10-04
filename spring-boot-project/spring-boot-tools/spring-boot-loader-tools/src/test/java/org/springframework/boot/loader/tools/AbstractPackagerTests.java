@@ -234,7 +234,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
 		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"").collect(Collectors.toList());
+				.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"").toList();
 		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
 	}
 
@@ -265,7 +265,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"").collect(Collectors.toList());
+				.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"").toList();
 		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
@@ -637,7 +637,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	protected abstract void execute(P packager, Libraries libraries) throws IOException;
 
 	protected Collection<String> getPackagedEntryNames() throws IOException {
-		return getAllPackagedEntries().stream().map(ZipArchiveEntry::getName).collect(Collectors.toList());
+		return getAllPackagedEntries().stream().map(ZipArchiveEntry::getName)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	protected boolean hasPackagedLauncherClasses() throws IOException {

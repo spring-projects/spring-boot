@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import io.micrometer.tracing.SamplerFunction;
 import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
@@ -110,8 +109,7 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	ContextPropagators otelContextPropagators(ObjectProvider<TextMapPropagator> textMapPropagators) {
-		return ContextPropagators
-				.create(TextMapPropagator.composite(textMapPropagators.orderedStream().collect(Collectors.toList())));
+		return ContextPropagators.create(TextMapPropagator.composite(textMapPropagators.orderedStream().toList()));
 	}
 
 	@Bean
@@ -122,8 +120,11 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	SpanProcessor otelSpanProcessor(ObjectProvider<SpanExporter> spanExporters) {
-		return SpanProcessor.composite(spanExporters.orderedStream()
-				.map((exporter) -> BatchSpanProcessor.builder(exporter).build()).collect(Collectors.toList()));
+		return SpanProcessor.composite(spanExporters.orderedStream().map(this::buildBatchSpanProcessor).toList());
+	}
+
+	private SpanProcessor buildBatchSpanProcessor(SpanExporter exporter) {
+		return BatchSpanProcessor.builder(exporter).build();
 	}
 
 	@Bean

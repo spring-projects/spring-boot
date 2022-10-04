@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -84,7 +83,9 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		Method method = operationMethod.getMethod();
 		ManagedOperationParameter[] managed = jmxAttributeSource.getManagedOperationParameters(method);
 		if (managed.length == 0) {
-			return asList(operationMethod.getParameters().stream().map(DiscoveredJmxOperationParameter::new));
+			Stream<JmxOperationParameter> parameters = operationMethod.getParameters().stream()
+					.map(DiscoveredJmxOperationParameter::new);
+			return parameters.toList();
 		}
 		return mergeParameters(operationMethod.getParameters(), managed);
 	}
@@ -96,10 +97,6 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 			merged.add(new DiscoveredJmxOperationParameter(managedParameters[i], operationParameters.get(i)));
 		}
 		return Collections.unmodifiableList(merged);
-	}
-
-	private <T> List<T> asList(Stream<T> stream) {
-		return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
 	@Override

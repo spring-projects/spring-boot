@@ -39,7 +39,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -720,7 +719,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	List<String> entryLines(JarFile jarFile, String entryName) throws IOException {
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(jarFile.getInputStream(jarFile.getEntry(entryName))))) {
-			return reader.lines().collect(Collectors.toList());
+			return reader.lines().toList();
 		}
 	}
 

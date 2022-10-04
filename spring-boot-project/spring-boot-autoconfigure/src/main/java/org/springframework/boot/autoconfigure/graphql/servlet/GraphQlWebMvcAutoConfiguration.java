@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.graphql.servlet;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import graphql.GraphQL;
 import jakarta.websocket.server.ServerContainer;
@@ -97,9 +96,8 @@ public class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
-			ObjectProvider<WebGraphQlInterceptor> interceptorsProvider) {
-		return WebGraphQlHandler.builder(service)
-				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList())).build();
+			ObjectProvider<WebGraphQlInterceptor> interceptors) {
+		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
 	}
 
 	@Bean

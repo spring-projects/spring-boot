@@ -17,6 +17,7 @@
 package org.springframework.boot.util;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -137,7 +138,7 @@ public class Instantiator<T> {
 	}
 
 	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
-		List<T> instances = typeSuppliers.map(this::instantiate).collect(Collectors.toList());
+		List<T> instances = typeSuppliers.map(this::instantiate).collect(Collectors.toCollection(ArrayList::new));
 		AnnotationAwareOrderComparator.sort(instances);
 		return Collections.unmodifiableList(instances);
 	}

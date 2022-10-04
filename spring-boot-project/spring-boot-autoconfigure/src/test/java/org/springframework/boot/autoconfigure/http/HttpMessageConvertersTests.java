@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.http;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -84,8 +84,7 @@ class HttpMessageConvertersTests {
 	void addBeforeExistingEquivalentConverter() {
 		GsonHttpMessageConverter converter1 = new GsonHttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1);
-		List<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass)
-				.collect(Collectors.toList());
+		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
 		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class);
 	}

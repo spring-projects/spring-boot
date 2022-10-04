@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.webservices.client;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -46,8 +45,7 @@ public class WebServiceTemplateAutoConfiguration {
 	public WebServiceTemplateBuilder webServiceTemplateBuilder(
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
-		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream()
-				.collect(Collectors.toList());
+		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream().toList();
 		if (!customizers.isEmpty()) {
 			builder = builder.customizers(customizers);
 		}

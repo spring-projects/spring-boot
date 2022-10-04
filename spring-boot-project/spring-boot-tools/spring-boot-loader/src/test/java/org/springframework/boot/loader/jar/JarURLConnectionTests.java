@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.jar.JarEntry;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -207,7 +206,7 @@ class JarURLConnectionTests {
 	void entriesCanBeStreamedFromJarFileOfConnection() throws Exception {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/");
 		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
-		List<String> entryNames = connection.getJarFile().stream().map(JarEntry::getName).collect(Collectors.toList());
+		List<String> entryNames = connection.getJarFile().stream().map(JarEntry::getName).toList();
 		assertThat(entryNames).hasSize(12);
 	}
 

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -92,10 +91,7 @@ public class MetricsEndpoint {
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
-		if (tags == null) {
-			return Collections.emptyList();
-		}
-		return tags.stream().map(this::parseTag).collect(Collectors.toList());
+		return (tags != null) ? tags.stream().map(this::parseTag).toList() : Collections.emptyList();
 	}
 
 	private Tag parseTag(String tag) {
@@ -157,8 +153,7 @@ public class MetricsEndpoint {
 	}
 
 	private <K, V, T> List<T> asList(Map<K, V> map, BiFunction<K, V, T> mapper) {
-		return map.entrySet().stream().map((entry) -> mapper.apply(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toList());
+		return map.entrySet().stream().map((entry) -> mapper.apply(entry.getKey(), entry.getValue())).toList();
 	}
 
 	/**

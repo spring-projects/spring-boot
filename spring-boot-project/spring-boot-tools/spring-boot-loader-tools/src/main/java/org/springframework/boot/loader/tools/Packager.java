@@ -31,7 +31,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
@@ -510,7 +509,7 @@ public abstract class Packager {
 		private void writeClasspathIndexIfNecessary(List<String> paths, Layout layout, AbstractJarWriter writer)
 				throws IOException {
 			if (layout.getClasspathIndexFileLocation() != null) {
-				List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").collect(Collectors.toList());
+				List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").toList();
 				writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
 			}
 		}

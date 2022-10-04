@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.graphql;
 
-import java.util.stream.Collectors;
-
 import graphql.GraphQL;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -56,7 +54,7 @@ public class GraphQlMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(GraphQlTagsProvider.class)
 	public DefaultGraphQlTagsProvider graphQlTagsProvider(ObjectProvider<GraphQlTagsContributor> contributors) {
-		return new DefaultGraphQlTagsProvider(contributors.orderedStream().collect(Collectors.toList()));
+		return new DefaultGraphQlTagsProvider(contributors.orderedStream().toList());
 	}
 
 	@Bean

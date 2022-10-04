@@ -22,7 +22,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokens;
@@ -64,8 +63,7 @@ public class Neo4jAutoConfiguration {
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
 			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
 		AuthToken authToken = mapAuthToken(properties.getAuthentication(), environment);
-		Config config = mapDriverConfig(properties,
-				configBuilderCustomizers.orderedStream().collect(Collectors.toList()));
+		Config config = mapDriverConfig(properties, configBuilderCustomizers.orderedStream().toList());
 		URI serverUri = determineServerUri(properties, environment);
 		return GraphDatabase.driver(serverUri, authToken, config);
 	}

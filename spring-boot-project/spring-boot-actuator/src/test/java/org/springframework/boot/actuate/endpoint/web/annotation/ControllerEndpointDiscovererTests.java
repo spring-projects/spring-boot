@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -118,8 +117,7 @@ class ControllerEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
-					List<EndpointId> ids = endpoints.stream().map(ExposableControllerEndpoint::getEndpointId)
-							.collect(Collectors.toList());
+					List<EndpointId> ids = endpoints.stream().map(ExposableControllerEndpoint::getEndpointId).toList();
 					assertThat(ids).containsOnly(EndpointId.of("testcontroller"), EndpointId.of("testrestcontroller"));
 				}));
 	}

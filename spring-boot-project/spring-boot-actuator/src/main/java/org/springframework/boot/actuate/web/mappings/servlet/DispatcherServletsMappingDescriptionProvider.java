@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.servlet.Servlet;
@@ -104,7 +103,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	private List<DispatcherServletMappingDescription> describeMappings(DispatcherServletHandlerMappings mappings) {
-		return mappings.getHandlerMappings().stream().flatMap(this::describe).collect(Collectors.toList());
+		return mappings.getHandlerMappings().stream().flatMap(this::describe).toList();
 	}
 
 	private <T> Stream<DispatcherServletMappingDescription> describe(T handlerMapping) {
@@ -141,7 +140,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		@Override
 		public List<DispatcherServletMappingDescription> describe(RequestMappingInfoHandlerMapping handlerMapping) {
 			Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
-			return handlerMethods.entrySet().stream().map(this::describe).collect(Collectors.toList());
+			return handlerMethods.entrySet().stream().map(this::describe).toList();
 		}
 
 		private DispatcherServletMappingDescription describe(Entry<RequestMappingInfo, HandlerMethod> mapping) {
@@ -164,7 +163,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 		@Override
 		public List<DispatcherServletMappingDescription> describe(AbstractUrlHandlerMapping handlerMapping) {
-			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).collect(Collectors.toList());
+			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).toList();
 		}
 
 		private DispatcherServletMappingDescription describe(Entry<String, Object> mapping) {

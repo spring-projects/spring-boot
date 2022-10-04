@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.stream.Collectors;
-
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 
@@ -51,8 +49,7 @@ public class MongoAutoConfiguration {
 	@ConditionalOnMissingBean(MongoClient.class)
 	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			MongoClientSettings settings) {
-		return new MongoClientFactory(builderCustomizers.orderedStream().collect(Collectors.toList()))
-				.createMongoClient(settings);
+		return new MongoClientFactory(builderCustomizers.orderedStream().toList()).createMongoClient(settings);
 	}
 
 	@Configuration(proxyBeanMethods = false)

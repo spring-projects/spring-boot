@@ -17,7 +17,6 @@
 package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -63,7 +62,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 
 	private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
-				.map((source) -> Descriptor.get(source, propertyName)).collect(Collectors.toList());
+				.map((source) -> Descriptor.get(source, propertyName)).toList();
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {

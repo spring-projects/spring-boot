@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
@@ -159,7 +158,7 @@ class ConfigurationPropertiesBinder {
 
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
 		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class).orderedStream()
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private Binder getBinder() {

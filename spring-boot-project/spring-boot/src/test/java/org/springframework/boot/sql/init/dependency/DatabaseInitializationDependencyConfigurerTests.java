@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -311,11 +310,10 @@ class DatabaseInitializationDependencyConfigurerTests {
 				return super.findResources(name);
 			}
 			Properties properties = new Properties();
-			properties.put(DatabaseInitializerDetector.class.getName(), String.join(",",
-					this.databaseInitializerDetectors.stream().map(Class::getName).collect(Collectors.toList())));
-			properties.put(DependsOnDatabaseInitializationDetector.class.getName(),
-					String.join(",", this.dependsOnDatabaseInitializationDetectors.stream().map(Class::getName)
-							.collect(Collectors.toList())));
+			properties.put(DatabaseInitializerDetector.class.getName(),
+					String.join(",", this.databaseInitializerDetectors.stream().map(Class::getName).toList()));
+			properties.put(DependsOnDatabaseInitializationDetector.class.getName(), String.join(",",
+					this.dependsOnDatabaseInitializationDetectors.stream().map(Class::getName).toList()));
 			File springFactories = new File(this.temp, "spring.factories");
 			try (FileWriter writer = new FileWriter(springFactories)) {
 				properties.store(writer, "");

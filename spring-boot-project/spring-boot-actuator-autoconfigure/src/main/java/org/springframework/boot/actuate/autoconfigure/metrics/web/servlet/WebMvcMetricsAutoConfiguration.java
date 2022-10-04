@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 
-import java.util.stream.Collectors;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import jakarta.servlet.DispatcherType;
@@ -76,7 +74,7 @@ public class WebMvcMetricsAutoConfiguration {
 	@ConditionalOnMissingBean(WebMvcTagsProvider.class)
 	public DefaultWebMvcTagsProvider webMvcTagsProvider(ObjectProvider<WebMvcTagsContributor> contributors) {
 		return new DefaultWebMvcTagsProvider(this.properties.getWeb().getServer().getRequest().isIgnoreTrailingSlash(),
-				contributors.orderedStream().collect(Collectors.toList()));
+				contributors.orderedStream().toList());
 	}
 
 	@Bean

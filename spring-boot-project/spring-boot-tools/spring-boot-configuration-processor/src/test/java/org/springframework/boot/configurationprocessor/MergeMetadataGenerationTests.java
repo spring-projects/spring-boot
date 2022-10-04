@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +86,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				SimpleConflictingProperties.class);
 		assertThat(metadata.getItems()).hasSize(6);
 		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.getName().equals("simple.flag"))
-				.collect(Collectors.toList());
+				.toList();
 		assertThat(items).hasSize(2);
 		ItemMetadata matchingProperty = items.stream().filter((item) -> item.getType().equals(Boolean.class.getName()))
 				.findFirst().orElse(null);

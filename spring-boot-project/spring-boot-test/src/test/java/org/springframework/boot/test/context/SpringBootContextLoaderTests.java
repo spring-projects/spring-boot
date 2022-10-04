@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -143,7 +144,7 @@ class SpringBootContextLoaderTests {
 		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getApplicationContext()
 				.getEnvironment();
 		List<String> names = environment.getPropertySources().stream().map(PropertySource::getName)
-				.collect(Collectors.toList());
+				.collect(Collectors.toCollection(ArrayList::new));
 		String last = names.remove(names.size() - 1);
 		assertThat(names).containsExactly("configurationProperties", "Inlined Test Properties", "commandLineArgs",
 				"servletConfigInitParams", "servletContextInitParams", "systemProperties", "systemEnvironment",

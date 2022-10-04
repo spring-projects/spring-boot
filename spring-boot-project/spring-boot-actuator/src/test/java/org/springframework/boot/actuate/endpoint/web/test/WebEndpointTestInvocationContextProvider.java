@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.test;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -144,7 +145,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		public void beforeEach(ExtensionContext extensionContext) throws Exception {
 			List<Class<?>> configurationClasses = Stream
 					.of(extensionContext.getRequiredTestClass().getDeclaredClasses()).filter(this::isConfiguration)
-					.collect(Collectors.toList());
+					.collect(Collectors.toCollection(ArrayList::new));
 			this.context = this.contextFactory.apply(configurationClasses);
 		}
 

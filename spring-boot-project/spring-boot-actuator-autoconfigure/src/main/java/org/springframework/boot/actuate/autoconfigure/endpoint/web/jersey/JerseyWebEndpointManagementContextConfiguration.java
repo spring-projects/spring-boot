@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
@@ -183,7 +182,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 					WebServerNamespace.MANAGEMENT, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
 					.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
-					.stream().filter(Objects::nonNull).collect(Collectors.toList());
+					.stream().filter(Objects::nonNull).toList();
 			register(endpointResources, config);
 		}
 

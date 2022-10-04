@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 
@@ -130,7 +129,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		}
 		StringBuilder message = new StringBuilder();
 		message.append("Imported " + results.size() + " resource" + ((results.size() != 1) ? "s " : " "));
-		message.append(results.stream().map(ConfigDataResolutionResult::getResource).collect(Collectors.toList()));
+		message.append(results.stream().map(ConfigDataResolutionResult::getResource).toList());
 		return message;
 	}
 

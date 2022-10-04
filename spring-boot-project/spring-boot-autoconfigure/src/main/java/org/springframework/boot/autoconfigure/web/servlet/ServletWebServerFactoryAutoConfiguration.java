@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletRequest;
@@ -77,9 +76,8 @@ public class ServletWebServerFactoryAutoConfiguration {
 	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
 			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers) {
-		return new ServletWebServerFactoryCustomizer(serverProperties,
-				webListenerRegistrars.orderedStream().collect(Collectors.toList()),
-				cookieSameSiteSuppliers.orderedStream().collect(Collectors.toList()));
+		return new ServletWebServerFactoryCustomizer(serverProperties, webListenerRegistrars.orderedStream().toList(),
+				cookieSameSiteSuppliers.orderedStream().toList());
 	}
 
 	@Bean

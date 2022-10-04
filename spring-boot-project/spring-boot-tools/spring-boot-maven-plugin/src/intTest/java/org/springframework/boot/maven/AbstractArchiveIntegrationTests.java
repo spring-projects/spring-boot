@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
@@ -179,10 +178,8 @@ abstract class AbstractArchiveIntegrationTests {
 
 		ListAssert<String> entryNamesInPath(String path) {
 			List<String> matches = new ArrayList<>();
-			withJarFile((jarFile) -> withEntries(jarFile,
-					(entries) -> matches.addAll(entries.map(ZipEntry::getName)
-							.filter((name) -> name.startsWith(path) && name.length() > path.length())
-							.collect(Collectors.toList()))));
+			withJarFile((jarFile) -> withEntries(jarFile, (entries) -> matches.addAll(entries.map(ZipEntry::getName)
+					.filter((name) -> name.startsWith(path) && name.length() > path.length()).toList())));
 			return new ListAssert<>(matches);
 		}
 

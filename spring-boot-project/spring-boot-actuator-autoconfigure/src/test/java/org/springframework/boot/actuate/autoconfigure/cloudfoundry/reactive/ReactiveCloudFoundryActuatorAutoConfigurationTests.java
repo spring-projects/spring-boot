@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
@@ -211,8 +210,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
-					List<EndpointId> endpointIds = endpoints.stream().map(ExposableWebEndpoint::getEndpointId)
-							.collect(Collectors.toList());
+					List<EndpointId> endpointIds = endpoints.stream().map(ExposableWebEndpoint::getEndpointId).toList();
 					assertThat(endpointIds).contains(EndpointId.of("test"));
 				});
 	}

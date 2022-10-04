@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -148,7 +147,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	private List<String> readDescriptionLines(FailureAnalysis analysis) throws IOException {
 		try (BufferedReader reader = new BufferedReader(new StringReader(analysis.getDescription()))) {
-			return reader.lines().collect(Collectors.toList());
+			return reader.lines().toList();
 		}
 	}
 

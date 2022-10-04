@@ -95,7 +95,7 @@ class CustomLayersProvider {
 		if (layerOrder == null) {
 			return Collections.emptyList();
 		}
-		return getChildNodeTextContent(layerOrder, "layer").stream().map(Layer::new).collect(Collectors.toList());
+		return getChildNodeTextContent(layerOrder, "layer").stream().map(Layer::new).toList();
 	}
 
 	private <T> List<ContentSelector<T>> getSelectors(Element root, String elementName,
@@ -130,14 +130,14 @@ class CustomLayersProvider {
 		List<String> excludes = getChildNodeTextContent(element, "exclude");
 		Element includeModuleDependencies = getChildElement(element, "includeModuleDependencies");
 		Element excludeModuleDependencies = getChildElement(element, "excludeModuleDependencies");
-		List<ContentFilter<Library>> includeFilters = includes.stream().map(filterFactory).collect(Collectors.toList());
+		List<ContentFilter<Library>> includeFilters = includes.stream().map(filterFactory)
+				.collect(Collectors.toCollection(ArrayList::new));
 		if (includeModuleDependencies != null) {
-			includeFilters = new ArrayList<>(includeFilters);
 			includeFilters.add(Library::isLocal);
 		}
-		List<ContentFilter<Library>> excludeFilters = excludes.stream().map(filterFactory).collect(Collectors.toList());
+		List<ContentFilter<Library>> excludeFilters = excludes.stream().map(filterFactory)
+				.collect(Collectors.toCollection(ArrayList::new));
 		if (excludeModuleDependencies != null) {
-			excludeFilters = new ArrayList<>(excludeFilters);
 			excludeFilters.add(Library::isLocal);
 		}
 		return new IncludeExcludeContentSelector<>(layer, includeFilters, excludeFilters);

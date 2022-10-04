@@ -270,7 +270,7 @@ public final class EndpointRequest {
 		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, Set<String> paths) {
 			return paths.stream().map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
-					.collect(Collectors.toList());
+					.collect(Collectors.toCollection(ArrayList::new));
 		}
 
 	}

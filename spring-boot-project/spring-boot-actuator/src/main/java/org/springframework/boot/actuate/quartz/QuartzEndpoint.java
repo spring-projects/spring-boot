@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
@@ -99,7 +98,7 @@ public class QuartzEndpoint {
 		Map<String, Object> result = new LinkedHashMap<>();
 		for (String groupName : this.scheduler.getJobGroupNames()) {
 			List<String> jobs = this.scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)).stream()
-					.map((key) -> key.getName()).collect(Collectors.toList());
+					.map((key) -> key.getName()).toList();
 			result.put(groupName, Collections.singletonMap("jobs", jobs));
 		}
 		return new QuartzGroups(result);
@@ -117,7 +116,7 @@ public class QuartzEndpoint {
 			Map<String, Object> groupDetails = new LinkedHashMap<>();
 			groupDetails.put("paused", pausedTriggerGroups.contains(groupName));
 			groupDetails.put("triggers", this.scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName))
-					.stream().map((key) -> key.getName()).collect(Collectors.toList()));
+					.stream().map((key) -> key.getName()).toList());
 			result.put(groupName, groupDetails);
 		}
 		return new QuartzGroups(result);

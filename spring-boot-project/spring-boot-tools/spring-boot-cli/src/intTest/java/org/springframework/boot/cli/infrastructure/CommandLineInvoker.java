@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -170,7 +169,7 @@ public final class CommandLineInvoker {
 
 		private List<String> getLines(StringBuffer buffer) {
 			BufferedReader reader = new BufferedReader(new StringReader(buffer.toString()));
-			return reader.lines().filter((line) -> !line.startsWith("Picked up ")).collect(Collectors.toList());
+			return reader.lines().filter((line) -> !line.startsWith("Picked up ")).toList();
 		}
 
 		public int await() throws InterruptedException {

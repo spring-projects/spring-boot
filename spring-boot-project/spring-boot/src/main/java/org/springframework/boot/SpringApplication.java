@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -652,7 +651,7 @@ public class SpringApplication {
 	}
 
 	private List<String> quoteProfiles(String[] profiles) {
-		return Arrays.stream(profiles).map((profile) -> "\"" + profile + "\"").collect(Collectors.toList());
+		return Arrays.stream(profiles).map((profile) -> "\"" + profile + "\"").toList();
 	}
 
 	/**

@@ -103,12 +103,12 @@ class DefaultWebMvcTagsProviderTests {
 		@Override
 		public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
 				Throwable exception) {
-			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).collect(Collectors.toList());
+			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).toList();
 		}
 
 		@Override
 		public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
-			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).collect(Collectors.toList());
+			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).toList();
 		}
 
 	}

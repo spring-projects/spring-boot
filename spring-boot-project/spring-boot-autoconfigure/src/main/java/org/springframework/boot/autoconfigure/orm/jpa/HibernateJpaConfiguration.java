@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -99,7 +98,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
 				physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(), beanFactory,
-				hibernatePropertiesCustomizers.orderedStream().collect(Collectors.toList()));
+				hibernatePropertiesCustomizers.orderedStream().toList());
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(

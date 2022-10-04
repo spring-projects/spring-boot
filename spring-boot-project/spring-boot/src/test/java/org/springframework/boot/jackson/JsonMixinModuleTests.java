@@ -19,7 +19,6 @@ package org.springframework.boot.jackson;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,8 +89,7 @@ class JsonMixinModuleTests {
 
 	private void load(Class<?>... basePackageClasses) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		List<String> basePackages = Arrays.stream(basePackageClasses).map(ClassUtils::getPackageName)
-				.collect(Collectors.toList());
+		List<String> basePackages = Arrays.stream(basePackageClasses).map(ClassUtils::getPackageName).toList();
 		context.registerBean(JsonMixinModule.class, () -> new JsonMixinModule(context, basePackages));
 		context.refresh();
 		this.context = context;

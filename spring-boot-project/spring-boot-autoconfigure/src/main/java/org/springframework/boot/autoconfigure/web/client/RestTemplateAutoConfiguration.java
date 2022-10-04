@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -58,9 +56,8 @@ public class RestTemplateAutoConfiguration {
 			ObjectProvider<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
 		RestTemplateBuilderConfigurer configurer = new RestTemplateBuilderConfigurer();
 		configurer.setHttpMessageConverters(messageConverters.getIfUnique());
-		configurer.setRestTemplateCustomizers(restTemplateCustomizers.orderedStream().collect(Collectors.toList()));
-		configurer.setRestTemplateRequestCustomizers(
-				restTemplateRequestCustomizers.orderedStream().collect(Collectors.toList()));
+		configurer.setRestTemplateCustomizers(restTemplateCustomizers.orderedStream().toList());
+		configurer.setRestTemplateRequestCustomizers(restTemplateRequestCustomizers.orderedStream().toList());
 		return configurer;
 	}
 

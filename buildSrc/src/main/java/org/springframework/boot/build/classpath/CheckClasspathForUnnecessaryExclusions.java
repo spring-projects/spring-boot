@@ -106,8 +106,7 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 			if (!exclusions.isEmpty()) {
 				Dependency toCheck = this.dependencyById.get(dependencyId);
 				List<String> dependencies = this.configurations.detachedConfiguration(toCheck, this.platform)
-						.getIncoming().getArtifacts().getArtifacts().stream().map(this::getId)
-						.collect(Collectors.toList());
+						.getIncoming().getArtifacts().getArtifacts().stream().map(this::getId).toList();
 				exclusions.removeAll(dependencies);
 				removeProfileExclusions(dependencyId, exclusions);
 				if (!exclusions.isEmpty()) {

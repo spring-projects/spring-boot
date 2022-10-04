@@ -19,7 +19,6 @@ package org.springframework.boot.build.testing;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
@@ -42,8 +41,7 @@ public abstract class TestResultsOverview
 	private final Object monitor = new Object();
 
 	void addFailures(Test test, List<TestDescriptor> failureDescriptors) {
-		List<TestFailure> testFailures = failureDescriptors.stream().map(TestFailure::new).sorted()
-				.collect(Collectors.toList());
+		List<TestFailure> testFailures = failureDescriptors.stream().map(TestFailure::new).sorted().toList();
 		synchronized (this.monitor) {
 			this.testFailures.put(test, testFailures);
 		}

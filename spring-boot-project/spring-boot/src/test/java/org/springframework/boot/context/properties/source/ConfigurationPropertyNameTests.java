@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.source;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -581,8 +580,8 @@ class ConfigurationPropertyNameTests {
 		names.add(ConfigurationPropertyName.of("foo.baz"));
 		names.add(ConfigurationPropertyName.of("foo"));
 		Collections.sort(names);
-		assertThat(names.stream().map(ConfigurationPropertyName::toString).collect(Collectors.toList()))
-				.containsExactly("foo", "foo[2]", "foo[10]", "foo.bar", "foo.bard", "foo.baz");
+		assertThat(names.stream().map(ConfigurationPropertyName::toString).toList()).containsExactly("foo", "foo[2]",
+				"foo[10]", "foo.bar", "foo.bard", "foo.baz");
 	}
 
 	@Test

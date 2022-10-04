@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -87,8 +86,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 			@Override
 			public void bindTo(MeterRegistry registry) {
-				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream()
-						.collect(Collectors.toList());
+				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream().toList();
 				this.dataSources.forEach((name, dataSource) -> bindDataSourceToRegistry(name, dataSource,
 						metadataProvidersList, registry));
 			}

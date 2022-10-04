@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -95,7 +94,7 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 	@SuppressWarnings("unchecked")
 	private void check(String key, Map<String, Object> json, Analysis analysis) {
 		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.get(key);
-		List<String> names = groups.stream().map((group) -> (String) group.get("name")).collect(Collectors.toList());
+		List<String> names = groups.stream().map((group) -> (String) group.get("name")).toList();
 		List<String> sortedNames = sortedCopy(names);
 		for (int i = 0; i < names.size(); i++) {
 			String actual = names.get(i);
