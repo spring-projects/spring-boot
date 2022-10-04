@@ -83,7 +83,7 @@ public class NettyWebServerFactoryCustomizer
 
 	private void customizeRequestDecoder(NettyReactiveWebServerFactory factory, PropertyMapper propertyMapper) {
 		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder((httpRequestDecoderSpec) -> {
-			propertyMapper.from(this.serverProperties.getMaxHttpHeaderSize()).whenNonNull()
+			propertyMapper.from(this.serverProperties.getMaxHttpRequestHeaderSize()).whenNonNull()
 					.to((maxHttpRequestHeader) -> httpRequestDecoderSpec
 							.maxHeaderSize((int) maxHttpRequestHeader.toBytes()));
 			ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();

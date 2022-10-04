@@ -92,9 +92,9 @@ public class TomcatWebServerFactoryCustomizer
 				.to((maxThreads) -> customizeMaxThreads(factory, threadProperties.getMax()));
 		propertyMapper.from(threadProperties::getMinSpare).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper.from(this.serverProperties.getMaxHttpHeaderSize()).whenNonNull().asInt(DataSize::toBytes)
+		propertyMapper.from(this.serverProperties.getMaxHttpRequestHeaderSize()).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpRequestHeaderSize(factory, maxHttpRequestHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull().asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes)
@@ -275,12 +275,13 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void customizeMaxHttpHeaderSize(ConfigurableTomcatWebServerFactory factory, int maxHttpHeaderSize) {
+	private void customizeMaxHttpRequestHeaderSize(ConfigurableTomcatWebServerFactory factory,
+			int maxHttpRequestHeaderSize) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractHttp11Protocol) {
 				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-				protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
+				protocol.setMaxHttpRequestHeaderSize(maxHttpRequestHeaderSize);
 			}
 		});
 	}
