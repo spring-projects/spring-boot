@@ -17,6 +17,7 @@ configurations {
 	couchbase
 	ehcache
 	hazelcast
+	infinispan
 }
 
 dependencies {
@@ -39,6 +40,21 @@ dependencies {
 	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	hazelcast("com.hazelcast:hazelcast")
 	hazelcast("com.hazelcast:hazelcast-spring")
+
+	infinispan(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	infinispan("javax.cache:cache-api")
+	infinispan("org.infinispan:infinispan-commons-jakarta")
+	infinispan("org.infinispan:infinispan-component-annotations")
+	infinispan("org.infinispan:infinispan-core-jakarta")
+	infinispan("org.infinispan:infinispan-jcache")
+	modules {
+		module("org.inifinispan:infinispan-commons") {
+			replacedBy("org.infinispan:infinispan-commons-jakarta", "Java EE 9 baseline")
+		}
+		module("org.inifinispan:infinispan-core") {
+			replacedBy("org.infinispan:infinispan-core-jakarta", "Java EE 9 baseline")
+		}
+	}
 
 	redisTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
 	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
@@ -69,6 +85,12 @@ def testHazelcast = tasks.register("testHazelcast", Test) {
 	classpath = sourceSets.test.runtimeClasspath + configurations.hazelcast
 }
 
+def testInfinispan = tasks.register("testInfinispan", Test) {
+	description = "Runs the tests against Infinispan"
+	classpath = sourceSets.test.runtimeClasspath + configurations.infinispan
+	systemProperties = ["spring.cache.jcache.config" : "classpath:infinispan.xml"]
+}
+
 def testRedis = tasks.register("testRedis", Test) {
 	description = "Runs the tests against Redis"
 	classpath = sourceSets.redisTest.runtimeClasspath
@@ -76,5 +98,5 @@ def testRedis = tasks.register("testRedis", Test) {
 }
 
 tasks.named("check").configure {
-	dependsOn testCaffeine, testCouchbase, testEhcache, testHazelcast, testRedis
+	dependsOn testCaffeine, testCouchbase, testEhcache, testHazelcast, testInfinispan, testRedis
 }

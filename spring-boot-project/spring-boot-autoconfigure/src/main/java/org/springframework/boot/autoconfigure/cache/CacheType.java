@@ -47,6 +47,11 @@ public enum CacheType {
 	COUCHBASE,
 
 	/**
+	 * Infinispan backed caching.
+	 */
+	INFINISPAN,
+
+	/**
 	 * Redis backed caching.
 	 */
 	REDIS,
