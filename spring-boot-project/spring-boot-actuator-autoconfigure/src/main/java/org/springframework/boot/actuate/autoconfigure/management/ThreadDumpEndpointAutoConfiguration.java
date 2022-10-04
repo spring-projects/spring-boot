@@ -17,12 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.management;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
-import org.springframework.boot.actuate.management.ThreadDumpEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -40,14 +37,6 @@ public class ThreadDumpEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ThreadDumpEndpoint dumpEndpoint() {
 		return new ThreadDumpEndpoint();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(ThreadDumpEndpoint.class)
-	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
-	public ThreadDumpEndpointWebExtension threadDumpWebExtension(ThreadDumpEndpoint threadDumpEndpoint) {
-		return new ThreadDumpEndpointWebExtension(threadDumpEndpoint);
 	}
 
 }
