@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
+import java.util.Collections;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
@@ -53,7 +55,7 @@ class CompositeHandlerExceptionResolverTests {
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
 		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
-				new HttpRequestMethodNotSupportedException("POST"));
+				new HttpRequestMethodNotSupportedException("POST", Collections.emptyList()));
 		assertThat(resolved.getViewName()).isEqualTo("test-view");
 	}
 
@@ -62,7 +64,8 @@ class CompositeHandlerExceptionResolverTests {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("POST");
+		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("POST",
+				Collections.emptyList());
 		ModelAndView resolved = resolver.resolveException(this.request, this.response, null, exception);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.isEmpty()).isTrue();
