@@ -75,6 +75,12 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	private String mainClass;
 
 	/**
+	 * Application arguments that should be taken into account for AOT processing.
+	 */
+	@Parameter
+	private String[] arguments;
+
+	/**
 	 * Spring profiles to take into account for AOT processing.
 	 */
 	@Parameter
@@ -100,15 +106,21 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		aotArguments.add(this.generatedClasses.toString());
 		aotArguments.add(this.project.getGroupId());
 		aotArguments.add(this.project.getArtifactId());
-		if (!ObjectUtils.isEmpty(this.profiles)) {
-			aotArguments.add("--spring.profiles.active=" + String.join(",", this.profiles));
-		}
+		aotArguments.addAll(resolveArguments().getArgs());
 		return aotArguments.toArray(String[]::new);
 	}
 
-	protected URL[] getClassPath() throws Exception {
+	private URL[] getClassPath() throws Exception {
 		File[] directories = new File[] { this.classesDirectory, this.generatedClasses };
 		return getClassPath(directories, new ExcludeTestScopeArtifactFilter());
+	}
+
+	private RunArguments resolveArguments() {
+		RunArguments runArguments = new RunArguments(this.arguments);
+		if (!ObjectUtils.isEmpty(this.profiles)) {
+			runArguments.getArgs().addFirst("--spring.profiles.active=" + String.join(",", this.profiles));
+		}
+		return runArguments;
 	}
 
 }
