@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.time.Duration;
+
+import com.rabbitmq.stream.BackOffDelayPolicy;
+import com.rabbitmq.stream.Codec;
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -32,6 +36,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
@@ -209,6 +214,17 @@ class RabbitStreamConfigurationTests {
 				});
 	}
 
+	@Test
+	void environmentCreatedByBuilderCanBeCustomized() {
+		this.contextRunner.withUserConfiguration(EnvironmentBuilderCustomizers.class).run((context) -> {
+			Environment environment = context.getBean(Environment.class);
+			assertThat(environment).extracting("codec")
+					.isEqualTo(context.getBean(EnvironmentBuilderCustomizers.class).codec);
+			assertThat(environment).extracting("recoveryBackOffDelayPolicy")
+					.isEqualTo(context.getBean(EnvironmentBuilderCustomizers.class).recoveryBackOffDelayPolicy);
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -268,6 +284,28 @@ class RabbitStreamConfigurationTests {
 		@Bean
 		MessageConverter anotherMessageConverter() {
 			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EnvironmentBuilderCustomizers {
+
+		private final Codec codec = mock(Codec.class);
+
+		private final BackOffDelayPolicy recoveryBackOffDelayPolicy = BackOffDelayPolicy.fixed(Duration.ofSeconds(5));
+
+		@Bean
+		@Order(1)
+		EnvironmentBuilderCustomizer customizerA() {
+			return (builder) -> builder.codec(this.codec);
+		}
+
+		@Bean
+		@Order(0)
+		EnvironmentBuilderCustomizer customizerB() {
+			return (builder) -> builder.codec(mock(Codec.class))
+					.recoveryBackOffDelayPolicy(this.recoveryBackOffDelayPolicy);
 		}
 
 	}

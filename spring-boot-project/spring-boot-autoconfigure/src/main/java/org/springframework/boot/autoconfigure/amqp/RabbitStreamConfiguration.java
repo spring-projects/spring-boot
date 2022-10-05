@@ -65,8 +65,11 @@ class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
-	Environment rabbitStreamEnvironment(RabbitProperties properties) {
-		return configure(Environment.builder(), properties).build();
+	Environment rabbitStreamEnvironment(RabbitProperties properties,
+			ObjectProvider<EnvironmentBuilderCustomizer> customizers) {
+		EnvironmentBuilder builder = configure(Environment.builder(), properties);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
 	}
 
 	@Bean
