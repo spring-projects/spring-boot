@@ -166,7 +166,7 @@ public class TracingProperties {
 	public static class Propagation {
 
 		/**
-		 * Tracing context propagation types.
+		 * Tracing context propagation type.
 		 */
 		private PropagationType type = PropagationType.W3C;
 
