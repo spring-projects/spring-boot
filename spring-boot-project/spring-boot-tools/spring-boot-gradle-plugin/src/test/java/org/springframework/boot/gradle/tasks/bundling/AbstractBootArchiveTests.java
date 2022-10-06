@@ -69,6 +69,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -482,6 +483,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			expected.add("- \"dependencies\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
+			expected.add("  - \"" + this.libPath + "fourth-library.jar\"");
 			expected.add("  - \"" + this.libPath + "second-library.jar\"");
 			if (!layerToolsJar.contains("SNAPSHOT")) {
 				expected.add("  - \"" + layerToolsJar + "\"");
@@ -536,6 +538,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			expected.add("- \"my-internal-deps\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
+			expected.add("  - \"" + this.libPath + "fourth-library.jar\"");
 			expected.add("  - \"" + this.libPath + "second-library.jar\"");
 			expected.add("- \"my-snapshot-deps\":");
 			expected.add("  - \"" + this.libPath + "second-project-library-SNAPSHOT.jar\"");
@@ -616,27 +619,43 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	File createLayeredJar() throws IOException {
-		return createLayeredJar((spec) -> {
+		return createLayeredJar(false);
+	}
+
+	File createLayeredJar(boolean addReachabilityProperties) throws IOException {
+		return createLayeredJar(addReachabilityProperties, (spec) -> {
 		});
 	}
 
 	File createLayeredJar(Action<LayeredSpec> action) throws IOException {
+		return createLayeredJar(false, action);
+	}
+
+	File createLayeredJar(boolean addReachabilityProperties, Action<LayeredSpec> action) throws IOException {
 		applyLayered(action);
-		addContent();
+		addContent(addReachabilityProperties);
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
 	File createPopulatedJar() throws IOException {
-		addContent();
+		return createPopulatedJar(false);
+	}
+
+	File createPopulatedJar(boolean addReachabilityProperties) throws IOException {
+		addContent(addReachabilityProperties);
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
 	abstract void applyLayered(Action<LayeredSpec> action);
 
-	@SuppressWarnings("unchecked")
 	void addContent() throws IOException {
+		addContent(false);
+	}
+
+	@SuppressWarnings("unchecked")
+	void addContent(boolean addReachabilityProperties) throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		File classesJavaMain = new File(this.temp, "classes/java/main");
 		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
@@ -650,14 +669,20 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		staticResources.mkdir();
 		File css = new File(staticResources, "test.css");
 		css.createNewFile();
+		if (addReachabilityProperties) {
+			createReachabilityProperties(resourcesMain, "com.example", "first-library", "true");
+			createReachabilityProperties(resourcesMain, "com.example", "second-library", "true");
+			createReachabilityProperties(resourcesMain, "com.example", "fourth-library", "false");
+		}
 		this.task.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
-				jarFile("third-library-SNAPSHOT.jar"), jarFile("first-project-library.jar"),
-				jarFile("second-project-library-SNAPSHOT.jar"));
+				jarFile("third-library-SNAPSHOT.jar"), jarFile("fourth-library.jar"),
+				jarFile("first-project-library.jar"), jarFile("second-project-library-SNAPSHOT.jar"));
 		Set<ResolvedArtifact> artifacts = new LinkedHashSet<>();
 		artifacts.add(mockLibraryArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
 		artifacts.add(mockLibraryArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
 		artifacts.add(
 				mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
+		artifacts.add(mockLibraryArtifact("fourth-library.jar", "com.example", "fourth-library", "1.0.0"));
 		artifacts
 				.add(mockProjectArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
 		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example",
@@ -680,6 +705,14 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		}).given(resolvableDependencies).afterResolve(any(Action.class));
 		given(configuration.getIncoming()).willReturn(resolvableDependencies);
 		populateResolvedDependencies(configuration);
+	}
+
+	protected void createReachabilityProperties(File directory, String groupId, String artifactId, String override)
+			throws IOException {
+		File targetDirectory = new File(directory, "META-INF/native-image/%s/%s".formatted(groupId, artifactId));
+		File target = new File(targetDirectory, "reachability-metadata.properties");
+		targetDirectory.mkdirs();
+		FileCopyUtils.copy("override=%s\n".formatted(override).getBytes(StandardCharsets.ISO_8859_1), target);
 	}
 
 	abstract void populateResolvedDependencies(Configuration configuration);

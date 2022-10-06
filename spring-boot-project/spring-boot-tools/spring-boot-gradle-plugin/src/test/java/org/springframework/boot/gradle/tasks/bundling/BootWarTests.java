@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import org.gradle.api.Action;
 import org.gradle.api.artifacts.Configuration;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -32,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
+@ClassPathExclusions("kotlin-daemon-client-*")
 class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	BootWarTests() {
@@ -115,7 +118,8 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
 					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
-					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
+					"- \"WEB-INF/lib/first-project-library.jar\"",
 					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}
@@ -127,7 +131,8 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 					.isEqualTo("WEB-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
 					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
-					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
+					"- \"WEB-INF/lib/first-project-library.jar\"",
 					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}

@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -612,6 +613,42 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		Collection<String> packagedEntryNames = getPackagedEntryNames();
 		packagedEntryNames.removeIf((name) -> !name.endsWith(".jar"));
 		assertThat(packagedEntryNames).containsExactly("WEB-INF/lib/" + libraryTwo.getName());
+	}
+
+	@Test
+	void nativeImageArgFileWithExcludesIsWritten() throws Exception {
+		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
+		File libraryOne = createLibraryJar();
+		File libraryTwo = createLibraryJar();
+		File libraryThree = createLibraryJar();
+		File libraryFour = createLibraryJar();
+		this.testJarFile.addFile("META-INF/native-image/com.example.one/lib-one/reachability-metadata.properties",
+				new ByteArrayInputStream("override=true\n".getBytes(StandardCharsets.ISO_8859_1)));
+		this.testJarFile.addFile("META-INF/native-image/com.example.two/lib-two/reachability-metadata.properties",
+				new ByteArrayInputStream("override=true\n".getBytes(StandardCharsets.ISO_8859_1)));
+		this.testJarFile.addFile("META-INF/native-image/com.example.three/lib-three/reachability-metadata.properties",
+				new ByteArrayInputStream("other=test\n".getBytes(StandardCharsets.ISO_8859_1)));
+		P packager = createPackager(this.testJarFile.getFile());
+		execute(packager, (callback) -> {
+			callback.library(new Library(null, libraryOne, LibraryScope.COMPILE,
+					LibraryCoordinates.of("com.example.one", "lib-one", "123"), false, false, true));
+			callback.library(new Library(null, libraryTwo, LibraryScope.COMPILE,
+					LibraryCoordinates.of("com.example.two", "lib-two", "123"), false, false, true));
+			callback.library(new Library(null, libraryThree, LibraryScope.COMPILE,
+					LibraryCoordinates.of("com.example.three", "lib-three", "123"), false, false, true));
+			callback.library(new Library(null, libraryFour, LibraryScope.COMPILE,
+					LibraryCoordinates.of("com.example.four", "lib-four", "123"), false, false, true));
+		});
+
+		List<String> expected = new ArrayList<>();
+		expected.add("--exclude-config");
+		expected.add("\"\\\\Q" + libraryOne.getName() + "\\\\E\"");
+		expected.add("\"^/META-INF/native-image/.*\"");
+		expected.add("--exclude-config");
+		expected.add("\"\\\\Q" + libraryTwo.getName() + "\\\\E\"");
+		expected.add("\"^/META-INF/native-image/.*\"");
+		assertThat(getPackagedEntryContent("META-INF/native-image/argfile"))
+				.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
 	}
 
 	private File createLibraryJar() throws IOException {

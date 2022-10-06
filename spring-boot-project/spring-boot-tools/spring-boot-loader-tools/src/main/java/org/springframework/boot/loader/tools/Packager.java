@@ -16,14 +16,20 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -31,6 +37,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
@@ -51,6 +60,8 @@ import org.springframework.util.StringUtils;
  * @since 2.3.0
  */
 public abstract class Packager {
+
+	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/reachability-metadata.properties";
 
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
@@ -196,7 +207,8 @@ public abstract class Packager {
 		writeLoaderClasses(writer);
 		writer.writeEntries(sourceJar, getEntityTransformer(), libraries.getUnpackHandler(),
 				libraries.getLibraryLookup());
-		libraries.write(writer);
+		Map<String, Library> writtenLibraries = libraries.write(writer);
+		writeNativeImageArgFile(writer, sourceJar, writtenLibraries);
 		if (isLayered()) {
 			writeLayerIndex(writer);
 		}
@@ -209,6 +221,39 @@ public abstract class Packager {
 		}
 		else if (layout.isExecutable()) {
 			writer.writeLoaderClasses();
+		}
+	}
+
+	private void writeNativeImageArgFile(AbstractJarWriter writer, JarFile sourceJar,
+			Map<String, Library> writtenLibraries) throws IOException {
+		Set<String> excludes = new LinkedHashSet<>();
+		for (Map.Entry<String, Library> entry : writtenLibraries.entrySet()) {
+			LibraryCoordinates coordinates = entry.getValue().getCoordinates();
+			ZipEntry zipEntry = (coordinates != null) ? sourceJar.getEntry(REACHABILITY_METADATA_PROPERTIES_LOCATION
+					.formatted(coordinates.getGroupId(), coordinates.getArtifactId())) : null;
+			if (zipEntry != null) {
+				try (InputStream inputStream = sourceJar.getInputStream(zipEntry)) {
+					Properties properties = new Properties();
+					properties.load(inputStream);
+					if (Boolean.parseBoolean(properties.getProperty("override"))) {
+						excludes.add(entry.getKey());
+					}
+				}
+			}
+		}
+		// https://docs.oracle.com/en/java/javase/18/docs/specs/man/java.html#java-command-line-argument-files
+		if (!excludes.isEmpty()) {
+			List<String> args = new ArrayList<>();
+			for (String exclude : excludes) {
+				int lastSlash = exclude.lastIndexOf('/');
+				String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
+				args.add("--exclude-config");
+				args.add("\"" + Pattern.quote(jar).replace("\\", "\\\\") + "\"");
+				args.add("\"^/META-INF/native-image/.*\"");
+			}
+			String contents = args.stream().collect(Collectors.joining("\n")) + "\n";
+			writer.writeEntry("META-INF/native-image/argfile",
+					new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)));
 		}
 	}
 
@@ -492,21 +537,22 @@ public abstract class Packager {
 			return this.libraryLookup;
 		}
 
-		void write(AbstractJarWriter writer) throws IOException {
-			List<String> writtenPaths = new ArrayList<>();
+		Map<String, Library> write(AbstractJarWriter writer) throws IOException {
+			Map<String, Library> writtenLibraries = new LinkedHashMap<>();
 			for (Entry<String, Library> entry : this.libraries.entrySet()) {
 				String path = entry.getKey();
 				Library library = entry.getValue();
 				if (library.isIncluded()) {
 					String location = path.substring(0, path.lastIndexOf('/') + 1);
 					writer.writeNestedLibrary(location, library);
-					writtenPaths.add(path);
+					writtenLibraries.put(path, library);
 				}
 			}
-			writeClasspathIndexIfNecessary(writtenPaths, getLayout(), writer);
+			writeClasspathIndexIfNecessary(writtenLibraries.keySet(), getLayout(), writer);
+			return writtenLibraries;
 		}
 
-		private void writeClasspathIndexIfNecessary(List<String> paths, Layout layout, AbstractJarWriter writer)
+		private void writeClasspathIndexIfNecessary(Collection<String> paths, Layout layout, AbstractJarWriter writer)
 				throws IOException {
 			if (layout.getClasspathIndexFileLocation() != null) {
 				List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").toList();
