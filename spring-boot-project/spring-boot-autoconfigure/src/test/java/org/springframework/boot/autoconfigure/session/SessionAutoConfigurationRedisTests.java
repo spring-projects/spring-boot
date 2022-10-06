@@ -25,7 +25,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.RedisSessionConfiguration.IndexedRedisSessionConfiguration.SpringBootRedisIndexedHttpSessionConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -191,9 +190,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", keyNamespace);
 			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", flushMode);
 			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
-			SpringBootRedisIndexedHttpSessionConfiguration configuration = context
-					.getBean(SpringBootRedisIndexedHttpSessionConfiguration.class);
-			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
+			assertThat(repository).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
 		};
 	}
 
