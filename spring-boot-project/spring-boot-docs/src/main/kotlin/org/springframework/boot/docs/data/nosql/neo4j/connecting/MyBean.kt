@@ -16,9 +16,7 @@
 
 package org.springframework.boot.docs.data.nosql.neo4j.connecting
 
-import org.neo4j.driver.Driver
-import org.neo4j.driver.Transaction
-import org.neo4j.driver.Values
+import org.neo4j.driver.*
 import org.springframework.stereotype.Component
 
 @Component
@@ -26,11 +24,13 @@ class MyBean(private val driver: Driver) {
 	// @fold:on // ...
 	fun someMethod(message: String?): String {
 		driver.session().use { session ->
-			return@someMethod session.writeTransaction { transaction: Transaction ->
-				transaction.run(
-					"CREATE (a:Greeting) SET a.message = \$message RETURN a.message + ', from node ' + id(a)",
-					Values.parameters("message", message)
-				).single()[0].asString()
+			return@someMethod session.executeWrite { transaction: TransactionContext ->
+				transaction
+					.run(
+						"CREATE (a:Greeting) SET a.message = \$message RETURN a.message + ', from node ' + id(a)",
+						Values.parameters("message", message)
+					)
+					.single()[0].asString()
 			}
 		}
 	}

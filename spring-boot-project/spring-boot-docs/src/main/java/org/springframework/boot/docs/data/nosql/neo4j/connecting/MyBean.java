@@ -34,7 +34,7 @@ public class MyBean {
 	// @fold:on // ...
 	public String someMethod(String message) {
 		try (Session session = this.driver.session()) {
-			return session.writeTransaction((transaction) -> transaction
+			return session.executeWrite((transaction) -> transaction
 					.run("CREATE (a:Greeting) SET a.message = $message RETURN a.message + ', from node ' + id(a)",
 							Values.parameters("message", message))
 					.single().get(0).asString());
