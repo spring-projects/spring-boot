@@ -65,7 +65,9 @@ class JavaProcessExecutor {
 	int run(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
-		this.runProcessCustomizer.accept(runProcess);
+		if (this.runProcessCustomizer != null) {
+			this.runProcessCustomizer.accept(runProcess);
+		}
 		try {
 			int exitCode = runProcess.run(true, args, environmentVariables);
 			if (!hasTerminatedSuccessfully(exitCode)) {
