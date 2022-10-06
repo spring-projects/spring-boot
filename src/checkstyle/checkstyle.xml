@@ -8,6 +8,7 @@
 	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+		<module name="io.spring.javaformat.checkstyle.check.SpringDeprecatedCheck" />
 		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
