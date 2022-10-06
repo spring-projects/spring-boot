@@ -58,6 +58,13 @@ bom {
 			]
 		}
 	}
+	library("Brave", "5.14.1") {
+		group("io.zipkin.brave") {
+			imports = [
+				"brave-bom"
+			]
+		}
+	}
 	library("Build Helper Maven Plugin", "3.3.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
@@ -1639,13 +1646,6 @@ bom {
 		group("org.eclipse") {
 			modules = [
 				"yasson"
-			]
-		}
-	}
-	library("Zipkin", "2.16.3") {
-		group("io.zipkin.reporter2") {
-			modules = [
-				"zipkin-sender-urlconnection"
 			]
 		}
 	}
