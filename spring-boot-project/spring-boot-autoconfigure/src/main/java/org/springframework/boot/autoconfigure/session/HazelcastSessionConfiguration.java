@@ -45,27 +45,21 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastSessionProperties.class)
+@Import(HazelcastHttpSessionConfiguration.class)
 class HazelcastSessionConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@Import(HazelcastHttpSessionConfiguration.class)
-	static class SpringBootHazelcastHttpSessionConfiguration {
-
-		@Bean
-		SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-				SessionProperties sessionProperties, HazelcastSessionProperties hazelcastSessionProperties,
-				ServerProperties serverProperties) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			return (sessionRepository) -> {
-				map.from(sessionProperties
-						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-						.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
-				map.from(hazelcastSessionProperties::getMapName).to(sessionRepository::setSessionMapName);
-				map.from(hazelcastSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
-				map.from(hazelcastSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-			};
-		}
-
+	@Bean
+	SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+			SessionProperties sessionProperties, HazelcastSessionProperties hazelcastSessionProperties,
+			ServerProperties serverProperties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		return (sessionRepository) -> {
+			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+					.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+			map.from(hazelcastSessionProperties::getMapName).to(sessionRepository::setSessionMapName);
+			map.from(hazelcastSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
+			map.from(hazelcastSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+		};
 	}
 
 }

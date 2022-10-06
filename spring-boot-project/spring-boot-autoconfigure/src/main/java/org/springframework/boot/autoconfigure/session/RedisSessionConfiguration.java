@@ -57,40 +57,35 @@ class RedisSessionConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "default",
 			matchIfMissing = true)
+	@Import(RedisHttpSessionConfiguration.class)
 	static class DefaultRedisSessionConfiguration {
 
-		@Configuration(proxyBeanMethods = false)
-		@Import(RedisHttpSessionConfiguration.class)
-		static class SpringBootRedisHttpSessionConfiguration {
-
-			@Bean
-			SessionRepositoryCustomizer<RedisSessionRepository> springBootSessionRepositoryCustomizer(
-					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
-					ServerProperties serverProperties) {
-				String cleanupCron = redisSessionProperties.getCleanupCron();
-				if (cleanupCron != null) {
-					throw new InvalidConfigurationPropertyValueException("spring.session.redis.cleanup-cron",
-							cleanupCron,
-							"Cron-based cleanup is only supported when spring.session.redis.repository-type is set to "
-									+ "indexed.");
-				}
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-				return (sessionRepository) -> {
-					map.from(sessionProperties
-							.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-							.to(sessionRepository::setDefaultMaxInactiveInterval);
-					map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-					map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
-					map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-				};
+		@Bean
+		SessionRepositoryCustomizer<RedisSessionRepository> springBootSessionRepositoryCustomizer(
+				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+				ServerProperties serverProperties) {
+			String cleanupCron = redisSessionProperties.getCleanupCron();
+			if (cleanupCron != null) {
+				throw new InvalidConfigurationPropertyValueException("spring.session.redis.cleanup-cron", cleanupCron,
+						"Cron-based cleanup is only supported when spring.session.redis.repository-type is set to "
+								+ "indexed.");
 			}
-
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			return (sessionRepository) -> {
+				map.from(sessionProperties
+						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+						.to(sessionRepository::setDefaultMaxInactiveInterval);
+				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+				map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
+				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+			};
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "indexed")
+	@Import(RedisIndexedHttpSessionConfiguration.class)
 	static class IndexedRedisSessionConfiguration {
 
 		@Bean
@@ -102,27 +97,20 @@ class RedisSessionConfiguration {
 			};
 		}
 
-		@Configuration(proxyBeanMethods = false)
-		@Import(RedisIndexedHttpSessionConfiguration.class)
-		static class SpringBootRedisIndexedHttpSessionConfiguration {
-
-			@Bean
-			SessionRepositoryCustomizer<RedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
-					ServerProperties serverProperties) {
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-				return (sessionRepository) -> {
-					map.from(sessionProperties
-							.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-							.to((timeout) -> sessionRepository
-									.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
-					map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-					map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
-					map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-					map.from(redisSessionProperties::getCleanupCron).to(sessionRepository::setCleanupCron);
-				};
-			}
-
+		@Bean
+		SessionRepositoryCustomizer<RedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+				ServerProperties serverProperties) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			return (sessionRepository) -> {
+				map.from(sessionProperties
+						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+						.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+				map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
+				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+				map.from(redisSessionProperties::getCleanupCron).to(sessionRepository::setCleanupCron);
+			};
 		}
 
 	}

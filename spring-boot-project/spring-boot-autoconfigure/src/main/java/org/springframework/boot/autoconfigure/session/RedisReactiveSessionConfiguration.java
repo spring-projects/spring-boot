@@ -43,26 +43,20 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 @EnableConfigurationProperties(RedisSessionProperties.class)
+@Import(RedisWebSessionConfiguration.class)
 class RedisReactiveSessionConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@Import(RedisWebSessionConfiguration.class)
-	static class SpringBootRedisWebSessionConfiguration {
-
-		@Bean
-		ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
-				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
-				ServerProperties serverProperties) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			return (sessionRepository) -> {
-				map.from(sessionProperties
-						.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
-						.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
-				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-			};
-		}
-
+	@Bean
+	ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
+			SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+			ServerProperties serverProperties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		return (sessionRepository) -> {
+			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
+					.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+			map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+			map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+		};
 	}
 
 }

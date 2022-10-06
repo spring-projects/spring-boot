@@ -50,7 +50,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
 @EnableConfigurationProperties(JdbcSessionProperties.class)
-@Import(DatabaseInitializationDependencyConfigurer.class)
+@Import({ DatabaseInitializationDependencyConfigurer.class, JdbcHttpSessionConfiguration.class })
 class JdbcSessionConfiguration {
 
 	@Bean
@@ -63,25 +63,19 @@ class JdbcSessionConfiguration {
 		return new JdbcSessionDataSourceScriptDatabaseInitializer(dataSourceToInitialize, properties);
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@Import(JdbcHttpSessionConfiguration.class)
-	static class SpringBootJdbcHttpSessionConfiguration {
-
-		@Bean
-		SessionRepositoryCustomizer<JdbcIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-				SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
-				ServerProperties serverProperties) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			return (sessionRepository) -> {
-				map.from(sessionProperties
-						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-						.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
-				map.from(jdbcSessionProperties::getTableName).to(sessionRepository::setTableName);
-				map.from(jdbcSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
-				map.from(jdbcSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-				map.from(jdbcSessionProperties::getCleanupCron).to(sessionRepository::setCleanupCron);
-			};
-		}
+	@Bean
+	SessionRepositoryCustomizer<JdbcIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+			SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
+			ServerProperties serverProperties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		return (sessionRepository) -> {
+			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+					.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+			map.from(jdbcSessionProperties::getTableName).to(sessionRepository::setTableName);
+			map.from(jdbcSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
+			map.from(jdbcSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+			map.from(jdbcSessionProperties::getCleanupCron).to(sessionRepository::setCleanupCron);
+		};
 
 	}
 

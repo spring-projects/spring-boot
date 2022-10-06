@@ -43,25 +43,19 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)
 @EnableConfigurationProperties(MongoSessionProperties.class)
+@Import(MongoHttpSessionConfiguration.class)
 class MongoSessionConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@Import(MongoHttpSessionConfiguration.class)
-	static class SpringBootMongoHttpSessionConfiguration {
-
-		@Bean
-		SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-				SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
-				ServerProperties serverProperties) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			return (sessionRepository) -> {
-				map.from(sessionProperties
-						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-						.to((timeout) -> sessionRepository.setMaxInactiveIntervalInSeconds((int) timeout.getSeconds()));
-				map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
-			};
-		}
-
+	@Bean
+	SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
+			ServerProperties serverProperties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		return (sessionRepository) -> {
+			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+					.to((timeout) -> sessionRepository.setMaxInactiveIntervalInSeconds((int) timeout.getSeconds()));
+			map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
+		};
 	}
 
 }
