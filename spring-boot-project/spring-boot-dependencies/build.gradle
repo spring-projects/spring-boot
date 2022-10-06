@@ -1642,10 +1642,10 @@ bom {
 			]
 		}
 	}
-	library("Zipkin", "2.16.3") {
-		group("io.zipkin.reporter2") {
-			modules = [
-				"zipkin-sender-urlconnection"
+	library("Zipkin", "5.14.1") {
+		group("io.zipkin.brave") {
+			imports = [
+				"brave-bom"
 			]
 		}
 	}
