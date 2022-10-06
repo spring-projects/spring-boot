@@ -98,7 +98,7 @@ class ObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomGlobalObservationConvention.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Context micrometerContext = new Context();
-			Observation.start("test-observation", micrometerContext, observationRegistry).stop();
+			Observation.start("test-observation", () -> micrometerContext, observationRegistry).stop();
 			assertThat(micrometerContext.getAllKeyValues()).containsExactly(KeyValue.of("key1", "value1"));
 		});
 	}
@@ -129,7 +129,7 @@ class ObservationAutoConfigurationTests {
 					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 					List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
 					CustomContext customContext = new CustomContext();
-					Observation.start("test-observation", customContext, observationRegistry);
+					Observation.start("test-observation", () -> customContext, observationRegistry);
 					assertThat(handlers).hasSize(1);
 					assertThat(handlers.get(0)).isInstanceOf(ObservationHandlerWithCustomContext.class);
 				});
