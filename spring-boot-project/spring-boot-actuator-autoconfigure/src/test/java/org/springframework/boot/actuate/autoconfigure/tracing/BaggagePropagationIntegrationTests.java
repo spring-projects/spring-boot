@@ -93,7 +93,7 @@ class BaggagePropagationIntegrationTests {
 
 				try (Tracer.SpanInScope scope2 = tracer.withSpan(null)) {
 					assertThatMdcContainsUnsetTraceId();
-					assertThat(MDC.get(COUNTRY_CODE)).isNullOrEmpty();
+					assertThat(MDC.get(COUNTRY_CODE)).isNull();
 				}
 
 				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
@@ -103,7 +103,7 @@ class BaggagePropagationIntegrationTests {
 				span.end();
 			}
 			assertThatMdcContainsUnsetTraceId();
-			assertThat(MDC.get(COUNTRY_CODE)).isNullOrEmpty();
+			assertThat(MDC.get(COUNTRY_CODE)).isNull();
 		});
 	}
 
