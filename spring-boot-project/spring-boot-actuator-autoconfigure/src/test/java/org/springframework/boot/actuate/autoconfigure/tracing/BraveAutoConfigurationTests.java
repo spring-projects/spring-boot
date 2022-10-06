@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.baggage.BaggagePropagation;
@@ -209,6 +210,27 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyMdcCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
 				.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
+	}
+
+	@Test
+	void shouldHave128BitTraceId() {
+		this.contextRunner.run((context) -> {
+			Tracing tracing = context.getBean(Tracing.class);
+			Span span = tracing.tracer().nextSpan();
+			assertThat(span.context().traceIdString()).hasSize(32);
+		});
+	}
+
+	@Test
+	void shouldNotSupportJoinedSpans() {
+		this.contextRunner.run((context) -> {
+			Tracing tracing = context.getBean(Tracing.class);
+			Span parentSpan = tracing.tracer().nextSpan();
+			Span childSpan = tracing.tracer().joinSpan(parentSpan.context());
+			assertThat(parentSpan.context().traceIdString()).isEqualTo(childSpan.context().traceIdString());
+			assertThat(parentSpan.context().spanIdString()).isEqualTo(childSpan.context().parentIdString());
+			assertThat(parentSpan.context().spanIdString()).isNotEqualTo(childSpan.context().spanIdString());
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
