@@ -16,13 +16,11 @@
 
 package org.springframework.boot.actuate.metrics.web.client;
 
-import io.micrometer.observation.ObservationConvention;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.observation.DefaultClientHttpObservationConvention;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,11 +44,10 @@ class ObservationRestTemplateCustomizerTests {
 	@Test
 	void shouldCustomizeObservationConfiguration() {
 		this.customizer.customize(this.restTemplate);
-		assertThat((ObservationRegistry) ReflectionTestUtils.getField(this.restTemplate, "observationRegistry"))
-				.isEqualTo(this.observationRegistry);
-		assertThat((ObservationConvention<?>) ReflectionTestUtils.getField(this.restTemplate, "observationConvention"))
-				.isInstanceOf(DefaultClientHttpObservationConvention.class).extracting("name")
-				.isEqualTo(TEST_METRIC_NAME);
+		assertThat(this.restTemplate).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
+		assertThat(this.restTemplate).extracting("observationConvention")
+				.isInstanceOf(DefaultClientHttpObservationConvention.class)
+				.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}
 
 }

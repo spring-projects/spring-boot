@@ -16,12 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.client;
 
-import io.micrometer.observation.ObservationConvention;
-import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.ClientObservationConvention;
 import org.springframework.web.reactive.function.client.DefaultClientObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -51,10 +48,10 @@ class ObservationWebClientCustomizerTests {
 	@Test
 	void shouldCustomizeObservationConfiguration() {
 		this.customizer.customize(this.clientBuilder);
-		assertThat((ObservationRegistry) ReflectionTestUtils.getField(this.clientBuilder, "observationRegistry"))
-				.isEqualTo(this.observationRegistry);
-		assertThat((ObservationConvention<?>) ReflectionTestUtils.getField(this.clientBuilder, "observationConvention"))
-				.isInstanceOf(DefaultClientObservationConvention.class).extracting("name").isEqualTo(TEST_METRIC_NAME);
+		assertThat(this.clientBuilder).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
+		assertThat(this.clientBuilder).extracting("observationConvention")
+				.isInstanceOf(DefaultClientObservationConvention.class)
+				.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}
 
 }

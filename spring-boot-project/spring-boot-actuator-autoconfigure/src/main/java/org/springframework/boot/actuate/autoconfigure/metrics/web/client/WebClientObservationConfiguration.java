@@ -41,7 +41,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 class WebClientObservationConfiguration {
 
 	@Bean
-	ObservationWebClientCustomizer metricsWebClientCustomizer(ObservationRegistry observationRegistry,
+	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
 			ObservationProperties observationProperties,
 			ObjectProvider<WebClientExchangeTagsProvider> optionalTagsProvider, MetricsProperties metricsProperties) {
 		String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();
