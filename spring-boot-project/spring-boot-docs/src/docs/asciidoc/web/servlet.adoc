@@ -298,6 +298,22 @@ TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorC
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
 To do so, extend `BasicErrorController`, add a public method with a `@RequestMapping` that has a `produces` attribute, and create a bean of your new type.
 
+As of Spring Framework 6.0, {spring-framework-docs}/web.html#mvc-ann-rest-exceptions[RFC 7807 Problem Details] is supported.
+Spring MVC can produce custom error messages with the `application/problem+json` media type, like:
+
+[source,json,indent=0,subs="verbatim"]
+----
+{
+  "type": "https://example.org/problems/unknown-project",
+  "title": "Unknown project",
+  "status": 404,
+  "detail": "No project found for id 'spring-unknown'",
+  "instance": "/projects/spring-unknown"
+}
+----
+
+This support can be enabled by setting configprop:spring.mvc.problemdetails.enabled[] to `true`.
+
 You can also define a class annotated with `@ControllerAdvice` to customize the JSON document to return for a particular controller and/or exception type, as shown in the following example:
 
 include::code:MyControllerAdvice[]

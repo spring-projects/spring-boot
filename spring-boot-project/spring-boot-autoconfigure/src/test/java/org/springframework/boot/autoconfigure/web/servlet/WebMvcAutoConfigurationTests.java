@@ -77,6 +77,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -106,6 +107,7 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
@@ -959,6 +961,25 @@ class WebMvcAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	void problemDetailsDisabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ProblemDetailsExceptionHandler.class));
+	}
+
+	@Test
+	void problemDetailsEnabledAddsExceptionHandler() {
+		this.contextRunner.withPropertyValues("spring.mvc.problemdetails.enabled:true")
+				.run((context) -> assertThat(context).hasSingleBean(ProblemDetailsExceptionHandler.class));
+	}
+
+	@Test
+	void problemDetailsBacksOffWhenExceptionHandler() {
+		this.contextRunner.withPropertyValues("spring.mvc.problemdetails.enabled:true")
+				.withUserConfiguration(CustomExceptionResolverConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(ProblemDetailsExceptionHandler.class)
+						.hasSingleBean(CustomExceptionResolver.class));
+	}
+
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
 			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
@@ -1482,6 +1503,21 @@ class WebMvcAutoConfigurationTests {
 
 			};
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExceptionResolverConfiguration {
+
+		@Bean
+		CustomExceptionResolver customExceptionResolver() {
+			return new CustomExceptionResolver();
+		}
+
+	}
+
+	@ControllerAdvice
+	static class CustomExceptionResolver extends ResponseEntityExceptionHandler {
 
 	}
 

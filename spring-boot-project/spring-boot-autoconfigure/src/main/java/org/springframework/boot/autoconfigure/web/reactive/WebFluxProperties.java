@@ -36,6 +36,8 @@ public class WebFluxProperties {
 
 	private final Format format = new Format();
 
+	private final Problemdetails problemdetails = new Problemdetails();
+
 	/**
 	 * Path pattern used for static resources.
 	 */
@@ -72,6 +74,10 @@ public class WebFluxProperties {
 
 	public Format getFormat() {
 		return this.format;
+	}
+
+	public Problemdetails getProblemdetails() {
+		return this.problemdetails;
 	}
 
 	public String getStaticPathPattern() {
@@ -129,6 +135,23 @@ public class WebFluxProperties {
 
 		public void setDateTime(String dateTime) {
 			this.dateTime = dateTime;
+		}
+
+	}
+
+	public static class Problemdetails {
+
+		/**
+		 * Whether RFC 7807 Problem Details support should be enabled.
+		 */
+		private boolean enabled = false;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

@@ -106,6 +106,8 @@ public class WebMvcProperties {
 
 	private final Pathmatch pathmatch = new Pathmatch();
 
+	private final Problemdetails problemdetails = new Problemdetails();
+
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
 	}
@@ -211,6 +213,10 @@ public class WebMvcProperties {
 
 	public Pathmatch getPathmatch() {
 		return this.pathmatch;
+	}
+
+	public Problemdetails getProblemdetails() {
+		return this.problemdetails;
 	}
 
 	public static class Async {
@@ -444,6 +450,23 @@ public class WebMvcProperties {
 		 * Use the {@code PathPatternParser} implementation.
 		 */
 		PATH_PATTERN_PARSER
+
+	}
+
+	public static class Problemdetails {
+
+		/**
+		 * Whether RFC 7807 Problem Details support should be enabled.
+		 */
+		private boolean enabled = false;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 	}
 
