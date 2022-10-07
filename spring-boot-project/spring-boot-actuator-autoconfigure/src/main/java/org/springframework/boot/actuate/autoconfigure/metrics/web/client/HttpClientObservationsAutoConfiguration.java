@@ -58,7 +58,7 @@ public class HttpClientObservationsAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
 	@ConditionalOnBean(MeterRegistry.class)
-	class MeterFilterConfiguration {
+	static class MeterFilterConfiguration {
 
 		@Bean
 		@Order(0)

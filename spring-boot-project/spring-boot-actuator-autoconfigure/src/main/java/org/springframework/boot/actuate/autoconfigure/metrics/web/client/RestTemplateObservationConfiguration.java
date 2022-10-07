@@ -44,7 +44,7 @@ import org.springframework.web.client.RestTemplate;
 class RestTemplateObservationConfiguration {
 
 	@Bean
-	ObservationRestTemplateCustomizer metricsRestTemplateCustomizer(ObservationRegistry observationRegistry,
+	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
 			ObservationProperties observationProperties, MetricsProperties metricsProperties,
 			ObjectProvider<RestTemplateExchangeTagsProvider> optionalTagsProvider) {
 		String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();

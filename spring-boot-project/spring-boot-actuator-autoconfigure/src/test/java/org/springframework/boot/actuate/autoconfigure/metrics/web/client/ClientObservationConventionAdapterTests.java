@@ -65,7 +65,7 @@ class ClientObservationConventionAdapterTests {
 	}
 
 	@Test
-	void shouldOnlySupportClientHttpObservationContext() {
+	void shouldOnlySupportClientObservationContext() {
 		assertThat(this.convention.supportsContext(this.context)).isTrue();
 		assertThat(this.convention.supportsContext(new OtherContext())).isFalse();
 	}
