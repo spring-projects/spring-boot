@@ -92,8 +92,9 @@ public class BraveAutoConfiguration {
 			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
 			Factory propagationFactory, Sampler sampler) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		Builder builder = Tracing.newBuilder().currentTraceContext(currentTraceContext)
-				.propagationFactory(propagationFactory).sampler(sampler).localServiceName(applicationName);
+		Builder builder = Tracing.newBuilder().currentTraceContext(currentTraceContext).traceId128Bit(true)
+				.supportsJoin(false).propagationFactory(propagationFactory).sampler(sampler)
+				.localServiceName(applicationName);
 		for (SpanHandler spanHandler : spanHandlers) {
 			builder.addSpanHandler(spanHandler);
 		}
