@@ -23,7 +23,6 @@ import jakarta.servlet.DispatcherType;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -248,18 +247,6 @@ public class ThymeleafAutoConfiguration {
 		@ConditionalOnMissingBean
 		SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Java8TimeDialect.class)
-	static class ThymeleafJava8TimeDialect {
-
-		@Bean
-		@ConditionalOnMissingBean
-		Java8TimeDialect java8TimeDialect() {
-			return new Java8TimeDialect();
 		}
 
 	}

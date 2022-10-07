@@ -1531,7 +1531,7 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf", "3.1.0.M2") {
+	library("Thymeleaf", "3.1.0.M3") {
 		group("org.thymeleaf") {
 			modules = [
 				"thymeleaf",
@@ -1543,13 +1543,6 @@ bom {
 		group("com.github.mxab.thymeleaf.extras") {
 			modules = [
 				"thymeleaf-extras-data-attribute"
-			]
-		}
-	}
-	library("Thymeleaf Extras Java8Time", "3.0.4.RELEASE") {
-		group("org.thymeleaf.extras") {
-			modules = [
-				"thymeleaf-extras-java8time"
 			]
 		}
 	}

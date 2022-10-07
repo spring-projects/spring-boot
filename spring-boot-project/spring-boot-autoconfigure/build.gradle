@@ -204,7 +204,6 @@ dependencies {
 	}
 	optional("org.thymeleaf:thymeleaf")
 	optional("org.thymeleaf:thymeleaf-spring6")
-	optional("org.thymeleaf.extras:thymeleaf-extras-java8time")
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 
