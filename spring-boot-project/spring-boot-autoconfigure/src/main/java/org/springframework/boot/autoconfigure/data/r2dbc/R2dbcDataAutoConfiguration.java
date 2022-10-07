@@ -79,6 +79,7 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("deprecation")
 	public R2dbcMappingContext r2dbcMappingContext(ObjectProvider<NamingStrategy> namingStrategy,
 			R2dbcCustomConversions r2dbcCustomConversions, RelationalManagedTypes r2dbcManagedTypes) {
 		R2dbcMappingContext relationalMappingContext = new R2dbcMappingContext(
