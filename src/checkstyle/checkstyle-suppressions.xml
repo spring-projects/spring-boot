@@ -5,6 +5,7 @@
 <suppressions>
 	<suppress files="ConditionEvaluationReportLoggerTests\.java" checks="IllegalImport" />
 	<suppress files="ConditionEvaluationReportLoggingListenerTests\.java" checks="IllegalImport" />
+	<suppress files="ConditionEvaluationReportLoggingProcessorTests\.java" checks="IllegalImport" />
 	<suppress files="LoggingApplicationListenerTests\.java" checks="IllegalImport" />
 	<suppress files="LogbackInitializer\.java" checks="IllegalImport" />
 	<suppress files="LogbackLoggingSystem\.java" checks="IllegalImport" />
