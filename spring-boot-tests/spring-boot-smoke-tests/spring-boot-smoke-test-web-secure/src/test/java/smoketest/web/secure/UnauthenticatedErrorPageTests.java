@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
  * Tests for error page that permits access to all.
@@ -44,10 +46,11 @@ class UnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTest
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/error").permitAll();
-				requests.antMatchers("/public/**").permitAll();
+				requests.requestMatchers("/error").permitAll();
+				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().authenticated();
 			});
+			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			http.httpBasic();
 			return http.build();
 		}

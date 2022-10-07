@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
  * Tests to ensure that the error page is accessible only to authorized users.
@@ -44,9 +46,10 @@ class ErrorPageTests extends AbstractErrorPageTests {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/public/**").permitAll();
+				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
 			});
+			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			return http.build();

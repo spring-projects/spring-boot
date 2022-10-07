@@ -96,7 +96,7 @@ class SampleWebSecureApplicationTests {
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/public/**").permitAll();
+				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
 			});
 			http.httpBasic();

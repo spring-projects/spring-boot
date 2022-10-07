@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfigurationTests.WebSecurity;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.ConverterBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.DeserializerBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.ExampleController;
@@ -53,7 +52,7 @@ class SecurityFilterAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
 	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class, WebSecurity.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			SecurityFilterAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

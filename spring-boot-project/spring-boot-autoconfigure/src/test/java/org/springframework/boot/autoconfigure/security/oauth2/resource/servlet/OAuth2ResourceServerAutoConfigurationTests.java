@@ -37,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -57,10 +58,10 @@ import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
-import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -579,7 +580,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void jwtSecurityConfigurerBacksOffWhenSecurityFilterChainBeanIsPresent() {
-		this.contextRunner
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class, TestSecurityFilterChainConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(SecurityFilterChain.class));
@@ -587,7 +588,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void opaqueTokenSecurityConfigurerBacksOffWhenSecurityFilterChainBeanIsPresent() {
-		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class)
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
+				.withUserConfiguration(TestSecurityFilterChainConfig.class)
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
@@ -692,8 +694,9 @@ class OAuth2ResourceServerAutoConfigurationTests {
 
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-			return http.antMatcher("/**").authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-					.build();
+			http.securityMatcher("/**");
+			http.authorizeHttpRequests().anyRequest().authenticated();
+			return http.build();
 		}
 
 	}

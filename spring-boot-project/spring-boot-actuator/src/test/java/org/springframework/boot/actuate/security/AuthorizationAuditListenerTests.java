@@ -16,21 +16,17 @@
 
 package org.springframework.boot.actuate.security;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.access.event.AbstractAuthorizationEvent;
-import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
-import org.springframework.security.access.event.AuthorizationFailureEvent;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.event.AuthorizationDeniedEvent;
+import org.springframework.security.authorization.event.AuthorizationEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -51,35 +47,48 @@ class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	void testAuthenticationCredentialsNotFound() {
-		AuditApplicationEvent event = handleAuthorizationEvent(
-				new AuthenticationCredentialsNotFoundEvent(this, Collections.singletonList(new SecurityConfig("USER")),
-						new AuthenticationCredentialsNotFoundException("Bad user")));
-		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
-	}
-
-	@Test
-	void testAuthorizationFailure() {
-		AuditApplicationEvent event = handleAuthorizationEvent(new AuthorizationFailureEvent(this,
-				Collections.singletonList(new SecurityConfig("USER")),
-				new UsernamePasswordAuthenticationToken("user", "password"), new AccessDeniedException("Bad user")));
-		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
-	}
-
-	@Test
-	void testDetailsAreIncludedInAuditEvent() {
-		Object details = new Object();
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
+	void authorizationDeniedEvent() {
+		AuthorizationDecision decision = new AuthorizationDecision(false);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("spring",
 				"password");
-		authentication.setDetails(details);
-		AuditApplicationEvent event = handleAuthorizationEvent(
-				new AuthorizationFailureEvent(this, Collections.singletonList(new SecurityConfig("USER")),
-						authentication, new AccessDeniedException("Bad user")));
-		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
-		assertThat(event.getAuditEvent().getData()).containsEntry("details", details);
+		authentication.setDetails("details");
+		AuthorizationDeniedEvent<?> authorizationEvent = new AuthorizationDeniedEvent<>(() -> authentication, "",
+				decision);
+		AuditEvent auditEvent = handleAuthorizationEvent(authorizationEvent).getAuditEvent();
+		assertThat(auditEvent.getPrincipal()).isEqualTo("spring");
+		assertThat(auditEvent.getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		assertThat(auditEvent.getData()).containsEntry("details", "details");
 	}
 
-	private AuditApplicationEvent handleAuthorizationEvent(AbstractAuthorizationEvent event) {
+	@Test
+	void authorizationDeniedEventWhenAuthenticationIsNotAvailable() {
+		AuthorizationDecision decision = new AuthorizationDecision(false);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("spring",
+				"password");
+		authentication.setDetails("details");
+		AuthorizationDeniedEvent<?> authorizationEvent = new AuthorizationDeniedEvent<>(() -> {
+			throw new RuntimeException("No authentication");
+		}, "", decision);
+		AuditEvent auditEvent = handleAuthorizationEvent(authorizationEvent).getAuditEvent();
+		assertThat(auditEvent.getPrincipal()).isEqualTo("<unknown>");
+		assertThat(auditEvent.getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		assertThat(auditEvent.getData()).doesNotContainKey("details");
+	}
+
+	@Test
+	void authorizationDeniedEventWhenAuthenticationDoesNotHaveDetails() {
+		AuthorizationDecision decision = new AuthorizationDecision(false);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("spring",
+				"password");
+		AuthorizationDeniedEvent<?> authorizationEvent = new AuthorizationDeniedEvent<>(() -> authentication, "",
+				decision);
+		AuditEvent auditEvent = handleAuthorizationEvent(authorizationEvent).getAuditEvent();
+		assertThat(auditEvent.getPrincipal()).isEqualTo("spring");
+		assertThat(auditEvent.getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		assertThat(auditEvent.getData()).doesNotContainKey("details");
+	}
+
+	private AuditApplicationEvent handleAuthorizationEvent(AuthorizationEvent event) {
 		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor.forClass(AuditApplicationEvent.class);
 		this.listener.onApplicationEvent(event);
 		then(this.publisher).should().publishEvent(eventCaptor.capture());

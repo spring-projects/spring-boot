@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,7 +46,6 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
@@ -89,30 +89,11 @@ class SecurityAutoConfigurationTests {
 
 	@Test
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
-			assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
-			assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
-		});
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void securityConfigurerBacksOffWhenOtherWebSecurityAdapterBeanPresent() {
-		this.contextRunner.withUserConfiguration(WebSecurity.class).run((context) -> {
-			assertThat(context.getBeansOfType(
-					org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter.class)
-					.size()).isEqualTo(1);
-			assertThat(context.containsBean("securityAutoConfigurationTests.WebSecurity")).isTrue();
-		});
-	}
-
-	@Test
-	void testDefaultFilterOrderWithSecurityAdapter() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(WebSecurity.class, SecurityFilterAutoConfiguration.class))
-				.run((context) -> assertThat(
-						context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
-								.getOrder()).isEqualTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
+				.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
+					assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
+					assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
+				});
 	}
 
 	@Test
@@ -256,20 +237,12 @@ class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableWebSecurity
-	@SuppressWarnings("deprecation")
-	static class WebSecurity
-			extends org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-			return http.antMatcher("/**").authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-					.build();
+			return http.securityMatcher("/**")
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
 
 		}
 
@@ -281,7 +254,7 @@ class SecurityAutoConfigurationTests {
 		@Bean
 		@ConfigurationPropertiesBinding
 		Converter<String, TargetType> targetTypeConverter() {
-			return new Converter<String, TargetType>() {
+			return new Converter<>() {
 
 				@Override
 				public TargetType convert(String input) {

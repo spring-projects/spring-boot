@@ -38,7 +38,7 @@ import org.springframework.graphql.execution.SecurityDataFetcherExceptionResolve
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -151,7 +151,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
-	@EnableGlobalMethodSecurity(prePostEnabled = true)
+	@EnableMethodSecurity(prePostEnabled = true)
 	@SuppressWarnings("deprecation")
 	static class SecurityConfig {
 

@@ -44,7 +44,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -184,25 +183,6 @@ class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	void securityConfigurationWhenWebSecurityConfigurerAdapterIsFound2() throws Exception {
-		this.context = getContext(() -> {
-			AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
-			context.setServletContext(new MockServletContext());
-			context.register(Config.class, PropertyPlaceholderAutoConfiguration.class,
-					TestWebSecurityConfigurerAdapter.class);
-			TestPropertyValues.of("spring.devtools.remote.secret:supersecret").applyTo(context);
-			context.refresh();
-			return context;
-		});
-		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(springSecurity()).addFilter(filter)
-				.build();
-		mockMvc.perform(MockMvcRequestBuilders.get(DEFAULT_CONTEXT_PATH + "/restart").header(DEFAULT_SECRET_HEADER_NAME,
-				"supersecret")).andExpect(status().isOk());
-		assertRestartInvoked(true);
-	}
-
-	@Test
 	void disableRestart() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false"));
@@ -266,18 +246,6 @@ class RemoteDevToolsAutoConfigurationTests {
 		HttpRestartServer remoteRestartHttpRestartServer() {
 			SourceDirectoryUrlFilter sourceDirectoryUrlFilter = mock(SourceDirectoryUrlFilter.class);
 			return new MockHttpRestartServer(sourceDirectoryUrlFilter);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("deprecation")
-	static class TestWebSecurityConfigurerAdapter
-			extends org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/foo/**").authorizeHttpRequests().anyRequest().authenticated().and().httpBasic();
 		}
 
 	}

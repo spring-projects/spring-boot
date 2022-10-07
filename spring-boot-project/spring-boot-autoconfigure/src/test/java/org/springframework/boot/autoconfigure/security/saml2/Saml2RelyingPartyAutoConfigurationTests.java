@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -41,7 +42,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
-import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
+import org.springframework.security.saml2.provider.service.web.authentication.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -206,16 +207,9 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	}
 
 	@Test
-	void samlLoginShouldBackOffWhenAWebSecurityConfigurerAdapterIsDefined() {
-		this.contextRunner.withUserConfiguration(WebSecurityConfigurerAdapterConfiguration.class)
-				.withPropertyValues(getPropertyValues())
-				.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
-	}
-
-	@Test
 	void samlLoginShouldBackOffWhenASecurityFilterChainBeanIsPresent() {
-		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class)
-				.withPropertyValues(getPropertyValues())
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
+				.withUserConfiguration(TestSecurityFilterChainConfig.class).withPropertyValues(getPropertyValues())
 				.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
 	}
 
@@ -304,25 +298,12 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class WebSecurityConfigurerAdapterConfiguration {
-
-		@Bean
-		@SuppressWarnings("deprecation")
-		org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
-			return new org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter() {
-
-			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-			return http.antMatcher("/**").authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-					.build();
+			return http.securityMatcher("/**")
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
 		}
 
 	}

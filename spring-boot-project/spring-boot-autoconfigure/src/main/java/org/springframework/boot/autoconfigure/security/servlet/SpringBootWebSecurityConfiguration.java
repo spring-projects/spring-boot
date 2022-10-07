@@ -29,6 +29,10 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
  * {@link Configuration @Configuration} class securing servlet applications.
@@ -57,6 +61,8 @@ class SpringBootWebSecurityConfiguration {
 			http.authorizeHttpRequests().anyRequest().authenticated();
 			http.formLogin();
 			http.httpBasic();
+			http.setSharedObject(SecurityContextRepository.class, new DelegatingSecurityContextRepository(
+					new RequestAttributeSecurityContextRepository(), new HttpSessionSecurityContextRepository()));
 			return http.build();
 		}
 

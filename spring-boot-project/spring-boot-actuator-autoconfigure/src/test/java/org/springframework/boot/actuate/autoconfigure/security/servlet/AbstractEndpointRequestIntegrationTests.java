@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
@@ -177,22 +178,15 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		@SuppressWarnings("deprecation")
-		org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
-			return new org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter() {
-
-				@Override
-				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeHttpRequests((requests) -> {
-						requests.requestMatchers(EndpointRequest.toLinks()).permitAll();
-						requests.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll();
-						requests.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated();
-						requests.anyRequest().hasRole("ADMIN");
-					});
-					http.httpBasic();
-				}
-
-			};
+		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+			http.authorizeHttpRequests((requests) -> {
+				requests.requestMatchers(EndpointRequest.toLinks()).permitAll();
+				requests.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll();
+				requests.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated();
+				requests.anyRequest().hasRole("ADMIN");
+			});
+			http.httpBasic();
+			return http.build();
 		}
 
 	}

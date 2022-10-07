@@ -32,8 +32,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authorization.event.AuthorizationEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -149,7 +149,7 @@ class AuditAutoConfigurationTests {
 		}
 
 		@Override
-		public void onApplicationEvent(AbstractAuthorizationEvent event) {
+		public void onApplicationEvent(AuthorizationEvent event) {
 		}
 
 	}

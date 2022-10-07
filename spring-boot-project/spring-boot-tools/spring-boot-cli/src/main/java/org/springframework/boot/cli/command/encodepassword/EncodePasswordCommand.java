@@ -54,7 +54,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 		Map<String, Supplier<PasswordEncoder>> encoders = new LinkedHashMap<>();
 		encoders.put("default", PasswordEncoderFactories::createDelegatingPasswordEncoder);
 		encoders.put("bcrypt", BCryptPasswordEncoder::new);
-		encoders.put("pbkdf2", Pbkdf2PasswordEncoder::new);
+		encoders.put("pbkdf2", Pbkdf2PasswordEncoder::defaultsForSpringSecurity_v5_8);
 		ENCODERS = Collections.unmodifiableMap(encoders);
 	}
 

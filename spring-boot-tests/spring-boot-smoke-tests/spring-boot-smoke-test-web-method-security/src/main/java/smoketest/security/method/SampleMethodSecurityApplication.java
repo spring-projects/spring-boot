@@ -24,18 +24,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	@Override
@@ -69,8 +71,8 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeHttpRequests(
-					(requests) -> requests.anyRequest().fullyAuthenticated().shouldFilterAllDispatcherTypes(false));
+			http.authorizeHttpRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			http.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access"));
 			return http.build();
@@ -85,10 +87,10 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.requestMatcher(EndpointRequest.toAnyEndpoint());
-			http.authorizeHttpRequests(
-					(requests) -> requests.anyRequest().authenticated().shouldFilterAllDispatcherTypes(false));
+			http.securityMatcher(EndpointRequest.toAnyEndpoint());
+			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.httpBasic();
+			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			return http.build();
 		}
 

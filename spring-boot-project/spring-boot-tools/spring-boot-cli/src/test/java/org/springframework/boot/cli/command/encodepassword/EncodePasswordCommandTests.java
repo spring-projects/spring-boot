@@ -83,7 +83,8 @@ class EncodePasswordCommandTests {
 		ExitStatus status = command.run("-a", "pbkdf2", "boot");
 		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
-		assertThat(new Pbkdf2PasswordEncoder().matches("boot", this.message.getValue())).isTrue();
+		assertThat(Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8().matches("boot", this.message.getValue()))
+				.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 

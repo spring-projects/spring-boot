@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -72,7 +71,6 @@ public class UserDetailsServiceAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();

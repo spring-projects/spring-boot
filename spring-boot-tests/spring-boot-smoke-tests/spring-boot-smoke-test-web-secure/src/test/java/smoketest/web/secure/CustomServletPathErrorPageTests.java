@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
  * Tests to ensure that the error page with a custom servlet path is accessible only to
@@ -45,10 +47,11 @@ class CustomServletPathErrorPageTests extends AbstractErrorPageTests {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/custom/servlet/path/public/**").permitAll();
+				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
 			});
 			http.httpBasic();
+			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			http.formLogin((form) -> form.loginPage("/custom/servlet/path/login").permitAll());
 			return http.build();
 		}

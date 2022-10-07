@@ -29,7 +29,7 @@ public class MySecurityConfiguration {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.requestMatcher(EndpointRequest.toAnyEndpoint());
+		http.securityMatcher(EndpointRequest.toAnyEndpoint());
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
 		http.httpBasic(withDefaults());
 		return http.build();

@@ -18,6 +18,7 @@ package smoketest.session.mongodb;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +33,17 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,7 +74,7 @@ public class SampleSessionMongoApplicationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSessions() {
-		createSession(URI.create("/"));
+		performLogin();
 		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -86,9 +91,16 @@ public class SampleSessionMongoApplicationTests {
 		assertThat(entity.getBody()).contains("maxWireVersion");
 	}
 
-	private void createSession(URI uri) {
-		RequestEntity<Object> request = getRequestEntity(uri);
-		this.restTemplate.exchange(request, String.class);
+	private String performLogin() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+		form.set("username", "user");
+		form.set("password", "password");
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
+				new HttpEntity<>(form, headers), String.class);
+		return entity.getHeaders().getFirst("Set-Cookie");
 	}
 
 	private RequestEntity<Object> getRequestEntity(URI uri) {

@@ -20,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
  * Tests for error page that permits access to all with a custom servlet path.
@@ -44,10 +46,11 @@ class CustomServletPathUnauthenticatedErrorPageTests extends AbstractUnauthentic
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/custom/servlet/path/error").permitAll();
-				requests.antMatchers("/custom/servlet/path/public/**").permitAll();
+				requests.requestMatchers("/error").permitAll();
+				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().authenticated();
 			});
+			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			http.httpBasic();
 			return http.build();
 		}

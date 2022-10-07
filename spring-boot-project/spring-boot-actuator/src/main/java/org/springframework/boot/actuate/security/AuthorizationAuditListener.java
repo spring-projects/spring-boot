@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.security;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.security.access.event.AbstractAuthorizationEvent;
-import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
-import org.springframework.security.access.event.AuthorizationFailureEvent;
+import org.springframework.security.authorization.event.AuthorizationDeniedEvent;
+import org.springframework.security.authorization.event.AuthorizationEvent;
+import org.springframework.security.core.Authentication;
 
 /**
  * Default implementation of {@link AbstractAuthorizationAuditListener}.
@@ -39,30 +40,38 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	public static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
 
 	@Override
-	public void onApplicationEvent(AbstractAuthorizationEvent event) {
-		if (event instanceof AuthenticationCredentialsNotFoundEvent credentialsNotFoundEvent) {
-			onAuthenticationCredentialsNotFoundEvent(credentialsNotFoundEvent);
-		}
-		else if (event instanceof AuthorizationFailureEvent authorizationFailureEvent) {
-			onAuthorizationFailureEvent(authorizationFailureEvent);
+	public void onApplicationEvent(AuthorizationEvent event) {
+		if (event instanceof AuthorizationDeniedEvent<?> authorizationDeniedEvent) {
+			onAuthorizationDeniedEvent(authorizationDeniedEvent);
 		}
 	}
 
-	private void onAuthenticationCredentialsNotFoundEvent(AuthenticationCredentialsNotFoundEvent event) {
-		Map<String, Object> data = new HashMap<>();
-		data.put("type", event.getCredentialsNotFoundException().getClass().getName());
-		data.put("message", event.getCredentialsNotFoundException().getMessage());
-		publish(new AuditEvent("<unknown>", AuthenticationAuditListener.AUTHENTICATION_FAILURE, data));
+	private void onAuthorizationDeniedEvent(AuthorizationDeniedEvent<?> event) {
+		String name = getName(event.getAuthentication());
+		Map<String, Object> data = new LinkedHashMap<>();
+		Object details = getDetails(event.getAuthentication());
+		if (details != null) {
+			data.put("details", details);
+		}
+		publish(new AuditEvent(name, AUTHORIZATION_FAILURE, data));
 	}
 
-	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
-		Map<String, Object> data = new HashMap<>();
-		data.put("type", event.getAccessDeniedException().getClass().getName());
-		data.put("message", event.getAccessDeniedException().getMessage());
-		if (event.getAuthentication().getDetails() != null) {
-			data.put("details", event.getAuthentication().getDetails());
+	private String getName(Supplier<Authentication> authentication) {
+		try {
+			return authentication.get().getName();
 		}
-		publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE, data));
+		catch (Exception ex) {
+			return "<unknown>";
+		}
+	}
+
+	private Object getDetails(Supplier<Authentication> authentication) {
+		try {
+			return authentication.get().getDetails();
+		}
+		catch (Exception ex) {
+			return null;
+		}
 	}
 
 }

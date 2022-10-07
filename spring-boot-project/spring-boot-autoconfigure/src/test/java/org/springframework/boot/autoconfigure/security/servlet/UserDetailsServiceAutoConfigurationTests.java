@@ -36,7 +36,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -164,12 +163,6 @@ class UserDetailsServiceAutoConfigurationTests {
 				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
-	@Test
-	void generatedPasswordShouldNotBePrintedIfAuthenticationManagerBuilderIsUsed(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(TestConfigWithAuthenticationManagerBuilder.class)
-				.run(((context) -> assertThat(output).doesNotContain("Using generated security password: ")));
-	}
-
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
 		this.contextRunner.withUserConfiguration(configClass)
 				.withPropertyValues("spring.security.user.password=" + providedPassword).run(((context) -> {
@@ -260,24 +253,6 @@ class UserDetailsServiceAutoConfigurationTests {
 		@Bean
 		OpaqueTokenIntrospector introspectionClient() {
 			return mock(OpaqueTokenIntrospector.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(TestSecurityConfiguration.class)
-	static class TestConfigWithAuthenticationManagerBuilder {
-
-		@Bean
-		@SuppressWarnings("deprecation")
-		org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
-			return new org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter() {
-				@Override
-				protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-					auth.inMemoryAuthentication().withUser("hero").password("{noop}hero").roles("HERO", "USER").and()
-							.withUser("user").password("{noop}user").roles("USER");
-				}
-			};
 		}
 
 	}

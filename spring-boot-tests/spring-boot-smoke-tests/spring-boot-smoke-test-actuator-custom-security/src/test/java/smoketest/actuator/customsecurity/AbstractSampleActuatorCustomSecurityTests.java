@@ -128,7 +128,8 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 
 	@Test
 	void secureServletEndpointWithAnonymous() {
-		ResponseEntity<String> entity = restTemplate().getForEntity("/actuator/se1", String.class);
+		ResponseEntity<String> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

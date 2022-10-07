@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -55,9 +54,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -469,12 +466,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	private static final class ReactiveSecurityContext implements SecurityContext {
 
-		private final RoleVoter roleVoter = new RoleVoter();
+		private static final String ROLE_PREFIX = "ROLE_";
 
 		private final Authentication authentication;
 
 		ReactiveSecurityContext(Authentication authentication) {
 			this.authentication = authentication;
+		}
+
+		private Authentication getAuthentication() {
+			return this.authentication;
 		}
 
 		@Override
@@ -484,11 +485,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public boolean isUserInRole(String role) {
-			if (!role.startsWith(this.roleVoter.getRolePrefix())) {
-				role = this.roleVoter.getRolePrefix() + role;
-			}
-			return this.roleVoter.vote(this.authentication, null,
-					Collections.singletonList(new SecurityConfig(role))) == AccessDecisionVoter.ACCESS_GRANTED;
+			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
+			return AuthorityAuthorizationManager.hasAuthority(authority).check(this::getAuthentication, null)
+					.isGranted();
 		}
 
 	}
