@@ -1531,7 +1531,7 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf", "3.1.0.M2") {
+	library("Thymeleaf", "3.1.0.RC1") {
 		group("org.thymeleaf") {
 			modules = [
 				"thymeleaf",
@@ -1546,14 +1546,8 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf Extras Java8Time", "3.0.4.RELEASE") {
-		group("org.thymeleaf.extras") {
-			modules = [
-				"thymeleaf-extras-java8time"
-			]
-		}
-	}
-	library("Thymeleaf Extras SpringSecurity", "3.1.0.M1") {
+	
+	library("Thymeleaf Extras SpringSecurity", "3.1.0.RC1") {
 		group("org.thymeleaf.extras") {
 			modules = [
 				"thymeleaf-extras-springsecurity6"
