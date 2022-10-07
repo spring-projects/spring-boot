@@ -86,8 +86,7 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 			MongoIndexedSessionRepository repository = validateSessionRepository(context,
 					MongoIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("collectionName", collectionName);
-			assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds",
-					(int) timeout.getSeconds());
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", timeout);
 		};
 	}
 

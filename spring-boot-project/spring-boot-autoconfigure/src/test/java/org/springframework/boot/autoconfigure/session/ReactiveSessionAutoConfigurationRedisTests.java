@@ -78,7 +78,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner.withPropertyValues("spring.session.timeout=1m").run((context) -> {
 			ReactiveRedisSessionRepository repository = validateSessionRepository(context,
 					ReactiveRedisSessionRepository.class);
-			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
 		});
 	}
 
@@ -87,7 +87,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner.withPropertyValues("server.reactive.session.timeout=1m").run((context) -> {
 			ReactiveRedisSessionRepository repository = validateSessionRepository(context,
 					ReactiveRedisSessionRepository.class);
-			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
 		});
 	}
 
@@ -124,7 +124,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 			ReactiveRedisSessionRepository repository = validateSessionRepository(context,
 					ReactiveRedisSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
-					MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS);
+					MapSession.DEFAULT_MAX_INACTIVE_INTERVAL);
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
 			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
 		};

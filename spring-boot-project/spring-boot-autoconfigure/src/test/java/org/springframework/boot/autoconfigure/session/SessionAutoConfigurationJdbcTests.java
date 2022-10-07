@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -83,7 +85,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 				JdbcIndexedSessionRepository.class);
 		assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
-				(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
+				new ServerProperties().getServlet().getSession().getTimeout());
 		assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
 		assertThat(repository).hasFieldOrPropertyWithValue("cleanupCron", "0 * * * * *");
 		assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
@@ -118,7 +120,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		this.contextRunner.withPropertyValues("spring.session.timeout=1m").run((context) -> {
 			JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 					JdbcIndexedSessionRepository.class);
-			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
 		});
 	}
 
