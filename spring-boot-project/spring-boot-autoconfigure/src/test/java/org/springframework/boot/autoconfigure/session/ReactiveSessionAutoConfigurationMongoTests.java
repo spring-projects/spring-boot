@@ -36,6 +36,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.http.ResponseCookie;
+import org.springframework.session.MapSession;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
@@ -72,7 +73,8 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 				"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl()).run((context) -> {
 					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 							ReactiveMongoSessionRepository.class);
-					assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 60);
+					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+							Duration.ofMinutes(1));
 				});
 	}
 
@@ -82,7 +84,8 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 				"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl()).run((context) -> {
 					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 							ReactiveMongoSessionRepository.class);
-					assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 60);
+					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+							Duration.ofMinutes(1));
 				});
 	}
 
@@ -126,8 +129,8 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 			ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 					ReactiveMongoSessionRepository.class);
 			assertThat(repository.getCollectionName()).isEqualTo(collectionName);
-			assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds",
-					ReactiveMongoSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+					MapSession.DEFAULT_MAX_INACTIVE_INTERVAL);
 		};
 	}
 

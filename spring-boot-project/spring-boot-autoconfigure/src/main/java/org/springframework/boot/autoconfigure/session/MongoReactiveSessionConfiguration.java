@@ -53,7 +53,7 @@ class MongoReactiveSessionConfiguration {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
-					.to((timeout) -> sessionRepository.setMaxInactiveIntervalInSeconds((int) timeout.getSeconds()));
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
 		};
 	}

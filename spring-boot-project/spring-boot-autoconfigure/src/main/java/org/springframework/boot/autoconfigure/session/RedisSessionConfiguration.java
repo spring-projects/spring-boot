@@ -105,7 +105,7 @@ class RedisSessionConfiguration {
 			return (sessionRepository) -> {
 				map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-						.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+						.to(sessionRepository::setDefaultMaxInactiveInterval);
 				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
 				map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
 				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);

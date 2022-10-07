@@ -186,7 +186,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 			RedisIndexedSessionRepository repository = validateSessionRepository(context,
 					RedisIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
-					(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
+					new ServerProperties().getServlet().getSession().getTimeout());
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", keyNamespace);
 			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", flushMode);
 			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
