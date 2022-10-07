@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.Test;
@@ -69,7 +71,7 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 		this.contextRunner.withPropertyValues("spring.session.timeout=1m").run((context) -> {
 			HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
 					HazelcastIndexedSessionRepository.class);
-			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
 		});
 	}
 
@@ -77,7 +79,7 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 		HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
 				HazelcastIndexedSessionRepository.class);
 		assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
-				(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
+				new ServerProperties().getServlet().getSession().getTimeout());
 		HazelcastInstance hazelcastInstance = context.getBean(HazelcastInstance.class);
 		then(hazelcastInstance).should().getMap("spring:session:sessions");
 	}

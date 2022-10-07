@@ -70,7 +70,7 @@ class JdbcSessionConfiguration {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-					.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(jdbcSessionProperties::getTableName).to(sessionRepository::setTableName);
 			map.from(jdbcSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
 			map.from(jdbcSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);

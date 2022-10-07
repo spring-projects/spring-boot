@@ -55,7 +55,7 @@ class HazelcastSessionConfiguration {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-					.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(hazelcastSessionProperties::getMapName).to(sessionRepository::setSessionMapName);
 			map.from(hazelcastSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
 			map.from(hazelcastSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);

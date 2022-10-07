@@ -53,7 +53,7 @@ class RedisReactiveSessionConfiguration {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
-					.to((timeout) -> sessionRepository.setDefaultMaxInactiveInterval((int) timeout.getSeconds()));
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
 			map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
 		};
