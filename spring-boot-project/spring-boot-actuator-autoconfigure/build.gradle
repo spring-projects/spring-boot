@@ -193,10 +193,17 @@ dependencies {
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
 	testRuntimeOnly("org.cache2k:cache2k-core")
+	testRuntimeOnly("org.opensaml:opensaml-core:4.0.1")
+	testRuntimeOnly("org.opensaml:opensaml-saml-api:4.0.1")
+	testRuntimeOnly("org.opensaml:opensaml-saml-impl:4.0.1")
 	testRuntimeOnly("org.springframework:spring-aspects")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
-	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
+	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider") {
+		exclude group: "org.opensaml", module: "opensaml-core"
+		exclude group: "org.opensaml", module: "opensaml-saml-api"
+		exclude group: "org.opensaml", module: "opensaml-saml-impl"
+	}
 }
 
 test {

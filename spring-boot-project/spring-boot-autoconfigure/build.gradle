@@ -138,6 +138,9 @@ dependencies {
 	}
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.opensaml:opensaml-core:4.0.1")
+	optional("org.opensaml:opensaml-saml-api:4.0.1")
+	optional("org.opensaml:opensaml-saml-impl:4.0.1")
 	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework.integration:spring-integration-core")
@@ -185,7 +188,11 @@ dependencies {
 	optional("org.springframework.security:spring-security-oauth2-jose")
 	optional("org.springframework.security:spring-security-oauth2-resource-server")
 	optional("org.springframework.security:spring-security-rsocket")
-	optional("org.springframework.security:spring-security-saml2-service-provider")
+	optional("org.springframework.security:spring-security-saml2-service-provider") {
+		exclude group: "org.opensaml", module: "opensaml-core"
+		exclude group: "org.opensaml", module: "opensaml-saml-api"
+		exclude group: "org.opensaml", module: "opensaml-saml-impl"
+	}
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
 	optional("org.springframework.session:spring-session-data-mongodb")
