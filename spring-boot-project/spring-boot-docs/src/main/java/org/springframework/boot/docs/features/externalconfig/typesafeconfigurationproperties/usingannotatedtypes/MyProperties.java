@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.usingannotatedtypes;
 
-class SomeProperties {
+class MyProperties {
 
 	Object getRemoteAddress() {
 		return null;
