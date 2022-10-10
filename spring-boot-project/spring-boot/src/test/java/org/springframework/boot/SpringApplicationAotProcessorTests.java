@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.aot.AbstractAotProcessor.Settings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -45,9 +46,8 @@ class SpringApplicationAotProcessorTests {
 	@Test
 	void processApplicationInvokesRunMethod(@TempDir Path directory) {
 		String[] arguments = new String[] { "1", "2" };
-		SpringApplicationAotProcessor processor = new SpringApplicationAotProcessor(SampleApplication.class, arguments,
-				directory.resolve("source"), directory.resolve("resource"), directory.resolve("class"), "com.example",
-				"example");
+		SpringApplicationAotProcessor processor = new SpringApplicationAotProcessor(SampleApplication.class,
+				settings(directory), arguments);
 		processor.process();
 		assertThat(SampleApplication.argsHolder).isEqualTo(arguments);
 		assertThat(SampleApplication.postRunInvoked).isFalse();
@@ -56,8 +56,7 @@ class SpringApplicationAotProcessorTests {
 	@Test
 	void processApplicationWithMainMethodThatDoesNotRun(@TempDir Path directory) {
 		SpringApplicationAotProcessor processor = new SpringApplicationAotProcessor(BrokenApplication.class,
-				new String[0], directory.resolve("source"), directory.resolve("resource"), directory.resolve("class"),
-				"com.example", "example");
+				settings(directory), new String[0]);
 		assertThatIllegalStateException().isThrownBy(processor::process)
 				.withMessageContaining("Does it run a SpringApplication?");
 		assertThat(directory).isEmptyDirectory();
@@ -78,6 +77,13 @@ class SpringApplicationAotProcessorTests {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> SpringApplicationAotProcessor.main(new String[] { "Test" }))
 				.withMessageContaining("Usage:");
+	}
+
+	private Settings settings(Path directory) {
+		return new Settings().setSourceOutput(directory.resolve("source"))
+				.setResourceOutput(directory.resolve("resource")).setClassOutput(directory.resolve("class"))
+				.setGroupId("com.example").setArtifactId("example");
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

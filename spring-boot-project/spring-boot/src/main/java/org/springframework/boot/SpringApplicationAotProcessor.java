@@ -17,14 +17,13 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.springframework.boot.SpringApplication.AbandonedRunException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.aot.AotProcessor;
+import org.springframework.context.aot.ContextAotProcessor;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -40,25 +39,18 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Phillip Webb
  * @since 3.0.0
  */
-public class SpringApplicationAotProcessor extends AotProcessor {
+public class SpringApplicationAotProcessor extends ContextAotProcessor {
 
 	private final String[] applicationArgs;
 
 	/**
 	 * Create a new processor for the specified application and settings.
 	 * @param application the application main class
+	 * @param settings the general AOT processor settings
 	 * @param applicationArgs the arguments to provide to the main method
-	 * @param sourceOutput the location of generated sources
-	 * @param resourceOutput the location of generated resources
-	 * @param classOutput the location of generated classes
-	 * @param groupId the group ID of the application, used to locate
-	 * native-image.properties
-	 * @param artifactId the artifact ID of the application, used to locate
-	 * native-image.properties
 	 */
-	public SpringApplicationAotProcessor(Class<?> application, String[] applicationArgs, Path sourceOutput,
-			Path resourceOutput, Path classOutput, String groupId, String artifactId) {
-		super(application, sourceOutput, resourceOutput, classOutput, groupId, artifactId);
+	public SpringApplicationAotProcessor(Class<?> application, Settings settings, String[] applicationArgs) {
+		super(application, settings);
 		this.applicationArgs = applicationArgs;
 	}
 
@@ -74,17 +66,12 @@ public class SpringApplicationAotProcessor extends AotProcessor {
 		int requiredArgs = 6;
 		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
 				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
-		String applicationName = args[0];
-		Path sourceOutput = Paths.get(args[1]);
-		Path resourceOutput = Paths.get(args[2]);
-		Path classOutput = Paths.get(args[3]);
-		String groupId = args[4];
-		String artifactId = args[5];
+		Class<?> application = Class.forName(args[0]);
+		Settings settings = new Settings().setSourceOutput(Paths.get(args[1])).setResourceOutput(Paths.get(args[2]))
+				.setClassOutput(Paths.get(args[3])).setGroupId(args[4]).setArtifactId(args[5]);
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
-		Class<?> application = Class.forName(applicationName);
-		new SpringApplicationAotProcessor(application, applicationArgs, sourceOutput, resourceOutput, classOutput,
-				groupId, artifactId).process();
+		new SpringApplicationAotProcessor(application, settings, applicationArgs).process();
 	}
 
 	/**
