@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -137,8 +138,9 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean
 	OtelTracer micrometerOtelTracer(Tracer tracer, EventPublisher eventPublisher,
 			OtelCurrentTraceContext otelCurrentTraceContext) {
-		return new OtelTracer(tracer, otelCurrentTraceContext, eventPublisher, new OtelBaggageManager(
-				otelCurrentTraceContext, this.tracingProperties.getBaggage().getRemoteFields(), List.of()));
+		return new OtelTracer(tracer, otelCurrentTraceContext, eventPublisher,
+				new OtelBaggageManager(otelCurrentTraceContext, this.tracingProperties.getBaggage().getRemoteFields(),
+						Collections.emptyList()));
 	}
 
 	@Bean
@@ -202,8 +204,9 @@ public class OpenTelemetryAutoConfiguration {
 		@ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "B3")
 		TextMapPropagator b3BaggageTextMapPropagator(OtelCurrentTraceContext otelCurrentTraceContext) {
 			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
-			return TextMapPropagator.composite(B3Propagator.injectingSingleHeader(), new BaggageTextMapPropagator(
-					remoteFields, new OtelBaggageManager(otelCurrentTraceContext, remoteFields, List.of())));
+			return TextMapPropagator.composite(B3Propagator.injectingSingleHeader(),
+					new BaggageTextMapPropagator(remoteFields,
+							new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList())));
 		}
 
 		@Bean

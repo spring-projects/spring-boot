@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.util.Collections;
 import java.util.List;
 
 import brave.Tracer;
@@ -184,7 +185,7 @@ public class BraveAutoConfiguration {
 			return switch (tracing.getPropagation().getType()) {
 				case B3 ->
 					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of());
+				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, Collections.emptyList());
 			};
 		}
 
@@ -207,7 +208,7 @@ public class BraveAutoConfiguration {
 			Factory delegate = switch (this.tracingProperties.getPropagation().getType()) {
 				case B3 ->
 					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of());
+				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, Collections.emptyList());
 			};
 			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(delegate);
 			baggagePropagationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));

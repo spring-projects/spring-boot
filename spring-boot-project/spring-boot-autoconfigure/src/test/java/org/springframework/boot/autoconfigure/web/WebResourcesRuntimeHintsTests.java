@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -52,7 +53,7 @@ class WebResourcesRuntimeHintsTests {
 
 	@Test
 	void registerHintsWithNoLocation() {
-		RuntimeHints hints = register(new TestClassLoader(List.of()));
+		RuntimeHints hints = register(new TestClassLoader(Collections.emptyList()));
 		assertThat(hints.resources().resourcePatternHints()).isEmpty();
 	}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -106,12 +107,13 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendSpansShouldHandleHttpFailures(boolean async) throws InterruptedException {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
 		if (async) {
-			CallbackResult callbackResult = makeAsyncRequest(List.of());
+			CallbackResult callbackResult = makeAsyncRequest(Collections.emptyList());
 			assertThat(callbackResult.success()).isFalse();
 			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
 		}
 		else {
-			assertThatThrownBy(() -> makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
+			assertThatThrownBy(() -> makeSyncRequest(Collections.emptyList()))
+					.hasMessageContaining("500 Internal Server Error");
 		}
 
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
