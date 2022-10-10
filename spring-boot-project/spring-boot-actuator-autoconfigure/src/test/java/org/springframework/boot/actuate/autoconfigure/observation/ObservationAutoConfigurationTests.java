@@ -83,9 +83,9 @@ class ObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ObservationPredicates.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			// This is allowed by ObservationPredicates.customPredicate
-			Observation.start("observation1", observationRegistry).start().stop();
+			Observation.start("observation1", observationRegistry).stop();
 			// This isn't allowed by ObservationPredicates.customPredicate
-			Observation.start("observation2", observationRegistry).start().stop();
+			Observation.start("observation2", observationRegistry).stop();
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.get("observation1").timer().count()).isEqualTo(1);
 			assertThatThrownBy(() -> meterRegistry.get("observation2").timer())
@@ -108,7 +108,7 @@ class ObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ObservationHandlers.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
-			Observation.start("test-observation", observationRegistry);
+			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 			assertThat(handlers).hasSize(2);
 			// Regular handlers are registered first
@@ -129,7 +129,7 @@ class ObservationAutoConfigurationTests {
 					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 					List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
 					CustomContext customContext = new CustomContext();
-					Observation.start("test-observation", () -> customContext, observationRegistry);
+					Observation.start("test-observation", () -> customContext, observationRegistry).stop();
 					assertThat(handlers).hasSize(1);
 					assertThat(handlers.get(0)).isInstanceOf(ObservationHandlerWithCustomContext.class);
 				});
@@ -140,7 +140,7 @@ class ObservationAutoConfigurationTests {
 		this.tracingContextRunner.withUserConfiguration(ObservationHandlersTracing.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
-			Observation.start("test-observation", observationRegistry);
+			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(handlers).hasSize(3);
 			// Regular handlers are registered first
 			assertThat(handlers.get(0)).isInstanceOf(CustomObservationHandler.class);
