@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.wavefront;
 
-import java.util.Set;
+import java.util.Collections;
 
 import brave.handler.SpanHandler;
 import com.wavefront.sdk.common.WavefrontSender;
@@ -84,7 +84,7 @@ public class WavefrontTracingAutoConfiguration {
 		WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
 				SpanMetrics spanMetrics, ApplicationTags applicationTags) {
 			return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,
-					properties.getSourceOrDefault(), applicationTags, Set.of());
+					properties.getSourceOrDefault(), applicationTags, Collections.emptySet());
 		}
 
 		@Configuration(proxyBeanMethods = false)

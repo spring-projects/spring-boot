@@ -54,6 +54,13 @@
 				value="Please use BDD-style (given, when, then) using BDDMockito imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0"/>
+			<property name="format" value="(List|Map|Set)\.of\(\)" />
+			<property name="message"
+					  value="Please use Collections.emptyList()/emptyMap()/emptySet() for creating empty lists/maps/sets." />
+			<property name="ignoreComments" value="true" />
+		</module>
 		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
 			<property name="publicOnlySinceTags" value="true" />
 			<property name="requireSinceTag" value="true" />
