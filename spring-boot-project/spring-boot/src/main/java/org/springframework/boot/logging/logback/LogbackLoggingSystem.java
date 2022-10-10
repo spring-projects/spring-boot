@@ -52,7 +52,6 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.core.Ordered;
-import org.springframework.core.SpringProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -73,9 +72,6 @@ import org.springframework.util.StringUtils;
 public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
 	private static final String BRIDGE_HANDLER = "org.slf4j.bridge.SLF4JBridgeHandler";
-
-	// Static final field to facilitate code removal by Graal
-	private static final boolean XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
@@ -237,7 +233,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (XML_ENABLED && url.toString().endsWith("xml")) {
+		if (url.toString().endsWith("xml")) {
 			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
