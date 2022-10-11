@@ -45,7 +45,7 @@ public class ProcessTestAot extends AbstractAot {
 	private final Configuration junitPlatformLauncher;
 
 	public ProcessTestAot() {
-		getMainClass().set("org.springframework.test.context.aot.TestAotProcessor");
+		getMainClass().set("org.springframework.boot.test.context.SpringBootTestAotProcessor");
 		this.junitPlatformLauncher = createJUnitPlatformLauncher();
 	}
 

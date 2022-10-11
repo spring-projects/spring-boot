@@ -58,7 +58,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 
 	private static final String JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID = "junit-platform-launcher";
 
-	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.test.context.aot.TestAotProcessor";
+	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.test.context.SpringBootTestAotProcessor";
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into

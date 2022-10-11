@@ -1026,7 +1026,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.10.0-SNAPSHOT") {
+	library("Micrometer", "1.10.0-RC1") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1038,7 +1038,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.0.0-SNAPSHOT") {
+	library("Micrometer Tracing", "1.0.0-RC1") {
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
@@ -1445,7 +1445,7 @@ bom {
 			]
 		}
 	}
-	library("Spring HATEOAS", "2.0.0-M6") {
+	library("Spring HATEOAS", "2.0.0-SNAPSHOT") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"

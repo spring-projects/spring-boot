@@ -55,6 +55,7 @@ dependencies {
 	}
 
 	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
