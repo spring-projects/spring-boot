@@ -57,7 +57,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SuppressWarnings({ "deprecation", "removal" })
 class RestTemplateObservationConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withBean(ObservationRegistry.class, TestObservationRegistry::create)
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
 					RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
@@ -118,22 +118,23 @@ class RestTemplateObservationConfigurationTests {
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
+		this.contextRunner.with(MetricsRun.simple()).withPropertyValues("management.metrics.web.client.max-uri-tags=2")
+				.run((context) -> {
 
-			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
-			MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-			for (int i = 0; i < 3; i++) {
-				server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
-			}
-			for (int i = 0; i < 3; i++) {
-				restTemplate.getForObject("/test/" + i, String.class);
-			}
-			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry);
-			// TODO: check observation count for name
-			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.contains("Are you using 'uriVariables'?");
-		});
+					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+					MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+					for (int i = 0; i < 3; i++) {
+						server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
+					}
+					for (int i = 0; i < 3; i++) {
+						restTemplate.getForObject("/test/" + i, String.class);
+					}
+					TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
+					TestObservationRegistryAssert.assertThat(registry);
+					// TODO: check observation count for name
+					assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+							.contains("Are you using 'uriVariables'?");
+				});
 	}
 
 	@Test
