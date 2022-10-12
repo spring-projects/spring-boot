@@ -184,7 +184,7 @@ public class BraveAutoConfiguration {
 			return switch (tracing.getPropagation().getType()) {
 				case B3 ->
 					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, List.of());
+				case W3C -> new W3CPropagation();
 			};
 		}
 
