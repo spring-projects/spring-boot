@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -95,12 +96,13 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 		if (async) {
-			CallbackResult callbackResult = makeAsyncRequest(List.of());
+			CallbackResult callbackResult = makeAsyncRequest(Collections.emptyList());
 			assertThat(callbackResult.success()).isFalse();
 			assertThat(callbackResult.error()).isNotNull().hasMessageContaining("500 Internal Server Error");
 		}
 		else {
-			assertThatThrownBy(() -> makeSyncRequest(List.of())).hasMessageContaining("500 Internal Server Error");
+			assertThatThrownBy(() -> makeSyncRequest(Collections.emptyList()))
+					.hasMessageContaining("500 Internal Server Error");
 		}
 	}
 

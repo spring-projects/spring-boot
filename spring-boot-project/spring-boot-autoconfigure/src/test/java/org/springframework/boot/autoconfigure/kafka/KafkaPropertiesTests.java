@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.kafka.common.config.SslConfigs;
@@ -55,7 +56,7 @@ class KafkaPropertiesTests {
 
 	@Test
 	void adminDefaultValuesAreConsistent() {
-		KafkaAdmin admin = new KafkaAdmin(Map.of());
+		KafkaAdmin admin = new KafkaAdmin(Collections.emptyMap());
 		Admin adminProperties = new KafkaProperties().getAdmin();
 		assertThat(admin).hasFieldOrPropertyWithValue("fatalIfBrokerNotAvailable", adminProperties.isFailFast());
 		assertThat(admin).hasFieldOrPropertyWithValue("modifyTopicConfigs", adminProperties.isModifyTopicConfigs());
