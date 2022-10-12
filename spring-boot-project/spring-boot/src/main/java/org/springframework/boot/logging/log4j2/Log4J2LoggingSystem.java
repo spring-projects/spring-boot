@@ -58,6 +58,7 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
+import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -85,10 +86,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
-	/**
-	 * Identifies the Spring environment.
-	 */
-	public static final String ENVIRONMENT_KEY = "SpringEnvironment";
+	static final String ENVIRONMENT_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
+			"environment");
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
@@ -473,6 +472,17 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.setExternalContext(null);
+	}
+
+	/**
+	 * Get the Spring {@link Environment} attached to the given {@link LoggerContext} or
+	 * {@code null} if no environment is available.
+	 * @param loggerContext the logger context
+	 * @return the Spring {@link Environment} or {@code null}
+	 * @since 3.0.0
+	 */
+	public static Environment getEnvironment(LoggerContext loggerContext) {
+		return (Environment) ((loggerContext != null) ? loggerContext.getObject(ENVIRONMENT_KEY) : null);
 	}
 
 	/**

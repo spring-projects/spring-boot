@@ -57,6 +57,7 @@ import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -436,6 +437,15 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setProperty("logging.log4j2.config.override", "src/test/resources/log4j2-override.xml");
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+	}
+
+	@Test
+	void initializeAttachesEnvironmentToLoggerContext() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		Environment environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
+		assertThat(environment).isSameAs(this.environment);
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {
