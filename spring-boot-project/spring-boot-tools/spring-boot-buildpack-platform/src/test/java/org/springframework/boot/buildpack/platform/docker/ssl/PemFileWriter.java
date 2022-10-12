@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class PemFileWriter {
 			+ "a/OsPdOw0j+NqFDBd3mSMhSVgfvXdK6j9WaxY1VGXyaidLARgvn63wfzgr857sQW\n"
 			+ "c8eSxbwEQxwlMvVxW6Os4VhCfUQr8VrBrvPa2zs+6IlK+Ug=\n" + "-----END CERTIFICATE-----\n";
 
-	public static final String PRIVATE_KEY = EXAMPLE_SECRET_QUALIFIER + "-----BEGIN RSA PRIVATE KEY-----\n"
+	public static final String PRIVATE_RSA_KEY = EXAMPLE_SECRET_QUALIFIER + "-----BEGIN RSA PRIVATE KEY-----\n"
 			+ "MIICXAIBAAKBgQDO5HdnIxePcJtfjkO0ORhPenF7nljT6/zcHou9bX+huAZhNAfr\n"
 			+ "LlxxL5y6R04/aXV/2cwSCvIyGf8fEZ0nbivysvs5tUDGFFmbVggIAlvFs4AevQp/\n"
 			+ "4UBvCkl90vW6jg7kALz+eBkCQ+/uJFbjQRoxW+A2g+J7zJj7QC0mX/GQmQIDAQAB\n"
@@ -95,6 +95,11 @@ public class PemFileWriter {
 			+ "59UjutYTRIVqRJICFtR/8ii9P9sfYs1j7/KnvC0d5duMhU44VOjivW8b4Eic8F1Y\n"
 			+ "8bbHWILSIhFJHg0V7skCQDa8/YkRWF/3pwIZNWQr4ce4OzvYsFMkRvGRdX8B2a0p\n"
 			+ "wSKcVTdEdO2DhBlYddN0zG0rjq4vDMtdmldEl4BdldQ=\n" + "-----END RSA PRIVATE KEY-----\n";
+
+	public static final String PRIVATE_EC_KEY = EXAMPLE_SECRET_QUALIFIER + "-----BEGIN EC PRIVATE KEY-----\n"
+			+ "MHcCAQEEIIwZkO8Zjbggzi8wwrk5rzSPzUX31gqTRhBYw4AL6w44oAoGCCqGSM49\n"
+			+ "AwEHoUQDQgAE8y28khug747bA68M90IAMCPHAYyen+RsN6i84LORpNDUhv00QZWd\n"
+			+ "hOhjWFCQjnewR98Y8pEb1fnORll4LhHPlQ==\n" + "-----END EC PRIVATE KEY-----";
 
 	private final Path tempDir;
 
