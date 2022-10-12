@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigu
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.actuate.autoconfigure.metrics.PropertiesAutoTimer;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.LongTaskTimingHandlerInterceptor;
@@ -83,7 +84,7 @@ public class WebMvcMetricsAutoConfiguration {
 			WebMvcTagsProvider tagsProvider) {
 		ServerRequest request = this.properties.getWeb().getServer().getRequest();
 		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(registry, tagsProvider, request.getMetricName(),
-				request.getAutotime());
+				new PropertiesAutoTimer(request.getAutotime()));
 		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
