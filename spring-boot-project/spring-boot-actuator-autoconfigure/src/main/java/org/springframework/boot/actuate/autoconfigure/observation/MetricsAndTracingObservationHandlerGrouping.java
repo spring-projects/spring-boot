@@ -27,8 +27,8 @@ import io.micrometer.observation.ObservationRegistry.ObservationConfig;
 import io.micrometer.tracing.handler.TracingObservationHandler;
 
 /**
- * {@link ObservationHandlerGrouping} used by {@link ObservationAutoConfiguration} if
- * micrometer-tracing is on the classpath.
+ * {@link ObservationHandlerGrouping} used by {@link ObservationAutoConfiguration} if both
+ * micrometer-core and micrometer-tracing are on the classpath.
  *
  * Groups all {@link TracingObservationHandler} into a
  * {@link FirstMatchingCompositeObservationHandler}, and {@link MeterObservationHandler}
@@ -37,7 +37,7 @@ import io.micrometer.tracing.handler.TracingObservationHandler;
  *
  * @author Moritz Halbritter
  */
-class TracingObservationHandlerGrouping implements ObservationHandlerGrouping {
+class MetricsAndTracingObservationHandlerGrouping implements ObservationHandlerGrouping {
 
 	@Override
 	public void apply(Collection<ObservationHandler<?>> handlers, ObservationConfig config) {

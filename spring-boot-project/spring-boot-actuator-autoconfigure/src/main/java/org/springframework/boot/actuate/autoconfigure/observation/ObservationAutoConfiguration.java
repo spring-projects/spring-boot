@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,7 +71,8 @@ public class ObservationAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(type = "io.micrometer.tracing.Tracer")
+	@ConditionalOnClass(MeterRegistry.class)
+	@ConditionalOnMissingClass("io.micrometer.tracing.Tracer")
 	static class OnlyMetricsConfiguration {
 
 		@Bean
@@ -88,20 +90,39 @@ public class ObservationAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(Tracer.class)
+	@ConditionalOnClass(Tracer.class)
+	@ConditionalOnMissingClass("io.micrometer.core.instrument.MeterRegistry")
+	static class OnlyTracingConfiguration {
+
+		@Bean
+		OnlyTracingObservationHandlerGrouping tracingObservationHandlerGrouping() {
+			return new OnlyTracingObservationHandlerGrouping();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ MeterRegistry.class, Tracer.class })
 	static class MetricsWithTracingConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(MeterObservationHandler.class)
-		@ConditionalOnBean(MeterRegistry.class)
+		@ConditionalOnBean({ MeterRegistry.class, Tracer.class })
 		TracingAwareMeterObservationHandler<Observation.Context> tracingAwareMeterObservationHandler(
 				MeterRegistry meterRegistry, Tracer tracer) {
 			return new TracingAwareMeterObservationHandler<>(new DefaultMeterObservationHandler(meterRegistry), tracer);
 		}
 
 		@Bean
-		TracingObservationHandlerGrouping tracingObservationHandlerGrouping() {
-			return new TracingObservationHandlerGrouping();
+		@ConditionalOnMissingBean({ MeterObservationHandler.class, Tracer.class })
+		@ConditionalOnBean(MeterRegistry.class)
+		DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry) {
+			return new DefaultMeterObservationHandler(meterRegistry);
+		}
+
+		@Bean
+		MetricsAndTracingObservationHandlerGrouping metricsAndTracingObservationHandlerGrouping() {
+			return new MetricsAndTracingObservationHandlerGrouping();
 		}
 
 	}

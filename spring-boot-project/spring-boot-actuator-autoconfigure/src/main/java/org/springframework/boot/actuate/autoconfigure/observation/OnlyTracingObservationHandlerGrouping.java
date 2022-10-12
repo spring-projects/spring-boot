@@ -20,36 +20,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.observation.ObservationHandler;
-import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
-import io.micrometer.observation.ObservationRegistry.ObservationConfig;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.handler.TracingObservationHandler;
 
 /**
  * {@link ObservationHandlerGrouping} used by {@link ObservationAutoConfiguration} if
- * micrometer-tracing is not on the classpath but micrometer-core is.
+ * micrometer-core is not on the classpath but micrometer-tracing is.
  *
- * Groups all {@link MeterObservationHandler} into a
- * {@link FirstMatchingCompositeObservationHandler}. All other handlers are added to the
- * {@link ObservationConfig} directly.
+ * Groups all {@link TracingObservationHandler} into a
+ * {@link ObservationHandler.FirstMatchingCompositeObservationHandler}. All other handlers
+ * are added to the {@link ObservationRegistry.ObservationConfig} directly.
  *
- * @author Moritz Halbritter
+ * @author Jonatan Ivanov
  */
-class OnlyMetricsObservationHandlerGrouping implements ObservationHandlerGrouping {
+class OnlyTracingObservationHandlerGrouping implements ObservationHandlerGrouping {
 
 	@Override
-	public void apply(Collection<ObservationHandler<?>> handlers, ObservationConfig config) {
-		List<ObservationHandler<?>> meterObservationHandlers = new ArrayList<>();
+	public void apply(Collection<ObservationHandler<?>> handlers, ObservationRegistry.ObservationConfig config) {
+		List<ObservationHandler<?>> tracingObservationHandlers = new ArrayList<>();
 		for (ObservationHandler<?> handler : handlers) {
-			if (handler instanceof MeterObservationHandler<?>) {
-				meterObservationHandlers.add(handler);
+			if (handler instanceof TracingObservationHandler<?>) {
+				tracingObservationHandlers.add(handler);
 			}
 			else {
 				config.observationHandler(handler);
 			}
 		}
-		if (!meterObservationHandlers.isEmpty()) {
-			config.observationHandler(new FirstMatchingCompositeObservationHandler(meterObservationHandlers));
+		if (!tracingObservationHandlers.isEmpty()) {
+			config.observationHandler(
+					new ObservationHandler.FirstMatchingCompositeObservationHandler(tracingObservationHandlers));
 		}
 	}
 
