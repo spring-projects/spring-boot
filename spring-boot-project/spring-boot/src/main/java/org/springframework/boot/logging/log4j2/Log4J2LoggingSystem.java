@@ -60,6 +60,7 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -83,6 +84,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
+
+	/**
+	 * Identifies the Spring environment.
+	 */
+	public static final String ENVIRONMENT_KEY = "SpringEnvironment";
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
@@ -227,6 +233,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
+		Environment environment = initializationContext.getEnvironment();
+		getLoggerContext().putObjectIfAbsent(ENVIRONMENT_KEY, environment);
 		loggerContext.getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
 		markAsInitialized(loggerContext);
