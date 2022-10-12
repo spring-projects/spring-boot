@@ -171,8 +171,11 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyW3CWithoutBaggageByDefaultIfBaggageDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
-				.run((context) -> assertThat(context).hasSingleBean(W3CPropagation.class));
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
+			assertThat(context).hasBean("propagationFactory");
+			assertThat(context).hasSingleBean(W3CPropagation.class);
+			assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
+		});
 	}
 
 	@Test
@@ -181,6 +184,7 @@ class BraveAutoConfigurationTests {
 				"management.tracing.propagation.type=B3").run((context) -> {
 					assertThat(context).hasBean("propagationFactory");
 					assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+					assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
 				});
 	}
 
@@ -196,7 +200,7 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotApplyCorrelationFieldsIfBaggageCorrelationEnabled() {
+	void shouldApplyCorrelationFieldsIfBaggageCorrelationEnabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=true",
 				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
 					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);

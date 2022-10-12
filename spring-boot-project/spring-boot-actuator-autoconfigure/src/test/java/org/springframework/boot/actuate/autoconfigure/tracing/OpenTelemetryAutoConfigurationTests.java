@@ -38,7 +38,6 @@ import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Answers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -152,7 +151,7 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplySlf4jBaggageEventListenerBaggageCorrelationDisabled() {
+	void shouldNotSupplySlf4jBaggageEventListenerWhenBaggageCorrelationDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class));
 	}
@@ -190,16 +189,6 @@ class OpenTelemetryAutoConfigurationTests {
 	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
 				.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
-	}
-
-	@Test
-	void shouldSupplyB3PropagationWithoutBaggageWhenBaggageDisabledAndB3PropagationEnabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
-				"management.tracing.propagation.type=B3").run((context) -> {
-					assertThat(context).hasBean("b3TextMapPropagator");
-					assertThat(context).hasSingleBean(B3Propagator.class);
-					assertThat(context).doesNotHaveBean("w3cTextMapPropagatorWithoutBaggage");
-				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -277,36 +266,6 @@ class OpenTelemetryAutoConfigurationTests {
 
 		@Bean
 		TextMapPropagator customTextMapPropagator() {
-			return mock(TextMapPropagator.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static class OpenTelemetryConfiguration {
-
-		@Bean
-		OpenTelemetry openTelemetry() {
-			return mock(OpenTelemetry.class, Answers.RETURNS_MOCKS);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static class ContextPropagatorsConfiguration {
-
-		@Bean
-		ContextPropagators contextPropagators() {
-			return mock(ContextPropagators.class, Answers.RETURNS_MOCKS);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static class CustomFactoryConfiguration {
-
-		@Bean
-		TextMapPropagator customPropagationFactory() {
 			return mock(TextMapPropagator.class);
 		}
 

@@ -236,7 +236,7 @@ public class BraveAutoConfiguration {
 		CorrelationScopeDecorator.Builder mdcCorrelationScopeDecoratorBuilder(
 				ObjectProvider<CorrelationScopeCustomizer> correlationScopeCustomizers) {
 			CorrelationScopeDecorator.Builder builder = MDCScopeDecorator.newBuilder();
-			correlationScopeCustomizers.forEach((customizer) -> customizer.customize(builder));
+			correlationScopeCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}
 
