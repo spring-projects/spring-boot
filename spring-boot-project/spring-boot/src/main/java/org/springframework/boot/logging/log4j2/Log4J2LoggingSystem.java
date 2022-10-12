@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -45,6 +46,7 @@ import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -137,6 +139,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
 		}
 		supportedConfigLocations.add("log4j2.xml");
+		PropertiesUtil props = new PropertiesUtil(new Properties());
+		String location = props.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+		if (location != null) {
+			supportedConfigLocations.add(location);
+		}
 		return StringUtils.toStringArray(supportedConfigLocations);
 	}
 
