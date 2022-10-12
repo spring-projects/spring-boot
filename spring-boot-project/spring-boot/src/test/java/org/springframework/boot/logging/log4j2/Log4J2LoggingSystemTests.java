@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
@@ -293,6 +294,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
 				"log4j2-test.yaml", "log4j2-test.yml", "log4j2-test.json", "log4j2-test.jsn", "log4j2-test.xml",
 				"log4j2.properties", "log4j2.yaml", "log4j2.yml", "log4j2.json", "log4j2.jsn", "log4j2.xml");
+	}
+
+	@Test
+	void configLocationsWithConfigurationFileSystemProperty() {
+		System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "custom-log4j2.properties");
+		try {
+			assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2-test.properties",
+					"log4j2-test.xml", "log4j2.properties", "log4j2.xml");
+		}
+		finally {
+			System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+		}
 	}
 
 	@Test
