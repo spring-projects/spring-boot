@@ -23,7 +23,7 @@ The endpoint uses query parameters to limit the sessions that it returns.
 The following table shows the single required query parameter:
 
 [cols="2,4"]
-include::{snippets}/sessions/username/request-parameters.adoc[]
+include::{snippets}/sessions/username/query-parameters.adoc[]
 
 
 

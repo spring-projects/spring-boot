@@ -38,7 +38,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -76,7 +76,7 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 						.param("principal", "alice").param("after", queryTimestamp).param("type", "logout"))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filtered",
-						requestParameters(
+						queryParameters(
 								parameterWithName("after").description(
 										"Restricts the events to those that occurred after the given time. Optional."),
 								parameterWithName("principal").description(

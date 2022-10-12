@@ -43,7 +43,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -88,7 +88,7 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 				.andDo(document("sessions/username",
 						responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
 								.andWithPrefix("sessions.[].", sessionFields),
-						requestParameters(parameterWithName("username").description("Name of the user."))));
+						queryParameters(parameterWithName("username").description("Name of the user."))));
 	}
 
 	@Test

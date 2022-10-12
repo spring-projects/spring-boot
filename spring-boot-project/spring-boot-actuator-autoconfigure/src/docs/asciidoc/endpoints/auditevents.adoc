@@ -23,7 +23,7 @@ The endpoint uses query parameters to limit the events that it returns.
 The following table shows the supported query parameters:
 
 [cols="2,4"]
-include::{snippets}/auditevents/filtered/request-parameters.adoc[]
+include::{snippets}/auditevents/filtered/query-parameters.adoc[]
 
 
 
