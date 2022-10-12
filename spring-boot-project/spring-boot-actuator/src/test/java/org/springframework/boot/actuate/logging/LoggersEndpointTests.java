@@ -25,6 +25,10 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
+import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.logging.LoggersEndpoint.GroupLoggerLevels;
 import org.springframework.boot.actuate.logging.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.actuate.logging.LoggersEndpoint.SingleLoggerLevels;
@@ -139,6 +143,21 @@ class LoggersEndpointTests {
 	void configureLogLevelWithNullInLoggerGroupShouldSetLevelOnLoggingSystem() {
 		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", null);
 		then(this.loggingSystem).should().setLogLevel("test.member", null);
+	}
+
+	@Test
+	void registersRuntimeHintsForClassesSerializedToJson() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new ReflectiveRuntimeHintsRegistrar().registerRuntimeHints(runtimeHints, LoggersEndpoint.class);
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection.onType(LoggerLevels.class)).accepts(runtimeHints);
+		assertThat(reflection.onMethod(LoggerLevels.class, "getConfiguredLevel")).accepts(runtimeHints);
+		assertThat(reflection.onType(SingleLoggerLevels.class)).accepts(runtimeHints);
+		assertThat(reflection.onMethod(SingleLoggerLevels.class, "getEffectiveLevel")).accepts(runtimeHints);
+		assertThat(reflection.onMethod(SingleLoggerLevels.class, "getConfiguredLevel")).accepts(runtimeHints);
+		assertThat(reflection.onType(GroupLoggerLevels.class)).accepts(runtimeHints);
+		assertThat(reflection.onMethod(GroupLoggerLevels.class, "getMembers")).accepts(runtimeHints);
+		assertThat(reflection.onMethod(GroupLoggerLevels.class, "getConfiguredLevel")).accepts(runtimeHints);
 	}
 
 }
