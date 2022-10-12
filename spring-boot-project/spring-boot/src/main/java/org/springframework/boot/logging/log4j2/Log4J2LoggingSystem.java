@@ -16,9 +16,12 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -43,9 +46,15 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.net.UrlConnectionFactory;
+import org.apache.logging.log4j.core.net.ssl.SslConfiguration;
+import org.apache.logging.log4j.core.net.ssl.SslConfigurationFactory;
+import org.apache.logging.log4j.core.util.AuthorizationProvider;
+import org.apache.logging.log4j.core.util.FileUtils;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
@@ -82,12 +91,16 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String FILE_PROTOCOL = "file";
 
+	private static final String HTTPS = "https";
+
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
 	static final String ENVIRONMENT_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
 			"environment");
+
+	private static org.apache.logging.log4j.Logger LOGGER = StatusLogger.getLogger();
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
@@ -280,11 +293,20 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		try {
 			List<Configuration> configurations = new ArrayList<>();
 			LoggerContext context = getLoggerContext();
-			configurations.add(load(location, context));
-			for (String override : overrides) {
-				configurations.add(load(override, context));
+			Configuration configuration = load(location, context);
+			if (configuration != null) {
+				configurations.add(load(location, context));
 			}
-			Configuration configuration = (configurations.size() > 1) ? createComposite(configurations)
+			else {
+				throw new FileNotFoundException("Cannot locate file: " + location);
+			}
+			for (String override : overrides) {
+				configuration = load(override, context);
+				if (configuration != null) {
+					configurations.add(configuration);
+				}
+			}
+			configuration = (configurations.size() > 1) ? createComposite(configurations)
 					: configurations.iterator().next();
 			context.start(configuration);
 		}
@@ -293,18 +315,29 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private Configuration load(String location, LoggerContext context) throws IOException {
+	private Configuration load(String location, LoggerContext context) throws IOException, URISyntaxException {
 		URL url = ResourceUtils.getURL(location);
 		ConfigurationSource source = getConfigurationSource(url);
-		return ConfigurationFactory.getInstance().getConfiguration(context, source);
+		return (source != null) ? ConfigurationFactory.getInstance().getConfiguration(context, source) : null;
 	}
 
-	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
-		InputStream stream = url.openStream();
-		if (FILE_PROTOCOL.equals(url.getProtocol())) {
-			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
+	private ConfigurationSource getConfigurationSource(URL url) throws IOException, URISyntaxException {
+		AuthorizationProvider provider = ConfigurationFactory.authorizationProvider(PropertiesUtil.getProperties());
+		SslConfiguration sslConfiguration = url.getProtocol().equals(HTTPS)
+				? SslConfigurationFactory.getSslConfiguration() : null;
+		URLConnection urlConnection = UrlConnectionFactory.createConnection(url, 0, sslConfiguration, provider);
+
+		File file = FileUtils.fileFromUri(url.toURI());
+		try {
+			if (file != null) {
+				return new ConfigurationSource(urlConnection.getInputStream(), FileUtils.fileFromUri(url.toURI()));
+			}
+			return new ConfigurationSource(urlConnection.getInputStream(), url, urlConnection.getLastModified());
 		}
-		return new ConfigurationSource(stream, url);
+		catch (FileNotFoundException ex) {
+			LOGGER.info("Unable to locate file {}, ignoring.", url.toString());
+			return null;
+		}
 	}
 
 	private CompositeConfiguration createComposite(List<Configuration> configurations) {
@@ -332,7 +365,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			try {
 				configurations.add((AbstractConfiguration) load(override, context));
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				throw new RuntimeException("Failed to load overriding configuration from '" + override + "'", ex);
 			}
 		}
