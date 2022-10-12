@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,10 +64,10 @@ class KeyStoreFactoryTests {
 	}
 
 	@Test
-	void createKeyStoreWithCertChainAndPrivateKey()
+	void createKeyStoreWithCertChainAndRsaPrivateKey()
 			throws IOException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
 		Path certPath = this.fileWriter.writeFile("cert.pem", PemFileWriter.CA_CERTIFICATE, PemFileWriter.CERTIFICATE);
-		Path keyPath = this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_KEY);
+		Path keyPath = this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_RSA_KEY);
 		KeyStore keyStore = KeyStoreFactory.create(certPath, keyPath, "test-alias");
 		assertThat(keyStore.containsAlias("test-alias")).isTrue();
 		assertThat(keyStore.getCertificate("test-alias")).isNotNull();
