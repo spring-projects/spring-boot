@@ -21,14 +21,16 @@ import io.micrometer.tracing.Tracer;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
+import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Prometheus Exemplars with
@@ -37,7 +39,9 @@ import org.springframework.context.annotation.Bean;
  * @author Jonatan Ivanov
  * @since 3.0.0
  */
-@AutoConfiguration(before = PrometheusMetricsExportAutoConfiguration.class)
+@AutoConfiguration(before = PrometheusMetricsExportAutoConfiguration.class,
+		after = MicrometerTracingAutoConfiguration.class)
+@ConditionalOnBean(Tracer.class)
 @ConditionalOnClass({ Tracer.class, SpanContextSupplier.class })
 @ConditionalOnEnabledTracing
 public class ExemplarsAutoConfiguration {
@@ -53,39 +57,32 @@ public class ExemplarsAutoConfiguration {
 	 * {@link Tracer} can depend on the MeterRegistry (recording metrics), this
 	 * {@link SpanContextSupplier} breaks the circle by lazily loading the {@link Tracer}.
 	 */
-	static class LazyTracingSpanContextSupplier implements SpanContextSupplier, SmartInitializingSingleton {
+	static class LazyTracingSpanContextSupplier implements SpanContextSupplier {
 
-		private final ObjectProvider<Tracer> tracerProvider;
-
-		private Tracer tracer;
+		private final SingletonSupplier<Tracer> tracer;
 
 		LazyTracingSpanContextSupplier(ObjectProvider<Tracer> tracerProvider) {
-			this.tracerProvider = tracerProvider;
+			this.tracer = SingletonSupplier.of(tracerProvider::getObject);
 		}
 
 		@Override
 		public String getTraceId() {
-			return this.tracer.currentSpan().context().traceId();
+			return currentSpan().context().traceId();
 		}
 
 		@Override
 		public String getSpanId() {
-			return this.tracer.currentSpan().context().spanId();
+			return currentSpan().context().spanId();
 		}
 
 		@Override
 		public boolean isSampled() {
-			return this.tracer != null && isSampled(this.tracer);
-		}
-
-		private boolean isSampled(Tracer tracer) {
-			Span currentSpan = tracer.currentSpan();
+			Span currentSpan = currentSpan();
 			return currentSpan != null && currentSpan.context().sampled();
 		}
 
-		@Override
-		public void afterSingletonsInstantiated() {
-			this.tracer = this.tracerProvider.getIfAvailable();
+		private Span currentSpan() {
+			return this.tracer.obtain().currentSpan();
 		}
 
 	}
