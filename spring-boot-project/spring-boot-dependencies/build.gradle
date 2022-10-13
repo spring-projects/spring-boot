@@ -72,7 +72,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.12.17") {
+	library("Byte Buddy", "1.12.18") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
