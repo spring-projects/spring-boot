@@ -114,7 +114,7 @@ public class ObservationAutoConfiguration {
 	@ConditionalOnMissingBean(MeterObservationHandler.class)
 	static class MeterObservationHandlerConfiguration {
 
-		@ConditionalOnMissingBean(Tracer.class)
+		@ConditionalOnMissingBean(type = "io.micrometer.tracing.Tracer")
 		@Configuration(proxyBeanMethods = false)
 		static class OnlyMetricsMeterObservationHandlerConfiguration {
 
