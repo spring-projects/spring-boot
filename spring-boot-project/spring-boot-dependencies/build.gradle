@@ -1674,7 +1674,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2021.2.4-SNAPSHOT") {
+	library("Spring Data Bom", "2021.2.5-SNAPSHOT") {
 		prohibit("[2022.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
