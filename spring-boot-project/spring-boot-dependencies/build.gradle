@@ -1387,7 +1387,6 @@ bom {
 				"log4j-over-slf4j",
 				"slf4j-api",
 				"slf4j-ext",
-				"slf4j-jcl",
 				"slf4j-jdk-platform-logging",
 				"slf4j-jdk14",
 				"slf4j-log4j12",
