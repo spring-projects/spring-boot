@@ -68,9 +68,10 @@ class PaketoBuilderTests {
 	GradleBuild gradleBuild;
 
 	@BeforeEach
-	void configureGradleBuild() {
+	void configureGradleBuild() throws IOException {
 		this.gradleBuild.scriptProperty("systemTestMavenRepository",
 				new File("build/system-test-maven-repository").getAbsoluteFile().toURI().toASCIIString());
+		this.gradleBuild.scriptPropertyFrom(new File("../../gradle.properties"), "nativeBuildToolsVersion");
 		this.gradleBuild.expectDeprecationMessages("BPL_SPRING_CLOUD_BINDINGS_ENABLED.*true.*Deprecated");
 		this.gradleBuild.expectDeprecationMessages("BOM table is deprecated");
 	}
