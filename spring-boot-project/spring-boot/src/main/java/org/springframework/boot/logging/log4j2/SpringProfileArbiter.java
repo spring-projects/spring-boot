@@ -37,51 +37,38 @@ import org.springframework.util.StringUtils;
  * included.
  *
  * @author Ralph Goers
- * @since 3.0.0
  */
 @Plugin(name = "SpringProfile", category = Node.CATEGORY, elementType = Arbiter.ELEMENT_TYPE, deferChildren = true,
 		printObject = true)
-public final class SpringProfileArbiter implements Arbiter {
-
-	private final String[] profileNames;
+final class SpringProfileArbiter implements Arbiter {
 
 	private final Environment environment;
 
-	private SpringProfileArbiter(final String[] profiles, Environment environment) {
-		this.profileNames = profiles;
+	private final Profiles profiles;
+
+	private SpringProfileArbiter(Environment environment, String[] profiles) {
 		this.environment = environment;
+		this.profiles = Profiles.of(profiles);
 	}
 
 	@Override
 	public boolean isCondition() {
-		if (this.environment == null) {
-			return false;
-		}
-
-		if (this.profileNames.length == 0) {
-			return false;
-		}
-		return this.environment.acceptsProfiles(Profiles.of(this.profileNames));
+		return (this.environment != null) ? this.environment.acceptsProfiles(this.profiles) : false;
 	}
 
 	@PluginBuilderFactory
-	public static Builder newBuilder() {
+	static Builder newBuilder() {
 		return new Builder();
 	}
 
 	/**
 	 * Standard Builder to create the Arbiter.
 	 */
-	public static class Builder implements org.apache.logging.log4j.core.util.Builder<SpringProfileArbiter> {
+	public static final class Builder implements org.apache.logging.log4j.core.util.Builder<SpringProfileArbiter> {
 
-		private static final Logger LOGGER = StatusLogger.getLogger();
+		private static final Logger statusLogger = StatusLogger.getLogger();
 
-		/**
-		 * Attribute name identifier.
-		 */
-		public static final String ATTR_NAME = "name";
-
-		@PluginBuilderAttribute(ATTR_NAME)
+		@PluginBuilderAttribute
 		private String name;
 
 		@PluginConfiguration
@@ -90,47 +77,30 @@ public final class SpringProfileArbiter implements Arbiter {
 		@PluginLoggerContext
 		private LoggerContext loggerContext;
 
+		private Builder() {
+		}
+
 		/**
-		 * Sets the Profile Name or Names.
-		 * @param name the profile name(s).
+		 * Sets the profile name or expression.
+		 * @param name the profile name or expression
 		 * @return this
+		 * @see Profiles#of(String...)
 		 */
-		public Builder setName(final String name) {
+		public Builder setName(String name) {
 			this.name = name;
-			return asBuilder();
-		}
-
-		public Builder setConfiguration(final Configuration configuration) {
-			this.configuration = configuration;
-			return asBuilder();
-		}
-
-		public Builder setLoggerContext(final LoggerContext loggerContext) {
-			this.loggerContext = loggerContext;
-			return asBuilder();
-		}
-
-		private SpringProfileArbiter.Builder asBuilder() {
 			return this;
 		}
 
+		@Override
 		public SpringProfileArbiter build() {
-			String[] profileNames = StringUtils.trimArrayElements(StringUtils
-					.commaDelimitedListToStringArray(this.configuration.getStrSubstitutor().replace(this.name)));
-			Environment environment = null;
-			if (this.loggerContext != null) {
-				environment = (Environment) this.loggerContext.getObject(Log4J2LoggingSystem.ENVIRONMENT_KEY);
-				if (environment == null) {
-					LOGGER.warn("Cannot create Arbiter, no Spring Environment provided");
-					return null;
-				}
-
-				return new SpringProfileArbiter(profileNames, environment);
+			Environment environment = Log4J2LoggingSystem.getEnvironment(this.loggerContext);
+			if (environment == null) {
+				statusLogger.warn("Cannot create Arbiter, no Spring Environment available");
+				return null;
 			}
-			else {
-				LOGGER.warn("Cannot create Arbiter, LoggerContext is not available");
-			}
-			return null;
+			String name = this.configuration.getStrSubstitutor().replace(this.name);
+			String[] profiles = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
+			return new SpringProfileArbiter(environment, profiles);
 		}
 
 	}
