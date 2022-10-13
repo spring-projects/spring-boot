@@ -19,6 +19,7 @@ package org.springframework.boot.logging.log4j2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.net.ProtocolException;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -468,6 +469,15 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		properties = PropertiesUtil.getProperties();
 		assertThat(properties.getStringProperty("spring")).isEqualTo("boot");
+	}
+
+	@Test
+	void nonFileUrlsAreResolvedUsingLog4J2UrlConnectionFactory() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
+						"http://localhost:8080/shouldnotwork", null))
+				.havingCause().isInstanceOf(ProtocolException.class).withMessageContaining("http has not been enabled");
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {
