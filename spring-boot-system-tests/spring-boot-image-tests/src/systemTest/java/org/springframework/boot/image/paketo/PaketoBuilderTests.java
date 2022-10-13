@@ -17,7 +17,6 @@
 package org.springframework.boot.image.paketo;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.jar.Attributes;
@@ -73,17 +71,9 @@ class PaketoBuilderTests {
 	void configureGradleBuild() throws IOException {
 		this.gradleBuild.scriptProperty("systemTestMavenRepository",
 				new File("build/system-test-maven-repository").getAbsoluteFile().toURI().toASCIIString());
-		this.gradleBuild.scriptProperty("nativeBuildToolsVersion", getNativeBuildToolsVersion());
+		this.gradleBuild.scriptPropertyFrom(new File("../../gradle.properties"), "nativeBuildToolsVersion");
 		this.gradleBuild.expectDeprecationMessages("BPL_SPRING_CLOUD_BINDINGS_ENABLED.*true.*Deprecated");
 		this.gradleBuild.expectDeprecationMessages("BOM table is deprecated");
-	}
-
-	private String getNativeBuildToolsVersion() throws IOException {
-		Properties gradleProperties = new Properties();
-		try (FileInputStream input = new FileInputStream("../../gradle.properties")) {
-			gradleProperties.load(input);
-			return gradleProperties.getProperty("nativeBuildToolsVersion");
-		}
 	}
 
 	@Test
