@@ -16,24 +16,61 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.micrometer.observation.ObservationHandler;
+import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationRegistry.ObservationConfig;
 
-/**
- * Strategy to apply {@link ObservationHandler ObservationHandlers} to an
- * {@link ObservationConfig}.
- *
- * @author Moritz Halbritter
- */
-interface ObservationHandlerGrouping {
+import org.springframework.util.CollectionUtils;
 
-	/**
-	 * Applies the given list of {@code handlers} to the given {@code config}.
-	 * @param handlers the list of observation handlers
-	 * @param config the config to apply the handlers to
-	 */
-	void apply(Collection<ObservationHandler<?>> handlers, ObservationConfig config);
+/**
+ * Groups {@link ObservationHandler ObservationHandlers} by type.
+ *
+ * @author Andy Wilkinson
+ */
+@SuppressWarnings("rawtypes")
+class ObservationHandlerGrouping {
+
+	private final List<Class<? extends ObservationHandler>> categories;
+
+	ObservationHandlerGrouping(Class<? extends ObservationHandler> category) {
+		this(List.of(category));
+	}
+
+	ObservationHandlerGrouping(List<Class<? extends ObservationHandler>> categories) {
+		this.categories = categories;
+	}
+
+	void apply(List<ObservationHandler<?>> handlers, ObservationConfig config) {
+		Map<Class<? extends ObservationHandler>, List<ObservationHandler<?>>> groupings = new HashMap<>();
+		for (ObservationHandler<?> handler : handlers) {
+			Class<? extends ObservationHandler> category = findCategory(handler);
+			if (category != null) {
+				groupings.computeIfAbsent(category, (c) -> new ArrayList<>()).add(handler);
+			}
+			else {
+				config.observationHandler(handler);
+			}
+		}
+		for (Class<? extends ObservationHandler> category : this.categories) {
+			List<ObservationHandler<?>> handlerGroup = groupings.get(category);
+			if (!CollectionUtils.isEmpty(handlerGroup)) {
+				config.observationHandler(new FirstMatchingCompositeObservationHandler(handlerGroup));
+			}
+		}
+	}
+
+	private Class<? extends ObservationHandler> findCategory(ObservationHandler<?> handler) {
+		for (Class<? extends ObservationHandler> category : this.categories) {
+			if (category.isInstance(handler)) {
+				return category;
+			}
+		}
+		return null;
+	}
 
 }
