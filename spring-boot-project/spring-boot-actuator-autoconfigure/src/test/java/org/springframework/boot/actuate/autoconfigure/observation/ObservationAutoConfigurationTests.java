@@ -98,7 +98,7 @@ class ObservationAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ObservationHandler.class);
 			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
-			assertThat(context).hasSingleBean(OnlyMetricsObservationHandlerGrouping.class);
+			assertThat(context).hasBean("metricsObservationHandlerGrouping");
 		});
 	}
 
@@ -109,7 +109,7 @@ class ObservationAutoConfigurationTests {
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).doesNotHaveBean(ObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
-			assertThat(context).hasSingleBean(OnlyTracingObservationHandlerGrouping.class);
+			assertThat(context).hasBean("tracingObservationHandlerGrouping");
 		});
 	}
 
@@ -123,7 +123,7 @@ class ObservationAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ObservationHandler.class);
 			assertThat(context).hasSingleBean(TracingAwareMeterObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
-			assertThat(context).hasSingleBean(MetricsAndTracingObservationHandlerGrouping.class);
+			assertThat(context).hasBean("metricsAndTracingObservationHandlerGrouping");
 		});
 	}
 
@@ -136,7 +136,7 @@ class ObservationAutoConfigurationTests {
 					assertThat(context).hasSingleBean(ObservationHandler.class);
 					assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
 					assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
-					assertThat(context).hasSingleBean(MetricsAndTracingObservationHandlerGrouping.class);
+					assertThat(context).hasBean("metricsAndTracingObservationHandlerGrouping");
 				});
 	}
 
