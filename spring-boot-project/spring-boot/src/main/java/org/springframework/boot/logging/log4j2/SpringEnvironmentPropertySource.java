@@ -19,46 +19,40 @@ package org.springframework.boot.logging.log4j2;
 import org.apache.logging.log4j.util.PropertySource;
 
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * Returns properties from Spring.
  *
  * @author Ralph Goers
- * @since 3.0.0
  */
-public class SpringPropertySource implements PropertySource {
-
-	private static final int DEFAULT_PRIORITY = -100;
-
-	private final Environment environment;
-
-	public SpringPropertySource(Environment environment) {
-		this.environment = environment;
-	}
+class SpringEnvironmentPropertySource implements PropertySource {
 
 	/**
 	 * System properties take precedence followed by properties in Log4j properties files.
-	 * @return this PropertySource's priority.
 	 */
+	private static final int PRIORITY = -100;
+
+	private final Environment environment;
+
+	SpringEnvironmentPropertySource(Environment environment) {
+		Assert.notNull(environment, "Environment must not be null");
+		this.environment = environment;
+	}
+
 	@Override
 	public int getPriority() {
-		return DEFAULT_PRIORITY;
+		return PRIORITY;
 	}
 
 	@Override
 	public String getProperty(String key) {
-		if (this.environment != null) {
-			return this.environment.getProperty(key);
-		}
-		return null;
+		return this.environment.getProperty(key);
 	}
 
 	@Override
 	public boolean containsProperty(String key) {
-		if (this.environment != null) {
-			return this.environment.containsProperty(key);
-		}
-		return false;
+		return this.environment.containsProperty(key);
 	}
 
 }
