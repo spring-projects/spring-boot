@@ -1343,7 +1343,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.4.0") {
+	library("Selenium", "4.5.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"selenium-api",
@@ -1352,7 +1352,6 @@ bom {
 				"selenium-firefox-driver",
 				"selenium-ie-driver",
 				"selenium-java",
-				"selenium-opera-driver",
 				"selenium-remote-driver",
 				"selenium-safari-driver",
 				"selenium-support"
