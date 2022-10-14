@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -45,6 +46,7 @@ import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -71,6 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Alexander Heusingfeld
  * @author Ben Hale
+ * @author Ralph Goers
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
@@ -123,32 +126,29 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	protected String[] getStandardConfigLocations() {
-		return getCurrentlySupportedConfigLocations();
-	}
-
-	private String[] getCurrentlySupportedConfigLocations() {
-		List<String> supportedConfigLocations = new ArrayList<>();
-		addTestFiles(supportedConfigLocations);
-		supportedConfigLocations.add("log4j2.properties");
+		List<String> locations = new ArrayList<>();
+		locations.add("log4j2-test.properties");
 		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
-			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
+			Collections.addAll(locations, "log4j2-test.yaml", "log4j2-test.yml");
 		}
 		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
-			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
+			Collections.addAll(locations, "log4j2-test.json", "log4j2-test.jsn");
 		}
-		supportedConfigLocations.add("log4j2.xml");
-		return StringUtils.toStringArray(supportedConfigLocations);
-	}
-
-	private void addTestFiles(List<String> supportedConfigLocations) {
-		supportedConfigLocations.add("log4j2-test.properties");
+		locations.add("log4j2-test.xml");
+		locations.add("log4j2.properties");
 		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
-			Collections.addAll(supportedConfigLocations, "log4j2-test.yaml", "log4j2-test.yml");
+			Collections.addAll(locations, "log4j2.yaml", "log4j2.yml");
 		}
 		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
-			Collections.addAll(supportedConfigLocations, "log4j2-test.json", "log4j2-test.jsn");
+			Collections.addAll(locations, "log4j2.json", "log4j2.jsn");
 		}
-		supportedConfigLocations.add("log4j2-test.xml");
+		locations.add("log4j2.xml");
+		String propertyDefinedLocation = new PropertiesUtil(new Properties())
+				.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+		if (propertyDefinedLocation != null) {
+			locations.add(propertyDefinedLocation);
+		}
+		return StringUtils.toStringArray(locations);
 	}
 
 	protected boolean isClassAvailable(String className) {
