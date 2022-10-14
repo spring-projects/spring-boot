@@ -10,6 +10,7 @@
 	<suppress files="LogbackInitializer\.java" checks="IllegalImport" />
 	<suppress files="LogbackLoggingSystem\.java" checks="IllegalImport" />
 	<suppress files="LogbackLoggingSystemTests\.java" checks="IllegalImport" />
+	<suppress files="LogbackConfigurationAotContributionTests\.java" checks="IllegalImport" />
 	<suppress files="MeterRegistryConfigurerIntegrationTests\.java" checks="IllegalImport" />
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />

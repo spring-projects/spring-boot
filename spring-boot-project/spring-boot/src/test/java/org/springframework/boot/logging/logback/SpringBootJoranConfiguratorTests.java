@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -188,6 +189,25 @@ class SpringBootJoranConfiguratorTests {
 		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
 
+	@Test
+	void addsAotContributionToContextDuringAotProcessing() throws Exception {
+		withSystemProperty("spring.aot.processing", "true", () -> {
+			initialize("property.xml");
+			Object contribution = this.context.getObject(BeanFactoryInitializationAotContribution.class.getName());
+			assertThat(contribution).isNotNull();
+		});
+	}
+
+	private void withSystemProperty(String name, String value, Action action) throws Exception {
+		System.setProperty(name, value);
+		try {
+			action.perform();
+		}
+		finally {
+			System.clearProperty(name);
+		}
+	}
+
 	private void doTestNestedProfile(boolean expected, String... profiles) throws JoranException {
 		this.environment.setActiveProfiles(profiles);
 		initialize("nested.xml");
@@ -204,6 +224,12 @@ class SpringBootJoranConfiguratorTests {
 	private void initialize(String config) throws JoranException {
 		this.configurator.setContext(this.context);
 		this.configurator.doConfigure(getClass().getResourceAsStream(config));
+	}
+
+	private interface Action {
+
+		void perform() throws Exception;
+
 	}
 
 }

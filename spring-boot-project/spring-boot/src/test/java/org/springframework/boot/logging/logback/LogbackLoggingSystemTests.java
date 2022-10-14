@@ -46,6 +46,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
@@ -627,6 +628,22 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		LayoutWrappingEncoder<?> encoder = (LayoutWrappingEncoder<?>) getConsoleAppender().getEncoder();
 		assertThat(encoder.getCharset()).isEqualTo(StandardCharsets.UTF_16);
+	}
+
+	@Test
+	void whenContextHasNoAotContributionThenProcessAheadOfTimeReturnsNull() {
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
+		assertThat(contribution).isNull();
+	}
+
+	@Test
+	void whenContextHasAotContributionThenProcessAheadOfTimeClearsAndReturnsIt() {
+		LoggerContext context = ((LoggerContext) LoggerFactory.getILoggerFactory());
+		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
+				mock(BeanFactoryInitializationAotContribution.class));
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
+		assertThat(context.getObject(BeanFactoryInitializationAotContribution.class.getName())).isNull();
+		assertThat(contribution).isNotNull();
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {

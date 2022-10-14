@@ -43,6 +43,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import org.springframework.aot.AotDetector;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -69,7 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Ben Hale
  * @since 1.0.0
  */
-public class LogbackLoggingSystem extends AbstractLoggingSystem {
+public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanFactoryInitializationAotProcessor {
 
 	private static final String BRIDGE_HANDLER = "org.slf4j.bridge.SLF4JBridgeHandler";
 
@@ -178,13 +182,30 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
-		super.initialize(initializationContext, configLocation, logFile);
+		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, logFile)) {
+			super.initialize(initializationContext, configLocation, logFile);
+		}
 		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn("Ignoring '" + CONFIGURATION_FILE_PROPERTY
 					+ "' system property. Please use 'logging.config' instead.");
 		}
+	}
+
+	private boolean initializeFromAotGeneratedArtifactsIfPossible(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
+		if (!AotDetector.useGeneratedArtifacts()) {
+			return false;
+		}
+		if (initializationContext != null) {
+			applySystemProperties(initializationContext.getEnvironment(), logFile);
+		}
+		LoggerContext loggerContext = getLoggerContext();
+		stopAndReset(loggerContext);
+		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
+		configurator.setContext(loggerContext);
+		return configurator.configureUsingAotGeneratedArtifacts();
 	}
 
 	@Override
@@ -380,6 +401,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.removeObject(LoggingSystem.class.getName());
+	}
+
+	@Override
+	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
+		String key = BeanFactoryInitializationAotContribution.class.getName();
+		LoggerContext context = getLoggerContext();
+		BeanFactoryInitializationAotContribution contribution = (BeanFactoryInitializationAotContribution) context
+				.getObject(key);
+		context.removeObject(key);
+		return contribution;
 	}
 
 	/**
