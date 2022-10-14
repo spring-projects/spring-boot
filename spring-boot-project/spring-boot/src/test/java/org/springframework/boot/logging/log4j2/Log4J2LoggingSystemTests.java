@@ -19,12 +19,12 @@ package org.springframework.boot.logging.log4j2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.net.ProtocolException;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
@@ -35,12 +35,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.util.PropertiesUtil;
+import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,9 @@ import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -99,6 +103,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
+		cleanUpPropertySources();
 	}
 
 	@AfterEach
@@ -107,6 +112,16 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		loggerContext.stop();
 		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
+		cleanUpPropertySources();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void cleanUpPropertySources() { // https://issues.apache.org/jira/browse/LOG4J2-3618
+		PropertiesUtil properties = PropertiesUtil.getProperties();
+		Object environment = ReflectionTestUtils.getField(properties, "environment");
+		Set<PropertySource> sources = (Set<PropertySource>) ReflectionTestUtils.getField(environment, "sources");
+		sources.removeIf((candidate) -> candidate instanceof SpringEnvironmentPropertySource
+				|| candidate instanceof SpringBootPropertySource);
 	}
 
 	@Test
@@ -296,6 +311,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void configLocationsWithConfigurationFileSystemProperty() {
+		System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "custom-log4j2.properties");
+		try {
+			assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2-test.properties",
+					"log4j2-test.xml", "log4j2.properties", "log4j2.xml");
+		}
+		finally {
+			System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+		}
+	}
+
+	@Test
 	void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
 		assertThat(locations).containsExactly("log4j2-test-spring.properties", "log4j2-test-spring.xml",
@@ -425,35 +452,40 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
 	}
 
+	@Test
+	void initializeAttachesEnvironmentToLoggerContext() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		Environment environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
+		assertThat(environment).isSameAs(this.environment);
+	}
+
+	@Test
+	void initializeAddsSpringEnvironmentPropertySource() {
+		PropertiesUtil properties = PropertiesUtil.getProperties();
+		this.environment.setProperty("spring", "boot");
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		properties = PropertiesUtil.getProperties();
+		assertThat(properties.getStringProperty("spring")).isEqualTo("boot");
+	}
+
+	@Test
+	void nonFileUrlsAreResolvedUsingLog4J2UrlConnectionFactory() {
+		this.loggingSystem.beforeInitialize();
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
+						"http://localhost:8080/shouldnotwork", null))
+				.havingCause().isInstanceOf(ProtocolException.class).withMessageContaining("http has not been enabled");
+	}
+
 	private String getRelativeClasspathLocation(String fileName) {
 		String defaultPath = ClassUtils.getPackageName(getClass());
 		defaultPath = defaultPath.replace('.', '/');
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
-	}
-
-	static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
-
-		private List<String> availableClasses = new ArrayList<>();
-
-		TestLog4J2LoggingSystem() {
-			super(TestLog4J2LoggingSystem.class.getClassLoader());
-		}
-
-		Configuration getConfiguration() {
-			return ((org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false)).getConfiguration();
-		}
-
-		@Override
-		protected boolean isClassAvailable(String className) {
-			return this.availableClasses.contains(className);
-		}
-
-		private void availableClasses(String... classNames) {
-			Collections.addAll(this.availableClasses, classNames);
-		}
-
 	}
 
 	/**
