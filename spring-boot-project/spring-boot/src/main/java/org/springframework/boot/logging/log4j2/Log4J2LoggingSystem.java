@@ -17,8 +17,8 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -43,6 +43,10 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.net.UrlConnectionFactory;
+import org.apache.logging.log4j.core.net.ssl.SslConfiguration;
+import org.apache.logging.log4j.core.net.ssl.SslConfigurationFactory;
+import org.apache.logging.log4j.core.util.AuthorizationProvider;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.message.Message;
@@ -300,11 +304,16 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
-		InputStream stream = url.openStream();
 		if (FILE_PROTOCOL.equals(url.getProtocol())) {
-			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
+			return new ConfigurationSource(url.openStream(), ResourceUtils.getFile(url));
 		}
-		return new ConfigurationSource(stream, url);
+		AuthorizationProvider authorizationProvider = ConfigurationFactory
+				.authorizationProvider(PropertiesUtil.getProperties());
+		SslConfiguration sslConfiguration = url.getProtocol().equals("https")
+				? SslConfigurationFactory.getSslConfiguration() : null;
+		URLConnection connection = UrlConnectionFactory.createConnection(url, 0, sslConfiguration,
+				authorizationProvider);
+		return new ConfigurationSource(connection.getInputStream(), url, connection.getLastModified());
 	}
 
 	private CompositeConfiguration createComposite(List<Configuration> configurations) {
