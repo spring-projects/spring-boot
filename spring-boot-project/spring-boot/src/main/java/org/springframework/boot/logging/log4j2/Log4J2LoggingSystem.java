@@ -233,7 +233,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			return;
 		}
 		Environment environment = initializationContext.getEnvironment();
-		getLoggerContext().putObjectIfAbsent(ENVIRONMENT_KEY, environment);
+		if (environment != null) {
+			getLoggerContext().putObjectIfAbsent(ENVIRONMENT_KEY, environment);
+			PropertiesUtil.getProperties().addPropertySource(new SpringEnvironmentPropertySource(environment));
+		}
 		loggerContext.getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
 		markAsInitialized(loggerContext);

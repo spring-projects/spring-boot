@@ -25,6 +25,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
@@ -42,6 +43,7 @@ import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.util.PropertiesUtil;
+import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,6 +61,7 @@ import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -101,6 +104,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
+		cleanUpPropertySources();
 	}
 
 	@AfterEach
@@ -109,6 +113,16 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		loggerContext.stop();
 		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
+		cleanUpPropertySources();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void cleanUpPropertySources() { // https://issues.apache.org/jira/browse/LOG4J2-3618
+		PropertiesUtil properties = PropertiesUtil.getProperties();
+		Object environment = ReflectionTestUtils.getField(properties, "environment");
+		Set<PropertySource> sources = (Set<PropertySource>) ReflectionTestUtils.getField(environment, "sources");
+		sources.removeIf((candidate) -> candidate instanceof SpringEnvironmentPropertySource
+				|| candidate instanceof SpringBootPropertySource);
 	}
 
 	@Test
@@ -446,6 +460,16 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		Environment environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
 		assertThat(environment).isSameAs(this.environment);
+	}
+
+	@Test
+	void initializeAddsSpringEnvironmentPropertySource() {
+		PropertiesUtil properties = PropertiesUtil.getProperties();
+		this.environment.setProperty("spring", "boot");
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		properties = PropertiesUtil.getProperties();
+		assertThat(properties.getStringProperty("spring")).isEqualTo("boot");
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {
