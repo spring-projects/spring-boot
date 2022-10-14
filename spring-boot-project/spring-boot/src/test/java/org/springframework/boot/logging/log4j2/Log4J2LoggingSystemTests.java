@@ -19,8 +19,6 @@ package org.springframework.boot.logging.log4j2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -478,29 +476,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
-	}
-
-	static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
-
-		private List<String> availableClasses = new ArrayList<>();
-
-		TestLog4J2LoggingSystem() {
-			super(TestLog4J2LoggingSystem.class.getClassLoader());
-		}
-
-		Configuration getConfiguration() {
-			return ((org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false)).getConfiguration();
-		}
-
-		@Override
-		protected boolean isClassAvailable(String className) {
-			return this.availableClasses.contains(className);
-		}
-
-		private void availableClasses(String... classNames) {
-			Collections.addAll(this.availableClasses, classNames);
-		}
-
 	}
 
 	/**
