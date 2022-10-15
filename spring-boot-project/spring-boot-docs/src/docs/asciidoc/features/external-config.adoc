@@ -6,7 +6,8 @@ You can use a variety of external configuration sources, include Java properties
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<features#features.external-config.typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
-Properties are considered in the following order (with values from lower items overriding earlier ones):
+Later property sources can override the values defined in earlier ones.
+Sources are considered in the following order:
 
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
