@@ -463,11 +463,10 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void initializeAddsSpringEnvironmentPropertySource() {
-		PropertiesUtil properties = PropertiesUtil.getProperties();
 		this.environment.setProperty("spring", "boot");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		properties = PropertiesUtil.getProperties();
+		PropertiesUtil properties = PropertiesUtil.getProperties();
 		assertThat(properties.getStringProperty("spring")).isEqualTo("boot");
 	}
 

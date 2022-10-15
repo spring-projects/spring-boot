@@ -154,9 +154,7 @@ class SpringProfileArbiterTests {
 
 	private String getPackageResource(String fileName) {
 		String path = ClassUtils.getPackageName(getClass());
-		path = path.replace('.', '/');
-		path = path + "/" + fileName;
-		return "src/test/resources/" + path;
+		return "src/test/resources/" + path.replace('.', '/') + "/" + fileName;
 	}
 
 }
