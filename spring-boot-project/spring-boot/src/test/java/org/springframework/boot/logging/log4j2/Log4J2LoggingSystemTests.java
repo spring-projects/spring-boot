@@ -314,8 +314,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void configLocationsWithConfigurationFileSystemProperty() {
 		System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "custom-log4j2.properties");
 		try {
-			assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2-test.properties",
-					"log4j2-test.xml", "log4j2.properties", "log4j2.xml");
+			assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
+					"log4j2-test.xml", "log4j2.properties", "log4j2.xml", "custom-log4j2.properties");
 		}
 		finally {
 			System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
