@@ -430,6 +430,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean(name = "welcomePageHandlerMapping")
 		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
 				FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
 			WelcomePageHandlerMapping welcomePageHandlerMapping = new WelcomePageHandlerMapping(
