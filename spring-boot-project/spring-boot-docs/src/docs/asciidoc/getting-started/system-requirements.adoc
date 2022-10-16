@@ -35,3 +35,24 @@ Spring Boot supports the following embedded servlet containers:
 |===
 
 You can also deploy Spring Boot applications to any servlet 5.0+ compatible container.
+
+
+
+[[getting-started.system-requirements.graal]]
+=== GraalVM Native Images
+Spring Boot applications can be <<native-image#native-image.introducing-graalvm-native-images,converted into a Native Image>> using using Graal {graal-version} or above.
+
+Images can be created using the https://github.com/graalvm/native-build-tools[native build tools] Gradle/Maven plugins or `native-image` tool provided by GraalVM.
+You can also create native images using the the https://github.com/paketo-buildpacks/native-image[native-image Paketo buildpack].
+
+The following versions are supported:
+
+|===
+| Name | Version
+
+| GraalVM Community
+| {graal-version}
+
+| Native Build Tools
+| {native-build-tools-version}
+|===

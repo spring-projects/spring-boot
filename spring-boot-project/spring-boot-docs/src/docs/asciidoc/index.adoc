@@ -23,6 +23,7 @@ The reference documentation consists of the following sections:
 <<container-images#container-images,Container Images>> :: Efficient container images and Building container images with Dockerfiles and Cloud Native Buildpacks.
 <<actuator#actuator,Production-ready Features>> :: Monitoring, Metrics, Auditing, and more.
 <<deployment#deployment,Deploying Spring Boot Applications>> :: Deploying to the Cloud, and Installing as a Unix application.
+<<native-image#native-image,Graal Native Image Support>> :: Create a native executable from your application using GraalVM
 <<cli#cli,Spring Boot CLI>> :: Installing the CLI, Using the CLI, Configuring the CLI, and more.
 <<build-tool-plugins#build-tool-plugins,Build Tool Plugins>> :: Maven Plugin, Gradle Plugin, Antlib, and more.
 <<howto#howto,"`How-to`" Guides>> :: Application Development, Configuration, Embedded Servers, Data Access, and many more.

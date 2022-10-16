@@ -317,6 +317,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-security-version": securityVersion,
+					"native-build-tools-version": nativeBuildToolsVersion,
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
 					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
 					"spring-application-output": runSpringApplicationExample.outputs.files.singleFile,
