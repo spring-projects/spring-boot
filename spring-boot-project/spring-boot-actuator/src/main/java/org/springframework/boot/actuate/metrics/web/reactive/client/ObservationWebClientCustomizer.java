@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.metrics.web.reactive.client;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
-import org.springframework.web.reactive.function.client.ClientObservationConvention;
+import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -33,7 +33,7 @@ public class ObservationWebClientCustomizer implements WebClientCustomizer {
 
 	private final ObservationRegistry observationRegistry;
 
-	private final ClientObservationConvention observationConvention;
+	private final ClientRequestObservationConvention observationConvention;
 
 	/**
 	 * Create a new {@code ObservationWebClientCustomizer} that will configure the
@@ -42,7 +42,7 @@ public class ObservationWebClientCustomizer implements WebClientCustomizer {
 	 * @param observationConvention the convention to use to populate observations
 	 */
 	public ObservationWebClientCustomizer(ObservationRegistry observationRegistry,
-			ClientObservationConvention observationConvention) {
+			ClientRequestObservationConvention observationConvention) {
 		this.observationRegistry = observationRegistry;
 		this.observationConvention = observationConvention;
 	}

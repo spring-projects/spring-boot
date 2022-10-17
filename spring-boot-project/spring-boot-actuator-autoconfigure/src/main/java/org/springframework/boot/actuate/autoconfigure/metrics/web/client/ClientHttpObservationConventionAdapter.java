@@ -21,17 +21,17 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.observation.Observation;
 
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
-import org.springframework.http.client.observation.ClientHttpObservationContext;
-import org.springframework.http.client.observation.ClientHttpObservationConvention;
+import org.springframework.http.client.observation.ClientRequestObservationContext;
+import org.springframework.http.client.observation.ClientRequestObservationConvention;
 
 /**
  * Adapter class that applies {@link RestTemplateExchangeTagsProvider} tags as a
- * {@link ClientHttpObservationConvention}.
+ * {@link ClientRequestObservationConvention}.
  *
  * @author Brian Clozel
  */
 @SuppressWarnings({ "removal" })
-class ClientHttpObservationConventionAdapter implements ClientHttpObservationConvention {
+class ClientHttpObservationConventionAdapter implements ClientRequestObservationConvention {
 
 	private final String metricName;
 
@@ -44,12 +44,12 @@ class ClientHttpObservationConventionAdapter implements ClientHttpObservationCon
 
 	@Override
 	public boolean supportsContext(Observation.Context context) {
-		return context instanceof ClientHttpObservationContext;
+		return context instanceof ClientRequestObservationContext;
 	}
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public KeyValues getLowCardinalityKeyValues(ClientHttpObservationContext context) {
+	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 		KeyValues keyValues = KeyValues.empty();
 		Iterable<Tag> tags = this.tagsProvider.getTags(context.getUriTemplate(), context.getCarrier(),
 				context.getResponse());
@@ -60,7 +60,7 @@ class ClientHttpObservationConventionAdapter implements ClientHttpObservationCon
 	}
 
 	@Override
-	public KeyValues getHighCardinalityKeyValues(ClientHttpObservationContext context) {
+	public KeyValues getHighCardinalityKeyValues(ClientRequestObservationContext context) {
 		return KeyValues.empty();
 	}
 

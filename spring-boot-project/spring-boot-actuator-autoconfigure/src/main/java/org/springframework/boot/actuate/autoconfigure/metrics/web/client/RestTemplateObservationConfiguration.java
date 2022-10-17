@@ -28,8 +28,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.observation.ClientHttpObservationConvention;
-import org.springframework.http.client.observation.DefaultClientHttpObservationConvention;
+import org.springframework.http.client.observation.ClientRequestObservationConvention;
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -51,9 +51,9 @@ class RestTemplateObservationConfiguration {
 		String observationName = observationProperties.getHttp().getClient().getRequests().getName();
 		String name = (observationName != null) ? observationName : metricName;
 		RestTemplateExchangeTagsProvider tagsProvider = optionalTagsProvider.getIfAvailable();
-		ClientHttpObservationConvention observationConvention = (tagsProvider != null)
+		ClientRequestObservationConvention observationConvention = (tagsProvider != null)
 				? new ClientHttpObservationConventionAdapter(name, tagsProvider)
-				: new DefaultClientHttpObservationConvention(name);
+				: new DefaultClientRequestObservationConvention(name);
 		return new ObservationRestTemplateCustomizer(observationRegistry, observationConvention);
 	}
 

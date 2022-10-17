@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.metrics.web.client;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.boot.web.client.RestTemplateCustomizer;
-import org.springframework.http.client.observation.ClientHttpObservationConvention;
+import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -33,7 +33,7 @@ public class ObservationRestTemplateCustomizer implements RestTemplateCustomizer
 
 	private final ObservationRegistry observationRegistry;
 
-	private final ClientHttpObservationConvention observationConvention;
+	private final ClientRequestObservationConvention observationConvention;
 
 	/**
 	 * Create a new {@code ObservationRestTemplateCustomizer}.
@@ -41,7 +41,7 @@ public class ObservationRestTemplateCustomizer implements RestTemplateCustomizer
 	 * @param observationRegistry the observation registry
 	 */
 	public ObservationRestTemplateCustomizer(ObservationRegistry observationRegistry,
-			ClientHttpObservationConvention observationConvention) {
+			ClientRequestObservationConvention observationConvention) {
 		this.observationConvention = observationConvention;
 		this.observationRegistry = observationRegistry;
 	}

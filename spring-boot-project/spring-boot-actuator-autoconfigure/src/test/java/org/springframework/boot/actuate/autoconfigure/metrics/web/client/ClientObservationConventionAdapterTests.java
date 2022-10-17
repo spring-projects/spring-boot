@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.reactive.function.client.ClientObservationContext;
 import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,11 +49,11 @@ class ClientObservationConventionAdapterTests {
 
 	private ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
 
-	private ClientObservationContext context;
+	private ClientRequestObservationContext context;
 
 	@BeforeEach
 	void setup() {
-		this.context = new ClientObservationContext();
+		this.context = new ClientRequestObservationContext();
 		this.context.setCarrier(this.request);
 		this.context.setResponse(this.response);
 		this.context.setUriTemplate("/resource/{name}");

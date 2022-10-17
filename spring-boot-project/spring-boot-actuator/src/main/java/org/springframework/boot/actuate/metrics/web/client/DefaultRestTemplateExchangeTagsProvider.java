@@ -22,7 +22,6 @@ import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.observation.DefaultClientHttpObservationConvention;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,7 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Nishant Raut
  * @since 2.0.0
  * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
- * {@link DefaultClientHttpObservationConvention}
+ * {@link org.springframework.http.client.observation.DefaultClientRequestObservationConvention}
  */
 @Deprecated(since = "3.0.0", forRemoval = true)
 @SuppressWarnings({ "deprecation", "removal" })

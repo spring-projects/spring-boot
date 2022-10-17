@@ -21,19 +21,19 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.observation.Observation;
 
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
-import org.springframework.web.reactive.function.client.ClientObservationContext;
-import org.springframework.web.reactive.function.client.ClientObservationConvention;
 import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
+import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Adapter class that applies {@link WebClientExchangeTagsProvider} tags as a
- * {@link ClientObservationConvention}.
+ * {@link ClientRequestObservationConvention}.
  *
  * @author Brian Clozel
  */
 @SuppressWarnings({ "deprecation", "removal" })
-class ClientObservationConventionAdapter implements ClientObservationConvention {
+class ClientObservationConventionAdapter implements ClientRequestObservationConvention {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
@@ -48,11 +48,11 @@ class ClientObservationConventionAdapter implements ClientObservationConvention 
 
 	@Override
 	public boolean supportsContext(Observation.Context context) {
-		return context instanceof ClientObservationContext;
+		return context instanceof ClientRequestObservationContext;
 	}
 
 	@Override
-	public KeyValues getLowCardinalityKeyValues(ClientObservationContext context) {
+	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 		KeyValues keyValues = KeyValues.empty();
 		mutateClientRequest(context);
 		Iterable<Tag> tags = this.tagsProvider.tags(context.getCarrier(), context.getResponse(), context.getError());
@@ -66,14 +66,14 @@ class ClientObservationConventionAdapter implements ClientObservationConvention 
 	 * {@link WebClientExchangeTagsProvider} relies on a request attribute to get the URI
 	 * template, we need to adapt to that.
 	 */
-	private static void mutateClientRequest(ClientObservationContext context) {
+	private static void mutateClientRequest(ClientRequestObservationContext context) {
 		ClientRequest clientRequest = ClientRequest.from(context.getCarrier())
 				.attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
 		context.setCarrier(clientRequest);
 	}
 
 	@Override
-	public KeyValues getHighCardinalityKeyValues(ClientObservationContext context) {
+	public KeyValues getHighCardinalityKeyValues(ClientRequestObservationContext context) {
 		return KeyValues.empty();
 	}
 

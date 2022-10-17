@@ -26,8 +26,8 @@ import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExc
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.ClientObservationConvention;
-import org.springframework.web.reactive.function.client.DefaultClientObservationConvention;
+import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
+import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -48,9 +48,9 @@ class WebClientObservationConfiguration {
 		String observationName = observationProperties.getHttp().getClient().getRequests().getName();
 		String name = (observationName != null) ? observationName : metricName;
 		WebClientExchangeTagsProvider tagsProvider = optionalTagsProvider.getIfAvailable();
-		ClientObservationConvention observationConvention = (tagsProvider != null)
+		ClientRequestObservationConvention observationConvention = (tagsProvider != null)
 				? new ClientObservationConventionAdapter(name, tagsProvider)
-				: new DefaultClientObservationConvention(name);
+				: new DefaultClientRequestObservationConvention(name);
 		return new ObservationWebClientCustomizer(observationRegistry, observationConvention);
 	}
 

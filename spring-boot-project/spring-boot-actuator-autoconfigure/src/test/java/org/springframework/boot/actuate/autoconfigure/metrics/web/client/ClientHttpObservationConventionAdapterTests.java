@@ -28,7 +28,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.observation.ClientHttpObservationContext;
+import org.springframework.http.client.observation.ClientRequestObservationContext;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
@@ -51,11 +51,11 @@ class ClientHttpObservationConventionAdapterTests {
 
 	private ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.OK);
 
-	private ClientHttpObservationContext context;
+	private ClientRequestObservationContext context;
 
 	@BeforeEach
 	void setup() {
-		this.context = new ClientHttpObservationContext(this.request);
+		this.context = new ClientRequestObservationContext(this.request);
 		this.context.setResponse(this.response);
 		this.context.setUriTemplate("/resource/{name}");
 	}

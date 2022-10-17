@@ -20,7 +20,7 @@ import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.http.client.observation.DefaultClientHttpObservationConvention;
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,14 +39,14 @@ class ObservationRestTemplateCustomizerTests {
 	private RestTemplate restTemplate = new RestTemplate();
 
 	private ObservationRestTemplateCustomizer customizer = new ObservationRestTemplateCustomizer(
-			this.observationRegistry, new DefaultClientHttpObservationConvention(TEST_METRIC_NAME));
+			this.observationRegistry, new DefaultClientRequestObservationConvention(TEST_METRIC_NAME));
 
 	@Test
 	void shouldCustomizeObservationConfiguration() {
 		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
 		assertThat(this.restTemplate).extracting("observationConvention")
-				.isInstanceOf(DefaultClientHttpObservationConvention.class)
+				.isInstanceOf(DefaultClientRequestObservationConvention.class)
 				.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}
 

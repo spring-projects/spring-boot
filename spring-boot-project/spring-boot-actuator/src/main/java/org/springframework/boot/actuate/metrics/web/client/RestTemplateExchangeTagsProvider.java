@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.observation.ClientHttpObservationConvention;
+import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Andy Wilkinson
  * @since 2.0.0
  * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
- * {@link ClientHttpObservationConvention}
+ * {@link ClientRequestObservationConvention}
  */
 @FunctionalInterface
 @Deprecated(since = "3.0.0", forRemoval = true)

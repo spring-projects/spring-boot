@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.metrics.web.reactive.client;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.web.reactive.function.client.ClientObservationConvention;
-import org.springframework.web.reactive.function.client.DefaultClientObservationConvention;
+import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
+import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ class ObservationWebClientCustomizerTests {
 
 	private TestObservationRegistry observationRegistry = TestObservationRegistry.create();
 
-	private ClientObservationConvention observationConvention = new DefaultClientObservationConvention(
+	private ClientRequestObservationConvention observationConvention = new DefaultClientRequestObservationConvention(
 			TEST_METRIC_NAME);
 
 	private ObservationWebClientCustomizer customizer = new ObservationWebClientCustomizer(this.observationRegistry,
@@ -50,7 +50,7 @@ class ObservationWebClientCustomizerTests {
 		this.customizer.customize(this.clientBuilder);
 		assertThat(this.clientBuilder).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
 		assertThat(this.clientBuilder).extracting("observationConvention")
-				.isInstanceOf(DefaultClientObservationConvention.class)
+				.isInstanceOf(DefaultClientRequestObservationConvention.class)
 				.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}
 
