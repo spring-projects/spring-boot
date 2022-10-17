@@ -97,6 +97,10 @@ task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	}
 }
 
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	attributes "native-build-tools-version": nativeBuildToolsVersion
+}
+
 javadoc {
 	options {
 		author = true

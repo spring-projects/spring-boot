@@ -39,7 +39,7 @@ v{gradle-project-version}
 :buildpacks-reference: https://buildpacks.io/docs
 :paketo-reference: https://paketo.io/docs
 :paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
-:nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
+:nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/{native-build-tools-version}/gradle-plugin.html
 
 
 
@@ -56,6 +56,8 @@ include::packaging-oci-image.adoc[leveloffset=+1]
 include::publishing.adoc[leveloffset=+1]
 
 include::running.adoc[leveloffset=+1]
+
+include::aot.adoc[leveloffset=+1]
 
 include::integrating-with-actuator.adoc[leveloffset=+1]
 
