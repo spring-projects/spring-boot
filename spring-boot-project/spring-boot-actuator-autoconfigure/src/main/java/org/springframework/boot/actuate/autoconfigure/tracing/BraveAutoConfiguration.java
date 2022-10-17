@@ -53,7 +53,11 @@ import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BravePropagator;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import io.micrometer.tracing.brave.bridge.CompositeSpanHandler;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
+import io.micrometer.tracing.exporter.SpanExportingPredicate;
+import io.micrometer.tracing.exporter.SpanFilter;
+import io.micrometer.tracing.exporter.SpanReporter;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -64,6 +68,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
@@ -86,6 +91,15 @@ public class BraveAutoConfiguration {
 	 * Default value for application name if {@code spring.application.name} is not set.
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "application";
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	CompositeSpanHandler compositeSpanHandler(ObjectProvider<SpanExportingPredicate> predicates,
+			ObjectProvider<SpanReporter> reporters, ObjectProvider<SpanFilter> filters) {
+		return new CompositeSpanHandler(predicates.orderedStream().toList(), reporters.orderedStream().toList(),
+				filters.orderedStream().toList());
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
