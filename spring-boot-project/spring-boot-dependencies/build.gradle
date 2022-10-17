@@ -1476,7 +1476,7 @@ bom {
 			]
 		}
 	}
-	library("Spring RESTDocs", "3.0.0-SNAPSHOT") {
+	library("Spring RESTDocs", "3.0.0-RC1") {
 		group("org.springframework.restdocs") {
 			imports = [
 				"spring-restdocs-bom"
