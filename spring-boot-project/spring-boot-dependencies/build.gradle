@@ -1768,7 +1768,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.7.4-SNAPSHOT") {
+	library("Spring Security", "5.7.4") {
 		prohibit("[6.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
