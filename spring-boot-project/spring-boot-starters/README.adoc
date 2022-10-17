@@ -253,4 +253,7 @@ do as they were designed before this was clarified.
 | https://github.com/knowm/XChange[XChange]
 | https://github.com/cassandre-tech/cassandre-trading-bot
 
+| https://societe-generale.github.io/failover/[Failover]
+| https://github.com/societe-generale/failover
+
 |===
