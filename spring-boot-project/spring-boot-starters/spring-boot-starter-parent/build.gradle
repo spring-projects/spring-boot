@@ -254,6 +254,14 @@ publishing.publications.withType(MavenPublication) {
 										delegate.enabled('true')
 									}
 								}
+								executions {
+									execution {
+										delegate.id('add-reachability-metadata')
+										goals {
+											delegate.goal('add-reachability-metadata')
+										}
+									}
+								}
 							}
 						}
 					}
