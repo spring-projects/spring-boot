@@ -670,9 +670,9 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		File css = new File(staticResources, "test.css");
 		css.createNewFile();
 		if (addReachabilityProperties) {
-			createReachabilityProperties(resourcesMain, "com.example", "first-library", "true");
-			createReachabilityProperties(resourcesMain, "com.example", "second-library", "true");
-			createReachabilityProperties(resourcesMain, "com.example", "fourth-library", "false");
+			createReachabilityProperties(resourcesMain, "com.example", "first-library", "1.0.0", "true");
+			createReachabilityProperties(resourcesMain, "com.example", "second-library", "1.0.0", "true");
+			createReachabilityProperties(resourcesMain, "com.example", "fourth-library", "1.0.0", "false");
 		}
 		this.task.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
 				jarFile("third-library-SNAPSHOT.jar"), jarFile("fourth-library.jar"),
@@ -707,9 +707,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		populateResolvedDependencies(configuration);
 	}
 
-	protected void createReachabilityProperties(File directory, String groupId, String artifactId, String override)
-			throws IOException {
-		File targetDirectory = new File(directory, "META-INF/native-image/%s/%s".formatted(groupId, artifactId));
+	protected void createReachabilityProperties(File directory, String groupId, String artifactId, String version,
+			String override) throws IOException {
+		File targetDirectory = new File(directory,
+				"META-INF/native-image/%s/%s/%s".formatted(groupId, artifactId, version));
 		File target = new File(targetDirectory, "reachability-metadata.properties");
 		targetDirectory.mkdirs();
 		FileCopyUtils.copy("override=%s\n".formatted(override).getBytes(StandardCharsets.ISO_8859_1), target);

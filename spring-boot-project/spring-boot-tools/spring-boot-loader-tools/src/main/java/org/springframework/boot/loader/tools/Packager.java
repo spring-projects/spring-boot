@@ -61,7 +61,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class Packager {
 
-	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/reachability-metadata.properties";
+	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/%s/reachability-metadata.properties";
 
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
@@ -230,7 +230,7 @@ public abstract class Packager {
 		for (Map.Entry<String, Library> entry : writtenLibraries.entrySet()) {
 			LibraryCoordinates coordinates = entry.getValue().getCoordinates();
 			ZipEntry zipEntry = (coordinates != null) ? sourceJar.getEntry(REACHABILITY_METADATA_PROPERTIES_LOCATION
-					.formatted(coordinates.getGroupId(), coordinates.getArtifactId())) : null;
+					.formatted(coordinates.getGroupId(), coordinates.getArtifactId(), coordinates.getVersion())) : null;
 			if (zipEntry != null) {
 				try (InputStream inputStream = sourceJar.getInputStream(zipEntry)) {
 					Properties properties = new Properties();

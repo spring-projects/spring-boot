@@ -622,11 +622,12 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		File libraryTwo = createLibraryJar();
 		File libraryThree = createLibraryJar();
 		File libraryFour = createLibraryJar();
-		this.testJarFile.addFile("META-INF/native-image/com.example.one/lib-one/reachability-metadata.properties",
+		this.testJarFile.addFile("META-INF/native-image/com.example.one/lib-one/123/reachability-metadata.properties",
 				new ByteArrayInputStream("override=true\n".getBytes(StandardCharsets.ISO_8859_1)));
-		this.testJarFile.addFile("META-INF/native-image/com.example.two/lib-two/reachability-metadata.properties",
+		this.testJarFile.addFile("META-INF/native-image/com.example.two/lib-two/123/reachability-metadata.properties",
 				new ByteArrayInputStream("override=true\n".getBytes(StandardCharsets.ISO_8859_1)));
-		this.testJarFile.addFile("META-INF/native-image/com.example.three/lib-three/reachability-metadata.properties",
+		this.testJarFile.addFile(
+				"META-INF/native-image/com.example.three/lib-three/123/reachability-metadata.properties",
 				new ByteArrayInputStream("other=test\n".getBytes(StandardCharsets.ISO_8859_1)));
 		P packager = createPackager(this.testJarFile.getFile());
 		execute(packager, (callback) -> {

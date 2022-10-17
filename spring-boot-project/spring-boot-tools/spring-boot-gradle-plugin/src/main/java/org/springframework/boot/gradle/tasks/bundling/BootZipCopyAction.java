@@ -76,10 +76,10 @@ class BootZipCopyAction implements CopyAction {
 	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
 			.getTimeInMillis();
 
-	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/reachability-metadata.properties";
+	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/%s/reachability-metadata.properties";
 
 	private static final Pattern REACHABILITY_METADATA_PROPERTIES_LOCATION_PATTERN = Pattern
-			.compile(REACHABILITY_METADATA_PROPERTIES_LOCATION.formatted(".*", ".*"));
+			.compile(REACHABILITY_METADATA_PROPERTIES_LOCATION.formatted(".*", ".*", ".*"));
 
 	private final File output;
 
@@ -356,8 +356,8 @@ class BootZipCopyAction implements CopyAction {
 						.find(entry.getValue().getFile());
 				LibraryCoordinates coordinates = (descriptor != null) ? descriptor.getCoordinates() : null;
 				FileCopyDetails propertiesFile = (coordinates != null)
-						? this.reachabilityMetadataProperties.get(REACHABILITY_METADATA_PROPERTIES_LOCATION
-								.formatted(coordinates.getGroupId(), coordinates.getArtifactId()))
+						? this.reachabilityMetadataProperties.get(REACHABILITY_METADATA_PROPERTIES_LOCATION.formatted(
+								coordinates.getGroupId(), coordinates.getArtifactId(), coordinates.getVersion()))
 						: null;
 				if (propertiesFile != null) {
 					try (InputStream inputStream = propertiesFile.open()) {
