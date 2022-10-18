@@ -94,7 +94,7 @@ class DefaultBindConstructorProviderTests {
 	void getBindConstructorWhenIsMemberTypeWithPrivateConstructorReturnsNull() {
 		Constructor<?> constructor = this.provider.getBindConstructor(MemberTypeWithPrivateConstructor.Member.class,
 				false);
-		assertThat(constructor).isNotNull();
+		assertThat(constructor).isNull();
 	}
 
 	static class OnlyDefaultConstructor {
