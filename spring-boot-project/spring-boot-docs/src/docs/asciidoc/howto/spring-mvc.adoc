@@ -35,8 +35,7 @@ If Jackson's XML extension is not available and JAXB is available, XML can be re
 
 include::code:MyThing[]
 
-JAXB is only available out of the box with Java 8.
-If you use a more recent Java generation, add the following dependency to your project:
+You will need to ensure that the JAXB library is part of your project, for example by adding:
 
 [source,xml,indent=0,subs="verbatim"]
 ----

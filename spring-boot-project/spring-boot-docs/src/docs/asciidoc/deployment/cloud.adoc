@@ -45,7 +45,7 @@ At this point, `cf` starts uploading your application, producing output similar 
 	Preparing to start acloudyspringtime... *OK*
 	-----> Downloaded app package (*8.9M*)
 	-----> Java Buildpack Version: v3.12 (offline) | https://github.com/cloudfoundry/java-buildpack.git#6f25b7e
-	-----> Downloading Open Jdk JRE 1.8.0_121 from https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-1.8.0_121.tar.gz (found in cache)
+	-----> Downloading Open Jdk JRE
 	       Expanding Open Jdk JRE to .java-buildpack/open_jdk_jre (1.6s)
 	-----> Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https://java-buildpack.cloudfoundry.org/memory-calculator/trusty/x86_64/memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)
 	       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize=104857K -Xms681574K -XX:MetaspaceSize=104857K
@@ -179,8 +179,8 @@ Which will result in the following:
 	Total 95 (delta 31), reused 0 (delta 0)
 
 	-----> Java app detected
-	-----> Installing OpenJDK 1.8... *done*
-	-----> Installing Maven 3.3.1... *done*
+	-----> Installing OpenJDK... *done*
+	-----> Installing Maven... *done*
 	-----> Installing settings.xml... *done*
 	-----> Executing: mvn -B -DskipTests=true clean install
 

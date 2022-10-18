@@ -136,11 +136,11 @@ You can list the capabilities of the service by using the `--list` flag, as show
 
 The `init` command supports many options.
 See the `help` output for more details.
-For instance, the following command creates a Gradle project that uses Java 8 and `war` packaging:
+For instance, the following command creates a Gradle project that uses Java 17 and `war` packaging:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-	$ spring init --build=gradle --java-version=1.8 --dependencies=websocket --packaging=war sample-app.zip
+	$ spring init --build=gradle --java-version=17 --dependencies=websocket --packaging=war sample-app.zip
 	Using service at https://start.spring.io
 	Content saved to 'sample-app.zip'
 ----

@@ -1,7 +1,7 @@
 [[getting-started.installing]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command line tool.
-Either way, you need https://www.java.com[Java SDK v1.8] or higher.
+Either way, you need https://www.java.com[Java SDK v17] or higher.
 Before you begin, you should check your current Java installation by using the following command:
 
 [source,shell,indent=0,subs="verbatim"]
