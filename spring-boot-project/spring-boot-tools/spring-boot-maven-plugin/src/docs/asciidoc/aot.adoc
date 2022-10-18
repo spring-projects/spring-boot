@@ -19,6 +19,8 @@ To configure your application to use this feature, add an execution for the `pro
 include::../maven/aot/pom.xml[tags=aot]
 ----
 
+TIP: If you are using `spring-boot-starter-parent`, this execution is automatically configured if you enable the `native` profile.
+
 As the `BeanFactory` is fully prepared at build-time, conditions are also evaluated.
 This has an important difference compared to what a regular Spring Boot application does at runtime.
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
@@ -38,6 +40,8 @@ To configure your application to use this feature, add an execution for the `pro
 ----
 include::../maven/aot-test/pom.xml[tags=aot]
 ----
+
+TIP: If you are using `spring-boot-starter-parent`, this execution is automatically configured if you enable the `nativeTest` profile.
 
 As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
 

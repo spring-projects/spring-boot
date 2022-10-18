@@ -9,6 +9,7 @@ The parent project provides the following features:
 * A dependency management section, inherited from the `spring-boot-dependencies` POM, that manages the versions of common dependencies.
 This dependency management lets you omit `<version>` tags for those dependencies when used in your own POM.
 * An execution of the <<goals.adoc#goals-repackage, `repackage` goal>> with a `repackage` execution id.
+* A `native` profile that configures the build to be able to generate a Native image.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
