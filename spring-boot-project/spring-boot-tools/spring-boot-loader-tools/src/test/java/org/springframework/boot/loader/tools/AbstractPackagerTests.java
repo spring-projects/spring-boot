@@ -643,11 +643,11 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 		List<String> expected = new ArrayList<>();
 		expected.add("--exclude-config");
-		expected.add("\"\\\\Q" + libraryOne.getName() + "\\\\E\"");
-		expected.add("\"^/META-INF/native-image/.*\"");
+		expected.add("\\Q" + libraryOne.getName() + "\\E");
+		expected.add("^/META-INF/native-image/.*");
 		expected.add("--exclude-config");
-		expected.add("\"\\\\Q" + libraryTwo.getName() + "\\\\E\"");
-		expected.add("\"^/META-INF/native-image/.*\"");
+		expected.add("\\Q" + libraryTwo.getName() + "\\E");
+		expected.add("^/META-INF/native-image/.*");
 		assertThat(getPackagedEntryContent("META-INF/native-image/argfile"))
 				.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
 	}

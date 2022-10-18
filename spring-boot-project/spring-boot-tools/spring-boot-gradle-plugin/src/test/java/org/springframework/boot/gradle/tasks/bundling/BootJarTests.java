@@ -189,8 +189,8 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	void nativeImageArgFileWithExcludesIsWritten() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar(true))) {
 			assertThat(entryLines(jarFile, "META-INF/native-image/argfile")).containsExactly("--exclude-config",
-					"\"\\\\Qfirst-library.jar\\\\E\"", "\"^/META-INF/native-image/.*\"", "--exclude-config",
-					"\"\\\\Qsecond-library.jar\\\\E\"", "\"^/META-INF/native-image/.*\"");
+					"\\Qfirst-library.jar\\E", "^/META-INF/native-image/.*", "--exclude-config",
+					"\\Qsecond-library.jar\\E", "^/META-INF/native-image/.*");
 		}
 	}
 

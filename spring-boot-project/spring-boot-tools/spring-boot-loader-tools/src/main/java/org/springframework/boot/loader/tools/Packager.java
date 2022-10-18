@@ -241,15 +241,14 @@ public abstract class Packager {
 				}
 			}
 		}
-		// https://docs.oracle.com/en/java/javase/18/docs/specs/man/java.html#java-command-line-argument-files
 		if (!excludes.isEmpty()) {
 			List<String> args = new ArrayList<>();
 			for (String exclude : excludes) {
 				int lastSlash = exclude.lastIndexOf('/');
 				String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
 				args.add("--exclude-config");
-				args.add("\"" + Pattern.quote(jar).replace("\\", "\\\\") + "\"");
-				args.add("\"^/META-INF/native-image/.*\"");
+				args.add(Pattern.quote(jar));
+				args.add("^/META-INF/native-image/.*");
 			}
 			String contents = args.stream().collect(Collectors.joining("\n")) + "\n";
 			writer.writeEntry("META-INF/native-image/argfile",
