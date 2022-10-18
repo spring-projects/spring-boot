@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -143,16 +142,13 @@ class PropertyDescriptorResolver {
 
 		private final TypeElement type;
 
-		private final boolean constructorBoundType;
-
 		private final List<ExecutableElement> constructors;
 
 		private final List<ExecutableElement> boundConstructors;
 
-		ConfigurationPropertiesTypeElement(TypeElement type, boolean constructorBoundType,
-				List<ExecutableElement> constructors, List<ExecutableElement> boundConstructors) {
+		ConfigurationPropertiesTypeElement(TypeElement type, List<ExecutableElement> constructors,
+				List<ExecutableElement> boundConstructors) {
 			this.type = type;
-			this.constructorBoundType = constructorBoundType;
 			this.constructors = constructors;
 			this.boundConstructors = boundConstructors;
 		}
@@ -162,11 +158,11 @@ class PropertyDescriptorResolver {
 		}
 
 		boolean isConstructorBindingEnabled() {
-			return this.constructorBoundType || !this.boundConstructors.isEmpty();
+			return !this.boundConstructors.isEmpty();
 		}
 
 		ExecutableElement getBindConstructor() {
-			if (this.constructorBoundType && this.boundConstructors.isEmpty()) {
+			if (this.boundConstructors.isEmpty()) {
 				return findBoundConstructor();
 			}
 			if (this.boundConstructors.size() == 1) {
@@ -189,10 +185,9 @@ class PropertyDescriptorResolver {
 		}
 
 		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
-			boolean constructorBoundType = isConstructorBoundType(type, env);
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 			List<ExecutableElement> boundConstructors = getBoundConstructors(env, constructors);
-			return new ConfigurationPropertiesTypeElement(type, constructorBoundType, constructors, boundConstructors);
+			return new ConfigurationPropertiesTypeElement(type, constructors, boundConstructors);
 		}
 
 		private static List<ExecutableElement> getBoundConstructors(MetadataGenerationEnvironment env,
@@ -211,13 +206,6 @@ class PropertyDescriptorResolver {
 				return constructors.get(0);
 			}
 			return null;
-		}
-
-		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
-			if (type.getNestingKind() == NestingKind.MEMBER) {
-				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), env);
-			}
-			return false;
 		}
 
 	}
