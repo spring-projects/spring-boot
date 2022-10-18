@@ -17,6 +17,7 @@
 package org.springframework.boot.loader;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -33,8 +34,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -101,24 +105,26 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void explodedJarDefinedPackagesIncludeManifestAttributes() throws Exception {
+	void explodedJarDefinedPackagesIncludeManifestAttributes() {
 		Manifest manifest = new Manifest();
 		Attributes attributes = manifest.getMainAttributes();
 		attributes.put(Name.MANIFEST_VERSION, "1.0");
 		attributes.put(Name.IMPLEMENTATION_TITLE, "test");
-		File explodedRoot = explode(
-				createJarArchive("archive.jar", manifest, "BOOT-INF", true, Collections.emptyList()));
-		TestCompiler compiler = new TestCompiler(new File(explodedRoot, "BOOT-INF/classes"));
-		File source = new File(this.tempDir, "explodedsample/ExampleClass.java");
-		source.getParentFile().mkdirs();
-		FileCopyUtils.copy(new File("src/test/resources/explodedsample/ExampleClass.txt"), source);
-		compiler.getTask(Collections.singleton(source)).call();
-		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-		Iterator<Archive> archives = launcher.getClassPathArchivesIterator();
-		URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
-		Class<?> loaded = classLoader.loadClass("explodedsample.ExampleClass");
-		assertThat(loaded.getPackage().getImplementationTitle()).isEqualTo("test");
+		SourceFile sourceFile = SourceFile.of("explodedsample/ExampleClass.java",
+				new ClassPathResource("explodedsample/ExampleClass.txt"));
+		TestCompiler.forSystem().compile(sourceFile, ThrowingConsumer.of((compiled) -> {
+			File explodedRoot = explode(
+					createJarArchive("archive.jar", manifest, "BOOT-INF", true, Collections.emptyList()));
+			File target = new File(explodedRoot, "BOOT-INF/classes/explodedsample/ExampleClass.class");
+			target.getParentFile().mkdirs();
+			FileCopyUtils.copy(compiled.getClassLoader().getResourceAsStream("explodedsample/ExampleClass.class"),
+					new FileOutputStream(target));
+			JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+			Iterator<Archive> archives = launcher.getClassPathArchivesIterator();
+			URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
+			Class<?> loaded = classLoader.loadClass("explodedsample.ExampleClass");
+			assertThat(loaded.getPackage().getImplementationTitle()).isEqualTo("test");
+		}));
 	}
 
 	protected final URL[] getExpectedFileUrls(File explodedRoot) {
