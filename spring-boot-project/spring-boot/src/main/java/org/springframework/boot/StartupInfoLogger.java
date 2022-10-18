@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.context.ApplicationContext;
@@ -64,7 +65,8 @@ class StartupInfoLogger {
 
 	private CharSequence getStartingMessage() {
 		StringBuilder message = new StringBuilder();
-		message.append("Starting ");
+		message.append("Starting");
+		appendAotMode(message);
 		appendApplicationName(message);
 		appendVersion(message, this.sourceClass);
 		appendJavaVersion(message);
@@ -85,7 +87,7 @@ class StartupInfoLogger {
 
 	private CharSequence getStartedMessage(Duration timeTakenToStartup) {
 		StringBuilder message = new StringBuilder();
-		message.append("Started ");
+		message.append("Started");
 		appendApplicationName(message);
 		message.append(" in ");
 		message.append(timeTakenToStartup.toMillis() / 1000.0);
@@ -100,9 +102,13 @@ class StartupInfoLogger {
 		return message;
 	}
 
+	private void appendAotMode(StringBuilder message) {
+		append(message, "", () -> AotDetector.useGeneratedArtifacts() ? "AOT-processed" : null);
+	}
+
 	private void appendApplicationName(StringBuilder message) {
-		String name = (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass) : "application";
-		message.append(name);
+		append(message, "",
+				() -> (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass) : "application");
 	}
 
 	private void appendVersion(StringBuilder message, Class<?> source) {

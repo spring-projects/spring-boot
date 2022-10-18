@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class StartupInfoLoggerTests {
 
@@ -51,6 +52,25 @@ class StartupInfoLoggerTests {
 				+ System.getProperty("java.version") + " on " + InetAddress.getLocalHost().getHostName() + " with PID "
 				+ new ApplicationPid() + " (started by " + System.getProperty("user.name") + " in "
 				+ System.getProperty("user.dir") + ")");
+	}
+
+	@Test
+	void startingFormatInAotMode() throws UnknownHostException {
+		System.setProperty("spring.aot.enabled", "true");
+		try {
+			given(this.log.isInfoEnabled()).willReturn(true);
+			new StartupInfoLogger(getClass()).logStarting(this.log);
+			ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+			then(this.log).should().info(captor.capture());
+			assertThat(captor.getValue().toString()).contains("Starting AOT-processed " + getClass().getSimpleName()
+					+ " using Java " + System.getProperty("java.version") + " on "
+					+ InetAddress.getLocalHost().getHostName() + " with PID " + new ApplicationPid() + " (started by "
+					+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
+
+		}
+		finally {
+			System.clearProperty("spring.aot.enabled");
+		}
 	}
 
 	@Test
