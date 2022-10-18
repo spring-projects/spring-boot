@@ -52,8 +52,8 @@ public class SpringBootTestAotProcessor extends TestAotProcessor {
 						.formatted(TestAotProcessor.class.getName()));
 		Set<Path> classpathRoots = Arrays.stream(args[0].split(File.pathSeparator)).map(Paths::get)
 				.collect(Collectors.toSet());
-		Settings settings = new Settings().setSourceOutput(Paths.get(args[1])).setResourceOutput(Paths.get(args[2]))
-				.setClassOutput(Paths.get(args[3])).setGroupId(args[4]).setArtifactId(args[5]);
+		Settings settings = Settings.builder().sourceOutput(Paths.get(args[1])).resourceOutput(Paths.get(args[2]))
+				.classOutput(Paths.get(args[3])).groupId(args[4]).artifactId(args[5]).build();
 		new SpringBootTestAotProcessor(classpathRoots, settings).process();
 	}
 

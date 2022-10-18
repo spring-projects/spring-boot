@@ -67,8 +67,8 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
 				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		Class<?> application = Class.forName(args[0]);
-		Settings settings = new Settings().setSourceOutput(Paths.get(args[1])).setResourceOutput(Paths.get(args[2]))
-				.setClassOutput(Paths.get(args[3])).setGroupId(args[4]).setArtifactId(args[5]);
+		Settings settings = Settings.builder().sourceOutput(Paths.get(args[1])).resourceOutput(Paths.get(args[2]))
+				.classOutput(Paths.get(args[3])).groupId(args[4]).artifactId(args[5]).build();
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
 		new SpringApplicationAotProcessor(application, settings, applicationArgs).process();
