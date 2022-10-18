@@ -71,5 +71,5 @@
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
-	<suppress files="spring-boot-configuration-processor/src/test/java/org/springframework/boot/configurationsample/" checks="SpringDeprecatedCheck"/>
+	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
 </suppressions>
